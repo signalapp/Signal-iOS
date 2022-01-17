@@ -579,3 +579,5 @@
 "light_mode_theme" = "Light";
 "PIN_BUTTON_TEXT" = "Pin";
 "UNPIN_BUTTON_TEXT" = "Unpin";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";

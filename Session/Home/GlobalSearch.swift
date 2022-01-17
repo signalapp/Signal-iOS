@@ -1,12 +1,11 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import UIKit
 
 @objc
 public protocol GlobalSearchViewDelegate: AnyObject {
     func globalSearchViewWillBeginDragging()
-    
-    func globalSearchDidSelectSearchResult(thread: ThreadViewModel, messageId: String?)
 }
 
 @objc
@@ -123,7 +122,7 @@ public class GlobalSearchViewController: UITableViewController {
         var searchResults: HomeScreenSearchResultSet?
         self.dbReadConnection.asyncRead({[weak self] transaction in
             guard let strongSelf = self else { return }
-            searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction)
+            searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText,  transaction: transaction)
         }, completionBlock: { [weak self] in
             AssertIsOnMainThread()
             guard let self = self else { return }
@@ -151,24 +150,92 @@ extension GlobalSearchViewController {
     
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-
         guard let searchSection = SearchSection(rawValue: indexPath.section) else { return }
-
         switch searchSection {
         case .noResults:
             SNLog("shouldn't be able to tap 'no results' section")
         case .contacts:
             let sectionResults = searchResultSet.conversations
-            guard let searchResult = sectionResults[safe: indexPath.row] else { return }
-            delegate?.globalSearchDidSelectSearchResult(thread: searchResult.thread, messageId: searchResult.messageId)
+            guard let searchResult = sectionResults[safe: indexPath.row], let threadId = searchResult.thread.threadRecord.uniqueId, let thread = TSThread.fetch(uniqueId: threadId) else { return }
+            show(thread, highlightedMessageID: nil, animated: true)
         case .messages:
             let sectionResults = searchResultSet.messages
-            guard let searchResult = sectionResults[safe: indexPath.row] else { return }
-            delegate?.globalSearchDidSelectSearchResult(thread: searchResult.thread, messageId: searchResult.messageId)
+            guard let searchResult = sectionResults[safe: indexPath.row], let threadId = searchResult.thread.threadRecord.uniqueId, let thread = TSThread.fetch(uniqueId: threadId) else { return }
+            show(thread, highlightedMessageID: nil, animated: true)
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    private func show(_ thread: TSThread, highlightedMessageID: String?, animated: Bool) {
+        DispatchMainThreadSafe {
+            if let presentedVC = self.presentedViewController {
+                presentedVC.dismiss(animated: false, completion: nil)
+            }
+            let conversationVC = ConversationVC(thread: thread, focusedMessageID: highlightedMessageID)
+            self.navigationController?.pushViewController(conversationVC, animated: true)
         }
     }
 
     // MARK: UITableViewDataSource
+    
+    public override func numberOfSections(in tableView: UITableView) -> Int {
+        return 3
+    }
+    
+    public override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        UIView()
+    }
+
+    public override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        .leastNonzeroMagnitude
+    }
+
+    public override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard nil != self.tableView(tableView, titleForHeaderInSection: section) else {
+            return .leastNonzeroMagnitude
+        }
+        return UITableView.automaticDimension
+    }
+    
+    public override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let title = self.tableView(tableView, titleForHeaderInSection: section) else {
+            return UIView()
+        }
+        
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        
+        let container = UIView()
+        container.backgroundColor = Colors.cellBackground
+        container.layoutMargins = UIEdgeInsets(top: Values.smallSpacing, left: Values.mediumSpacing, bottom: Values.smallSpacing, right: Values.mediumSpacing)
+        container.addSubview(titleLabel)
+        titleLabel.autoPinEdgesToSuperviewMargins()
+
+        return container
+    }
+
+    public override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let searchSection = SearchSection(rawValue: section) else { return nil }
+
+        switch searchSection {
+        case .noResults:
+            return nil
+        case .contacts:
+            if searchResultSet.conversations.count > 0 {
+                return NSLocalizedString("SEARCH_SECTION_CONTACTS", comment: "")
+            } else {
+                return nil
+            }
+        case .messages:
+            if searchResultSet.messages.count > 0 {
+                return NSLocalizedString("SEARCH_SECTION_MESSAGES", comment: "")
+            } else {
+                return nil
+            }
+        }
+    }
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let searchSection = SearchSection(rawValue: section) else { return 0 }
@@ -197,10 +264,21 @@ extension GlobalSearchViewController {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: EmptySearchResultCell.reuseIdentifier) as? EmptySearchResultCell, indexPath.row == 0 else { return UITableViewCell() }
             cell.configure(searchText: searchText)
             return cell
-        case .contacts, .messages:
-            // TODO: return correct cell
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: EmptySearchResultCell.reuseIdentifier) as? EmptySearchResultCell else { return UITableViewCell() }
-            cell.configure(searchText: searchText)
+        case .contacts:
+            let sectionResults = searchResultSet.conversations
+            let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
+            cell.isShowingGlobalSearchResult = true
+            let searchResult = sectionResults[safe: indexPath.row]
+            cell.threadViewModel = searchResult?.thread
+            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet)
+            return cell
+        case .messages:
+            let sectionResults = searchResultSet.messages
+            let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
+            cell.isShowingGlobalSearchResult = true
+            let searchResult = sectionResults[safe: indexPath.row]
+            cell.threadViewModel = searchResult?.thread
+            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet)
             return cell
         }
     }

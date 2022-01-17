@@ -2,7 +2,12 @@ import UIKit
 import SessionUIKit
 
 final class ConversationCell : UITableViewCell {
-    var threadViewModel: ThreadViewModel! { didSet { update() } }
+    var isShowingGlobalSearchResult = false
+    var threadViewModel: ThreadViewModel! {
+        didSet {
+            isShowingGlobalSearchResult ? updateForSearchResult() : update()
+        }
+    }
     
     static let reuseIdentifier = "ConversationCell"
     
@@ -187,6 +192,27 @@ final class ConversationCell : UITableViewCell {
         // HACK: The two lines below are part of a workaround for a weird layout bug
         stackView.set(.width, to: UIScreen.main.bounds.width - Values.mediumSpacing)
         stackView.set(.height, to: cellHeight)
+    }
+    
+    // MARK: Updating for search results
+    private func updateForSearchResult() {
+        AssertIsOnMainThread()
+        guard let thread = threadViewModel?.threadRecord else { return }
+        profilePictureView.update(for: thread)
+        displayNameLabel.text = getDisplayName()
+        isPinnedIcon.isHidden = true
+        unreadCountView.isHidden = true
+        hasMentionView.isHidden = true
+    }
+    
+    public func configure(messageDate: Date?, snippet: String?) {
+        if let messageDate = messageDate, let snippet = snippet {
+            timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
+            snippetLabel.text = snippet
+        } else {
+            timestampLabel.text = DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate)
+            snippetLabel.attributedText = getSnippet()
+        }
     }
     
     // MARK: Updating

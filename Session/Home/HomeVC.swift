@@ -37,13 +37,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         return result
     }()
     
-    internal lazy var searchController: GlobalSearchViewController = {
+    internal lazy var searchResultsController: GlobalSearchViewController = {
         let result = GlobalSearchViewController()
         result.delegate = self
         return result
     }()
         
-    private lazy var tableView: UITableView = {
+    internal lazy var tableView: UITableView = {
         let result = UITableView()
         result.backgroundColor = .clear
         result.separatorStyle = .none
@@ -178,11 +178,33 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         searchBarContainer.addSubview(searchBar)
         searchBar.autoPinEdgesToSuperviewMargins()
         tableView.tableHeaderView = searchBarContainer
+        
+        addChild(searchResultsController)
+        view.addSubview(searchResultsController.view)
+        searchResultsController.view.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        searchResultsController.view.autoPinEdge(toSuperviewEdge: .top, withInset: 64)
+        searchResultsController.view.isHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        searchResultsController.viewDidAppear(animated)
         reload()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        searchResultsController.viewWillAppear(animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        searchResultsController.viewWillDisappear(animated)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        searchResultsController.viewDidDisappear(animated)
     }
     
     deinit {
