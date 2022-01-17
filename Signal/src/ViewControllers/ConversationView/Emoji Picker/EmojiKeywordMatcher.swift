@@ -46,6 +46,9 @@ class EmojiKeywordMatcher {
         return searchTree(for: nextPartialKeyword, currentNode: nextNode)
     }
     
+    /// A node in the trie lookup data structure
+    /// It contains the emoji which match, up to the current character
+    ///  and contains further character options in its children
     private class Node {
         var value: [Emoji.Category: [EmojiWithSkinTones]]
         var children: [Character: Node] = [:]
@@ -57,9 +60,12 @@ class EmojiKeywordMatcher {
     
     /// Builds the trie data structure for matching emoji by keyword
     /// Runs in O(n+m) time where n is the number of emoji and m is the number of tags
+    /// Only needs to be run once on initialization of this class
     private static func buildEmojiSearchTree(fromEmoji: [Emoji.Category: [EmojiWithSkinTones]]) -> Node {
         let rootNode = Node(value: [:])
         
+        // We first build a lookup dictionary to prevent having to filter every emoji in the loop below
+        // This allows us to reducce the complexity from O(nm) to O(n+m)
         let emojiToEmojiWithSkinTones = fromEmoji.reduce([Emoji: (Emoji.Category, EmojiWithSkinTones)]()) { (lookup, element) in
             let (category, emoji) = element
             var newLookup = lookup
@@ -69,6 +75,7 @@ class EmojiKeywordMatcher {
             return newLookup
         }
         
+        // For each keyword, we build a subtree, appending all the matching emoji for each partial form of the keyword
         for keyword in emojiTags.keys {
             let matchingEmoji = emojiTags[keyword]!
             let filteredEmojisByCategory = matchingEmoji.reduce([Emoji.Category: [EmojiWithSkinTones]]()) { (filtered, emoji) in

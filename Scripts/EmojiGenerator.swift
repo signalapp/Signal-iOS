@@ -40,6 +40,7 @@ enum RemoteModel {
             group = try container.decodeIfPresent(EmojiCategory.self, forKey: .group)
             order = try container.decodeIfPresent(Int.self, forKey: .order)
             skins = try container.decodeIfPresent([EmojiItem].self, forKey: .skins)
+            // "tone" may be an array or a single value, or no value. Decode as an array in any case
             if let value = try? container.decode(EmojiSkintone.self, forKey: .tone) {
                 tone = [value]
             } else if let value = try? container.decode([EmojiSkintone].self, forKey: .tone) {
@@ -103,8 +104,6 @@ enum RemoteModel {
     }
 
     static func fetchEmojiData() throws -> Data {
-        // let remoteSourceUrl = URL(string: "https://unicodey.com/emoji-data/emoji.json")!
-        // This URL has been unavailable the past couple of weeks. If you're seeing failures here, try this other one:
         let remoteSourceUrl = URL(string: "https://cdn.jsdelivr.net/npm/emojibase-data@6.2.0/en/data.json")!
         return try Data(contentsOf: remoteSourceUrl)
     }
@@ -148,7 +147,7 @@ struct EmojiModel {
             rawName = remoteItem.annotation.uppercased()
             enumName = Self.parseEnumNameFromRemoteItem(remoteItem)
             
-            let baseEmojiChar = Character(remoteItem.emoji)//try Self.codePointsToCharacter(Self.parseCodePointString(remoteItem.hexcode))
+            let baseEmojiChar = Character(remoteItem.emoji)
             let baseEmoji = Emoji(emojiChar: baseEmojiChar, base: baseEmojiChar, skintoneSequence: .none)
 
             let toneVariants: [Emoji]
@@ -553,6 +552,8 @@ extension EmojiGenerator {
     }
     
     static func writeTagLookupFile(from emojiModel: EmojiModel) {
+        // Tag/Keyword lookup. Create a dictionary mapping a string (keyword) to am arrau of emoji enum elements
+        // e.g. "autum": [.moonCake]
         let emojisForTag = emojiModel.definitions.reduce(into: [String: [EmojiModel.EmojiDefinition]]()) { emojisForTag, emoji in
             for tag in emoji.tags {
                 var emojis = emojisForTag[tag] ?? []
