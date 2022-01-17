@@ -22,21 +22,9 @@ class EmojiPickerCollectionView: UICollectionView {
     var hasRecentEmoji: Bool { !recentEmoji.isEmpty }
 
     private let allAvailableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
-    var emojiKeywordMatcher = EmojiKeywordMatcher(searchString: "") {
-        didSet {
-            matchingEmoji = emojiKeywordMatcher.getMatchingEmoji()
-            filteredEmojisByCategory = allAvailableEmojiByCategory.mapValues { emojiWithSkinTones in
-                return emojiWithSkinTones.filter { matchingEmoji.contains($0.baseEmoji) }
-            }
-            reloadData()
-        }
-    }
+    var emojiKeywordMatcher: EmojiKeywordMatcher
     var matchingEmoji = [Emoji]()
-    private lazy var filteredEmojisByCategory: [Emoji.Category: [EmojiWithSkinTones]] = allAvailableEmojiByCategory /*{
-        return allAvailableEmojiByCategory.mapValues { emojiWithSkinTones in
-            return emojiWithSkinTones.filter { matchingEmoji.contains($0.baseEmoji) }
-        }
-    }*/
+    private var filteredEmojisByCategory = [Emoji.Category: [EmojiWithSkinTones]]()
 
     static let emojiWidth: CGFloat = 38
     static let margins: CGFloat = 16
@@ -61,7 +49,9 @@ class EmojiPickerCollectionView: UICollectionView {
             )
             return (recentEmoji, allAvailableEmojiByCategory)
         }
-
+        emojiKeywordMatcher = EmojiKeywordMatcher(availableEmojiByCategory: allAvailableEmojiByCategory)
+        filteredEmojisByCategory = allAvailableEmojiByCategory
+        
         super.init(frame: .zero, collectionViewLayout: layout)
 
         delegate = self
@@ -216,6 +206,11 @@ class EmojiPickerCollectionView: UICollectionView {
     func dismissSkinTonePicker() {
         currentSkinTonePicker?.dismiss()
         currentSkinTonePicker = nil
+    }
+    
+    func updateFilteredEmoji(newSearchString: String) {
+        filteredEmojisByCategory = emojiKeywordMatcher.getMatchingEmoji(searchString: newSearchString)
+        reloadData()
     }
 }
 

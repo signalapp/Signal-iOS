@@ -106,7 +106,6 @@ extension EmojiPickerSheet: EmojiSearchBarDelegate {
         openSheet()
     }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        let matcher = EmojiKeywordMatcher(searchString: searchText)
-        collectionView.emojiKeywordMatcher = matcher
+        collectionView.updateFilteredEmoji(newSearchString: searchText)
     }
 }
