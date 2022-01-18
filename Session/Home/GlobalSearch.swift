@@ -64,6 +64,8 @@ public class GlobalSearchViewController: UITableViewController {
         tableView.separatorColor = .clear
         tableView.separatorInset = .zero
         tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false
+        tableView.keyboardDismissMode = .interactive
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
         tableView.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
