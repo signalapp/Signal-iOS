@@ -241,7 +241,11 @@ extension HVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
-        return false
+        if #available(iOS 13, *) {
+            return false
+        } else {
+            return true
+        }
     }
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
