@@ -15,6 +15,7 @@ extension HomeVC: UISearchBarDelegate, GlobalSearchViewDelegate {
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         self.updateSearchResultsVisibility()
+        self.ensureSearchBarCancelButton()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
