@@ -226,6 +226,10 @@ final class ConversationCell : UITableViewCell {
     }
     
     private func getHighlightedSnippet(snippet: String, searchText: String) -> NSMutableAttributedString {
+        guard snippet != NSLocalizedString("NOTE_TO_SELF", comment: "") else {
+            return NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text])
+        }
+        
         let result = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:UIColor.gray])
         let normalizedSnippet = snippet.lowercased() as NSString
         let normalizedSearchText = searchText.lowercased()
