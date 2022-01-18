@@ -2,6 +2,7 @@
 
 import Foundation
 import UIKit
+import NVActivityIndicatorView
 
 @objc
 public protocol GlobalSearchViewDelegate: AnyObject {
@@ -13,6 +14,8 @@ public class GlobalSearchViewController: UITableViewController {
     
     @objc
     public static let minimumSearchTextLength: Int = 2
+    
+    private let maxSearchResultCount: Int = 200
     
     @objc
     public weak var delegate: GlobalSearchViewDelegate?
@@ -99,12 +102,12 @@ public class GlobalSearchViewController: UITableViewController {
 
         refreshTimer?.invalidate()
         refreshTimer = WeakTimer.scheduledTimer(timeInterval: 0.1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
-            guard let strongSelf = self else {
+            guard let self = self else {
                 return
             }
 
-            strongSelf.updateSearchResults(searchText: strongSelf.searchText)
-            strongSelf.refreshTimer = nil
+            self.updateSearchResults(searchText: self.searchText)
+            self.refreshTimer = nil
         }
     }
     
@@ -123,8 +126,8 @@ public class GlobalSearchViewController: UITableViewController {
 
         var searchResults: HomeScreenSearchResultSet?
         self.dbReadConnection.asyncRead({[weak self] transaction in
-            guard let strongSelf = self else { return }
-            searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText,  transaction: transaction)
+            guard let self = self else { return }
+            searchResults = self.searcher.searchForHomeScreen(searchText: searchText, maxSearchResults: self.maxSearchResultCount,  transaction: transaction)
         }, completionBlock: { [weak self] in
             AssertIsOnMainThread()
             guard let self = self, let results = searchResults, self.lastSearchText == searchText else { return }
@@ -289,32 +292,37 @@ extension GlobalSearchViewController {
 class EmptySearchResultCell: UITableViewCell {
     static let reuseIdentifier = "EmptySearchResultCell"
 
-    let messageLabel: UILabel
-    let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    private lazy var messageLabel: UILabel = {
+        let result = UILabel()
+        result.textAlignment = .center
+        result.numberOfLines = 3
+        result.textColor = Colors.text
+        result.text = NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "")
+        return result
+    }()
+    
+    private lazy var spinner: NVActivityIndicatorView = {
+        let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
+        result.set(.width, to: 40)
+        result.set(.height, to: 40)
+        return result
+    }()
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        self.messageLabel = UILabel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        messageLabel.textAlignment = .center
-        messageLabel.numberOfLines = 3
-
+        
         contentView.addSubview(messageLabel)
-
         messageLabel.autoSetDimension(.height, toSize: 150)
-
         messageLabel.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
         messageLabel.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
         messageLabel.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
         messageLabel.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-
         messageLabel.autoVCenterInSuperview()
         messageLabel.autoHCenterInSuperview()
-
         messageLabel.setContentHuggingHigh()
         messageLabel.setCompressionResistanceHigh()
 
-        contentView.addSubview(activityIndicator)
-        activityIndicator.autoCenterInSuperview()
+        contentView.addSubview(spinner)
+        spinner.autoCenterInSuperview()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -322,18 +330,13 @@ class EmptySearchResultCell: UITableViewCell {
     }
 
     public func configure(searchText: String) {
-        if searchText.isEmpty {
-            activityIndicator.color = Colors.text
-            activityIndicator.isHidden = false
-            activityIndicator.startAnimating()
+        if searchText.count < GlobalSearchViewController.minimumSearchTextLength {
+            spinner.stopAnimating()
+            spinner.startAnimating()
             messageLabel.isHidden = true
-            messageLabel.text = nil
         } else {
-            activityIndicator.stopAnimating()
-            activityIndicator.isHidden = true
+            spinner.stopAnimating()
             messageLabel.isHidden = false
-            messageLabel.text = NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "")
-            messageLabel.textColor = Colors.text
         }
     }
 }
