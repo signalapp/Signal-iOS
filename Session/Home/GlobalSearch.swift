@@ -12,6 +12,9 @@ public protocol GlobalSearchViewDelegate: AnyObject {
 public class GlobalSearchViewController: UITableViewController {
     
     @objc
+    public static let minimumSearchTextLength: Int = 2
+    
+    @objc
     public weak var delegate: GlobalSearchViewDelegate?
     
     @objc
@@ -106,16 +109,13 @@ public class GlobalSearchViewController: UITableViewController {
     private func updateSearchResults(searchText rawSearchText: String) {
 
         let searchText = rawSearchText.stripped
-        guard searchText.count > 0 else {
+        guard searchText.count >= GlobalSearchViewController.minimumSearchTextLength else {
             searchResultSet = HomeScreenSearchResultSet.empty
             lastSearchText = nil
             reloadTableData()
             return
         }
-        guard lastSearchText != searchText else {
-            // Ignoring redundant search.
-            return
-        }
+        guard lastSearchText != searchText else { return }
 
         lastSearchText = searchText
 
@@ -125,17 +125,7 @@ public class GlobalSearchViewController: UITableViewController {
             searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText,  transaction: transaction)
         }, completionBlock: { [weak self] in
             AssertIsOnMainThread()
-            guard let self = self else { return }
-
-            guard let results = searchResults else {
-                owsFailDebug("searchResults was unexpectedly nil")
-                return
-            }
-            guard self.lastSearchText == searchText else {
-                // Discard results from stale search.
-                return
-            }
-
+            guard let self = self, let results = searchResults, self.lastSearchText == searchText else { return }
             self.searchResultSet = results
             self.reloadTableData()
         })

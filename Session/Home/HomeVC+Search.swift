@@ -37,7 +37,7 @@ extension HomeVC: UISearchBarDelegate, GlobalSearchViewDelegate {
     func updateSearchResultsVisibility() {
         guard let searchText = searchBar.text?.ows_stripped() else { return }
         searchResultsController.searchText = searchText
-        let isSearching = searchText.count > 0
+        let isSearching = searchText.count >= GlobalSearchViewController.minimumSearchTextLength
         searchResultsController.view.isHidden = !isSearching
         tableView.isScrollEnabled = !isSearching
     }

@@ -148,6 +148,11 @@ BOOL IsNoteToSelfEnabled(void)
     return nil;
 }
 
+- (NSString *)nameWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return nil;
+}
+
 - (NSArray<NSString *> *)recipientIdentifiers
 {
     return @[];
