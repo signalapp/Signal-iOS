@@ -101,6 +101,22 @@ final class ConversationCell : UITableViewCell {
         return result
     }()
     
+    private lazy var topLabelStackView: UIStackView = {
+        let result = UIStackView()
+        result.axis = .horizontal
+        result.alignment = .center
+        result.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
+        return result
+    }()
+    
+    private lazy var bottomLabelStackView: UIStackView = {
+        let result = UIStackView()
+        result.axis = .horizontal
+        result.alignment = .center
+        result.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
+        return result
+    }()
+    
     // MARK: Settings
     private static let unreadCountViewSize: CGFloat = 20
     private static let statusIndicatorSize: CGFloat = 14
@@ -140,21 +156,20 @@ final class ConversationCell : UITableViewCell {
         hasMentionLabel.pin(to: hasMentionView)
         // Label stack view
         let topLabelSpacer = UIView.hStretchingSpacer()
-        let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, isPinnedIcon, unreadCountView, hasMentionView, topLabelSpacer, timestampLabel ])
-        topLabelStackView.axis = .horizontal
-        topLabelStackView.alignment = .center
-        topLabelStackView.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
+        [ displayNameLabel, isPinnedIcon, unreadCountView, hasMentionView, topLabelSpacer, timestampLabel ].forEach{ view in
+            topLabelStackView.addArrangedSubview(view)
+        }
         let snippetLabelContainer = UIView()
         snippetLabelContainer.addSubview(snippetLabel)
         snippetLabelContainer.addSubview(typingIndicatorView)
         let bottomLabelSpacer = UIView.hStretchingSpacer()
-        let bottomLabelStackView = UIStackView(arrangedSubviews: [ snippetLabelContainer, bottomLabelSpacer, statusIndicatorView ])
-        bottomLabelStackView.axis = .horizontal
-        bottomLabelStackView.alignment = .center
-        bottomLabelStackView.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
-        let labelContainerView = UIView()
-        labelContainerView.addSubview(topLabelStackView)
-        labelContainerView.addSubview(bottomLabelStackView)
+        [ snippetLabelContainer, bottomLabelSpacer, statusIndicatorView ].forEach{ view in
+            bottomLabelStackView.addArrangedSubview(view)
+        }
+        let labelContainerView = UIStackView(arrangedSubviews: [ topLabelStackView, bottomLabelStackView ])
+        labelContainerView.axis = .vertical
+        labelContainerView.alignment = .leading
+        labelContainerView.spacing = 6
         // Main stack view
         let stackView = UIStackView(arrangedSubviews: [ accentLineView, profilePictureView, labelContainerView ])
         stackView.axis = .horizontal
@@ -177,16 +192,6 @@ final class ConversationCell : UITableViewCell {
         snippetLabel.pin(to: snippetLabelContainer)
         typingIndicatorView.pin(.leading, to: .leading, of: snippetLabelContainer)
         typingIndicatorView.centerYAnchor.constraint(equalTo: snippetLabel.centerYAnchor).isActive = true
-        // HACK: Not using a stack view for this is part of a workaround for a weird layout bug
-        topLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
-        topLabelStackView.pin(.top, to: .top, of: labelContainerView, withInset: 12)
-        topLabelStackView.pin(.trailing, to: .trailing, of: labelContainerView)
-        bottomLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
-        bottomLabelStackView.pin(.top, to: .bottom, of: topLabelStackView, withInset: 6)
-        labelContainerView.pin(.bottom, to: .bottom, of: bottomLabelStackView, withInset: 12)
-        // HACK: The two lines below are part of a workaround for a weird layout bug
-        labelContainerView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
-        labelContainerView.set(.height, to: cellHeight)
         stackView.pin(.leading, to: .leading, of: contentView)
         stackView.pin(.top, to: .top, of: contentView)
         // HACK: The two lines below are part of a workaround for a weird layout bug
@@ -205,14 +210,31 @@ final class ConversationCell : UITableViewCell {
         hasMentionView.isHidden = true
     }
     
-    public func configure(messageDate: Date?, snippet: String?) {
+    public func configure(messageDate: Date?, snippet: String?, searchText: String) {
         if let messageDate = messageDate, let snippet = snippet {
+            // Message
+            timestampLabel.isHidden = false
             timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
-            snippetLabel.text = snippet
+            bottomLabelStackView.isHidden = false
+            snippetLabel.attributedText = getHighlightedSnippet(snippet: snippet, searchText: searchText)
         } else {
-            timestampLabel.text = DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate)
-            snippetLabel.attributedText = getSnippet()
+            // Contact
+            displayNameLabel.attributedText = getHighlightedSnippet(snippet: displayNameLabel.text!, searchText: searchText)
+            bottomLabelStackView.isHidden = true
+            timestampLabel.isHidden = true
         }
+    }
+    
+    private func getHighlightedSnippet(snippet: String, searchText: String) -> NSMutableAttributedString {
+        let result = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:UIColor.gray])
+        let normalizedSnippet = snippet.lowercased() as NSString
+        let normalizedSearchText = searchText.lowercased()
+        
+        guard normalizedSnippet.contains(normalizedSearchText) else { return result }
+        
+        let range = normalizedSnippet.range(of: normalizedSearchText)
+        result.addAttribute(.foregroundColor, value: Colors.text, range: range)
+        return result
     }
     
     // MARK: Updating

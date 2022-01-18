@@ -265,7 +265,7 @@ extension GlobalSearchViewController {
             cell.isShowingGlobalSearchResult = true
             let searchResult = sectionResults[safe: indexPath.row]
             cell.threadViewModel = searchResult?.thread
-            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet)
+            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
             return cell
         case .messages:
             let sectionResults = searchResultSet.messages
@@ -273,7 +273,7 @@ extension GlobalSearchViewController {
             cell.isShowingGlobalSearchResult = true
             let searchResult = sectionResults[safe: indexPath.row]
             cell.threadViewModel = searchResult?.thread
-            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet)
+            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
             return cell
         }
     }
