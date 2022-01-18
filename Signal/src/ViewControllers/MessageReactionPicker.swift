@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -84,7 +84,10 @@ class MessageReactionPicker: UIStackView {
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
             button.setTitle(title: emoji.rawValue, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
             button.setPressedBlock { [weak self] in
-                self?.delegate?.didSelectReaction(reaction: emoji.rawValue, isRemoving: emoji == self?.selectedEmoji)
+                // current title of button may have changed in the meantime
+                if let currentEmoji = button.button.title(for: .normal) {
+                    self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji?.rawValue)
+                }
             }
             buttonForEmoji[emoji.rawValue] = button
             addArrangedSubview(button)
