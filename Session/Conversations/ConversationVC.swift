@@ -633,7 +633,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     func scrollToInteraction(with interactionID: String, position: UITableView.ScrollPosition = .middle, isAnimated: Bool = true, highlighted: Bool = false) {
         guard let indexPath = viewModel.ensureLoadWindowContainsInteractionId(interactionID) else { return }
         messagesTableView.scrollToRow(at: indexPath, at: position, animated: isAnimated)
-        if highlighted, let _ = messagesTableView.cellForRow(at: indexPath) as? VisibleMessageCell {
+        if highlighted {
             focusedMessageIndexPath = indexPath
         }
     }
