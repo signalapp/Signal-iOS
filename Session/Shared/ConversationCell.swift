@@ -204,7 +204,6 @@ final class ConversationCell : UITableViewCell {
         AssertIsOnMainThread()
         guard let thread = threadViewModel?.threadRecord else { return }
         profilePictureView.update(for: thread)
-        displayNameLabel.text = getDisplayName()
         isPinnedIcon.isHidden = true
         unreadCountView.isHidden = true
         hasMentionView.isHidden = true
@@ -213,24 +212,25 @@ final class ConversationCell : UITableViewCell {
     public func configure(messageDate: Date?, snippet: String?, searchText: String) {
         if let messageDate = messageDate, let snippet = snippet {
             // Message
+            displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
             timestampLabel.isHidden = false
             timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
             bottomLabelStackView.isHidden = false
-            snippetLabel.attributedText = getHighlightedSnippet(snippet: snippet, searchText: searchText)
+            snippetLabel.attributedText = getHighlightedSnippet(snippet: snippet, searchText: searchText, fontSize: Values.smallFontSize)
         } else {
             // Contact
-            displayNameLabel.attributedText = getHighlightedSnippet(snippet: displayNameLabel.text!, searchText: searchText)
+            displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: searchText, fontSize: Values.mediumFontSize)
             bottomLabelStackView.isHidden = true
             timestampLabel.isHidden = true
         }
     }
     
-    private func getHighlightedSnippet(snippet: String, searchText: String) -> NSMutableAttributedString {
+    private func getHighlightedSnippet(snippet: String, searchText: String, fontSize: CGFloat) -> NSMutableAttributedString {
         guard snippet != NSLocalizedString("NOTE_TO_SELF", comment: "") else {
             return NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text])
         }
         
-        let result = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:UIColor.gray])
+        let result = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
         let normalizedSnippet = snippet.lowercased() as NSString
         let normalizedSearchText = searchText.lowercased()
         
@@ -238,6 +238,7 @@ final class ConversationCell : UITableViewCell {
         
         let range = normalizedSnippet.range(of: normalizedSearchText)
         result.addAttribute(.foregroundColor, value: Colors.text, range: range)
+        result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: fontSize), range: range)
         return result
     }
     
