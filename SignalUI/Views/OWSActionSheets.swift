@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,7 +27,7 @@ import SignalMessaging
     }
 
     @objc
-    public class func showActionSheet(title: String?, message: String? = nil, buttonTitle: String? = nil, buttonAction: ActionSheetAction.Handler? = nil) {
+    public class func showActionSheet(title: String? = nil, message: String? = nil, buttonTitle: String? = nil, buttonAction: ActionSheetAction.Handler? = nil) {
         guard let fromViewController = CurrentAppContext().frontmostViewController() else {
             return
         }
@@ -36,7 +36,7 @@ import SignalMessaging
     }
 
     @objc
-    public class func showActionSheet(title: String?, message: String? = nil, buttonTitle: String? = nil, buttonAction: ActionSheetAction.Handler? = nil, fromViewController: UIViewController?) {
+    public class func showActionSheet(title: String? = nil, message: String? = nil, buttonTitle: String? = nil, buttonAction: ActionSheetAction.Handler? = nil, fromViewController: UIViewController?) {
 
         let actionSheet = ActionSheetController(title: title, message: message)
 

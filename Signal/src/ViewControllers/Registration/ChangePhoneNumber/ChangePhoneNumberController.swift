@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -182,15 +182,29 @@ class ChangePhoneNumberController: Dependencies {
 
         RegistrationBaseViewController.restoreBackButton(changePhoneNumberViewFromViewController)
 
-        navigationController.popToViewController(changePhoneNumberViewFromViewController, animated: true) {
-
-            RegistrationBaseViewController.restoreBackButton(changePhoneNumberViewFromViewController)
-
-            if didSucceed {
-                let toast = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL",
-                                              comment: "Message indicating that 'change phone number' was successful.")
-                changePhoneNumberViewFromViewController.presentToast(text: toast)
+        if didSucceed {
+            guard let newPhoneNumber = newPhoneNumber else {
+                owsFailDebug("Missing new number.")
+                return
             }
+
+            guard let rootViewController = navigationController.viewControllers.first else {
+                owsFailDebug("Missing rootViewController.")
+                return
+            }
+
+            navigationController.popToViewController(rootViewController, animated: true) {
+                let format = NSLocalizedString(
+                    "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT",
+                    comment: "Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }}")
+                OWSActionSheets.showActionSheet(
+                    message: String(format: format, PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: newPhoneNumber.e164)),
+                    buttonTitle: CommonStrings.okayButton,
+                    fromViewController: rootViewController
+                )
+            }
+        } else {
+            navigationController.popToViewController(changePhoneNumberViewFromViewController, animated: true)
         }
     }
 

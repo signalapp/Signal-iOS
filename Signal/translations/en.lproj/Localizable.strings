@@ -3044,7 +3044,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their number to a new number";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
@@ -5263,8 +5263,8 @@
 /* Label for button in settings views to change phone number */
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
 
-/* Message indicating that 'change phone number' was successful. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL" = "Your phone number has been changed.";
+/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Change Number";
