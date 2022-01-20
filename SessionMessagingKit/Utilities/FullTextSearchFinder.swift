@@ -97,6 +97,7 @@ public class FullTextSearchFinder: NSObject {
         let snippetOptions = YapDatabaseFullTextSearchSnippetOptions()
         snippetOptions.startMatchText = ""
         snippetOptions.endMatchText = ""
+        snippetOptions.numberOfTokens = 5
         ext.enumerateKeysAndObjects(matching: query, with: snippetOptions) { (snippet: String, _: String, _: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>) in
             guard searchResultCount < maxSearchResults else {
                 stop.pointee = true

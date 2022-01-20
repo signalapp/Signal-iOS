@@ -305,7 +305,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     @objc private func handleSeedViewedNotification(_ notification: Notification) {
-        self.tableView.reloadSections(IndexSet(integer: 0), with: .none) // TODO: Just reload header
+        self.tableView.reloadSections(IndexSet(integer: 0), with: .none) // TODO: Just reload header if possible
     }
 
     @objc private func handleBlockedContactsUpdatedNotification(_ notification: Notification) {

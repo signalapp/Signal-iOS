@@ -82,7 +82,7 @@ class BaseVC : UIViewController {
         headingImageView.image = UIImage(named: "SessionHeading")?.withRenderingMode(.alwaysTemplate)
         headingImageView.contentMode = .scaleAspectFit
         headingImageView.set(.width, to: 150)
-        headingImageView.set(.height, to: 18)
+        headingImageView.set(.height, to: Values.mediumFontSize)
         navigationItem.titleView = headingImageView
     }
 

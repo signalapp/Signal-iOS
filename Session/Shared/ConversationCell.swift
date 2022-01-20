@@ -210,17 +210,35 @@ final class ConversationCell : UITableViewCell {
     }
     
     public func configure(messageDate: Date?, snippet: String?, searchText: String) {
+        let normalizedSearchText = searchText.lowercased()
         if let messageDate = messageDate, let snippet = snippet {
             // Message
             displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
             timestampLabel.isHidden = false
             timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
             bottomLabelStackView.isHidden = false
-            snippetLabel.attributedText = getHighlightedSnippet(snippet: snippet, searchText: searchText, fontSize: Values.smallFontSize)
+            snippetLabel.attributedText = getHighlightedSnippet(snippet: snippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
         } else {
             // Contact
-            displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: searchText, fontSize: Values.mediumFontSize)
-            bottomLabelStackView.isHidden = true
+            displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
+            if threadViewModel.isGroupThread, let thread = threadViewModel.threadRecord as? TSGroupThread {
+                bottomLabelStackView.isHidden = false
+                let context: Contact.Context = thread.isOpenGroup ? .openGroup : .regular
+                var rawSnippet: String = ""
+                thread.groupModel.groupMemberIds.forEach{ id in
+                    if let displayName = Storage.shared.getContact(with: id)?.displayName(for: context) {
+                        if !rawSnippet.isEmpty {
+                            rawSnippet += ", \(displayName)"
+                        }
+                        if displayName.lowercased().contains(normalizedSearchText) {
+                            rawSnippet = displayName
+                        }
+                    }
+                }
+                snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
+            } else {
+                bottomLabelStackView.isHidden = true
+            }
             timestampLabel.isHidden = true
         }
     }
@@ -232,11 +250,10 @@ final class ConversationCell : UITableViewCell {
         
         let result = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
         let normalizedSnippet = snippet.lowercased() as NSString
-        let normalizedSearchText = searchText.lowercased()
         
-        guard normalizedSnippet.contains(normalizedSearchText) else { return result }
+        guard normalizedSnippet.contains(searchText) else { return result }
         
-        let range = normalizedSnippet.range(of: normalizedSearchText)
+        let range = normalizedSnippet.range(of: searchText)
         result.addAttribute(.foregroundColor, value: Colors.text, range: range)
         result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: fontSize), range: range)
         return result
