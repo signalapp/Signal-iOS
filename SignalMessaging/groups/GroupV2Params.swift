@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,7 +59,7 @@ public extension GroupV2Params {
         assert(ciphertext.count > 0)
 
         if plaintext.count <= Self.decryptedBlobCacheMaxItemSize {
-            let cacheKey = (groupSecretParamsData + ciphertext)
+            let cacheKey = (ciphertext + groupSecretParamsData)
             Self.decryptedBlobCache.setObject(plaintext, forKey: cacheKey)
         }
 
@@ -71,7 +71,7 @@ public extension GroupV2Params {
     private static let decryptedBlobCacheMaxItemSize: UInt = 4 * 1024
 
     fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {
-        let cacheKey = (groupSecretParamsData + ciphertext)
+        let cacheKey = (ciphertext + groupSecretParamsData)
         if let plaintext = Self.decryptedBlobCache.object(forKey: cacheKey) {
             return plaintext
         }
@@ -94,7 +94,7 @@ public extension GroupV2Params {
     private static let decryptedUuidCache = LRUCache<Data, UUID>(maxSize: 256)
 
     func uuid(forUuidCiphertext uuidCiphertext: UuidCiphertext) throws -> UUID {
-        let cacheKey = (groupSecretParamsData + uuidCiphertext.serialize().asData)
+        let cacheKey = (uuidCiphertext.serialize().asData + groupSecretParamsData)
         if let plaintext = Self.decryptedUuidCache.object(forKey: cacheKey) {
             return plaintext
         }
@@ -111,7 +111,7 @@ public extension GroupV2Params {
         let uuidCiphertext = try clientZkGroupCipher.encryptUuid(uuid: uuid)
         let userId = uuidCiphertext.serialize().asData
 
-        let cacheKey = (groupSecretParamsData + userId)
+        let cacheKey = (userId + groupSecretParamsData)
         Self.decryptedUuidCache.setObject(uuid, forKey: cacheKey)
 
         return userId
@@ -122,7 +122,7 @@ public extension GroupV2Params {
     func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext,
                     uuid: UUID) throws -> Data {
 
-        let cacheKey = (groupSecretParamsData + profileKeyCiphertext.serialize().asData + uuid.data)
+        let cacheKey = (profileKeyCiphertext.serialize().asData + uuid.data + groupSecretParamsData)
         if let plaintext = Self.decryptedProfileKeyCache.object(forKey: cacheKey) {
             return plaintext
         }
