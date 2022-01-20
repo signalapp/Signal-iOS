@@ -29,9 +29,11 @@ extension HomeViewController {
             let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
             navigationItem.setLeftBarButton(doneButton, animated: true)
             navigationItem.setRightBarButtonItems(nil, animated: true)
+        } else {
+            owsAssertDebug(navigationItem.rightBarButtonItem != nil, "can't change label of right bar button")
+            navigationItem.rightBarButtonItem?.title = CommonStrings.doneButton
+            navigationItem.rightBarButtonItem?.accessibilityHint = CommonStrings.doneButton
         }
-        tableView.allowsSelectionDuringEditing = true
-        tableView.allowsMultipleSelectionDuringEditing = true
         searchBar.isUserInteractionEnabled = false
         searchBar.alpha = 0.5
         viewState.multiSelectState.setIsActive(true, tableView: tableView)
@@ -45,8 +47,11 @@ extension HomeViewController {
             return
         }
 
-        tableView.allowsSelectionDuringEditing = false
-        tableView.allowsMultipleSelectionDuringEditing = false
+        if homeViewMode == .archive {
+            owsAssertDebug(navigationItem.rightBarButtonItem != nil, "can't change label of right bar button")
+            navigationItem.rightBarButtonItem?.title = CommonStrings.selectButton
+            navigationItem.rightBarButtonItem?.accessibilityHint = CommonStrings.selectButton
+        }
         searchBar.isUserInteractionEnabled = true
         searchBar.alpha = 1
         viewState.multiSelectState.setIsActive(false, tableView: tableView)
@@ -64,8 +69,10 @@ extension HomeViewController {
             tbc.autoPinWidthToSuperview()
             tbc.autoPinEdge(toSuperviewEdge: .bottom)
             viewState.multiSelectState.toolbar = tbc
-            UIView.animate(withDuration: 0.25) {
+            UIView.animate(withDuration: 0.25, animations: {
                 tbc.alpha = 1
+            }) { [weak self] (_) in
+                self?.tableView.contentSize.height += tbc.height
             }
         }
         updateCaptions()
@@ -75,10 +82,8 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         if viewState.multiSelectState.isActive {
-            sender.title = CommonStrings.selectButton
             leaveMultiselectMode()
         } else {
-            sender.title = CommonStrings.doneButton
             willEnterMultiselectMode()
         }
     }
@@ -129,17 +134,18 @@ extension HomeViewController {
         }
 
         viewState.multiSelectState.parentButton = button
-        navigationController?.navigationBar.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
 
         let v = ContextMenuActionsView(menu: ContextMenu(contextMenuActions))
         let size = v.sizeThatFitsMaxSize
-        v.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        v.frame = CGRect(x: view.safeAreaInsets.left, y: view.safeAreaInsets.top, width: size.width, height: size.height)
         v.delegate = self
 
         viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
-        viewState.multiSelectState.contextMenuView!.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
         view.addSubview(viewState.multiSelectState.contextMenuView!)
-        animateIn(menu: viewState.multiSelectState.contextMenuView!, from: button)
+        animateIn(menu: viewState.multiSelectState.contextMenuView!, from: button) { [weak self] (_) in
+            self?.viewState.multiSelectState.contextMenuView!.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
+            self?.navigationController?.navigationBar.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
+        }
     }
 
     private func done() {
@@ -172,23 +178,25 @@ extension HomeViewController {
         }
     }
 
-    private func animateIn(menu: UIView, from: UIView?) {
+    private func animateIn(menu: UIView, from: UIView?, completion: ((Bool) -> Void)? = nil) {
         let oldAnchor = menu.layer.anchorPoint
-
-        menu.autoPinEdge(toSuperviewSafeArea: .top)
-        menu.autoPinEdge(toSuperviewSafeArea: .leading)
-        menu.alpha = 0
+        let frame = menu.frame
         menu.layer.anchorPoint = .zero
+        menu.frame = frame
+        menu.alpha = 0
         menu.transform = .scale(0.01)
+        from?.isUserInteractionEnabled = false
         animate({
             menu.alpha = 1
-        }, duration: 0.15, delay: 0)
-        animate({
             from?.alpha = 0.4
+        })
+        animateWithSpring({
             menu.transform = .identity
-        }) { (_) in
+        }) { (result) in
             menu.layer.anchorPoint = oldAnchor
             menu.autoPinEdgesToSuperviewSafeArea()
+            from?.isUserInteractionEnabled = true
+            completion?(result)
         }
     }
 
@@ -199,25 +207,34 @@ extension HomeViewController {
         }
 
         let frame = menu.frame
-        menu.autoPinEdge(toSuperviewSafeArea: .top)
-        menu.autoPinEdge(toSuperviewSafeArea: .leading)
         menu.layer.anchorPoint = .zero
         menu.frame = frame
-        animate({
-            menu.alpha = 0
-        }, duration: 0.15, delay: 0.25)
+        from?.isUserInteractionEnabled = false
         animate({
             from?.alpha = 1
+            menu.alpha = 0
             menu.transform = .scale(0.01)
+            menu.frame.origin = frame.origin + ContextMenuActionsViewContainer.offset
         }) { (result) in
             menu.removeFromSuperview()
+            from?.isUserInteractionEnabled = true
             completion?(result)
         }
     }
 
-    private func animate(_ animations: @escaping (() -> Void), completion: ((Bool) -> Void)? = nil, duration: TimeInterval = 0.4, delay: TimeInterval = 0) {
+    private func animate(_ animations: @escaping (() -> Void), completion: ((Bool) -> Void)? = nil, duration: TimeInterval = 0.25, delay: TimeInterval = 0) {
         UIView.animate(withDuration: duration,
                        delay: delay,
+                       options: [.curveEaseInOut, .beginFromCurrentState],
+                       animations: animations,
+                       completion: completion)
+    }
+
+    private func animateWithSpring(_ animations: @escaping (() -> Void), completion: ((Bool) -> Void)? = nil, duration: TimeInterval = 0.4, delay: TimeInterval = 0) {
+        UIView.animate(withDuration: duration,
+                       delay: delay,
+                       usingSpringWithDamping: 0.8,
+                       initialSpringVelocity: 1,
                        options: [.curveEaseInOut, .beginFromCurrentState],
                        animations: animations,
                        completion: completion)
@@ -275,8 +292,9 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         if let toolbar = viewState.multiSelectState.toolbar {
-            UIView.animate(withDuration: 0.25) {
+            UIView.animate(withDuration: 0.25) { [weak self] in
                 toolbar.alpha = 0
+                self?.tableView.contentSize.height -= toolbar.bounds.height
             } completion: { [weak self] (_) in
                 toolbar.removeFromSuperview()
                 self?.viewState.multiSelectState.toolbar = nil
@@ -410,15 +428,15 @@ extension HomeViewController: ContextMenuActionsViewDelegate {
 
 // MARK: - view helper class (providing a rounded view *with* a shadow)
 private class ContextMenuActionsViewContainer: UIView {
-    private let offset = CGPoint(x: 8, y: 0)
+    static let offset = CGPoint(x: 8, y: 0)
 
     required init(_ target: UIView) {
         super.init(frame: target.frame)
         var frame = target.bounds
-        frame.origin = offset
+        frame.origin = ContextMenuActionsViewContainer.offset
         let radius = target.layer.cornerRadius
-        let shadowView = UIView(frame: CGRect(x: offset.x + radius,
-                                              y: offset.y + radius,
+        let shadowView = UIView(frame: CGRect(x: ContextMenuActionsViewContainer.offset.x + radius,
+                                              y: ContextMenuActionsViewContainer.offset.y + radius,
                                               width: frame.width - 2 * radius,
                                               height: frame.height - 2 * radius))
         shadowView.backgroundColor = Theme.isDarkThemeEnabled ? .black : .white
