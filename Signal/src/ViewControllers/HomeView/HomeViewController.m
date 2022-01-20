@@ -479,6 +479,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     } else {
         [self applyDefaultBackButton];
     }
+    [self.tableDataSource updateAndSetRefreshTimer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -778,6 +779,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)viewWillDisappear:(BOOL)animated
 {
     [self leaveMultiselectMode];
+    [self.tableDataSource stopRefreshTimer];
     [super viewWillDisappear:animated];
 
     self.isViewVisible = NO;

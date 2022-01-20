@@ -110,7 +110,7 @@ extension HomeViewController {
             break
         }
 
-        tableDataSource.updateAndSetRefreshTimer()
+        tableDataSource.calcRefreshTimer()
         // We need to perform this regardless of the load result type.
         updateViewState()
     }
