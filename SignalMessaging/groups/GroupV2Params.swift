@@ -91,7 +91,12 @@ public extension GroupV2Params {
         return try uuid(forUuidCiphertext: uuidCiphertext)
     }
 
-    private static let decryptedUuidCache = LRUCache<Data, UUID>(maxSize: 256)
+    private static var maxGroupSize: Int {
+        return Int(RemoteConfig.groupsV2MaxGroupSizeHardLimit)
+    }
+
+    private static let decryptedUuidCache = LRUCache<Data, UUID>(maxSize: Self.maxGroupSize,
+                                                                 nseMaxSize: Self.maxGroupSize)
 
     func uuid(forUuidCiphertext uuidCiphertext: UuidCiphertext) throws -> UUID {
         let cacheKey = (uuidCiphertext.serialize().asData + groupSecretParamsData)
@@ -117,7 +122,8 @@ public extension GroupV2Params {
         return userId
     }
 
-    private static let decryptedProfileKeyCache = LRUCache<Data, Data>(maxSize: 256)
+    private static let decryptedProfileKeyCache = LRUCache<Data, Data>(maxSize: Self.maxGroupSize,
+                                                                       nseMaxSize: Self.maxGroupSize)
 
     func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext,
                     uuid: UUID) throws -> Data {

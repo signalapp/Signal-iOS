@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 // An @objc wrapper around LRUCache.
@@ -64,7 +64,6 @@ public class AnyLRUCache: NSObject {
 public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     private let cache = NSCache<AnyObject, AnyObject>()
-    private let maxSize: Int
     private let _resetCount = AtomicUInt(0)
     public var resetCount: UInt {
         _resetCount.get()
@@ -73,15 +72,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     public init(maxSize: Int,
                 nseMaxSize: Int = 0,
                 shouldEvacuateInBackground: Bool = false) {
-        self.maxSize = {
-            if CurrentAppContext().isNSE {
-                let disableCacheInNSE = true
-                return disableCacheInNSE ? 0 : nseMaxSize
-            } else {
-                return maxSize
-            }
-        }()
-        self.cache.countLimit = maxSize
+        self.cache.countLimit = CurrentAppContext().isNSE ? nseMaxSize : maxSize
 
         if CurrentAppContext().isMainApp,
            shouldEvacuateInBackground {
@@ -116,7 +107,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
             remove(key: key)
             return
         }
-        guard maxSize > 0 else {
+        guard cache.countLimit > 0 else {
             Logger.verbose("Using disabled cache.")
             return
         }
