@@ -470,8 +470,12 @@ public class MessageFetcherJob: NSObject {
             let builder = SSKProtoEnvelope.builder(timestamp: timestamp)
             builder.setType(type)
 
-            if let source: String = try params.optional(key: "source") {
-                builder.setSourceE164(source)
+            if let sourceE164: String = try params.optional(key: "source") {
+                builder.setSourceE164(sourceE164)
+            }
+
+            if let sourceUuid: String = try params.optional(key: "sourceUuid") {
+                builder.setSourceUuid(sourceUuid)
             }
 
             if let sourceDevice: UInt32 = try params.optional(key: "sourceDevice") {
