@@ -220,8 +220,8 @@ final class ConversationCell : UITableViewCell {
             snippetLabel.attributedText = getHighlightedSnippet(snippet: snippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
         } else {
             // Contact
-            displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
             if threadViewModel.isGroupThread, let thread = threadViewModel.threadRecord as? TSGroupThread {
+                displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
                 bottomLabelStackView.isHidden = false
                 let context: Contact.Context = thread.isOpenGroup ? .openGroup : .regular
                 var rawSnippet: String = ""
@@ -237,6 +237,7 @@ final class ConversationCell : UITableViewCell {
                 }
                 snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
             } else {
+                displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayNameForSearch(threadViewModel.contactSessionID!), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
                 bottomLabelStackView.isHidden = true
             }
             timestampLabel.isHidden = true
@@ -314,6 +315,15 @@ final class ConversationCell : UITableViewCell {
         } else {
             statusIndicatorView.isHidden = true
         }
+    }
+    
+    private func getDisplayNameForSearch(_ sessionID: String) -> String {
+        var result = sessionID
+        if let contact = Storage.shared.getContact(with: sessionID), let name = contact.name {
+            result = name
+            if let nickname = contact.nickname { result += "(\(nickname))"}
+        }
+        return result
     }
     
     private func getDisplayName() -> String {

@@ -178,8 +178,12 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
-        let displayName = Storage.shared.getContact(with: recipientId)?.displayName(for: Contact.Context.regular) ?? recipientId
-        return "\(recipientId) \(displayName)"
+        var result = "\(recipientId)"
+        if let contact = Storage.shared.getContact(with: recipientId) {
+            if let name = contact.name { result += " \(name)" }
+            if let nickname = contact.nickname { result += " \(nickname)" }
+        }
+        return result
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in
@@ -242,6 +246,6 @@ public class FullTextSearchFinder: NSObject {
                                          options: nil,
                                          handler: handler,
                                          ftsVersion: YapDatabaseFullTextSearchFTS5Version,
-                                         versionTag: "1")
+                                         versionTag: "2")
     }
 }
