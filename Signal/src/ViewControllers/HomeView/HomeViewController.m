@@ -749,7 +749,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     if (self.viewState.multiSelectState.isActive) {
         [self.tableView setEditing:YES animated:NO];
-        [self.tableView reloadData];
+        [self reloadTableData];
         [self willEnterMultiselectMode];
     } else {
         [self applyDefaultBackButton];

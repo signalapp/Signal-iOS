@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,7 +22,30 @@ public extension HomeViewController {
     func reloadTableData() {
         AssertIsOnMainThread()
 
+        var selectedThreadIds: Set<String> = []
+        for indexPath in tableView.indexPathsForSelectedRows ?? [] {
+            if let key = tableDataSource.threadViewModel(forIndexPath: indexPath, expectsSuccess: false)?.threadRecord.uniqueId {
+                selectedThreadIds.insert(key)
+            }
+        }
+
         tableView.reloadData()
+
+        if !selectedThreadIds.isEmpty {
+            var threadIdsToBeSelected = selectedThreadIds
+            for section in 0..<tableDataSource.numberOfSections(in: tableView) {
+                for row in 0..<tableDataSource.tableView(tableView, numberOfRowsInSection: section) {
+                    let indexPath = IndexPath(row: row, section: section)
+                    if let key = tableDataSource.threadViewModel(forIndexPath: indexPath, expectsSuccess: false)?.threadRecord.uniqueId, threadIdsToBeSelected.contains(key) {
+                        tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+                        threadIdsToBeSelected.remove(key)
+                        if threadIdsToBeSelected.isEmpty {
+                            break
+                        }
+                    }
+                }
+            }
+        }
     }
 
     func updateCellVisibility() {
