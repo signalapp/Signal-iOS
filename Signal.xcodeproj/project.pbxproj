@@ -20,7 +20,6 @@
 		17B78E0E260529E900E24A9E /* newlyInitializedSessionState in Resources */ = {isa = PBXBuildFile; fileRef = 17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */; };
 		23B9887F4A95010141FCF725 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E36B9FCE67E9FFDA471A085 /* Pods_SignalUI.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
-		323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */; };
 		326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */; };
 		327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */; };
 		328EF3DC25782A6A00D5C31D /* GroupCallSwipeToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */; };
@@ -399,9 +398,6 @@
 		347C3849252D004C00F3D941 /* CVComponentDateHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C3848252D004C00F3D941 /* CVComponentDateHeader.swift */; };
 		347C384B252D085900F3D941 /* CVComponentUnreadIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C384A252D085900F3D941 /* CVComponentUnreadIndicator.swift */; };
 		347C384D252D0FDC00F3D941 /* CVComponentTypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C384C252D0FDC00F3D941 /* CVComponentTypingIndicator.swift */; };
-		347C3851252DF83E00F3D941 /* GroupsV2AndMentionsSplash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */; };
-		347C3854252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */; };
-		347C3855252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json in Resources */ = {isa = PBXBuildFile; fileRef = 347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */; };
 		347C3857252E1E2300F3D941 /* CVComponentThreadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C3856252E1E2300F3D941 /* CVComponentThreadDetails.swift */; };
 		347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */; };
 		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
@@ -602,8 +598,6 @@
 		34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E88D252098C5AE00A608F4 /* ContactViewController.swift */; };
 		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */; };
-		34E93F942667F92100CE6FA5 /* ChatColorsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */; };
-		34E93F982668257400CE6FA5 /* color-bubble-64.json in Resources */ = {isa = PBXBuildFile; fileRef = 34E93F972668257400CE6FA5 /* color-bubble-64.json */; };
 		34E95C1B269F4F1B004807EC /* HVLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1A269F4F1A004807EC /* HVLoader.swift */; };
 		34E95C22269F4F4F004807EC /* HVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1D269F4F4F004807EC /* HVRenderState.swift */; };
 		34E95C24269F4F4F004807EC /* HVViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1F269F4F4F004807EC /* HVViewState.swift */; };
@@ -842,7 +836,6 @@
 		8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */; };
 		8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */; };
 		8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */; };
-		884EFBAC251478D0006B9457 /* ResearchMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */; };
 		8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */; };
 		8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */; };
 		88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88535063240829950011D318 /* DateHeaderInteraction.swift */; };
@@ -892,7 +885,6 @@
 		888017902741E5DB00346E9A /* boost_fire.json in Resources */ = {isa = PBXBuildFile; fileRef = 8880178A2741E5DB00346E9A /* boost_fire.json */; };
 		888017922741F33B00346E9A /* BoostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888017912741F33B00346E9A /* BoostViewController.swift */; };
 		8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8880179327430DDB00346E9A /* BadgeThanksSheet.swift */; };
-		888B6D4225B16F3500E2A662 /* SharingSuggestionsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */; };
 		888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
@@ -931,7 +923,6 @@
 		88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C4E37F24635337009C9B97 /* DeviceTransferService.swift */; };
 		88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C659AF24688335002AC115 /* SelfSignedIdentity.swift */; };
 		88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */; };
-		88CB462025843527001900F2 /* GroupCallsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */; };
 		88CB462225843758001900F2 /* GroupCallTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88CB462125843758001900F2 /* GroupCallTooltip.swift */; };
 		88D1BCB924F73C05009A1738 /* PhoneNumberSharingSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */; };
 		88D1BCBB24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */; };
@@ -953,7 +944,6 @@
 		88D6E93F254CF712003142D9 /* group_call_leave.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93D254CF712003142D9 /* group_call_leave.aiff */; };
 		88D6E940254CF712003142D9 /* group_call_join.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 88D6E93E254CF712003142D9 /* group_call_join.aiff */; };
 		88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D6E94125535482003142D9 /* CVTextTest.swift */; };
-		88D7896926AB540E00086229 /* AvatarBuilderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7896826AB540E00086229 /* AvatarBuilderMegaphone.swift */; };
 		88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */; };
 		88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */; };
 		88DBDFBB2638FFBD00C2101C /* audio-played-dot.json in Resources */ = {isa = PBXBuildFile; fileRef = 88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */; };
@@ -1176,7 +1166,6 @@
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCollisionReviewCell.swift; sourceTree = "<group>"; };
-		323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewsMegaphone.swift; sourceTree = "<group>"; };
 		326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedBadgeViewController.swift; sourceTree = "<group>"; };
 		327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetStartedBannerViewController.swift; sourceTree = "<group>"; };
 		328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallSwipeToastView.swift; sourceTree = "<group>"; };
@@ -1439,9 +1428,6 @@
 		347C3848252D004C00F3D941 /* CVComponentDateHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentDateHeader.swift; sourceTree = "<group>"; };
 		347C384A252D085900F3D941 /* CVComponentUnreadIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentUnreadIndicator.swift; sourceTree = "<group>"; };
 		347C384C252D0FDC00F3D941 /* CVComponentTypingIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentTypingIndicator.swift; sourceTree = "<group>"; };
-		347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2AndMentionsSplash.swift; sourceTree = "<group>"; };
-		347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_groupsv2_iOS_dark.json; sourceTree = "<group>"; };
-		347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = splash_groupsv2_iOS_light.json; sourceTree = "<group>"; };
 		347C3856252E1E2300F3D941 /* CVComponentThreadDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentThreadDetails.swift; sourceTree = "<group>"; };
 		347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingGroupMigrationView.swift; sourceTree = "<group>"; };
 		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
@@ -1796,8 +1782,6 @@
 		34E88D252098C5AE00A608F4 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
 		34E8A8D02085238900B272B1 /* ProtoParsingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoParsingTest.m; sourceTree = "<group>"; };
 		34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BodyTextItems.swift"; sourceTree = "<group>"; };
-		34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColorsMegaphone.swift; sourceTree = "<group>"; };
-		34E93F972668257400CE6FA5 /* color-bubble-64.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "color-bubble-64.json"; sourceTree = "<group>"; };
 		34E95C1A269F4F1A004807EC /* HVLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVLoader.swift; sourceTree = "<group>"; };
 		34E95C1D269F4F4F004807EC /* HVRenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVRenderState.swift; sourceTree = "<group>"; };
 		34E95C1F269F4F4F004807EC /* HVViewState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HVViewState.swift; sourceTree = "<group>"; };
@@ -2059,7 +2043,6 @@
 		8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDescriptionPreviewView.swift; sourceTree = "<group>"; };
 		8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarHistoryManager.swift; sourceTree = "<group>"; };
 		8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarEditViewController.swift; sourceTree = "<group>"; };
-		884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchMegaphone.swift; sourceTree = "<group>"; };
 		8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputTextView.swift; sourceTree = "<group>"; };
 		8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Mentions.swift"; sourceTree = "<group>"; };
 		88535063240829950011D318 /* DateHeaderInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderInteraction.swift; sourceTree = "<group>"; };
@@ -2156,7 +2139,6 @@
 		888A280424B3E9820045D639 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A280524B3E9820045D639 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888B6D4025AE7E2200E2A662 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = translations/zh_HK.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingSuggestionsMegaphone.swift; sourceTree = "<group>"; };
 		888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Wallpaper.swift"; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
@@ -2223,7 +2205,6 @@
 		88C4E37F24635337009C9B97 /* DeviceTransferService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTransferService.swift; sourceTree = "<group>"; };
 		88C659AF24688335002AC115 /* SelfSignedIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentity.swift; sourceTree = "<group>"; };
 		88C7597224B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedPinSettingsTableViewController.swift; sourceTree = "<group>"; };
-		88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallsMegaphone.swift; sourceTree = "<group>"; };
 		88CB462125843758001900F2 /* GroupCallTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallTooltip.swift; sourceTree = "<group>"; };
 		88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberSharingSettingsTableViewController.swift; sourceTree = "<group>"; };
 		88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberDiscoverabilitySettingsTableViewController.swift; sourceTree = "<group>"; };
@@ -2248,7 +2229,6 @@
 		88D6E93D254CF712003142D9 /* group_call_leave.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = group_call_leave.aiff; sourceTree = "<group>"; };
 		88D6E93E254CF712003142D9 /* group_call_join.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = group_call_join.aiff; sourceTree = "<group>"; };
 		88D6E94125535482003142D9 /* CVTextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVTextTest.swift; sourceTree = "<group>"; };
-		88D7896826AB540E00086229 /* AvatarBuilderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarBuilderMegaphone.swift; sourceTree = "<group>"; };
 		88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageRelay.swift; sourceTree = "<group>"; };
 		88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDisappearingMessageTimerInteraction.swift; sourceTree = "<group>"; };
 		88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "audio-played-dot.json"; sourceTree = "<group>"; };
@@ -4184,18 +4164,11 @@
 		88A505FE23DBAE640005C012 /* Upgrade Views */ = {
 			isa = PBXGroup;
 			children = (
-				34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */,
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
 				88FBE953264B6848005F6C80 /* SubscriptionMegaphone.swift */,
-				88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */,
-				347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
-				323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */,
 				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
-				884EFBAB251478D0006B9457 /* ResearchMegaphone.swift */,
-				888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */,
-				88D7896826AB540E00086229 /* AvatarBuilderMegaphone.swift */,
 			);
 			path = "Upgrade Views";
 			sourceTree = "<group>";
@@ -4231,7 +4204,6 @@
 				88A9419324099F6E000E9700 /* Attachment Keyboard */,
 				88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */,
 				34848D5A25D43ADD00E5034B /* cash-out.json */,
-				34E93F972668257400CE6FA5 /* color-bubble-64.json */,
 				34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */,
 				34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */,
 				34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */,
@@ -4252,8 +4224,6 @@
 				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
 				346EFC3825FFDC6900F493C7 /* restore-dark.json */,
 				346EFC3725FFDC6900F493C7 /* restore.json */,
-				347C3852252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json */,
-				347C3853252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json */,
 				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
 				887CD4862473587300FDD265 /* transfer.json */,
 				346EFC3925FFDC6900F493C7 /* update-pin-dark.json */,
@@ -5135,7 +5105,6 @@
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,
 				34684DB125C2228D00C5A93C /* indeterminate_spinner_blue.json in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
-				347C3855252DF8DC00F3D941 /* splash_groupsv2_iOS_light.json in Resources */,
 				4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */,
 				886CB07824E77E5B00753909 /* silence.aiff in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
@@ -5159,7 +5128,6 @@
 				886CB07C24E78F2200753909 /* Reflection.m4r in Resources */,
 				8880178D2741E5DB00346E9A /* boost_heart_eyes.json in Resources */,
 				88A9419524099F7E000E9700 /* attachment_dark.json in Resources */,
-				347C3854252DF8DC00F3D941 /* splash_groupsv2_iOS_dark.json in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
 				34848D6125D43ADD00E5034B /* add-money.json in Resources */,
@@ -5198,7 +5166,6 @@
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
-				34E93F982668257400CE6FA5 /* color-bubble-64.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6064,7 +6031,6 @@
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
-				323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */,
 				3498AC982518E98A00B1F315 /* DebugUIPayments.swift in Sources */,
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
@@ -6142,11 +6108,9 @@
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
-				88D7896926AB540E00086229 /* AvatarBuilderMegaphone.swift in Sources */,
 				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
-				884EFBAC251478D0006B9457 /* ResearchMegaphone.swift in Sources */,
 				346E09012662FBBE0042375E /* HomeViewCell.swift in Sources */,
 				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,
@@ -6200,7 +6164,6 @@
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				3420CF6F2638A01A00E7DCB0 /* CVWallpaperBlurView.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
-				34E93F942667F92100CE6FA5 /* ChatColorsMegaphone.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */,
 				E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */,
@@ -6224,7 +6187,6 @@
 				34C7C7152625D8E100F4DC2A /* DebugUIMessages.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				3497971525D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift in Sources */,
-				88CB462025843527001900F2 /* GroupCallsMegaphone.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* DeviceTransferQRScanningViewController.swift in Sources */,
 				34E95C24269F4F4F004807EC /* HVViewState.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
@@ -6317,7 +6279,6 @@
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
 				887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */,
 				887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */,
-				888B6D4225B16F3500E2A662 /* SharingSuggestionsMegaphone.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */,
 				88588D1B252D3DFF00405414 /* CallControls.swift in Sources */,
@@ -6394,7 +6355,6 @@
 				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
 				347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */,
 				342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */,
-				347C3851252DF83E00F3D941 /* GroupsV2AndMentionsSplash.swift in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,

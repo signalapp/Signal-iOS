@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -104,7 +104,6 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     func didToggleLinkPreviewsEnabled(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
         databaseStorage.write { transaction in
-            ExperienceUpgradeManager.clearExperienceUpgrade(.linkPreviews, transaction: transaction.unwrapGrdbWrite)
             SSKPreferences.setAreLinkPreviewsEnabled(sender.isOn, sendSyncMessage: true, transaction: transaction)
         }
     }

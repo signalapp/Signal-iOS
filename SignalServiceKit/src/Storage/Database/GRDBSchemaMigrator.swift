@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -153,7 +153,6 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_indexSignalRecipients
         case dataMigration_kbsStateCleanup
         case dataMigration_turnScreenSecurityOnForExistingUsers
-        case dataMigration_disableLinkPreviewForExistingUsers
         case dataMigration_groupIdMapping
         case dataMigration_disableSharingSuggestionsForExistingUsers
         case dataMigration_removeOversizedGroupAvatars
@@ -161,7 +160,6 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_populateGroupMember
         case dataMigration_cullInvalidIdentityKeySendingErrors
         case dataMigration_moveToThreadAssociatedData
-        case dataMigration_markAvatarBuilderMegaphoneCompleteIfNecessary
         case dataMigration_senderKeyStoreKeyIdMigration
     }
 
@@ -1631,20 +1629,6 @@ public class GRDBSchemaMigrator: NSObject {
             preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_disableLinkPreviewForExistingUsers.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-            let linkPreviewsWereEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction.asAnyRead)
-
-            if linkPreviewsWereEnabled {
-                // Disable link previews until user interacts with megaphone
-                SSKPreferences.setAreLinkPreviewsEnabled(false, transaction: transaction.asAnyWrite)
-            } else {
-                // We don't want to show the megaphone for users that already had link previews disabled
-                ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .linkPreviews, transaction: transaction)
-            }
-        }
-
         migrator.registerMigration(MigrationId.dataMigration_groupIdMapping.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
@@ -1767,19 +1751,6 @@ public class GRDBSchemaMigrator: NSObject {
                 } catch {
                     owsFail("Error \(error)")
                 }
-            }
-        }
-
-        migrator.registerMigration(MigrationId.dataMigration_markAvatarBuilderMegaphoneCompleteIfNecessary.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
-            let avatarData = Self.profileManager.profileAvatarData(
-                for: OWSUserProfile.localProfileAddress,
-                transaction: transaction.asAnyWrite)
-
-            if avatarData != nil {
-                ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .avatarBuilder, transaction: transaction)
             }
         }
 

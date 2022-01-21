@@ -1,23 +1,20 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import Contacts
 
 public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
+    // Experience upgrades are prioritized based on their order in this
+    // enum, so the first entries in the enum (introducing pins) will
+    // show before later entris in the enum (pin reminder) when multiple
+    // upgrades are eligible for presentation.
     case introducingPins = "009"
-    case pinReminder // Never saved, used to periodically prompt the user for their PIN
     case notificationPermissionReminder
-    case contactPermissionReminder
-    case linkPreviews
-    case researchMegaphone1
-    case groupsV2AndMentionsSplash2
-    case groupCallsMegaphone
-    case sharingSuggestions
-    case chatColors
-    case avatarBuilder
     case subscriptionMegaphone
+    case pinReminder // Never saved, used to periodically prompt the user for their PIN
+    case contactPermissionReminder
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -62,20 +59,6 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             }
         case .contactPermissionReminder:
             return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
-        case .linkPreviews:
-            return true
-        case .researchMegaphone1:
-            return RemoteConfig.researchMegaphone
-        case .groupsV2AndMentionsSplash2:
-            return FeatureFlags.groupsV2showSplash
-        case .groupCallsMegaphone:
-            return RemoteConfig.groupCalling
-        case .sharingSuggestions:
-            return true
-        case .chatColors:
-            return true
-        case .avatarBuilder:
-            return profileManager.localProfileAvatarData() == nil
         case .subscriptionMegaphone:
             return RemoteConfig.subscriptionMegaphone && !subscriptionManager.hasCurrentSubscription(transaction: transaction.asAnyRead)
         }
@@ -98,7 +81,6 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
     var skipForNewUsers: Bool {
         switch self {
         case .introducingPins,
-             .researchMegaphone1,
              .subscriptionMegaphone:
             return false
         default:
@@ -120,46 +102,6 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return 8 * kHourInterval
         case .subscriptionMegaphone:
             return 5 * kDayInterval
-        default:
-            return 0
-        }
-    }
-
-    // In addition to being sorted by their order as defined in this enum,
-    // experience upgrades are also sorted by priority. For example, a high
-    // priority upgrade will always show before a low priority experience
-    // upgrade, even if it shows up later in the list.
-    enum Priority: Int {
-        case low
-        case medium
-        case high
-    }
-    var priority: Priority {
-        switch self {
-        case .introducingPins:
-            return .high
-        case .linkPreviews:
-            return .medium
-        case .pinReminder:
-            return .medium
-        case .notificationPermissionReminder:
-            return .medium
-        case .contactPermissionReminder:
-            return .medium
-        case .researchMegaphone1:
-            return .low
-        case .groupsV2AndMentionsSplash2:
-            return .medium
-        case .groupCallsMegaphone:
-            return .medium
-        case .sharingSuggestions:
-            return .medium
-        case .subscriptionMegaphone:
-            return .low
-        case .chatColors:
-            return .low
-        case .avatarBuilder:
-            return .medium
         }
     }
 
@@ -209,8 +151,6 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
         case .notificationPermissionReminder:
             return true
         case .contactPermissionReminder:
-            return true
-        case .sharingSuggestions:
             return true
         case .subscriptionMegaphone:
             return true
@@ -283,8 +223,8 @@ public class ExperienceUpgradeFinder: NSObject {
     // MARK: -
 
     /// Returns an array of all experience upgrades currently being run that have
-    /// yet to be completed. Sorted by priority from highest to lowest. For equal
-    /// priority upgrades follows the order of the `ExperienceUpgradeId` enumeration
+    /// yet to be completed. Priority is determined by the order of
+    /// the `ExperienceUpgradeId` enumeration
     private class func allActiveExperienceUpgrades(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
         let isPrimaryDevice = Self.tsAccountManager.isRegisteredPrimaryDevice
 
@@ -324,10 +264,6 @@ public class ExperienceUpgradeFinder: NSObject {
         }
 
         return experienceUpgrades.sorted { lhs, rhs in
-            guard lhs.id.priority == rhs.id.priority else {
-                return lhs.id.priority.rawValue > rhs.id.priority.rawValue
-            }
-
             guard let lhsIndex = activeIds.firstIndex(of: lhs.uniqueId),
                 let rhsIndex = activeIds.firstIndex(of: rhs.uniqueId) else {
                     owsFailDebug("failed to find index for uniqueIds \(lhs.uniqueId) \(rhs.uniqueId)")
@@ -358,7 +294,8 @@ public extension ExperienceUpgrade {
 
     var hasCompletedVisibleDuration: Bool {
         switch id {
-        case .researchMegaphone1: return daysSinceFirstViewed >= 7
+        // To have a megaphone dismiss after N days, you can create a case like the following
+        // case .researchMegaphone1: return daysSinceFirstViewed >= 7
         default: return false
         }
     }

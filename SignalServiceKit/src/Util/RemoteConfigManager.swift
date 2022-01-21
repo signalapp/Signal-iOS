@@ -12,7 +12,6 @@ public class RemoteConfig: BaseFlags {
     // into a getter below...
     fileprivate let isEnabledFlags: [String: Bool]
     fileprivate let valueFlags: [String: AnyObject]
-    private let researchMegaphone: Bool
     private let subscriptionMegaphone: Bool
     private let standardMediaQualityLevel: ImageQualityLevel?
     private let paymentsDisabledRegions: [String]
@@ -21,7 +20,6 @@ public class RemoteConfig: BaseFlags {
          valueFlags: [String: AnyObject]) {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
-        self.researchMegaphone = Self.isCountryCodeBucketEnabled(.researchMegaphone, valueFlags: valueFlags)
         self.subscriptionMegaphone = Self.isCountryCodeBucketEnabled(.subscriptionMegaphone2, valueFlags: valueFlags)
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
         self.paymentsDisabledRegions = Self.parsePaymentsDisabledRegions(valueFlags: valueFlags)
@@ -124,12 +122,6 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var reactiveProfileKeyAttemptInterval: TimeInterval {
         interval(.reactiveProfileKeyAttemptInterval, defaultInterval: kHourInterval)
-    }
-
-    @objc
-    public static var researchMegaphone: Bool {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return false }
-        return remoteConfig.researchMegaphone
     }
 
     @objc
@@ -471,7 +463,6 @@ private struct Flags {
         case groupsV2MaxGroupSizeRecommended
         case groupsV2MaxGroupSizeHardLimit
         case clientExpiration
-        case researchMegaphone
         case cdsSyncInterval
         case automaticSessionResetAttemptInterval
         case reactiveProfileKeyAttemptInterval
@@ -499,7 +490,6 @@ private extension FlagType {
         switch rawValue {
         case "groupsV2MaxGroupSizeRecommended": return "global.groupsv2.maxGroupSize"
         case "groupsV2MaxGroupSizeHardLimit": return "global.groupsv2.groupSizeHardLimit"
-        case "researchMegaphone": return "research.megaphone.1"
         case "cdsSyncInterval": return "cds.syncInterval.seconds"
         case "paymentsDisabledRegions": return "global.payments.disabledRegions"
         default: return Flags.prefix + rawValue

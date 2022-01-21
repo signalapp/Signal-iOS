@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -152,8 +152,6 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins:
             return true
-        case .groupsV2AndMentionsSplash2:
-            return true
         default:
             return false
         }
@@ -163,8 +161,6 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins:
             return IntroducingPinsSplash(experienceUpgrade: experienceUpgrade)
-        case .groupsV2AndMentionsSplash2:
-            return GroupsV2AndMentionsSplash(experienceUpgrade: experienceUpgrade)
         default:
             return nil
         }
@@ -178,16 +174,8 @@ class ExperienceUpgradeManager: NSObject {
              .pinReminder,
              .notificationPermissionReminder,
              .contactPermissionReminder,
-             .linkPreviews,
-             .researchMegaphone1,
-             .groupCallsMegaphone,
-             .sharingSuggestions,
-             .subscriptionMegaphone,
-             .chatColors,
-             .avatarBuilder:
+             .subscriptionMegaphone:
             return true
-        case .groupsV2AndMentionsSplash2:
-            return false
         default:
             return false
         }
@@ -203,20 +191,8 @@ class ExperienceUpgradeManager: NSObject {
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .linkPreviews:
-            return LinkPreviewsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .researchMegaphone1:
-            return ResearchMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .groupCallsMegaphone:
-            return GroupCallsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .sharingSuggestions:
-            return SharingSuggestionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .subscriptionMegaphone:
             return SubscriptionMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .chatColors:
-            return ChatColorsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .avatarBuilder:
-            return AvatarBuilderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

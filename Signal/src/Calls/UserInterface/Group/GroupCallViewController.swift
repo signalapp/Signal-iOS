@@ -127,9 +127,6 @@ class GroupCallViewController: UIViewController {
                     return owsFailDebug("Failed to build group call")
                 }
 
-                // Dismiss the group calling megaphone once someone opens the lobby.
-                ExperienceUpgradeManager.clearExperienceUpgradeWithSneakyTransaction(.groupCallsMegaphone)
-
                 // Dismiss the group call tooltip
                 self.preferences.setWasGroupCallTooltipShown()
 
