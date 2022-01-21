@@ -689,19 +689,19 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Modifier la photo";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Votre nouveau numéro ne doit pas être le même que l’ancien. Veuillez saisir un nouveau numéro de téléphone pour changer votre numéro.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Le numéro de téléphone que vous avez saisi ne correspond pas à celui de votre compte.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Numéro numéro de téléphone invalide. Veuillez saisir un numéro de téléphone valide pour changer votre numéro.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Ancien numéro de téléphone invalide. Veuillez saisir un numéro de téléphone valide pour changer votre numéro.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Saisissez le NIP du nouveau numéro de téléphone. Il est différent de votre code de confirmation reçu par texto.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Voici un aperçu de la couleur de la conversation.";
@@ -782,7 +782,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour voir qui de vos contacts utilise Signal.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Configure Reactions";
+"CONFIGURE_REACTIONS" = "Configurer les réactions";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "L’application sera réinitialisée en effaçant vos messages. L’appli sera fermée une fois le processus terminé.";
@@ -1016,16 +1016,16 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Cette conversation sera supprimée de cet appareil.";
 
 /* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "Ces conversations seront supprimées de cet appareil.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Supprimer %@ conversations ?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mettre la conversation en sourdine pour…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 jour";
@@ -3044,7 +3044,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Vous pouvez envoyer ou recevoir des messages synchronisés de votre téléphone ou de votre iPad.\nPour votre sécurité, l’historique des conversations n’est pas transféré vers les appareils nouvellement reliés.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ a changé de numéro de téléphone";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ est sur Signal.";
@@ -3617,7 +3617,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Trouver par numéro de téléphone";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 membre";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nouveau groupe";
@@ -5261,7 +5261,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Changer de numéro de téléphone";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
 "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
@@ -5297,7 +5297,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Changer de numéro de téléphone";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Changer le numéro";

@@ -1022,7 +1022,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Eliminare la chat?";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Eliminare %@ chat?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
