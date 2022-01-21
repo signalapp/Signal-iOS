@@ -240,9 +240,6 @@ public class FeatureFlags: BaseFlags {
     public static let subscriptions = build.includes(.qa)
 
     @objc
-    public static let canChangePhoneNumber = build.includes(.production)
-
-    @objc
     public static var notificationServiceExtension: Bool {
         // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
         // however there is a significant bug in iOS 14 where the NSE will not
@@ -581,12 +578,7 @@ public class DebugFlags: BaseFlags {
     })
 
     @objc
-    public static let forceChangePhoneNumberCapability = TestableFlag(build.includes(.dev),
-                                                                      title: LocalizationNotNeeded("Force 'change phone number' capability."),
-                                                                      details: LocalizationNotNeeded("The capability will be advertised."))
-
-    @objc
-    public static let forceChangePhoneNumberUI = TestableFlag(build.includes(.qa),
+    public static let forceChangePhoneNumberUI = TestableFlag(build.includes(.beta),
                                                               title: LocalizationNotNeeded("Force 'change phone number' UI."),
                                                               details: LocalizationNotNeeded("The UI will appear in settings."))
 
