@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalUI/OWSViewController.h>
@@ -86,6 +86,7 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 + (UITableViewCell *)newCell;
 + (void)configureCell:(UITableViewCell *)cell;
++ (void)configureCellLabels:(UITableViewCell *)cell;
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title
                     actionBlock:(nullable OWSTableActionBlock)actionBlock NS_SWIFT_NAME(init(title:actionBlock:));

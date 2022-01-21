@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSTableViewController.h"
@@ -140,14 +140,18 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return cell;
 }
 
-+ (void)configureCell:(UITableViewCell *)cell
++ (void)configureCellLabels:(UITableViewCell *)cell
 {
-    cell.backgroundColor = Theme.backgroundColor;
     cell.textLabel.font = OWSTableItem.primaryLabelFont;
     cell.textLabel.textColor = Theme.primaryTextColor;
     cell.detailTextLabel.textColor = Theme.secondaryTextAndIconColor;
     cell.detailTextLabel.font = OWSTableItem.accessoryLabelFont;
+}
 
++ (void)configureCell:(UITableViewCell *)cell
+{
+    cell.backgroundColor = Theme.backgroundColor;
+    [self configureCellLabels:cell];
     UIView *selectedBackgroundView = [UIView new];
     selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
     cell.selectedBackgroundView = selectedBackgroundView;

@@ -166,10 +166,13 @@ public class HomeViewCell: UITableViewCell {
     private func commonInit() {
         self.backgroundColor = Theme.backgroundColor
 
-        let v = UIView(frame: contentView.bounds)
-        v.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        var v = UIView(frame: contentView.bounds)
         v.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
         multipleSelectionBackgroundView = v
+
+        v = UIView(frame: contentView.bounds)
+        v.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+        selectedBackgroundView = v
 
         contentView.addSubview(outerHStack)
         outerHStack.shouldDeactivateConstraints = false
@@ -178,7 +181,6 @@ public class HomeViewCell: UITableViewCell {
         outerHStack.autoPinHeightToSuperview()
 
         self.selectionStyle = .default
-        selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
     }
 
     // This method can be invoked from any thread.
@@ -316,7 +318,7 @@ public class HomeViewCell: UITableViewCell {
     func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
         AssertIsOnMainThread()
 
-        OWSTableItem.configureCell(self)
+        OWSTableItem.configureCellLabels(self)
 
         self.preservesSuperviewLayoutMargins = false
         self.contentView.preservesSuperviewLayoutMargins = false
