@@ -199,7 +199,7 @@ message GroupChanges {
         Group       groupState  = 2;
     }
 
-    repeated GroupChangeState groupChanges = 1;
+    repeated bytes /*GroupChangeState*/ groupChanges = 1;
 }
 
 message GroupAttributeBlob {

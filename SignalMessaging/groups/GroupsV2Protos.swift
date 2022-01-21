@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -489,7 +489,8 @@ public class GroupsV2Protos {
                                               downloadedAvatars: GroupV2DownloadedAvatars,
                                               groupV2Params: GroupV2Params) throws -> [GroupV2Change] {
         var result = [GroupV2Change]()
-        for changeStateProto in groupChangesProto.groupChanges {
+        for changeStateData in groupChangesProto.groupChanges {
+            let changeStateProto = try GroupsProtoGroupChangesGroupChangeState(serializedData: changeStateData)
             var snapshot: GroupV2Snapshot?
             if let snapshotProto = changeStateProto.groupState {
                 snapshot = try parse(groupProto: snapshotProto,
@@ -535,7 +536,8 @@ public class GroupsV2Protos {
     private class func collectAvatarUrlPaths(groupChangesProto: GroupsProtoGroupChanges, ignoreSignature: Bool,
                                              groupV2Params: GroupV2Params) throws -> [String] {
         var avatarUrlPaths = [String]()
-        for changeStateProto in groupChangesProto.groupChanges {
+        for changeStateData in groupChangesProto.groupChanges {
+            let changeStateProto = try GroupsProtoGroupChangesGroupChangeState(serializedData: changeStateData)
             guard let groupState = changeStateProto.groupState else {
                 throw OWSAssertionError("Missing groupState proto.")
             }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -4818,12 +4818,12 @@ public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
 
         fileprivate init() {}
 
-        public mutating func addGroupChanges(_ valueParam: GroupsProtoGroupChangesGroupChangeState) {
-            proto.groupChanges.append(valueParam.proto)
+        public mutating func addGroupChanges(_ valueParam: Data) {
+            proto.groupChanges.append(valueParam)
         }
 
-        public mutating func setGroupChanges(_ wrappedItems: [GroupsProtoGroupChangesGroupChangeState]) {
-            proto.groupChanges = wrappedItems.map { $0.proto }
+        public mutating func setGroupChanges(_ wrappedItems: [Data]) {
+            proto.groupChanges = wrappedItems
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -4841,7 +4841,9 @@ public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
 
     fileprivate let proto: GroupsProtos_GroupChanges
 
-    public let groupChanges: [GroupsProtoGroupChangesGroupChangeState]
+    public var groupChanges: [Data] {
+        return proto.groupChanges
+    }
 
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
@@ -4851,10 +4853,8 @@ public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
         return proto.unknownFields
     }
 
-    private init(proto: GroupsProtos_GroupChanges,
-                 groupChanges: [GroupsProtoGroupChangesGroupChangeState]) {
+    private init(proto: GroupsProtos_GroupChanges) {
         self.proto = proto
-        self.groupChanges = groupChanges
     }
 
     public func serializedData() throws -> Data {
@@ -4867,15 +4867,11 @@ public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
     }
 
     fileprivate init(_ proto: GroupsProtos_GroupChanges) throws {
-        var groupChanges: [GroupsProtoGroupChangesGroupChangeState] = []
-        groupChanges = try proto.groupChanges.map { try GroupsProtoGroupChangesGroupChangeState($0) }
-
         // MARK: - Begin Validation Logic for GroupsProtoGroupChanges -
 
         // MARK: - End Validation Logic for GroupsProtoGroupChanges -
 
-        self.init(proto: proto,
-                  groupChanges: groupChanges)
+        self.init(proto: proto)
     }
 
     public init(from decoder: Swift.Decoder) throws {
