@@ -166,6 +166,11 @@ public class HomeViewCell: UITableViewCell {
     private func commonInit() {
         self.backgroundColor = Theme.backgroundColor
 
+        let v = UIView(frame: contentView.bounds)
+        v.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        v.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
+        multipleSelectionBackgroundView = v
+
         contentView.addSubview(outerHStack)
         outerHStack.shouldDeactivateConstraints = false
         outerHStack.autoPinEdge(toSuperviewEdge: .leading)
@@ -173,6 +178,7 @@ public class HomeViewCell: UITableViewCell {
         outerHStack.autoPinHeightToSuperview()
 
         self.selectionStyle = .default
+        selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
     }
 
     // This method can be invoked from any thread.
@@ -876,13 +882,6 @@ public class HomeViewCell: UITableViewCell {
         typingIndicatorView.resetForReuse()
 
         NotificationCenter.default.removeObserver(self)
-    }
-
-    // MARK: - Selection
-
-    override public func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        self.selectedBackgroundView?.backgroundColor = UIColor.clear
     }
 
     // MARK: - Name

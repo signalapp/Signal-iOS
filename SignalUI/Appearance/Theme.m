@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "Theme.h"
@@ -420,6 +420,11 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 + (UIColor *)tableCell2SelectedBackgroundColor
 {
     return Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray15Color;
+}
+
++ (UIColor *)tableCell2MultiSelectedBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray05Color;
 }
 
 + (UIColor *)tableCell2PresentedSelectedBackgroundColor

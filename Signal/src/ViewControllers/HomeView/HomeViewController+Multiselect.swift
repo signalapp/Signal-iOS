@@ -466,6 +466,8 @@ public class MultiSelectState: NSObject {
 
     fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
         if active != _isActive {
+            AssertIsOnMainThread()
+
             _isActive = active
             if active || !actionPerformed {
                 tableView?.setEditing(active, animated: true)
