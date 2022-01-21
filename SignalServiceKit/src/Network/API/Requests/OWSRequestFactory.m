@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRequestFactory.h"
@@ -497,9 +497,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         capabilities[@"storage"] = @(YES);
     }
 
-    if (RemoteConfig.changePhoneNumberCapability || (isSecondaryDevice && SSKFeatureFlags.canChangePhoneNumber)) {
-        capabilities[@"changeNumber"] = @(YES);
-    }
+    capabilities[@"changeNumber"] = @(YES);
 
     OWSLogInfo(@"local device capabilities: %@", capabilities);
     return [capabilities copy];

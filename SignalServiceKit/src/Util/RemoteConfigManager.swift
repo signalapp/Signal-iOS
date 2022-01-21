@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -237,22 +237,11 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var changePhoneNumberCapability: Bool {
-        if changePhoneNumberUI {
-            return true
-        }
-        if DebugFlags.forceChangePhoneNumberCapability.get() {
-            return true
-        }
-        return isEnabled(.changePhoneNumberCapability) && FeatureFlags.canChangePhoneNumber
-    }
-
-    @objc
     public static var changePhoneNumberUI: Bool {
         if DebugFlags.forceChangePhoneNumberUI.get() {
             return true
         }
-        return isEnabled(.changePhoneNumberUI) && FeatureFlags.canChangePhoneNumber
+        return isEnabled(.changePhoneNumberUI)
     }
 
     // MARK: -
@@ -451,7 +440,6 @@ private struct Flags {
         case messageResendKillSwitch
         case donorBadgeDisplayKillSwitch
         case donorBadgeAcquisitionKillSwitch
-        case changePhoneNumberCapability
         case changePhoneNumberUI
     }
 
