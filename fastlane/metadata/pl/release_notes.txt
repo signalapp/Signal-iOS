@@ -1,7 +1,7 @@
-• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
-• A new multi-select feature lets you select multiple chats at once from the chat list and mark them read, archive, or delete them. Tap your profile photo in the top left to try it out.
-• Archived chats are now quicker to access. Just tap your profile photo in the top left to easily get to them.
-• So many reactions to pick from, so little time. Now you can search for your favorite reaction easily.
-• Customize your default reactions so you can wear your favorite emotions closer to your sleeve.
-• Notification fatigue? Just swipe left on a chat from the chat list to quickly mute or unmute it.
-• Fixed a bug that would cause parts of a long text messages to become invisible in the input box.
+• Masz nowy numer telefonu? Teraz możesz zmienić numer zarejestrowany w Signal, nie tracąc swojej historii rozmów, grup i profilu Signal. Przejdź do Ustawienia > Konto > Zmień numer, aby wypróbować tę opcję.
+• Nowa funkcja pozwoli Ci wybierać jednocześnie kilka rozmów z listy i oznaczyć je, jako przeczytane, przenieść do archiwum lub usunąć. Stuknij swoje zdjęcie profilowe w lewym górnym rogu, aby ją wypróbować..
+• Masz teraz szybszy dostęp do zarchiwizowanych rozmów. Stuknij swoje zdjęcie profilowe w lewym górnym rogu, aby łatwo do nich dotrzeć.
+• Tyle reakcji do wyboru, a tak mało czasu. Teraz możesz łatwo wyszukać swoją, ulubioną reakcję.
+• Spersonalizuj domyślne reakcje, aby mieć pod ręką swoje ulubione emotikony.
+• Męczą Cię ciągłe powiadomienia? Po prostu przesuń w lewo rozmowę na liście rozmów, aby szybko ją wyciszyć lub cofnąć wyciszenie.
+• Naprawiliśmy błąd, który sprawiał, że część długiej wiadomości tekstowej w polu nowej wiadomości stawała się niewidzialna.

@@ -701,7 +701,7 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Ungültige alte Rufnummer. Bitte gib zum Ändern deiner Rufnummer eine gültige Nummer ein.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Gib die PIN für die neue Rufnummer ein. Diese unterscheidet sich von dem SMS-Verifikationscode.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Gib die PIN für die neue Rufnummer ein. Diese unterscheidet sich von deinem SMS-Verifikationscode.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Hier ist eine Vorschau der Unterhaltungsfarbe.";
@@ -782,7 +782,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kannst den Zugriff auf deine Kontakte in der iOS-App »Einstellungen« aktivieren, um zu sehen, welche deiner Kontakte Signal verwenden.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Reaktionen einstellen";
+"CONFIGURE_REACTIONS" = "Reaktionen konfigurieren";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Dies setzt die App durch Löschen aller deiner Nachrichten in ihren Ursprungszustand zurück. Nach Abschluss des Vorgangs wird die App geschlossen.";
@@ -1022,7 +1022,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Unterhaltung löschen?";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "%@ Unterhaltungen löschen?";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "%@ Unterhaltungen löschen?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Diese Unterhaltung stummschalten für …";
@@ -2972,10 +2972,10 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Title for the 'Select Chats' option in the HomeView. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Unterhaltungen auswählen";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "auswählen";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Alle gelesen";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "alle gelesen";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Zeichne zum Verwischen in beliebige Bereiche";
@@ -6437,7 +6437,7 @@
 "TXT_DELETE_TITLE" = "Löschen";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "In Eingang verschieben";
+"UNARCHIVE_ACTION" = "wiederherstellen";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Nutzer nicht in deinen Kontakten. Möchtest du diesen Nutzer blockieren?";

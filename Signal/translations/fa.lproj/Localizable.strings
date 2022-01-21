@@ -6167,7 +6167,7 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "کمک کردن";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "فدرت سیگنال در حضور افرادی چون شماست. مشارکت کنید و یک نشان دریافت کنید.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "نه،‌ ممنون";
