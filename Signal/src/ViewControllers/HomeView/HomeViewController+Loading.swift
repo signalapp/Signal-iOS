@@ -175,6 +175,9 @@ extension HomeViewController {
                     tableView.insertRows(at: [newIndexPath], with: rowAnimation)
                 }
             case .update(let oldIndexPath):
+                if tableView.isEditing && !viewState.multiSelectState.isActive {
+                    checkAndSetTableUpdates()
+                }
                 let tds = tableView.dataSource as? HVTableDataSource
                 if tds == nil || !tds!.updateVisibleCellContent(at: oldIndexPath, for: tableView) {
                     checkAndSetTableUpdates()
