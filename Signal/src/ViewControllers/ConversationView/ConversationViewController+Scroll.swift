@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -412,12 +412,6 @@ extension ConversationViewController {
             return nil
         }
 
-        // Never update the lastKnownDistanceFromBottom,
-        // if we're presenting the message actions which
-        // temporarily meddles with the content insets.
-        guard !isPresentingMessageActions else {
-            return nil
-        }
         let lastKnownDistanceFromBottom = self.safeDistanceFromBottom
         self.lastKnownDistanceFromBottom = lastKnownDistanceFromBottom
         return lastKnownDistanceFromBottom
@@ -496,14 +490,6 @@ extension ConversationViewController {
             Logger.verbose("---- proposedContentOffset: \(proposedContentOffset)")
         }
 
-        if isPresentingMessageActions,
-           let contentOffset = targetContentOffsetForMessageActionInteraction {
-            if !DebugFlags.reduceLogChatter {
-                Logger.verbose("---- targetContentOffsetForMessageActionInteraction: \(contentOffset)")
-            }
-            return contentOffset
-        }
-
         // TODO: Consider handling these transitions using a scroll
         // continuity token.
         if let contentOffset = targetContentOffsetForSizeTransition() {
@@ -537,9 +523,6 @@ extension ConversationViewController {
     }
 
     var shouldUseDelegateScrollContinuity: Bool {
-        if isPresentingMessageActions {
-            return true
-        }
         if let scrollAction = viewState.scrollActionForSizeTransition,
            scrollAction != .none {
             return true
@@ -634,27 +617,6 @@ extension ConversationViewController {
             owsFailDebug("Invalid scroll action: \(scrollAction.description)")
             return nil
         }
-    }
-
-    private var targetContentOffsetForMessageActionInteraction: CGPoint? {
-        guard isPresentingMessageActions,
-              let messageActionsViewController = messageActionsViewController else {
-            owsFailDebug("Not presenting message actions.")
-            return nil
-        }
-
-        let messageActionInteractionId = messageActionsViewController.focusedInteraction.uniqueId
-
-        guard let indexPath = indexPath(forInteractionUniqueId: messageActionInteractionId) else {
-            // This is expected if the menu action interaction is being deleted.
-            return nil
-        }
-        guard let layoutAttributes = layout.layoutAttributesForItem(at: indexPath) else {
-            owsFailDebug("Missing layoutAttributes.")
-            return nil
-        }
-        let cellFrame = layoutAttributes.frame
-        return CGPoint(x: 0, y: cellFrame.origin.y - messageActionsOriginalFocusY)
     }
 
     // MARK: -

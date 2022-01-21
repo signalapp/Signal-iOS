@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -78,8 +78,7 @@ extension GiphyImageInfo {
     }
 
     public var fullSizeAsset: GiphyAsset? {
-        let validTypes: [GiphyAsset.FileType] = RemoteConfig
-            .giphySendAsMP4 ? [.gif, .mp4] : [.gif]
+        let validTypes: [GiphyAsset.FileType] = [.gif, .mp4]
 
         return assets
             .filter { !$0.rendition.isStill }

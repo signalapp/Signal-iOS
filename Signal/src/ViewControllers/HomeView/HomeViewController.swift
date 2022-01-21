@@ -376,11 +376,7 @@ public extension HomeViewController {
         Logger.info("")
 
         // Dismiss any message actions if they're presented
-        if FeatureFlags.contextMenus {
             conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
-        } else {
-            conversationSplitViewController?.selectedConversationViewController?.dismissMessageActions(animated: true)
-        }
 
         let navigationController = AppSettingsViewController.inModalNavigationController()
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -91,7 +91,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-        if RemoteConfig.usernames {
+        if FeatureFlags.usernames {
             mainSection.add(.disclosureItem(
                 icon: .settingsMention,
                 name: username ?? NSLocalizedString(

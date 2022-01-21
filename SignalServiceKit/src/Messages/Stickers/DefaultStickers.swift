@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ class DefaultStickerPack {
     }
 
     private class func parseAll() -> [StickerPackInfo: DefaultStickerPack] {
-        guard FeatureFlags.isUsingProductionService else {
+        guard TSConstants.isUsingProductionService else {
             return [:]
         }
         let packs = [

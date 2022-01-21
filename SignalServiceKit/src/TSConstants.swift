@@ -1,55 +1,21 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
-
-private protocol TSConstantsProtocol: AnyObject {
-    var mainServiceWebSocketAPI_identified: String { get }
-    var mainServiceWebSocketAPI_unidentified: String { get }
-    var mainServiceURL: String { get }
-    var textSecureCDN0ServerURL: String { get }
-    var textSecureCDN2ServerURL: String { get }
-    var contactDiscoveryURL: String { get }
-    var keyBackupURL: String { get }
-    var storageServiceURL: String { get }
-    var sfuURL: String { get }
-    var sfuTestURL: String { get }
-    var kUDTrustRoot: String { get }
-    var updatesURL: String { get }
-    var updates2URL: String { get }
-
-    var censorshipReflectorHost: String { get }
-
-    var serviceCensorshipPrefix: String { get }
-    var cdn0CensorshipPrefix: String { get }
-    var cdn2CensorshipPrefix: String { get }
-    var contactDiscoveryCensorshipPrefix: String { get }
-    var keyBackupCensorshipPrefix: String { get }
-    var storageServiceCensorshipPrefix: String { get }
-
-    var contactDiscoveryEnclaveName: String { get }
-    var contactDiscoveryMrEnclave: String { get }
-
-    var keyBackupEnclave: KeyBackupEnclave { get }
-    var keyBackupPreviousEnclaves: [KeyBackupEnclave] { get }
-
-    var applicationGroup: String { get }
-
-    var serverPublicParamsBase64: String { get }
-}
-
-public struct KeyBackupEnclave: Equatable {
-    let name: String
-    let mrenclave: String
-    let serviceId: String
-}
 
 // MARK: -
 
 @objc
 public class TSConstants: NSObject {
 
+    private enum Environment {
+        case production, staging
+    }
+    private static var environment: Environment = .production
+
     @objc
-    public static let EnvironmentDidChange = Notification.Name("EnvironmentDidChange")
+    public static var isUsingProductionService: Bool {
+        return environment == .production
+    }
 
     // Never instantiate this class.
     private override init() {}
@@ -113,47 +79,6 @@ public class TSConstants: NSObject {
     @objc
     public static var serverPublicParamsBase64: String { shared.serverPublicParamsBase64 }
 
-    @objc
-    public static var isUsingProductionService: Bool {
-        return environment == .production
-    }
-
-    private enum Environment {
-        case production, staging
-    }
-
-    private static let serialQueue = DispatchQueue(label: "TSConstants")
-    private static var _forceEnvironment: Environment?
-    private static var forceEnvironment: Environment? {
-        get {
-            return serialQueue.sync {
-                return _forceEnvironment
-            }
-        }
-        set {
-            serialQueue.sync {
-                _forceEnvironment = newValue
-            }
-        }
-    }
-
-    private static var environment: Environment {
-        if let environment = forceEnvironment {
-            return environment
-        }
-        return FeatureFlags.isUsingProductionService ? .production : .staging
-    }
-
-    @objc
-    public class func forceStaging() {
-        forceEnvironment = .staging
-    }
-
-    @objc
-    public class func forceProduction() {
-        forceEnvironment = .production
-    }
-
     private static var shared: TSConstantsProtocol {
         switch environment {
         case .production:
@@ -165,6 +90,49 @@ public class TSConstants: NSObject {
 }
 
 // MARK: -
+
+private protocol TSConstantsProtocol: AnyObject {
+    var mainServiceWebSocketAPI_identified: String { get }
+    var mainServiceWebSocketAPI_unidentified: String { get }
+    var mainServiceURL: String { get }
+    var textSecureCDN0ServerURL: String { get }
+    var textSecureCDN2ServerURL: String { get }
+    var contactDiscoveryURL: String { get }
+    var keyBackupURL: String { get }
+    var storageServiceURL: String { get }
+    var sfuURL: String { get }
+    var sfuTestURL: String { get }
+    var kUDTrustRoot: String { get }
+    var updatesURL: String { get }
+    var updates2URL: String { get }
+
+    var censorshipReflectorHost: String { get }
+
+    var serviceCensorshipPrefix: String { get }
+    var cdn0CensorshipPrefix: String { get }
+    var cdn2CensorshipPrefix: String { get }
+    var contactDiscoveryCensorshipPrefix: String { get }
+    var keyBackupCensorshipPrefix: String { get }
+    var storageServiceCensorshipPrefix: String { get }
+
+    var contactDiscoveryEnclaveName: String { get }
+    var contactDiscoveryMrEnclave: String { get }
+
+    var keyBackupEnclave: KeyBackupEnclave { get }
+    var keyBackupPreviousEnclaves: [KeyBackupEnclave] { get }
+
+    var applicationGroup: String { get }
+
+    var serverPublicParamsBase64: String { get }
+}
+
+public struct KeyBackupEnclave: Equatable {
+    let name: String
+    let mrenclave: String
+    let serviceId: String
+}
+
+// MARK: - Production
 
 private class TSConstantsProduction: TSConstantsProtocol {
 
@@ -215,7 +183,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let serverPublicParamsBase64 = "AMhf5ywVwITZMsff/eCyudZx9JDmkkkbV6PInzG4p8x3VqVJSFiMvnvlEKWuRob/1eaIetR31IYeAbm0NdOuHH8Qi+Rexi1wLlpzIo1gstHWBfZzy1+qHRV5A4TqPp15YzBPm0WSggW6PbSn+F4lf57VCnHF7p8SvzAA2ZZJPYJURt8X7bbg+H3i+PEjH9DXItNEqs2sNcug37xZQDLm7X36nOoGPs54XsEGzPdEV+itQNGUFEjY6X9Uv+Acuks7NpyGvCoKxGwgKgE5XyJ+nNKlyHHOLb6N1NuHyBrZrgtY/JYJHRooo5CEqYKBqdFnmbTVGEkCvJKxLnjwKWf+fEPoWeQFj5ObDjcKMZf2Jm2Ae69x+ikU5gBXsRmoF94GXQ=="
 }
 
-// MARK: -
+// MARK: - Staging
 
 private class TSConstantsStaging: TSConstantsProtocol {
 

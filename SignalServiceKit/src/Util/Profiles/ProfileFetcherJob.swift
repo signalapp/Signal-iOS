@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -270,7 +270,7 @@ public class ProfileFetcherJob: NSObject {
             case SignalServiceProfile.ValidationError.invalidIdentityKey:
                 // There will be invalid identity keys on staging that can be safely ignored.
                 // This should not be retried.
-                if FeatureFlags.isUsingProductionService {
+                if TSConstants.isUsingProductionService {
                     owsFailDebug("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")
                 } else {
                     Logger.warn("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")

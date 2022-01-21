@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -65,7 +65,7 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
     }
 
     private func normalizeService(service: String) -> String {
-        return (FeatureFlags.isUsingProductionService
+        return (TSConstants.isUsingProductionService
             ? service
             : service + ".staging")
     }

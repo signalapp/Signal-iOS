@@ -54,7 +54,85 @@ extension StorageMode: CustomStringConvertible {
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
+    @objc
+    public static let phoneNumberSharing = build.includes(.qa)
 
+    @objc
+    public static let phoneNumberDiscoverability = build.includes(.qa)
+
+    @objc
+    public static let usernames = build.includes(.qa)
+
+    @objc
+    public static let linkedPhones = build.includes(.qa)
+
+    // We keep this feature flag around as we may want to
+    // ship a build that disables the dependency on KBS
+    // during registration. Features cannot be toggled
+    // remotely during registration.
+    @objc
+    public static let pinsForNewUsers = true
+
+    @objc
+    public static let supportAnimatedStickers_Lottie = false
+
+    @objc
+    public static let paymentsRequests = false
+
+    @objc
+    public static let paymentsScrubDetails = false
+
+    @objc
+    public static let deprecateREST = false
+
+    @objc
+    public static let groupRings = false
+
+    @objc
+    public static let canUseNativeWebsocket = false
+
+    @objc
+    public static var notificationServiceExtension: Bool {
+        // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
+        // however there is a significant bug in iOS 14 where the NSE will not
+        // launch properly after a crash so we only support it in iOS 15.
+        if #available(iOS 15, *) { return true }
+        return false
+    }
+
+    public static func buildFlagMap() -> [String: Any] {
+        BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
+            FeatureFlags.value(forKey: key)
+        }
+    }
+
+    public static var allTestableFlags: [TestableFlag] {
+        BaseFlags.findTestableFlags(for: FeatureFlags.self) { (key: String) -> Any? in
+            FeatureFlags.value(forKey: key)
+        }
+    }
+
+    @objc
+    public static func logFlags() {
+        let logFlag = { (prefix: String, key: String, value: Any?) in
+            if let value = value {
+                Logger.info("\(prefix): \(key) = \(value)", function: "")
+            } else {
+                Logger.info("\(prefix): \(key) = nil", function: "")
+            }
+        }
+
+        let flagMap = buildFlagMap()
+        for key in Array(flagMap.keys).sorted() {
+            let value = flagMap[key]
+            logFlag("FeatureFlag", key, value)
+        }
+    }
+}
+
+// MARK: -
+
+extension FeatureFlags {
     public static var buildVariantString: String? {
         // Leaving this internal only for now. If we ever move this to
         // HelpSettings we need to localize these strings
@@ -113,165 +191,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static var storageModeDescription: String {
         return "\(storageMode)"
-    }
-
-    @objc
-    public static let stickerSearch = false
-
-    @objc
-    public static let stickerPackOrdering = false
-
-    // Don't enable this flag until the Desktop changes have been in production for a while.
-    @objc
-    public static let strictSyncTranscriptTimestamps = false
-
-    @objc
-    public static let phoneNumberSharing = build.includes(.qa)
-
-    @objc
-    public static let phoneNumberDiscoverability = build.includes(.qa)
-
-    @objc
-    public static let complainAboutSlowDBWrites = true
-
-    // Don't consult this flags; consult RemoteConfig.usernames.
-    static let usernamesSupported = build.includes(.qa)
-
-    // Don't consult this flags; consult RemoteConfig.groupsV2...
-    static var groupsV2Supported: Bool { !CurrentAppContext().isRunningTests }
-
-    @objc
-    public static let groupsV2embedProtosInGroupUpdates = true
-
-    @objc
-    public static let groupsV2processProtosInGroupUpdates = true
-
-    @objc
-    public static let linkedPhones = build.includes(.qa)
-
-    @objc
-    public static var isUsingProductionService: Bool {
-        if paymentsInternalBeta {
-            return false
-        } else {
-            return true
-        }
-    }
-
-    @objc
-    public static let sendRecipientUpdates = false
-
-    @objc
-    public static let pinsForNewUsers = true
-
-    @objc
-    public static let deviceTransferDestroyOldDevice = true
-
-    @objc
-    public static let deviceTransferThrowAway = false
-
-    @objc
-    public static let attachmentUploadV3ForV1GroupAvatars = false
-
-    @objc
-    public static let supportAnimatedStickers_Lottie = false
-
-    @objc
-    public static let supportAnimatedStickers_Apng = true
-
-    @objc
-    public static let supportAnimatedStickers_AnimatedWebp = true
-
-    @objc
-    public static let paymentsInternalBeta = false
-
-    @objc
-    public static let paymentsBeta = true
-
-    @objc
-    public static let paymentsEnabled = paymentsBeta
-
-    @objc
-    public static let paymentsRequests = false
-
-    @objc
-    public static let paymentsScrubDetails = false
-
-    @objc
-    public static let spamChallenges = false
-
-    @objc
-    public static let universalDisappearingMessages = true
-
-    @objc
-    public static let groupDescriptionEditing = true
-
-    @objc
-    public static let contextMenus = true
-
-    @objc
-    public static let communicationStyleNotifications = true
-
-    @objc
-    public static let newLinkDeviceScheme = build.includes(.dev)
-
-    @objc
-    public static let forceEnableGiphyMP4 = build.includes(.beta)
-
-    @objc
-    public static let deprecateREST = false
-
-    @objc
-    public static let groupRings = false
-
-    @objc
-    public static let canUseNativeWebsocket = false
-
-    @objc
-    public static let fetchAndDisplayBadges = build.includes(.qa)
-
-    @objc
-    public static let configureBadges = build.includes(.qa)
-
-    @objc
-    public static let subscriptions = build.includes(.qa)
-
-    @objc
-    public static var notificationServiceExtension: Bool {
-        // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
-        // however there is a significant bug in iOS 14 where the NSE will not
-        // launch properly after a crash so we only support it in iOS 15.
-        if #available(iOS 15, *) { return true }
-        return false
-    }
-
-    public static func buildFlagMap() -> [String: Any] {
-        BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
-            FeatureFlags.value(forKey: key)
-        }
-    }
-
-    public static var allTestableFlags: [TestableFlag] {
-        BaseFlags.findTestableFlags(for: FeatureFlags.self) { (key: String) -> Any? in
-            FeatureFlags.value(forKey: key)
-        }
-    }
-
-    @objc
-    public static func logFlags() {
-        let logFlag = { (prefix: String, key: String, value: Any?) in
-            if let value = value {
-                Logger.info("\(prefix): \(key) = \(value)", function: "")
-            } else {
-                Logger.info("\(prefix): \(key) = nil", function: "")
-            }
-        }
-
-        let flagMap = buildFlagMap()
-        for key in Array(flagMap.keys).sorted() {
-            let value = flagMap[key]
-            logFlag("FeatureFlag", key, value)
-        }
     }
 }
 
@@ -382,7 +301,7 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2ignoreCorruptInvites = false
 
     @objc
-    public static let groupsV2memberStatusIndicators = FeatureFlags.groupsV2Supported && build.includes(.qa)
+    public static let groupsV2memberStatusIndicators = build.includes(.qa)
 
     @objc
     public static let isMessageProcessingVerbose = false
@@ -429,9 +348,6 @@ public class DebugFlags: BaseFlags {
     public static let allowV1GroupsUpdates = build.includes(.qa)
 
     @objc
-    public static let forceProfilesForAll = build.includes(.beta)
-
-    @objc
     public static let forceGroupCalling = build.includes(.beta)
 
     @objc
@@ -461,9 +377,6 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let fastPerfTests = false
-
-    @objc
-    public static let forceViewedReceiptSending = true
 
     @objc
     public static let forceDonorBadgeDisplay = build.includes(.qa)
@@ -539,9 +452,6 @@ public class DebugFlags: BaseFlags {
                                                                                    details: LocalizationNotNeeded("Outgoing payments won't be submitted or verified."))
 
     @objc
-    public static let paymentsAllowAllCountries = FeatureFlags.paymentsInternalBeta
-
-    @objc
     public static let messageSendsFail = TestableFlag(false,
                                                       title: LocalizationNotNeeded("Message Sends Fail"),
                                                       details: LocalizationNotNeeded("All outgoing message sends will fail."))
@@ -578,6 +488,12 @@ public class DebugFlags: BaseFlags {
     public static let forceChangePhoneNumberUI = TestableFlag(build.includes(.beta),
                                                               title: LocalizationNotNeeded("Force 'change phone number' UI."),
                                                               details: LocalizationNotNeeded("The UI will appear in settings."))
+
+    @objc
+    public static let deviceTransferPreserveOldDevice = false
+
+    @objc
+    public static let deviceTransferThrowAway = false
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in

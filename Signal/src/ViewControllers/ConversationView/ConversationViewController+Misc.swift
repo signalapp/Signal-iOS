@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -509,8 +509,7 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         if isUserScrolling || !isViewCompletelyAppeared || !isViewVisible
-            || !CurrentAppContext().isAppForegroundAndActive() || !viewHasEverAppeared
-            || isPresentingMessageActions {
+            || !CurrentAppContext().isAppForegroundAndActive() || !viewHasEverAppeared {
             return
         }
 

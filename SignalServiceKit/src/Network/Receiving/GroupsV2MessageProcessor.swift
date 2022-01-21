@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -784,9 +784,6 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             guard contextRevision == oldGroupModel.revision + 1 else {
                 // We can only apply embedded changes if we're behind exactly
                 // one revision.
-                return future.resolve(.failureShouldFailoverToService)
-            }
-            guard FeatureFlags.groupsV2processProtosInGroupUpdates else {
                 return future.resolve(.failureShouldFailoverToService)
             }
             guard let changeActionsProtoData = groupContext.groupChange else {

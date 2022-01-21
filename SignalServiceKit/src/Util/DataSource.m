@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
@@ -170,13 +170,11 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
                                @synchronized(self) {
-                                   if (SSKFeatureFlags.complainAboutSlowDBWrites) {
-                                       OWSAssertDebug(!NSThread.isMainThread);
-                                       // This method is meant to be fast. If _cachedFileUrl is nil,
-                                       // we'll still lazily generate it and this method will work,
-                                       // but it will be slower than expected.
-                                       OWSAssertDebug(self->_cachedFileUrl != nil);
-                                   }
+                                   OWSAssertDebug(!NSThread.isMainThread);
+                                   // This method is meant to be fast. If _cachedFileUrl is nil,
+                                   // we'll still lazily generate it and this method will work,
+                                   // but it will be slower than expected.
+                                   OWSAssertDebug(self->_cachedFileUrl != nil);
 
                                    NSURL *_Nullable srcUrl = self.dataUrl;
                                    if (srcUrl == nil) {

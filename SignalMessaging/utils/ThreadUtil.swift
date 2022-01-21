@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -137,7 +137,7 @@ extension TSThread {
 
         let sendMessageIntent: INSendMessageIntent
 
-        if #available(iOS 15, *), FeatureFlags.communicationStyleNotifications {
+        if #available(iOS 15, *) {
             sendMessageIntent = generateRichCommunicationNotificationSendMessageIntent(transaction: transaction, sender: sender)
         } else {
             sendMessageIntent = generateChatSuggestionSendMessageIntent(transaction: transaction)
@@ -213,7 +213,7 @@ extension TSThread {
     @available(iOS 15, *)
     public func generateStartCallIntent() -> INStartCallIntent? {
         databaseStorage.read { transaction in
-            guard FeatureFlags.communicationStyleNotifications, SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
+            guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
             var recipients: [INPerson] = []
             for recipient in self.recipientAddresses {

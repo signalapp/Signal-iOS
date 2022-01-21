@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -199,11 +199,9 @@ import CallKit
         // IFF one of the following things is true, we can handle inbound call offers
         // * The thread is in our profile whitelist
         // * The thread belongs to someone in our system contacts
-        // * The thread existed before messages requests
         return (self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
                 || self.contactsManager.isSystemContact(address: thread.contactAddress,
-                                                        transaction: transaction)
-                || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead))
+                                                        transaction: transaction))
     }
 
     private struct CallIdentityKeys {

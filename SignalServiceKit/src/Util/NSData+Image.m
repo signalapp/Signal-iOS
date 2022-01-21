@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSData+Image.h"
@@ -684,10 +684,6 @@ typedef struct {
                 return ImageMetadata.invalid;
             }
             isAnimated = webpMetadata.frameCount > 1;
-            if (isAnimated && !SSKFeatureFlags.supportAnimatedStickers_AnimatedWebp) {
-                OWSLogWarn(@"Animated webp not permitted.");
-                return ImageMetadata.invalid;
-            }
             break;
         }
         case ImageFormat_Png: {
@@ -696,12 +692,7 @@ typedef struct {
                 OWSLogWarn(@"Could not determine if png is animated.");
                 return ImageMetadata.invalid;
             } else if (isAnimatedPng.boolValue) {
-                if (SSKFeatureFlags.supportAnimatedStickers_Apng) {
-                    isAnimated = YES;
-                } else {
-                    OWSLogWarn(@"Animated png not permitted.");
-                    return ImageMetadata.invalid;
-                }
+                isAnimated = YES;
             } else {
                 isAnimated = NO;
             }

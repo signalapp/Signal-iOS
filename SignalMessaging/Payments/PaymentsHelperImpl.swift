@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,9 +15,6 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
     public var hasValidPhoneNumberForPayments: Bool {
         guard Self.tsAccountManager.isRegisteredAndReady else {
             return false
-        }
-        if DebugFlags.paymentsAllowAllCountries {
-            return true
         }
         guard let localNumber = Self.tsAccountManager.localNumber else {
             return false
@@ -78,9 +75,6 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
     }
 
     public var canEnablePayments: Bool {
-        guard FeatureFlags.paymentsEnabled else {
-            return false
-        }
         guard !isKillSwitchActive else {
             return false
         }
@@ -215,9 +209,6 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
     }
 
     private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
-        guard FeatureFlags.paymentsEnabled else {
-            return .disabled
-        }
         func loadPaymentsEntropy() -> Data? {
             guard storageCoordinator.isStorageReady else {
                 owsFailDebug("Storage is not ready.")

@@ -312,9 +312,6 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
                      receiptType:(OWSReceiptType)receiptType
                      transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (receiptType == OWSReceiptType_Viewed && !RemoteConfig.viewedReceiptSending) {
-        return;
-    }
     OWSAssertDebug(address.isValid);
     if (timestamp < 1) {
         OWSFailDebug(@"Invalid timestamp.");

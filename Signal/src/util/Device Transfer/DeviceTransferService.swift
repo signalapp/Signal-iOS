@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import MultipeerConnectivity
+import SignalServiceKit
 
 protocol DeviceTransferServiceObserver: AnyObject {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?)
@@ -315,7 +316,7 @@ class DeviceTransferService: NSObject {
         }
 
         Promise.when(fulfilled: promises).done {
-            if !FeatureFlags.deviceTransferThrowAway {
+            if !DebugFlags.deviceTransferThrowAway {
                 self.tsAccountManager.wasTransferred = true
             }
             try self.sendDoneMessage(to: newDevicePeerId)

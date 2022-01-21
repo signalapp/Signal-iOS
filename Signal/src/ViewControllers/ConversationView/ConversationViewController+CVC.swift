@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -152,11 +152,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         }
 
         // If the message has been deleted / disappeared, we need to dismiss
-        if FeatureFlags.contextMenus {
-            dismissMessageContextMenuIfNecessary()
-        } else {
-            dismissMessageActionsIfNecessary()
-        }
+        dismissMessageContextMenuIfNecessary()
 
         showMessageRequestDialogIfRequiredAsync()
 

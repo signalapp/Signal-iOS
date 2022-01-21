@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -153,42 +153,6 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
     }
 
     @objc
-    public class func isPreMessageRequestsThread(_ thread: TSThread, transaction: GRDBReadTransaction) -> Bool {
-        guard !RemoteConfig.profilesForAll else { return false }
-
-        // Grandfather legacy threads where you haven't shared your profile.
-        guard !thread.isNoteToSelf else { return false }
-
-        let interactionFinder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
-
-        // We don't want to show message requests for threads that existed before we
-        // enabled the feature. In order to make sure this is the case, we record
-        // the max row id from the interactions table when the feature is turned on.
-        // If the current thread contains messages that are earlier than that id,
-        // we don't show the message request.
-        if let messageRequestInteractionIdEpoch = SSKPreferences.messageRequestInteractionIdEpoch(transaction: transaction),
-            let earliestKnownInteractionId = interactionFinder.earliestKnownInteractionRowId(transaction: transaction),
-            earliestKnownInteractionId <= messageRequestInteractionIdEpoch {
-            return true
-        }
-
-        // It's possible we pass the above check for a legacy thread, for example if
-        // you have a strict disappearing message timer enabled that deletes all the
-        // messages before the epoch. As an additional safe guard, we treat the thread
-        // as pre-message requests if you've ever sent an outgoing message AND you have
-        // not shared your profile since that shouldn't be possible in a message request
-        // world.
-        let hasSentMessages = interactionFinder.existsOutgoingMessage(transaction: transaction)
-
-        let threadIsWhitelisted = Self.profileManager.isThread(
-            inProfileWhitelist: thread,
-            transaction: transaction.asAnyRead
-        )
-
-        return hasSentMessages && !threadIsWhitelisted
-    }
-
-    @objc
     public class func hasPendingMessageRequest(thread: TSThread, transaction: GRDBReadTransaction) -> Bool {
 
         // TODO: Should we consult isRequestingMember() here?
@@ -218,10 +182,6 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
             transaction: transaction.asAnyRead
         ) else { return false }
 
-        // If this thread is from before we supported message requests,
-        // don't show the message request view.
-        guard !isPreMessageRequestsThread(thread, transaction: transaction) else { return false }
-
         let interactionFinder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
 
         if isGroupThread {
@@ -246,8 +206,6 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         thread: TSThread,
         transaction: GRDBReadTransaction
     ) -> Bool {
-        guard FeatureFlags.universalDisappearingMessages else { return false }
-
         // We never set the default timer for group threads. Group thread timers
         // are set during group creation.
         guard !thread.isGroupThread else { return false }

@@ -35,20 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
-    
-    if (TSConstants.isUsingProductionService) {
-        [items addObject:[OWSTableItem itemWithTitle:@"Switch to Staging Environment"
-                                         actionBlock:^{
-                                             [TSConstants forceStaging];
-                                             OWSAssertDebug(!TSConstants.isUsingProductionService);
-                                         }]];
-    } else {
-        [items addObject:[OWSTableItem itemWithTitle:@"Switch to Production Environment"
-                                         actionBlock:^{
-                                             [TSConstants forceProduction];
-                                             OWSAssertDebug(TSConstants.isUsingProductionService);
-                                         }]];
-    }
 
     [items addObject:[OWSTableItem itemWithTitle:@"Enable Manual Censorship Circumvention"
                                      actionBlock:^{

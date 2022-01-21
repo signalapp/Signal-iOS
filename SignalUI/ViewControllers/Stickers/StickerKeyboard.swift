@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -151,14 +151,6 @@ public class StickerKeyboard: CustomKeyboard {
         headerView.layoutMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 6, trailing: 6)
         headerView.isLayoutMarginsRelativeArrangement = true
 
-        if FeatureFlags.stickerSearch {
-            let searchButton = buildHeaderButton("search-24") { [weak self] in
-                self?.searchButtonWasTapped()
-            }
-            headerView.addArrangedSubview(searchButton)
-            searchButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "searchButton")
-        }
-
         packsCollectionView.backgroundColor = Theme.keyboardBackgroundColor
         headerView.addArrangedSubview(packsCollectionView)
 
@@ -197,14 +189,6 @@ public class StickerKeyboard: CustomKeyboard {
         Logger.verbose("")
 
         updatePageConstraints(ignoreScrollingState: true)
-    }
-
-    private func searchButtonWasTapped() {
-        AssertIsOnMainThread()
-
-        Logger.verbose("")
-
-        // TODO:
     }
 
     private func recentsButtonWasTapped() {

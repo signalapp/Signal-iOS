@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -108,48 +108,46 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         ))
         contents.addSection(messagingSection)
 
-        if FeatureFlags.universalDisappearingMessages {
-            let disappearingMessagesSection = OWSTableSection()
-            disappearingMessagesSection.headerTitle = NSLocalizedString(
-                "SETTINGS_DISAPPEARING_MESSAGES",
-                comment: "Label for the 'disappearing messages' privacy settings."
-            )
-            disappearingMessagesSection.footerTitle = NSLocalizedString(
-                "SETTINGS_DISAPPEARING_MESSAGES_FOOTER",
-                comment: "Explanation for the 'disappearing messages' privacy settings."
-            )
-            let disappearingMessagesConfiguration = databaseStorage.read { transaction in
-                OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
-            }
-            disappearingMessagesSection.add(.init(
-                customCellBlock: { [weak self] in
-                    guard let self = self else { return UITableViewCell() }
-                    let cell = OWSTableItem.buildIconNameCell(
-                        itemName: NSLocalizedString(
-                            "SETTINGS_DEFAULT_DISAPPEARING_MESSAGES",
-                            comment: "table cell label in conversation settings"
-                        ),
-                        accessoryText: disappearingMessagesConfiguration.isEnabled
-                            ? NSString.formatDurationSeconds(disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
-                            : CommonStrings.switchOff,
-                        accessoryType: .disclosureIndicator,
-                        accessoryImage: nil,
-                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages")
-                    )
-                    return cell
-                }, actionBlock: { [weak self] in
-                    let vc = DisappearingMessagesTimerSettingsViewController(configuration: disappearingMessagesConfiguration, isUniversal: true) { configuration in
-                        self?.databaseStorage.write { transaction in
-                            configuration.anyUpsert(transaction: transaction)
-                        }
-                        self?.storageServiceManager.recordPendingLocalAccountUpdates()
-                        self?.updateTableContents()
-                    }
-                    self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                }
-            ))
-            contents.addSection(disappearingMessagesSection)
+        let disappearingMessagesSection = OWSTableSection()
+        disappearingMessagesSection.headerTitle = NSLocalizedString(
+            "SETTINGS_DISAPPEARING_MESSAGES",
+            comment: "Label for the 'disappearing messages' privacy settings."
+        )
+        disappearingMessagesSection.footerTitle = NSLocalizedString(
+            "SETTINGS_DISAPPEARING_MESSAGES_FOOTER",
+            comment: "Explanation for the 'disappearing messages' privacy settings."
+        )
+        let disappearingMessagesConfiguration = databaseStorage.read { transaction in
+            OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)
         }
+        disappearingMessagesSection.add(.init(
+            customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                let cell = OWSTableItem.buildIconNameCell(
+                    itemName: NSLocalizedString(
+                        "SETTINGS_DEFAULT_DISAPPEARING_MESSAGES",
+                        comment: "table cell label in conversation settings"
+                    ),
+                    accessoryText: disappearingMessagesConfiguration.isEnabled
+                    ? NSString.formatDurationSeconds(disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
+                    : CommonStrings.switchOff,
+                    accessoryType: .disclosureIndicator,
+                    accessoryImage: nil,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "disappearing_messages")
+                )
+                return cell
+            }, actionBlock: { [weak self] in
+                let vc = DisappearingMessagesTimerSettingsViewController(configuration: disappearingMessagesConfiguration, isUniversal: true) { configuration in
+                    self?.databaseStorage.write { transaction in
+                        configuration.anyUpsert(transaction: transaction)
+                    }
+                    self?.storageServiceManager.recordPendingLocalAccountUpdates()
+                    self?.updateTableContents()
+                }
+                self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+            }
+        ))
+        contents.addSection(disappearingMessagesSection)
 
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = NSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "RemoteAttestation.h"
@@ -282,7 +282,7 @@ NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
             OWSLogInfo(@"signatureBody: %@", signatureBody);
             OWSLogInfo(@"signature: %@", signature);
         }
-        if (SSKFeatureFlags.isUsingProductionService) {
+        if (TSConstants.isUsingProductionService) {
             OWSFailDebug(@"Signature is expired: %@", signatureBodyEntity.timestamp);
             *error = RemoteAttestationErrorMakeWithReason(
                                                           RemoteAttestationAssertionError, @"Signature is expired.");

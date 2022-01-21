@@ -47,12 +47,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var profilesForAll: Bool {
-        if DebugFlags.forceProfilesForAll { return true }
-        return isEnabled(.profilesForAll)
-    }
-
-    @objc
     public static var groupsV2MaxGroupSizeRecommended: UInt {
         let defaultValue: UInt = 151
         guard AppReadiness.isAppReady else {
@@ -95,11 +89,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var usernames: Bool {
-        FeatureFlags.usernamesSupported
-    }
-
-    @objc
     public static var groupCalling: Bool {
         return DebugFlags.forceGroupCalling || !isEnabled(.groupCallingKillSwitch)
     }
@@ -138,16 +127,6 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var paymentsResetKillSwitch: Bool {
         isEnabled(.paymentsResetKillSwitch)
-    }
-
-    @objc
-    public static var giphySendAsMP4: Bool {
-        isEnabled(.giphySendAsMP4) || FeatureFlags.forceEnableGiphyMP4
-    }
-
-    @objc
-    public static var viewedReceiptSending: Bool {
-        DebugFlags.forceViewedReceiptSending || isEnabled(.viewedReceiptSending)
     }
 
     public static var standardMediaQualityLevel: ImageQualityLevel? {
@@ -421,13 +400,9 @@ private struct Flags {
     enum SupportedIsEnabledFlags: String, FlagType {
         case kbs
         case uuidSafetyNumbers
-        case groupsV2InviteLinksV2
-        case profilesForAll
         case groupCallingKillSwitch
         case automaticSessionResetKillSwitch
         case paymentsResetKillSwitch
-        case giphySendAsMP4
-        case viewedReceiptSending
         case senderKeyKillSwitch
         case messageResendKillSwitch
         case donorBadgeDisplayKillSwitch

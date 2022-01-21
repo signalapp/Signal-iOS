@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -66,10 +66,6 @@ extension ConversationViewController {
         } else if isInPreviewPlatter {
             scrollDownIsHidden = true
             scrollToNextMentionIsHidden = true
-        } else if self.isPresentingMessageActions {
-            // Content offset calculations get messed up when we're presenting message actions
-            // Don't change button visibility if we're presenting actions
-            // no-op
         } else {
             let shouldScrollDownAppear = isScrolledUpOnePage || hasLaterMessageOffscreen
             scrollDownIsHidden = !shouldScrollDownAppear

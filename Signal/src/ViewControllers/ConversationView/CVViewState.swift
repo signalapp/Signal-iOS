@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -133,13 +133,6 @@ public class CVViewState: NSObject {
     var initialScrollState: CVInitialScrollState?
 
     public var presentationStatus: CVPresentationStatus = .notYetPresented
-
-    // MARK: - Message Actions
-
-    public var messageActionsViewController: MessageActionsViewController?
-    public var messageActionsExtraContentInsetPadding: CGFloat = 0
-    public var messageActionsOriginalContentOffset: CGPoint = .zero
-    public var messageActionsOriginalFocusY: CGFloat = 0
 
     #if TESTABLE_BUILD
     public let initialLoadBenchSteps = BenchSteps(title: "initialLoadBenchSteps")
@@ -307,24 +300,6 @@ public extension ConversationViewController {
         set { viewState.collectionViewActiveContextMenuInteraction = newValue }
     }
 
-    // MARK: - Message Actions
-
-    var messageActionsViewController: MessageActionsViewController? {
-        get { viewState.messageActionsViewController }
-        set { viewState.messageActionsViewController = newValue }
-    }
-    var messageActionsExtraContentInsetPadding: CGFloat {
-        get { viewState.messageActionsExtraContentInsetPadding }
-        set { viewState.messageActionsExtraContentInsetPadding = newValue }
-    }
-    var messageActionsOriginalContentOffset: CGPoint {
-        get { viewState.messageActionsOriginalContentOffset }
-        set { viewState.messageActionsOriginalContentOffset = newValue }
-    }
-    var messageActionsOriginalFocusY: CGFloat {
-        get { viewState.messageActionsOriginalFocusY }
-        set { viewState.messageActionsOriginalFocusY = newValue }
-    }
     var backgroundContainer: CVBackgroundContainer {
         get { viewState.backgroundContainer }
     }

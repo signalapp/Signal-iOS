@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -402,8 +402,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // If there is a modal presented over us, or another window above us, don't respond to keyboard commands.
         guard presentedViewController == nil || view.window?.isKeyWindow != true else { return nil }
 
-        // Don't allow keyboard commands while presenting message actions.
-        guard selectedConversationViewController?.isPresentingMessageActions != true else { return nil }
+        // Don't allow keyboard commands while presenting context menu.
+        guard selectedConversationViewController?.isPresentingContextMenu != true else { return nil }
 
         if selectedThread != nil {
             return selectedConversationKeyCommands + globalKeyCommands

@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import MultipeerConnectivity
 import SignalCoreKit
+import SignalServiceKit
 
 extension DeviceTransferService: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer newDevicePeerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
@@ -100,7 +101,7 @@ extension DeviceTransferService: MCSessionDelegate {
             // When the old device receives the done message from the new device,
             // it can be confident that the transfer has completed successfully and
             // clear out all data from this device. This will crash the app.
-            if FeatureFlags.deviceTransferDestroyOldDevice {
+            if !DebugFlags.deviceTransferPreserveOldDevice {
                 SignalApp.resetAppData()
             }
 

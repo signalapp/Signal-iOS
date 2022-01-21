@@ -37,7 +37,7 @@ extension ConversationViewController: CVComponentDelegate {
         let messageActions = MessageActions.textActions(itemViewModel: itemViewModel,
                                                         shouldAllowReply: shouldAllowReply,
                                                         delegate: self)
-        self.presentMessageActions(messageActions, withFocusedCell: cell, itemViewModel: itemViewModel)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
     public func cvc_didLongPressMediaViewItem(_ cell: CVCell,
@@ -48,7 +48,7 @@ extension ConversationViewController: CVComponentDelegate {
         let messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
                                                          shouldAllowReply: shouldAllowReply,
                                                          delegate: self)
-        self.presentMessageActions(messageActions, withFocusedCell: cell, itemViewModel: itemViewModel)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
     public func cvc_didLongPressQuote(_ cell: CVCell,
@@ -59,7 +59,7 @@ extension ConversationViewController: CVComponentDelegate {
         let messageActions = MessageActions.quotedMessageActions(itemViewModel: itemViewModel,
                                                                  shouldAllowReply: shouldAllowReply,
                                                                  delegate: self)
-        self.presentMessageActions(messageActions, withFocusedCell: cell, itemViewModel: itemViewModel)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
     public func cvc_didLongPressSystemMessage(_ cell: CVCell,
@@ -68,7 +68,7 @@ extension ConversationViewController: CVComponentDelegate {
 
         let messageActions = MessageActions.infoMessageActions(itemViewModel: itemViewModel,
                                                                delegate: self)
-        self.presentMessageActions(messageActions, withFocusedCell: cell, itemViewModel: itemViewModel)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
     public func cvc_didLongPressSticker(_ cell: CVCell,
@@ -79,54 +79,25 @@ extension ConversationViewController: CVComponentDelegate {
         let messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
                                                          shouldAllowReply: shouldAllowReply,
                                                          delegate: self)
-        self.presentMessageActions(messageActions, withFocusedCell: cell, itemViewModel: itemViewModel)
+        self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
     public func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidChange()
-
-        guard let messageActionsViewController = messageActionsViewController else {
-            return
-        }
-        if messageActionsViewController.focusedInteraction.uniqueId !=
-            itemViewModel.interaction.uniqueId {
-            owsFailDebug("Received longpress update for unexpected cell")
-            return
-        }
-        messageActionsViewController.didChangeLongpress()
     }
 
     public func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidEnd()
-
-        guard let messageActionsViewController = messageActionsViewController else {
-            return
-        }
-        if messageActionsViewController.focusedInteraction.uniqueId !=
-            itemViewModel.interaction.uniqueId {
-            owsFailDebug("Received longpress update for unexpected cell")
-            return
-        }
-        messageActionsViewController.didEndLongpress()
     }
 
     public func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
-        guard let messageActionsViewController = messageActionsViewController else {
-            return
-        }
-        if messageActionsViewController.focusedInteraction.uniqueId !=
-            itemViewModel.interaction.uniqueId {
-            owsFailDebug("Received longpress update for unexpected cell")
-            return
-        }
-        // TODO: Port.
-        //        messageActionsViewController.didCancelLongpress()
+        collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidEnd()
     }
 
     // MARK: -

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1611,9 +1611,7 @@ public class GroupManager: NSObject {
             messageBuilder.groupMetaMessage = .update
 
             if thread.isGroupV2Thread {
-                if FeatureFlags.groupsV2embedProtosInGroupUpdates {
-                    messageBuilder.changeActionsProtoData = changeActionsProtoData
-                }
+                messageBuilder.changeActionsProtoData = changeActionsProtoData
                 if singleRecipient == nil {
                     self.addAdditionalRecipients(to: messageBuilder,
                                                  groupThread: thread,

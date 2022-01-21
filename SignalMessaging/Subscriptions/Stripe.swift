@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -82,7 +82,7 @@ public struct Stripe: Dependencies {
 // MARK: - API
 fileprivate extension Stripe {
 
-    static let publishableKey: String = FeatureFlags.isUsingProductionService
+    static let publishableKey: String = TSConstants.isUsingProductionService
         ? "pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D"
         : "pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD"
 
@@ -222,7 +222,7 @@ fileprivate extension Stripe {
             parameters["pk_token_payment_network"] = payment.token.paymentMethod.network.map { $0.rawValue }
 
             if payment.token.transactionIdentifier == "Simulated Identifier" {
-                owsAssertDebug(!FeatureFlags.isUsingProductionService, "Simulated ApplePay only works in staging")
+                owsAssertDebug(!TSConstants.isUsingProductionService, "Simulated ApplePay only works in staging")
                 // Generate a fake transaction identifier
                 parameters["pk_token_transaction_id"] = "ApplePayStubs~4242424242424242~0~USD~\(UUID().uuidString)"
             } else {

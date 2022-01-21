@@ -388,11 +388,7 @@ public class ConversationViewController: OWSViewController {
 
         self.isViewCompletelyAppeared = false
 
-        if FeatureFlags.contextMenus {
-            dismissMessageContextMenu(animated: false)
-        } else {
-            dismissMessageActions(animated: false)
-        }
+        dismissMessageContextMenu(animated: false)
 
         self.dismissReactionsDetailSheet(animated: false)
         self.saveLastVisibleSortIdAndOnScreenPercentage(async: true)
@@ -498,11 +494,8 @@ public class ConversationViewController: OWSViewController {
 
         // Re-styling the message actions is tricky,
         // since this happens rarely just dismiss
-        if FeatureFlags.contextMenus {
-            dismissMessageContextMenu(animated: false)
-        } else {
-            dismissMessageActions(animated: false)
-        }
+        dismissMessageContextMenu(animated: false)
+
         dismissReactionsDetailSheet(animated: false)
     }
 
@@ -548,11 +541,7 @@ public class ConversationViewController: OWSViewController {
 
         super.viewWillTransition(to: size, with: coordinator)
 
-        if FeatureFlags.contextMenus {
-            dismissMessageContextMenu(animated: false)
-        } else {
-            dismissMessageActions(animated: false)
-        }
+        dismissMessageContextMenu(animated: false)
 
         dismissReactionsDetailSheet(animated: false)
 

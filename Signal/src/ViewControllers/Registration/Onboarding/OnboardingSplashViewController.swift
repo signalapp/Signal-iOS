@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 import SafariServices
+import SignalServiceKit
 
 @objc
 public class OnboardingSplashViewController: OnboardingBaseViewController {
@@ -51,7 +52,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
-        if !FeatureFlags.isUsingProductionService {
+        if !TSConstants.isUsingProductionService {
             titleLabel.text = "Internal Staging Build" + "\n" + "\(appVersion.currentAppVersion4)"
         }
 

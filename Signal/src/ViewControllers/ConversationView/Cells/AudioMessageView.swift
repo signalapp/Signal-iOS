@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -437,10 +437,6 @@ class AudioMessageView: ManualStackView {
 
     private func updateViewedState(animated: Bool = true) {
         var isViewed = self.isViewed
-
-        // If we don't support viewed receipts yet, never show
-        // the unviewed dot.
-        if !RemoteConfig.viewedReceiptSending { isViewed = true }
 
         let destination: AnimationProgressTime = isViewed ? 1 : 0
 

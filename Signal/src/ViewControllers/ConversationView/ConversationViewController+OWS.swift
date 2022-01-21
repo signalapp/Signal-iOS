@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalUI
@@ -96,11 +96,10 @@ extension ConversationViewController {
         var newInsets = oldInsets
 
         let keyboardOverlap = inputAccessoryPlaceholder.keyboardOverlap
-        newInsets.bottom = (messageActionsExtraContentInsetPadding +
-                                keyboardOverlap +
+        newInsets.bottom = (keyboardOverlap +
                                 bottomBar.height -
                                 view.safeAreaInsets.bottom)
-        newInsets.top = messageActionsExtraContentInsetPadding + (bannerView?.height ?? 0)
+        newInsets.top = (bannerView?.height ?? 0)
 
         let wasScrolledToBottom = self.isScrolledToBottom
 
@@ -338,97 +337,6 @@ extension ConversationViewController {
 
         updateBarButtonItems()
         ensureBottomViewType()
-    }
-}
-
-// MARK: -
-
-extension ConversationViewController: MessageActionsViewControllerDelegate {
-    public func messageActionsViewControllerRequestedKeyboardDismissal(_ messageActionsViewController: MessageActionsViewController,
-                                                                       focusedView: UIView) {
-        dismissKeyBoard()
-
-        // After dismissing the keyboard, it's important we update the message actions
-        // state. We keep track of the content offset at the time of presenting a message
-        // action to ensure that new messages / typing indicators don't cause the
-        // focused message to move. That offset is now different since the focused message
-        // may be repositioning.
-        updateMessageActionsState(forCell: focusedView)
-    }
-
-    public func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController,
-                                                               withAction action: MessageAction?) {
-
-        let sender: UIView? = {
-            let interaction = messageActionsViewController.focusedInteraction
-            guard let indexPath = indexPath(forInteractionUniqueId: interaction.uniqueId) else {
-                return nil
-            }
-
-            guard self.collectionView.indexPathsForVisibleItems.contains(indexPath),
-                  let cell = self.collectionView.cellForItem(at: indexPath) as? CVCell else {
-                return nil
-            }
-
-            // TODO: Should we use a more specific cell view?
-            return cell
-        }()
-
-        dismissMessageActions(animated: true) {
-            action?.block(sender)
-        }
-    }
-
-    public func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController,
-                                                               withReaction reaction: String,
-                                                               isRemoving: Bool) {
-        dismissMessageActions(animated: true) {
-            guard let message = messageActionsViewController.focusedInteraction as? TSMessage else {
-                owsFailDebug("Not sending reaction for unexpected interaction type")
-                return
-            }
-
-            self.databaseStorage.asyncWrite { transaction in
-                ReactionManager.localUserReacted(
-                    to: message,
-                    emoji: reaction,
-                    isRemoving: isRemoving,
-                    transaction: transaction
-                )
-            }
-        }
-    }
-
-    public func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
-                                             shouldShowReactionPickerForInteraction: TSInteraction) -> Bool {
-        return self.shouldShowReactionPickerForInteraction(messageActionsViewController.focusedInteraction)
-    }
-
-    public func shouldShowReactionPickerForInteraction(_ interaction: TSInteraction) -> Bool {
-        guard !threadViewModel.hasPendingMessageRequest else { return false }
-        guard threadViewModel.isLocalUserFullMemberOfThread else { return false }
-
-        switch interaction {
-        case let outgoingMessage as TSOutgoingMessage:
-            if outgoingMessage.wasRemotelyDeleted { return false }
-
-            switch outgoingMessage.messageState {
-            case .failed, .sending, .pending:
-                return false
-            default:
-                return true
-            }
-        case let incomingMessage as TSIncomingMessage:
-            if incomingMessage.wasRemotelyDeleted { return false }
-
-            return true
-        default:
-            return false
-        }
-    }
-
-    public func messageActionsViewControllerLongPressGestureRecognizer(_ messageActionsViewController: MessageActionsViewController) -> UILongPressGestureRecognizer {
-        return collectionViewLongPressGestureRecognizer
     }
 }
 

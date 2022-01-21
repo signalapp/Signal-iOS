@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -260,10 +260,6 @@ public class OWSWebSocket: NSObject {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateModifiedDeviceList),
                                                name: OWSDevicesService.deviceListUpdateModifiedDeviceList,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(environmentDidChange),
-                                               name: TSConstants.EnvironmentDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appExpiryDidChange),
@@ -1097,17 +1093,6 @@ public class OWSWebSocket: NSObject {
         if webSocketType == .identified {
             cycleSocket()
         }
-    }
-
-    @objc
-    private func environmentDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        if Self.verboseLogging {
-            Logger.info("\(self.logPrefix)")
-        }
-
-        cycleSocket()
     }
 
     @objc

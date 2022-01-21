@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -134,9 +134,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // build since we need to obtain authentication from
     // the service, so we cache and reuse instances.
     func getMobileCoinAPI() -> Promise<MobileCoinAPI> {
-        guard FeatureFlags.paymentsEnabled else {
-            return Promise(error: PaymentsError.notEnabled)
-        }
         guard !CurrentAppContext().isNSE else {
             return Promise(error: OWSAssertionError("Payments disabled in NSE."))
         }
@@ -249,9 +246,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     private var canUsePayments: Bool {
-        FeatureFlags.paymentsEnabled &&
-              arePaymentsEnabled &&
-            !CurrentAppContext().isNSE
+        arePaymentsEnabled && !CurrentAppContext().isNSE
     }
 
     // We need to update our balance:

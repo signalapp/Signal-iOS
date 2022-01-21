@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,67 +81,44 @@ class GroupAttributesViewController: OWSTableViewController2 {
         ))
         contents.addSection(avatarSection)
 
-        if FeatureFlags.groupDescriptionEditing {
-            let nameAndDescriptionSection = OWSTableSection()
-            nameAndDescriptionSection.add(.disclosureItem(
-                icon: .settingsAddToGroup,
-                name: helper.groupNameCurrent ?? NSLocalizedString(
-                    "GROUP_NAME_VIEW_TITLE",
-                    comment: "Title for the group name view."
-                ),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "group_name"),
-                actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    let vc = GroupNameViewController(
-                        groupModel: self.groupThread.groupModel,
-                        groupNameCurrent: self.helper.groupNameCurrent
-                    )
-                    vc.nameDelegate = self
-                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                }
-            ))
-            nameAndDescriptionSection.add(.disclosureItem(
-                icon: .compose24,
-                name: helper.groupDescriptionCurrent ?? NSLocalizedString(
-                    "GROUP_DESCRIPTION_VIEW_TITLE",
-                    comment: "Title for the group description view."
-                ),
-                maxNameLines: 2,
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "group_description"),
-                actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    let vc = GroupDescriptionViewController(
-                        groupModel: self.groupThread.groupModel,
-                        groupDescriptionCurrent: self.helper.groupDescriptionCurrent,
-                        options: .editable
-                    )
-                    vc.descriptionDelegate = self
-                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                }
-            ))
-            contents.addSection(nameAndDescriptionSection)
-        } else {
-            let nameTextField = helper.nameTextField
-            let nameSection = OWSTableSection()
-            nameSection.add(.init(
-                customCellBlock: {
-                    let cell = OWSTableItem.newCell()
-                    cell.selectionStyle = .none
-
-                    nameTextField.font = .ows_dynamicTypeBodyClamped
-                    nameTextField.textColor = Theme.primaryTextColor
-
-                    cell.contentView.addSubview(nameTextField)
-                    nameTextField.autoPinEdgesToSuperviewMargins()
-
-                    return cell
-                },
-                actionBlock: {
-                    nameTextField.becomeFirstResponder()
-                }
-            ))
-            contents.addSection(nameSection)
-        }
+        let nameAndDescriptionSection = OWSTableSection()
+        nameAndDescriptionSection.add(.disclosureItem(
+            icon: .settingsAddToGroup,
+            name: helper.groupNameCurrent ?? NSLocalizedString(
+                "GROUP_NAME_VIEW_TITLE",
+                comment: "Title for the group name view."
+            ),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "group_name"),
+            actionBlock: { [weak self] in
+                guard let self = self else { return }
+                let vc = GroupNameViewController(
+                    groupModel: self.groupThread.groupModel,
+                    groupNameCurrent: self.helper.groupNameCurrent
+                )
+                vc.nameDelegate = self
+                self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+            }
+        ))
+        nameAndDescriptionSection.add(.disclosureItem(
+            icon: .compose24,
+            name: helper.groupDescriptionCurrent ?? NSLocalizedString(
+                "GROUP_DESCRIPTION_VIEW_TITLE",
+                comment: "Title for the group description view."
+            ),
+            maxNameLines: 2,
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "group_description"),
+            actionBlock: { [weak self] in
+                guard let self = self else { return }
+                let vc = GroupDescriptionViewController(
+                    groupModel: self.groupThread.groupModel,
+                    groupDescriptionCurrent: self.helper.groupDescriptionCurrent,
+                    options: .editable
+                )
+                vc.descriptionDelegate = self
+                self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+            }
+        ))
+        contents.addSection(nameAndDescriptionSection)
 
         self.contents = contents
     }

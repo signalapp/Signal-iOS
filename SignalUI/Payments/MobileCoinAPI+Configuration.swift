@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import MobileCoin
+import SignalServiceKit
 
 extension MobileCoinAPI {
 
@@ -18,15 +19,8 @@ extension MobileCoinAPI {
         case mobileCoinMainNet
 
         public static var current: Environment {
-            if FeatureFlags.isUsingProductionService {
+            if TSConstants.isUsingProductionService {
                 return .signalMainNet
-            } else if FeatureFlags.paymentsInternalBeta {
-                // TODO: Revisit.
-                #if TESTABLE_BUILD
-                return .mobileCoinAlphaNet
-                #else
-                return .signalTestNet
-                #endif
             } else {
                 return .mobileCoinAlphaNet
             }
