@@ -547,6 +547,9 @@
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Редакция";
 
+/* Label for the 'mute' button. */
+"BUTTON_MUTE" = "Заглуши";
+
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Следващ";
 
@@ -576,6 +579,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Изпрати";
+
+/* Label for the 'unmute' button. */
+"BUTTON_UNMUTE" = "Изключи тих режим";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Преглед";
@@ -682,6 +688,21 @@
 /* Button label to allow user to change avatar */
 "CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
 
+/* Error indicating that the user's old and new phone numbers are identical. */
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+
+/* Error indicating that the user's old phone number was not entered correctly. */
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "The phone number you entered doesn’t match your account’s.";
+
+/* Error indicating that the user's new phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+
+/* Error indicating that the user's old phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+
+/* Title of the 'change phone number PIN' view. */
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Here’s a preview of the chat color.";
 
@@ -759,6 +780,9 @@
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Можете да дадете достъп до контактите от приложението с Настройки на iOS, за да видите кои от вашите контакти са потребители на Signal.";
+
+/* Configure reactions title text */
+"CONFIGURE_REACTIONS" = "Configure Reactions";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
@@ -991,8 +1015,32 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
 
+/* Message for the 'conversations delete confirmation' alert for multiple messages. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Изтриване на разговора?";
+
+/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+
+/* Title for the 'conversation mute confirmation' alert. */
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+
+/* 1 day */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 ден";
+
+/* 1 hour */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 час";
+
+/* 1 week */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 седмица";
+
+/* 8 hours */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 часа";
+
+/* Always */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Винаги";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
@@ -1853,7 +1901,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Добави съобщение";
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "Forward To";
@@ -2923,6 +2971,12 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* Title for the 'Select Chats' option in the HomeView. */
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+
+/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Рисувайте където пожелаете, за да се размаже";
 
@@ -2988,6 +3042,9 @@
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+
+/* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ е в Signal!";
@@ -3559,6 +3616,9 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Намери по Телефонен Номер";
 
+/* The title for the 'select members for new group' view if already one member is selected. */
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Нова Група";
 
@@ -3582,6 +3642,9 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Нова Група";
+
+/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
+"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ членове";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ до %@";
@@ -3920,7 +3983,7 @@
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Pay";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Плати";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
@@ -3962,7 +4025,7 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Плати";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Total Amount";
@@ -4765,6 +4828,9 @@
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signal Изследване";
 
+/* Configure reactions reset button text */
+"RESET" = "Рестартирай";
+
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Опитай Отново";
 
@@ -5190,6 +5256,51 @@
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Прехвърляйте всички повиквания през сървър на Signal, за да не разкривате своя IP адрес на вашия контакт. Активирането ще влоши качеството на повикването.";
+
+/* Label for the 'edit phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+
+/* Label for button in settings views to change phone number */
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+
+/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+
+/* Label for the 'confirm change phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Промени Номер";
+
+/* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Код на Държава";
+
+/* Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
+
+/* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Пример: %@";
+
+/* Title for the 'new phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+
+/* Title for the 'old phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Телефонен Номер";
+
+/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+
+/* Description text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+
+/* Title text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+
+/* Title for the 'change phone number' views in settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Промени Номер";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Чатове";
@@ -5645,7 +5756,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Невалиден адрес";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Сканирай QR Код";
@@ -6240,6 +6351,9 @@
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+
+/* Tap to Replace Emoji string for reaction configuration */
+"TAP_REPLACE_EMOJI" = "Натиснете, за да заместите емоджи";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Това съобщение беше изтрито.";

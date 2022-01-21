@@ -1,2 +1,2 @@
-• We spruced up the chat list a bit to make unread chats clearer to see
-• Fixes for some issues with search and zooming in on photos
+我们优化了聊天信息列表, 未读信息现在更加明显了
+修复了一些搜索和图片放大相关的问题

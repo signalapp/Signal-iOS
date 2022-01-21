@@ -547,6 +547,9 @@
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "ਸੋਧੋ";
 
+/* Label for the 'mute' button. */
+"BUTTON_MUTE" = "ਚੁੱਪ";
+
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "ਅਗਲਾ";
 
@@ -576,6 +579,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "ਭੇਜੋ";
+
+/* Label for the 'unmute' button. */
+"BUTTON_UNMUTE" = "ਅਨਮਿਊਟ ਕਰੋ";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "ਵੇਖੋ";
@@ -682,6 +688,21 @@
 /* Button label to allow user to change avatar */
 "CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
 
+/* Error indicating that the user's old and new phone numbers are identical. */
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+
+/* Error indicating that the user's old phone number was not entered correctly. */
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "ਤੁਹਾਡੇ ਵਲੋਂ ਦਿੱਤਾ ਫ਼ੋਨ ਨੰਬਰ ਤੁਹਾਡੇ ਖਾਤੇ ਨਾਲ ਮਿਲਦਾ ਨਹੀਂ ਹੈ।";
+
+/* Error indicating that the user's new phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+
+/* Error indicating that the user's old phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+
+/* Title of the 'change phone number PIN' view. */
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "ਇਹ ਹੈ ਚੈਟ ਦੇ ਰੰਗ ਦੀ ਝਲਕ।";
 
@@ -759,6 +780,9 @@
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "ਤੁਹਾਡੇ ਕਿਹੜੇ ਸੰਪਰਕ Signal ਦੇ ਉਪਭੋਗਤਾ ਹਨ, ਇਹ ਦੇਖਣ ਲਈ ਤੁਸੀਂ iOS ਸੈਟਿੰਗ ਐਪ ਵਿੱਚ ਸੰਪਰਕਾਂ ਤਾਈਂ ਪਹੁੰਚ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ.";
+
+/* Configure reactions title text */
+"CONFIGURE_REACTIONS" = "Configure Reactions";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "ਇਸ ਨਾਲ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਮਿਟਕੇ ਐਪਲੀਕੇਸ਼ਨ ਰੀਸੈੱਟ ਹੋ ਜਾਵੇਗੀ। ਇਹ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਣ ਤੋਂ ਬਾਅਦ ਐਪ ਬੰਦ ਹੋ ਜਾਵੇਗੀ।";
@@ -991,8 +1015,32 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ਇਸ ਚੈਟ ਨੂੰ ਇਸ ਡਿਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।";
 
+/* Message for the 'conversations delete confirmation' alert for multiple messages. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ਚੈਟ ਹਟਾਉਣੀ ਹੈ?";
+
+/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+
+/* Title for the 'conversation mute confirmation' alert. */
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+
+/* 1 day */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 ਦਿਨ";
+
+/* 1 hour */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 ਘੰਟਾ";
+
+/* 1 week */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 ਹਫਤਾ";
+
+/* 8 hours */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 ਘੰਟੇ";
+
+/* Always */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "ਹਮੇਸ਼ਾਂ";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "ਸਿਰਫ ਐਡਮਿਨ ਹੀ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਸੁਨੇਹੇ ਭੇਜ ਸਕਦੇ ਹਨ।";
@@ -2923,6 +2971,12 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* Title for the 'Select Chats' option in the HomeView. */
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+
+/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "ਧੁੰਦਲਾ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਖਿੱਚੋ";
 
@@ -2988,6 +3042,9 @@
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "ਤੁਸੀਂ ਆਪਣੇ ਫੋਨ ਜਾਂ iPad ਤੋਂ ਸਿੰਕ੍ਰੋਨਾਈਜ਼ ਕੀਤੇ ਸੁਨੇਹੇ ਭੇਜ ਜਾਂ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।  ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਦੇ ਲਈ, ਵਾਰਤਾਲਾਪ ਦਾ ਇਤਿਹਾਸ ਨਵੇਂ ਲਿੰਕ ਕੀਤੇ ਹੋਏ ਡਿਵਾਈਸਾਂ 'ਤੇ ਟ੍ਰਾਂਸਫਰ ਨਹੀਂ ਹੋਇਆ।";
+
+/* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal 'ਤੇ ਹੈ!";
@@ -3559,6 +3616,9 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ਫੋਨ ਨੰਬਰ ਨਾਲ ਖੋਜੋ";
 
+/* The title for the 'select members for new group' view if already one member is selected. */
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "ਨਵਾਂ ਗਰੁੱਪ";
 
@@ -3582,6 +3642,9 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "ਨਵਾਂ ਗਰੁੱਪ";
+
+/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
+"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ ਮੈਂਬਰ";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ ਤੋਂ %@";
@@ -4643,7 +4706,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "ਤੁਹਾਡੇ ਕੋਲ 1 ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ. ਤੁਹਾਡੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਖਤਮ ਹੋ ਜਾਣ 'ਤੇ, ਤੁਹਾਡਾ ਖਾਤਾ ਲੌਕ ਹੋ ਜਾਵੇਗਾ. 7 ਦਿਨਾਂ ਲਈ ਕੋਈ ਗਤੀਵਿਧੀ ਨਾ ਹੋਣ ਤੋਂ ਬਾਅਦ, ਤੁਸੀਂ ਆਪਣੇ ਪਿਨ ਤੋਂ ਬਿਨਾਂ ਮੁੜ-ਰਜਿਸਟਰ ਕਰ ਸਕਦੇ ਹੋ. ਤੁਹਾਡੀ ਗਤਿਵਿਧੀ ਸਾਫ ਕਰ ਦਿੱਤੀ ਜਾਵੇਗੀ ਅਤੇ ਸਾਰੀ ਸਮੱਗਰੀ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "ਤੁਹਾਡੇ ਕੋਲ 1 ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ. ਤੁਹਾਡੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਖਤਮ ਹੋ ਜਾਣ 'ਤੇ, ਤੁਸੀਂ ਇੱਕ ਨਵਾਂ ਪਿਨ ਬਣਾ ਸਕਦੇ ਹੋ. ਤੁਸੀਂ ਰਜਿਸਟਰ ਕਰਕੇ ਆਪਣਾ ਖਾਤਾ ਵਰਤ ਸਕਦੇ ਹੋ ਪਰ ਤੁਸੀਂ ਸਹੇਜੀ ਗਈ ਕੁਝ ਜਾਣਕਾਰੀ ਖੋ ਬੈਠੋਗੇ ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਦੀ ਜਾਣਕਾਰੀ.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "ਤੁਹਾਡੇ ਕੋਲ 1 ਕੋਸ਼ਿਸ਼ ਬਾਕੀ ਹੈ। ਤੁਹਾਡੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਖਤਮ ਹੋ ਜਾਣ 'ਤੇ ਤੁਸੀਂ ਨਵਾਂ ਪਿਨ ਬਣਾ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਰਜਿਸਟਰ ਕਰਕੇ ਆਪਣਾ ਖਾਤਾ ਵਰਤ ਸਕਦੇ ਹੋ, ਪਰ ਤੁਸੀਂ ਸੰਭਾਲੀ ਗਈ ਕੁਝ ਜਾਣਕਾਰੀ ਗੁਆ ਦਿਉਂਗੇ, ਜਿਵੇਂ ਕਿ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਦੀ ਜਾਣਕਾਰੀ।";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "ਗਲਤ ਪਿਨ";
@@ -4765,6 +4828,9 @@
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signal ਖੋਜ";
 
+/* Configure reactions reset button text */
+"RESET" = "ਰੀਸੈੱਟ ਕਰੋ";
+
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ";
 
@@ -4817,13 +4883,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "ਪ੍ਰਮਾਣੀਕਰਨ ਦੀਆਂ ਬਹੁਤ ਜ਼ਿਆਦਾ ਅਸਫਲ ਕੋਸ਼ਿਸ਼ਾਂ ਰਹੀਆਂ. ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "ਸਕ੍ਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੀਆਂ iOS ਸੈਟਿੰਗਸ ਵਿੱਚ ਪਾਸਕੋਡ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਹੋਵੇਗਾ.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "ਸਕਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੀਆਂ iOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਪਾਸਕੋਡ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਹੋਵੇਗਾ।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "ਸਕ੍ਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੀਆਂ iOS ਸੈਟਿੰਗਸ ਵਿੱਚ ਪਾਸਕੋਡ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਹੋਵੇਗਾ.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "ਸਕਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੀਆਂ iOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਪਾਸਕੋਡ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਹੋਵੇਗਾ।";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "ਸਕ੍ਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੀਆਂ iOS ਸੈਟਿੰਗਸ ਵਿੱਚ ਪਾਸਕੋਡ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਹੋਵੇਗਾ.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "ਸਕਰੀਨ ਲੌਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਆਪਣੀਆਂ iOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਪਾਸਕੋਡ ਨੂੰ ਸਮਰੱਥ ਕਰਨਾ ਹੋਵੇਗਾ।";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਪ੍ਰਮਾਣੀਕਰਨ ਕਰੋ.";
@@ -5190,6 +5256,51 @@
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "ਆਪਣੇ ਸੰਪਰਕ ਨੂੰ ਤੁਹਾਡੇ IP ਦਾ ਪਤਾ ਲੱਗਣ ਤੋਂ ਬਚਾਉਣ ਲਈ Signal ਸਰਵਰ ਰਾਹੀਂ ਸਾਰੀਆਂ ਕਾਲਾਂ ਨੂੰ ਰੀਲੇਅ ਕਰੋ. ਸਮਰੱਥ ਕਰਨ ਨਾਲ ਕਾਲ ਦੀ ਗੁਣਵੱਤਾ ਘਟੇਗੀ.";
+
+/* Label for the 'edit phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+
+/* Label for button in settings views to change phone number */
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+
+/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+
+/* Label for the 'confirm change phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "ਨੰਬਰ ਬਦਲੋ";
+
+/* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "ਦੇਸ਼ ਦਾ ਕੋਡ";
+
+/* Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
+
+/* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "ਉਦਾਹਰਨ: %@";
+
+/* Title for the 'new phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+
+/* Title for the 'old phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "ਫੋਨ ਨੰਬਰ";
+
+/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+
+/* Description text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+
+/* Title text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+
+/* Title for the 'change phone number' views in settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "ਨੰਬਰ ਬਦਲੋ";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "ਗੱਲਬਾਤ";
@@ -5765,7 +5876,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "ਪਿਨ ਰਿਮਾਈਂਡਰ";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "ਪਿਨ Signal ਦੇ ਨਾਲ ਸਟੋਰ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਐਨਕ੍ਰਿਪਟਡ ਰੱਖਦੇ ਹਨ, ਇਸ ਲਈ ਤੁਸੀਂ ਹੀ ਇਸ ਨੂੰ ਵੇਖ ਸਕਦੇ ਹੋ। ਜਦੋਂ ਤੁਸੀਂ Signal ਨੂੰ ਮੁੜ-ਇੰਸਟਾਲ ਕਰਦੇ ਹੋ ਤਾਂ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ, ਸੈਟਿੰਗਾਂ, ਅਤੇ ਸੰਪਰਕ ਮੁੜ-ਬਹਾਲ ਹੋ ਜਾਣਗੇ।";
+"SETTINGS_PINS_FOOTER" = "ਪਿਨ Signal ਦੇ ਨਾਲ ਸਟੋਰ ਕੀਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਇਨਕ੍ਰਿਪਟਡ ਰੱਖਦੇ ਹਨ, ਇਸ ਲਈ ਤੁਸੀਂ ਹੀ ਇਸ ਨੂੰ ਵੇਖ ਸਕਦੇ ਹੋ। ਜਦੋਂ ਤੁਸੀਂ Signal ਨੂੰ ਮੁੜ-ਇੰਸਟਾਲ ਕਰਦੇ ਹੋ ਤਾਂ ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ, ਸੈਟਿੰਗਾਂ, ਅਤੇ ਸੰਪਰਕ ਮੁੜ-ਬਹਾਲ ਹੋ ਜਾਣਗੇ।";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "ਆਪਣਾ ਪਿਨ ਬਦਲੋ";
@@ -5777,7 +5888,7 @@
 "SETTINGS_PINS_TITLE" = "سگنل دی PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "ਸੈਂਸਰਸ਼ਿਪ ਦੀ ਉਲੰਘਣਾ, ਰਿਲੇਅ ਕਾਲਾਂ ਅਤੇ ਸੀਲਬੰਦ ਸੈਂਡਰ ਸੈਟਿੰਗਜ਼।";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "ਸੈਂਸਰਸ਼ਿਪ ਦੀ ਉਲੰਘਣਾ, ਰਿਲੇਅ ਕਾਲਾਂ ਅਤੇ ਸੀਲਬੰਦ ਸੈਂਡਰ ਸੈਟਿੰਗਾਂ।";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "ਉੱਨਤ";
@@ -6241,6 +6352,9 @@
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਕੋਈ ਸੰਪਰਕ ਨਹੀਂ। ਬੇਨਤੀਆਂ ਦੀ ਧਿਆਨ ਨਾਲ ਸਮੀਖਿਆ ਕਰੋ।";
 
+/* Tap to Replace Emoji string for reaction configuration */
+"TAP_REPLACE_EMOJI" = "ਕਿਸੇ ਇਮੋਜੀ ਨੂੰ ਬਦਲਣ ਲਈ ਟੈਪ ਕਰੋ";
+
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "ਇਹ ਸੁਨੇਹਾ ਮਿਟਾਇਆ ਗਿਆ ਸੀ.";
 
@@ -6431,7 +6545,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "ਪਿੰਨ ਅਸਮਰੱਥ ਕਰੋ";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ਨੂੰ ਚਲਾਉਣ ਲਈ ਜਲਦ ਹੀ iOS 11 ਜਾਂ ਬਾਅਦ ਦੇ ਸੰਸਕਰਣ ਦੀ ਲੋੜ ਹੋਵੇਗੀ. ਕਿਰਪਾ ਕਰਕੇ ਸੈਟਿੰਗਸ ਐਪ >> ਸਧਾਰਨ >> ਸੌਫ਼ਟਵੇਅਰ ਅਪਡੇਟ ਵਿੱਚ ਜਾ ਕੇ ਅਪਡੇਟ ਕਰੋ.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ਨੂੰ ਚਲਾਉਣ ਲਈ ਜਲਦ ਹੀ iOS 11 ਜਾਂ ਬਾਅਦ ਦੇ ਵਰਜ਼ਨ ਦੀ ਲੋੜ ਹੋਵੇਗੀ। ਸੈਟਿੰਗਾਂ ਐਪ >> ਸਧਾਰਨ >> ਸੌਫ਼ਟਵੇਅਰ ਅਪਡੇਟ ਵਿੱਚ ਜਾ ਕੇ ਅੱਪਡੇਟ ਕਰੋ।";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS ਅਪਗ੍ਰੇਡ ਕਰੋ";

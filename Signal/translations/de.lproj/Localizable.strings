@@ -113,7 +113,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Verstanden";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Eine Nachricht, ein Sticker, eine Reaktion, eine Lesebestätigung oder ein Medieninhalt von %@  konnte dir in dieser Unterhaltung nicht zugestellt werden.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Eine Nachricht, ein Sticker, eine Reaktion, eine Lesebestätigung oder ein Medieninhalt von %@ konnte dir in dieser Unterhaltung nicht zugestellt werden.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Zustellungsproblem";
@@ -547,6 +547,9 @@
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Bearbeiten";
 
+/* Label for the 'mute' button. */
+"BUTTON_MUTE" = "Stummschalten";
+
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Weiter";
 
@@ -576,6 +579,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Übermitteln";
+
+/* Label for the 'unmute' button. */
+"BUTTON_UNMUTE" = "Stummschaltung aufheben";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Anzeigen";
@@ -682,6 +688,21 @@
 /* Button label to allow user to change avatar */
 "CHANGE_AVATAR_BUTTON_LABEL" = "Foto bearbeiten";
 
+/* Error indicating that the user's old and new phone numbers are identical. */
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+
+/* Error indicating that the user's old phone number was not entered correctly. */
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Die eingegebene Rufnummer entspricht nicht der deines Kontos.";
+
+/* Error indicating that the user's new phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+
+/* Error indicating that the user's old phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+
+/* Title of the 'change phone number PIN' view. */
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Hier ist eine Vorschau der Unterhaltungsfarbe.";
 
@@ -759,6 +780,9 @@
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kannst den Zugriff auf deine Kontakte in der iOS-App »Einstellungen« aktivieren, um zu sehen, welche deiner Kontakte Signal verwenden.";
+
+/* Configure reactions title text */
+"CONFIGURE_REACTIONS" = "Configure Reactions";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Dies setzt die App durch Löschen aller deiner Nachrichten in ihren Ursprungszustand zurück. Nach Abschluss des Vorgangs wird die App geschlossen.";
@@ -991,8 +1015,32 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Diese Unterhaltung wird von diesem Gerät gelöscht.";
 
+/* Message for the 'conversations delete confirmation' alert for multiple messages. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Unterhaltung löschen?";
+
+/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+
+/* Title for the 'conversation mute confirmation' alert. */
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+
+/* 1 day */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 Tag";
+
+/* 1 hour */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 Stunde";
+
+/* 1 week */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 Woche";
+
+/* 8 hours */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 Stunden";
+
+/* Always */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Immer";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Nur Admins können in dieser Gruppe Nachrichten senden.";
@@ -1424,7 +1472,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Fahre fort ohne Übertragen deines Kontos und deiner Nachrichten";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Füge diesen iPad ohne Übertragen deines Nachrichtenverlaufs als neu gekoppeltes Gerät hinzu";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Füge dieses iPad ohne Übertragen deines Nachrichtenverlaufs als neu gekoppeltes Gerät hinzu";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Als neues Gerät hinzufügen";
@@ -2744,7 +2792,7 @@
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Es wird eine Gruppe alten Typs erstellt, da 1 Mitglied eine alte Signal-Version verwendet. Du kannst eine Gruppe neuen Typs mit diesem Mitglied erstellen, sobald es Signal aktualisiert hat, oder es vor Erstellen der Gruppe entfernen.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Es wird eine Gruppe alten Typs erstellt, da %@ Mitglieder eine alte Signal-Version verwenden. Du kannst eine  Gruppe neuen Typs mit diesen Mitgliedern erstellen, sobald sie Signal aktualisiert haben, oder sie vor Erstellen der Gruppe entfernen.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Es wird eine Gruppe alten Typs erstellt, da %@ Mitglieder eine alte Signal-Version verwenden. Du kannst eine Gruppe neuen Typs mit diesen Mitgliedern erstellen, sobald sie Signal aktualisiert haben, oder sie vor Erstellen der Gruppe entfernen.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 Mitglied unterstützt keine Gruppen neuen Typs, daher wird diese Gruppe als Gruppe alten Typs erstellt. %@";
@@ -2923,6 +2971,12 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* Title for the 'Select Chats' option in the HomeView. */
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+
+/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Zeichne zum Verwischen in beliebige Bereiche";
 
@@ -2988,6 +3042,9 @@
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Du kannst von deinem Telefon oder iPad synchronisierte Nachrichten versenden oder empfangen. Zu deiner Sicherheit wird der Unterhaltungsverlauf nicht auf neue gekoppelte Geräte übertragen.";
+
+/* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ ist bei Signal!";
@@ -3559,6 +3616,9 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Rufnummer suchen";
 
+/* The title for the 'select members for new group' view if already one member is selected. */
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Neue Gruppe";
 
@@ -3582,6 +3642,9 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Neue Gruppe";
+
+/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
+"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ Mitglieder";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ an %@";
@@ -4757,13 +4820,16 @@
 "RESEARCH_MODAL_NO_THANKS" = "Nein danke";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Wir glauben an Datenschutz.</bold>\n\nSignal verfolgt dich nicht und sammelt auch nicht deine Daten. Um Signal für alle zu verbessern, stützen wir uns auf Rückmeldungen der Nutzer, <bold>und wir wären sehr an deinen interessiert</bold>.\n\nZum besseren Verständnis darüber, wie du Signal nutzt, führen wir eine Umfrage durch. Unsere Umfrage sammelt keinerlei Daten, die Rückschlüsse auf deine Identität erlauben. Falls du weiteres Feedback geben möchtest,  kannst du optional deine Kontaktinformationen hinterlassen.\n\nWenn du einige Minuten erübrigen kannst, würden wir sehr gerne von dir hören.";
+"RESEARCH_MODAL_PLEA" = "<bold>Wir glauben an Datenschutz.</bold>\n\nSignal verfolgt dich nicht und sammelt auch nicht deine Daten. Um Signal für alle zu verbessern, stützen wir uns auf Rückmeldungen der Nutzer, <bold>und wir wären sehr an deinen interessiert</bold>.\n\nZum besseren Verständnis darüber, wie du Signal nutzt, führen wir eine Umfrage durch. Unsere Umfrage sammelt keinerlei Daten, die Rückschlüsse auf deine Identität erlauben. Falls du weiteres Feedback geben möchtest, kannst du optional deine Kontaktinformationen hinterlassen.\n\nWenn du einige Minuten erübrigen kannst, würden wir sehr gerne von dir hören.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "An Umfrage teilnehmen";
 
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signal-Forschung";
+
+/* Configure reactions reset button text */
+"RESET" = "Zurücksetzen";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Erneut versuchen";
@@ -5191,6 +5257,51 @@
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Alle Anrufe über den Signal-Server leiten, um die eigene IP-Adresse gegenüber Kontakten nicht offenzulegen. Dies verringert die Anrufqualität.";
 
+/* Label for the 'edit phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+
+/* Label for button in settings views to change phone number */
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+
+/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+
+/* Label for the 'confirm change phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Rufnummer ändern";
+
+/* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Landesvorwahl";
+
+/* Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
+
+/* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Beispiel: %@";
+
+/* Title for the 'new phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+
+/* Title for the 'old phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Rufnummer";
+
+/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+
+/* Description text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+
+/* Title text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+
+/* Title for the 'change phone number' views in settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Rufnummer ändern";
+
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Unterhaltungen";
 
@@ -5573,7 +5684,7 @@
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Letzte Zahlungen";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Bevor du deine PIN deaktivieren kannst, musst du deine  Wiederherstellungsphrase für Zahlungen notieren. Dies stellt sicher, dass du dein Zahlungskonto wiederherstellen kannst.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Bevor du deine PIN deaktivieren kannst, musst du deine Wiederherstellungsphrase für Zahlungen notieren. Dies stellt sicher, dass du dein Zahlungskonto wiederherstellen kannst.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Wiederherstellungsphrase notieren";
@@ -6240,6 +6351,9 @@
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Keine Kontakte in dieser Gruppe. Prüfe Anfragen sorgfältig.";
+
+/* Tap to Replace Emoji string for reaction configuration */
+"TAP_REPLACE_EMOJI" = "Antippen, um ein Emoji zu ersetzen";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Diese Nachricht wurde gelöscht.";

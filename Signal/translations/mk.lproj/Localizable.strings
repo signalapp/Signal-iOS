@@ -374,7 +374,7 @@
 "BACK_BUTTON" = "Назад";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Мои беџови";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Беџови";
@@ -401,7 +401,7 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Додај поттик";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Беџот е истечен";
 
 /* Button title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
@@ -416,10 +416,10 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Прикажи на профил";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "Постави како истакнат беџ";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Ви благодариме за Вашата поддршка!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Кога имате повеќе од еден беџ, можете да изберете еден главен беџ за другите да го видат на Вашиот профил.";
@@ -503,7 +503,7 @@
 "BLUR_TOOLTIP" = "Ново: Замаглувајте лица или нацртајте било каде за замаглување.";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Постави валута";
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
@@ -518,13 +518,13 @@
 "BOOST_VIEW_OTHER_WAYS" = "Повеќе опции за плаќање";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Изберете поголем износ за донирање";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "Изберете помал износ за донирање";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"BOOST_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"BOOST_VIEW_SELECT_AN_AMOUNT" = "Изберете износ за донирање";
 
 /* Title for the donate to signal view */
 "BOOST_VIEW_TITLE" = "Дајте му поттик на Signal";
@@ -546,6 +546,9 @@
 
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Измени";
+
+/* Label for the 'mute' button. */
+"BUTTON_MUTE" = "Исклучи известувања";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Следно";
@@ -576,6 +579,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Испрати";
+
+/* Label for the 'unmute' button. */
+"BUTTON_UNMUTE" = "Вклучи известувања";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Преглед";
@@ -680,7 +686,22 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Изберете  земја";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Уреди фотографија";
+
+/* Error indicating that the user's old and new phone numbers are identical. */
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+
+/* Error indicating that the user's old phone number was not entered correctly. */
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Бројот што го внесовте не се совпаѓа со Вашите сметки.";
+
+/* Error indicating that the user's new phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+
+/* Error indicating that the user's old phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+
+/* Title of the 'change phone number PIN' view. */
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Еве преглед на бојата на разговорот.";
@@ -759,6 +780,9 @@
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Можете да им овозможите пристап на контактите во апликацијата за iOS Поставки за да видите кој од вашите корисници се Signal корисници.";
+
+/* Configure reactions title text */
+"CONFIGURE_REACTIONS" = "Configure Reactions";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Ова ќе ја ресетира апликацијата со бришење на Вашите пораки. Апликацијата ќе се затвори откако ќе заврши овој процес.";
@@ -991,8 +1015,32 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Овој разговор ќе биде избришан од овој уред.";
 
+/* Message for the 'conversations delete confirmation' alert for multiple messages. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Да се избрише разговорот?";
+
+/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+
+/* Title for the 'conversation mute confirmation' alert. */
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+
+/* 1 day */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 ден";
+
+/* 1 hour */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 час";
+
+/* 1 week */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 недела";
+
+/* 8 hours */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 часа";
+
+/* Always */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Секогаш";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Само администраторите можат да испраќаат пораки во оваа група.";
@@ -1049,7 +1097,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "Звук";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Добијте беџ за Вашиот профил со поддршка на Signal. Допрете на беџот за да дознаете повеќе.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Беџови";
@@ -1271,7 +1319,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Цврста";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Боја на разговор";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Повлечете за да ја смените насоката на градиентот";
@@ -1562,22 +1610,22 @@
 "DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Внесете износ";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Донирајте на Signal";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "Други начини за донирање";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Изберете поголема сума за донирање";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Изберете помал износ за донирање";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "Изберете износ за донирање";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Ви благодариме за Вашата поддршка!";
 
 /* Title for the donate to signal view */
 "DONATION_VIEW_TITLE" = "Signal е овозможен од луѓе како тебе.";
@@ -1586,7 +1634,7 @@
 "DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "Зошто да донирате?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Можете да дозволите пристап во iOS поставките.";
@@ -1676,16 +1724,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Не може да им се пристапи на контактите";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Не може да се препрати пораката.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Не може да се препрати поракта бидејќи веќе не е достапна.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Не може да се препратат пораките бидејќи веќе не се достапни.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Не може да се препратат пораките";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Видеото не може да се зачува.";
@@ -1742,7 +1790,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Пораката не може да биде испорачана";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Добиена дупликат порака.";
@@ -1814,10 +1862,10 @@
 "FAILED_VERIFICATION_TITLE" = "Неуспешна потврда на Безбедносен Број!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Изберете беџ";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Истакнат беџ";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Означи како верификувано";
@@ -1841,13 +1889,13 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Испрати порака";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Испрати %@ пораки";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Побрзо препратување";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Пораката е испратена";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Пораките се испратени";
@@ -1856,7 +1904,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Додади порака";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "Препрати до";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Немате медија во овој разговор.";
@@ -1961,7 +2009,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Само администраторите на оваа група можат да започнат повик.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Не можам да започнам групен повик";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ е блокиран/а.";
@@ -2009,7 +2057,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "Нема никој";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Сè уште никој не е на овој повик.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, и %ld други се приклучија на повикот";
@@ -2036,7 +2084,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ е на овој повик";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ презентира";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Повторно поврзување";
@@ -2045,7 +2093,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Некој со променет сигурносен број се приклучи на овој повик.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Повелчете нагоре за да го видите споделениот екран";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Некој започна групен повик";
@@ -2105,16 +2153,16 @@
 "GROUP_DESCRIPTION_MORE" = "повеќе";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Додадете опис на групата...";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Описот на групата ќе им биде видлив на членовите на оваа група и луѓето кои што се поканети.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "Опис на групата";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Опис на групата (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "Невалидна покана беше додадена.";
@@ -2162,22 +2210,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ го исклучи групниот линк.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Групниот линк е вклучен. Администраторското одобрување е вклучено.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Го вклучивте групниот линк. Администраторското одобрување е вклучено.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ го вклучи групниот линк. Администраторското одобрување е вклучено.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Групниот линк е вклучен. Администраторското одобрување е исклучено.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Го вклучивте групниот линк. Администраторското одобрување е исклучено.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ го вклучи групниот линк. Администраторското одобрување е исклучено.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "Групниот линк е ресетиран.";
@@ -2189,22 +2237,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ го ресетираше групниот линк.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Admin approval was turned off for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Администраторското одобрување е исклучено за групниот линк.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Го исклучивте администраторското одобрување за групниот линк.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ го исклучи администраторското одобрување за групниот линк.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Администраторското одобрување е вклучено за групниот линк.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Го вклучивте администраторското одобрување за групниот линк.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on admin approval for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ го вклучи администраторското одобрување за групниот линк.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ не може автоматски да биде додаден во оваа група од вас. Тој беше поканет да се приклучи, и нема да види ниту една порака во групата додека не ја прифати поканата.";
@@ -2777,7 +2825,7 @@
 "GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Ќе треба да прифатите покана за да и се приклучите на оваа група повторно. Нема да добивате пораки од групата додека не прифатите.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Upgrade Group";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Надгради група";
 
 /* Title for the the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "За пристап до нови опции како @mentions и администратори надградете ја оваа група.";
@@ -2792,16 +2840,16 @@
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Нови групи доаѓаат со опции како @mentions и администратори на групи. Исто така ќе поддржуваат повеќе опции во иднина.";
 
 /* Title for the 'new groups' alert view. */
-"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "New Groups";
+"GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Нови групи";
 
 /* Label for the 'add members' button in the 're-add dropped group members' alert view. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Додадете членови";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Add Member?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Да додадам член?";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Add Members?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Да додадам членови?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Додадете членови";
@@ -2923,6 +2971,12 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* Title for the 'Select Chats' option in the HomeView. */
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+
+/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Нацртајте било каде за да замаглите";
 
@@ -2942,7 +2996,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Не ги гледате Вашите фотографии?";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Неуспешно одбирање на прикачување.";
@@ -2988,6 +3042,9 @@
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+
+/* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ е на Signal!";
@@ -3221,7 +3278,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Препрати ја оваа порака";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Препрати ги избраните пораки";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
@@ -3559,6 +3616,9 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Најди по телефонски број";
 
+/* The title for the 'select members for new group' view if already one member is selected. */
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Нова група";
 
@@ -3582,6 +3642,9 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Нова група";
+
+/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
+"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ Членови";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ до %@";
@@ -4765,6 +4828,9 @@
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signal истражувања";
 
+/* Configure reactions reset button text */
+"RESET" = "Ресетираj";
+
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Обиди се пак";
 
@@ -5190,6 +5256,51 @@
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Препраќајте ги повиците преку Signal сервер за да избегнете да му ја откриете вашата IP адреса на вашиот контакт. Овозможувањето ќе го намали квалитетот на повикот.";
+
+/* Label for the 'edit phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+
+/* Label for button in settings views to change phone number */
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+
+/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+
+/* Label for the 'confirm change phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Смени го бројот";
+
+/* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Повикувачки број на земјата";
+
+/* Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
+
+/* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Пример: %@";
+
+/* Title for the 'new phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+
+/* Title for the 'old phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Телефонски број";
+
+/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+
+/* Description text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+
+/* Title text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+
+/* Title for the 'change phone number' views in settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Смени го бројот";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Разговори";
@@ -6167,7 +6278,7 @@
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Ве молиме контактирајте со поддршката.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Постави валута";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
@@ -6240,6 +6351,9 @@
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Нема контакти во оваа група. Внимателно разгледајте ги барањата.";
+
+/* Tap to Replace Emoji string for reaction configuration */
+"TAP_REPLACE_EMOJI" = "Допрете за замена на емоџи";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Оваа порака беше избришана.";

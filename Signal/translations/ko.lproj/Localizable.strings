@@ -547,6 +547,9 @@
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "수정";
 
+/* Label for the 'mute' button. */
+"BUTTON_MUTE" = "알림 끄기";
+
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "다음";
 
@@ -576,6 +579,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "보내기";
+
+/* Label for the 'unmute' button. */
+"BUTTON_UNMUTE" = "알림 켜기";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "보기";
@@ -682,6 +688,21 @@
 /* Button label to allow user to change avatar */
 "CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
 
+/* Error indicating that the user's old and new phone numbers are identical. */
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+
+/* Error indicating that the user's old phone number was not entered correctly. */
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "입력한 전화번호가 계정의 전화번호와 일치하지 않습니다.";
+
+/* Error indicating that the user's new phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+
+/* Error indicating that the user's old phone number is not valid. */
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+
+/* Title of the 'change phone number PIN' view. */
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "다음은 채팅 색상의 미리 보기입니다.";
 
@@ -759,6 +780,9 @@
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS 설정 앱에서 연락처 권한을 허용하면 내 연락처에서 누가 Signal을 사용하고 있는지 알 수 있습니다.";
+
+/* Configure reactions title text */
+"CONFIGURE_REACTIONS" = "Configure Reactions";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "메시지를 삭제하고 애플리케이션이 재설정됩니다. 이 과정이 완료되면 애플리케이션이 종료됩니다.";
@@ -991,8 +1015,32 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "이 기기에서 대화가 삭제됩니다.";
 
+/* Message for the 'conversations delete confirmation' alert for multiple messages. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "대화를 삭제하시겠습니까?";
+
+/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+
+/* Title for the 'conversation mute confirmation' alert. */
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+
+/* 1 day */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1일";
+
+/* 1 hour */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1시간";
+
+/* 1 week */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1주";
+
+/* 8 hours */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8시간";
+
+/* Always */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "항상";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "관리자만 그룹에 메시지를 전송할 수 있습니다.";
@@ -2923,6 +2971,12 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* Title for the 'Select Chats' option in the HomeView. */
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+
+/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "아무 곳이나 그려서 가릴 수 있습니다";
 
@@ -2988,6 +3042,9 @@
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "휴대전화 또는 iPad에서 동기화된 메시지를 보내거나 받을 수 있습니다.\n보안을 위해 대화 기록은 새로 연결하는 기기로 전송되지 않습니다.";
+
+/* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ 님이 Signal에 가입했습니다!";
@@ -3559,6 +3616,9 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "전화번호로 찾기";
 
+/* The title for the 'select members for new group' view if already one member is selected. */
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "새 그룹";
 
@@ -3582,6 +3642,9 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "새 그룹";
+
+/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
+"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "멤버 %@명";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ 님이 %@에서";
@@ -4765,6 +4828,9 @@
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signal 리서치";
 
+/* Configure reactions reset button text */
+"RESET" = "초기화";
+
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "재시도";
 
@@ -5190,6 +5256,51 @@
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "내 연락처에게 IP 주소가 표시되지 않도록 모든 통화를 Signal 서버로 중계합니다. 전화 품질이 떨어질 수 있습니다.";
+
+/* Label for the 'edit phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+
+/* Label for button in settings views to change phone number */
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+
+/* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+
+/* Label for the 'confirm change phone number' button in the 'change phone number' views. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Change Number";
+
+/* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "국가 코드";
+
+/* Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
+
+/* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
+"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "예시: %@";
+
+/* Title for the 'new phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+
+/* Title for the 'old phone number' section in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+
+/* Label for the 'country code' row in the 'change phone number' settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "전화번호";
+
+/* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+
+/* Description text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+
+/* Title text in the 'change phone number splash' view. */
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+
+/* Title for the 'change phone number' views in settings. */
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Change Number";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "대화";
@@ -6240,6 +6351,9 @@
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "이 그룹에 연락처가 없습니다. 요청을 주의 깊게 검토하세요.";
+
+/* Tap to Replace Emoji string for reaction configuration */
+"TAP_REPLACE_EMOJI" = "이모티콘을 바꾸려면 탭하세요.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "이 메세지는 삭제되었습니다.";
