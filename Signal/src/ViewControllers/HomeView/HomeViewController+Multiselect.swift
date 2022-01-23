@@ -462,7 +462,11 @@ public class MultiSelectState: NSObject {
     var actionPerformed = false
 
     @objc
-    var isActive: Bool { return _isActive}
+    var isActive: Bool { return _isActive }
+
+    @objc func themeChanged() {
+        toolbar?.themeChanged()
+    }
 
     fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
         if active != _isActive {

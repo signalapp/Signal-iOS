@@ -86,7 +86,7 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 + (UITableViewCell *)newCell;
 + (void)configureCell:(UITableViewCell *)cell;
-+ (void)configureCellLabels:(UITableViewCell *)cell;
++ (void)configureCellColors:(UITableViewCell *)cell;
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title
                     actionBlock:(nullable OWSTableActionBlock)actionBlock NS_SWIFT_NAME(init(title:actionBlock:));

@@ -164,16 +164,7 @@ public class HomeViewCell: UITableViewCell {
     }
 
     private func commonInit() {
-        self.backgroundColor = Theme.backgroundColor
-
-        var v = UIView(frame: contentView.bounds)
-        v.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
-        multipleSelectionBackgroundView = v
-
-        v = UIView(frame: contentView.bounds)
-        v.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-        selectedBackgroundView = v
-
+        multipleSelectionBackgroundView = UIView(frame: contentView.bounds)
         contentView.addSubview(outerHStack)
         outerHStack.shouldDeactivateConstraints = false
         outerHStack.autoPinEdge(toSuperviewEdge: .leading)
@@ -318,7 +309,9 @@ public class HomeViewCell: UITableViewCell {
     func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
         AssertIsOnMainThread()
 
-        OWSTableItem.configureCellLabels(self)
+        OWSTableItem.configureCellColors(self)
+        multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
+        selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
 
         self.preservesSuperviewLayoutMargins = false
         self.contentView.preservesSuperviewLayoutMargins = false
