@@ -5,20 +5,12 @@ import UIKit
 import NVActivityIndicatorView
 
 @objc
-public protocol GlobalSearchViewDelegate: AnyObject {
-    func globalSearchViewWillBeginDragging() // This is not in use for now, aiming to use this to load more search results
-}
-
-@objc
 public class GlobalSearchViewController: UITableViewController {
     
     @objc
     public static let minimumSearchTextLength: Int = 2
     
     private let maxSearchResultCount: Int = 200
-    
-    @objc
-    public weak var delegate: GlobalSearchViewDelegate?
     
     @objc
     public var searchText = "" {
@@ -276,14 +268,6 @@ extension GlobalSearchViewController {
             cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
             return cell
         }
-    }
-}
-
-// MARK: - UIScrollViewDelegate
-
-extension GlobalSearchViewController {
-    public override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        delegate?.globalSearchViewWillBeginDragging()
     }
 }
 

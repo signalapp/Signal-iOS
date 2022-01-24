@@ -2,10 +2,10 @@
 // See https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions and
 // https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification for
 // more information on database handling.
-
 final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
     private var threads: YapDatabaseViewMappings!
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
+    private var tableViewTopConstraint: NSLayoutConstraint!
     
     private var threadCount: UInt {
         threads.numberOfItems(inGroup: TSInboxGroup)
@@ -29,20 +29,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         result.delegate = self
         return result
     }()
-    
-    internal lazy var searchBar: SearchBar = {
-        let result = SearchBar()
-        result.delegate = self
-        return result
-    }()
-    
-    internal lazy var searchResultsController: GlobalSearchViewController = {
-        let result = GlobalSearchViewController()
-        result.delegate = self
-        return result
-    }()
         
-    internal lazy var tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let result = UITableView()
         result.backgroundColor = .clear
         result.separatorStyle = .none
@@ -101,12 +89,24 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         }
         updateNavBarButtons()
         setUpNavBarSessionHeading()
+        // Recovery phrase reminder
+        let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
+        if !hasViewedSeed {
+            view.addSubview(seedReminderView)
+            seedReminderView.pin(.leading, to: .leading, of: view)
+            seedReminderView.pin(.top, to: .top, of: view)
+            seedReminderView.pin(.trailing, to: .trailing, of: view)
+        }
         // Table view
         tableView.dataSource = self
         tableView.delegate = self
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
-        tableView.pin(.top, to: .top, of: view, withInset: Values.verySmallSpacing)
+        if !hasViewedSeed {
+            tableViewTopConstraint = tableView.pin(.top, to: .bottom, of: seedReminderView)
+        } else {
+            tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
+        }
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
         view.addSubview(fadeView)
@@ -156,45 +156,11 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         }
         // Get default open group rooms if needed
         OpenGroupAPIV2.getDefaultRoomsIfNeeded()
-        // Search
-        let searchBarContainer = UIView()
-        searchBarContainer.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        searchBar.sizeToFit()
-        searchBar.layoutMargins = UIEdgeInsets.zero
-        searchBarContainer.frame = searchBar.frame
-        searchBarContainer.addSubview(searchBar)
-        searchBar.autoPinEdgesToSuperviewMargins()
-        tableView.tableHeaderView = searchBarContainer
-        if #available(iOS 15.0, *) {
-            tableView.sectionHeaderTopPadding = 0
-        }
-        
-        addChild(searchResultsController)
-        view.addSubview(searchResultsController.view)
-        searchResultsController.view.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-        searchResultsController.view.autoPinEdge(toSuperviewEdge: .top, withInset: 60)
-        searchResultsController.view.isHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        searchResultsController.viewDidAppear(animated)
         reload()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        searchResultsController.viewWillAppear(animated)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        searchResultsController.viewWillDisappear(animated)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        searchResultsController.viewDidDisappear(animated)
     }
     
     deinit {
@@ -210,22 +176,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
         cell.threadViewModel = threadViewModel(at: indexPath.row)
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
-        if !hasViewedSeed {
-            return seedReminderView
-        }
-        return UIView()
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
-        if !hasViewedSeed {
-            return UITableView.automaticDimension
-        }
-        return .leastNonzeroMagnitude
     }
         
     // MARK: Updating
@@ -305,7 +255,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     @objc private func handleSeedViewedNotification(_ notification: Notification) {
-        self.tableView.reloadSections(IndexSet(integer: 0), with: .none) // TODO: Just reload header if possible
+        tableViewTopConstraint.isActive = false
+        tableViewTopConstraint = tableView.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
+        seedReminderView.removeFromSuperview()
     }
 
     @objc private func handleBlockedContactsUpdatedNotification(_ notification: Notification) {
@@ -313,6 +265,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     private func updateNavBarButtons() {
+        // Profile picture view
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
         profilePictureView.accessibilityLabel = "Settings button"
@@ -323,32 +276,27 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         profilePictureView.set(.height, to: profilePictureSize)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
+        // Path status indicator
+        let pathStatusView = PathStatusView()
+        pathStatusView.accessibilityLabel = "Current onion routing path indicator"
+        pathStatusView.set(.width, to: PathStatusView.size)
+        pathStatusView.set(.height, to: PathStatusView.size)
+        // Container view
         let profilePictureViewContainer = UIView()
         profilePictureViewContainer.accessibilityLabel = "Settings button"
         profilePictureViewContainer.addSubview(profilePictureView)
-        profilePictureView.pin(.leading, to: .leading, of: profilePictureViewContainer, withInset: 4)
-        profilePictureView.pin(.top, to: .top, of: profilePictureViewContainer)
-        profilePictureView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
-        profilePictureView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
+        profilePictureView.autoPinEdgesToSuperviewEdges()
+        profilePictureViewContainer.addSubview(pathStatusView)
+        pathStatusView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
+        pathStatusView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
+        // Left bar button item
         let leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
         leftBarButtonItem.accessibilityLabel = "Settings button"
         leftBarButtonItem.isAccessibilityElement = true
         navigationItem.leftBarButtonItem = leftBarButtonItem
-        let pathStatusViewContainer = UIView()
-        pathStatusViewContainer.accessibilityLabel = "Current onion routing path button"
-        let pathStatusViewContainerSize = Values.verySmallProfilePictureSize // Match the profile picture view
-        pathStatusViewContainer.set(.width, to: pathStatusViewContainerSize)
-        pathStatusViewContainer.set(.height, to: pathStatusViewContainerSize)
-        let pathStatusView = PathStatusView()
-        pathStatusView.accessibilityLabel = "Current onion routing path button"
-        pathStatusView.set(.width, to: PathStatusView.size)
-        pathStatusView.set(.height, to: PathStatusView.size)
-        pathStatusViewContainer.addSubview(pathStatusView)
-        pathStatusView.center(.horizontal, in: pathStatusViewContainer)
-        pathStatusView.center(.vertical, in: pathStatusViewContainer)
-        pathStatusViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPath)))
-        let rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
-        rightBarButtonItem.accessibilityLabel = "Current onion routing path button"
+        // Right bar button item - search button
+        let rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: nil)
+        rightBarButtonItem.accessibilityLabel = "Search button"
         rightBarButtonItem.isAccessibilityElement  = true
         navigationItem.rightBarButtonItem = rightBarButtonItem
     }
