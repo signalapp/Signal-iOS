@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -848,12 +848,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         }
 
         let actionsProto = try actionsBuilder.build()
-        // TODO: Remove this logging once we're resolved the "empty update" issue.
-        if DebugFlags.internalLogging {
-            Logger.info("Updating group: \(actionsProto.debugDescription).")
-        } else {
-            Logger.info("Updating group.")
-        }
+        Logger.info("Updating group.")
         return actionsProto
     }
 }
