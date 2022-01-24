@@ -306,13 +306,15 @@ public class HomeViewCell: UITableViewCell {
                                   unreadBadgeMeasurements: unreadBadgeMeasurements)
     }
 
-    func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
+    func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true, setBackgroundColors: Bool = true) {
         AssertIsOnMainThread()
 
         OWSTableItem.configureCellLabels(self)
-        multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
-        selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-
+        if setBackgroundColors {
+            multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
+            selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
+            backgroundColor = Theme.backgroundColor
+        }
         self.preservesSuperviewLayoutMargins = false
         self.contentView.preservesSuperviewLayoutMargins = false
 
@@ -895,7 +897,7 @@ public class HomeViewCell: UITableViewCell {
             return
         }
         reset()
-        configure(cellContentToken: cellContentToken)
+        configure(cellContentToken: cellContentToken, setBackgroundColors: false)
     }
 
     @objc
