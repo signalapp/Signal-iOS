@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -85,8 +85,8 @@ public class PinnedThreadManager: NSObject {
 
                 if pinnedThreadIds.contains(threadId) && (associatedData.isArchived || !thread.shouldThreadBeVisible) {
                     // Pinning a thread should unarchive it and make it visible if it was not already so.
-                    thread.updateWithShouldThreadBeVisible(true, transaction: transaction)
                     associatedData.updateWith(isArchived: false, updateStorageService: true, transaction: transaction)
+                    thread.updateWithShouldThreadBeVisible(true, transaction: transaction)
                 } else {
                     SDSDatabaseStorage.shared.touch(thread: thread, shouldReindex: false, transaction: transaction)
                 }

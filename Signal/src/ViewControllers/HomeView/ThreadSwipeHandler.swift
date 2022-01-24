@@ -33,11 +33,8 @@ extension ThreadSwipeHandler where Self: UIViewController {
             pinnedStateAction.image = actionImage(name: "unpin-solid-24", title: CommonStrings.unpinAction)
         } else {
             pinnedStateAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
-                if threadViewModel.isArchived {
-                    self?.archiveThread(threadViewModel: threadViewModel, closeConversationBlock: nil)
-                }
-                completion(false)
                 self?.pinThread(threadViewModel: threadViewModel)
+                completion(false)
             }
             pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
             pinnedStateAction.accessibilityLabel = CommonStrings.pinAction
