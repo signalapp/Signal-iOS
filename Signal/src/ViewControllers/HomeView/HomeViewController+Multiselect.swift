@@ -11,7 +11,8 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         if viewState.multiSelectState.parentButton == nil {
-            showMenu(button: sender)
+            viewState.multiSelectState.themeChangedDelegate = self
+            showMenu(button: sender, animated: true)
         } else {
             hideMenu()
         }
@@ -90,7 +91,7 @@ extension HomeViewController {
 
     // MARK: private helper
 
-    private func showMenu(button: UIButton) {
+    private func showMenu(button: UIButton?, animated: Bool) {
         AssertIsOnMainThread()
 
         guard viewState.multiSelectState.contextMenuView == nil else {
@@ -142,9 +143,15 @@ extension HomeViewController {
 
         viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
         view.addSubview(viewState.multiSelectState.contextMenuView!)
-        animateIn(menu: viewState.multiSelectState.contextMenuView!, from: button) { [weak self] (_) in
+        let completion = { [weak self] (_: Bool) in
             self?.viewState.multiSelectState.contextMenuView!.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
             self?.navigationController?.navigationBar.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
+        }
+        if animated {
+            animateIn(menu: viewState.multiSelectState.contextMenuView!, from: button, completion: completion)
+        } else {
+            viewState.multiSelectState.contextMenuView?.autoPinEdgesToSuperviewSafeArea()
+            completion(true)
         }
     }
 
@@ -157,10 +164,10 @@ extension HomeViewController {
     }
 
     private func hideMenu() {
-        hideMenuAndExecuteWhenVanished()
+        hideMenuAndExecuteWhenVanished(animated: true)
     }
 
-    private func hideMenuAndExecuteWhenVanished(completion: (() -> Void)? = nil) {
+    private func hideMenuAndExecuteWhenVanished(animated: Bool = true, completion handler: (() -> Void)? = nil) {
         AssertIsOnMainThread()
 
         if let navBar = navigationController?.navigationBar {
@@ -171,10 +178,16 @@ extension HomeViewController {
             }
         }
 
-        animateOut(menu: viewState.multiSelectState.contextMenuView, from: viewState.multiSelectState.parentButton) { [weak self] (_) in
+        let completion = { [weak self] (_: Bool) in
+            self?.viewState.multiSelectState.contextMenuView?.removeFromSuperview()
             self?.viewState.multiSelectState.parentButton = nil
             self?.viewState.multiSelectState.contextMenuView = nil
-            completion?()
+            handler?()
+        }
+        if animated {
+            animateOut(menu: viewState.multiSelectState.contextMenuView, from: viewState.multiSelectState.parentButton, completion: completion)
+        } else {
+            completion(true)
         }
     }
 
@@ -426,6 +439,18 @@ extension HomeViewController: ContextMenuActionsViewDelegate {
     }
 }
 
+extension HomeViewController: ContextMenuThemeChangedDelegate {
+    func contextMenuThemeChanged() {
+        // if the context menu is shown
+        if let btn = viewState.multiSelectState.parentButton, viewState.multiSelectState.contextMenuView != nil {
+            // we have to create it again (changed colors, icons etc.)
+            hideMenuAndExecuteWhenVanished(animated: false) {
+                self.showMenu(button: btn, animated: false)
+            }
+        }
+    }
+}
+
 // MARK: - view helper class (providing a rounded view *with* a shadow)
 private class ContextMenuActionsViewContainer: UIView {
     static let offset = CGPoint(x: 8, y: 0)
@@ -451,6 +476,10 @@ private class ContextMenuActionsViewContainer: UIView {
     }
 }
 
+private protocol ContextMenuThemeChangedDelegate: AnyObject {
+    func contextMenuThemeChanged()
+}
+
 // MARK: - object encapsulating the complete state of the MultiSelect process
 @objc
 public class MultiSelectState: NSObject {
@@ -458,6 +487,7 @@ public class MultiSelectState: NSObject {
     fileprivate var title: String?
     fileprivate var contextMenuView: ContextMenuActionsViewContainer?
     fileprivate var toolbar: BlurredToolbarContainer?
+    fileprivate weak var themeChangedDelegate: ContextMenuThemeChangedDelegate?
     private var _isActive = false
     var actionPerformed = false
 
@@ -466,6 +496,7 @@ public class MultiSelectState: NSObject {
 
     @objc func themeChanged() {
         toolbar?.themeChanged()
+        themeChangedDelegate?.contextMenuThemeChanged()
     }
 
     fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil) {

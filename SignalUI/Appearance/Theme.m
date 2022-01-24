@@ -424,7 +424,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)tableCell2MultiSelectedBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray05Color;
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray05Color;
 }
 
 + (UIColor *)tableCell2PresentedSelectedBackgroundColor

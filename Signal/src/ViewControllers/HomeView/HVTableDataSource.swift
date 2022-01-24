@@ -569,15 +569,7 @@ extension HVTableDataSource: UITableViewDataSource {
             }
         }()
 
-        if let splitViewController = self.splitViewController {
-            if !splitViewController.isCollapsed {
-                cell.selectedBackgroundView?.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
-                cell.backgroundColor = Theme.secondaryBackgroundColor
-            }
-        } else {
-            owsFailDebug("Missing splitViewController.")
-        }
-
+        adjustBackgroundColors(for: cell)
         cell.tintColor = .ows_accentBlue
         return cell
     }
@@ -616,7 +608,7 @@ extension HVTableDataSource: UITableViewDataSource {
         let contentToken = cellConfigurationAndContentToken.contentToken
 
         cell.configure(cellContentToken: contentToken)
-
+        adjustBackgroundColors(for: cell)
         let thread = configuration.thread.threadRecord
         let cellName: String = {
             if let groupThread = thread as? TSGroupThread {
@@ -696,6 +688,17 @@ extension HVTableDataSource: UITableViewDataSource {
         cell.accessibilityIdentifier = "archived_conversations"
 
         return cell
+    }
+
+    private func adjustBackgroundColors(for cell: UITableViewCell) {
+        if let splitViewController = self.splitViewController {
+            if !splitViewController.isCollapsed {
+                cell.selectedBackgroundView?.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
+                cell.backgroundColor = Theme.secondaryBackgroundColor
+            }
+        } else {
+            owsFailDebug("Missing splitViewController.")
+        }
     }
 
     // MARK: - Edit Actions
@@ -826,6 +829,7 @@ extension HVTableDataSource {
                     homeCell.reset()
                     // reduces flicker effects for already visible cells
                     homeCell.configure(cellContentToken: token, asyncAvatarLoadingAllowed: false)
+                    adjustBackgroundColors(for: cell)
                     return true
                 }
             }

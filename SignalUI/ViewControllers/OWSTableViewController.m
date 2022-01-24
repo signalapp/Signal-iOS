@@ -140,21 +140,21 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     return cell;
 }
 
-+ (void)configureCellColors:(UITableViewCell *)cell
++ (void)configureCellLabels:(UITableViewCell *)cell
 {
     cell.textLabel.font = OWSTableItem.primaryLabelFont;
     cell.textLabel.textColor = Theme.primaryTextColor;
     cell.detailTextLabel.textColor = Theme.secondaryTextAndIconColor;
     cell.detailTextLabel.font = OWSTableItem.accessoryLabelFont;
-    cell.backgroundColor = Theme.backgroundColor;
-    cell.selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
 }
 
 + (void)configureCell:(UITableViewCell *)cell
 {
     UIView *selectedBackgroundView = [UIView new];
     cell.selectedBackgroundView = selectedBackgroundView;
-    [self configureCellColors:cell];
+    cell.backgroundColor = Theme.backgroundColor;
+    cell.selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
+    [self configureCellLabels:cell];
 }
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock

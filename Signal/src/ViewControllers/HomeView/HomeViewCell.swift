@@ -309,7 +309,7 @@ public class HomeViewCell: UITableViewCell {
     func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
         AssertIsOnMainThread()
 
-        OWSTableItem.configureCellColors(self)
+        OWSTableItem.configureCellLabels(self)
         multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
         selectedBackgroundView?.backgroundColor = Theme.tableCell2SelectedBackgroundColor
 
