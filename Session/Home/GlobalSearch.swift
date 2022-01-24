@@ -68,7 +68,7 @@ public class GlobalSearchViewController: UITableViewController {
         tableView.separatorInset = .zero
         tableView.separatorStyle = .none
         tableView.showsVerticalScrollIndicator = false
-        tableView.keyboardDismissMode = .interactive
+        tableView.keyboardDismissMode = .onDrag
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
         tableView.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
