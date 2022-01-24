@@ -6,7 +6,7 @@ import NVActivityIndicatorView
 
 @objc
 public protocol GlobalSearchViewDelegate: AnyObject {
-    func globalSearchViewWillBeginDragging()
+    func globalSearchViewWillBeginDragging() // This is not in use for now, aiming to use this to load more search results
 }
 
 @objc
