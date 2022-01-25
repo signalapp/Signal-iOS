@@ -321,7 +321,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     private func highlightFocusedMessageIfNeeded() {
         if let indexPath = focusedMessageIndexPath, let cell = messagesTableView.cellForRow(at: indexPath) as? VisibleMessageCell {
-            cell.highlithed()
+            cell.highlight()
             focusedMessageIndexPath = nil
         }
     }

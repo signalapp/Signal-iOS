@@ -476,7 +476,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         }
     }
     
-    func highlithed() {
+    func highlight() {
         bubbleView.setShadow(radius: 6, opacity: 1, offset: .zero, color: Colors.accent.cgColor)
         DispatchQueue.main.async {
             UIView.animate(withDuration: 2) {
