@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,7 +59,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
     private func doneButtonTapped(sender: UIButton) {
         let currentEmojiSet = reactionPicker.currentEmojiSet()
         SDSDatabaseStorage.shared.write { transaction in
-            ReactionManager.setEmojiSet(currentEmojiSet, transaction: transaction)
+            ReactionManager.setCustomEmojiSet(currentEmojiSet, transaction: transaction)
         }
         Self.storageServiceManager.recordPendingLocalAccountUpdates()
         dismiss(animated: true, completion: nil)

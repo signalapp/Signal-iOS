@@ -62,7 +62,20 @@ class MessageReactionPicker: UIStackView {
         layoutMargins = UIEdgeInsets(top: pickerPadding, leading: pickerPadding, bottom: pickerPadding, trailing: pickerPadding)
 
         var emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.read { transaction in
-            return ReactionManager.emojiSet(transaction: transaction).compactMap { Emoji(rawValue: $0)?.withPreferredSkinTones(transaction: transaction) }
+            let customSetStrings = ReactionManager.customEmojiSet(transaction: transaction) ?? []
+            let customSet = customSetStrings.lazy.map { EmojiWithSkinTones(rawValue: $0) }
+
+            // Any holes or invalid choices are filled in with the default reactions.
+            // This should never happen piecemeal, but we've had bugs in the past where a string isn't considered a
+            // valid emoji, and that *removed* the reaction from iOS in a way that could not consistently be reset
+            // from the UI. So now we make sure there are always as many reactions as the default set.
+            return ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> EmojiWithSkinTones in
+                if let customReaction = customSet[safe: i] ?? nil {
+                    return customReaction
+                } else {
+                    return Emoji(rawValue: defaultEmoji)!.withPreferredSkinTones(transaction: transaction)
+                }
+            }
         }
 
         var addAnyButton = !self.configureMode

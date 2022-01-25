@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -586,7 +586,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setE164(localPhoneNumber)
         }
 
-        builder.setPreferredReactionEmoji(ReactionManager.emojiSet(transaction: transaction))
+        if let customEmojiSet = ReactionManager.customEmojiSet(transaction: transaction) {
+            builder.setPreferredReactionEmoji(customEmojiSet)
+        }
 
         if let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction),
            let subscriberCurrencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
@@ -766,7 +768,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                     return defaultEmoji
                 }
             }
-            ReactionManager.setEmojiSet(reactionEmoji, transaction: transaction)
+            ReactionManager.setCustomEmojiSet(reactionEmoji, transaction: transaction)
         }
 
         if let subscriberIDData = subscriberID, let subscriberCurrencyCode = subscriberCurrencyCode {

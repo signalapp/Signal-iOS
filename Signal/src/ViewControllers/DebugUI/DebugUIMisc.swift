@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,6 +59,12 @@ public extension DebugUIMisc {
     static func clearTemporalCredentials() {
         Self.databaseStorage.write { transaction in
             Self.groupsV2.clearTemporalCredentials(transaction: transaction)
+        }
+    }
+
+    static func clearLocalCustomEmoji() {
+        Self.databaseStorage.write { transaction in
+            ReactionManager.setCustomEmojiSet(nil, transaction: transaction)
         }
     }
 }
