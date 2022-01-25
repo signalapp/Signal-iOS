@@ -346,6 +346,11 @@ message DataMessage {
       optional Cancellation cancellation = 1003;
     // }
   }
+
+  message StoryContext {
+    optional string authorUuid = 1;
+    optional uint64 sentTimestamp = 2;
+  }
     
   enum ProtocolVersion {
     option allow_alias = true;
@@ -380,6 +385,7 @@ message DataMessage {
   repeated BodyRange         bodyRanges              = 18;
   optional GroupCallUpdate   groupCallUpdate         = 19;
   optional Payment           payment                 = 20;
+  optional StoryContext      storyContext            = 21;
 }
 
 message NullMessage {

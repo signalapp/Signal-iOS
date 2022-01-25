@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 // *
@@ -981,6 +981,15 @@ struct SignalServiceProtos_DataMessage {
   var hasPayment: Bool {return _storage._payment != nil}
   /// Clears the value of `payment`. Subsequent reads from it will return its default value.
   mutating func clearPayment() {_uniqueStorage()._payment = nil}
+
+  var storyContext: SignalServiceProtos_DataMessage.StoryContext {
+    get {return _storage._storyContext ?? SignalServiceProtos_DataMessage.StoryContext()}
+    set {_uniqueStorage()._storyContext = newValue}
+  }
+  /// Returns true if `storyContext` has been explicitly set.
+  var hasStoryContext: Bool {return _storage._storyContext != nil}
+  /// Clears the value of `storyContext`. Subsequent reads from it will return its default value.
+  mutating func clearStoryContext() {_uniqueStorage()._storyContext = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2128,6 +2137,37 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _notification: SignalServiceProtos_DataMessage.Payment.Notification?
     fileprivate var _request: SignalServiceProtos_DataMessage.Payment.Request?
     fileprivate var _cancellation: SignalServiceProtos_DataMessage.Payment.Cancellation?
+  }
+
+  struct StoryContext {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var authorUuid: String {
+      get {return _authorUuid ?? String()}
+      set {_authorUuid = newValue}
+    }
+    /// Returns true if `authorUuid` has been explicitly set.
+    var hasAuthorUuid: Bool {return self._authorUuid != nil}
+    /// Clears the value of `authorUuid`. Subsequent reads from it will return its default value.
+    mutating func clearAuthorUuid() {self._authorUuid = nil}
+
+    var sentTimestamp: UInt64 {
+      get {return _sentTimestamp ?? 0}
+      set {_sentTimestamp = newValue}
+    }
+    /// Returns true if `sentTimestamp` has been explicitly set.
+    var hasSentTimestamp: Bool {return self._sentTimestamp != nil}
+    /// Clears the value of `sentTimestamp`. Subsequent reads from it will return its default value.
+    mutating func clearSentTimestamp() {self._sentTimestamp = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _authorUuid: String?
+    fileprivate var _sentTimestamp: UInt64?
   }
 
   init() {}
@@ -4865,7 +4905,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     17: .same(proto: "delete"),
     18: .same(proto: "bodyRanges"),
     19: .same(proto: "groupCallUpdate"),
-    20: .same(proto: "payment")
+    20: .same(proto: "payment"),
+    21: .same(proto: "storyContext")
   ]
 
   fileprivate class _StorageClass {
@@ -4888,6 +4929,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] = []
     var _groupCallUpdate: SignalServiceProtos_DataMessage.GroupCallUpdate?
     var _payment: SignalServiceProtos_DataMessage.Payment?
+    var _storyContext: SignalServiceProtos_DataMessage.StoryContext?
 
     static let defaultInstance = _StorageClass()
 
@@ -4913,6 +4955,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _bodyRanges = source._bodyRanges
       _groupCallUpdate = source._groupCallUpdate
       _payment = source._payment
+      _storyContext = source._storyContext
     }
   }
 
@@ -4950,6 +4993,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 18: try { try decoder.decodeRepeatedMessageField(value: &_storage._bodyRanges) }()
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._groupCallUpdate) }()
         case 20: try { try decoder.decodeSingularMessageField(value: &_storage._payment) }()
+        case 21: try { try decoder.decodeSingularMessageField(value: &_storage._storyContext) }()
         default: break
         }
       }
@@ -5019,6 +5063,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._payment {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
       } }()
+      try { if let v = _storage._storyContext {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5047,6 +5094,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._bodyRanges != rhs_storage._bodyRanges {return false}
         if _storage._groupCallUpdate != rhs_storage._groupCallUpdate {return false}
         if _storage._payment != rhs_storage._payment {return false}
+        if _storage._storyContext != rhs_storage._storyContext {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -6362,6 +6410,48 @@ extension SignalServiceProtos_DataMessage.Payment.Cancellation: SwiftProtobuf.Me
 
   static func ==(lhs: SignalServiceProtos_DataMessage.Payment.Cancellation, rhs: SignalServiceProtos_DataMessage.Payment.Cancellation) -> Bool {
     if lhs._requestID != rhs._requestID {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".StoryContext"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "authorUuid"),
+    2: .same(proto: "sentTimestamp")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self._authorUuid) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._sentTimestamp) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._authorUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._sentTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.StoryContext, rhs: SignalServiceProtos_DataMessage.StoryContext) -> Bool {
+    if lhs._authorUuid != rhs._authorUuid {return false}
+    if lhs._sentTimestamp != rhs._sentTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
