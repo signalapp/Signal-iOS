@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "மீட்பு சொற்றொடரை ஒட்டவும்";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "உங்கள் மீட்டெடுப்பு சொற்றொடர் உங்களுக்கு தனித்துவமான 12-வார்த்தை சொற்றொடர். இதைப் பயன்படுத்தவும்மீட்டமை உங்கள் கொடுப்பனவுகள் கணக்கு.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "உள்ளிடவும் மீட்பு சொற்றொடர்";

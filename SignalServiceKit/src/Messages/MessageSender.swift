@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -927,7 +927,7 @@ public extension MessageSender {
                 return
             }
 
-            Logger.verbose("Retrying: \(message.debugDescription)")
+            Logger.verbose("Retrying: \(message.timestamp)")
             self.sendMessage(toRecipient: messageSend)
         }
 

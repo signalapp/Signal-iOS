@@ -2081,10 +2081,8 @@ NS_ASSUME_NONNULL_BEGIN
     // for attachments explicitly.
     if (!message.hasRenderableContent && dataMessage.attachments.count == 0) {
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);
-        if (SSKDebugFlags.internalLogging) {
-            OWSLogInfo(@"Ignoring empty message(envelope): %@", envelope.debugDescription);
-            OWSLogInfo(@"Ignoring empty message(dataMessage): %@", dataMessage.debugDescription);
-        }
+        OWSLogVerbose(@"Ignoring empty message(envelope): %@", envelope.debugDescription);
+        OWSLogVerbose(@"Ignoring empty message(dataMessage): %@", dataMessage.debugDescription);
         return nil;
     }
 

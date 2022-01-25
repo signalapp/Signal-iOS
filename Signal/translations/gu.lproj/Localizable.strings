@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "રિકવરી ફ્રેઝને પેસ્ટ કરો";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "તમારો રિકવરી ફ્રેઝ તમારા માટે અનન્ય 12 શબ્દોનો ફ્રેઝ છે. તમારા પેમેન્ટ એકાઉન્ટને રિસ્ટોર કરવા માટે તેનો ઉપયોગ કરો.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "રિકવરી ફેઝ દાખલ કરો";

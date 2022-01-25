@@ -701,7 +701,7 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Je oude telefoonnummer is ongeldig. Voer een geldig nummer in om je telefoonnummer te wijzigen.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Om je gegevens te herstellen, voer je Signal-pincode in als je er een had ingesteld. Dit is niet dezelfde code als de telefoonnummer verificatie code die je per sms of telefoonoproep hebt ontvangen.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Hier zie je een voorbeeld van de gesprekskleur.";
@@ -3866,7 +3866,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Incorrecte pincode";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Voer de pincode in welke je eerder hebt aangemaakt. Dit is niet dezelfde code als je sms-verificatiecode.";
+"ONBOARDING_PIN_EXPLANATION" = "Voer de pincode in welke je eerder hebt aangemaakt. Dit is niet dezelfde code als de telefoonnummer verificatie code die je per sms of telefoonoproep hebt ontvangen.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Voer je pincode in";
@@ -5315,7 +5315,7 @@
 "SETTINGS_CURRENT_SUBSCRIPTION" = "Maandelijkse donatie";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Dataverbruik";
+"SETTINGS_DATA" = "Dataoverdracht";
 
 /* Item title for the low bandwidth call setting */
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Minder dataoverdracht bij oproepen";
@@ -5345,7 +5345,7 @@
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Media verzenden";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Dataverbruik";
+"SETTINGS_DATA_TITLE" = "Dataoverdracht";
 
 /* table cell label in conversation settings */
 "SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Standaard-tijdspanne voor nieuwe gesprekken";
@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Herstel-zin plakken";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "De herstel-zin is voor iedereen uniek en bestaat uit 12 woorden. Je kunt deze zin gebruiken om je krediet te herstellen als je toegang hebt verloren.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Vul je herstel-zin in";

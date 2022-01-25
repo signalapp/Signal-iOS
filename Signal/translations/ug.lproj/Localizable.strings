@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "ئەسلىگە كەلتۈرۈش ئىبارىسىنى چاپلا";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "ئەسلىگە كەلتۈرۈش ئىبارىڭىز سىزگىلا خاس 12 سۆزلۈك ئىبارە. چىقىم قىلىش ھېساباتىڭىزنى ئەسلىگە كەلتۈرۈش ئۈچۈن ئىشلىتىلىدۇ.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "ئەسلىگە كەلتۈرۈش ئىبارىسىنى كىرگۈزۈڭ";

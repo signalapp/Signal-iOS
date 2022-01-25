@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "রিকভারি ফ্রেজ পেস্ট করুন";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "আপনার রিকভারি ফ্রেজ হল 12-শব্দ বিশিষ্ট বাক্যাংশ যা আপনার জন্য অনন্য। আপনার পেমেন্ট অ্যাকাউন্ট পুনর্বহাল করতে এটি ব্যবহার করুন।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "রিকভারি ফ্রেজ লিখুন";

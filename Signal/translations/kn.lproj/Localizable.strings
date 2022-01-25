@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "ರಿಕವರಿ ಪದಗುಚ್ಛವನ್ನು ಅಂಟಿಸಿ";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "ನಿಮ್ಮ ರಿಕವರಿ ಪದಗುಚ್ಛವು 12 ಪದದ ಪದಗುಚ್ಛವಾಗಿದ್ದು ನಿಮಗೆ ವಿಶಿಷ್ಟವಾಗಿದೆ. ನಿಮ್ಮ ಪೇಮೆಂಟ್‌ಗಳ ಖಾತೆಯನ್ನು ರಿಸ್ಟೋರ್‌ ಮಾಡಲು ಅದನ್ನು ಬಳಸಿ.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "ರಿಕವರಿ ಪದಗುಚ್ಛವನ್ನು ನಮೂದಿಸಿ";

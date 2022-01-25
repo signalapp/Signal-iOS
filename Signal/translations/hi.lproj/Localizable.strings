@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "रिकवरी फ़्रेज़ पेस्ट करें";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "आपका रिकवरी फ़्रेज़ आपके लिए एक अनोखा 12-शब्द का वाक्यांश होता है। अपने भुगतान खाते को रीस्टोर करने के लिए इसका उपयोग करें।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "रिकवरी फ़्रेज़ दर्ज करें";

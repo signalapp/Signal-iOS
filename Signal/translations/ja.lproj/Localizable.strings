@@ -689,19 +689,19 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "画像を編集";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "新しい番号は、以前の番号とは違う必要があります。電話番号を変更する場合は、以前の番号とは別の電話番号を、入力してください。";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "新しい電話番号は、現在のものと異なっている必要があります。電話番号を変更するには、別の電話番号を入力してください。";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "入力された電話番号は、あなたのアカウントのものと一致しません。";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "新しい電話番号が、無効な番号です。電話番号を変更する場合は、有効な電話番号を入力してください。";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "入力された新しい電話番号は無効です。電話番号を変更するには、正しいものを入力してください。";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "変更前の電話番号が、無効な番号です。電話番号を変更する場合は、有効な電話番号を入力してください。";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "入力された現在の電話番号は無効です。電話番号を変更するには、正しいものを入力してください。";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "アカウントを作成するときに決めたPINを入力してください。SMSの認証コードではありません。";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "新しい電話番号用のPINを入力してください。これはSMS認証コードとは異なります。";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "チャットの色のプレビューです。";
@@ -1022,7 +1022,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "チャットを削除しますか？";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "%@ 個のチャットを削除しますか？　";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "%@件のチャットを削除しますか？";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "このチャットをミュート…";
@@ -2975,7 +2975,7 @@
 "HOME_VIEW_TITLE_SELECT_CHATS" = "チャットを選択";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "すべて既読にする";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "ぼかす場所を選択してください";
@@ -5264,13 +5264,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "電話番号を変更";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "登録されている電話番号は、%@ に変更されました。";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "あなたの電話番号は %@ に変更されました。";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "電話番号を変更する";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "登録されている電話番号を %1$@ から %2$@ に変更しようとしています。\n\n変更する前に、以下の電話番号が正しいことを確認してください。";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "電話番号を %1$@ から %2$@ に変更しようとしています。\n\n続ける前に、以下の電話番号が正しいことを確認してください。";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "国番号";
@@ -5285,19 +5285,19 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "新しい電話番号";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "変更前の電話番号";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "現在の電話番号";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "電話番号";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ を検証しています…";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ を検証しています";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "現在登録している電話番号を、新しい電話番号に変更します。変更を元に戻すことはできません。新しい電話番号が、SMSの受信や通話ができることを確認してから、変更してください。";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "現在使用している電話番号を、新しい電話番号に変更する際に使用してください。この変更を元に戻すことはできません。\n\n続ける前に、新しい電話番号がSMSや通話を受信できることを確認してください。";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "電話番号を変更";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "電話番号の変更";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "電話番号の変更";
@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "リカバリーフレーズを貼り付け";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "あなたのリカバリーフレーズは12語で、あなた固有のものです。口座の復元に使用してください。";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "リカバリーパスフレーズの入力";

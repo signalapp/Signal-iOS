@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို ကူးရေးမယ်";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "သင်၏ ပြန်လည်ရယူရန် စာပုဒ်တိုသည် သင့်အတွက်သာ ထူးခြားသော စကားလုံး ၁၂ လုံး ရှိသော စာပုဒ်တိုဖြစ်ပါသည်။ ၎င်းစာတိုသုံး၍ သင့်ငွေပေးချေမှု အကောင့်ကို ပြန်ရယူလိုက်ပါ။";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "ပြန်လည်ရယူရန် စာပုဒ်တိုကို ရိုက်ထည့်ပါ";
