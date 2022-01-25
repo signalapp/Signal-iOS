@@ -244,7 +244,21 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             button.set(.height, to: SettingsVC.buttonHeight)
             return button
         }
+        
+        let pathButton = getSettingButton(withTitle: NSLocalizedString("vc_path_title", comment: ""), color: Colors.text, action: #selector(showPath))
+        let pathStatusView = PathStatusView()
+        pathStatusView.set(.width, to: PathStatusView.size)
+        pathStatusView.set(.height, to: PathStatusView.size)
+        
+        pathButton.addSubview(pathStatusView)
+        pathStatusView.pin(.leading, to: .trailing, of: pathButton.titleLabel!, withInset: Values.smallSpacing)
+        pathStatusView.autoVCenterInSuperview()
+        
+        pathButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: Values.smallSpacing)
+        
         return [
+            getSeparator(),
+            pathButton,
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
@@ -478,6 +492,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
         navigationController!.present(shareVC, animated: true, completion: nil)
+    }
+    
+    @objc private func showPath() {
+        let pathVC = PathVC()
+        navigationController!.pushViewController(pathVC, animated: true)
     }
     
     @objc private func showPrivacySettings() {

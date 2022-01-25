@@ -421,12 +421,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         self.navigationController?.setViewControllers([ self, searchController ], animated: true)
     }
     
-    @objc private func showPath() {
-        let pathVC = PathVC()
-        let navigationController = OWSNavigationController(rootViewController: pathVC)
-        present(navigationController, animated: true, completion: nil)
-    }
-    
     @objc func joinOpenGroup() {
         let joinOpenGroupVC = JoinOpenGroupVC()
         let navigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
