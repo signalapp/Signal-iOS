@@ -295,7 +295,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         leftBarButtonItem.isAccessibilityElement = true
         navigationItem.leftBarButtonItem = leftBarButtonItem
         // Right bar button item - search button
-        let rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: nil)
+        let rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(showSearchUI))
         rightBarButtonItem.accessibilityLabel = "Search button"
         rightBarButtonItem.isAccessibilityElement  = true
         navigationItem.rightBarButtonItem = rightBarButtonItem
@@ -411,6 +411,11 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let settingsVC = SettingsVC()
         let navigationController = OWSNavigationController(rootViewController: settingsVC)
         present(navigationController, animated: true, completion: nil)
+    }
+    
+    @objc private func showSearchUI() {
+        let searchController = GlobalSearchViewController()
+        self.navigationController?.pushViewController(searchController, animated: true)
     }
     
     @objc private func showPath() {
