@@ -304,9 +304,10 @@ public final class SnodeAPI : NSObject {
         let onsName = onsName.lowercased()
         // Hash the ONS name using BLAKE2b
         let nameAsData = [UInt8](onsName.data(using: String.Encoding.utf8)!)
-        guard let nameHash = sodium.genericHash.hash(message: nameAsData),
-            let base64EncodedNameHash = nameHash.toBase64() else { return Promise(error: Error.hashingFailed) }
+        guard let nameHash = sodium.genericHash.hash(message: nameAsData) else { return Promise(error: Error.hashingFailed) }
+        
         // Ask 3 different snodes for the Session ID associated with the given name hash
+        let base64EncodedNameHash = nameHash.toBase64()
         let parameters: [String:Any] = [
             "endpoint" : "ons_resolve",
             "params" : [
@@ -473,7 +474,7 @@ public final class SnodeAPI : NSObject {
                     "pubkey" : userX25519PublicKey,
                     "pubkey_ed25519" : userED25519KeyPair.publicKey.toHexString(),
                     "messages": serverHashes,
-                    "signature": signature.toBase64()!
+                    "signature": signature.toBase64()
                 ]
                 return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                     invoke(.deleteMessage, on: snode, associatedWith: publicKey, parameters: parameters).map2{ rawResponse -> [String:Bool] in
@@ -520,7 +521,7 @@ public final class SnodeAPI : NSObject {
                             "pubkey" : userX25519PublicKey,
                             "pubkey_ed25519" : userED25519KeyPair.publicKey.toHexString(),
                             "timestamp" : timestamp,
-                            "signature" : signature.toBase64()!
+                            "signature" : signature.toBase64()
                         ]
                         return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                             invoke(.clearAllData, on: snode, parameters: parameters).map2 { rawResponse -> [String:Bool] in
