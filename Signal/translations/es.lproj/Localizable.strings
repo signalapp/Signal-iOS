@@ -1034,13 +1034,13 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "Durante una hora";
 
 /* 1 week */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 semana";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "Durante una semana";
 
 /* 8 hours */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "Durante 8 horas";
 
 /* Always */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Siempre";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Para siempre";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Solo admins pueden enviar mensajes en este grupo.";
@@ -3032,7 +3032,7 @@
 "IN_CALL_TERMINATED" = "Llamada finalizada.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Los chats archivados vuelven al buzón de entrada si recibes mensajes nuevos.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Los chats archivados regresan a la lista principal si recibes mensajes nuevos.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Todavía no tienes chats.\nComienza a chatear con tus amistades.";

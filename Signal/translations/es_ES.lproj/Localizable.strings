@@ -383,7 +383,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Sostén Signal";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Dale un impulso a Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Da un impulso a Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Tu distintivo de impulso ha caducado y ya no es visible en tu perfil.\n\nPuedes continuar usando Signal, pero para sostener la tecnología hecha para ti, y no para tus datos, considera en sostener Signal mensualmente.";
@@ -527,7 +527,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Selecciona una cantidad para donar";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Dale un impulso a Signal";
+"BOOST_VIEW_TITLE" = "Da un impulso a Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Añadir";
@@ -3032,7 +3032,7 @@
 "IN_CALL_TERMINATED" = "Llamada finalizada.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Los chats archivados vuelven al buzón de entrada si recibes mensajes nuevos.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Los chats archivados regresan a la lista principal si recibes mensajes nuevos.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Todavía no tienes chats.\nComienza a chatear con tus amistades.";
@@ -3248,7 +3248,7 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensaje";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar en el chat";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar del chat";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para tod@s en el chat si usan una versión reciente de Signal. En el chat se mostrará que lo has eliminado. ";
@@ -5972,7 +5972,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrarlos en las notificaciones y sugerencias al compartir adjuntos desde otras aplicaciones.";
 
 /* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Impulso a Signal";
+"SETTINGS_SIGNAL_BOOST" = "Impulsa Signal";
 
 /* Title for the 'become a sustainer' link in settings. */
 "SETTINGS_SUBSCRIPTION" = "Sostén Signal";

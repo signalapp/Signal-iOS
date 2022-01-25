@@ -1730,7 +1730,7 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Nevarēja pārsūtīt ziņas, jo tās vairs nav pieejamas.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
@@ -1898,7 +1898,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Ziņas nosūtītas";
 
 /* Indicates that the user can add a text message to forwarded messages. */
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Pievienojiet ziņu";

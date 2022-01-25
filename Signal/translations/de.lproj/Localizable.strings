@@ -647,7 +647,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Anruf beenden";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Stummschalten";
+"CALL_VIEW_MUTE_LABEL" = "Stumm";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ wird von dir eine Unterhaltungsanfrage erhalten. Du kannst anrufen, sobald diese angenommen wurde.";
@@ -1175,13 +1175,13 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Immer";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Stummschalten";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Stumm";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 Stunden";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Stummschalten";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Stumm";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nicht stumm";
@@ -2972,10 +2972,10 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Title for the 'Select Chats' option in the HomeView. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "auswählen";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Wähle Unterhaltungen";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "alle gelesen";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Alle gelesen";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Zeichne zum Verwischen in beliebige Bereiche";
@@ -6437,7 +6437,7 @@
 "TXT_DELETE_TITLE" = "Löschen";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "wiederherstellen";
+"UNARCHIVE_ACTION" = "Rückgängig";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Nutzer nicht in deinen Kontakten. Möchtest du diesen Nutzer blockieren?";

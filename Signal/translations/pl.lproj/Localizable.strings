@@ -1031,7 +1031,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dzień";
 
 /* 1 hour */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 godzina";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 godzinę";
 
 /* 1 week */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 tydzień";
@@ -5270,7 +5270,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Zmień numer";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Zamierzasz zmienić swój numer telefonu z %1$@ na %2$@\n\n.Upewnij się, że poniższy numer jest poprawny.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Zamierzasz zmienić swój numer telefonu z %1$@ na %2$@.\n\nUpewnij się, że poniższy numer jest poprawny.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Kod kraju";
@@ -5294,7 +5294,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Weryfikowanie %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Użyj tej opcji do zmiany Twojego, aktualnego numeru telefonu na nowy.  Tej zmiany nie można cofnąć.\n\nZanim zaczniesz, upewnij się, że Twój nowy numer może otrzymywać SMS-y lub połączenia.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Użyj tej opcji do zmiany Twojego, aktualnego numeru telefonu na nowy. Tej zmiany nie można cofnąć.\n\nZanim zaczniesz, upewnij się, że Twój nowy numer może otrzymywać SMS-y lub połączenia.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Zmień numer telefonu";

@@ -5264,7 +5264,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Schimbare număr de telefon";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Numărul tău de telefon a fost schimbat cu %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Numărul tău de telefon a fost schimbat în %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Schimbă Numărul";

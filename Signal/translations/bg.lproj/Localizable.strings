@@ -1898,7 +1898,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Съобщенията са изпратени";
 
 /* Indicates that the user can add a text message to forwarded messages. */
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Добави съобщение";
@@ -6506,7 +6506,7 @@
 "UNPINNED_SECTION_TITLE" = "Чатове";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "Непрочитане";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Получен е прикачен файл от неподдържан тип.";
