@@ -72,6 +72,9 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     }
     
     private func setupNavigationBar() {
+        // This is a workaround for a UI issue that the navigation bar can be a bit higher if
+        // the search bar is put directly to be the titleView. And this can cause the tableView
+        // in home screen doing a weird scrolling when going back to home screen.
         let searchBarContainer = UIView()
         searchBarContainer.layoutMargins = UIEdgeInsets.zero
         searchBar.sizeToFit()
@@ -136,6 +139,8 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         self.dbReadConnection.asyncRead({[weak self] transaction in
             guard let self = self else { return }
             self.isLoading = true
+            // The max search result count is set according to the keyword length. This is just a workaround for performance issue.
+            // The longer and more accurate the keyword is, the less search results should there be. 
             searchResults = self.searcher.searchForHomeScreen(searchText: searchText, maxSearchResults: searchText.count * 50,  transaction: transaction)
         }, completionBlock: { [weak self] in
             AssertIsOnMainThread()
