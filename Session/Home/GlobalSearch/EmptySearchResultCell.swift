@@ -46,6 +46,8 @@ class EmptySearchResultCell: UITableViewCell {
 
     public func configure(isLoading: Bool) {
         if isLoading {
+            // Calling stopAnimating() here is a workaround for
+            // the spinner won't change its colour as the theme changed.
             spinner.stopAnimating()
             spinner.startAnimating()
             messageLabel.isHidden = true
