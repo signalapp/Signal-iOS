@@ -15,9 +15,7 @@ public class ReactionManager: NSObject {
     /// Returns custom emoji set by the user, or `nil` if the user has never customized their emoji
     /// (including on linked devices).
     ///
-    /// This is important because the primary reactions preserve their skin tone, even if the user has a different
-    /// preferred (last-used) skin tone for a particular emoji. If the user has never customized their set, though,
-    /// we should follow the last-used color for the default thumbs-up and thumbs-down reacts.
+    /// This is important because we shouldn't ever send the default set of reactions over storage service.
     public class func customEmojiSet(transaction: SDSAnyReadTransaction) -> [String]? {
         return emojiSetKVS.getObject(forKey: emojiSetKey, transaction: transaction) as? [String]
     }

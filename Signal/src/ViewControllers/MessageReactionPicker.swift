@@ -73,7 +73,7 @@ class MessageReactionPicker: UIStackView {
                 if let customReaction = customSet[safe: i] ?? nil {
                     return customReaction
                 } else {
-                    return Emoji(rawValue: defaultEmoji)!.withPreferredSkinTones(transaction: transaction)
+                    return EmojiWithSkinTones(rawValue: defaultEmoji)!
                 }
             }
         }
