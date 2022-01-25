@@ -79,6 +79,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *tableCell2BackgroundColor;
 @property (class, readonly, nonatomic) UIColor *tableCell2PresentedBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *tableCell2SelectedBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *tableCell2SelectedBackgroundColor2;
 @property (class, readonly, nonatomic) UIColor *tableCell2MultiSelectedBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *tableCell2PresentedSelectedBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *tableView2BackgroundColor;

@@ -11,7 +11,6 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         if viewState.multiSelectState.parentButton == nil {
-            viewState.multiSelectState.themeChangedDelegate = self
             showMenu(button: sender, animated: true)
         } else {
             hideMenu()
@@ -86,6 +85,17 @@ extension HomeViewController {
             leaveMultiselectMode()
         } else {
             willEnterMultiselectMode()
+        }
+    }
+
+    func applyThemeToContextMenuAndToolbar() {
+        viewState.multiSelectState.toolbar?.themeChanged()
+        // if the context menu is shown
+        if let btn = viewState.multiSelectState.parentButton, viewState.multiSelectState.contextMenuView != nil {
+            // we have to create it again (changed colors, icons etc.)
+            hideMenuAndExecuteWhenVanished(animated: false) {
+                self.showMenu(button: btn, animated: false)
+            }
         }
     }
 
@@ -439,18 +449,6 @@ extension HomeViewController: ContextMenuActionsViewDelegate {
     }
 }
 
-extension HomeViewController: ContextMenuThemeChangedDelegate {
-    func contextMenuThemeChanged() {
-        // if the context menu is shown
-        if let btn = viewState.multiSelectState.parentButton, viewState.multiSelectState.contextMenuView != nil {
-            // we have to create it again (changed colors, icons etc.)
-            hideMenuAndExecuteWhenVanished(animated: false) {
-                self.showMenu(button: btn, animated: false)
-            }
-        }
-    }
-}
-
 // MARK: - view helper class (providing a rounded view *with* a shadow)
 private class ContextMenuActionsViewContainer: UIView {
     static let offset = CGPoint(x: 8, y: 0)
@@ -487,17 +485,11 @@ public class MultiSelectState: NSObject {
     fileprivate var title: String?
     fileprivate var contextMenuView: ContextMenuActionsViewContainer?
     fileprivate var toolbar: BlurredToolbarContainer?
-    fileprivate weak var themeChangedDelegate: ContextMenuThemeChangedDelegate?
     private var _isActive = false
     var actionPerformed = false
 
     @objc
     var isActive: Bool { return _isActive }
-
-    @objc func themeChanged() {
-        toolbar?.themeChanged()
-        themeChangedDelegate?.contextMenuThemeChanged()
-    }
 
     fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
         if active != _isActive {

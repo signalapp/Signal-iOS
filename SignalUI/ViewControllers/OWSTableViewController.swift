@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -395,6 +395,13 @@ public extension OWSTableItem {
 
             }
         )
+    }
+
+    static func configureCell(_ cell: UITableViewCell, iPadColors: Bool) {
+        Self.configureCell(cell)
+        cell.selectedBackgroundView?.backgroundColor = iPadColors ? Theme.tableCell2SelectedBackgroundColor2 : Theme.tableCell2SelectedBackgroundColor
+        cell.backgroundColor = iPadColors ? Theme.secondaryBackgroundColor : Theme.backgroundColor
+        cell.multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
     }
 }
 

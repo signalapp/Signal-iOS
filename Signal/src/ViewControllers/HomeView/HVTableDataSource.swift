@@ -569,7 +569,6 @@ extension HVTableDataSource: UITableViewDataSource {
             }
         }()
 
-        adjustBackgroundColors(for: cell)
         cell.tintColor = .ows_accentBlue
         return cell
     }
@@ -608,7 +607,6 @@ extension HVTableDataSource: UITableViewDataSource {
         let contentToken = cellConfigurationAndContentToken.contentToken
 
         cell.configure(cellContentToken: contentToken)
-        adjustBackgroundColors(for: cell)
         let thread = configuration.thread.threadRecord
         let cellName: String = {
             if let groupThread = thread as? TSGroupThread {
@@ -688,17 +686,6 @@ extension HVTableDataSource: UITableViewDataSource {
         cell.accessibilityIdentifier = "archived_conversations"
 
         return cell
-    }
-
-    private func adjustBackgroundColors(for cell: UITableViewCell) {
-        if let splitViewController = self.splitViewController {
-            if !splitViewController.isCollapsed {
-                cell.selectedBackgroundView?.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
-                cell.backgroundColor = Theme.secondaryBackgroundColor
-            }
-        } else {
-            owsFailDebug("Missing splitViewController.")
-        }
     }
 
     // MARK: - Edit Actions
@@ -829,7 +816,6 @@ extension HVTableDataSource {
                     homeCell.reset()
                     // reduces flicker effects for already visible cells
                     homeCell.configure(cellContentToken: token, asyncAvatarLoadingAllowed: false)
-                    adjustBackgroundColors(for: cell)
                     return true
                 }
             }
@@ -844,13 +830,15 @@ extension HVTableDataSource {
 
     // This method can be called from any thread.
     private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
-                                               lastReloadDate: Date?) -> HomeViewCell.Configuration {
+                                               lastReloadDate: Date?,
+                                               iPadColors: Bool) -> HomeViewCell.Configuration {
         owsAssertDebug(threadViewModel.homeViewInfo != nil)
 
         let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
         let configuration = HomeViewCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,
-                                                       isBlocked: isBlocked)
+                                                       isBlocked: isBlocked,
+                                                       iPadColors: iPadColors)
         return configuration
     }
 
@@ -872,7 +860,8 @@ extension HVTableDataSource {
             return self.lastReloadDate
         }()
         let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                        lastReloadDate: lastReloadDate)
+                                                        lastReloadDate: lastReloadDate,
+                                                        iPadColors: viewController.hasVisibleSplitViewController)
         let cellContentCache = viewController.cellContentCache
         let contentToken = { () -> HVCellContentToken in
             // If we have an existing HVCellContentToken, use it.
@@ -938,7 +927,8 @@ extension HVTableDataSource {
                 ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                            lastReloadDate: lastReloadDate)
+                                                            lastReloadDate: lastReloadDate,
+                                                            iPadColors: viewController.hasVisibleSplitViewController)
             let contentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
         }.done(on: .main) { (threadViewModel: ThreadViewModel,
