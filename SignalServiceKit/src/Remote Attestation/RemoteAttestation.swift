@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -333,7 +333,6 @@ public class RemoteAttestationKeys: NSObject {
 
             let derivedMaterial = try hkdf(
                 outputLength: Int(kAES256_KeyByteLength) * 2,
-                version: 3,
                 inputKeyMaterial: masterSecret,
                 salt: publicKeys,
                 info: []

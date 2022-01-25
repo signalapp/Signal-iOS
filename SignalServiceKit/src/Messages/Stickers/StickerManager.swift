@@ -1082,7 +1082,7 @@ public class StickerManager: NSObject {
         let stickerKeyInfo = "Sticker Pack"
         let stickerKeyLength = 64
         let stickerKey = try stickerKeyInfo.utf8.withContiguousStorageIfAvailable {
-            try hkdf(outputLength: stickerKeyLength, version: 3, inputKeyMaterial: packKey, salt: [], info: $0)
+            try hkdf(outputLength: stickerKeyLength, inputKeyMaterial: packKey, salt: [], info: $0)
         }!
 
         let temporaryDecryptedFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)

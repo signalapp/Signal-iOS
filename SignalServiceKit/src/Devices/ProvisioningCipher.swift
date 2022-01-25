@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -70,7 +70,7 @@ public class ProvisioningCipher {
             with: primaryDeviceEphemeralPublicKey)
 
         let keyBytes = try Self.messageInfo.utf8.withContiguousStorageIfAvailable {
-            try hkdf(outputLength: 64, version: 3, inputKeyMaterial: agreement, salt: [], info: $0)
+            try hkdf(outputLength: 64, inputKeyMaterial: agreement, salt: [], info: $0)
         }!
 
         let cipherKey = Array(keyBytes[0..<32])

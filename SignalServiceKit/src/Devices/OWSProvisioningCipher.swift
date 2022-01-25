@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import CommonCrypto
@@ -60,7 +60,7 @@ public class OWSProvisioningCipher: NSObject {
             let infoData = ProvisioningCipher.messageInfo
             let derivedSecret: [UInt8] = try infoData.utf8.withContiguousStorageIfAvailable {
                 let totalLength = Self.cipherKeyLength + Self.macKeyLength
-                return try hkdf(outputLength: totalLength, version: 3, inputKeyMaterial: sharedSecret, salt: [], info: $0)
+                return try hkdf(outputLength: totalLength, inputKeyMaterial: sharedSecret, salt: [], info: $0)
             }!
             let cipherKey = derivedSecret[0..<Self.cipherKeyLength]
             let macKey = derivedSecret[Self.cipherKeyLength...]
