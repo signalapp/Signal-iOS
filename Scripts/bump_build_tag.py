@@ -146,24 +146,30 @@ class Version4:
     def formatted(self):
         return str(self.major) + "." + str(self.minor) + "." + str(self.patch) + "." + str(self.build)
 
+    def asVersion3(self):
+        return Version3(self.major, self.minor, self.patch)
 
-def parse_version_3(text):
+
+def parse_version_4(text):
    # print 'text', text
-   regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
+   regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)\.?(\d+)?$')
    match = regex.search(text)
    # print 'match', match
    if not match:
        fail('Could not parse .plist')
-   if len(match.groups()) != 3:
+   if len(match.groups()) < 3 or len(match.groups()) > 4:
        fail('Could not parse .plist')
    major = int(match.group(1))
    minor = int(match.group(2))
    patch = int(match.group(3))
+   if match.group(4) != None:
+       build = int(match.group(4))
+   else:
+       build = 0
 
-   version = Version3(major, minor, patch)
-   
-   # Verify that roundtripping yields the same value.
-   if version.formatted() != text:
+   version = Version4(major, minor, patch, build)
+   # Verify that roundtripping yields the same value (or a version3 equivalent)
+   if version.formatted() != text and version.asVersion3().formatted() != text:
        fail('Could not parse .plist')
    
    return version
@@ -224,7 +230,7 @@ def get_versions(plist_file_path):
 
     release_version_str = release_version_match.group(1)
     print 'CFBundleShortVersionString:', release_version_str
-    release_version = parse_version_3(release_version_str)
+    release_version = parse_version_4(release_version_str).asVersion3()
     print 'old_release_version:', release_version.formatted()
 
     build_version_1_str = build_version_1_match.group(1)
@@ -338,16 +344,11 @@ if __name__ == '__main__':
         # Bump version, reset patch to zero.
         #
         # e.g. --version 1.2.3 -> "1.2.3", "102.3.0"
-        new_release_version_3 = parse_version_3(args.version.strip())
+        new_build_version_4 = parse_version_4(args.version.strip())
+        new_build_version_1 = Version1(new_build_version_4.build)
+        new_release_version_3 = new_build_version_4.asVersion3()
         # print 'new_release_version_3:', new_release_version_3.formatted()
         
-        new_build_version_1 = Version1(0)
-        new_build_version_4 = Version4(
-            new_release_version_3.major,
-            new_release_version_3.minor,
-            new_release_version_3.patch, 
-            0
-        )
     else:
         # Bump patch.
         new_release_version_3 = old_release_version
