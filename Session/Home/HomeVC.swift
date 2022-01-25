@@ -414,8 +414,11 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     @objc private func showSearchUI() {
+        if let presentedVC = self.presentedViewController {
+            presentedVC.dismiss(animated: false, completion: nil)
+        }
         let searchController = GlobalSearchViewController()
-        self.navigationController?.pushViewController(searchController, animated: true)
+        self.navigationController?.setViewControllers([ self, searchController ], animated: true)
     }
     
     @objc private func showPath() {
