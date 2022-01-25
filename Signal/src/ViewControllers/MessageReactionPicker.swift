@@ -82,9 +82,9 @@ class MessageReactionPicker: UIStackView {
 
         if !self.configureMode, let selectedEmoji = self.selectedEmoji {
             // If the local user reacted with any of the default emoji set,
-            // regardless of skin tone, we should show it in the normal place
-            // in the picker bar.
-            if let index = emojiSet.map({ $0.baseEmoji }).firstIndex(of: selectedEmoji.baseEmoji) {
+            // we should show it in the normal place in the picker bar.
+            // NOTE: This used to match independent of skin tone, but we decided to drop that behavior.
+            if let index = emojiSet.firstIndex(of: selectedEmoji) {
                 emojiSet[index] = selectedEmoji
             } else {
                 emojiSet.append(selectedEmoji)
