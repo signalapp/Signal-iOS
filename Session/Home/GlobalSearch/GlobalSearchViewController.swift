@@ -140,8 +140,8 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
             guard let self = self else { return }
             self.isLoading = true
             // The max search result count is set according to the keyword length. This is just a workaround for performance issue.
-            // The longer and more accurate the keyword is, the less search results should there be. 
-            searchResults = self.searcher.searchForHomeScreen(searchText: searchText, maxSearchResults: searchText.count * 50,  transaction: transaction)
+            // The longer and more accurate the keyword is, the less search results should there be.
+            searchResults = self.searcher.searchForHomeScreen(searchText: searchText, maxSearchResults: min(searchText.count * 50, 500),  transaction: transaction)
         }, completionBlock: { [weak self] in
             AssertIsOnMainThread()
             guard let self = self, let results = searchResults, self.lastSearchText == searchText else { return }
