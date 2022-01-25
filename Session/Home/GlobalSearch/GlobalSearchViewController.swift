@@ -209,7 +209,6 @@ extension GlobalSearchViewController {
             guard let searchResult = sectionResults[safe: indexPath.row], let threadId = searchResult.thread.threadRecord.uniqueId, let thread = TSThread.fetch(uniqueId: threadId) else { return }
             show(thread, highlightedMessageID: searchResult.messageId, animated: true)
         }
-        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     private func show(_ thread: TSThread, highlightedMessageID: String?, animated: Bool) {
