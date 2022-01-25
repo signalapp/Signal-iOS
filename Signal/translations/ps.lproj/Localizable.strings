@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "د بیرته تر لاسه کولو عبارت پیسټ کړئ";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "ستاسې د بیرته تر لاسه کولو عبارت ستاسې لپاره یوه  12 -بې سارې عبارتې کلیمه ده. دغه عبارت وکاروئ تر څو خپل د پرداختونو اکاونټ تر لاسه کړئ.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "د بیرته تر لاسه کولو عبارت دننه کړئ";

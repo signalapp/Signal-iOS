@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "വീണ്ടെടുക്കൽ വാചകം ഒട്ടിക്കുക";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "നിങ്ങളുടെ വീണ്ടെടുക്കൽ വാക്യം നിങ്ങൾക്ക് അതുല്യമായ 12 വാക്കുകളുള്ള വാക്യമാണ്. നിങ്ങളുടെ പേയ്മെന്റ് അക്കൗണ്ട് പുന:സ്ഥാപിക്കാൻ ഇത് ഉപയോഗിക്കുക.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "വീണ്ടെടുക്കൽ വാക്യാംശം നൽകുക";

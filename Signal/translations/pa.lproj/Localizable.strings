@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਪੇਸਟ  ਕਰੋ";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "ਤੁਹਾਡਾ ਬਹਾਲੀ ਵਾਕ ਤੁਹਾਡੇ ਲਈ ਵਿਲੱਖਣ ਇੱਕ 12 ਸ਼ਬਦਾਂ ਵਾਲਾ ਵਾਕ ਹੁੰਦਾ ਹੈ। ਆਪਣੇ ਭੁਗਤਾਨ ਖਾਤੇ ਨੂੰ ਮੁੜ ਬਹਾਲ ਕਰਨ ਲਈ ਇਸ ਵਾਕ ਦੀ ਵਰਤੋਂ ਕਰੋ।";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "ਰਿਕਵਰੀ ਵਾਕ ਭਰੋ";

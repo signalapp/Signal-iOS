@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "రికవరీ పదబంధాన్ని అతికించండి";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "మీ రికవరీ పదబంధం మీకు ప్రత్యేకమైన 12-పదాల పదబంధం. మీ చెల్లింపుల ఖాతాను పునరుద్ధరించడానికి దీన్ని ఉపయోగించండి.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "రికవరీ పదబంధాన్ని నమోదు చేయండి";

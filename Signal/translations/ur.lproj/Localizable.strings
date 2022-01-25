@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "بازیافت کے جملے پیسٹ کریں";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "آپ کی بازیابی کا جملہ آپ کے لئے 12 الفاظ کا فقرہ ہے۔ اپنے ادائیگیوں کا اکاؤنٹ بحال کرنے کے لئے اس کا استعمال کریں۔";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "بازیابی کی عبارت درج کریں";
