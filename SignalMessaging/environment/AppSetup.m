@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSetup.h"
@@ -7,7 +7,6 @@
 #import "OWSProfileManager.h"
 #import "VersionMigrations.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>

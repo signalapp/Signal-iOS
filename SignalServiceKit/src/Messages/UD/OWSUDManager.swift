@@ -1,9 +1,8 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
-import SignalMetadataKit
 import SignalCoreKit
 import SignalClient
 
@@ -129,7 +128,7 @@ public class OWSUDSendingAccess: NSObject {
 
     @objc func warmCaches()
 
-    @objc func trustRoot() -> ECPublicKey
+    @objc var trustRoot: ECPublicKey { get }
 
     @objc func isUDVerboseLoggingEnabled() -> Bool
 
@@ -199,7 +198,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // MARK: Recipient State
 
-    var certificateValidator: SMKCertificateValidator
+    // Exposed for testing
+    public internal(set) var trustRoot: ECPublicKey
 
     // To avoid deadlock, never open a database transaction while
     // unfairLock is acquired.
@@ -213,7 +213,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public required override init() {
-        self.certificateValidator = SMKCertificateDefaultValidator(trustRoot: OWSUDManagerImpl.trustRoot())
+        self.trustRoot = OWSUDManagerImpl.trustRoot()
 
         super.init()
 
@@ -695,18 +695,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let nowMs = NSDate.ows_millisecondTimeStamp()
         let anHourFromNowMs = nowMs + kHourInMs
 
-        do {
-            try certificateValidator.throwswrapped_validate(senderCertificate: certificate, validationTime: anHourFromNowMs)
+        if case .some(true) = try? certificate.validate(trustRoot: trustRoot.key, time: anHourFromNowMs) {
             return true
-        } catch {
-            Logger.error("Invalid certificate")
-            return false
         }
-    }
-
-    @objc
-    public func trustRoot() -> ECPublicKey {
-        return OWSUDManagerImpl.trustRoot()
+        Logger.error("Invalid certificate")
+        return false
     }
 
     @objc

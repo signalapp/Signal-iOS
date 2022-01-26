@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 import Foundation
 import SignalCoreKit
-import SignalMetadataKit
 @testable import SignalServiceKit
 
 class StickerManagerTest: SSKBaseTestSwift {

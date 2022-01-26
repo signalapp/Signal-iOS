@@ -1,12 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 import Foundation
 import Curve25519Kit
 import SignalCoreKit
-import SignalMetadataKit
 import SignalClient
 @testable import SignalServiceKit
 
@@ -20,9 +19,10 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
     let aliceE164 = "+13213214321"
     let aliceUuid = UUID()
+    let trustRoot = IdentityKeyPair.generate()
     lazy var aliceAddress = SignalServiceAddress(uuid: aliceUuid, phoneNumber: aliceE164)
-    lazy var defaultSenderCert = try! SenderCertificate(buildSenderCertificateProto(uuidOnly: false).serializedData())
-    lazy var uuidOnlySenderCert = try! SenderCertificate(buildSenderCertificateProto(uuidOnly: true).serializedData())
+    lazy var defaultSenderCert = buildSenderCertificate(uuidOnly: false)
+    lazy var uuidOnlySenderCert = buildSenderCertificate(uuidOnly: true)
 
     override func setUp() {
         super.setUp()
@@ -37,7 +37,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                                                   transaction: transaction)
         }
 
-        udManagerImpl.certificateValidator = MockCertificateValidator()
+        udManagerImpl.trustRoot = ECPublicKey(trustRoot.publicKey)
         udManagerImpl.setSenderCertificate(uuidOnly: true, certificateData: Data(uuidOnlySenderCert.serialize()))
         udManagerImpl.setSenderCertificate(uuidOnly: false, certificateData: Data(defaultSenderCert.serialize()))
     }
@@ -256,48 +256,23 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     }
     // MARK: - Util
 
-    func buildServerCertificateProto() -> SMKProtoServerCertificate {
-        let serverKey = try! Curve25519.generateKeyPair().ecPublicKey().serialized
-        let certificateData = try! SMKProtoServerCertificateCertificate.builder(id: 1,
-                                                                                key: serverKey).buildSerializedData()
+    func buildSenderCertificate(uuidOnly: Bool) -> SenderCertificate {
+        let serverKeys = IdentityKeyPair.generate()
+        let serverCert = try! ServerCertificate(keyId: 1,
+                                                publicKey: serverKeys.publicKey,
+                                                trustRoot: trustRoot.privateKey)
 
-        let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)
+        var senderAddress = try! SealedSenderAddress(e164: nil, uuidString: aliceUuid.uuidString, deviceId: 1)
+        if !uuidOnly {
+            senderAddress.e164 = aliceE164
+        }
 
-        let wrapperProto = SMKProtoServerCertificate.builder(certificate: certificateData,
-                                                             signature: signatureData)
-
-        return try! wrapperProto.build()
-    }
-
-    func buildSenderCertificateProto(uuidOnly: Bool) -> SMKProtoSenderCertificate {
         let expires = NSDate.ows_millisecondTimeStamp() + kWeekInMs
-        let identityKey = try! Curve25519.generateKeyPair().ecPublicKey().serialized
-        let signer = buildServerCertificateProto()
-        let certificateBuilder = SMKProtoSenderCertificateCertificate.builder(senderDevice: 1,
-                                                                              expires: expires,
-                                                                              identityKey: identityKey,
-                                                                              signer: signer)
-        if !uuidOnly { certificateBuilder.setSenderE164(aliceE164) }
-        certificateBuilder.setSenderUuid(aliceUuid.uuidString)
-        let certificateData = try! certificateBuilder.buildSerializedData()
-
-        let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)
-
-        let wrapperProto = try! SMKProtoSenderCertificate.builder(certificate: certificateData,
-                                                                  signature: signatureData).build()
-
-        return wrapperProto
-    }
-}
-
-// MARK: -
-
-class MockCertificateValidator: NSObject, SMKCertificateValidator {
-    public func throwswrapped_validate(senderCertificate: SenderCertificate, validationTime: UInt64) throws {
-        // Do not throw
-    }
-
-    public func throwswrapped_validate(serverCertificate: ServerCertificate) throws {
-        // Do not throw
+        let senderKeys = IdentityKeyPair.generate()
+        return try! SenderCertificate(sender: senderAddress,
+                                      publicKey: senderKeys.publicKey,
+                                      expiration: expires,
+                                      signerCertificate: serverCert,
+                                      signerKey: serverKeys.privateKey)
     }
 }

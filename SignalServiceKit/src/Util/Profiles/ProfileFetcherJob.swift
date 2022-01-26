@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalMetadataKit
 
 @objc
 public enum ProfileFetchError: Int, Error {

@@ -5,7 +5,6 @@
 import Foundation
 
 import SignalClient
-import SignalMetadataKit
 import CommonCrypto
 
 public struct ProvisionMessage {

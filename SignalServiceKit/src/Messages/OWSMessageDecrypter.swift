@@ -1,9 +1,8 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalClient
-import SignalMetadataKit
 
 @objcMembers
 public class OWSMessageDecryptResult: NSObject {
@@ -667,14 +666,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return .failure(OWSAssertionError("Invalid serverTimestamp."))
         }
 
-        guard let localAddress = tsAccountManager.localAddress else {
-            return .failure(OWSAssertionError("missing local address"))
-        }
-
-        let localDeviceId = tsAccountManager.storedDeviceId()
-
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: Self.udManager.trustRoot())
-
         let cipher: SMKSecretSessionCipher
         do {
             cipher = try SMKSecretSessionCipher(
@@ -691,13 +682,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let decryptResult: SMKDecryptResult
         do {
-            decryptResult = try cipher.throwswrapped_decryptMessage(
-                certificateValidator: certificateValidator,
+            decryptResult = try cipher.decryptMessage(
+                trustRoot: Self.udManager.trustRoot.key,
                 cipherTextData: encryptedData,
                 timestamp: envelope.serverTimestamp,
-                localE164: localAddress.phoneNumber,
-                localUuid: localAddress.uuid,
-                localDeviceId: Int32(localDeviceId),
                 protocolContext: transaction
             )
         } catch let outerError as SecretSessionKnownSenderError {
@@ -724,9 +712,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             TSPreKeyManager.checkPreKeysIfNecessary()
         }
 
-        let senderE164 = decryptResult.senderE164
-        let senderUuid = decryptResult.senderUuid
-        let sourceAddress = SignalServiceAddress(uuid: senderUuid, phoneNumber: senderE164, trustLevel: .high)
+        let sourceAddress = decryptResult.senderAddress
         guard sourceAddress.isValid else {
             return .failure(OWSAssertionError("Invalid UD sender: \(sourceAddress)"))
         }
@@ -869,15 +855,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
 private extension SSKProtoEnvelope {
     func buildIdentifiedCopy(using error: SecretSessionKnownSenderError) -> SSKProtoEnvelope {
-        let senderAddress = SignalServiceAddress(
-            uuid: error.senderAddress.uuid,
-            phoneNumber: error.senderAddress.e164,
-            trustLevel: .high)
-        owsAssert(senderAddress.isValid)
+        owsAssert(error.senderAddress.isValid)
 
         let identifiedEnvelopeBuilder = asBuilder()
-        senderAddress.phoneNumber.map { identifiedEnvelopeBuilder.setSourceE164($0) }
-        senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
+        error.senderAddress.phoneNumber.map { identifiedEnvelopeBuilder.setSourceE164($0) }
+        error.senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
         identifiedEnvelopeBuilder.setSourceDevice(error.senderDeviceId)
         identifiedEnvelopeBuilder.setContent(error.unsealedContent)
 

@@ -1,9 +1,8 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalClient
-import SignalMetadataKit
 
 extension MessageSender {
     private var senderKeyQueue: DispatchQueue { .global(qos: .utility) }
