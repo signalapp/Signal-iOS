@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,8 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
 
     private let changePhoneNumberController: ChangePhoneNumberController
 
-    private let rootView = UIStackView()
+    private let bottomContainer = UIView()
+    private let scrollingStack = UIStackView()
 
     public init(changePhoneNumberController: ChangePhoneNumberController) {
         self.changePhoneNumberController = changePhoneNumberController
@@ -27,15 +28,26 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
     }
 
     private func createContents() {
-        rootView.axis = .vertical
-        rootView.alignment = .fill
-        rootView.isLayoutMarginsRelativeArrangement = true
-        rootView.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
-        view.addSubview(rootView)
-        rootView.autoPinEdge(toSuperviewSafeArea: .leading)
-        rootView.autoPinEdge(toSuperviewSafeArea: .trailing)
-        rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        self.autoPinView(toBottomOfViewControllerOrKeyboard: rootView, avoidNotch: true)
+        let scrollView = UIScrollView()
+        view.addSubview(scrollView)
+        scrollView.autoPinEdge(toSuperviewSafeArea: .leading)
+        scrollView.autoPinEdge(toSuperviewSafeArea: .trailing)
+        scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+
+        scrollingStack.axis = .vertical
+        scrollingStack.alignment = .fill
+        scrollingStack.isLayoutMarginsRelativeArrangement = true
+        scrollingStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
+        scrollView.addSubview(scrollingStack)
+        scrollingStack.autoMatch(.width, to: .width, of: scrollView)
+        scrollingStack.autoPinEdgesToSuperviewEdges()
+
+        bottomContainer.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
+        view.addSubview(bottomContainer)
+        bottomContainer.autoPinEdge(toSuperviewSafeArea: .leading)
+        bottomContainer.autoPinEdge(toSuperviewSafeArea: .trailing)
+        bottomContainer.autoPinEdge(.top, to: .bottom, of: scrollView)
+        autoPinView(toBottomOfViewControllerOrKeyboard: bottomContainer, avoidNotch: true)
 
         updateContents()
     }
@@ -93,35 +105,20 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
         continueButton.autoSetHeightUsingFont()
         continueButton.cornerRadius = 8
 
-        let cancelButton = OWSFlatButton.button(title: CommonStrings.cancelButton,
-                                                font: UIFont.ows_dynamicTypeBody,
-                                                titleColor: .ows_accentBlue,
-                                                backgroundColor: .clear,
-                                                target: self,
-                                                selector: #selector(didTapCancel))
-        cancelButton.autoSetHeightUsingFont()
-        cancelButton.cornerRadius = 8
-
-        rootView.removeAllSubviews()
-        rootView.addArrangedSubviews([
+        scrollingStack.removeAllSubviews()
+        scrollingStack.addArrangedSubviews([
             UIView.spacer(withHeight: 40),
             heroStack,
             UIView.spacer(withHeight: 24),
             titleLabel,
             UIView.spacer(withHeight: 12),
             descriptionLabel,
-            UIView.vStretchingSpacer(),
-            continueButton,
-            UIView.spacer(withHeight: 20),
-            cancelButton
+            UIView.vStretchingSpacer(minHeight: 16)
         ])
-    }
 
-    @objc
-    private func didTapCancel(_ sender: UIButton) {
-        AssertIsOnMainThread()
-
-        changePhoneNumberController.cancelFlow(viewController: self)
+        bottomContainer.removeAllSubviews()
+        bottomContainer.addSubview(continueButton)
+        continueButton.autoPinEdgesToSuperviewMargins()
     }
 
     @objc
