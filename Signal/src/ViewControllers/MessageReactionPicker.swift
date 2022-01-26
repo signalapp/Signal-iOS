@@ -62,16 +62,30 @@ class MessageReactionPicker: UIStackView {
         layoutMargins = UIEdgeInsets(top: pickerPadding, leading: pickerPadding, bottom: pickerPadding, trailing: pickerPadding)
 
         var emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.read { transaction in
-            return ReactionManager.emojiSet(transaction: transaction).compactMap { Emoji(rawValue: $0)?.withPreferredSkinTones(transaction: transaction) }
+            let customSetStrings = ReactionManager.customEmojiSet(transaction: transaction) ?? []
+            let customSet = customSetStrings.lazy.map { EmojiWithSkinTones(rawValue: $0) }
+
+            // Any holes or invalid choices are filled in with the default reactions.
+            // This could happen if another platform supports an emoji that we don't yet (say, because there's a newer
+            // version of Unicode), or if a bug results in a string that's not valid at all, or fewer entries than the
+            // default.
+            return ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> EmojiWithSkinTones in
+                // Treat "out-of-bounds index" and "in-bounds but not valid" the same way.
+                if let customReaction = customSet[safe: i] ?? nil {
+                    return customReaction
+                } else {
+                    return EmojiWithSkinTones(rawValue: defaultEmoji)!
+                }
+            }
         }
 
         var addAnyButton = !self.configureMode
 
         if !self.configureMode, let selectedEmoji = self.selectedEmoji {
             // If the local user reacted with any of the default emoji set,
-            // regardless of skin tone, we should show it in the normal place
-            // in the picker bar.
-            if let index = emojiSet.map({ $0.baseEmoji }).firstIndex(of: selectedEmoji.baseEmoji) {
+            // we should show it in the normal place in the picker bar.
+            // NOTE: This used to match independent of skin tone, but we decided to drop that behavior.
+            if let index = emojiSet.firstIndex(of: selectedEmoji) {
                 emojiSet[index] = selectedEmoji
             } else {
                 emojiSet.append(selectedEmoji)
