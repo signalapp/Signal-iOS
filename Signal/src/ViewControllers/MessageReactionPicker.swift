@@ -66,10 +66,11 @@ class MessageReactionPicker: UIStackView {
             let customSet = customSetStrings.lazy.map { EmojiWithSkinTones(rawValue: $0) }
 
             // Any holes or invalid choices are filled in with the default reactions.
-            // This should never happen piecemeal, but we've had bugs in the past where a string isn't considered a
-            // valid emoji, and that *removed* the reaction from iOS in a way that could not consistently be reset
-            // from the UI. So now we make sure there are always as many reactions as the default set.
+            // This could happen if another platform supports an emoji that we don't yet (say, because there's a newer
+            // version of Unicode), or if a bug results in a string that's not valid at all, or fewer entries than the
+            // default.
             return ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> EmojiWithSkinTones in
+                // Treat "out-of-bounds index" and "in-bounds but not valid" the same way.
                 if let customReaction = customSet[safe: i] ?? nil {
                     return customReaction
                 } else {
