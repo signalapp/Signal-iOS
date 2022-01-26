@@ -590,34 +590,47 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    private func fetchGroupChangeActions(groupId: Data,
-                                         groupV2Params: GroupV2Params,
-                                         localUuid: UUID,
-                                         includeCurrentRevision: Bool,
-                                         firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
+    private struct GroupChangePage {
+        let changes: [GroupV2Change]
+        let earlyEnd: UInt32?
 
+        static func parseEarlyEnd(fromGroupRangeHeader header: String?) -> UInt32? {
+            guard let header = header else {
+                OWSLogger.warn("Missing Content-Range for group update request with 206 response")
+                return nil
+            }
+
+            let pattern = try! NSRegularExpression(pattern: #"^versions (\d+)-(\d+)/(\d+)$"#)
+            guard let match = pattern.firstMatch(in: header, range: header.entireRange) else {
+                OWSLogger.warn("Unparseable Content-Range for group update request: \(header)")
+                return nil
+            }
+
+            guard let earlyEndRange = Range(match.range(at: 1), in: header) else {
+                owsFailDebug("Could not translate NSRange to Range<String.Index>")
+                return nil
+            }
+
+            guard let earlyEndValue = UInt32(header[earlyEndRange]) else {
+                OWSLogger.warn("Invalid early-end in Content-Range for group update request: \(header)")
+                return nil
+            }
+
+            return earlyEndValue
+        }
+    }
+
+    /// Fetches a single page of group changes from the service.
+    ///
+    /// This makes a request, then parses the changes that came back, converting them from protobuf form to
+    /// structured data. However, there may still be additional pages if there have been many changes following
+    /// `fromRevision`.
+    private func fetchGroupChangeActionSinglePage(groupId: Data,
+                                                  groupV2Params: GroupV2Params,
+                                                  fromRevision: UInt32,
+                                                  requireSnapshotForFirstChange: Bool) -> Promise<GroupChangePage> {
         let requestBuilder: RequestBuilder = { (authCredential) in
-            return firstly(on: .global()) { () -> GroupsV2Request in
-                let (fromRevision, requireSnapshotForFirstChange) =
-                    try self.databaseStorage.read { (transaction) throws -> (UInt32, Bool) in
-                        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                            if let firstKnownRevision = firstKnownRevision {
-                                Logger.info("Group not in database, using first known revision.")
-                                return (firstKnownRevision, true)
-                            }
-                            // This probably isn't an error and will be handled upstream.
-                            throw GroupsV2Error.groupNotInDatabase
-                        }
-                        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                            throw OWSAssertionError("Invalid group model.")
-                        }
-                        if includeCurrentRevision {
-                            return (groupModel.revision, true)
-                        } else {
-                            return (groupModel.revision + 1, false)
-                        }
-                    }
-
+            firstly(on: .global()) { () -> GroupsV2Request in
                 return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
                                                                               fromRevision: fromRevision,
                                                                               requireSnapshotForFirstChange: requireSnapshotForFirstChange,
@@ -633,22 +646,103 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                        groupId: groupId,
                                        behavior403: .ignore,
                                        behavior404: .fail)
-        }.map(on: .global()) { (response: HTTPResponse) -> GroupsProtoGroupChanges in
+        }.map(on: .global()) { (response: HTTPResponse) -> (GroupsProtoGroupChanges, UInt32?) in
             guard let groupChangesProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
-            return try GroupsProtoGroupChanges(serializedData: groupChangesProtoData)
-        }.then(on: .global()) { (groupChangesProto: GroupsProtoGroupChanges) -> Promise<[GroupV2Change]> in
+            let earlyEnd: UInt32?
+            if response.responseStatusCode == 206 {
+                let groupRangeHeader = response.responseHeaders.first {
+                    $0.key.caseInsensitiveCompare("content-range") == .orderedSame
+                }?.value
+                earlyEnd = GroupChangePage.parseEarlyEnd(fromGroupRangeHeader: groupRangeHeader)
+            } else {
+                earlyEnd = nil
+            }
+            return (try GroupsProtoGroupChanges(serializedData: groupChangesProtoData), earlyEnd)
+        }.then(on: .global()) { (groupChangesProto: GroupsProtoGroupChanges,
+                                 earlyEnd: UInt32?) -> Promise<GroupChangePage> in
             return firstly {
                 // We can ignoreSignature; these protos came from the service.
                 self.fetchAllAvatarData(groupChangesProto: groupChangesProto,
                                         ignoreSignature: true,
                                         groupV2Params: groupV2Params)
-            }.map(on: .global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> [GroupV2Change] in
-                try GroupsV2Protos.parseChangesFromService(groupChangesProto: groupChangesProto,
-                                                           downloadedAvatars: downloadedAvatars,
-                                                           groupV2Params: groupV2Params)
+            }.map(on: .global()) { (downloadedAvatars: GroupV2DownloadedAvatars) -> GroupChangePage in
+                let changes = try GroupsV2Protos.parseChangesFromService(groupChangesProto: groupChangesProto,
+                                                                         downloadedAvatars: downloadedAvatars,
+                                                                         groupV2Params: groupV2Params)
+                return GroupChangePage(changes: changes, earlyEnd: earlyEnd)
             }
+        }
+    }
+
+    /// Repeatedly calls `fetchGroupChangeActionSinglePage(...)` until all pages have been fetched.
+    ///
+    /// Returns the data still chunked by page to avoid copying at each intermediate step.
+    private func fetchGroupChangeActionPages(groupId: Data,
+                                             groupV2Params: GroupV2Params,
+                                             fromRevision: UInt32,
+                                             requireSnapshotForFirstChange: Bool) -> Promise<[[GroupV2Change]]> {
+        return fetchGroupChangeActionSinglePage(groupId: groupId,
+                                                groupV2Params: groupV2Params,
+                                                fromRevision: fromRevision,
+                                                requireSnapshotForFirstChange: requireSnapshotForFirstChange)
+            .then(on: .global()) { (page: GroupChangePage) -> Promise<[[GroupV2Change]]> in
+                guard let pageEnd = page.earlyEnd else {
+                    return .value([page.changes])
+                }
+                return self.fetchGroupChangeActionPages(groupId: groupId,
+                                                        groupV2Params: groupV2Params,
+                                                        fromRevision: pageEnd + 1,
+                                                        requireSnapshotForFirstChange: false)
+                    .map(on: .global()) { (changes: [[GroupV2Change]]) -> [[GroupV2Change]] in
+                        var result = changes
+                        result.insert(page.changes, at: 0)
+                        return result
+                    }
+        }
+    }
+
+    private func fetchGroupChangeActions(groupId: Data,
+                                         groupV2Params: GroupV2Params,
+                                         localUuid: UUID,
+                                         includeCurrentRevision: Bool,
+                                         firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
+        do {
+            let (fromRevision, requireSnapshotForFirstChange) =
+                try self.databaseStorage.read { (transaction) throws -> (UInt32, Bool) in
+                    guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                        if let firstKnownRevision = firstKnownRevision {
+                            Logger.info("Group not in database, using first known revision.")
+                            return (firstKnownRevision, true)
+                        }
+                        // This probably isn't an error and will be handled upstream.
+                        throw GroupsV2Error.groupNotInDatabase
+                    }
+                    guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                        throw OWSAssertionError("Invalid group model.")
+                    }
+                    if includeCurrentRevision {
+                        return (groupModel.revision, true)
+                    } else {
+                        return (groupModel.revision + 1, false)
+                    }
+                }
+
+            return fetchGroupChangeActionPages(groupId: groupId,
+                                               groupV2Params: groupV2Params,
+                                               fromRevision: fromRevision,
+                                               requireSnapshotForFirstChange: requireSnapshotForFirstChange)
+                .map(on: .global()) { (changes: [[GroupV2Change]]) -> [GroupV2Change] in
+                    // Combine all the pages once we're done to avoid copying at each intermediate step.
+                    // Start from the second page to avoid an extra copy in the single-page case.
+                    guard let firstPage = changes.first else {
+                        return []
+                    }
+                    return changes.dropFirst().reduce(into: firstPage, { $0 += $1 })
+                }
+        } catch {
+            return Promise(error: error)
         }
     }
 
