@@ -8,7 +8,6 @@
 #import "OWSDevice.h"
 #import "OWSIdentityManager.h"
 #import "ProfileManagerProtocol.h"
-#import "RemoteAttestation.h"
 #import "SSKEnvironment.h"
 #import "SignedPrekeyRecord.h"
 #import "TSAccountManager.h"
@@ -612,18 +611,14 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 #pragma mark - Remote Attestation
 
-+ (TSRequest *)remoteAttestationAuthRequestForService:(RemoteAttestationService)service
++ (TSRequest *)remoteAttestationAuthRequestForKeyBackup
 {
-    NSString *path;
-    switch (service) {
-        case RemoteAttestationServiceContactDiscovery:
-            path = @"v1/directory/auth";
-            break;
-        case RemoteAttestationServiceKeyBackup:
-            path = @"v1/backup/auth";
-            break;
-    }
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/backup/auth"] method:@"GET" parameters:@{}];
+}
+
++ (TSRequest *)remoteAttestationAuthRequestForContactDiscovery
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/directory/auth"] method:@"GET" parameters:@{}];
 }
 
 #pragma mark - CDS

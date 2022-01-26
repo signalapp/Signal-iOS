@@ -56,12 +56,12 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
     private let changePhoneNumberController: ChangePhoneNumberController
     private let oldPhoneNumber: PhoneNumber
     private let newPhoneNumber: PhoneNumber
-    private let kbsAuth: RemoteAttestationAuth
+    private let kbsAuth: RemoteAttestation.Auth
 
     init(changePhoneNumberController: ChangePhoneNumberController,
          oldPhoneNumber: PhoneNumber,
          newPhoneNumber: PhoneNumber,
-         kbsAuth: RemoteAttestationAuth) {
+         kbsAuth: RemoteAttestation.Auth) {
         self.changePhoneNumberController = changePhoneNumberController
         self.oldPhoneNumber = oldPhoneNumber
         self.newPhoneNumber = newPhoneNumber

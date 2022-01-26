@@ -417,7 +417,7 @@ public class OnboardingController: NSObject {
 
     public private(set) var twoFAPin: String?
 
-    private var kbsAuth: RemoteAttestationAuth?
+    private var kbsAuth: RemoteAttestation.Auth?
 
     public private(set) var verificationRequestCount: UInt = 0
 

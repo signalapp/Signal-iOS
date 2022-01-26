@@ -1,8 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
-
-#import <SignalServiceKit/RemoteAttestation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -135,7 +133,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 #pragma mark - Remote Attestation
 
-+ (TSRequest *)remoteAttestationAuthRequestForService:(RemoteAttestationService)service;
++ (TSRequest *)remoteAttestationAuthRequestForKeyBackup;
++ (TSRequest *)remoteAttestationAuthRequestForContactDiscovery;
 
 #pragma mark - CDS
 

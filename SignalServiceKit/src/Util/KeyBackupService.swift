@@ -80,7 +80,7 @@ public class KeyBackupService: NSObject {
     // When changing number, we need to verify the PIN against the new number's KBS
     // record in order to generate a registration lock token. It's important that this
     // happens without touching any of the state we maintain around our account.
-    public static func acquireRegistrationLockForNewNumber(with pin: String, and auth: RemoteAttestationAuth) -> Promise<String> {
+    public static func acquireRegistrationLockForNewNumber(with pin: String, and auth: RemoteAttestation.Auth) -> Promise<String> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
@@ -92,7 +92,7 @@ public class KeyBackupService: NSObject {
 
     private static func acquireRegistrationLockForNewNumber(
         pin: String,
-        auth: RemoteAttestationAuth,
+        auth: RemoteAttestation.Auth,
         enclavesToCheck: [KeyBackupEnclave]
     ) -> Promise<String> {
         guard let enclave = enclavesToCheck.first else {
@@ -115,7 +115,7 @@ public class KeyBackupService: NSObject {
 
     private static func acquireRegistrationLockForNewNumber(
         pin: String,
-        auth: RemoteAttestationAuth,
+        auth: RemoteAttestation.Auth,
         enclave: KeyBackupEnclave
     ) -> Promise<String> {
         Logger.info("Attempting to acquire registration lock from enclave \(enclave.name)")
@@ -143,7 +143,7 @@ public class KeyBackupService: NSObject {
     }
 
     /// Loads the users key, if any, from the KBS into the database.
-    public static func restoreKeysAndBackup(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
+    public static func restoreKeysAndBackup(with pin: String, and auth: RemoteAttestation.Auth? = nil) -> Promise<Void> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
@@ -155,7 +155,7 @@ public class KeyBackupService: NSObject {
 
     private static func restoreKeysAndBackup(
         pin: String,
-        auth: RemoteAttestationAuth?,
+        auth: RemoteAttestation.Auth?,
         enclavesToCheck: [KeyBackupEnclave]
     ) -> Promise<Void> {
         guard let enclave = enclavesToCheck.first else {
@@ -178,7 +178,7 @@ public class KeyBackupService: NSObject {
 
     private static func restoreKeysAndBackup(
         pin: String,
-        auth: RemoteAttestationAuth?,
+        auth: RemoteAttestation.Auth?,
         enclave: KeyBackupEnclave
     ) -> Promise<Void> {
         Logger.info("Attempting KBS restore from enclave \(enclave.name)")
@@ -274,7 +274,7 @@ public class KeyBackupService: NSObject {
 
     private static func restoreKeys(
         pin: String,
-        auth: RemoteAttestationAuth?,
+        auth: RemoteAttestation.Auth?,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false
     ) -> Promise<RestoredKeys> {
@@ -933,7 +933,7 @@ public class KeyBackupService: NSObject {
     // MARK: - Requests
 
     private static func enclaveRequest<RequestType: KBSRequestOption>(
-        auth: RemoteAttestationAuth? = nil,
+        auth: RemoteAttestation.Auth? = nil,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false,
         requestOptionBuilder: @escaping (Token) throws -> RequestType
@@ -1043,7 +1043,7 @@ public class KeyBackupService: NSObject {
         accessKey: Data,
         encryptedMasterKey: Data,
         enclave: KeyBackupEnclave,
-        auth: RemoteAttestationAuth? = nil
+        auth: RemoteAttestation.Auth? = nil
     ) -> Promise<KeyBackupProtoBackupResponse> {
         return enclaveRequest(auth: auth, enclave: enclave) { token -> KeyBackupProtoBackupRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
@@ -1075,7 +1075,7 @@ public class KeyBackupService: NSObject {
     private static func restoreKeyRequest(
         accessKey: Data,
         enclave: KeyBackupEnclave,
-        auth: RemoteAttestationAuth? = nil,
+        auth: RemoteAttestation.Auth? = nil,
         ignoreCachedToken: Bool = false
     ) -> Promise<KeyBackupProtoRestoreResponse> {
         return enclaveRequest(auth: auth, enclave: enclave, ignoreCachedToken: ignoreCachedToken) { token -> KeyBackupProtoRestoreRequest in
@@ -1254,7 +1254,7 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    private static func fetchBackupId(auth: RemoteAttestationAuth?, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
+    private static func fetchBackupId(auth: RemoteAttestation.Auth?, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
         if !ignoreCachedToken, let currentToken = Token.next(
             enclaveName: enclave.name
         ) { return Promise.value(currentToken.backupId) }

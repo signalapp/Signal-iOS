@@ -240,7 +240,7 @@ class ChangePhoneNumberController: Dependencies {
     }
 
     public func verificationDidRequire2FAPin(viewController: UIViewController,
-                                             kbsAuth: RemoteAttestationAuth) {
+                                             kbsAuth: RemoteAttestation.Auth) {
         AssertIsOnMainThread()
 
         Logger.info("")

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 // Any Obj-C used by SSK Swift must be imported.
@@ -65,7 +65,6 @@
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/PreKeyBundle+jsonDict.h>
 #import <SignalServiceKit/RESTNetworkManager.h>
-#import <SignalServiceKit/RemoteAttestation.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SSKJobRecord.h>
 #import <SignalServiceKit/SSKMessageDecryptJobRecord.h>

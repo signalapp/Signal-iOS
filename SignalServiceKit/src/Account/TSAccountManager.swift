@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -341,12 +341,14 @@ extension TSAccountManager {
             guard let backupCredentials = json["backupCredentials"] as? [String: Any] else {
                 return OWSAssertionError("Invalid response.")
             }
-            guard let auth = RemoteAttestation.parseAuthParams(backupCredentials) else {
+
+            do {
+                let auth = try RemoteAttestation.Auth(authParams: backupCredentials)
+                return RegistrationMissing2FAPinError(remoteAttestationAuth: auth)
+            } catch {
                 owsFailDebug("Remote attestation auth could not be parsed: \(json).")
                 return OWSAssertionError("Invalid response.")
             }
-
-            return RegistrationMissing2FAPinError(remoteAttestationAuth: auth)
         default:
             owsFailDebugUnlessNetworkFailure(error)
             return error
@@ -394,10 +396,9 @@ public extension TSAccountManager {
 @objc
 public class RegistrationMissing2FAPinError: NSObject, Error, IsRetryableProvider, UserErrorDescriptionProvider {
 
-    @objc
-    public let remoteAttestationAuth: RemoteAttestationAuth
+    public let remoteAttestationAuth: RemoteAttestation.Auth
 
-    required init(remoteAttestationAuth: RemoteAttestationAuth) {
+    required init(remoteAttestationAuth: RemoteAttestation.Auth) {
         self.remoteAttestationAuth = remoteAttestationAuth
     }
 
