@@ -1,7 +1,7 @@
-• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Phone Number to try it out.
+Vaihtuiko puhelinnumerosi? Voit nyt vaihtaa Signaliin rekisteröityä puhelinnumeroa menettämättä viestihistoriaa, ryhmiä ja Signal-profiiliasi. Valitse Asetukset > Tili > Vaihda puhelinnumeroa.
 Uusi toiminto: voit valita useita keskusteluja keskustelulistalta ja merkitä ne luetuiksi, arkistoida ne tai poistaa ne. Napauta profiilikuvaasi vasemmassa ylänurkassa ja kokeile.
 Arkistoituihin keskusteluihin pääsee nyt helpommin käsiksi. Napauta vain profiilikuvaasi vasemmassa ylänurkassa.
 Niin paljon reaktioita, niin vähän aikaa. Voit nyt käyttää helppoa hakutoimintoa oikean reaktion löytämiseen.
 Mukauta vakioreaktiosi niin pääset niihin nopeasti käsiksi.
 Ilmoitusväsymystä? Pyyhkäise vasemmalle keskustelulistan keskustelua niin saat kytkettyä mykistyksen helposti päälle ja pois.
-• Fixed a bug that would cause parts of long text messages to become invisible in the input box.
+Korjattu virhe, joka saattoi aiheuttaa sen, että pitkä viesti ei näkynyt kokonaan tekstinsyöttöruudussa.

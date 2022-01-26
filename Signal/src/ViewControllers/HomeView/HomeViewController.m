@@ -93,6 +93,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [super themeDidChange];
 
     [self reloadTableDataAndResetCellContentCache];
+    [self applyThemeToContextMenuAndToolbar];
 }
 
 - (void)applyTheme

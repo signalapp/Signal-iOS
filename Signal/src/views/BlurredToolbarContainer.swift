@@ -15,8 +15,11 @@ class BlurredToolbarContainer: UIView {
         toolbar.autoPinEdge(toSuperviewSafeArea: .bottom)
         toolbar.autoPinWidthToSuperview()
         toolbar.autoPinEdge(toSuperviewSafeArea: .top)
-        toolbar.tintColor = Theme.primaryIconColor
+        themeChanged()
+    }
 
+    func themeChanged() {
+        toolbar.tintColor = Theme.primaryIconColor
         if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             let color = Theme.navbarBackgroundColor

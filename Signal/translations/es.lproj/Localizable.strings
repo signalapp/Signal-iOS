@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Pegar frase de recuperación";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Tu frase de recuperación son las 24 palabras que solo tú conoces. Úsala para recuperar tu cartera de pagos.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Introducir frase de recuperación";

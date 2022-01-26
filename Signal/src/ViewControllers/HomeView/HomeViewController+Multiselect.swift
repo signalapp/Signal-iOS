@@ -11,7 +11,7 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         if viewState.multiSelectState.parentButton == nil {
-            showMenu(button: sender)
+            showMenu(button: sender, animated: true)
         } else {
             hideMenu()
         }
@@ -88,9 +88,20 @@ extension HomeViewController {
         }
     }
 
+    func applyThemeToContextMenuAndToolbar() {
+        viewState.multiSelectState.toolbar?.themeChanged()
+        // if the context menu is shown
+        if let btn = viewState.multiSelectState.parentButton, viewState.multiSelectState.contextMenuView != nil {
+            // we have to create it again (changed colors, icons etc.)
+            hideMenuAndExecuteWhenVanished(animated: false) {
+                self.showMenu(button: btn, animated: false)
+            }
+        }
+    }
+
     // MARK: private helper
 
-    private func showMenu(button: UIButton) {
+    private func showMenu(button: UIButton?, animated: Bool) {
         AssertIsOnMainThread()
 
         guard viewState.multiSelectState.contextMenuView == nil else {
@@ -142,9 +153,15 @@ extension HomeViewController {
 
         viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
         view.addSubview(viewState.multiSelectState.contextMenuView!)
-        animateIn(menu: viewState.multiSelectState.contextMenuView!, from: button) { [weak self] (_) in
+        let completion = { [weak self] (_: Bool) in
             self?.viewState.multiSelectState.contextMenuView!.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
             self?.navigationController?.navigationBar.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
+        }
+        if animated {
+            animateIn(menu: viewState.multiSelectState.contextMenuView!, from: button, completion: completion)
+        } else {
+            viewState.multiSelectState.contextMenuView?.autoPinEdgesToSuperviewSafeArea()
+            completion(true)
         }
     }
 
@@ -157,10 +174,10 @@ extension HomeViewController {
     }
 
     private func hideMenu() {
-        hideMenuAndExecuteWhenVanished()
+        hideMenuAndExecuteWhenVanished(animated: true)
     }
 
-    private func hideMenuAndExecuteWhenVanished(completion: (() -> Void)? = nil) {
+    private func hideMenuAndExecuteWhenVanished(animated: Bool = true, completion handler: (() -> Void)? = nil) {
         AssertIsOnMainThread()
 
         if let navBar = navigationController?.navigationBar {
@@ -171,10 +188,16 @@ extension HomeViewController {
             }
         }
 
-        animateOut(menu: viewState.multiSelectState.contextMenuView, from: viewState.multiSelectState.parentButton) { [weak self] (_) in
+        let completion = { [weak self] (_: Bool) in
+            self?.viewState.multiSelectState.contextMenuView?.removeFromSuperview()
             self?.viewState.multiSelectState.parentButton = nil
             self?.viewState.multiSelectState.contextMenuView = nil
-            completion?()
+            handler?()
+        }
+        if animated {
+            animateOut(menu: viewState.multiSelectState.contextMenuView, from: viewState.multiSelectState.parentButton, completion: completion)
+        } else {
+            completion(true)
         }
     }
 
@@ -462,7 +485,7 @@ public class MultiSelectState: NSObject {
     var actionPerformed = false
 
     @objc
-    var isActive: Bool { return _isActive}
+    var isActive: Bool { return _isActive }
 
     fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
         if active != _isActive {

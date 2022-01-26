@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -290,8 +290,7 @@ public extension UIView {
         ]
     }
 
-    @discardableResult @objc
-    func autoPinWidthToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+    @discardableResult func autoPinWidthToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of widths to the positioning of edges
         // "Width less than or equal to superview margin width"
@@ -300,12 +299,11 @@ public extension UIView {
         let resolvedRelation = relation.inverse
         return [
             autoPinEdge(toSuperviewEdge: .leading, withInset: .zero, relation: resolvedRelation),
-            autoPinEdge(toSuperviewEdge: .trailing, withInset: .zero, relation: resolvedRelation),
+            autoPinEdge(toSuperviewEdge: .trailing, withInset: .zero, relation: resolvedRelation)
         ]
     }
 
-    @discardableResult @objc
-    func autoPinHeightToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+    @discardableResult func autoPinHeightToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of height to the positioning of edges
         // "Height less than or equal to superview margin height"
@@ -314,12 +312,11 @@ public extension UIView {
         let resolvedRelation = relation.inverse
         return [
             autoPinEdge(toSuperviewEdge: .top, withInset: .zero, relation: resolvedRelation),
-            autoPinEdge(toSuperviewEdge: .bottom, withInset: .zero, relation: resolvedRelation),
+            autoPinEdge(toSuperviewEdge: .bottom, withInset: .zero, relation: resolvedRelation)
         ]
     }
 
-    @discardableResult @objc
-    func autoPinWidthToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+    @discardableResult func autoPinWidthToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of widths to the positioning of edges
         // "Width less than or equal to superview margin width"
@@ -328,12 +325,11 @@ public extension UIView {
         let resolvedRelation = relation.inverse
         return [
             autoPinEdge(toSuperviewMargin: .leading, relation: resolvedRelation),
-            autoPinEdge(toSuperviewMargin: .trailing, relation: resolvedRelation),
+            autoPinEdge(toSuperviewMargin: .trailing, relation: resolvedRelation)
         ]
     }
 
-    @discardableResult @objc
-    func autoPinHeightToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+    @discardableResult func autoPinHeightToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of height to the positioning of edges
         // "Height less than or equal to superview margin height"
@@ -342,7 +338,7 @@ public extension UIView {
         let resolvedRelation = relation.inverse
         return [
             autoPinEdge(toSuperviewMargin: .top, relation: resolvedRelation),
-            autoPinEdge(toSuperviewMargin: .bottom, relation: resolvedRelation),
+            autoPinEdge(toSuperviewMargin: .bottom, relation: resolvedRelation)
         ]
     }
 
@@ -436,6 +432,10 @@ public extension UIViewController {
             viewControllerToPresent.modalPresentationStyle = .formSheet
         }
         present(viewControllerToPresent, animated: animated, completion: completion)
+    }
+
+    var hasExpandedSplitViewController: Bool {
+        splitViewController != nil && !splitViewController!.isCollapsed
     }
 }
 

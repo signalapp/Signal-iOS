@@ -143,6 +143,10 @@ extension HomeViewController {
             }
         }
 
+        // Ss soon as structural changes are applied to the table we can not use our optimized update implementation
+        // anymore. All indexPaths are based on the old model (before any change was applied) and if we
+        // animate move, insert and delete changes the indexPaths of the to be updated rows will differ.
+        var useFallBackUpdateMechanism = false
         for rowChange in rowChanges {
 
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
@@ -155,9 +159,11 @@ extension HomeViewController {
             case .delete(let oldIndexPath):
                 checkAndSetTableUpdates()
                 tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
+                useFallBackUpdateMechanism = true
             case .insert(let newIndexPath):
                 checkAndSetTableUpdates()
                 tableView.insertRows(at: [newIndexPath], with: rowAnimation)
+                useFallBackUpdateMechanism = true
             case .move(let oldIndexPath, let newIndexPath):
                 // NOTE: if we're moving within the same section, we perform
                 //       moves using a "delete" and "insert" rather than a "move".
@@ -174,12 +180,15 @@ extension HomeViewController {
                     tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
                     tableView.insertRows(at: [newIndexPath], with: rowAnimation)
                 }
+                useFallBackUpdateMechanism = true
             case .update(let oldIndexPath):
                 if tableView.isEditing && !viewState.multiSelectState.isActive {
                     checkAndSetTableUpdates()
                 }
-                let tds = tableView.dataSource as? HVTableDataSource
-                if tds == nil || !tds!.updateVisibleCellContent(at: oldIndexPath, for: tableView) {
+                if !useFallBackUpdateMechanism, let tds = tableView.dataSource as? HVTableDataSource {
+                    useFallBackUpdateMechanism = !tds.updateVisibleCellContent(at: oldIndexPath, for: tableView)
+                }
+                if useFallBackUpdateMechanism {
                     checkAndSetTableUpdates()
                     tableView.reloadRows(at: [oldIndexPath], with: .none)
                 }

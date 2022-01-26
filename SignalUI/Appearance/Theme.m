@@ -422,9 +422,14 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray15Color;
 }
 
++ (UIColor *)tableCell2SelectedBackgroundColor2
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray15Color;
+}
+
 + (UIColor *)tableCell2MultiSelectedBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray05Color;
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray05Color;
 }
 
 + (UIColor *)tableCell2PresentedSelectedBackgroundColor

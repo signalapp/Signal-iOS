@@ -569,15 +569,6 @@ extension HVTableDataSource: UITableViewDataSource {
             }
         }()
 
-        if let splitViewController = self.splitViewController {
-            if !splitViewController.isCollapsed {
-                cell.selectedBackgroundView?.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
-                cell.backgroundColor = Theme.secondaryBackgroundColor
-            }
-        } else {
-            owsFailDebug("Missing splitViewController.")
-        }
-
         cell.tintColor = .ows_accentBlue
         return cell
     }
@@ -616,7 +607,6 @@ extension HVTableDataSource: UITableViewDataSource {
         let contentToken = cellConfigurationAndContentToken.contentToken
 
         cell.configure(cellContentToken: contentToken)
-
         let thread = configuration.thread.threadRecord
         let cellName: String = {
             if let groupThread = thread as? TSGroupThread {
@@ -823,9 +813,11 @@ extension HVTableDataSource {
         if let primKey = threadViewModel(forIndexPath: indexPath, expectsSuccess: false)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
             for cell in tableView.visibleCells {
                 if let homeCell = cell as? HomeViewCell, let myKey = homeCell.thread?.uniqueId, myKey == primKey, let token = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken {
+                    let cellWasVisible = homeCell.isCellVisible
                     homeCell.reset()
                     // reduces flicker effects for already visible cells
                     homeCell.configure(cellContentToken: token, asyncAvatarLoadingAllowed: false)
+                    homeCell.isCellVisible = cellWasVisible
                     return true
                 }
             }
@@ -840,13 +832,15 @@ extension HVTableDataSource {
 
     // This method can be called from any thread.
     private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
-                                               lastReloadDate: Date?) -> HomeViewCell.Configuration {
+                                               lastReloadDate: Date?,
+                                               isSplitViewControllerExpanded: Bool) -> HomeViewCell.Configuration {
         owsAssertDebug(threadViewModel.homeViewInfo != nil)
 
         let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
         let configuration = HomeViewCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,
-                                                       isBlocked: isBlocked)
+                                                       isBlocked: isBlocked,
+                                                       isSplitViewControllerExpanded: isSplitViewControllerExpanded)
         return configuration
     }
 
@@ -868,7 +862,8 @@ extension HVTableDataSource {
             return self.lastReloadDate
         }()
         let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                        lastReloadDate: lastReloadDate)
+                                                        lastReloadDate: lastReloadDate,
+                                                        isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
         let cellContentCache = viewController.cellContentCache
         let contentToken = { () -> HVCellContentToken in
             // If we have an existing HVCellContentToken, use it.
@@ -934,7 +929,8 @@ extension HVTableDataSource {
                 ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                            lastReloadDate: lastReloadDate)
+                                                            lastReloadDate: lastReloadDate,
+                                                            isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
             let contentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
         }.done(on: .main) { (threadViewModel: ThreadViewModel,

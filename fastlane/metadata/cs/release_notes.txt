@@ -1,7 +1,7 @@
-• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Phone Number to try it out.
+• Máte nové telefonní číslo? Nyní můžete změnit číslo, které jste zaregistrovali do Signalu, aniž byste přišli o historii chatu, skupiny a profil Signal. Přejděte do Nastavení > Účet > Změnit telefonní číslo a vyzkoušejte to.
 • Nová funkce více výběrů umožňuje vybrat ze seznamu chatů více chatů najednou a označit je jako přečtené, archivovat nebo odstranit. Vyzkoušejte ji klepnutím na profilovou fotografii v levém horním rohu.
 • K archivovaným chatům je nyní rychlejší přístup. Stačí klepnout na profilovou fotografii v levém horním rohu a snadno se k nim dostanete.
 • Tolik reakcí na výběr a tak málo času. Nyní můžete snadno vyhledat svou oblíbenou reakci.
 • Přizpůsobte si výchozí reakce, abyste měli své oblíbené emoce vždy po ruce.
 • Únava z oznámení? Chcete-li rychle ztlumit nebo zrušit zvuk, stačí na chatu v seznamu chatů přejet prstem doleva.
-• Fixed a bug that would cause parts of long text messages to become invisible in the input box.
+• Opravena chyba, která způsobovala, že části dlouhých textových zpráv byly ve vstupním poli neviditelné.

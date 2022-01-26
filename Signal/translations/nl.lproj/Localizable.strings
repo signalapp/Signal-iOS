@@ -5294,7 +5294,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ aan het verifiëren";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Gebruik deze optie wanneer je je huidige telefoonnummer wilt wijzigen naar een nieuw telefoonnummer. Let op: je kunt dit niet ongedaan maken.\n\nGa voordat je verder gaat na dat op dit moment je nieuwe telefoonnummer in staat is om sms-berichten of telefoonoproepen te ontvangen.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Gebruik dit als Signal wilt blijven gebruiken met een ander telefoonnummer. Je kunt overstappen naar een nieuw telefoonnummer niet ongedaan maken.\n\nGa voordat je verder gaat na dat je op het nieuwe telefoonnummer sms-berichten of oproepen kunt ontvangen.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Telefoonnummer wijzigen";
@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Herstel-zin plakken";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "De herstel-zin is voor iedereen uniek en bestaat uit 24 woorden. Je kunt deze zin gebruiken om je krediet te herstellen als je toegang hebt verloren.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Vul je herstel-zin in";

@@ -2714,7 +2714,7 @@
 "GROUP_YOU_LEFT" = "អ្នកបានចាកចេញពីក្រុម។";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "អភិបាល";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";

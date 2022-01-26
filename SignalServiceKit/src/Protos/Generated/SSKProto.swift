@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7608,6 +7608,181 @@ extension SSKProtoDataMessagePayment.SSKProtoDataMessagePaymentBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageStoryContext
+
+@objc
+public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding {
+
+    // MARK: - SSKProtoDataMessageStoryContextBuilder
+
+    @objc
+    public static func builder() -> SSKProtoDataMessageStoryContextBuilder {
+        return SSKProtoDataMessageStoryContextBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessageStoryContextBuilder {
+        let builder = SSKProtoDataMessageStoryContextBuilder()
+        if let _value = authorUuid {
+            builder.setAuthorUuid(_value)
+        }
+        if hasSentTimestamp {
+            builder.setSentTimestamp(sentTimestamp)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessageStoryContextBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.StoryContext()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setAuthorUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.authorUuid = valueParam
+        }
+
+        public func setAuthorUuid(_ valueParam: String) {
+            proto.authorUuid = valueParam
+        }
+
+        @objc
+        public func setSentTimestamp(_ valueParam: UInt64) {
+            proto.sentTimestamp = valueParam
+        }
+
+        public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+            proto.unknownFields = unknownFields
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessageStoryContext {
+            return try SSKProtoDataMessageStoryContext(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageStoryContext(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.StoryContext
+
+    @objc
+    public var authorUuid: String? {
+        guard hasAuthorUuid else {
+            return nil
+        }
+        return proto.authorUuid
+    }
+    @objc
+    public var hasAuthorUuid: Bool {
+        return proto.hasAuthorUuid && !proto.authorUuid.isEmpty
+    }
+
+    @objc
+    public var sentTimestamp: UInt64 {
+        return proto.sentTimestamp
+    }
+    @objc
+    public var hasSentTimestamp: Bool {
+        return proto.hasSentTimestamp
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.StoryContext) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_DataMessage.StoryContext(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.StoryContext) throws {
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageStoryContext -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageStoryContext -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoDataMessageStoryContext {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageStoryContext.SSKProtoDataMessageStoryContextBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessageStoryContext? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageFlags
 
 @objc
@@ -7737,6 +7912,9 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
         }
         if let _value = payment {
             builder.setPayment(_value)
+        }
+        if let _value = storyContext {
+            builder.setStoryContext(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -7927,6 +8105,17 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
             proto.payment = valueParam.proto
         }
 
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setStoryContext(_ valueParam: SSKProtoDataMessageStoryContext?) {
+            guard let valueParam = valueParam else { return }
+            proto.storyContext = valueParam.proto
+        }
+
+        public func setStoryContext(_ valueParam: SSKProtoDataMessageStoryContext) {
+            proto.storyContext = valueParam.proto
+        }
+
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
             proto.unknownFields = unknownFields
         }
@@ -7979,6 +8168,9 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
 
     @objc
     public let payment: SSKProtoDataMessagePayment?
+
+    @objc
+    public let storyContext: SSKProtoDataMessageStoryContext?
 
     @objc
     public var body: String? {
@@ -8069,7 +8261,8 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                  delete: SSKProtoDataMessageDelete?,
                  bodyRanges: [SSKProtoDataMessageBodyRange],
                  groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?,
-                 payment: SSKProtoDataMessagePayment?) {
+                 payment: SSKProtoDataMessagePayment?,
+                 storyContext: SSKProtoDataMessageStoryContext?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -8083,6 +8276,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
         self.bodyRanges = bodyRanges
         self.groupCallUpdate = groupCallUpdate
         self.payment = payment
+        self.storyContext = storyContext
     }
 
     @objc
@@ -8149,6 +8343,11 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
             payment = try SSKProtoDataMessagePayment(proto.payment)
         }
 
+        var storyContext: SSKProtoDataMessageStoryContext?
+        if proto.hasStoryContext {
+            storyContext = try SSKProtoDataMessageStoryContext(proto.storyContext)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -8165,7 +8364,8 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
                   delete: delete,
                   bodyRanges: bodyRanges,
                   groupCallUpdate: groupCallUpdate,
-                  payment: payment)
+                  payment: payment,
+                  storyContext: storyContext)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {

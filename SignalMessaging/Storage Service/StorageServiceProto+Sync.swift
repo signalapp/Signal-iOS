@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -586,7 +586,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setE164(localPhoneNumber)
         }
 
-        builder.setPreferredReactionEmoji(ReactionManager.emojiSet(transaction: transaction))
+        if let customEmojiSet = ReactionManager.customEmojiSet(transaction: transaction) {
+            builder.setPreferredReactionEmoji(customEmojiSet)
+        }
 
         if let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction),
            let subscriberCurrencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
@@ -758,15 +760,10 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         if !preferredReactionEmoji.isEmpty {
             // Treat new preferred emoji as a full source of truth (if not empty).
-            // Any holes or invalid choices are filled in with the *default* reactions, not the previous local choices.
-            let reactionEmoji = ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> String in
-                if let newReaction = preferredReactionEmoji[safe: i], newReaction.isSingleEmoji {
-                    return newReaction
-                } else {
-                    return defaultEmoji
-                }
-            }
-            ReactionManager.setEmojiSet(reactionEmoji, transaction: transaction)
+            // Note that we aren't doing any validation up front, which may be important if another platform supports
+            // an emoji we don't (say, because a new version of Unicode has come out). We deal with this when the custom
+            // set is read out.
+            ReactionManager.setCustomEmojiSet(preferredReactionEmoji, transaction: transaction)
         }
 
         if let subscriberIDData = subscriberID, let subscriberCurrencyCode = subscriberCurrencyCode {

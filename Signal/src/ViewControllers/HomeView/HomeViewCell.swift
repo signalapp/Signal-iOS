@@ -81,6 +81,7 @@ public class HomeViewCell: UITableViewCell {
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
+        let isSplitViewControllerExpanded: Bool
 
         fileprivate var hasOverrideSnippet: Bool {
             overrideSnippet != nil
@@ -106,12 +107,14 @@ public class HomeViewCell: UITableViewCell {
              lastReloadDate: Date?,
              isBlocked: Bool,
              overrideSnippet: NSAttributedString? = nil,
-             overrideDate: Date? = nil) {
+             overrideDate: Date? = nil,
+             isSplitViewControllerExpanded: Bool) {
             self.thread = thread
             self.lastReloadDate = lastReloadDate
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
+            self.isSplitViewControllerExpanded = isSplitViewControllerExpanded
         }
     }
     private var cellContentToken: HVCellContentToken?
@@ -164,16 +167,7 @@ public class HomeViewCell: UITableViewCell {
     }
 
     private func commonInit() {
-        self.backgroundColor = Theme.backgroundColor
-
-        var v = UIView(frame: contentView.bounds)
-        v.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
-        multipleSelectionBackgroundView = v
-
-        v = UIView(frame: contentView.bounds)
-        v.backgroundColor = Theme.tableCell2SelectedBackgroundColor
-        selectedBackgroundView = v
-
+        multipleSelectionBackgroundView = UIView(frame: contentView.bounds)
         contentView.addSubview(outerHStack)
         outerHStack.shouldDeactivateConstraints = false
         outerHStack.autoPinEdge(toSuperviewEdge: .leading)
@@ -210,6 +204,7 @@ public class HomeViewCell: UITableViewCell {
             isBlocked: configuration.isBlocked,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
+            isSplitViewControllerExpanded: configuration.isSplitViewControllerExpanded,
             messageStatusToken: messageStatusToken,
             unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
 
@@ -318,8 +313,7 @@ public class HomeViewCell: UITableViewCell {
     func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
         AssertIsOnMainThread()
 
-        OWSTableItem.configureCellLabels(self)
-
+        OWSTableItem.configureCell(self, isSplitViewControllerExpanded: cellContentToken.configs.isSplitViewControllerExpanded)
         self.preservesSuperviewLayoutMargins = false
         self.contentView.preservesSuperviewLayoutMargins = false
 
@@ -975,6 +969,7 @@ private struct HVCellConfigs {
     let isBlocked: Bool
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool
+    let isSplitViewControllerExpanded: Bool
     let messageStatusToken: HVMessageStatusToken?
     let unreadIndicatorLabelConfig: CVLabelConfig?
 

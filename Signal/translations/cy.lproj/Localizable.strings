@@ -689,19 +689,19 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Golygu Llun";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Ni ddylai eich rhif newydd fod yr un peth â'ch hen un. Rhowch rif ffôn newydd i newid eich rhif.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Nid yw'r rhif ffôn a nodoch yn cyfateb i'ch rhif cyfrif.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Rhif ffôn newydd annilys. Rhowch rif ffôn dilys i newid eich rhif.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Hen rif ffôn annilys. Rhowch rif ffôn dilys i newid eich rhif.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Rhowch y PIN ar gyfer y rhif ffôn newydd. Mae hyn yn wahanol i'ch cod dilysu SMS.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Dyma rhagolwg o'r lliw sgwrsio.";
@@ -782,7 +782,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Gallwch chi alluogi mynediad i'ch cysylltiadau yn yr app Gosodiadau iOS i weld pa rai ohonynt sy'n ddefnyddwyr Signal.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Configure Reactions";
+"CONFIGURE_REACTIONS" = "Ffufweddu Ymatebion";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Bydd hyn yn ailosod yr ap gan ddileu eich negeseuon. Bydd yr ap yn cau ar ôl i'r broses hon gael ei chwblhau.";
@@ -1016,16 +1016,16 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Bydd y sgwrs hon yn cael ei dileu o'r ddyfais hon.";
 
 /* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "Bydd y sgyrsiau rhain yn cael ei dileu o'r ddyfais hon.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Dileu Sgwrs?";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Dileu %@ Sgwrs?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Tewi y sgwrs hon am…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 diwrnod";
@@ -2972,10 +2972,10 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Title for the 'Select Chats' option in the HomeView. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Dewis Sgyrsiau";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Darllen Popeth";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Llunio unrhyw le i bylu";
@@ -3044,7 +3044,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Gallwch anfon neu dderbyn negeseuon cydamserol o'ch ffôn neu iPad.\nEr mwyn eich diogelwch, ni chaiff cofnod sgwrsio ei drosglwyddo i ddyfeisiau cysylltiedig newydd.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "Newidiodd %@ ei rif ffôn.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "Mae %@ ar Signal!";
@@ -3617,7 +3617,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Darganfod gyda Rhif Ffôn";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Aelod";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Grŵp Newydd";
@@ -5258,19 +5258,19 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Trsoglwyddo pob galwad trwy gweinydd Signal i osgoi datgelu eich cyfeiriad IP i'ch cysylltiad. Bydd galluogi yn dirywio ansawdd galwadau.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Golygu'r Rhif";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Newid Rhif Ffôn";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Mae eich rhif ffôn wedi'i newid i %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Newid Rhif";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Rydych chi ar fin newid eich rhif ffôn o %1$@ i %2$@.\n\nCyn parhau, gwiriwch fod y rhif isod yn gywir.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Côd Gwlad";
@@ -5282,22 +5282,22 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Esiample: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Eich Rhif Newydd";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Eich Hen Rif";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Rhif Ffôn";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Yn Gwirio %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Defnyddiwch hwn i newid eich rhif ffôn presenol i rif ffôn newydd. Nid oes modd dadwneud y newid hwn.\n\nCyn parhau, gwnewch yn siŵr bod eich rhif newydd yn gallu derbyn SMS neu alwadau.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Newid Rhif Ffôn";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Newid Rhif";
@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Gludo'r Ymadrodd Adfer";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Ymadrodd 24-gair sy'n unigryw i chi yw eich  ymadrodd adfer. Defnyddiwch o i adfer eich cyfrif taliadau.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Rhowch Ymadrodd Adfer";

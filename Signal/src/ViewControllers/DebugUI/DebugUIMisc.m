@@ -203,6 +203,9 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Clear Temporal Credentials"
                                      actionBlock:^() { [DebugUIMisc clearTemporalCredentials]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear custom reaction emoji (locally)"
+                                     actionBlock:^() { [DebugUIMisc clearLocalCustomEmoji]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 

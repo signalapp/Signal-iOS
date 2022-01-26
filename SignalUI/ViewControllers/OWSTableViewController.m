@@ -150,11 +150,11 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (void)configureCell:(UITableViewCell *)cell
 {
-    cell.backgroundColor = Theme.backgroundColor;
-    [self configureCellLabels:cell];
     UIView *selectedBackgroundView = [UIView new];
-    selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
     cell.selectedBackgroundView = selectedBackgroundView;
+    cell.backgroundColor = Theme.backgroundColor;
+    cell.selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
+    [self configureCellLabels:cell];
 }
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock

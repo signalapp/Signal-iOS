@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,11 +12,15 @@ public class ReactionManager: NSObject {
     private static let emojiSetKVS = SDSKeyValueStore(collection: "EmojiSetKVS")
     private static let emojiSetKey = "EmojiSetKey"
 
-    public class func emojiSet(transaction: SDSAnyReadTransaction) -> [String] {
-        return emojiSetKVS.getObject(forKey: emojiSetKey, transaction: transaction) as? [String] ?? defaultEmojiSet
+    /// Returns custom emoji set by the user, or `nil` if the user has never customized their emoji
+    /// (including on linked devices).
+    ///
+    /// This is important because we shouldn't ever send the default set of reactions over storage service.
+    public class func customEmojiSet(transaction: SDSAnyReadTransaction) -> [String]? {
+        return emojiSetKVS.getObject(forKey: emojiSetKey, transaction: transaction) as? [String]
     }
 
-    public class func setEmojiSet(_ emojis: [String], transaction: SDSAnyWriteTransaction) {
+    public class func setCustomEmojiSet(_ emojis: [String]?, transaction: SDSAnyWriteTransaction) {
         emojiSetKVS.setObject(emojis, key: emojiSetKey, transaction: transaction)
     }
 
