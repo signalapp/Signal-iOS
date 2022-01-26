@@ -81,7 +81,7 @@ public class HomeViewCell: UITableViewCell {
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
-        let iPadColors: Bool
+        let isSplitViewControllerExpanded: Bool
 
         fileprivate var hasOverrideSnippet: Bool {
             overrideSnippet != nil
@@ -108,13 +108,13 @@ public class HomeViewCell: UITableViewCell {
              isBlocked: Bool,
              overrideSnippet: NSAttributedString? = nil,
              overrideDate: Date? = nil,
-             iPadColors: Bool) {
+             isSplitViewControllerExpanded: Bool) {
             self.thread = thread
             self.lastReloadDate = lastReloadDate
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
-            self.iPadColors = iPadColors
+            self.isSplitViewControllerExpanded = isSplitViewControllerExpanded
         }
     }
     private var cellContentToken: HVCellContentToken?
@@ -204,7 +204,7 @@ public class HomeViewCell: UITableViewCell {
             isBlocked: configuration.isBlocked,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
-            iPadColors: configuration.iPadColors,
+            isSplitViewControllerExpanded: configuration.isSplitViewControllerExpanded,
             messageStatusToken: messageStatusToken,
             unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
 
@@ -313,7 +313,7 @@ public class HomeViewCell: UITableViewCell {
     func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
         AssertIsOnMainThread()
 
-        OWSTableItem.configureCell(self, iPadColors: cellContentToken.configs.iPadColors)
+        OWSTableItem.configureCell(self, isSplitViewControllerExpanded: cellContentToken.configs.isSplitViewControllerExpanded)
         self.preservesSuperviewLayoutMargins = false
         self.contentView.preservesSuperviewLayoutMargins = false
 
@@ -969,7 +969,7 @@ private struct HVCellConfigs {
     let isBlocked: Bool
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool
-    let iPadColors: Bool
+    let isSplitViewControllerExpanded: Bool
     let messageStatusToken: HVMessageStatusToken?
     let unreadIndicatorLabelConfig: CVLabelConfig?
 

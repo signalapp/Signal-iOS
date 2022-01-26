@@ -831,14 +831,14 @@ extension HVTableDataSource {
     // This method can be called from any thread.
     private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
                                                lastReloadDate: Date?,
-                                               iPadColors: Bool) -> HomeViewCell.Configuration {
+                                               isSplitViewControllerExpanded: Bool) -> HomeViewCell.Configuration {
         owsAssertDebug(threadViewModel.homeViewInfo != nil)
 
         let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
         let configuration = HomeViewCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,
                                                        isBlocked: isBlocked,
-                                                       iPadColors: iPadColors)
+                                                       isSplitViewControllerExpanded: isSplitViewControllerExpanded)
         return configuration
     }
 
@@ -861,7 +861,7 @@ extension HVTableDataSource {
         }()
         let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
                                                         lastReloadDate: lastReloadDate,
-                                                        iPadColors: viewController.hasVisibleSplitViewController)
+                                                        isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
         let cellContentCache = viewController.cellContentCache
         let contentToken = { () -> HVCellContentToken in
             // If we have an existing HVCellContentToken, use it.
@@ -928,7 +928,7 @@ extension HVTableDataSource {
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
                                                             lastReloadDate: lastReloadDate,
-                                                            iPadColors: viewController.hasVisibleSplitViewController)
+                                                            isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
             let contentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
         }.done(on: .main) { (threadViewModel: ThreadViewModel,

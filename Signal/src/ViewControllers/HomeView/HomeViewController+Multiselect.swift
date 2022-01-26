@@ -474,10 +474,6 @@ private class ContextMenuActionsViewContainer: UIView {
     }
 }
 
-private protocol ContextMenuThemeChangedDelegate: AnyObject {
-    func contextMenuThemeChanged()
-}
-
 // MARK: - object encapsulating the complete state of the MultiSelect process
 @objc
 public class MultiSelectState: NSObject {

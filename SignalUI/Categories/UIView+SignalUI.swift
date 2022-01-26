@@ -434,7 +434,7 @@ public extension UIViewController {
         present(viewControllerToPresent, animated: animated, completion: completion)
     }
 
-    var hasVisibleSplitViewController: Bool {
+    var hasExpandedSplitViewController: Bool {
         splitViewController != nil && !splitViewController!.isCollapsed
     }
 }
