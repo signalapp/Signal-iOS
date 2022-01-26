@@ -5033,7 +5033,7 @@
 "SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "Raining all day";
 
 /* An example name for a user we use in the screenshots. */
-"SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
+"SCREENSHOT_USERNAME_1" = "";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "名稱、使用者名稱或冧把";
@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "貼上恢復口訣";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "您嘅恢復口訣係您專屬嘅 24 組字，獨一無二。佢係用嚟還原您嘅付款帳戶。";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "輸入恢復口訣";

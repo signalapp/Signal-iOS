@@ -5033,7 +5033,7 @@
 "SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "Kunonaya zuva rese";
 
 /* An example name for a user we use in the screenshots. */
-"SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
+"SCREENSHOT_USERNAME_1" = "";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Zita,mazita, kana nhamba";

@@ -5261,7 +5261,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Muokkaa numeroa";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Vaihda puhelinnumero";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Vaihda puhelinnumeroa";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
 "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Puhelinnumeroksesi on nyt vaihdettu %@";
@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Liitä palautuslause";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Palautuslause on 24 sanasta muodostuva ainutlaatuinen merkkijono. Voit sen avulla palauttaa maksutilisi.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Syötä palautuslause";

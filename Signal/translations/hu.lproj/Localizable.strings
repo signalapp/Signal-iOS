@@ -1025,7 +1025,7 @@
 "CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Törölsz %@ beszélgetést?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Némítás eddig...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Némítás eddig:";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 nap";
@@ -5732,7 +5732,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Helyreállítási kifejezés beillesztése";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "A helyreállítási kifejezésed egy egyedi, 24 szavas mondat, melyet fizetési fiókod helyreállítására használhatsz.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Helyreállítási kifejezés megadása";
