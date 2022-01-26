@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1063,7 +1063,7 @@ fileprivate extension GroupsV2Migration {
         }
         let migrationInfo = "GV2 Migration"
         let masterKey = try migrationInfo.utf8.withContiguousStorageIfAvailable {
-            try hkdf(outputLength: GroupMasterKey.SIZE, version: 3, inputKeyMaterial: v1GroupId, salt: [], info: $0)
+            try hkdf(outputLength: GroupMasterKey.SIZE, inputKeyMaterial: v1GroupId, salt: [], info: $0)
         }!
         return Data(masterKey)
     }
