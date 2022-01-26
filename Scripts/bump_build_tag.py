@@ -341,9 +341,9 @@ if __name__ == '__main__':
     old_release_version, old_build_version_1 = get_versions(main_plist_path)
 
     if args.version:
-        # Bump version, reset patch to zero.
-        #
-        # e.g. --version 1.2.3 -> "1.2.3", "102.3.0"
+        # Update version to the provided argument
+        # e.g. --version 1.2.3 -> "1.2.3", "0"
+        # e.g. --version 1.2.3.4 -> "1.2.3" "4"
         new_build_version_4 = parse_version_4(args.version.strip())
         new_build_version_1 = Version1(new_build_version_4.build)
         new_release_version_3 = new_build_version_4.asVersion3()
