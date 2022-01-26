@@ -813,9 +813,11 @@ extension HVTableDataSource {
         if let primKey = threadViewModel(forIndexPath: indexPath, expectsSuccess: false)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
             for cell in tableView.visibleCells {
                 if let homeCell = cell as? HomeViewCell, let myKey = homeCell.thread?.uniqueId, myKey == primKey, let token = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken {
+                    let cellWasVisible = homeCell.isCellVisible
                     homeCell.reset()
                     // reduces flicker effects for already visible cells
                     homeCell.configure(cellContentToken: token, asyncAvatarLoadingAllowed: false)
+                    homeCell.isCellVisible = cellWasVisible
                     return true
                 }
             }
