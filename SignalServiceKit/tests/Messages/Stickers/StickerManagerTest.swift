@@ -5,7 +5,6 @@
 import XCTest
 import Foundation
 import SignalCoreKit
-import SignalMetadataKit
 @testable import SignalServiceKit
 
 class StickerManagerTest: SSKBaseTestSwift {

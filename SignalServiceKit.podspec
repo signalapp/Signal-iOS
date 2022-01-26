@@ -50,7 +50,6 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'SwiftProtobuf'
   s.dependency 'SignalClient'
   s.dependency 'SignalCoreKit'
-  s.dependency 'SignalMetadataKit'
   s.dependency 'GRDB.swift/SQLCipher'
   s.dependency 'libwebp'
   s.dependency 'YYImage/WebP'

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalMetadataKit
 
 public typealias AccountId = String
 

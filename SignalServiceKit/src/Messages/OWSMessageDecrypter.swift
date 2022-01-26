@@ -3,7 +3,6 @@
 //
 
 import SignalClient
-import SignalMetadataKit
 
 @objcMembers
 public class OWSMessageDecryptResult: NSObject {

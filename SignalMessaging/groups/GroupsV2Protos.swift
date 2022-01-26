@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalServiceKit
-import SignalMetadataKit
 import SignalClient
 
 public class GroupsV2Protos {

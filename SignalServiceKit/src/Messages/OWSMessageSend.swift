@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalMetadataKit
 
 // Corresponds to a single effort to send a message to a given recipient,
 // which may span multiple attempts.  Note that group messages may be sent

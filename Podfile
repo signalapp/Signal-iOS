@@ -20,9 +20,6 @@ pod 'SignalClient', git: 'https://github.com/signalapp/libsignal-client.git', te
 pod 'Curve25519Kit', git: 'ssh://git@github.com/signalapp/Curve25519Kit', testspecs: ["Tests"], branch: 'feature/SignalClient-adoption'
 # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-pod 'SignalMetadataKit', git: 'ssh://git@github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
-# pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
-
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 

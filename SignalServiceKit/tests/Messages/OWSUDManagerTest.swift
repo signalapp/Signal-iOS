@@ -6,7 +6,6 @@ import XCTest
 import Foundation
 import Curve25519Kit
 import SignalCoreKit
-import SignalMetadataKit
 import SignalClient
 @testable import SignalServiceKit
 

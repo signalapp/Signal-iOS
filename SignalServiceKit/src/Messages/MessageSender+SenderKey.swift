@@ -3,7 +3,6 @@
 //
 
 import SignalClient
-import SignalMetadataKit
 
 extension MessageSender {
     private var senderKeyQueue: DispatchQueue { .global(qos: .utility) }

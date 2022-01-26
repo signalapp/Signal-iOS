@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalMetadataKit
 import SignalClient
 
 @objc
