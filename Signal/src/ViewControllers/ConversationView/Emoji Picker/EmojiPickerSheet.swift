@@ -138,8 +138,9 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
             searchBar.text = nil
             collectionView.searchText = nil
 
-            // Collection view needs a moment to reload
-            DispatchQueue.main.async {
+            // Collection view needs a moment to reload.
+            // Do empty batch of updates to postpone scroll until collection view has updated.
+            collectionView.performBatchUpdates(nil) { _ in
                 self.collectionView.scrollToSectionHeader(section, animated: false)
             }
         } else {
