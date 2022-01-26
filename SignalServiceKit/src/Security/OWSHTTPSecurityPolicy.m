@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSHTTPSecurityPolicy.h"
@@ -18,18 +18,19 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         httpSecurityPolicy = [[self alloc]
-            initWithPinnedCertificates:[NSSet setWithObject:[self certificateDataForService:@"textsecure"]]];
+            initWithPinnedCertificates:[NSSet setWithObjects:
+                                        [self certificateDataForService:@"textsecure"],
+                                        [self certificateDataForService:@"signal-messenger"],
+                                        nil]];
     });
     return httpSecurityPolicy;
 }
 
-+ (instancetype)systemDefault
-{
++ (instancetype)systemDefault {
     return [[self alloc] initWithPinnedCertificates:[NSSet set]];
 }
 
-- (instancetype)initWithPinnedCertificates:(NSSet<NSData *> *)certificates
-{
+- (instancetype)initWithPinnedCertificates:(NSSet<NSData *> *)certificates {
     self = [super init];
     if (self) {
         _pinnedCertificates = [certificates copy];
@@ -37,8 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (NSData *)dataFromCertificateFileForService:(NSString *)service
-{
++ (NSData *)dataFromCertificateFileForService:(NSString *)service {
     NSBundle *bundle = [NSBundle bundleForClass:self.class];
     NSString *path = [bundle pathForResource:service ofType:@"cer"];
 
@@ -59,16 +59,14 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-+ (SecCertificateRef)newCertificateForService:(NSString *)service CF_RETURNS_RETAINED
-{
++ (SecCertificateRef)newCertificateForService:(NSString *)service CF_RETURNS_RETAINED {
     NSData *certificateData = [self dataFromCertificateFileForService:service];
     SecCertificateRef certRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));
     OWSAssert(certRef);
     return certRef;
 }
 
-- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(nullable NSString *)domain
-{
+- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(nullable NSString *)domain {
     NSMutableArray *policies = [NSMutableArray array];
     [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
 
@@ -110,9 +108,12 @@ _out:
     return isValid;
 }
 
-NSData *SSKTextSecureServiceCertificateData()
-{
+NSData *SSKTextSecureServiceCertificateData() {
     return [OWSHTTPSecurityPolicy dataFromCertificateFileForService:@"textsecure"];
+}
+
+NSData *SSKSignalMessengerCertificateData() {
+    return [OWSHTTPSecurityPolicy dataFromCertificateFileForService:@"signal-messenger"];
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSData *SSKTextSecureServiceCertificateData(void);
+extern NSData *SSKSignalMessengerCertificateData(void);
 
 /// A simplified version of AFNetworking's AFSecurityPolicy.
 @interface OWSHTTPSecurityPolicy : NSObject

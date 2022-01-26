@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -52,7 +52,7 @@ class SSKWebSocketStarScream: SSKWebSocket {
 
         socket.disableSSLCertValidation = true
         socket.socketSecurityLevel = StreamSocketSecurityLevel.tlSv1_2
-        let security = SSLSecurity(certs: [TextSecureCertificate()], usePublicKeys: false)
+        let security = SSLSecurity(certs: [TextSecureCertificate(), SignalMessengerCertificate()], usePublicKeys: false)
         security.validateEntireChain = false
         socket.security = security
 
@@ -149,6 +149,11 @@ extension SSKWebSocketStarScream: WebSocketDelegate {
 
 private func TextSecureCertificate() -> SSLCert {
     let data = SSKTextSecureServiceCertificateData()
+    return SSLCert(data: data)
+}
+
+private func SignalMessengerCertificate() -> SSLCert {
+    let data = SSKSignalMessengerCertificateData()
     return SSLCert(data: data)
 }
 
