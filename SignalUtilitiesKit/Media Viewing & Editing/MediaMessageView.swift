@@ -221,7 +221,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let stackView: UIStackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.alignment = (attachment.isUrl ? .leading : .center)
+        stackView.alignment = (attachment.isUrl && linkPreviewInfo?.url != nil ? .leading : .center)
         stackView.distribution = .fill
         
         switch mode {

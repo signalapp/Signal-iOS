@@ -14,42 +14,40 @@ PODS:
   - AFNetworking/Serialization (4.0.1)
   - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
-  - CocoaLumberjack (3.6.2):
-    - CocoaLumberjack/Core (= 3.6.2)
-  - CocoaLumberjack/Core (3.6.2)
-  - CryptoSwift (1.3.2)
+  - CocoaLumberjack (3.7.4):
+    - CocoaLumberjack/Core (= 3.7.4)
+  - CocoaLumberjack/Core (3.7.4)
+  - CryptoSwift (1.4.2)
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
-  - GRKOpenSSLFramework (1.0.2.20)
-  - HKDFKit (0.0.3)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - NVActivityIndicatorView (5.0.1):
-    - NVActivityIndicatorView/Base (= 5.0.1)
-  - NVActivityIndicatorView/Base (5.0.1)
-  - OpenSSL-Universal (1.1.1200)
-  - PromiseKit (6.13.1):
-    - PromiseKit/CorePromise (= 6.13.1)
-    - PromiseKit/Foundation (= 6.13.1)
-    - PromiseKit/UIKit (= 6.13.1)
-  - PromiseKit/CorePromise (6.13.1)
-  - PromiseKit/Foundation (6.13.1):
+  - NVActivityIndicatorView (5.1.1):
+    - NVActivityIndicatorView/Base (= 5.1.1)
+  - NVActivityIndicatorView/Base (5.1.1)
+  - OpenSSL-Universal (1.1.1300)
+  - PromiseKit (6.15.3):
+    - PromiseKit/CorePromise (= 6.15.3)
+    - PromiseKit/Foundation (= 6.15.3)
+    - PromiseKit/UIKit (= 6.15.3)
+  - PromiseKit/CorePromise (6.15.3)
+  - PromiseKit/Foundation (6.15.3):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.13.1):
+  - PromiseKit/UIKit (6.15.3):
     - PromiseKit/CorePromise
-  - PureLayout (3.1.8)
+  - PureLayout (3.1.9)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
     - OpenSSL-Universal
-  - Sodium (0.8.0)
-  - SQLCipher (4.4.0):
-    - SQLCipher/standard (= 4.4.0)
-  - SQLCipher/common (4.4.0)
-  - SQLCipher/standard (4.4.0):
+  - Sodium (0.9.1)
+  - SQLCipher (4.5.0):
+    - SQLCipher/standard (= 4.5.0)
+  - SQLCipher/common (4.5.0)
+  - SQLCipher/standard (4.5.0):
     - SQLCipher/common
   - SwiftProtobuf (1.5.0)
   - YapDatabase/SQLCipher (3.1.1):
@@ -125,18 +123,16 @@ DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
-  - GRKOpenSSLFramework
-  - HKDFKit
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView
   - PromiseKit
   - PureLayout (~> 3.1.8)
   - Reachability
   - SAMKeychain
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - Sodium (~> 0.8.0)
+  - SignalCoreKit (from `https://github.com/oxen-io/session-ios-core-kit`, branch `session-version`)
+  - Sodium (~> 0.9.1)
   - SwiftProtobuf (~> 1.5.0)
-  - YapDatabase/SQLCipher (from `https://github.com/loki-project/session-ios-yap-database.git`, branch `signal-release`)
+  - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
 
@@ -145,8 +141,6 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
-    - GRKOpenSSLFramework
-    - HKDFKit
     - NVActivityIndicatorView
     - OpenSSL-Universal
     - PromiseKit
@@ -165,10 +159,11 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :git: https://github.com/signalapp/SignalCoreKit.git
+    :branch: session-version
+    :git: https://github.com/oxen-io/session-ios-core-kit
   YapDatabase:
     :branch: signal-release
-    :git: https://github.com/loki-project/session-ios-yap-database.git
+    :git: https://github.com/oxen-io/session-ios-yap-database.git
   YYImage:
     :git: https://github.com/signalapp/YYImage
 
@@ -177,40 +172,38 @@ CHECKOUT OPTIONS:
     :commit: 4fc1c10e98fff2534b5379a9bb587430fdb8e577
     :git: https://github.com/signalapp/Curve25519Kit.git
   Mantle:
-    :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
+    :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 21c092e94b307690957b50f2305e5e65d28fa89e
-    :git: https://github.com/signalapp/SignalCoreKit.git
+    :commit: 4590c2737a2b5dc0ef4ace9f9019b581caccc1de
+    :git: https://github.com/oxen-io/session-ios-core-kit
   YapDatabase:
-    :commit: 5806f6b6e0b34124ee09283a9eca9ce7e6eaf14e
-    :git: https://github.com/loki-project/session-ios-yap-database.git
+    :commit: d84069e25e12a16ab4422e5258127a04b70489ad
+    :git: https://github.com/oxen-io/session-ios-yap-database.git
   YYImage:
-    :commit: d91910e6f313a255febbf69795198e74259bd51c
+    :commit: 62a4cede20bcf31da73d18163408e46a92f171c6
     :git: https://github.com/signalapp/YYImage
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
-  CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
-  CryptoSwift: 093499be1a94b0cae36e6c26b70870668cb56060
+  CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
+  CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
-  GRKOpenSSLFramework: dc635b0a9d4cd8af2a9ff80a61e779e21b69dfd8
-  HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  NVActivityIndicatorView: 738e843cb8924e9e4fc3e559d0728031624bf860
-  OpenSSL-Universal: 3b8c0d6268fbd5d3ac44f97338e2fd16a73d9dbf
-  PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
-  PureLayout: a4afb3d79dd958564ce33d22c89f407280d8e6a8
+  NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
+  OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
+  PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
+  PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 1fbd8732163ef76de16cd1107d1fa3684b607e5d
-  Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
-  SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
+  Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
+  SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
-  YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
+  YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: e7aa4e20c8329a413eadd5e6f0d900340810f4c7
+PODFILE CHECKSUM: 19ce2820c263e8f3c114817f7ca2da73a9382b6a
 
 COCOAPODS: 1.11.2
