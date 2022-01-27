@@ -1,11 +1,19 @@
 #!/bin/bash
+# shellcheck disable=SC2164  # pushd/popd failure
 
-if [ ! -z ${USE_PRIVATE_PODS+x} ]; then
+if [ ! -d Signal.xcodeproj ]; then
+    echo "error: Must be run from the repository root" >&2
+    exit 1
+fi
+
+if [ -n "${USE_PRIVATE_PODS+x}" ]; then
     echo "Using private pods"
-    if [ -d "Pods" ]; then
+    if [ -e "Pods/.git" ]; then
         pushd Pods
-        HAS_CONFIGURED_PRIVATE_REMOTE=`git remote -v | grep -ci 'signal-pods-private' || true`
-        if [ "$HAS_CONFIGURED_PRIVATE_REMOTE" = 0 ]; then
+        # FIXME: Possible failure modes here:
+        # - You have a Signal-Pods-Private remote not named 'private'.
+        # - You have a remote named 'private' that points somewhere else.
+        if ! git remote -v | grep -qi 'signal-pods-private'; then
             echo "Adding private pods remote"
             git remote add private git@github.com:signalapp/Signal-Pods-Private.git
         fi
@@ -13,7 +21,13 @@ if [ ! -z ${USE_PRIVATE_PODS+x} ]; then
         popd
     else
         echo "Cloning private pods repo"
-        git clone git@github.com:signalapp/Signal-Pods-Private.git Pods
+        git clone git@github.com:signalapp/Signal-Pods-Private.git -o private Pods
+        # Add the public repo as a remote explicitly.
+        # This is what would happen if you did `git submodule update --init` first,
+        # and it helps avoid confusing Jenkins for the nightly builder.
+        git -C Pods remote add origin git@github.com:signalapp/Signal-Pods.git
+        # Not strictly necessary, but consistent with doing `git submodule update --init` first.
+        git submodule absorbgitdirs Pods
     fi
 else
     echo "Not using private pods. Define USE_PRIVATE_PODS in your environment to enable."
