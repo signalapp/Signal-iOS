@@ -326,12 +326,16 @@ final class ConversationCell : UITableViewCell {
     }
     
     private func getDisplayNameForSearch(_ sessionID: String) -> String {
-        var result = sessionID
-        if let contact = Storage.shared.getContact(with: sessionID), let name = contact.name {
-            result = name
-            if let nickname = contact.nickname { result += "(\(nickname))"}
+        if threadViewModel.threadRecord.isNoteToSelf() {
+            return NSLocalizedString("NOTE_TO_SELF", comment: "")
+        } else {
+            var result = sessionID
+            if let contact = Storage.shared.getContact(with: sessionID), let name = contact.name {
+                result = name
+                if let nickname = contact.nickname { result += "(\(nickname))"}
+            }
+            return result
         }
-        return result
     }
     
     private func getDisplayName() -> String {
