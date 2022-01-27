@@ -111,6 +111,8 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
         switch self {
         case .pinReminder:
             return false
+        case .introducingPins:
+            return false
         default:
             return true
         }
@@ -121,6 +123,8 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
     var canBeCompleted: Bool {
         switch self {
         case .pinReminder:
+            return false
+        case .introducingPins:
             return false
         case .notificationPermissionReminder:
             return false
