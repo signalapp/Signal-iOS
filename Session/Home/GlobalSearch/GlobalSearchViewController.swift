@@ -12,7 +12,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
             refreshSearchResults()
         }
     }
-    var recentSearchResults: [String] = []
+    var recentSearchResults: [String] = Array(Storage.shared.getRecentSearchResults().reversed())
     var searchResultSet: HomeScreenSearchResultSet = HomeScreenSearchResultSet.empty
     private var lastSearchText: String?
     var searcher: FullTextSearcher {
@@ -98,7 +98,6 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     }
     
     private func reloadTableData() {
-        recentSearchResults = Array(Storage.shared.getRecentSearchResults().reversed())
         tableView.reloadData()
     }
     
@@ -138,7 +137,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
         let searchText = rawSearchText.stripped
         guard searchText.count > 0 else {
-            searchResultSet = HomeScreenSearchResultSet.empty
+            searchResultSet = HomeScreenSearchResultSet.noteToSelfOnly
             lastSearchText = nil
             reloadTableData()
             return
@@ -225,7 +224,7 @@ extension GlobalSearchViewController {
     
     private func show(_ thread: TSThread, highlightedMessageID: String?, animated: Bool, isFromRecent: Bool = false) {
         if let threadId = thread.uniqueId {
-            Storage.shared.addSearchResults(threadID: threadId)
+            recentSearchResults = Array(Storage.shared.addSearchResults(threadID: threadId).reversed())
         }
         
         DispatchMainThreadSafe {

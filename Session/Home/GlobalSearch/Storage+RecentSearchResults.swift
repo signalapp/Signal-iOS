@@ -19,7 +19,7 @@ extension Storage{
         }
     }
     
-    public func addSearchResults(threadID: String) {
+    public func addSearchResults(threadID: String) -> [String] {
         var recentSearchResults = getRecentSearchResults()
         if recentSearchResults.count > 20 { recentSearchResults.remove(at: 0) } // Limit the size of the collection to 20
         if let index = recentSearchResults.firstIndex(of: threadID) { recentSearchResults.remove(at: index) }
@@ -27,5 +27,6 @@ extension Storage{
         Storage.write { transaction in
             transaction.setObject(recentSearchResults, forKey: Storage.recentSearchResultKey, inCollection: Storage.recentSearchResultDatabaseCollection)
         }
+        return recentSearchResults
     }
 }
