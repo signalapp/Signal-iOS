@@ -563,17 +563,9 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 // Discard results from stale search.
                 return
             }
+
             self.searchResultSet = results
-            if let candidates = updateCellCandidates {
-                for cell in candidates {
-                    if let (section, row) = self.getIndexPathFor(threadId: cell.thread?.uniqueId), let configuration = self.cellConfiguration(searchSection: section, row: row) {
-                        cell.reset()
-                        cell.configure(cellContentToken: self.cellContentToken(forConfiguration: configuration, useCache: false))
-                    }
-                }
-            } else {
-                self.reloadTableData()
-            }
+            self.reloadTableData()
         })
     }
 
@@ -585,21 +577,6 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 return searchResultSet.contactThreads[indexPath.row].thread
             } else if searchSection == .groupThreads {
                 return searchResultSet.groupThreads[indexPath.row].thread
-            }
-        }
-        return nil
-    }
-
-    private func getIndexPathFor(threadId: String?) -> (SearchSection, Int)? {
-        if let threadId = threadId {
-            if let row = searchResultSet.contactThreads.map({$0.thread.threadRecord.uniqueId}).firstIndex(of: threadId) {
-                return (SearchSection.contactThreads, row)
-            }
-            if let row = searchResultSet.groupThreads.map({$0.thread.threadRecord.uniqueId}).firstIndex(of: threadId) {
-                return (SearchSection.groupThreads, row)
-            }
-            if let row = searchResultSet.messages.map({$0.thread.threadRecord.uniqueId}).firstIndex(of: threadId) {
-                return (SearchSection.messages, row)
             }
         }
         return nil
