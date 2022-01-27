@@ -36,6 +36,12 @@ jobs:
 
       - name: Checkout Repo
         uses: actions/checkout@v2
+        with:
+          # Check out submodules through GitHub instead of from scratch later.
+          # THIS STEP WILL FAIL if the current Pods commit is only available in Private.
+          # However, we can continue and the build will still pass.
+          submodules: recursive
+        continue-on-error: true
 
       - name: Initialize workflow variables
         id: vars
@@ -56,6 +62,9 @@ jobs:
           repository: signalapp/signal-pods-private
           token: ${{ secrets.ACCESS_TOKEN }}
           path: Pods
+          # We don't know which commit we'll need in this step, so fetch everything so that
+          # `make dependencies` doesn't end up doing it the slow way.
+          fetch-depth: 0
 
       - name: Initialize Submodules
         run: make dependencies
