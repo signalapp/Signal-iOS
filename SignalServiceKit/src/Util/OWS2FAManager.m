@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS2FAManager.h"
@@ -123,6 +123,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 - (void)markDisabledWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
+    [OWS2FAManager.keyValueStore removeValueForKey:OWS2FAManager.isRegistrationLockV2EnabledKey transaction:transaction];
 
     [transaction addSyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
