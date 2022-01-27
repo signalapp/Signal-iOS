@@ -909,7 +909,18 @@ public class InstalledStickerCache: NSObject {
     }
 
     private let cache: ModelReadCache<KeyType, ValueType>
-    private let adapter = Adapter(cacheName: "InstalledSticker", cacheCountLimit: 32, cacheCountLimitNSE: 8)
+    private static var cacheCountLimit: Int {
+        if CurrentAppContext().isMainApp {
+            // Large enough to hold three pages of max-size stickers.
+            return 600
+        } else {
+            // Large enough to hold the current default 49 stickers with a little room to grow.
+            return 64
+        }
+    }
+    private let adapter = Adapter(cacheName: "InstalledSticker",
+                                  cacheCountLimit: InstalledStickerCache.cacheCountLimit,
+                                  cacheCountLimitNSE: 8)
 
     @objc
     public override init() {
