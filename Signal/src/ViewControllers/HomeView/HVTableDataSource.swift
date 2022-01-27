@@ -3,7 +3,8 @@
 //
 
 import Foundation
-import SignalMessaging
+import SignalUI
+import UIKit
 
 @objc
 public class HVTableDataSource: NSObject {
@@ -810,19 +811,16 @@ extension HVTableDataSource {
     public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
         AssertIsOnMainThread()
 
-        if let primKey = threadViewModel(forIndexPath: indexPath, expectsSuccess: false)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
-            for cell in tableView.visibleCells {
-                if let homeCell = cell as? HomeViewCell, let myKey = homeCell.thread?.uniqueId, myKey == primKey, let token = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken {
-                    let cellWasVisible = homeCell.isCellVisible
-                    homeCell.reset()
-                    // reduces flicker effects for already visible cells
-                    homeCell.configure(cellContentToken: token, asyncAvatarLoadingAllowed: false)
-                    homeCell.isCellVisible = cellWasVisible
-                    return true
-                }
-            }
-        }
-        return false
+        guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return false }
+        guard let homeCell = tableView.cellForRow(at: indexPath) as? HomeViewCell else { return false }
+        guard let configToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken else { return false }
+
+        let cellWasVisible = homeCell.isCellVisible
+        homeCell.reset()
+        // reduces flicker effects for already visible cells
+        homeCell.configure(cellContentToken: configToken, asyncAvatarLoadingAllowed: false)
+        homeCell.isCellVisible = cellWasVisible
+        return true
     }
 
     fileprivate struct HVCellConfigurationAndContentToken {
