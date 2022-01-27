@@ -2,6 +2,9 @@
 
 @objc
 class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
+    
+    let isRecentSearchResultsEnabled = false
+    
     @objc public var searchText = "" {
         didSet {
             AssertIsOnMainThread()
@@ -309,7 +312,7 @@ extension GlobalSearchViewController {
                 return nil
             }
         case .recent:
-            if recentSearchResults.count > 0  && searchText.isEmpty {
+            if recentSearchResults.count > 0  && searchText.isEmpty && isRecentSearchResultsEnabled {
                 return NSLocalizedString("SEARCH_SECTION_RECENT", comment: "")
             } else {
                 return nil
@@ -327,7 +330,7 @@ extension GlobalSearchViewController {
         case .messages:
             return searchResultSet.messages.count
         case .recent:
-            return searchText.isEmpty ? recentSearchResults.count : 0
+            return searchText.isEmpty && isRecentSearchResultsEnabled ? recentSearchResults.count : 0
         }
     }
 
