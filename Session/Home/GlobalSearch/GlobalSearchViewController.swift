@@ -30,6 +30,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         let result = SearchBar()
         result.tintColor = Colors.text
         result.delegate = self
+        result.showsCancelButton = true
         return result
     }()
     
@@ -71,6 +72,11 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         searchBar.becomeFirstResponder()
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        searchBar.resignFirstResponder()
     }
     
     private func setupNavigationBar() {
@@ -153,6 +159,13 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
             self.reloadTableData()
         })
     }
+    
+    // MARK: Interaction
+    @objc func clearRecentSearchResults() {
+        recentSearchResults = []
+        tableView.reloadSections([ SearchSection.recent.rawValue ], with: .top)
+        Storage.shared.clearRecentSearchResults()
+    }
 
 }
 
@@ -160,30 +173,20 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 extension GlobalSearchViewController: UISearchBarDelegate {
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         self.updateSearchText()
-        self.ensureSearchBarCancelButton()
     }
     
     public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         self.updateSearchText()
-        self.ensureSearchBarCancelButton()
     }
     
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         self.updateSearchText()
-        self.ensureSearchBarCancelButton()
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.resignFirstResponder()
-        self.ensureSearchBarCancelButton()
         self.navigationController?.popViewController(animated: true)
-    }
-    
-    func ensureSearchBarCancelButton() {
-        let shouldShowCancelButton = searchBar.isFirstResponder || (searchBar.text ?? "").count > 0
-        guard searchBar.showsCancelButton != shouldShowCancelButton else { return }
-        self.searchBar.setShowsCancelButton(shouldShowCancelButton, animated: true)
     }
     
     func updateSearchText() {
@@ -256,6 +259,8 @@ extension GlobalSearchViewController {
     }
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let searchSection = SearchSection(rawValue: section) else { return nil }
+        
         guard let title = self.tableView(tableView, titleForHeaderInSection: section) else {
             return UIView()
         }
@@ -270,6 +275,17 @@ extension GlobalSearchViewController {
         container.layoutMargins = UIEdgeInsets(top: Values.smallSpacing, left: Values.mediumSpacing, bottom: Values.smallSpacing, right: Values.mediumSpacing)
         container.addSubview(titleLabel)
         titleLabel.autoPinEdgesToSuperviewMargins()
+        
+        if searchSection == .recent {
+            let clearButton = UIButton()
+            clearButton.setTitle("Clear", for: .normal)
+            clearButton.setTitleColor(Colors.text, for: UIControl.State.normal)
+            clearButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+            clearButton.addTarget(self, action: #selector(clearRecentSearchResults), for: .touchUpInside)
+            container.addSubview(clearButton)
+            clearButton.autoPinTrailingToSuperviewMargin()
+            clearButton.autoVCenterInSuperview()
+        }
 
         return container
     }
