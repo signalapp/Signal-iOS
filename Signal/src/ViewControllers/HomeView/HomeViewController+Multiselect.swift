@@ -24,6 +24,8 @@ extension HomeViewController {
             return
         }
 
+        // multi selection does not work well with displaying search results, so let's clear the search for now
+        searchBar.delegate?.searchBarCancelButtonClicked?(searchBar)
         viewState.multiSelectState.title = title
         if homeViewMode == .inbox {
             let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
@@ -492,6 +494,10 @@ public class MultiSelectState: NSObject {
             AssertIsOnMainThread()
 
             _isActive = active
+            // turn off current edit mode if necessary (removes leading and trailing actions)
+            if let tableView = tableView, active && tableView.isEditing {
+                tableView.setEditing(false, animated: true)
+            }
             if active || !actionPerformed {
                 tableView?.setEditing(active, animated: true)
             } else if let tableView = tableView {
