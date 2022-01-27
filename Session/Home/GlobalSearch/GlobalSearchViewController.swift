@@ -363,7 +363,9 @@ extension GlobalSearchViewController {
             cell.isShowingGlobalSearchResult = true
             let searchResult = sectionResults[safe: indexPath.row]
             cell.threadViewModel = searchResult?.thread
-            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
+            var message: TSMessage? = nil
+            if let messageId = searchResult?.messageId { message = TSMessage.fetch(uniqueId: messageId) }
+            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText, message: message)
             return cell
         case .recent:
             let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell

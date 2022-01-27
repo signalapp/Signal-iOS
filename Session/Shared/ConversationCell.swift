@@ -217,7 +217,7 @@ final class ConversationCell : UITableViewCell {
         timestampLabel.isHidden = true
     }
     
-    public func configure(messageDate: Date?, snippet: String?, searchText: String) {
+    public func configure(messageDate: Date?, snippet: String?, searchText: String, message: TSMessage? = nil) {
         let normalizedSearchText = searchText.lowercased()
         if let messageDate = messageDate, let snippet = snippet {
             // Message
@@ -225,7 +225,11 @@ final class ConversationCell : UITableViewCell {
             timestampLabel.isHidden = false
             timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
             bottomLabelStackView.isHidden = false
-            snippetLabel.attributedText = getHighlightedSnippet(snippet: snippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
+            var rawSnippet = snippet
+            if let message = message, let name = getMessageAuthorName(message: message) {
+                rawSnippet = "\(name): \(snippet)"
+            }
+            snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
         } else {
             // Contact
             if threadViewModel.isGroupThread, let thread = threadViewModel.threadRecord as? TSGroupThread {
@@ -325,6 +329,14 @@ final class ConversationCell : UITableViewCell {
         }
     }
     
+    private func getMessageAuthorName(message: TSMessage) -> String? {
+        guard threadViewModel.isGroupThread else { return nil }
+        if let incomingMessage = message as? TSIncomingMessage {
+            return Storage.shared.getContact(with: incomingMessage.authorId)?.displayName(for: .regular) ?? "Anonymous"
+        }
+        return nil
+    }
+    
     private func getDisplayNameForSearch(_ sessionID: String) -> String {
         if threadViewModel.threadRecord.isNoteToSelf() {
             return NSLocalizedString("NOTE_TO_SELF", comment: "")
@@ -367,9 +379,12 @@ final class ConversationCell : UITableViewCell {
             result.append(imageString)
             result.append(NSAttributedString(string: "  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
         }
+        let font = threadViewModel.hasUnreadMessages ? UIFont.boldSystemFont(ofSize: Values.smallFontSize) : UIFont.systemFont(ofSize: Values.smallFontSize)
+        if threadViewModel.isGroupThread, let message = threadViewModel.lastMessageForInbox as? TSMessage, let name = getMessageAuthorName(message: message) {
+            result.append(NSAttributedString(string: "\(name): ", attributes: [ .font : font, .foregroundColor : Colors.text ]))
+        }
         if let rawSnippet = threadViewModel.lastMessageText {
             let snippet = MentionUtilities.highlightMentions(in: rawSnippet, threadID: threadViewModel.threadRecord.uniqueId!)
-            let font = threadViewModel.hasUnreadMessages ? UIFont.boldSystemFont(ofSize: Values.smallFontSize) : UIFont.systemFont(ofSize: Values.smallFontSize)
             result.append(NSAttributedString(string: snippet, attributes: [ .font : font, .foregroundColor : Colors.text ]))
         }
         return result
