@@ -9,6 +9,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
             refreshSearchResults()
         }
     }
+    var recentSearchResults: [String] = []
     var searchResultSet: HomeScreenSearchResultSet = HomeScreenSearchResultSet.empty
     private var lastSearchText: String?
     var searcher: FullTextSearcher {
@@ -20,6 +21,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         case noResults
         case contacts
         case messages
+        case recent
     }
     
     // MARK: UI Components
@@ -87,6 +89,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     }
     
     private func reloadTableData() {
+        recentSearchResults = Array(Storage.shared.getRecentSearchResults().reversed())
         tableView.reloadData()
     }
     
@@ -208,23 +211,33 @@ extension GlobalSearchViewController {
             let sectionResults = searchResultSet.messages
             guard let searchResult = sectionResults[safe: indexPath.row], let threadId = searchResult.thread.threadRecord.uniqueId, let thread = TSThread.fetch(uniqueId: threadId) else { return }
             show(thread, highlightedMessageID: searchResult.messageId, animated: true)
+        case .recent:
+            guard let threadId = recentSearchResults[safe: indexPath.row], let thread = TSThread.fetch(uniqueId: threadId) else { return }
+            show(thread, highlightedMessageID: nil, animated: true, isFromRecent: true)
         }
     }
     
-    private func show(_ thread: TSThread, highlightedMessageID: String?, animated: Bool) {
+    private func show(_ thread: TSThread, highlightedMessageID: String?, animated: Bool, isFromRecent: Bool = false) {
+        if let threadId = thread.uniqueId {
+            Storage.shared.addSearchResults(threadID: threadId)
+        }
+        
         DispatchMainThreadSafe {
             if let presentedVC = self.presentedViewController {
                 presentedVC.dismiss(animated: false, completion: nil)
             }
             let conversationVC = ConversationVC(thread: thread, focusedMessageID: highlightedMessageID)
-            self.navigationController?.pushViewController(conversationVC, animated: true)
+            var viewControllers = self.navigationController?.viewControllers
+            if isFromRecent, let index = viewControllers?.firstIndex(of: self) { viewControllers?.remove(at: index) }
+            viewControllers?.append(conversationVC)
+            self.navigationController?.setViewControllers(viewControllers!, animated: true)
         }
     }
 
     // MARK: UITableViewDataSource
     
     public func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -279,6 +292,12 @@ extension GlobalSearchViewController {
             } else {
                 return nil
             }
+        case .recent:
+            if recentSearchResults.count > 0  && searchText.isEmpty {
+                return NSLocalizedString("SEARCH_SECTION_RECENT", comment: "")
+            } else {
+                return nil
+            }
         }
     }
 
@@ -291,6 +310,8 @@ extension GlobalSearchViewController {
             return searchResultSet.conversations.count
         case .messages:
             return searchResultSet.messages.count
+        case .recent:
+            return searchText.isEmpty ? recentSearchResults.count : 0
         }
     }
 
@@ -324,6 +345,15 @@ extension GlobalSearchViewController {
             let searchResult = sectionResults[safe: indexPath.row]
             cell.threadViewModel = searchResult?.thread
             cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
+            return cell
+        case .recent:
+            let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
+            cell.isShowingGlobalSearchResult = true
+            dbReadConnection.read { transaction in
+                guard let threadId = self.recentSearchResults[safe: indexPath.row], let thread = TSThread.fetch(uniqueId: threadId, transaction: transaction) else { return }
+                cell.threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+            }
+            cell.configureForRecent()
             return cell
         }
     }

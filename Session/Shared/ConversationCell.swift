@@ -209,6 +209,14 @@ final class ConversationCell : UITableViewCell {
         hasMentionView.isHidden = true
     }
     
+    public func configureForRecent() {
+        displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
+        bottomLabelStackView.isHidden = false
+        let snippet = String(format: NSLocalizedString("RECENT_SEARCH_LAST_MESSAGE_DATETIME", comment: ""), DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate))
+        snippetLabel.attributedText = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
+        timestampLabel.isHidden = true
+    }
+    
     public func configure(messageDate: Date?, snippet: String?, searchText: String) {
         let normalizedSearchText = searchText.lowercased()
         if let messageDate = messageDate, let snippet = snippet {
