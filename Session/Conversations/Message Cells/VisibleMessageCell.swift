@@ -131,6 +131,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private var bodyLabelTextColor: UIColor {
         switch (direction, AppModeManager.shared.currentAppMode) {
         case (.outgoing, .dark), (.incoming, .light): return .black
+        case (.outgoing, .light): return Colors.grey
         default: return .white
         }
     }

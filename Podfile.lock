@@ -132,7 +132,7 @@ DEPENDENCIES:
   - SignalCoreKit (from `https://github.com/oxen-io/session-ios-core-kit`, branch `session-version`)
   - Sodium (~> 0.9.1)
   - SwiftProtobuf (~> 1.5.0)
-  - YapDatabase/SQLCipher (from `https://github.com/loki-project/session-ios-yap-database.git`, branch `signal-release`)
+  - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
 
@@ -163,7 +163,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/oxen-io/session-ios-core-kit
   YapDatabase:
     :branch: signal-release
-    :git: https://github.com/loki-project/session-ios-yap-database.git
+    :git: https://github.com/oxen-io/session-ios-yap-database.git
   YYImage:
     :git: https://github.com/signalapp/YYImage
 
@@ -179,7 +179,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/oxen-io/session-ios-core-kit
   YapDatabase:
     :commit: d84069e25e12a16ab4422e5258127a04b70489ad
-    :git: https://github.com/loki-project/session-ios-yap-database.git
+    :git: https://github.com/oxen-io/session-ios-yap-database.git
   YYImage:
     :commit: 62a4cede20bcf31da73d18163408e46a92f171c6
     :git: https://github.com/signalapp/YYImage
@@ -204,6 +204,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 7722d8a03a0ebc6ecd0070d02b199bd748992f12
+PODFILE CHECKSUM: 7f961dc4934dd213f5a3277af57d54caef7a4442
 
 COCOAPODS: 1.11.2
