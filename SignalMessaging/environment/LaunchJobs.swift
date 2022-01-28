@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 @objc
 public class LaunchJobs: NSObject {
@@ -54,16 +55,24 @@ public class LaunchJobs: NSObject {
 
         Logger.verbose("Starting.")
 
-        DispatchQueue.global().async {
+        // Getting this work done ASAP is super high priority, since we won't finish launching until
+        // the completion block is fired.
+        //
+        // Originally, I considered making this all synchronous on the main thread (there's no UI to
+        // interrupt anyway) but I figured that in the absolute *worst* case where this work takes ~15s
+        // we risk getting watchdogged by SpringBoard.
+        //
+        // So instead, we'll use a user interactive queue and hope that's good enough.
+        DispatchQueue.sharedUserInteractive.async {
             // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
             // sent before the app exited should be marked as failures.
-            OWSFailedMessagesJob().runSync()
+            FailedMessagesJob().runSync()
             // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
             // connected, failed or hung up before the app existed should be marked as missed.
-            OWSIncompleteCallsJob().runSync()
+            IncompleteCallsJob().runSync()
             // Mark all "downloading" attachments as "failed", i.e. any incoming attachments that were not
             // successfully downloaded before the app exited should be marked as failures.
-            OWSFailedAttachmentDownloadsJob().runSync()
+            FailedAttachmentDownloadsJob().runSync()
 
             // Kick off a low priority trim of the MSL
             // This will reschedule itself on a background queue ~24h or so
