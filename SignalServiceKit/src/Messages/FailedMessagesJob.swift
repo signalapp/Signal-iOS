@@ -21,6 +21,7 @@ public class FailedMessagesJob: Dependencies {
                 }
             }
         }
+        Logger.info("Finished job. Marked \(count) incomplete sends as failed")
     }
 
     public func updateFailedMessageIfNecessary(_ uniqueId: String, transaction writeTx: SDSAnyWriteTransaction) {
