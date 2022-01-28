@@ -369,8 +369,7 @@ extension HVTableDataSource: UITableViewDelegate {
         case .archiveButton:
             if viewState.multiSelectState.isActive {
                 tableView.deselectRow(at: indexPath, animated: false)
-            }
-            else {
+            } else {
                 viewController.showArchivedConversations()
             }
         }
