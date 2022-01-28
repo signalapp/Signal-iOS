@@ -112,7 +112,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let result = UIView()
         result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
         let size = ConversationVC.unreadCountViewSize
-        result.set(.width, to: size)
+        result.set(.width, greaterThanOrEqualTo: size)
         result.set(.height, to: size)
         result.layer.masksToBounds = true
         result.layer.cornerRadius = size / 2
@@ -192,7 +192,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // Unread count view
         view.addSubview(unreadCountView)
         unreadCountView.addSubview(unreadCountLabel)
-        unreadCountLabel.pin(to: unreadCountView)
+        unreadCountLabel.pin(.top, to: .top, of: unreadCountView)
+        unreadCountLabel.pin(.bottom, to: .bottom, of: unreadCountView)
+        unreadCountView.pin(.leading, to: .leading, of: unreadCountLabel, withInset: -4)
+        unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
         unreadCountView.centerYAnchor.constraint(equalTo: scrollButton.topAnchor).isActive = true
         unreadCountView.center(.horizontal, in: scrollButton)
         updateUnreadCountView()
