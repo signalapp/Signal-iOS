@@ -1,4 +1,3 @@
-• Đổi một số điện thoại mới? Giờ đây bạn có thể thay đổi số mà bạn đã đăng ký với Signal mà không bị mất lịch sử trò chuyện, nhóm chat, và hồ sơ cá nhân Signal. Vào Cài Đặt > Tài Khoản > Thay Đổi Số Điện Thoại để thử ngay.
 • Tính năng đa lựa chọn mới cho phép bạn chọn nhiều cuộc trò chuyện cùng một lúc từ danh sách trò chuyện và đánh dấu chúng đã đọc, lưu trữ hoặc xóa chúng. Nhấn vào ảnh hồ sơ của bạn ở trên cùng bên trái để dùng thử.
 • Các cuộc trò chuyện đã được lưu hiện có thể truy cập nhanh hơn. Chỉ cần nhấn vào ảnh hồ sơ của bạn ở trên cùng bên trái để dễ dàng truy cập chúng.
 • Quá nhiều phản hồi để lựa chọn, thật nhanh và tiện lợi. Giờ đây bạn có thể tìm kiếm phản hồi yêu thích của mình một cách dễ dàng.
