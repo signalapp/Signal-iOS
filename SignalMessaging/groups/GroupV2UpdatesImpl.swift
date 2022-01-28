@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -390,6 +390,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                            groupUpdateMode: groupUpdateMode,
                                                            groupModelOptions: groupModelOptions)
+                    .timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
+                             description: "Update via changes") {
+                        GroupsV2Error.timeout
+                    }
             }.recover { (error) throws -> Promise<TSGroupThread> in
                 let shouldTrySnapshot = { () -> Bool in
                     // This should not fail over in the case of networking problems.
@@ -478,19 +482,33 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func fetchAndApplyChangeActionsFromService(groupSecretParamsData: Data,
                                                        groupUpdateMode: GroupUpdateMode,
                                                        groupModelOptions: TSGroupModelOptions) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<[GroupV2Change]> in
+        return firstly { () -> Promise<GroupsV2Impl.GroupChangePage> in
             self.fetchChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                groupUpdateMode: groupUpdateMode)
-        }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) throws -> Promise<TSGroupThread> in
+        }.then(on: .global()) { (groupChanges: GroupsV2Impl.GroupChangePage) throws -> Promise<TSGroupThread> in
             let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
-            return self.tryToApplyGroupChangesFromService(groupId: groupId,
-                                                          groupSecretParamsData: groupSecretParamsData,
-                                                          groupChanges: groupChanges,
-                                                          groupUpdateMode: groupUpdateMode,
-                                                          groupModelOptions: groupModelOptions)
-        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
-                  description: "Update via changes") {
-            GroupsV2Error.timeout
+            let applyPromise = self.tryToApplyGroupChangesFromService(groupId: groupId,
+                                                                      groupSecretParamsData: groupSecretParamsData,
+                                                                      groupChanges: groupChanges.changes,
+                                                                      groupUpdateMode: groupUpdateMode,
+                                                                      groupModelOptions: groupModelOptions)
+            guard let earlyEnd = groupChanges.earlyEnd else {
+                // We fetched all possible updates (or got a cached set of updates).
+                return applyPromise
+            }
+            if case .upToSpecificRevisionImmediately(upToRevision: let upToRevision) = groupUpdateMode {
+                if upToRevision <= earlyEnd {
+                    // We didn't fetch everything but we did fetch enough.
+                    return applyPromise
+                }
+            }
+
+            // Recurse to process more updates.
+            return applyPromise.then { _ in
+                return self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
+                                                                  groupUpdateMode: groupUpdateMode,
+                                                                  groupModelOptions: groupModelOptions)
+            }
         }
     }
 
@@ -565,8 +583,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         return cachedChanges
     }
 
-    private func fetchChangeActionsFromService(groupSecretParamsData: Data,
-                                               groupUpdateMode: GroupUpdateMode) -> Promise<[GroupV2Change]> {
+    private func fetchChangeActionsFromService(
+        groupSecretParamsData: Data,
+        groupUpdateMode: GroupUpdateMode
+    ) -> Promise<GroupsV2Impl.GroupChangePage> {
 
         let upToRevision: UInt32? = {
             switch groupUpdateMode {
@@ -589,21 +609,21 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
         let cacheKey = groupSecretParamsData.hexadecimalString
 
-        return DispatchQueue.global().async(.promise) { () -> [GroupV2Change]? in
+        return firstly(on: .global()) { () -> [GroupV2Change]? in
             // Try to use group changes from the cache.
             return self.cachedGroupChanges(forCacheKey: cacheKey,
                                            groupSecretParamsData: groupSecretParamsData,
                                            upToRevision: upToRevision)
-        }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]?) -> Promise<[GroupV2Change]> in
+        }.then(on: .global()) { (groupChanges: [GroupV2Change]?) -> Promise<GroupsV2Impl.GroupChangePage> in
             if let groupChanges = groupChanges {
-                return Promise.value(groupChanges)
+                return Promise.value(GroupsV2Impl.GroupChangePage(changes: groupChanges, earlyEnd: nil))
             }
             return firstly {
                 return self.groupsV2Impl.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData,
                                                                  includeCurrentRevision: includeCurrentRevision,
                                                                  firstKnownRevision: upToRevision)
-            }.map(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) -> [GroupV2Change] in
-                self.addGroupChangesToCache(groupChanges: groupChanges, cacheKey: cacheKey)
+            }.map(on: .global()) { (groupChanges: GroupsV2Impl.GroupChangePage) -> GroupsV2Impl.GroupChangePage in
+                self.addGroupChangesToCache(groupChanges: groupChanges.changes, cacheKey: cacheKey)
 
                 return groupChanges
             }
