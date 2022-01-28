@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -54,7 +54,7 @@ public class FailedAttachmentDownloadsJob: Dependencies {
             break
         case .failed:
             // This should not have been returned from `unfailedAttachmentPointerIds`
-            owsFailDebug("Attachment has unexpected state \(attachment.uniqueId).");
+            owsFailDebug("Attachment has unexpected state \(attachment.uniqueId).")
         }
     }
 }
