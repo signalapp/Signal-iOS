@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -103,10 +103,6 @@ public protocol GroupsV2Swift: GroupsV2 {
     func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot>
 
     func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
-
-    func fetchGroupChangeActions(groupSecretParamsData: Data,
-                                 includeCurrentRevision: Bool,
-                                 firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]>
 
     func buildChangeSet(oldGroupModel: TSGroupModelV2,
                         newGroupModel: TSGroupModelV2,
@@ -559,12 +555,6 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot> {
-        owsFail("Not implemented.")
-    }
-
-    public func fetchGroupChangeActions(groupSecretParamsData: Data,
-                                        includeCurrentRevision: Bool,
-                                        firstKnownRevision: UInt32?) -> Promise<[GroupV2Change]> {
         owsFail("Not implemented.")
     }
 
