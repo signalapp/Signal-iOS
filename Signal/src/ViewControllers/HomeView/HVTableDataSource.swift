@@ -352,19 +352,21 @@ extension HVTableDataSource: UITableViewDelegate {
             return
         }
 
-        if viewState.multiSelectState.isActive {
-            viewController.updateCaptions()
-        } else {
-            switch section {
-            case .reminders:
-                break
-            case .pinned, .unpinned:
-                guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
-                    owsFailDebug("Missing threadViewModel.")
-                    return
-                }
+        switch section {
+        case .reminders:
+            break
+        case .pinned, .unpinned:
+            guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
+                owsFailDebug("Missing threadViewModel.")
+                return
+            }
+            if viewState.multiSelectState.isActive {
+                viewController.updateCaptions()
+            } else {
                 viewController.present(threadViewModel.threadRecord, action: .none, animated: true)
-            case .archiveButton:
+            }
+        case .archiveButton:
+            if !viewState.multiSelectState.isActive {
                 viewController.showArchivedConversations()
             }
         }
@@ -646,8 +648,8 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        if let cell = cell as? ArchivedConversationsCell {
-            cell.configure(enabled: !viewState.multiSelectState.isActive)
+        if let cell = cell as? ArchivedConversationsCell, let viewController = viewController {
+            cell.configure(enabled: !viewState.multiSelectState.isActive, isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
         }
         return cell
     }

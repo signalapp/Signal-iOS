@@ -66,8 +66,8 @@ public class ArchivedConversationsCell: UITableViewCell {
         enabled = true
     }
 
-    func configure(enabled: Bool) {
-        OWSTableItem.configureCell(self)
+    func configure(enabled: Bool, isSplitViewControllerExpanded: Bool) {
+        OWSTableItem.configureCell(self, isSplitViewControllerExpanded: isSplitViewControllerExpanded)
         label.font = .ows_dynamicTypeBody
         self.enabled = enabled
         NotificationCenter.default.removeObserver(self)
