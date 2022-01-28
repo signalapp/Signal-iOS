@@ -62,7 +62,15 @@ public final class MentionsManager : NSObject {
             if let groupThread = thread as? TSGroupThread, groupThread.groupModel.groupType == .closedGroup {
                 result = result.union(groupThread.groupModel.groupMemberIds).subtracting([ getUserHexEncodedPublicKey() ])
             } else {
-                guard userPublicKeyCache[threadID] == nil else { return }
+                let hasOnlyCurrentUser: Bool = (
+                    userPublicKeyCache[threadID]?.count == 1 &&
+                    userPublicKeyCache[threadID]?.first == getUserHexEncodedPublicKey()
+                )
+                
+                guard userPublicKeyCache[threadID] == nil || ((thread as? TSGroupThread)?.groupModel.groupType == .openGroup && hasOnlyCurrentUser) else {
+                    return
+                }
+                
                 let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
                 interactions.enumerateKeysAndObjects(inGroup: threadID) { _, _, object, index, _ in
                     guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
