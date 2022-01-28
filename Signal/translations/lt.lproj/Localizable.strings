@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Prisegti";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Nepavyko sukurti naujo PIN kodo. Jūsų dabartinis PIN kodas buvo išjungtas. Patikrinkite interneto ryšį ir bandykite dar kartą.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Nepavyko pakeisti PIN kodo";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN kode privalo būti bent 4 simboliai";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kodai nesutampa. Bandykite dar kartą.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Patikrinkite interneto ryšį ir bandykite dar kartą.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Nėra interneto ryšio";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN kode privalo būti bent 4 skaitmenys";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Išjungti registracijos užraktą?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN kodas sėkmingai sukurtas, bet nepavyko įjungti registracijos užrakto. Patikrinkite interneto ryšį ir bandykite dar kartą.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Nepavyko įjungti registracijos užrakto";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Išjungti PIN kodą";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "PIN kodo sukūrimas nepavyko";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Nepavyko sukurti PIN kodo. Patikrinkite interneto ryšį ir bandykite dar kartą.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Tam, kad įsimintumėte savo PIN kodą, mes periodiškai prašysime jį įvesti. Bėgant laikui, mes tai darysime rečiau.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Susikurkite PIN kodą";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Užbaikite kurti PIN kodą.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Priminsime jums vėliau. PIN kodo sukūrimas po %ld dienų taps privalomu.";

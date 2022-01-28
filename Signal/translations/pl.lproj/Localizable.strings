@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Przypnij";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Nie udało się utworzyć nowego kodu PIN. Twój istniejący PIN został wyłączony. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Zmiana PIN-u nie powiodła się";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN musi mieć przynajmniej 4 znaki";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "Kody PIN się różnią. Spróbuj ponownie.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Brak połączenia z internetem";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN musi mieć przynajmniej 4 cyfry";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Wyłączyć blokadę rejestracji?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Utworzenie PIN-u powiodło się, ale nie udało się włączyć blokady rejestracji. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Wyłączenie blokady rejestracji nie powiodło się";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Wyłącz PIN";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Utworzenie PIN-u nie powiodło się";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Nie udało się utworzyć Twojego kodu PIN. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Aby pomóc Ci zapamiętać Twój PIN, będziemy co jakiś czas o niego pytać. Z czasem pytania będą coraz rzadsze.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Utwórz PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Dokończ tworzenie swojego kodu PIN Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Przypomnimy Ci o tym później. Utworzenie PIN-u stanie się obowiązkowe za %ld dni.";

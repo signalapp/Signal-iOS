@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Прикрепить";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Не удалось создать ваш новый PIN-код. Ваш существующий PIN-код был отключён. Проверьте ваше подключение к интернету и попробуйте ещё раз.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Не удалось изменить PIN-код";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-код должен быть не короче 4 символов";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-коды не совпадают. Попробуйте ещё раз.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Проверьте ваше подключение к интернету и попробуйте ещё раз.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Нет соединения с интернетом";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN-код должен быть не короче 4 цифр";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Отключить блокировку регистрации?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN-код был успешно создан, но не удалось включить блокировку регистрации. Проверьте ваше подключение к интернету и попробуйте ещё раз.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Не удалось включить блокировку регистрации";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Отключить PIN-код";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Не удалось создать PIN-код";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Не удалось создать ваш PIN-код. Проверьте ваше подключение к интернету и попробуйте ещё раз.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Чтобы помочь вам запомнить свой PIN-код, мы будем просить вас периодически вводить его. Со временем это будет происходить реже.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Создать PIN-код";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Завершите создание своего PIN-кода Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Мы напомним вам позже. Создание PIN-кода станет обязательным через %ld дней.";

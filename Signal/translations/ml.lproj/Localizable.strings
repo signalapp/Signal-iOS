@@ -401,10 +401,10 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "സബ്‌സ്‌ക്രിപ്‌ഷൻ റദ്ദാക്കി";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "ബൂസ്റ്റിനു നന്ദി!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "പ്രൊഫൈലിൽ പ്രദർശിപ്പിക്കുക";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";

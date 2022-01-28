@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Fixare";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Noul tău PIN nu a putut fi creat. PIN-ul existent a fost dezactivat. Verifică-ți conexiunea și încearcă din nou.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Schimbarea PIN-ului a eșuat.";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-ul trebuie să aibă cel puțin 4 caractere.";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-urile nu se potrivesc. Încearcă din nou.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Verifică-ți conexiunea și încearcă din nou.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Lipsă conexiune la rețea";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN-ul trebuie să aibă cel puțin 4 cifre";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Dezactivezi Blocarea Înregistrării?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN-ul a fost creat cu succes, dar blocarea înregistrării nu a putut fi activată. Verifică-ți conexiunea și încearcă din nou.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Blocarea înregistrării a eșuat";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Dezactivare PIN";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Crearea PIN-ului a eșuat";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "PIN-ul tău nu a putut fi creat. Verifică-ți conexiunea și încearcă din nou.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Pentru a te ajuta să memorezi codul PIN, te vom ruga să îl introduci periodic. În timp, o să-l cerem mai rar.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Creează un PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Finalizează crearea PIN-ului tău Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în %ld zile.";

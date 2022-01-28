@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Rögzít";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Az új Signal PIN létrehozása sikertelen volt. A meglevő Signal PIN letiltásra került. Ellenőrizd a netkapcsolatod és próbáld újra.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Sikertelen PIN változtatás";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "A PIN kód hossza minimum 4 karakter";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kódok nem egyeznek. Próbáld újra.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Ellenőrizd a netkapcsolatod és próbáld újra.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Nincs netkapcsolat.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "A PIN kód hossza minimum 4 számjegy";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Kikapcsolod a regisztrációs zárat?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "A Signal PIN létrehozása sikeres volt, viszont a regisztrációs zár engedélyezése nem sikerült. Ellenőrizd a netkapcsolatod és próbáld újra.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Regisztrációs zár engedélyezése sikertelen";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "PIN letiltása";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "PIN létrehozása sikertelen.";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "A Signal PIN létrehozása sikertelen volt. Ellenőrizd a netkapcsolatod és próbáld újra.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "A PIN megjegyzéséhez segítségül időnként be kell majd gépelned. Egyre kevesebbszer az idő haladtával.";
