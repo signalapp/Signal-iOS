@@ -10,6 +10,7 @@
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
 		1404D8B3276A353B0068E2F6 /* HomeViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* HomeViewController+Multiselect.swift */; };
 		1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */; };
+		1489ED0227A3D70200C7043A /* ArchivedConversationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */; };
 		14E4A340278EE999008408FD /* BlurredToolbarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4A33F278EE999008408FD /* BlurredToolbarContainer.swift */; };
 		1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */; };
 		1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */; };
@@ -1152,6 +1153,7 @@
 		10AE4264D3E52937D8964A86 /* Pods-SignalMessaging.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.profiling.xcconfig"; sourceTree = "<group>"; };
 		1404D8B2276A353A0068E2F6 /* HomeViewController+Multiselect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeViewController+Multiselect.swift"; sourceTree = "<group>"; };
 		1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSwipeHandler.swift; sourceTree = "<group>"; };
+		1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedConversationsCell.swift; sourceTree = "<group>"; };
 		14E4A33F278EE999008408FD /* BlurredToolbarContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurredToolbarContainer.swift; sourceTree = "<group>"; };
 		14FD26DD3B40616C54CDBF1A /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentTest.swift; sourceTree = "<group>"; };
@@ -2685,6 +2687,7 @@
 		34386A4C207D0C01009F5D9C /* HomeView */ = {
 			isa = PBXGroup;
 			children = (
+				1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */,
 				4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */,
 				880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */,
 				346E09002662FBBE0042375E /* HomeViewCell.swift */,
@@ -6252,6 +6255,7 @@
 				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
 				34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */,
 				4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */,
+				1489ED0227A3D70200C7043A /* ArchivedConversationsCell.swift in Sources */,
 				F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */,
 				348815CA255346A500D4F4C4 /* CVRenderItem.swift in Sources */,
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,

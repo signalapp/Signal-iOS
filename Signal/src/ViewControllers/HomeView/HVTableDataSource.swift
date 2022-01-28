@@ -20,8 +20,6 @@ public class HVTableDataSource: NSObject {
     @objc
     public var renderState: HVRenderState = .empty
 
-    private let kArchivedConversationsReuseIdentifier = "kArchivedConversationsReuseIdentifier"
-
     fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
 
     fileprivate var lastPreloadCellDate: Date?
@@ -63,7 +61,7 @@ public class HVTableDataSource: NSObject {
         tableView.separatorStyle = .none
         tableView.separatorColor = Theme.cellSeparatorColor
         tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.reuseIdentifier)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: kArchivedConversationsReuseIdentifier)
+        tableView.register(ArchivedConversationsCell.self, forCellReuseIdentifier: ArchivedConversationsCell.reuseIdentifier)
         tableView.tableFooterView = UIView()
     }
 }
@@ -644,48 +642,13 @@ extension HVTableDataSource: UITableViewDataSource {
     private func buildArchivedConversationsButtonCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: kArchivedConversationsReuseIdentifier) else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArchivedConversationsCell.reuseIdentifier) else {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        OWSTableItem.configureCell(cell)
-        cell.selectionStyle = .none
-
-        for subview in cell.contentView.subviews {
-            subview.removeFromSuperview()
+        if let cell = cell as? ArchivedConversationsCell {
+            cell.configure(enabled: !viewState.multiSelectState.isActive)
         }
-
-        let disclosureImageName = CurrentAppContext().isRTL ? "NavBarBack" : "NavBarBackRTL"
-        let disclosureImageView = UIImageView.withTemplateImageName(disclosureImageName,
-                                                                    tintColor: UIColor(rgbHex: 0xd1d1d6))
-        disclosureImageView.setContentHuggingHigh()
-        disclosureImageView.setCompressionResistanceHigh()
-
-        let label = UILabel()
-        label.text = NSLocalizedString("HOME_VIEW_ARCHIVED_CONVERSATIONS",
-                                       comment: "Label for 'archived conversations' button.")
-        label.textAlignment = .center
-        label.font = .ows_dynamicTypeBody
-        label.textColor = Theme.primaryTextColor
-
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = 5
-        // If alignment isn't set, UIStackView uses the height of
-        // disclosureImageView, even if label has a higher desired height.
-        stackView.alignment = .center
-        stackView.addArrangedSubview(label)
-        stackView.addArrangedSubview(disclosureImageView)
-        cell.contentView.addSubview(stackView)
-        stackView.autoCenterInSuperview()
-        // Constrain to cell margins.
-        stackView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .top)
-        stackView.autoPinEdge(toSuperviewMargin: .bottom)
-
-        cell.accessibilityIdentifier = "archived_conversations"
-
         return cell
     }
 
