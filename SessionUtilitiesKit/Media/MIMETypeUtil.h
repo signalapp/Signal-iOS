@@ -4,6 +4,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSMimeTypeApplicationOctetStream;
 extern NSString *const OWSMimeTypeApplicationZip;
+extern NSString *const OWSMimeTypeApplicationPdf;
 extern NSString *const OWSMimeTypeImagePng;
 extern NSString *const OWSMimeTypeImageJpeg;
 extern NSString *const OWSMimeTypeImageGif;

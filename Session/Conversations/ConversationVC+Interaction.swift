@@ -1,6 +1,7 @@
 import CoreServices
 import Photos
 import PhotosUI
+import SessionUtilitiesKit
 
 extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate,
     SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate, GifPickerViewControllerDelegate,
@@ -463,7 +464,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     let thread = self.thread as? TSContactThread,
                     Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                     confirmDownload()
-                } else {
+                }
+                else if viewItem.attachmentStream?.contentType == OWSMimeTypeApplicationPdf, let filePathString: String = viewItem.attachmentStream?.originalFilePath {
+                    let fileUrl: URL = URL(fileURLWithPath: filePathString)
+                    let interactionController: UIDocumentInteractionController = UIDocumentInteractionController(url: fileUrl)
+                    interactionController.delegate = self
+                    interactionController.presentPreview(animated: true)
+                }
+                else {
                     // Open the document if possible
                     guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
                     let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
@@ -979,5 +987,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let title = NSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE", comment: "")
         let message = attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage
         OWSAlerts.showAlert(title: title, message: message)
+    }
+}
+
+// MARK: - UIDocumentInteractionControllerDelegate
+
+extension ConversationVC: UIDocumentInteractionControllerDelegate {
+    func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
+        return self
     }
 }

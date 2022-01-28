@@ -22,6 +22,7 @@ NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
+NSString *const OWSMimeTypeApplicationPdf = @"application/pdf";
 
 NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
 NSString *const kOversizeTextAttachmentFileExtension = @"txt";
