@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Msemaji";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Ongeza Picha";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Chagua mwonekano na rangi au ubadilishe herufi za kwanza za jina lako.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Ongeza Picha ya Wasifu";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Chagua Rangi";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Rangi otomatiki inafanana na rangi iliyo kwenye picha ya mandhari";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Muonekano";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Sasa unaweza kubadilisha rangi kwenye gumzo zako kwa kutumia upinde na kadhali.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Rangi Maalum za Gumzo";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Rangi ya Gumzo na ya Picha ya Mandhari";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Kwa nini usimwalike mtu?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Haikufanikiwa kuwezesha Kifunga Usajili";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Bize";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Wewe (kwenye kifaa kingine)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Fungua Kikundi Kipya ili uanzishe mazugumzo mapya ya simu ya kikundi bila malipo ambayo yamesimbwa";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Tunakuletea Mikutano ya Kikundi";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Uliunda kundi";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Uunganishaji Kifaa Umefeli";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Hakiki za viungo sasa vitaandaliwa kwa tovuti zote.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Lemaza";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Hakiki Kiungo chochote";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Ili kuhamisha akaunti yako ya Signal, unahitaji kuwezesha ufikiaji wa mtandao wa karibu kwenye vifaa vyote viwili.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Bandika";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PINI lazima iwe na herufi 4 ";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINI hazioani. Jaribu tena.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PINI lazima iwe na nambari 4";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Zima Kifunga Usajili?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Zima PIN";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Hujafanikiwa Kuzima PIN";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "Uundaji PINI Umefeli";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Ili kukusaidia kuikumbuka PINI yako, tutakuuliza uiingize mara kwa mara. Tutakuuliza mara chache baada ya muda fulani.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Unda Nenosiri";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINI hufanya taarifa iliyohifadhiwa na Signal kusimbwa.";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Tutakukumbusha baadaye. Uundaji PINI itakuwa lazima ndani ya siku %ld.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PINI imeundwa. Unaweza kuibadilisha kwenye mipangilio";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Imezimwa.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Cheza Media";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Jisajili tena kwa Arifa za Bonyeza";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Ili kuiwezesha Signal kuwa programu bora zaidi ya kutuma ujumbe kote duniani, tungependa kusikia maoni yako.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Tuma maoni yako kwa Signal";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "Utafiti huu unasimamiwa na Surveygizmo kwenye kikoa salama cha surveys.signalusers.org";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Hapana nashukuru";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Tunazingatia sana faragha.</bold>\n\nSignal haifuatilii wala kukusanya data yako. Ili kuboresha Signal kwa kila mtu, tunategemea maoni ya watumiaji,<bold> na tungependa kusikia yako</bold> .\n\nTunafanya utafiti huu ili kuelewa jinsi unavyotumia Signal. Utafiti wetu haukusanyi data yoyote ambayo itakutambulisha. Ikiwa ungependa kushiriki maoni ya ziada, utakuwa na fursa ya kutoa maelezo yako ya mawasiliano.\n\nIkiwa unaweza kutenga dakika chache na una maoni ungependa kutoa, tungependa kusikia kutoka kwako.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Fanya utafiti";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Utafiti wa Signal";
 
 /* Configure reactions reset button text */
 "RESET" = "Seti upya tena";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Mapendekezo ya kushiriki hayajazimwa.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Gumzo za Signal sasa zinaweza kuonyeshwa kama mapendekezo zinaposhirikiwa kutoka kwa programu zingine.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Tumerahisisha Mchakato wa Kushiriki";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Lemaza";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Wezesha";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Onyesha Nambari ya Usalama";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Kamilisha uthibitishaji";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Vikundi vilivyopo vitapata huduma hizi kiotomatiki katika wiki chache zijazo.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Kikundi Kipya";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Tunakuletea Vikundi Vipya!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Vipengele vipya vya Kikundi ni pamoja na @kutajwa, wasimamizi na vinginevyo. Ijaribu kwa kugusa:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Ujumbe wa Kibandiko";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Kikundi hakikuweza kusasishwa. Kagua muunganisho wako wa mtandao kisha ujaribu tena.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Unda Nenosiri lako";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Pata Maelezo Zaidi Kuhusu PIN";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN hutumiwa kuhakikisha maelezo yaliyohifadhiwa katika Signal yamesimbwa kwa njia fiche hivi kwamba ni wewe tu unayeweza kuyafikia. Wasifu wako, mipangilio, na waasilian wako wa watarejeshwa utakapoisakinisha upya. Hutahitaji PIN yako kufungua programu.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Kuanzisha Nenosiri";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Zima PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Hivi karibuni Signal itahitaji iOS 11 au ya karibuni. Tafadhali boresha katika programu ya Mipangilio >> Jumla >> Sasisha Programu.";

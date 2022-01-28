@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "స్పీకర్";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "రంగును ఎంచుకోండి";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "వాల్‌పేపర్‌కు రంగును స్వయంచాలకంగా సరిపోల్చుతుంది";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "స్వరూపం";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "ఇప్పుడు మీరు మీ మాటామంతిలోని రంగులను ప్రవణతలతో మరియు మరెన్నో మార్చవచ్చు.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "అనుకూల మాటామంతి రంగులు";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "మాటామంతి కలర్ & వాల్‌పేపర్";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "మీరు ఎందుకు ఒకరిని ఆహ్వానించరు?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "రిజిస్ట్రేషన్ లాక్‌ని ప్రారంభించలేదు.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "పనిలో ఉన్నారు ";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "మీరు (మరొక పరికరంలో)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "ఉచిత గుప్తీకరించిన సమూహ కాల్‌ను ప్రారంభించడానికి క్రొత్త సమూహాన్ని తెరవండి";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "పరిచయం చేస్తున్నాం సమూహపు వీడియో కాల్స్";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "మీరు సమూహాన్ని సృష్టించారు.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "పరికరాన్ని లింక్ చేయడం విఫలమైంది";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "లింక్ పూర్వప్రదర్శనలు ఇప్పుడు అన్ని సైట్ల కోసం సృష్టించబడతాయి.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "అచేతనించు";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "ఏదైనా లింక్‌ను పూర్వపూర్వప్రదర్శనం చేయండి";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "మీ Signal ఖాతాను బదిలీ చేయడానికి, మీరు రెండు పరికరాల్లో స్థానిక నెట్‌వర్క్ ప్రాప్యతను ప్రారంభించాలి.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "పిన్";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "పిన్ కనీసం 4 అక్షరాలు ఉండాలి";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "పిన్‌లు సరిపోలడం లేదు. మళ్ళీ ప్రయత్నించండి.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "పిన్ కనీసం 4 అంకెలు ఉండాలి";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "రిజిస్ట్రేషన్ లాక్ ఆఫ్ చేయాలా?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "పిన్‌ను ఆపివేయి";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "పిన్ నిలిపివేయడం విఫలమైంది";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "పిన్ సృష్టి విఫలమైంది";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "మీ పిన్‌ను గుర్తుంచుకోవడంలో మీకు సహాయపడటానికి, మేము దీన్ని క్రమానుగతంగా నమోదు చేయమని అడుగుతాము. మేము కాలక్రమేణా తక్కువ అడుగుతాము.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "పిన్ సృష్టించండి";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "పిన్‌లు Signal గుప్తీకరించిన సమాచారాన్ని నిల్వ చేస్తాయి";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "మేము తరువాత మీకు గుర్తు చేస్తాము. %ld రోజుల్లో పిన్ సృష్టించడం తప్పనిసరి అవుతుంది.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "పిన్ సృష్టించబడింది. మీరు దీన్ని సెట్టింగులలో మార్చవచ్చు.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "పిన్ నిలిపివేయబడింది.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "మీడియాను ప్లే చేయండి";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "పుష్ నోటిఫికేషన్‌లను తిరిగి నమోదు చేయండి";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Signal‌ను గ్రహం మీద ఉత్తమ సందేశ అనువర్తనంగా మార్చడానికి, మీ అభిప్రాయాన్ని వినడానికి మేము ఇష్టపడతాము.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "మీరు ఏమనుకుంటున్నారో Signal‌కు చెప్పండి";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "సర్వేను సురక్షిత డొమైన్ survey.signalusers.org వద్ద Surveygizmo హోస్ట్ చేస్తుంది.";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "వద్దు ధన్యవాదాలు";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold> మేము గోప్యతను నమ్ముతున్నాము. </bold>\n\nSignal మిమ్మల్ని ట్రాక్ చేయదు లేదా మీ డేటాను సేకరించదు. ప్రతిఒక్కరికీ Signal మెరుగుపరచడానికి, మేము వినియోగదారు అభిప్రాయంపై ఆధారపడతాము, <bold> మరియు మేము మీ </bold> ని ఇష్టపడతాము\n\nమీరు Signal‌ను ఎలా ఉపయోగిస్తారో అర్థం చేసుకోవడానికి మేము ఒక సర్వేను నడుపుతున్నాము. మా సర్వే మిమ్మల్ని గుర్తించే డేటాను సేకరించదు. మీకు అదనపు అభిప్రాయాన్ని పంచుకోవటానికి ఆసక్తి ఉంటే, సంప్రదింపు సమాచారాన్ని అందించే అవకాశం మీకు ఉంటుంది.\n\nమీకు కొన్ని నిమిషాలు మరియు అభిప్రాయం ఉంటే, మేము మీ నుండి వినడానికి ఇష్టపడతాము.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "సర్వే తీసుకోండి";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal రీసెర్చ్";
 
 /* Configure reactions reset button text */
 "RESET" = "పునరుద్ధరించు";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "భాగస్వామ్య సూచనలను నిలిపివేయడంలో విఫలమైంది.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "ఇతర అనువర్తనాల నుండి భాగస్వామ్యం చేసేటప్పుడు Signal చాట్‌లను సూచనలుగా ప్రదర్శించవచ్చు.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "భాగస్వామ్యం చేయడం సులభంవంతమైంది ";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "అచేతనించు";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "ప్రారంభించు";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "భద్రతా సంఖ్యను చూపించు";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "పూర్తి ధృవీకరణ";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "రాబోయే వారాల్లో ప్రస్తుత సమూహాలు స్వయంచాలకంగా ఈ లక్షణాలను పొందుతాయి.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "కొత్త సమూహం";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "క్రొత్త సమూహాలు ఇక్కడ ఉన్నాయి!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "క్రొత్త సమూహ లక్షణాలలో ప్రస్తావనలు, నిర్వాహకులు మరియు మరిన్ని ఉన్నాయి. నొక్కడం ద్వారా దీన్ని ప్రయత్నించండి:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "స్టిక్కర్ సందేశం";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "సమూహాన్ని నవీకరించడం సాధ్యం కాలేదు. మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "మీ పిన్ను సృష్టించండి";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "పిన్‌ల గురించి మరింత తెలుసుకోండి";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "పిన్‌లు Signal గుప్తీకరించిన సమాచారాన్ని నిల్వ చేస్తాయి కాబట్టి మీరు మాత్రమే దీన్ని యాక్సెస్ చేయవచ్చు. మీరు మళ్లీ ఇన్‌స్టాల్ చేసినప్పుడు మీవ్యక్తిత్వవర్ణన, సెట్టింగ్‌లు మరియు పరిచయాలు పునరుద్ధరించబడతాయి. అనువర్తనాన్ని తెరవడానికి మీకు మీ పిన్ అవసరం లేదు.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "పిన్‌లను పరిచయం చేస్తోంది";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "పిన్‌ను ఆపివేయి";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal కు త్వరలో iOS 11 లేదా తరువాత అవసరం. దయచేసి సెట్టింగ్‌ల అనువర్తనంలో అప్‌గ్రేడ్ చేయండి >> సాధారణ >> సాఫ్ట్‌వేర్ నవీకరణ.";

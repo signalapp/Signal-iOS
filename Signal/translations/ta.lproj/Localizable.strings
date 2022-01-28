@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "சபாநாயகர்";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "கூட்டு புகைப்படம்";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "தோற்றத்தையும் வண்ணத்தையும் தேர்வு செய்யவும் அல்லது உங்கள் முதலெழுத்துக்களைத் தனிப்பயனாக்கவும்.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "கூட்டு ஒரு சுயவிவரம் புகைப்படம்";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "ஒரு வண்ணத்தைத் தேர்வுசெய்க";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "ஆட்டோ வண்ணத்துடன் பொருந்துகிறது பின்னணிப்படம்";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "தோற்றம்";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "இப்பொழுது உன்னால் முடியும் மாற்றம் உங்கள் அரட்டைகளில் சாய்வு மற்றும் பலவற்றின் வண்ணங்கள்.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "தனிப்பயன் அரட்டை வண்ணங்கள்\n ";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "அரட்டை நிறம் & பின்னணிப்படம்";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "நீங்கள் ஏன் எவேரேனுமொருவரை அழைக்கக்கூடாது ?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "பதிவு பூட்டை இயக்க முடியவில்லை.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "பரபரப்பு";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "நீங்கள் (மற்றொரு சாதனத்தில்)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "திற a புதிய குழு இலவசமாக தொடங்க மறைகுறியாக்கப்பட்டது குழு அழைப்பு";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "அறிமுகப்படுத்துகிறது குழு அழைப்புகள்";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "நீங்கள் குழுவை உருவாக்கியது.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "சாதனத்தை இணைப்பதில் தோல்வி";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "இணைப்பு முன்னோட்டங்கள் இப்போது எல்லா தளங்களுக்கும் உருவாக்கப்படும்.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "முடக்கு";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "எந்த இணைப்பையும் முன்னோட்டமிடுங்கள்";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "பொருட்டு பரிமாற்றம் உங்கள் Signal கணக்கு, நீங்கள் இரு சாதனங்களிலும் உள்ளூர் பிணைய அணுகலை இயக்க வேண்டும்.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "மேலே பொருத்தப்பட்ட செய்திகள்";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "பின் குறைந்தது 4 எழுத்துகள் இருக்க வேண்டும்";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "பின்'கள்  பொருந்தவில்லை. மீண்டும் முயற்சி செய்.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "பின்குறைந்தது 4 இலக்கங்களாக இருக்க வேண்டும்";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "அணைக்கவும் பதிவு பூட்டு?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "பின் முடக்கு";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "பின் அல்லது கடவுஎண் முடக்கு தோல்வியுற்றது";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "பின் உருவாக்கம் தோல்வியுற்றது";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "உங்கள் பின்னை மனப்பாடம் செய்ய உங்களுக்கு உதவ, அவ்வப்போது அதை உள்ளிடுமாறு கேட்டுக்கொள்கிறோம். காலப்போக்கில் குறைவாகக் கேட்போம்.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "பின் உருவாக்கவும்";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "பின்ஸ் வைத்திருக்கின்றன தகவல் அது சேமிக்கப்படுகிறது Signal மறைகுறியாக்கப்பட்டது";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "நாங்கள் நினைவூட்டுவோம் நீங்கள்பின்னர். உருவாக்குதல் aபின் % ld நாட்களில் கட்டாயமாகிவிடும்.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "பின் உருவாக்கப்பட்டது. நீங்கள் முடியும் மாற்றம் அது உள்ளே அமைப்புகள்.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "பின் அல்லது கடவுஎண் முடக்கப்பட்டது.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "மீடியா விளையாடு";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "மீண்டும் பதிவு செய்யுங்கள் அறிவிப்புகளை அழுத்துக";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "தயாரிக்க, தயாரிப்பு Signal கிரகத்தின் சிறந்த செய்தியிடல் பயன்பாடு, உங்களுடையதைக் கேட்க நாங்கள் விரும்புகிறோம் பின்னூட்டம்.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "நீங்கள் என்ன நினைக்கிறீர்கள் என்று Signal லிடம் சொல்லுங்கள்";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "கணக்கெடுப்பை சர்வேஜிஸ்மோ பாதுகாப்பான டொமைன் surveys.signalusers.org வழங்கியுள்ளார்";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "தேவையில்லை,நன்றி";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>நாங்கள் நம்புகிறோம் தனியுரிமை.</bold>\n\nSignal உங்களைக் கண்காணிக்கவோ அல்லது தரவைச் சேகரிக்கவோ இல்லை. மேம்படுத்திக்கொள்ள Signal அனைவருக்கும், நாங்கள் பயனரை நம்புகிறோம் பின்னூட்டம், <bold>நாங்கள் உன்னுடையதை விரும்புகிறோம்</bold>.\n\nநீங்கள் எவ்வாறு பயன்படுத்துகிறீர்கள் என்பதைப் புரிந்துகொள்ள நாங்கள் ஒரு கணக்கெடுப்பை நடத்துகிறோம் Signal. உங்களை அடையாளம் காணும் எந்த தரவையும் எங்கள் கணக்கெடுப்பு சேகரிக்கவில்லை.என்றால் கூடுதல் பகிர்வதில் ஆர்வமாக உள்ளீர்கள் பின்னூட்டம், தொடர்பை வழங்க உங்களுக்கு விருப்பம் இருக்கும் தகவல்.\n\nஎன்றால் உங்களுக்கு சில நிமிடங்கள் உள்ளன பின்னூட்டம் வழங்க, நாங்கள் உங்களிடமிருந்து கேட்க விரும்புகிறோம்.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "கணக்கெடுப்பில் பங்கேற்கவும்";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal ஆராய்ச்சி";
 
 /* Configure reactions reset button text */
 "RESET" = "மீட்டமைக்க";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "தோல்வி முடக்கு பரிந்துரைகளைப் பகிர்தல்.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal பகிர்வதில் உரையாடல்களை இப்போது பரிந்துரைகளாகக் காட்டலாம் மற்றவை பயன்பாடுகள்.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "பகிர்வு எளிதானது";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "முடக்கு";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "இயக்கு";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "பாதுகாப்பு எண்ணைக் காட்டு";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "முழுமை சரிபார்ப்பு";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "இருக்கும் குழுக்கள் வரும் வாரங்களில் இந்த அம்சங்களை தானாகவே பெறும்.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "புதிய குழு";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "புதிய குழுக்கள் இங்கே இருக்கிறார்கள்!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "புதிய குழு அம்சங்களில் குறிப்புகள், நிர்வாகிகள், இன்னமும் அதிகமாக. தட்டுவதன் மூலம் இதை முயற்சிக்கவும்:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ஸ்டிக்கர் செய்தி";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "குழுவைப் புதுப்பிக்க முடியவில்லை. உங்கள் இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "உங்கள் பின்னை உருவாக்கவும்";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "கடவு எண்கள் பின்ஸைப்  பற்றி மேலும் அறிக";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Signal PINS கடவுஎண் குறியாக்கத்துடன் தகவல்களை சேமித்து வைத்திருப்பதால் நீங்கள் மட்டுமே அதை அணுக முடியும். நீங்கள் மீண்டும் நிறுவும்போது உங்கள் சுயவிவரம், அமைப்புகள் மற்றும் தொடர்புகள் மீட்டமைக்கப்படும். பயன்பாட்டைத் திறக்க உங்கள் பின் தேவையில்லை.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "பின்'களை  அறிமுகப்படுத்துகிறது";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "பின் முடக்கு";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal விரைவில் தேவைப்படும் iOS 11 அல்லது அதற்குப் பிறகு. தயவு செய்து மேம்படுத்தல் இல் அமைப்புகள் செயலி >> பொது >> மென்பொருள் புதுப்பிப்பு.";

@@ -1,9 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 import SafariServices
+import SignalCoreKit
+import SignalServiceKit
+import SignalUI
 
 @objc(OWSPinSetupViewController)
 public class PinSetupViewController: OWSViewController {
@@ -607,12 +610,55 @@ public class PinSetupViewController: OWSViewController {
             self.recommendationLabel.alpha = 0
         }
 
-        OWS2FAManager.shared.requestEnable2FA(withPin: pin, mode: .V2).then { () -> Promise<Void> in
+        enum PinSetupError: Error {
+            case networkFailure
+            case enable2FA
+            case enableRegistrationLock
+        }
+
+        firstly { () -> Promise<Void> in
+            OWS2FAManager.shared.requestEnable2FA(withPin: pin, mode: .V2)
+        }.recover { error in
+            // If we have a network failure before even requesting to enable 2FA, we
+            // can just ask the user to retry without altering any state. We can be
+            // confident nothing has changed on the server.
+            if case OWSHTTPError.networkFailure = error {
+                throw PinSetupError.networkFailure
+            }
+
+            owsFailDebug("Failed to enable 2FA with error: \(error)")
+
+            // The client may have fallen out of sync with the service.
+            // Try to get back to a known good state by disabling 2FA
+            // whenever enabling it fails.
+            OWS2FAManager.shared.disable2FA(success: nil, failure: nil)
+
+            throw PinSetupError.enable2FA
+        }.then { () -> Promise<Void> in
             if self.enableRegistrationLock {
                 return OWS2FAManager.shared.enableRegistrationLockV2()
             } else {
                 return Promise.value(())
             }
+        }.recover { error -> Promise<Void> in
+            if error is PinSetupError { throw error }
+
+            owsFailDebug("Failed to enable registration lock with error: \(error)")
+
+            // If the registration lock wasn't already enabled, we have to notify
+            // the user of the failure and not attempt to enable it later. Otherwise,
+            // they would be left thinking they have registration lock enabled when
+            // they do not for some window of time.
+            guard OWS2FAManager.shared.isRegistrationLockV2Enabled else {
+                throw PinSetupError.enableRegistrationLock
+            }
+
+            // Otherwise, attempt to update our account attributes. This may also fail,
+            // but if it does it will flag our attributes as dirty so we upload them
+            // ASAP (when we have the ability to talk to the service) and get the user
+            // switched over to their new PIN for registration lock.
+            TSAccountManager.shared.updateAccountAttributes().cauterize()
+            return Promise.value(())
         }.done {
             AssertIsOnMainThread()
 
@@ -627,13 +673,6 @@ public class PinSetupViewController: OWSViewController {
         }.catch { error in
             AssertIsOnMainThread()
 
-            Logger.error("Failed to enable 2FA with error: \(error)")
-
-            // The client may have fallen out of sync with the service.
-            // Try to get back to a known good state by disabling 2FA
-            // whenever enabling it fails.
-            OWS2FAManager.shared.disable2FA(success: nil, failure: nil)
-
             progressView.stopAnimating(success: false) {
                 self.nextButton.alpha = 1
                 self.pinTextField.alpha = 1
@@ -643,23 +682,70 @@ public class PinSetupViewController: OWSViewController {
                 self.view.isUserInteractionEnabled = true
                 progressView.removeFromSuperview()
 
-                // If this is the first time the user is trying to create a PIN, it's a blocking flow.
-                // If for some reason they hit an error, notify them that we'll try again later and
-                // dismiss the flow so they aren't stuck.
-                if case .creating = self.initialMode {
+                guard let error = error as? PinSetupError else {
+                    return owsFailDebug("Unexpected error during PIN setup \(error)")
+                }
+
+                // Show special reglock themed error message.
+                switch error {
+                case .enableRegistrationLock:
                     OWSActionSheets.showActionSheet(
-                        title: NSLocalizedString("PIN_CREATION_ERROR_TITLE",
-                                                 comment: "Error title indicating that the attempt to create a PIN failed."),
-                        message: NSLocalizedString("PIN_CREATION_ERROR_MESSAGE",
-                                                   comment: "Error body indicating that the attempt to create a PIN failed.")
+                        title: NSLocalizedString(
+                            "PIN_CREATION_REGLOCK_ERROR_TITLE",
+                            comment: "Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed."),
+                        message: NSLocalizedString(
+                            "PIN_CREATION_REGLOCK_ERROR_MESSAGE",
+                            comment: "Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed.")
                     ) { _ in
                         self.completionHandler(self, error)
                     }
-                } else {
-                    OWSActionSheets.showErrorAlert(
-                        message: NSLocalizedString("ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
-                                                   comment: "Error indicating that attempt to enable 'two-factor auth' failed.")
+                case .networkFailure:
+                    OWSActionSheets.showActionSheet(
+                        title: NSLocalizedString(
+                            "PIN_CREATION_NO_NETWORK_ERROR_TITLE",
+                            comment: "Error title indicating that the attempt to create a PIN failed due to network issues."),
+                        message: NSLocalizedString(
+                            "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE",
+                            comment: "Error body indicating that the attempt to create a PIN failed due to network issues.")
                     )
+                case .enable2FA:
+                    switch self.initialMode {
+                    case .creating:
+                        OWSActionSheets.showActionSheet(
+                            title: NSLocalizedString(
+                                "PIN_CREATION_ERROR_TITLE",
+                                comment: "Error title indicating that the attempt to create a PIN failed."),
+                            message: NSLocalizedString(
+                                "PIN_CREATION_ERROR_MESSAGE",
+                                comment: "Error body indicating that the attempt to create a PIN failed.")
+                        ) { _ in
+                            self.completionHandler(self, error)
+                        }
+                    case .changing:
+                        OWSActionSheets.showActionSheet(
+                            title: NSLocalizedString(
+                                "PIN_CHANGE_ERROR_TITLE",
+                                comment: "Error title indicating that the attempt to change a PIN failed."),
+                            message: NSLocalizedString(
+                                "PIN_CHANGE_ERROR_MESSAGE",
+                                comment: "Error body indicating that the attempt to change a PIN failed.")
+                        ) { _ in
+                            self.completionHandler(self, error)
+                        }
+                    case .recreating:
+                        OWSActionSheets.showActionSheet(
+                            title: NSLocalizedString(
+                                "PIN_RECREATION_ERROR_TITLE",
+                                comment: "Error title indicating that the attempt to recreate a PIN failed."),
+                            message: NSLocalizedString(
+                                "PIN_RECRETION_ERROR_MESSAGE",
+                                comment: "Error body indicating that the attempt to recreate a PIN failed.")
+                        ) { _ in
+                            self.completionHandler(self, error)
+                        }
+                    case .confirming:
+                        owsFailDebug("Unexpected initial mode")
+                    }
                 }
             }
         }
