@@ -494,8 +494,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             unreadViewItems.remove(at: index)
         }
         let unreadCount = unreadViewItems.count
-        unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"
-        let fontSize = (unreadCount < 100) ? Values.verySmallFontSize : 8
+        unreadCountLabel.text = unreadCount < 10000 ? "\(unreadCount)" : "9999+"
+        let fontSize = (unreadCount < 10000) ? Values.verySmallFontSize : 8
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
         unreadCountView.isHidden = (unreadCount == 0)
     }
