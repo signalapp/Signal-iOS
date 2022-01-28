@@ -619,7 +619,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                           }];
 }
 
-- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
