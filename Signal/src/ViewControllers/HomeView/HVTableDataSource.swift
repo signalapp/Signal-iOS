@@ -354,6 +354,7 @@ extension HVTableDataSource: UITableViewDelegate {
 
         switch section {
         case .reminders:
+            tableView.deselectRow(at: indexPath, animated: false)
             break
         case .pinned, .unpinned:
             guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
@@ -366,7 +367,10 @@ extension HVTableDataSource: UITableViewDelegate {
                 viewController.present(threadViewModel.threadRecord, action: .none, animated: true)
             }
         case .archiveButton:
-            if !viewState.multiSelectState.isActive {
+            if viewState.multiSelectState.isActive {
+                tableView.deselectRow(at: indexPath, animated: false)
+            }
+            else {
                 viewController.showArchivedConversations()
             }
         }
