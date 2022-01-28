@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "စပီကာ ";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto matches the color to the wallpaper";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "ပုံပန်းသဏ္ဌာန်";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Now you can change the colors in your chats with gradients and more.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Custom Chat Colors";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "သူများတွေကို ဖိတ်ရအောင်နော် ";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "မှတ်ပုံတင်ခြင်းသော့ ကို အသုံးပြု၍ မရနိုင်ပါ။";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "မအားပါ";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "မိမိ (အခြားစက်ပေါ်ရှိ)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "အခမဲ့ စာဝှက်ထားသော အဖွဲ့လိုက်ခေါ်ဆိုမှုကို စတင်ရန် အဖွဲ့အသစ်တစ်ခုကိုဖွင့်ပါ";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "အဖွဲ့လိုက်ခေါ်ဆိုနိုင်ခြိင်း မိတ်ဆက်ပါသည်";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "သင်သည် အဖွဲ့ဖွဲ့ခဲ့ပါသည်။";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ဖုန်းအချင်းချင်းချိတ်ဆက်မှု မအောင်မြင်ပါ";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "ဆိုဒ်များအားလုံးအတွက် ကြိုတင်ကြည့်လင့်ခ်များကို ယခုမှစ၍ ထုတ်လုပ်ပါမည်။";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "ပိတ်မယ်";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "မည်သည့် လင့်ခ်ကိုမဆို ကြိုတင် ဖွင့်ကြည့်ပါ။";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "သင်၏ Signal အကောင့်ကို လွှဲပြောင်းရန် သင်သည် စက် ၂ ခုစလုံးပေါ်တွင် လိုကယ်ကွန်ယက်သုံးခွင့် ဖွင့်ထားရပါမည်။";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "မှတ်ထားမယ်";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "ပင်နံပါတ်သည် အနည်းဆုံး အက္ခရာ ၄ လုံးရှိရပါမည်";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "ပင်နံပါတ်များ မကိုက်ညီပါ။ ပြန်စမ်းပေးပါ။";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "ပင်နံပါတ်သည် အနည်းဆုံး နံပါတ် ၄ လုံးရှိရပါမည်။";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "မှတ်ပုံတင်ခြင်းသော့ ကို ပိတ်မည်လား?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "ပင်နံပါတ် ပိတ်မယ်";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "ပင်နံပါတ် ပိတ်ခြင်း မအောင်မြင်ပါ";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "ပင်နံပါတ် ဖန်တီးခြင်း မအောင်မြင်ပါ";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "သင်၏ ပင်နံပါတ်ကို အလွတ်ကျက်မှတ်ရန်အတွက် အခါအားလျော်စွာ ရိုက်ထည့်ရန် သင့်အား တောင်းဆိုလိမ့်မည်။ ကျွန်ုပ်တို့ အချိန်ကြာလာတာနှင့်အမျှ လျော့နည်းစွာ မေးပါလိမ့်မယ်။";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "ပင်နံပါတ်ဖန်တီးပါ";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "ပင်နံပါတ်အသုံးပြုချင်းသည် Signal ဖြင့်သိမ်းထားသောသတင်းအချက်အလက်များကို ကုဒ်ဖြင့်သိမ်းဆည်းသည်။";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "နောက်မှ သင့်ကို ကျွန်ုပ်တို့ သတိပေးပါမည်။ ပင်နံပါတ်သည် နောက်ထပ် %ld ရက်အတွင်းတွင် မဖြစ်မနေ ဖန်တီးရပါမည်။";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "ပင်နံပါတ်ဖန်တီးပြီး။ အပြင်အဆင်ထဲတွင် ၎င်းကို ပြောင်းလဲနိုင်ပါသည်။";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "ပင်နံပါတ် ပိတ်ထားပါသည်";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "မီဒီယာဖိုင် ဖွင့်ကြည့်မယ်";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "သတိပေးချက်ကြီးများ ကို ပြန်တင်ပါမယ်";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Signal ကိုကမ္ဘာပေါ်ရှိ အကောင်းဆုံးစာတိုပေးပို့ရေးအက်ပ် ဖြစ်စေရန် သင်၏အကြံပေးချက်များကို ကျွန်ုပ်တို့ကြားချင်ပါသည်။";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Signal ပေါ်ထင်မြင်ချက်များ ကျွန်ုပ်တို့ကို ပြောပြပေးပါ";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "Surveygizmo မှ စစ်တမ်းကို လုံခြုံသော ဆာဗာဒိုမိန်း surveys.signalusers.org တွင် ဆောင်ရွက်ပါသည်။";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "မလုပ်လိုပါ";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold> ကျွန်ုပ်တို့သည် ပုဂ္ဂိုလ်ရေးလုံခြုံမှုကို ယုံကြည်ပါသည်။</bold>\n\nSignal သည် သင့်ခြေရာမလိုက်ပါ သို့မဟုတ် သင့်ဒေတာမကောက်ပါ။ အားလုံးအတွက် Signal ကိုတိုးတက်စေရန် ကျွန်ုပ်တို့သည် သုံးသူများ၏ တုံ့ပြန်ချက်ကို အားကိုးပါသည်၊ <bold>ကျွန်ုပ်တို့သည် သင်၏အကြံပေးချက်များကိုလည်း ကြားချင်ပါသည်</bold>။\n\nသင်မှ Signal ကိုမည်ကဲ့သို့ အသုံးပြုသည်ကို ကျွန်ုပ်တို့ စစ်တမ်းကောက်နေပါသည်။ ၎င်းစစ်တမ်းသည် သင့်ကို ဖေါ်ထုတ်နိုင်သည့် ဒေတာများမကောက်ပါ။ သင်မှ ထပ်မံ အကြံပေးချင်လျှင် သင့်အား ဆက်သွယ်နိုင်သည့် အချက်အလက်များ ပေးနိုင်ပါသည်။\n\nမိနစ်အချိန်ပိုင်း နှင့် အကြံပြုချက်များ ရှိလျှင် ကျွှန်ုပ်တို့ သင့်ထံမှ ကြားချင်ပါသည်။";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "စစ်တမ်းဖြေမယ်";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal သုတေသန";
 
 /* Configure reactions reset button text */
 "RESET" = "ရီဆက်ချမည်";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "အကြံပြုချက်များ မျှဝေခြင်းကို ပိတ်ပယ်ရာတွင် မအောင်မြင်ပါ။";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "အခြားအပ္ပလီကေးရှင်းများမှ မျှဝေလျှင် Signal စကားပြောဆိုမှုများကို ယခု အကြံပြုချက်များ အနေအဖြစ် ပြသနိုင်ပါပြီ။ ";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "မျှဝေခြင်းကို ပိုမိုလွယ်ကူစေသည်";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "ပိတ်မယ်";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "ဖွင့်မယ်";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "လုံခြုံရေးနံပါတ်ကို ပြပါ";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "လက်ရှိရှိသော အဖွဲ့များသည် လာမည့်အပါတ်များထဲတွင် ၎င်းအင်္ဂါရပ်များကို အလိုအလျောက် ရရှိပါမည်။";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "အဖွဲ့သစ်";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "အဖွဲ့သစ်များ ရောက်ပြီ!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "အဖွဲ့ အင်္ဂါရပ်အသစ်များထဲတွင် @မန်းရှင်းများ၊ စီမံသူများ နှင့် အခြားများ ပါဝင်ပါသည်။ နှိပ်၍စမ်းသုံးကြည့်ပါ -";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "စတစ်ကာ မက်ဆေ့ချ်";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "အဖွဲ့ကို အပ်ဒိတ် မလုပ်နိုင်ပါ။ သင်၏ အင်တာနက်လိုင်းကို စစ်၍ ပြန်စမ်းကြည့်ပေးပါ။";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "သင့် ပင်နံပါတ်ကို ဖန်တီးပါ";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "ပင်နံပါတ်များအကြောင်း ထပ်မံလေ့လာမယ်";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "ပင်နံပါတ်များသည် Signal ပေါ်တွင် အချက်အလက်များကို ကုဒ်ဖြင့်သိမ်းဆည်းထားဖြင့် သင်သာ သုံးခွင်းရှိပါသည်။ သင့် ပရိုဖိုင်း၊ အပြင်အဆင်များ၊ နှင့် အဆက်အသွယ်များကို သင် ပြန်ထည့်သွင်းသောအခါ ပြန်လည်ရရှိပါမည်။​ အပ္ပလီကေးရှင်း ဖွင့်ရန် သင့် ပင်နံပါတ်မလိုအပ်ပါ။";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "ပင်နံပါတ်များကို မိတ်ဆက်ပေးသည်";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "ပင်နံပါတ် ပိတ်မယ်";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "မကြာမီ Signal သည် iOS ၁၁ သို့မဟုတ် နောက်ထွက်ဗားရှင်းတစ်ခု လိုအပ်ပါမည်။ အပြင်အဆင်အပ္ပလီကေးရှင်း (Settings) >> ယေဘူယျ (General)  >> ဆော့ဝဲအပ်ဒိတ် (Software Update) သို့သွား၍ အဆင့်မြှင့်ပေးပါ။";

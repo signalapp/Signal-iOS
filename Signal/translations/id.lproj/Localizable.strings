@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Pengeras Suara";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Tambahkan Foto";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Pilih tampilan dan warna atau kustomisasi inisial Anda.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Tambahkan foto profil";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Pilih sebuah Warna";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Cocokan warna dengan gambar latar secara otomatis";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Penampilan";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Sekarang Anda dapat mengubah warna pada percakapan dengan gradasi dan sebagainya.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Warna Percakapan Kustom";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Warna & Gambar Latar Percakapan";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Mengapa Anda tidak mengundang seseorang?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Tidak dapat mengaktifkan Kunci Pendaftaran.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Sibuk";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Anda (di perangkat lain)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Buka sebuah Grup Baru untuk memulai panggilan grup gratis yang terenkripsi.";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Memperkenalkan Panggilan Grup";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Grup telah dibuat.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Gagal Menautkan Perangkat";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Pratinjau tautan akan ditampilkan untuk semua situs mulai sekarang.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Nonaktifkan";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Pratinjau Tautan Apapun";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Untuk memindahkan akun Signal Anda, Anda perlu mengaktfikan akses ke jaringan lokal pada kedua perangkat.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Pin";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN minimal harus 4 karakter";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN tidak cocok. Coba lagi.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN minimal harus 4 karakter";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Matikan Kunci Pendaftaran?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Nonaktifkan PIN";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Gagal Menonaktifkan PIN";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "Gagal membuat PIN";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Untuk membantu Anda mengingat PIN, kami akan meminta Anda untuk memasukkannya secara berkala. Kami akan memintanya lebih jarang dari waktu ke waktu.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Buat PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN menjaga informasi yang disimpan di Signal terenkripsi";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Kami akan mengingatkan Anda nanti. PIN harus dibuat dalam %ld hari.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN telah dibuat. Anda dapat mengubah PIN dari Pengaturan.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Dinonaktifkan.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mainkan Media";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Daftarkan Ulang Penanda Notifikasi";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Untuk menjadikan Signal sebagai aplikasi bertukar pesan terbaik di planet, kami sangat menunggu umpan balik Anda.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Berikan Signal pendapat Anda ";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "Survei ini dijalankan oleh Surveygizmo pada domain yang aman surveys.signalusers.org";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Tidak, terima kasih";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Kami percaya pada privasi.</bold>\n\nSignal tidak melacak atau mengumpulkan data Anda. Untuk meningkatkan performa Signal untuk semua, kami mengandalkan umpan balik pengguna, <bold>dan kami ingin sekali umpan balik dari Anda</bold>.\n\nKami menjalankan sebuah survei untuk dapat mengerti bagaimana Anda menggunakan Signal. Survei kami tidak mengumpulkan data apapun yang akan mengidentifikasi Anda. Jika Anda tertarik membagikan umpan balik tambahan, Anda memiliki pilihan untuk memberikan informasi kontak.\n\nJika Anda memiliki beberapa menit dan umpan balik untuk diberikan, kami ingin sekali mendengarnya dari Anda.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Ikuti survei";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Riset Signal";
 
 /* Configure reactions reset button text */
 "RESET" = "Atur ulang";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Gagal menonaktifkan saran berbagi.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Pesan Signal sekarang dapat ditampilkan sebagai saran saat berbagi dari aplikasi lain.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Berbagi Menjadi Lebih Mudah";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Nonaktifkan";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Aktifkan";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Tunjukkan nomor keamanan";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Selesaikan verifikasi";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Grup yang ada akan secara otomatis mendapatkan fitur-fitur ini dalam minggu-minggu ke depan.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Grup Baru";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Grup Baru telah tiba!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Fitur-fitur Grup Baru termasuk @mention, admin, dan lainnya. Coba dengan mengetuk:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Pesan Stiker";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grup tidak dapat diperbarui. Periksa koneksi internet Anda dan coba lagi.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Buat PIN Anda";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Pelajari Lebih Lanjut Mengenai PIN";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN menjaga informasi yang disimpan dengan Signal terenkripsi sehingga hanya Anda yang dapat mengaksesnya. Profil Anda, pengaturan, dan kontak-kontak akan dipulihkan saat Anda memasang ulang aplikasi. Anda tidak memerlukan PIN untuk membuka aplikasinya.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Memperkenalkan PIN";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Nonaktifkan PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal akan segera mensyaratkan iOS 11 atau lebih baru. Perbarui di Pengaturan >> Umum >> Pembaruan Perangkat Lunak.";

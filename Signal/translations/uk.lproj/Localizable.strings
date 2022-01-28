@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Динамік";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Додати фото";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Оберіть вид та колір, або налаштуйте під себе ініціали.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Додати фото облікового запису";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Обрати колір";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Автоматично припасувати колір до шпалер";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Вигляд";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Відтепер ви можете змінювати кольори у чатах використовуючи градієнти та не лише.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Власні кольори чатів";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Колір чату та шпалери";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Чому би вам не запросити когось?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Неможливо увімкнути блокування входу.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Зайнято";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Ви (на іншому пристрої)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Створіть Нову групу, щоб розпочати безкоштовний і захищений груповий дзвінок";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Представляємо Групові дзвінки";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Ви створили групу.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Не вдалося прив’язати пристрій";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Попередній перегляд посилань відтепер генеруватиметься для усіх сайтів.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Вимкнути";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Попередній перегляд будь-якого посилання";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Щоб перенести ваш обліковий запис Signal, потрібно увімкнути доступ до локальної мережі на обох пристроях.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Закріпити";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-код повинен бути не коротшим 4-х символів";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-коди не співпадають. Спробуйте ще раз.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN-код повинен бути не коротшим 4-х цифр";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Відключити Блокування Реєстрації?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Вимкнути PIN";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Помилка вимкнення PIN";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "Не вдалося створити PIN-код";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Щоб допомогти вам запам'ятати свій PIN-код, ми будемо просити вас періодично вводити його. Згодом це буде відбуватися рідше.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Створити PIN-код";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN-коди зберігають інформацію в сервісі Signal зашифровано";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Ми нагадаємо вам пізніше. Створення PIN-коду стане обов'язковим через %ld днів.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN-код створено. Ви можете змінити його в налаштуваннях.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN вимкнено.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Відтворити медіа";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Перереєструвати Push-сповіщення";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Щоб зробити Signal найкращим застосунком для листування на планеті, ми б хотіли почути ваш відгук.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Поділиться думкою з Signal";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "Опитування проводиться сайтом Surveygizmo на захищеному домені surveys.signalusers.org";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Ні, дякую";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Ми віримо у приватність.</bold>\n\nSignal не слідкує за вами та не збирає ваші дані. Щоб покращити Signal для усіх, ми покладаємось на відгуки <bold>та хотіли б отримати ваш</bold>.\n\nМи проводимо опитування задля розуміння, як ви використовуєте Signal. Наше опитування не збирає будь-яких даних, які б могли вас ідентифікувати. Якщо вам цікаво поділитись додатковим відгуком, ви матимете можливість надати вашу контактну інформацію.\n\nЯкщо ви маєте декілька хвилин та відгук, ми залюбки його прочитаємо.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Пройти опитування";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Дослідження Signal";
 
 /* Configure reactions reset button text */
 "RESET" = "Скинути";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Не вдалось вимкнути пропозиції поширення.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Чати Signal відтепер відображатимуться як пропозиції під час поширення з інших застосунків.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Ділитись стало легше";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Вимкнути";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Увімкнути";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Показати номер безпеки";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Завершити підтвердження особи";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Існуючі групи автоматично отримають ці можливості протягом наступних тижнів.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Нова група";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Нові Групи вже тут!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Можливості Нових груп: @згадки, адміністратори, та інше. Торкніться та спробуйте:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Повідомлення зі Cтікером";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Групу не можна оновити. Перевірте з'єднання з інтернетом та спробуйте знову.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Створити PIN-код";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Дізнатись більше про PIN";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-коди зберігають інформацію в Signal зашифрованою, тому тільки ви можете отримати до неї доступ. Ваш профіль, налаштування та контакти буде відновлено, коли ви встановите застосунок знов. PIN-код не потрібен, щоб відкрити застосунок.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Представляємо PIN-коди";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Вимкнути PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Незабаром Signal буде працювати тільки на iOS 11 і вище. Будь ласка, поновіть iOS, перейшовши в додаток Налаштування >> Основні >> Оновлення ПО.";

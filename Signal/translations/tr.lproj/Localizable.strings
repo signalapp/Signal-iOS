@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Hoparlör";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Fotoğraf Ekleyin";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Görünüm ve renk seçimi yapın veya baş harflerinizi düzenleyin.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Profil fotoğrafı ekleyin";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Renk Seçin";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Arkaplana bağlı otomatik olarak renk eşleştirir";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Görünüm";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Şimdi konuşmalarınızdaki renkleri geçişlerle ve daha fazlasıyla değiştirebilirsiniz.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Özel Konuşma Renkleri";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Konuşma Rengi ve Arkaplan";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Neden birisini davet etmiyorsunuz?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Kayıt Kilidi etkinleştirilemedi.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Meşgul";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Siz (başka bir cihazda)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Ücretsiz ve şifreli grup araması başlatmak için yeni bir Grup açın.";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Karşınızda Grup Aramaları";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Grubu oluşturdunuz.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Cihaz Bağlanması Başarısız Oldu";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Artık tüm siteler için bağlantı önizlemeleri oluşturulacak.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Devre dışı bırak";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Tüm Bağlantıları Önizle";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Signal hesabınızı aktarabilmek için, her iki aygıtta da yerel ağ erişimini etkinleştirmeniz gerekiyor.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Sabitle";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN en az 4 karakterli olmalı";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN'ler eşleşmiyor. Tekrar deneyin.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN en az 4 haneli olmalı";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Kayıt Kilidi'ni Kapat?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "PIN'i devre dışı bırak";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN Devre Dışı Bırakılamadı";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "PIN Oluşturma Başarısız Oldu";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "PIN'inizi hatırlamanıza yardımcı olmak için, arada sırada girmenizi isteyeceğiz. Zaman geçtikçe daha az soracağız.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "PIN oluştur";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN'ler Signal'de depolanan verileri şifreli olarak tutar";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Size daha sonra hatırlatacağız. %ld gün sonra PIN oluşturmanız zorunlu olacaktır.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN oluşturuldu. Ayarlardan değiştirebilirsiniz.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN Devre Dışı Bırakıldı.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medyayı Oynat";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Anlık Bildirimler için Yeniden Kaydol";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Signal'i gezegendeki en iyi yazışma uygulaması yapmak için geri bildiriminizi duymaktan memnuniyet duyarız.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Signal'e ne düşündüğünüzü söyleyin";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "Ankete Surveygizmo tarafından barındırılan güvenli etki alanı surveys.signalusers.org adresinden erişilebilir";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Hayır teşekkürler";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Gizliliğe inanıyoruz.</bold>\n\nSignal sizi takip etmez veya verilerinizi toplamaz. Signal'i herkes için geliştirmek için, kullanıcı geri bildirimlerine güveniyoruz, <bold>ve sizinkini çok isteriz.</bold>\n\nSignal'i nasıl kullandığınızı anlamak için bir anket yapıyoruz.  Anketimiz sizi tanımlayacak herhangi bir veri toplamaz. Daha fazla geri bildirim paylaşmakla ilgileniyorsanız, iletişim bilgilerinizi sağlama seçeneğiniz vardır.\n\nBirkaç dakikanız ve geri bildiriminiz varsa, sizden haber almaktan memnuniyet duyarız.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Anketi doldur";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal Araştırması";
 
 /* Configure reactions reset button text */
 "RESET" = "Sıfırla";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Paylaşım önerileri devre dışı bırakılamadı.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal konuşmaları artık başka uygulamalardan paylaşım yapıldığında öneri olarak gözükecek.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Paylaşım Kolaylaştırıldı";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Devre dışı bırak";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Etkinleştir";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Güvenlik Numarasını Göster";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Doğrulamayı tamamla";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Mevcut gruplar bu özellikleri önümüzdeki haftalarda otomatik olarak alacak.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Yeni Grup";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Yeni Gruplar şimdi burada!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Yeni Grup özellikleri arasında @bahsetmeler, yöneticiler ve daha fazlası var. Aşağıya tıklayarak deneyebilirsiniz:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Çıkartma İletisi";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grup güncelleştirilemedi. İnternet bağlantınızı kontrol edin ve tekrar deneyin.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "PIN'inizi oluşturun";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PIN'ler hakkında dahasını öğrenin";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN'ler Signal'de depolanan verileri şifreli olarak tutar böylelikle yalnızca siz erişebilirsiniz. Profiliniz, ayarlarınız ve kişileriniz Signal'i yeniden yüklediğinizde geri yüklenecektir. Uygulamayı açmak için PIN'inize ihtiyacınız yoktur.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Karşınızda PIN'ler";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN'i devre dışı bırak";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal yakında iOS 11 ve sonrasını destekleyecektir. Lütfen Ayarlar >> Genel >> Yazılım güncelleme bölümünden yükseltin.";

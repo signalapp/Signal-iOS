@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "स्पीकर";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "फोटो जोडा";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "रूप आणि रंग निवडा किंवा आपली आद्याक्षरे सानुकूलित करा.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "प्रोफाईल फोटो जोडा";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "रंग बदला";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "वॉलपेपरसोबत स्वयंचलितपणे रंग जुळवते";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "स्वरूप";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "आता आपण ग्रेडिएंट आणि अधिकसह चॅटमधले रंग बदलू शकता.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "कस्टम चॅट रंग";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "चॅट रंग आणि वॉलपेपर";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "आपण कुणाला आमंत्रित का करत नाही?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "नोंदणी लॉक सक्षम करू शकले नाही.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "व्यस्त";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "आपण (दुसऱ्या डिव्हाईसवर)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "विनामूल्य एन्क्रिप्टेड गट कॉल चालू करण्यासाठी नवीन गट उघडा";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "सादर करत आहे गट कॉल";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "आपण गट तयार केला.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "डिव्हाईस लिंक करणे अयशस्वी";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "लिंक पुनरावलोकन आता सर्व साईटसाठी उत्पन्न केले जाईल.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "अक्षम करा";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "कुठलीही लिंकचे पुनरावलोकन करा";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "आपले Signal खाते स्थानांतरित करण्यासाठी, आपल्याला दोन्ही डिव्हाईसवर स्थानिक नेटवर्कचा अॅक्सेस सक्षम करणे गरजेचे आहे.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "पिन करा";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN कमीतकमी 4 कॅरेक्टर असावा";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN जुळत नाहीत. पुन्हा प्रयत्न करा.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN किमान 4 अंकांचा असायला हवा";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "नोंदणी लॉक बंद करायचे?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "PIN अक्षम करा";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN अक्षम करणे अयशस्वी";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "PIN निर्मिती अयशस्वी";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "आपला PIN आपल्या लक्षात रहाण्यात मदत करण्यासाठी, आम्ही वेळोवेळी तो प्रविष्ट करण्यास विचारू. कालांतराने आम्ही कमी वेळेस विचारू.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "PIN तयार करा";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "आम्ही आपल्याला नंतर आठवण करून देऊ. %ld दिवसांनी PIN तयार करणे अनिवार्य होईल.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN तयार केला. आपण त्यास सेटिंग मध्ये बदलू शकता.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN अक्षम केले.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "मिडिया प्ले करा";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "पुश सूचना पुन्हा नोंदणी करा";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "या ग्रहावरील Signal ला सर्वोत्कृष्ट संदेशन अॅप बनवण्यासाठी, आम्हाला आपला अभिप्राय ऐकायला आवडेल.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "आपल्याला काय वाटते ते Signal ला सांगा";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "सर्वेक्षण Surveygizmo द्वारा सुरक्षित डोमेन surveys.signalusers.org वर होस्ट केलेले आहे";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "नाही धन्यवाद";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>आम्ही गोपनीयतेमध्ये विश्वास ठेवतो.</bold>\n\nSignal आपल्याला ट्रॅक किंवा आपला डेटा गोळा करत नाही. सर्वांसाठी Signal सुधारित करण्यासाठी, आम्ही वापरकर्ता अभिप्रायावर अवलंबून असतो, <bold>आणि आम्हाला आपण तो दिलेला आवडेल</bold>.\n\nआपण Signal चा वापर कसा करता हे समजून घेण्यासाठी आम्ही एक सर्वेक्षण करतो आहे. आपण ओळखले जाल असा कुठलाही डेटा आमचा सर्वेक्षण गोळा करत नाही. आपण अतिरिक्त अभिप्राय शेअर करण्यास इच्छुक असल्यास, आपल्याकडे संपर्क माहिती पुरवण्याचा पर्याय असेल.\n\nआपल्याकडे देण्यासाठी काही मिनिटे आणि अभिप्राय असल्यास, आम्हाला तो आपल्याकडून ऐकायला आवडेल.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "सर्वेक्षण घ्या";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal संशोधन";
 
 /* Configure reactions reset button text */
 "RESET" = "रीसेट करा";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "शेअर करण्याच्या सूचना अक्षम करण्यात अयशस्वी.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "इतर अॅप वरून शेअर करताना Signal चॅट आता सूचना म्हणून दाखवले जाऊ शकतात.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "शेअर करणे बनले सोपे";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "अक्षम करा";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "सक्षम करा";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "सुरक्षितता नंबर दाखवा";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "सत्यापन पूर्ण करा";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "येत्या आठवड्यांमध्ये अस्तित्वात असलेल्या गटांना स्वयंचलितपणे हे वैशिष्ट्ये मिळतील.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "नवीन गट";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "नवीन गट येथे आहेत!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "नवीन गट वैशिष्ट्यांमध्ये @उल्लेख, अॅडमिन आणि आणखी बरेच समाविष्ट आहेत. टॅप करून वापरून पहा:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "स्टिकर संदेश";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "गट अद्यतनित केला जाऊ शकला नाही. आपले इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "आपला PIN तयार करा";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PIN बद्दल अधिक जाणा";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल. आपल्याला अॅप उघडण्यासाठी PIN ची गरज लागणार नाही.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PIN ची ओळख करून देत आहे";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN अक्षम करा";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "लवकरच Signal ला iOS 11 किंवा नंतरची आवश्यकता लागेल. कृपया सेटिंग अॅप >> साधारण >> सॉफ्टवेअर अद्यतन मधून श्रेणीसुधारित करा.";

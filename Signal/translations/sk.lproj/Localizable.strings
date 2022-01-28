@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Reproduktor";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Pridať fotku";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Vyberte vzhľad a farbu, alebo prispôsobte svoje iniciály.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Pridajte profilovú fotografiu";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Zvoľte farbu";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Automaticky nájde vhodnú farbu k pozadiu";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Vzhľad";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Teraz môžete zmeniť farby vo vašich chatoch pomocou farebných prechodov a ďalších vecí.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Vlastné farby chatov";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Farba chatu a pozadie";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Prečo niekoho nepozvete?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Nepodarilo sa aktivovať registračný zámok.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Obsadené";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Vy (na inom zariadení)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Otvorte Novú skupinu pre zahájenie bezplatného šifrovaného skupinového hovoru";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Predstavujeme skupinové hovory";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Vytvorili ste skupinu.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Prepojenie zariadenia zlyhalo";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Náhľady stránok sa odteraz budú generovať pre všetky odkazy.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Zrušiť";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Pozrite si predbežne akýkoľvek odkaz";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Aby ste preniesli váš Signal účet, musíte povoliť prístup k lokálnej sieti na oboch zariadeniach.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Pripnúť";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN musí mať aspoň 4 znaky";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINy sa nezhodujú. Skúste to znovu.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN musí mať aspoň 4 číslice";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Vypnúť registračný zámok?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Vypnúť PIN";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Vypnutie PINu zlyhalo";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "Vytvorenie PINu zlyhalo";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Aby sme vám pomohli zapamätať si váš PIN, pravidelne vás budeme žiadať o jeho zadanie. Postupom času budeme o to žiadať menej.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Vytvoriť PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN kódy udržiavajú informácie uložené v Signale zašifrované";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Pripomenieme vám to neskôr. PIN si budete musieť povinne vytvoriť o %ld dní.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN kód sa vytvoril. Môžete ho zmeniť v nastaveniach.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN bol vypnutý.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spustiť média";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Znovu zaregistrovať push notifikácie";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Aby sme zo Signalu mohli spraviť najlepšiu aplikáciu na posielanie správ na planéte, radi by sme počuli vašu spätnú väzbu.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Povedzte Signalu, čo si myslíte";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "Anketu sprostredkúva Surveygizmo na zabezpečenej doméne surveys.signalusers.org";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Nie, ďakujem";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "Veríme v súkromie.</bold>\n\nSignal vás nesleduje ani nezhromažďuje vaše údaje. Aby sme Signal vylepšili pre každého, spoliehame sa na spätnú väzbu našich používateľov <bold>a tešíme sa aj na tú vašu</bold>.\n\nSpustili sme anketu, aby sme zistili, ako Signal používate. Naša anketa nezhromažďuje žiadne údaje, na základe ktorých by vás bolo možné identifikovať. Ak nám budete chcieť poslať dodatočnú odozvu, budete mať možnosť poskytnúť kontaktné údaje.\nAk máte pár minút a vedeli by ste nám ponúknuť spätnú väzbu, boli by sme radi, keby ste sa nám ozvali.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Zapojiť sa do ankety";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Prieskum Signal";
 
 /* Configure reactions reset button text */
 "RESET" = "Resetovať";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Návrhy pri zdieľaní sa nepodarilo vypnúť.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signalovské chaty sa pri zdieľaní z iných aplikácií teraz môžu zobraziť ako návrhy.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Jednoduchšie zdieľanie";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Zrušiť";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Aktivovať";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Zobraziť bezpečnostné číslo";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Kompletné overenie";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existujúce skupiny dostanú tieto funkcie automaticky v v priebehu nasledujúcich týždňov.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Nová skupina";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Dorazili Nové skupiny!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Nové skupiny zahŕňajú @spomenutia, administrátorov a ďalšie funkcie. Ťuknite a vyskúšajte si to:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Správa s nálepkou";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Skupinu nebolo možné aktualizovať. Skontrolujte vaše pripojenie na internet a skúste to znovu.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Vytvorte si PIN";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Dozvedieť sa viac o PINoch";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN kódy udržiavajú informácie uložené v Signale zašifrované, aby ste k nim mali prístup iba vy. Váš profil, vaše nastavenia a kontakty sa po opätovnej inštalácii obnovia. Na otvorenie aplikácie PIN potrebovať nebudete.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Predstavujeme PINy";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Vypnúť PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal si čoskoro bude vyžadovať iOS 11 alebo novší. Prosím, vykonajte aktualizáciu v aplikácia Nastavenia >> Všeobecné >> Aktualizácia softvéru.";

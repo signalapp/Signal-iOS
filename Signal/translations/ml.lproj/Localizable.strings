@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "സ്പീക്കർ";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "ഫോട്ടോ ചേർക്കുക";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "ഒരു രൂപം തിരഞ്ഞെടുക്കുക കൂടാതെ നിങ്ങളുടെ ഇനീഷ്യലുകൾ വർണ്ണിക്കുക അല്ലെങ്കിൽ ഇഷ്ടാനുസൃതമാക്കുക.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "ഒരു പ്രൊഫൈൽ ഫോട്ടോ ചേർക്കുക";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "ഒരു നിറം തിരഞ്ഞെടുക്കുക";
 
@@ -374,13 +365,13 @@
 "BACK_BUTTON" = "തിരികെ പോകുക";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "എന്റെ ബാഡ്ജുകൾ";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "ബാഡ്ജുകള്‍";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "പരിപാലകര്‍ ആകുക";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
@@ -395,19 +386,19 @@
 "BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "പരിപാലകര്‍ ആകുക";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "ബാഡ്ജ് കാലഹരണപ്പെട്ടു";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "സബ്സ്ക്രിപ്ഷൻ പുതുക്കുക";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "സബ്‌സ്‌ക്രിപ്‌ഷൻ റദ്ദാക്കി";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
@@ -419,7 +410,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "നിങ്ങളുടെ പിന്തുണയ്ക്ക് നന്ദി!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "വാൾപേപ്പറിന്റെ നിറവുമായി സ്വയമേവ പൊരുത്തപ്പെടുന്നു";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "ദൃശ്യത";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "ഗ്രേഡിയന്റുകളും മറ്റും ഉപയോഗിച്ച് നിങ്ങളുടെ ചാറ്റുകളിലെ നിറങ്ങൾ ഇപ്പോൾ നിങ്ങൾക്ക് മാറ്റാനാകും.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "ഇഷ്ടാനുസൃത ചാറ്റ് നിറങ്ങൾ";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "ചാറ്റ് നിറം & വാള്‍പേപ്പര്‍";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "നിങ്ങൾ ആരെയും ക്ഷണിക്കാത്തതെന്തേ?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "രജിസ്ട്രേഷൻ ലോക്ക്  പ്രാപ്തമാക്കാൻ സാധിച്ചില്ല.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "തിരക്കിലാണ്";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "നിങ്ങൾ (മറ്റൊരു ഉപകരണത്തിൽ)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "എൻ‌ക്രിപ്റ്റ് ചെയ്ത ഗ്രൂപ്പ് കോൾ ആരംഭിക്കാൻ, ഒരു പുതിയ ഗ്രൂപ്പ് ചാറ്റ് തുറക്കുക";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "ഗ്രൂപ്പ് കോളുകൾ അവതരിപ്പിക്കുന്നു";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "നിങ്ങൾ ഗ്രൂപ്പ് സൃഷ്ടിച്ചു.";
@@ -3169,15 +3142,6 @@
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ഡിവൈസ് ലിങ്ക് ചെയ്യുന്നത് പരാജയപ്പെട്ടിരിക്കുന്നു";
 
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "ലിങ്ക് പ്രിവ്യൂകൾക്ക് ഇപ്പോൾ എല്ലാ സൈറ്റുകൾക്കുമായി നിർമ്മിക്കാൻ കഴിയും.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "പ്രവർത്തനരഹിതമാക്കുക";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "ഏതെങ്കിലും ലിങ്ക് പ്രിവ്യൂ ചെയ്യുക";
-
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "നിങ്ങളുടെ Signal അക്കൗണ്ട് ട്രാൻസ്ഫർ ചെയ്യുന്നതിന്, രണ്ട് ഉപകരണങ്ങളിലും പ്രാദേശിക നെറ്റ്‌വർക്ക് ആക്‌സസ് പ്രവർത്തനക്ഷമമാക്കേണ്ടതുണ്ട്.";
 
@@ -3617,7 +3581,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ഫോൺ നമ്പർ ഉപയോഗിച്ച് കണ്ടെത്തുക";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 അംഗം";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "പുതിയ ഗ്രൂപ്പ്";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "പിൻചെയ്യു";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN ൽ കുറഞ്ഞത് 4 അക്കങ്ങൾ/അക്ഷരങ്ങൾ ഉണ്ടായിരിക്കണം";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN കൾ പൊരുത്തപ്പെടുന്നില്ല. വീണ്ടും പരിശ്രമിക്കുക.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN ൽ കുറഞ്ഞത് 4 അക്കങ്ങൾ ഉണ്ടായിരിക്കണം";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "രജിസ്ട്രേഷൻ ലോക്ക് ഓഫ് ചെയ്യണോ?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "പിൻ അപ്രാപ്‌തമാക്കുക";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "പിൻ പ്രവർത്തനരഹിതമാക്കുന്നത് പരാജയപ്പെട്ടു";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "PIN സൃഷ്ടിക്കൽ പരാജയപ്പെട്ടു";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "നിങ്ങളുടെ PIN ഓർമ്മയിൽ നിൽക്കുന്നതിന് നിങ്ങളെ സഹായിക്കുന്നതിനായി, സമയാസമയങ്ങളിൽ അത് നൽകാൻ ഞങ്ങൾ നിങ്ങളോട് ആവശ്യപ്പെടും.  ഞങ്ങൾ കുറഞ്ഞ അധിക സമയങ്ങളിൽ ആവശ്യപ്പെടും.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "പിൻ സൃഷ്ടിക്കുക";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Signal എൻക്രിപ്റ്റ് ചെയ്ത് സ്റ്റോർ ചെയ്തിട്ടുള്ള വിവരങ്ങൾ PIN കൾ സൂക്ഷിക്കുന്നു";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "ഞങ്ങൾ നിങ്ങളെ പിന്നീട് ഓർമ്മപ്പെടുത്തും. ഒരു PIN സൃഷ്‌ടിക്കുന്നത് %ld ദിവസങ്ങളിൽ നിർബന്ധമാകും.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN സൃഷ്ടിച്ചിരിക്കുന്നു.  നിങ്ങൾക്കത് സെറ്റിംഗ്സിൽ മാറ്റാവുന്നതാണ്.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN പ്രവർത്തനരഹിതമാക്കി.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "മീഡിയ പ്ലേ ചെയ്യുക";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "പുഷ് അറിയിപ്പുകൾ വീണ്ടും രജിസ്റ്റർ ചെയ്യുക";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "ഭൂമിയിലെ മികച്ച സന്ദേശമയയ്‌ക്കൽ അപ്ലിക്കേഷനായി Signal - നെ മാറ്റുന്നതിന്, നിങ്ങളുടെ ഫീഡ്‌ബാക്ക് കേൾക്കാൻ ഞങ്ങൾ ആഗ്രഹിക്കുന്നു.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "നിങ്ങളുടെ അഭിപ്രായം Signal - നോട് പറയുക";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "സർവേഗിസ്മോ സുരക്ഷിതമായ ഡൊമെയ്‌നായ surveys.signalusers.org-ൽ സർവേ ഹോസ്റ്റ് ചെയ്യുന്നു.";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "വേണ്ട, നന്ദി";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>ഞങ്ങൾ സ്വകാര്യതയിൽ വിശ്വസിക്കുന്നു.</bold>\n\nSignal നിങ്ങളെ ട്രാക്ക് ചെയ്യുകയോ ഡാറ്റ ശേഖരിക്കുകയോ ചെയ്യുന്നില്ല. എല്ലാവർക്കും Signal മെച്ചപ്പെടുത്തുന്നതിന്, ഞങ്ങൾ ഉപയോക്തൃ ഫീഡ്ബാക്കിനെ ആശ്രയിക്കുന്നു, <bold>ഞങ്ങൾ നിങ്ങളുടേതിനെ ഇഷ്ടപ്പെടും</bold>.\n\nനിങ്ങൾ Signal എങ്ങനെ ഉപയോഗിക്കുന്നുവെന്ന് മനസ്സിലാക്കാൻ ഞങ്ങൾ ഒരു സർവേ നടത്തുന്നു. നിങ്ങളെ തിരിച്ചറിയുന്ന ഒരു ഡാറ്റയും ഞങ്ങളുടെ സർവേ ശേഖരിക്കുന്നില്ല. അധിക ഫീഡ്ബാക്ക് പങ്കിടാൻ നിങ്ങൾക്ക് താൽപ്പര്യമുണ്ടെങ്കിൽ, സമ്പർക്ക വിവരങ്ങൾ നൽകുന്നതിനുള്ള ഓപ്ഷൻ നിങ്ങൾക്ക് ലഭിക്കും.\n\nനിങ്ങൾക്ക് കുറച്ച് മിനിറ്റുകളും ഫീഡ്ബാക്കും വാഗ്ദാനം ചെയ്യാൻ ഉണ്ടെങ്കിൽ, നിങ്ങളിൽ നിന്ന് കേൾക്കാൻ ഞങ്ങൾ ആഗ്രഹിക്കുന്നു.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "സർവേ എടുക്കുക";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal റിസർച്ച്";
 
 /* Configure reactions reset button text */
 "RESET" = "പുനഃക്രമീകരിക്കുക";
@@ -5258,13 +5222,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = " നിങ്ങളുടെ കോൺടാക്ടിന് നിങ്ങളുടെ ഐപി വിലാസം വെളിപ്പെടുന്നത് ഒഴിവാക്കാൻ ഒരു Signal സെർവറിലൂടെ എല്ലാ കോളുകളും കൈമാറുക.  ഇത് പ്രാപ്തമാക്കുന്നത് കോളിൻ്റെ ഗുണമേന്മ കുറയ്ക്കും.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "നമ്പർ എഡിറ്റ് ചെയ്യുക";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "ഫോൺ നമ്പർ മാറ്റുക";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "നിങ്ങളുടെ ഫോൺ നമ്പർ %@ എന്നാക്കി മാറ്റി";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "നമ്പർ മാറ്റുക";
@@ -5282,10 +5246,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "ഉദാഹരണം: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "നിങ്ങളുടെ പുതിയ നമ്പർ";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "നിങ്ങളുടെ പഴയ നമ്പർ";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "ഫോൺ നമ്പർ";
@@ -5297,7 +5261,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "ഫോൺ നമ്പർ മാറ്റുക";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "നമ്പർ മാറ്റുക";
@@ -5963,7 +5927,7 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "ഫോട്ടോകളും വീഡിയോകളും";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "iOS-മായി കോൺടാക്റ്റുകൾ പങ്കിടുക";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "നിർദ്ദേശങ്ങൾ പങ്കിടുന്നത് പ്രവർത്തനരഹിതമാക്കുന്നതിൽ പരാജയപ്പെട്ടു.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "മറ്റ് ആപ്പുകളിൽ നിന്ന് പങ്കിടുമ്പോൾ Signal ചാറ്റുകൾ ഇപ്പോൾ നിർദ്ദേശങ്ങളായി പ്രദർശിപ്പിക്കാൻ കഴിയും.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "പങ്കിടൽ ഇപ്പോൾ എളുപ്പമായി";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "പ്രവർത്തനരഹിതമാക്കുക";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "പ്രവർത്തനക്ഷമമാക്കുക";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "സുരക്ഷാ നമ്പർ കാണിക്കുക";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "പരിശോധന പൂർത്തിയാക്കുക";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "നിലവിലുള്ള ഗ്രൂപ്പുകൾ‌ക്ക് ഈ സവിശേഷതകൾ‌ സ്വപ്രേരിതമായി വരും ആഴ്ചകളിൽ‌ ലഭിക്കും.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "പുതിയ ഗ്രൂപ്പ്";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "പുതിയ ഗ്രൂപ്പുകൾ എത്തി!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "പുതിയ ഗ്രൂപ്പ് സവിശേഷതകളിൽ @സൂചനകള്‍, അഡ്‌മിനുകൾ എന്നിവയും അതിലേറെയും ഉൾപ്പെടുന്നു. ടാപ്പുചെയ്ത് ഇത് പരീക്ഷിക്കുക:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "സ്റ്റിക്കർ സന്ദേശം";
@@ -6173,7 +6110,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "വേണ്ട, നന്ദി";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "പരിപാലകര്‍ ആകുക";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ നൊപ്പമുള്ള നിങ്ങളുടെ സുരക്ഷാ നമ്പർ പൊരുത്തപ്പെടുന്നു.  നിങ്ങൾക്ക് ഈ കോൺടാക്ട് പരിശോധിച്ചതായി അടയാളപ്പെടുത്താം.";
@@ -6242,7 +6179,7 @@
 "SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Contribute?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "എന്തുകൊണ്ട് സംഭാവന ചെയ്യണം?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
@@ -6254,16 +6191,16 @@
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "സബ്‌സ്‌ക്രിപ്‌ഷൻ റദ്ദാക്കുക";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "സ്ഥിരീകരിക്കുക";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "നിങ്ങളിൽ നിന്ന് വീണ്ടും നിരക്ക് ഈടാക്കില്ല. നിങ്ങളുടെ ബില്ലിംഗ് കാലയളവിന്റെ അവസാനം നിങ്ങളുടെ പ്രൊഫൈലിൽ നിന്ന് നിങ്ങളുടെ ബാഡ്ജ് നീക്കം ചെയ്യപ്പെടും.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "റദ്ദാക്കൽ സ്ഥിരീകരിക്കണോ?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
@@ -6305,7 +6242,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "കൂടുതൽ വായിക്കുക.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";
@@ -6314,7 +6251,7 @@
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "നിങ്ങളുടെ പേയ്‌മെന്റ് ഇപ്പോഴും പ്രോസസ്സ് ചെയ്യുകയാണ്. നിങ്ങളുടെ കണക്ഷനെ ആശ്രയിച്ച് ഇതിന് കുറച്ച് മിനിറ്റുകൾ എടുത്തേക്കാം.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "നിങ്ങളുടെ സബ്‌സ്‌ക്രിപ്‌ഷൻ റദ്ദാക്കി";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "ഇപ്പോൾ വേണ്ട";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്യാനായില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "നിങ്ങളുടെ പിൻ സൃഷ്ടിക്കുക";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PIN-കളെക്കുറിച്ച് കൂടുതലറിയുക";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-ഉകൾ / പിന്നുകൾ (സിഗ്നൽ ഉപയോഗിച്ച് സംഭരിച്ചിരിക്കുന്ന) വിവരങ്ങൾ എൻ‌ക്രിപ്റ്റ് ചെയ്യുന്നതിനാൽ നിങ്ങൾക്ക് മാത്രമേ ഇത് ആക്സസ് ചെയ്യാൻ കഴിയൂ. നിങ്ങൾ വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ നിങ്ങളുടെ പ്രൊഫൈൽ, ക്രമീകരണങ്ങൾ, കോൺടാക്റ്റുകൾ എന്നിവ പുന.സ്ഥാപിക്കും. അപ്ലിക്കേഷൻ തുറക്കാൻ നിങ്ങളുടെ PIN (പിൻ) ആവശ്യം വരില്ല. ";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "അവതരിപ്പിക്കുന്നു PIN-കൾ";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "പിൻ അപ്രാപ്‌തമാക്കുക";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal ന് ഉടനെ തന്നെ iOS 11 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ളത് ആവശ്യമുണ്ട്.   Settings app >> General >> Software Update ൽ പോയി അപ്‌ഗ്രേഡ് ചെയ്യുക.";

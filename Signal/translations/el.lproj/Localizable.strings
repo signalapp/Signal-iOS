@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Μεγάφωνο";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Προσθήκη φωτογραφίας";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Επέλεξε ένα στυλ και χρώμα, ή επεξεργάσου τα αρχικά σου.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Προσθήκη φωτογραφίας πρφίλ";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Επιλογή χρώματος";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Αυτόματο ταίριασμα του χρώματος με την ταπετσαρία";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Εμφάνιση";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Μπορείς πλέον να αλλάζεις τα χρώματα των συνομιλιών σου με διαβαθμίσεις και άλλα.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Προσαρμοσμένα χρώματα συνομιλιών";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Χρώμα και ταπετσαρία συνομιλίας";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Θες να προσκαλέσεις κάποιον/α;";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Αδυναμία ενεργοποίησης του κλειδώματος εγγραφής.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Κατειλημμένο";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Εσύ (από άλλη συσκευή)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Δημιούργησε μια Ομάδα νέου τύπου για να κάνεις μια ελεύθερη, κρυπτογραφημένη ομαδική κλήση.";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Ήρθαν οι Ομαδικές κλήσεις";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Δημιούργησες την ομάδα.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Αποτυχία σύνδεσης συσκευής";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Οι προεπισκοπήσεις συνδέσμων δεν δημιουργούνται για όλες τις σελίδες.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Απενεργοποίηση";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Προεπισκόπηση κάθε συνδέσμου";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Για να μεταφέρεις τον λογαριασμό Signal σου, θα πρέπει να ενεργοποιήσεις την πρόσβαση στο τοπικό δίκτυο και στις δύο συσκευές.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Καρφίτσωμα";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "Το PIN πρέπει να έχει τουλάχιστον 4 χαρακτήρες";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Τα PIN δεν ταιριάζουν. Ξαναδοκίμασε.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "Το PIN πρέπει να έχει τουλάχιστον 4 ψηφία";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Απενεργοποίηση του κλειδώματος εγγραφής;";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Απενεργοποίηση PIN";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Απέτυχε η απενεργοποίηση PIN";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "Απέτυχε η δημιουργία PIN";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Για να σε βοηθήσουμε να θυμάσαι το PIN, θα σε προτρέπουμε να το γράφεις κάθε τόσο. Θα σε ρωτάμε ολοένα και πιο σπάνια.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Δημιουργία PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Τα PIN κρατάνε κρυπτογραφημένες τις πληροφορίες που αποθηκεύονται στο Signal";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Θα σ' το υπενθυμίσουμε αργότερα. Η δημιουργία PIN θα είναι υποχρεωτική σε %ld μέρες.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "Το PIN δημιουργήθηκε. Μπορείς να το αλλάξεις στις ρυθμίσεις.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "Το PIN Απενεργοποιήθηκε.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Αναπαραγωγή πολυμέσων";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Επανεγγραφή στις Ειδοποιήσεις Push";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Για να κάνουμε το Signal τη καλύτερη εφαρμογή επικοινωνίας στο κόσμο, θα εκτιμούσαμε πραγματικά να ακούσουμε τη γνώμη σου.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Πες στο Signal τη γνώμη σου";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "Αυτή η έρευνα φιλοξενείται από το Surveygizmo στον ασφαλή σύνδεσμο surveys.signalusers.org";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Όχι, ευχαριστώ";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Πιστεύουμε στην ιδιωτικότητα.</bold>\n\nΤο Signal δεν σε παρακολουθεί ούτε συλλέγει τα δεδομένα σου. Για να βελτιώσουμε το Signal για όλους, βασιζόμαστε στα σχόλια των χρηστών <bold>και θα εκτιμούσαμε πολύ να ακούσουμε τα δικά σου</bold>.\n\nΚάνουμε μαι έρευνα που θα μας βοηθήσει να καταλάβουμε πως χρησιμοποιείς το Signal. Η έρευνά μας δεν συλλέγει δεδομένα που θα μπορούσαν να αποκαλύψουν την ταυτότητά σου. Αν ενδιαφέρεσαι να μας βοηθήσεις με περαιτέρω πληροφορίες και σχόλια, μπορείς να μας δώσεις στοιχεία επικοινωνίας.\n\nΑν έχεις μερικά λεπτά διαθέσιμα, και έχεις κάτι να σχολιάσεις, με χαρά θα θέλαμε να το ακούσουμε.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Πάρε μέρος στην έρευνα";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Έρευνα Signal";
 
 /* Configure reactions reset button text */
 "RESET" = "Επαναφορά";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Αποτυχία απενεργοποίησης προτάσεων διαμοιρασμού.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Οι συνομιλίες Signal μπορούν πλέον να εμφανίζονται ως προτάσεις όταν μοιράζεσαι από άλλες εφαρμογές.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Μοιράσου ευκολότερα";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Απενεργοποίηση";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Ενεργοποίηση";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Εμφάνιση αριθμού ασφαλείας";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Ολοκλήρωση επιβεβαίωσης";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Οι υφιστάμενες ομάδες θα λάβουν αυτές τις αναβαθμίσεις αυτόματα μέσα στις επόμενες εβδομάδες.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Νέα ομάδα";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Ήρθαν οι Ομάδες νέου τύπου!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Οι Ομάδες νέου τύπου έχουν δυνατότητες όπως οι @αναφορές, οι διαχειριστές ομάδας και άλλα. Δοκίμασέ το πατώντας:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Μήνυμα αυτοκόλλητου";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Δεν μπορέσαμε να ενημερώσουμε την ομάδα. Έλεγξε τη σύνδεσή σου στο διαδίκτυο και ξαναδοκίμασε.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Δημιουργία του PIN σου";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Μάθε Περισσότερα για τα PIN";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Τα PIN κρατούν τις πληροφορίες που αποθηκεύονται στο Signal κρυπτογραφημένες, οπότε μόνο εσύ έχεις πρόσβαση σε αυτές. Το προφίλ σου, οι ρυθμίσεις και οι επαφές να επαναφερθούν όταν επανεγκαταστήσεις το Signal. Δεν θα χρειάζεται να γράψεις το PIN για να ανοίξεις την εφαρμογή.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Υποδέξου τα PIN";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Απενεργοποίηση PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Το Signal σύντομα θα χρειάζεται την έκδοση iOS 11 ή νεότερη για να λειτουργήσει. Παρακαλώ αναβάθμισε τη συσκευή σου στην εφαρμογή Ρυθμίσεις > Γενικά > Αναβάθμιση Λογισμικού.";

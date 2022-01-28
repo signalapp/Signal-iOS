@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ลำโพง";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "เพิ่มรูปภาพ";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "เลือกหน้าตาและสีหรือปรับแต่งหน้าตาเริ่มต้นของคุณ";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "เพิ่มภาพโปรไฟล์";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "เลือกสี";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "จับคู่สีกับภาพพื้นหลังโดยอัตโนมัติ";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "หน้าตา";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "คุณสามารถเปลี่ยนสีในแชตของคุณได้แล้วด้วยการไล่สีและอื่นๆ อีกมากมาย";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "แชตสีกำหนดเอง";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "สีและภาพพื้นหลังแชต";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญใครสักคนล่ะ?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "ไม่สามารถเปิดใช้กุญแจลงทะเบียนได้";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "ไม่ว่าง";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "คุณ (อยู่บนอุปกรณ์อื่น)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "เปิดกลุ่มแบบใหม่เพื่อเริ่มการโทรแบบกลุ่มที่เข้ารหัส";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "แนะนำการโทรแบบกลุ่ม";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "คุณได้สร้างกลุ่มแล้ว";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "สามารถสร้างภาพตัวอย่างลิงก์ได้จากทุกเว็บไซต์แล้ว";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "หยุดใช้";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "แสดงภาพตัวอย่างทุกลิงก์";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "ในการถ่ายโอนบัญชี Signal ของคุณนั้น คุณจำเป็นต้องเปิดใช้งานการเข้าถึงเครือข่ายภายในบนอุปกรณ์ทั้งสองเครื่อง";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "ปักหมุด";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "รหัส PIN ต้องมีอย่างน้อย 4 ตัวอักษร";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "รหัส PIN ไม่ตรงกัน ลองอีกครั้ง";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "รหัส PIN ต้องมีอย่างน้อย 4 หลัก";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "ปิดกุญแจลงทะเบียนหรือไม่?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "ปิดใช้งาน PIN";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "การปิดใช้งาน PIN ล้มเหลว";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "การสร้างรหัส PIN ล้มเหลว";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "เพื่อช่วยให้คุณจดจำรหัส PIN ได้ เราจะขอให้คุณใส่รหัส PIN เป็นระยะ เราจะถามคุณน้อยลงเมื่อเวลาผ่านไป";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "สร้างรหัส PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "รหัส PIN รักษาข้อมูลที่เก็บไว้ใน Signal ที่เข้ารหัส";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "เราจะเตือนคุณในภายหลัง การสร้างรหัส PIN จำเป็นต้องทำภายใน %ld วัน";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "รหัส PIN ถูกสร้างแล้ว คุณสามารถเปลี่ยนรหัสได้ในการตั้งค่า";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "ปิดใช้ PIN อยู่";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "เล่นสื่อ";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "ลงทะเบียนอีกครั้งสำหรับการแจ้งเตือนแบบพุช";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "เราอยากได้ยินข้อเสนอแนะของคุณ เพื่อให้ Signal ได้กลายเป็นแอปส่งข้อความที่ดีที่สุดบนโลกนี้";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "บอกความคิดเห็นของคุณกับ Signal";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "แบบสำรวจนี้จัดทำโดย Surveygizmo บนโดเมนปลอดภัยที่ surveys.signalusers.org";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "ไม่ ขอบคุณ";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>เราเชื่อมั่นในความเป็นส่วนตัว</bold>\n\nSignal ไม่ติดตามหรือรวบรวมข้อมูลของคุณ เรารับฟังผู้ใช้เพื่อปรับปรุง Signal ให้กับทุกคน <bold>และเรายินดีที่จะฟังจากคุณ</bold>\n\nเราเปิดสำรวจเพื่อให้เข้าใจว่าคุณใช้ Signal อย่างไร การสำรวจของเราจะไม่เก็บข้อมูลใดที่จะระบุตัวคุณได้ หากคุณสนใจที่จะแบ่งปันข้อเสนอแนะเพิ่มเติม คุณสามารถเลือกเพิ่มข้อมูลการติดต่อของคุณ\n\nหากคุณสะดวกและมีข้อเสนอแนะ เรายินดียิ่งที่จะรับฟังจากคุณ";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "ทำแบบสำรวจ";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal Research";
 
 /* Configure reactions reset button text */
 "RESET" = "รีเซ็ต";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "การปิดคำแนะนำการแบ่งปันไม่สำเร็จ";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "ตอนนี้แชตของ Signal จะถูกแสดงเป็นคำแนะนำเมื่อแชร์จากแอปอื่น";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "การแบ่งปันทำให้ทุกอย่างง่ายขึ้น";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "หยุดใช้";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "เริ่มใช้";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "แสดงหมายเลขความปลอดภัย";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "การตรวจยืนยันสมบูรณ์";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "กลุ่มที่มีอยู่เดิมจะได้รับความสามารถเหล่านี้โดยอัตโนมัติ ภายในไม่กี่สัปดาห์นี้";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "กลุ่มแบบใหม่";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "กลุ่มแบบใหม่มาถึงแล้ว!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "กลุ่มแบบใหม่มีความสามารถเช่นการ @กล่าวถึง ระบบผู้ดูแล และอื่นๆ ลองใช้งานด้วยการแตะ:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ข้อความสติกเกอร์";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ไม่สามารถปรับปรุงได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่อีกครั้ง";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "สร้าง PIN ของคุณ";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "เรียนรู้เพิ่มเติมเกี่ยวกับรหัส PIN";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "รหัส PIN รักษาข้อมูลที่เก็บไว้ใน Signal ได้เข้ารหัสไว้ ดังนั้นจึงมีแต่คุณที่เข้าถึงข้อมูลนี้ได้ โปรไฟล์ของคุณ การตั้งค่า และรายชื่อผู้ติดต่อจะถูกกู้คืนเมื่อคุณติดตั้งแอปอีกครั้ง คุณไม่จำเป็นต้องมีรหัส PIN ของคุณเพื่อเปิดแอป";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "แนะนำ PINs";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "ปิดใช้งาน PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "ในอนาคตอันใกล้ Signal จะต้องทำงานบน iOS 11 หรือใหม่กว่า กรุณาปรับรุ่น โดยไปที่ การตั้งค่า >> ทั่วไป >> รายการอัพเดทซอฟต์แวร์";

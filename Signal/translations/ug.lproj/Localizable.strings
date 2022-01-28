@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ياڭراتقۇ";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "رەسىم قوش";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "كۆرۈنۈش ۋە رەڭ تاللاڭ ياكى قىسقارتىلمىسىنى ئىختىيارىلاشتۇرۇڭ";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "باش سۈرەت قوش";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "رەڭ تاللاڭ";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "تام قەغەز رەڭگىگە ئۆزلۈكىدىن ماسلىشىدۇ";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "كۆرۈنۈش";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "ھازىر يانتۇ ۋە باشقا ئۇسۇللار ئارقىلىق سۆھبەت رەڭگىنى ئۆزگەرتەلەيسىز.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "ئىختىيارىچە سۆھبەت رەڭگى";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "سۆھبەت رەڭگى ۋە تام قەغەز";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "باشقىلارنى تەكلىپ قىلىپ باقمامسىز؟";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "تىزىملىتىش قۇلۇپىنى قوزغاتقىلى بولمىدى.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "ئالدىراش";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "سىز(يەنە بىر ئۈسكىنىدە)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "ھەقسىز شىفىرلانغان گۇرۇپپا چاقىرىشنى باشلاش ئۈچۈن «يېڭى گۇرۇپپا»نى ئېچىڭ";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "«گۇرۇپپا چاقىرىشلىرى»نى تونۇشتۇرۇش";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "بۇ گۇرۇپپىنى سىز قۇرغان.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ئۈسكۈنە باغلاش مەغلۇب بولدى";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "بارلىق تور بېكەتلەرگە ئۇلانما ئالدىن كۆزىتىش ھاسىل قىلىدۇ.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "تاقاش";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "ھەر قانداق ئۇلانمىنى ئالدىن كۆزەت";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "‫Signal ھېساباتىڭىزنى يۆتكەش ئۈچۈن، ئىككى ئۈسكۈنىدە يەرلىك تور زىيارەت ھوقۇقىنى قوزغىتىشىڭىز كېرەك.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "مىخلاش";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN ئەڭ ئاز 4 ھەرپلەردىن تۈزۈلۈشى كېرەك";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN ماس كەلمىدى. قايتا سىناڭ.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN ئەڭ ئاز 4 خانىدىن تۈزۈلۈشى كېرەك";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "تىزىملىتىش قۇلۇپىنى ئېتەمسىز؟";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "PIN چەكلە";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN چەكلەش مەغلۇب بولدى";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "PIN قۇرۇش مەغلۇب بولدى";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "ئەستە تۇتۇشىڭىزغا قۇلايلىق بولۇشى ئۈچۈن PIN نى قەرەللىك ئەسكەرتىپ تۇرىمىز. ئەسكەرتىش قېتىم سانى تەدرىجىي ئازلايدۇ.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "PIN قۇر";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "‫Signal ئۇچۇر ساقلىغاندا PIN ئارقىلىق شىفىرلايدۇ.";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "بىز سەل تۇرۇپ سىزنى ئەسكەرتىمىز.%ld كۈندىن كېيىن چوقۇم PIN قۇرىسىز.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN قۇرۇلدى. ئۇنى تەڭشەكتىن ئۆزگەرتەلەيسىز.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN چەكلەندى.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "ۋاسىتە قوي";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "تەۋسىيە ئۇقتۇرۇشنى قايتا تىزىملات";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "‫Signal نى زېمىندىكى ئەڭ ياخشى ئەپكە ئايلاندۇرۇش ئۈچۈن، سىزنىڭ ئىنكاسىڭىزنى كۈتىمىز.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Signal ھەققىدە ئويلىغانلىرىڭىزنى سۆزلەڭ";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "بۇ تەتقىقات Surveygizmo نىڭ بىخەتەر دائىرە نامى surveys.signalusers.org دا قويۇلغان";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "ياق، رەھمەت";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>بىز شەخسىيەتكە ھۆرمەت قىلىمىز.</bold>\n\nSignal  سىزنى ئىزلىمايدۇ ياكى ئۇچۇرلىرىڭىزنى توپلىمايدۇ. . كۆپچىلىك ئۈچۈن  Signal نى ياخشىلاشتا، بىز ئىشلەتكۈچىلەرنىڭ ئىنكاسىغا ئېھتىياجلىق. <bold>شۇنداقلا ئىنكاسىڭىزنى كۈتىمىز.</bold>\n\n\nبىز Signal ئىشلىتىش ھەققىدە راي سىناش ئېلىپ بېرىۋاتىمىز. بۇ راي سىناش سالاھىيىتىڭىزنى ئاشكارىلايدىغان ھېچقانداق ئۇچۇر توپلىمايدۇ،  ئەگەر تېخىمۇ كۆپ ئىنكاسنى ھەمبەھىرلەشكە قىزىقسىڭىز، ئۆزىڭىز ياقتۇرىدىغان ئالاقە ئۇسۇلىنى تاللىسىڭىز بولىدۇ.\n\nئەگەر تەكلىپ پىكىر بېرىشكە  بىر نەچچە مىنۇت ۋاقتىڭىزنى ئاجراتسىڭىز، تەكلىپىڭىزنى ئاڭلاشقا تەشنامىز.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "راي سىناشقا قاتنىشىش";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "‫Signal تەتقىقاتى";
 
 /* Configure reactions reset button text */
 "RESET" = "ئەسلىگە قايتۇر";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "ھەمبەھىر تەۋسىيەلىرىنى ئاكتىپسىزلىغىلى بولمىدى.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "‫Signal سۆھبەتلىرى ھازىر باشقا ئەپلەردە ھەمبەھىرلىگىنىڭىزدە تەۋسىيەلەردە كۆرىنىدۇ.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "ھەمبەھىرلەش ئاسانلاشتى";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "تاقاش";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "قوزغات";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "بىخەتەرلىك نومۇرىنى كۆرسەت";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "دەلىللەش تامام";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "مەۋجۇت گۇرۇپپىلار كېيىنكى ھەپتە بۇ ئىقتىدارلارغا ئاپتوماتىك ئېرىشىدۇ.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "يېڭى گۇرۇپپا";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "يېڭى گۇرۇپپىلار بۇ يەردە!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "يېڭى گۇرۇپپا ئىقتىدارلىرى @ئەتىكەتلەش، باشقۇرغۇچىلار ۋە تېخمۇ جىقلارنى ئۆز ئىچىگە ئالىدۇ. چېكىپ سىناپ بېقىڭ.";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "چاپلاق ئۇچۇرى";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "گۇرۇپپىنى يۇقىرىلاتقىلى بولمىدى. ئىنتېرنېت ئۇلىنىشڭىزنى تەكشۈرۈپ قايتا سىناڭ.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "يېڭى PIN قۇر";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "PIN ھەققىدە تەپسىلاتلار";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "‫Signal ئۇچۇر ساقلىغاندا PIN ئارقىلىق شىفىرلايدۇ. شۇڭا سىزلا زىيارەت قىلالايسىز. ئارخىپىڭىز، سەپلىمىلىرىڭىز ۋە ئالاقەداشلىرىڭىز Signal نى قايتا قاچىلىغىنىڭىزدا ئەسلىگە كەلتۈرۈلىدۇ. ئەپنى ئېچىش PIN نىڭىز كېرەك ئەمەس.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = " PIN تونۇشتۇرۇش";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN چەكلە";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "‫iOS پات ئارىدا iOS 11 ياكى ئۇنىڭدىن يۇقىرى نەشرىنى تەلەپ قىلىدۇ. تەڭشەك >> ئادەتتىكى >> يۇمشاق دېتال يېڭىلاشدىن يۇقىرىلىتىڭ.";

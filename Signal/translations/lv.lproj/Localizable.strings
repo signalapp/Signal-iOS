@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Skaļrunis";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Pievienot fotoattēlu";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Izvēlieties izskatu un krāsu vai pielāgojiet savus iniciāļus.";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Pievienojiet profila fotoattēlu";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Izvēlieties krāsu";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Automātiski saskaņo krāsu ar fona tapeti";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "Izskats";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Tagad varat mainīt tērzēšanas krāsas, izmantojot gradientus un citas iespējas.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Pielāgotas tērzēšanas krāsas";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Tērzēšanas krāsa un fona tapete";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Kādēļ kādu neuzaicināt to lietot?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Nevarēja iespējot reģistrācijas bloķēšanu.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Aizņemts";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Jūs (otrā ierīcē)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Atveriet/izveidojiet jaunu grupu, lai sāktu bezmaksas šifrētu grupas zvanu";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Iepazīšanās ar grupas zvaniem";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Jūs izveidojāt grupu.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Neizdevās piesaistīt ierīci";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Saites priekšskatījumi tagad tiks ģenerēti visām vietnēm.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Atspējot";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Priekšskatīt jebkuru saiti";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Lai pārsūtītu savu Signal kontu, abās ierīcēs jāiespējo piekļuve lokālajam tīklam.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "Piespraust";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN kodā jābūt vismaz 4 rakstzīmēm";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN nesakrīt. Mēģiniet vēlreiz.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN jābūt vismaz 4 ciparus garam";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Vai izslēgt reģistrācijas bloķēšanu?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Atspējot PIN";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "PIN atspējošana neizdevās";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "PIN izveidošana neizdevās";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Lai palīdzētu jums iegaumēt PIN, laiku pa laikam mēs lūgsim jums to ievadīt. Laika gaitā mēs kļūsim mazāk uzstājīgi.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Izveidot PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN kodos ir informācija, kas lietotnē Signal ir šifrēta";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Mēs atgādināsim jums vēlāk. Pēc %ld dienām PIN būs obligāti jāizveido.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN izveidots. To var mainīt iestatījumos.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN atspējots.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Atskaņot multivides saturu";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Atkārtoti reģistrēties automātiskajiem paziņojumiem";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Lai padarītu Signal par labāko ziņapmaiņas lietotni uz planētas, mēs ar prieku uzklausīsim jūsu atsauksmes.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "Paudiet Signal savu viedokli";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "Šo aptauju rīko uzņēmums Surveygizmo drošā domēnā surveys.signalusers.org";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "Nē, paldies";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Mēs ticam privātumam.</bold>\n\nLietotne Signal jūs neizseko un neapkopo jūsu datus. Lai uzlabotu Signal atbilstoši katra lietotāja vēlmēm, mēs ņemam vērā lietotāju atsauksmes, <bold>un mēs labprāt uzklausīsim arī jūsu viedokli un ieteikumus</bold>.\n\nMēs veicam aptauju, lai noskaidrotu, kā lietotni Signal izmantojat jūs. Mūsu aptaujā netiek apkopoti dati, pēc kuriem jūs varētu identificēt. Ja vēlaties sniegt papildu atsauksmes, jums ir iespēja norādīt savu kontaktinformāciju.\n\nJa jums ir dažas minūtes laika un viedoklis, ko paust, mēs labprāt to uzklausīsim.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "Piekrist aptaujai";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal izpēte";
 
 /* Configure reactions reset button text */
 "RESET" = "Atstatīt";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Neizdevās atspējot kopīgošanas ieteikumus.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "Signal tērzēšanas tiek parādītas kā ieteikumi, kopīgojot saturu no citām lietotnēm.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "Vieglāka kopīgošana";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "Atspējot";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "Iespējot";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Rādīt drošības numuru";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Pabeigt verifikāciju";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Pastāvošās grupas šīs funkcijas automātiski iegūs tuvāko nedēļu laikā.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "Jauna grupa";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Jaunās grupas ir klāt!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Jaunās grupas funkcionalitātē ietilpst @pieminējumi, administratori un daudz kas cits. Izmēģiniet to, pieskaroties:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Ziņa ar uzlīmi";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupu nevarēja atjaunināt. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Izveidot PIN";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Uzzināt vairāk par PIN kodiem";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN kodos ir informācija, kas lietotnē Signal ir šifrēta, lai šai informācijai varētu piekļūt tikai jūs. Veicot atkārtotu instalēšanu, jūsu profils, iestatījumi un kontaktpersonas tiks atjaunotas. Lai atvērtu lietotni, PIN kods nebūs nepieciešams.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Informācija par PIN kodiem";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Atspējot PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Lietotnei Signal drīz būs nepieciešama OS iOS 11 vai jaunāka. Jauniniet sadaļā Settings >> General >> Software Update (Iestatījumi > Vispārīgi > Programmatūras atjaunināšana).";

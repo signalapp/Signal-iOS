@@ -340,15 +340,6 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "ಸ್ಪೀಕರ್";
 
-/* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
-
-/* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "ನೀವು ಹೇಗೆ ಕಾಣುವಿರಿ ಎಂದು ನೋಡಲು ರೂಪ ಮತ್ತು ಬಣ್ಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ ";
-
-/* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "ಪ್ರೊಫೈಲ್ ಫೋಟೋ ಸೇರಿಸಿ";
-
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "ಬಣ್ಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ";
 
@@ -744,15 +735,6 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "ವಾಲ್‌ಪೇಪರ್‌ಗೆ ಬಣ್ಣ ಸ್ವಯಂ ಹೊಂದಿಕೆಯಾಗುತ್ತದೆ";
-
-/* Action text for char colors megaphone */
-"CHAT_COLORS_MEGAPHONE_ACTION" = "ಲಕ್ಷಣ";
-
-/* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "ನೀವು ಈಗ ಚಾಟ್‌ಗಳಲ್ಲಿ ಬಣ್ಣಗಳನ್ನು ಗ್ರೇಡಿಯೆಂಟ್‌ ಮತ್ತು ಇನ್ನೂ ಹೆಚ್ಚಿನದರಿಂದ ಬದಲಾಯಿಸಬಹುದು.";
-
-/* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "ಕಸ್ಟಮ್‌ ಚಾಟ್‌ ಬಣ್ಣಗಳು";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "ಚಾಟ್‌ ಬಣ್ಣ & ವಾಲ್‌ಪೇಪರ್‌";
@@ -1711,9 +1693,6 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "ನೀವು ಯಾರನ್ನಾದರೂ ಏಕೆ ಆಹ್ವಾನಿಸಬಾರದು?";
 
-/* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "ನೋಂದಣಿ ಲಾಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ.";
-
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "ನಿರತ";
 
@@ -2130,12 +2109,6 @@
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "ನೀವು (ಮತ್ತೊಂದು  ಸಾಧನದಲ್ಲಿ)";
-
-/* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "ಉಚಿತ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಗ್ರೂಪ್‌ ಕಾಲ್‌ ಆರಂಭಿಸಲು ಹೊಸ ಗ್ರೂಪ್ ಆರಂಭಿಸಿ";
-
-/* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "ಗುಂಪು  ಕರೆಗಳನ್ನು  ಪರಿಚಯಿಸಲಾಗುತ್ತಿದೆ  ";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "ನೀವು ಗುಂಪನ್ನು ರಚಿಸಿದ್ದೀರಿ.";
@@ -3168,15 +3141,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ಸಾಧನವನ್ನು ಲಿಂಕ್ ಮಾಡುವುದು ವಿಫಲವಾಗಿದೆ";
-
-/* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "ಲಿಂಕ್ ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ಇದೀಗ ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಿಗಾಗಿ ರಚಿಸಲಾಗುತ್ತದೆ.";
-
-/* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ";
-
-/* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "ಯಾವುದೇ ಲಿಂಕ್ ಅನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "ನಿಮ್ಮ Signal ಖಾತೆಯನ್ನು ವರ್ಗಾಯಿಸಲು, ನೀವು ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್ ಪ್ರವೇಶವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಬೇಕಾಗುತ್ತದೆ.";
@@ -4315,6 +4279,12 @@
 /* Pressing this button pins a thread */
 "PIN_ACTION" = "ಪಿನ್";
 
+/* Error body indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to change a PIN failed. */
+"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "ಪಿನ್ ಕನಿಷ್ಠ 4 ಅಕ್ಷರಗಳಾಗಿರಬೇಕು";
 
@@ -4357,6 +4327,12 @@
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "ಪಿನ್‌ಗಳು ಹೊಂದಿಕೆಯಾಗುತಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.";
 
+/* Error body indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN failed due to network issues. */
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "ಪಿನ್ ಕನಿಷ್ಠ 4 ಅಂಕಿಗಳಷ್ಟು ಇರಬೇಕು.";
 
@@ -4381,6 +4357,12 @@
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "ನೋಂದಣಿ ಲಾಕ್ ಅನ್ನು ಆಫ್ ಮಾಡುವುದೇ?";
 
+/* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+
+/* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "ಪಿನ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ";
 
@@ -4395,6 +4377,12 @@
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "ಪಿನ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ವಿಫಲವಾಗಿದೆ";
+
+/* Error title indicating that the attempt to recreate a PIN failed. */
+"PIN_RECREATION_ERROR_TITLE" = "ಪಿನ್ ರಚನೆ ವಿಫಲವಾಗಿದೆ";
+
+/* Error body indicating that the attempt to recreate a PIN failed. */
+"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "ನಿಮ್ಮ ಪಿನ್ ಅನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು, ನಿಯತಕಾಲಿಕವಾಗಿ ಅದನ್ನು ನಮೂದಿಸಲು ನಾವು ನಿಮ್ಮನ್ನು ಕೇಳುತ್ತೇವೆ.";
@@ -4442,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "ಪಿನ್ ರಚಿಸಿ";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Signal ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಿರುವ ಸಂಗ್ರಹಿಸಿದ ಮಾಹಿತಿಯನ್ನು ಪಿನ್‌ಗಳು ಇರಿಸಿಕೊಳ್ಳುತ್ತವೆ.";
+"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "ನಾವು ನಿಮಗೆ ನಂತರ ನೆನಪಿಸುತ್ತೇವೆ. %ld ದಿನಗಳಲ್ಲಿ ಪಿನ್ ರಚಿಸುವುದು ಕಡ್ಡಾಯವಾಗುತ್ತದೆ.";
@@ -4452,9 +4440,6 @@
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "ಪಿನ್ ರಚಿಸಲಾಗಿದೆ. ನೀವು ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.";
-
-/* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "ಪಿನ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "ಮೀಡಿಯಾ ಪ್ಲೇ ಮಾಡಿ";
@@ -4806,27 +4791,6 @@
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "ಪುಶ್ ನೋಟಿಫಿಕೇಷನ್‌ಗಳನ್ನು ಮರು ನೋಂದಾಯಿಸಿ";
-
-/* Body for research megaphone */
-"RESEARCH_MEGAPHONE_BODY" = "Signal ಅನ್ನು ಸಂದೇಶವನ್ನು ಕಳಿಸುವ ವಿಶ್ವದ ಅತ್ಯುತ್ತಮ ಆಪ್ ಮಾಡಲು, ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕೇಳಲು ನಾವು ಇಷ್ಟಪಡುತ್ತೇವೆ.";
-
-/* Title for research megaphone */
-"RESEARCH_MEGAPHONE_TITLE" = "ನಿಮ್ಮ ಅನಿಸಿಕೆಗಳನ್ನು Signal ಗೆ ತಿಳಿಸಿ";
-
-/* Text for the research modal footer */
-"RESEARCH_MODAL_FOOTER" = "ಸಮೀಕ್ಷೆಯನ್ನು ಸುರಕ್ಷಿತ ಡೊಮೇನ್ surveys.signalusers.org ನಲ್ಲಿ Surveygizmo ಆಯೋಜಿಸಿದ್ದಾರೆ";
-
-/* Button text for declining the research modal */
-"RESEARCH_MODAL_NO_THANKS" = "ಇಲ್ಲ, ಧನ್ಯವಾದಗಳು";
-
-/* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>ನಾವು ಗೌಪ್ಯತೆಯಲ್ಲಿ ನಂಬಿಕೆಯಿರಿಸುತ್ತೇವೆ.</bold>\n\nSignal ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದಿಲ್ಲ ಅಥವಾ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ. ಎಲ್ಲರಿಗಾಗಿ Signal ಅನ್ನು ಸುಧಾರಿಸಲು, ನಾವು ಬಳಕೆದಾರರ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಅವಲಂಬಸಿದ್ದೇವೆ <bold>ಮತ್ತು ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಇಷ್ಟಪಡುತ್ತೇವೆ</bold>.\n\nನೀವು Signal ಅನ್ನು ಹೇಗೆ ಬಳಸುತ್ತೀರಿ ಎನ್ನುವುದನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ನಾವು ಸಮೀಕ್ಷೆಯನ್ನು ನಡೆಸುತ್ತಿದ್ದೇವೆ. ನಮ್ಮ ಸಮೀಕ್ಷೆಯು ನಿಮ್ಮನ್ನು ಗುರುತಿಸುವ ಯಾವುದೇ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ. ನೀವು ಹೆಚ್ಚುವರಿ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳುವಲ್ಲಿ ಆಸಕ್ತರಾಗಿದ್ದರೆ, ನೀವು ಸಂಪರ್ಕ ಮಾಹಿತಿಯನ್ನು ನೀಡುವ ಆಯ್ಕೆಯನ್ನು ಹೊಂದಿರುತ್ತೀರಿ.\n\nನೀವು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ಮತ್ತು ನೀಡಲು ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಹೊಂದಿದ್ದರೆ, ನಿಮ್ಮಿಂದ ಕೇಳಲು ನಾವು ಇಷ್ಟಪಡುತ್ತೇವೆ.";
-
-/* Button text for taking the research survey */
-"RESEARCH_MODAL_TAKE_SURVEY" = "ಸಮೀಕ್ಷೆಯನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ";
-
-/* Title for the research megaphone modal */
-"RESEARCH_MODAL_TITLE" = "Signal ಸಂಶೋಧನೆ";
 
 /* Configure reactions reset button text */
 "RESET" = "ಮರುಹೊಂದಿಸಿ";
@@ -6049,18 +6013,6 @@
 /* Title of alert indicating sharing suggestions failed to deactivate */
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "ಸಲಹೆಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ವಿಫಲವಾಗಿದೆ.";
 
-/* Body for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_BODY" = "ಇತರೆ ಆಪ್‌ಗಳಿಂದ ಹಂಚಿಕೊಂಡಾಗ Signal ಚಾಟ್‌ಗಳನ್ನು ಈಗ ಸಲಹೆಗಳು ಎಂಬುದಾಗಿ ತೋರಿಸಲಾಗುತ್ತದೆ.";
-
-/* Title for sharing suggestions megaphone */
-"SHARING_SUGGESTIONS_MEGAPHONE_TITLE" = "ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ಸುಲಭಗೊಳಿಸಲಾಗಿದೆ";
-
-/* Disable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_DISABLE" = "ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ";
-
-/* Enable button for sharing suggestions megaphone */
-"SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "ಸಕ್ರಿಯಗೊಳಿಸಿ";
-
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆ ತೋರಿಸಿ";
 
@@ -6096,21 +6048,6 @@
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "ದೃಢೀಕರಣ ಪೂರ್ಣಗೊಳಿಸಿ";
-
-/* Footer for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "ಮುಂಬರುವ ವಾರಗಳಲ್ಲಿ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಗುಂಪುಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಈ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಪಡೆಯುತ್ತವೆ.";
-
-/* Instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS" = "ಹೊಸ ಗುಂಪು";
-
-/* Joiner symbol in the instructions for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_INSTRUCTIONS_JOINER" = "+";
-
-/* Header for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "ಹೊಸ ಗುಂಪುಗಳು ಇಲ್ಲಿವೆ!";
-
-/* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "ಹೊಸ ಗುಂಪಿನ ವೈಶಿಷ್ಟ್ಯಗಳು @ಉಲ್ಲೇಖಗಳು, ಅಡ್ಮಿನ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಒಳಗೊಂಡಿರುತ್ತವೆ. ಟ್ಯಾಪ್ ಮಾಡುವ ಮೂಲಕ ಅದನ್ನು ಪ್ರಯತ್ನಿಸಿ:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ಸ್ಟಿಕ್ಕರ್ ಸಂದೇಶ";
@@ -6528,21 +6465,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ಗುಂಪನ್ನು ನವೀಕರಿಸಲಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.";
-
-/* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "ರಚಿಸಿ ನಿಮ್ಮ ಪಿನ್";
-
-/* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "ಪಿನ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ";
-
-/* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "ಪಿನ್‌ಗಳು Signal ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿಡುತ್ತವೆ ಆದ್ದರಿಂದ ನೀವು ಮಾತ್ರ ಅದನ್ನು ಪ್ರವೇಶಿಸಬಹುದು. ನೀವು ಪುನಃ ಇನ್‌‍ಸ್ಟಾಲ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಮತ್ತು ಸಂಪರ್ಕಗಳು ಮರುಸ್ಥಾಪನೆಯಾಗುತ್ತವೆ. ಆಪ್ ತೆರೆಯಲು ನಿಮಗೆ ನಿಮ್ಮ ಪಿನ್ ಅಗತ್ಯವಿಲ್ಲ.";
-
-/* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "ಪಿನ್‌ಗಳನ್ನು ಪರಿಚಯಿಸಲಾಗುತ್ತಿದೆ";
-
-/* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "ಪಿನ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal ಗೆ ಕೆಲವೇ ಸಮಯದಲ್ಲಿ iOS 11 ಅಥವಾ ನಂತರದ್ದು ಅಗತ್ಯವಾಗುತ್ತದೆ. ದಯವಿಟ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಆಪ್ >> ಸಾಮಾನ್ಯ >> ಸಾಫ್ಟ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್ ಇಲ್ಲ ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ.";
