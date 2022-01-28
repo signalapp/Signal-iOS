@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 extension OWS2FAManager {
 
+    @objc
     public static var isRegistrationLockV2EnabledKey = "isRegistrationLockV2Enabled"
 
     @objc

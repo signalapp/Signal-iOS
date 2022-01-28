@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -337,7 +337,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     private func showCreatePin(enableRegistrationLock: Bool = false) {
         let vc = PinSetupViewController(
-            mode: .creating,
+            mode: .recreating,
             enableRegistrationLock: enableRegistrationLock
         ) { [weak self] _, _ in
             guard let self = self else { return }
