@@ -278,7 +278,7 @@ extension HomeViewController {
             readButton = UIBarButtonItem(title: CommonStrings.readAction, style: .plain, target: self, action: #selector(performRead))
             readButton.isEnabled = false
             for path in tableView.indexPathsForSelectedRows ?? [] {
-                if let thread = tableDataSource.threadViewModel(forIndexPath: path), thread.hasUnreadMessages {
+                if let thread = tableDataSource.threadViewModel(forIndexPath: path, expectsSuccess: false), thread.hasUnreadMessages {
                     readButton.isEnabled = true
                     break
                 }
@@ -319,7 +319,10 @@ extension HomeViewController {
         if let toolbar = viewState.multiSelectState.toolbar {
             UIView.animate(withDuration: 0.25) { [weak self] in
                 toolbar.alpha = 0
-                self?.tableView.contentSize.height -= toolbar.bounds.height
+                if let tableView = self?.tableView {
+                    // remove the extra space for the toolbar if necessary
+                    tableView.contentSize.height = tableView.sizeThatFitsMaxSize.height
+                }
             } completion: { [weak self] (_) in
                 toolbar.removeFromSuperview()
                 self?.viewState.multiSelectState.toolbar = nil
@@ -421,7 +424,7 @@ extension HomeViewController {
     private func performOnAllSelectedEntries(action: ((ThreadViewModel) -> Void)) {
         var entries: [ThreadViewModel] = []
         for path in tableView.indexPathsForSelectedRows ?? [] {
-            if let thread = tableDataSource.threadViewModel(forIndexPath: path) {
+            if let thread = tableDataSource.threadViewModel(forIndexPath: path, expectsSuccess: false) {
                 entries.append(thread)
             }
         }
@@ -479,6 +482,9 @@ private class ContextMenuActionsViewContainer: UIView {
 // MARK: - object encapsulating the complete state of the MultiSelect process
 @objc
 public class MultiSelectState: NSObject {
+    @objc
+    public static let multiSelectionModeDidChange = Notification.Name("multiSelectionModeDidChange")
+
     fileprivate var parentButton: UIButton?
     fileprivate var title: String?
     fileprivate var contextMenuView: ContextMenuActionsViewContainer?
@@ -513,6 +519,7 @@ public class MultiSelectState: NSObject {
                 }
             }
             actionPerformed = false
+            NotificationCenter.default.post(name: Self.multiSelectionModeDidChange, object: active)
         }
     }
 }
