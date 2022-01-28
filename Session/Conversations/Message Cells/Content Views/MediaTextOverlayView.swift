@@ -56,7 +56,7 @@ final class MediaTextOverlayView : UIView {
             self.readMoreButton = readMoreButton
             readMoreButton.setTitle("Read More", for: UIControl.State.normal)
             readMoreButton.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
-            readMoreButton.setTitleColor(.white, for: UIControl.State.normal)
+            readMoreButton.setTitleColor(self.textColor, for: UIControl.State.normal)
             readMoreButton.addTarget(self, action: #selector(readMore), for: UIControl.Event.touchUpInside)
             addSubview(readMoreButton)
             readMoreButton.pin(.left, to: .left, of: self, withInset: inset)
