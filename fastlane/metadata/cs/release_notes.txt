@@ -1,4 +1,3 @@
-• Máte nové telefonní číslo? Nyní můžete změnit číslo, které jste zaregistrovali do Signalu, aniž byste přišli o historii chatu, skupiny a profil Signal. Přejděte do Nastavení > Účet > Změnit telefonní číslo a vyzkoušejte to.
 • Nová funkce více výběrů umožňuje vybrat ze seznamu chatů více chatů najednou a označit je jako přečtené, archivovat nebo odstranit. Vyzkoušejte ji klepnutím na profilovou fotografii v levém horním rohu.
 • K archivovaným chatům je nyní rychlejší přístup. Stačí klepnout na profilovou fotografii v levém horním rohu a snadno se k nim dostanete.
 • Tolik reakcí na výběr a tak málo času. Nyní můžete snadno vyhledat svou oblíbenou reakci.

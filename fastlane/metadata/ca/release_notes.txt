@@ -1,4 +1,3 @@
-• Teniu un número de telèfon nou? Ara podeu canviar el número que heu registrat al Signal sense perdre l'historial de converses, els grups i el perfil del Signal. Aneu a Configuració > Compte > Canvia el número de telèfon, per provar-ho.
 • Una nova funció de selecció múltiple us permet seleccionar diverses converses alhora de la llista i marcar-les com a llegides, arxivar-les o suprimir-les. Toqueu la fotografia del perfil a la part superior esquerra per provar-ho.
 • Ara s'accedeix més ràpidament a les converses arxivades. Només cal que toqueu la fotografia del perfil a la part superior esquerra per accedir-hi fàcilment.
 • Tantes reaccions per triar, tan poc temps. Ara podeu cercar fàcilment la reacció preferida.

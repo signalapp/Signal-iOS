@@ -1,4 +1,3 @@
-Vaihtuiko puhelinnumerosi? Voit nyt vaihtaa Signaliin rekisteröityä puhelinnumeroa menettämättä viestihistoriaa, ryhmiä ja Signal-profiiliasi. Valitse Asetukset > Tili > Vaihda puhelinnumeroa.
 Uusi toiminto: voit valita useita keskusteluja keskustelulistalta ja merkitä ne luetuiksi, arkistoida ne tai poistaa ne. Napauta profiilikuvaasi vasemmassa ylänurkassa ja kokeile.
 Arkistoituihin keskusteluihin pääsee nyt helpommin käsiksi. Napauta vain profiilikuvaasi vasemmassa ylänurkassa.
 Niin paljon reaktioita, niin vähän aikaa. Voit nyt käyttää helppoa hakutoimintoa oikean reaktion löytämiseen.
