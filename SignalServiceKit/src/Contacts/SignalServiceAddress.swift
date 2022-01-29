@@ -13,16 +13,20 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return Self.signalServiceAddressCache
     }
 
-    private let backingPhoneNumber: AtomicOptional<String>
+    private static var propertyLock: UnfairLock = UnfairLock()
+
+    private var backingPhoneNumberUnsynchronized: String?
     @objc public var phoneNumber: String? {
-        guard let phoneNumber = backingPhoneNumber.get() else {
+        guard let phoneNumber = Self.propertyLock.withLock({backingPhoneNumberUnsynchronized}) else {
             // If we weren't initialized with a phone number, but the phone number exists in the cache, use it
-            guard let uuid = backingUuid.get(),
+            guard let uuid = Self.propertyLock.withLock({backingUuidUnsynchronized}),
                 let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid)
             else {
                 return nil
             }
-            backingPhoneNumber.set(cachedPhoneNumber)
+            Self.propertyLock.withLock {
+                backingPhoneNumberUnsynchronized = cachedPhoneNumber
+            }
             return cachedPhoneNumber
         }
 
@@ -30,17 +34,19 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     // TODO UUID: eventually this can be not optional
-    private let backingUuid: AtomicOptional<UUID>
+    private var backingUuidUnsynchronized: UUID?
     @objc public var uuid: UUID? {
-        guard let uuid = backingUuid.get() else {
+        guard let uuid = Self.propertyLock.withLock({backingUuidUnsynchronized}) else {
             // If we weren't initialized with a uuid, but the uuid exists in the cache, use it
-            guard let phoneNumber = backingPhoneNumber.get(),
+            guard let phoneNumber = Self.propertyLock.withLock({backingPhoneNumberUnsynchronized}),
                 let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber)
             else {
                 return nil
             }
-            backingUuid.set(cachedUuid)
-            observeMappingChanges()
+            Self.propertyLock.withLock {
+                backingUuidUnsynchronized = cachedUuid
+            }
+            observeMappingChanges(forUuid: cachedUuid)
             return cachedUuid
         }
 
@@ -108,25 +114,25 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     public init(uuid: UUID?, phoneNumber: String?, trustLevel: SignalRecipientTrustLevel) {
         if phoneNumber == nil, let uuid = uuid,
             let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
-            backingPhoneNumber = AtomicOptional(cachedPhoneNumber)
+            backingPhoneNumberUnsynchronized = cachedPhoneNumber
         } else {
             if let phoneNumber = phoneNumber, phoneNumber.isEmpty {
                 owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
             }
 
-            backingPhoneNumber = AtomicOptional(phoneNumber)
+            backingPhoneNumberUnsynchronized = phoneNumber
         }
 
         if uuid == nil, let phoneNumber = phoneNumber,
             let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber) {
-            backingUuid = AtomicOptional(cachedUuid)
+            backingUuidUnsynchronized = cachedUuid
         } else {
-            backingUuid = AtomicOptional(uuid)
+            backingUuidUnsynchronized = uuid
         }
 
         backingHashValue = SignalServiceAddress.cache.hashAndCache(
-            uuid: backingUuid.get(),
-            phoneNumber: backingPhoneNumber.get(),
+            uuid: backingUuidUnsynchronized,
+            phoneNumber: backingPhoneNumberUnsynchronized,
             trustLevel: trustLevel
         )
 
@@ -136,7 +142,9 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             owsFailDebug("Unexpectedly initialized address with no identifier")
         }
 
-        observeMappingChanges()
+        if let backingUuid = backingUuidUnsynchronized {
+            observeMappingChanges(forUuid: backingUuid)
+        }
     }
 
     // MARK: - Codable
@@ -147,9 +155,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(backingUuid.get(), forKey: .backingUuid)
+        let (backingUuid, backingPhoneNumber) = Self.propertyLock.withLock {
+            (backingUuidUnsynchronized, backingPhoneNumberUnsynchronized)
+        }
+        try container.encode(backingUuid, forKey: .backingUuid)
         // Only encode the backingPhoneNumber if we don't know the UUID
-        try container.encode(backingUuid.get() == nil ? backingPhoneNumber.get() : nil, forKey: .backingPhoneNumber)
+        try container.encode(backingUuid == nil ? backingPhoneNumber : nil, forKey: .backingPhoneNumber)
     }
 
     public required convenience init(from decoder: Decoder) throws {
@@ -177,10 +188,13 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     // MARK: - NSSecureCoding
 
     public func encode(with aCoder: NSCoder) {
-        aCoder.encode(backingUuid.get(), forKey: "backingUuid")
+        let (backingUuid, backingPhoneNumber) = Self.propertyLock.withLock {
+            (backingUuidUnsynchronized, backingPhoneNumberUnsynchronized)
+        }
+        aCoder.encode(backingUuid, forKey: "backingUuid")
 
         // Only encode the backingPhoneNumber if we don't know the UUID
-        aCoder.encode(backingUuid.get() == nil ? backingPhoneNumber.get() : nil, forKey: "backingPhoneNumber")
+        aCoder.encode(backingUuid == nil ? backingPhoneNumber : nil, forKey: "backingPhoneNumber")
     }
 
     public convenience required init?(coder aDecoder: NSCoder) {
@@ -332,21 +346,27 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     private typealias AddressMappingObserver = NSHashTable<SignalServiceAddress>
 
     // Every address retains a strong reference to its observer.
-    private var mappingObserver = AtomicOptional<AddressMappingObserver>(nil)
+    private var mappingObserverUnsynchronized: AddressMappingObserver?
 
-    private static let unfairLock = UnfairLock()
+    private static let observerLock = UnfairLock()
     private static let mappingObserverCache = NSMapTable<NSUUID, AddressMappingObserver>(keyOptions: .strongMemory,
                                                                                          valueOptions: .weakMemory)
 
-    private func observeMappingChanges() {
-        guard let uuid = backingUuid.get() else {
+    private func observeMappingChanges(forUuid uuid: UUID) {
+        let needsObserver: Bool = Self.propertyLock.withLock {
+            owsAssertDebug(backingUuidUnsynchronized == uuid)
+
+            guard mappingObserverUnsynchronized == nil else {
+                owsFailDebug("There's shouldn't be an existing observer.")
+                return false
+            }
+            return true
+        }
+        guard needsObserver else {
             return
         }
-        guard mappingObserver.get() == nil else {
-            owsFailDebug("There's shouldn't be an existing observer.")
-            return
-        }
-        let observer = Self.unfairLock.withLock { () -> AddressMappingObserver in
+
+        let observer = Self.observerLock.withLock { () -> AddressMappingObserver in
             let observer = { () -> AddressMappingObserver in
                 if let observer = Self.mappingObserverCache.object(forKey: uuid as NSUUID) {
                     return observer
@@ -367,12 +387,14 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         }
         // We could race in this method, but in practice it should never happen.
         // If it did, it wouldn't have any adverse side effects.
-        owsAssertDebug(mappingObserver.get() == nil)
-        mappingObserver.set(observer)
+        Self.propertyLock.withLock {
+            owsAssertDebug(mappingObserverUnsynchronized == nil)
+            mappingObserverUnsynchronized = observer
+        }
     }
 
-    fileprivate static func notifyMappingDidChange(forUuid uuid: UUID) {
-        guard let addresses = (Self.unfairLock.withLock { () -> [SignalServiceAddress]? in
+    fileprivate static func notifyMappingDidChange(forUuid uuid: UUID, toPhoneNumber phoneNumber: String?) {
+        guard let addresses = (Self.observerLock.withLock { () -> [SignalServiceAddress]? in
             guard let observer = Self.mappingObserverCache.object(forKey: uuid as NSUUID) else {
                 return nil
             }
@@ -381,13 +403,15 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             return
         }
         for address in addresses {
-            address.mappingDidChange(uuid: uuid)
+            address.mappingDidChange(forUuid: uuid, toPhoneNumber: phoneNumber)
         }
     }
 
-    fileprivate func mappingDidChange(uuid: UUID) {
-        owsAssertDebug(uuid == self.uuid)
-        backingPhoneNumber.set(SignalServiceAddress.cache.phoneNumber(forUuid: uuid))
+    fileprivate func mappingDidChange(forUuid uuid: UUID, toPhoneNumber phoneNumber: String?) {
+        Self.propertyLock.withLock {
+            owsAssertDebug(uuid == backingUuidUnsynchronized)
+            backingPhoneNumberUnsynchronized = phoneNumber
+        }
     }
 
     public static func addressComponentsDescription(uuidString: String?,
@@ -413,11 +437,11 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
 extension SignalServiceAddress {
     var unresolvedUuid: UUID? {
-        backingUuid.get()
+        Self.propertyLock.withLock({backingUuidUnsynchronized})
     }
 
     var unresolvedPhoneNumber: String? {
-        backingPhoneNumber.get()
+        Self.propertyLock.withLock({backingPhoneNumberUnsynchronized})
     }
 }
 
@@ -618,7 +642,7 @@ public class SignalServiceAddressCache: NSObject {
         }
 
         // Notify any existing address objects to update their backing phone number
-        SignalServiceAddress.notifyMappingDidChange(forUuid: uuid)
+        SignalServiceAddress.notifyMappingDidChange(forUuid: uuid, toPhoneNumber: phoneNumber)
 
         if AppReadiness.isAppReady {
             Self.bulkProfileFetch.fetchProfile(uuid: uuid)
