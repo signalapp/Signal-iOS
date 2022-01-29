@@ -8,6 +8,7 @@ public class IncompleteCallsJob: Dependencies {
 
     private var count: UInt = 0
     private let cutoffTimestamp = CurrentAppContext().appLaunchTime.ows_millisecondsSince1970
+    public init() {}
 
     public func runSync() {
         databaseStorage.write { writeTx in
