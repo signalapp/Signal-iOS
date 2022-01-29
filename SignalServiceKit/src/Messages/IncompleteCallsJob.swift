@@ -7,16 +7,7 @@ import Foundation
 public class IncompleteCallsJob: Dependencies {
 
     private var count: UInt = 0
-    private let cutoffTimestamp: UInt64
-
-    public init() {
-        if CurrentAppContext().appLaunchTime.ows_millisecondsSince1970 > 0 {
-            cutoffTimestamp = CurrentAppContext().appLaunchTime.ows_millisecondsSince1970
-        } else {
-            owsFailDebug("Invalid app launch time")
-            cutoffTimestamp = Date.ows_millisecondTimestamp()
-        }
-    }
+    private let cutoffTimestamp = CurrentAppContext().appLaunchTime.ows_millisecondsSince1970
 
     public func runSync() {
         databaseStorage.write { writeTx in
