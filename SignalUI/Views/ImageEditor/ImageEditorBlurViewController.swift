@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -211,7 +211,7 @@ public class ImageEditorBlurViewController: OWSViewController {
                     "IMAGE_EDITOR_BLUR_TOAST",
                     comment: "A toast indicating that you can blur more faces after detection"
                 ))
-                let bottomInset = self.bottomLayoutGuide.length + 90
+                let bottomInset = self.view.safeAreaInsets.bottom + 90
                 toastController.presentToastView(fromBottomOfView: self.view, inset: bottomInset)
             }
 

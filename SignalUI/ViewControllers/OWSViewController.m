@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSViewController.h"
@@ -270,12 +270,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Adjust the position of the bottom view to account for the keyboard's
     // intrusion into the view.
     //
-    // On iPhoneX, when no keyboard is present, we include a buffer at the bottom of the screen so the bottom view
-    // clears the floating "home button". But because the keyboard includes it's own buffer, we subtract the length
-    // (height) of the bottomLayoutGuide, else we'd have an unnecessary buffer between the popped keyboard and the input
-    // bar.
+    // On iPhones no physical home button, when no keyboard is present, we include a buffer at the bottom of the screen so the bottom view
+    // clears the floating "home button". But because the keyboard includes it's own buffer, we subtract the size of bottom "safe area",
+    // else we'd have an unnecessary buffer between the popped keyboard and the input bar.
     CGFloat newInset = MAX(0,
-        (self.view.height + self.keyboardAdjustmentOffsetForAutoPinnedToBottomView - self.bottomLayoutGuide.length
+        (self.view.height + self.keyboardAdjustmentOffsetForAutoPinnedToBottomView - self.view.safeAreaInsets.bottom
             - keyboardEndFrameConverted.origin.y));
     self.lastBottomLayoutInset = newInset;
 

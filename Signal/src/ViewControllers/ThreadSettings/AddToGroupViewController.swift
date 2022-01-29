@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -209,8 +209,6 @@ public class AddToGroupViewController: OWSTableViewController2 {
     }
 
     private func notifyOfAddedAndDismiss(groupThread: TSGroupThread, shortName: String) {
-        let toastInset = bottomLayoutGuide.length + 8
-
         dismiss(animated: true) { [presentingViewController] in
             let toastFormat = NSLocalizedString(
                 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT",

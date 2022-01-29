@@ -868,7 +868,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)scrollSearchBarToTopAnimated:(BOOL)isAnimated
 {
-    CGFloat topInset = self.topLayoutGuide.length;
+    CGFloat topInset = self.view.safeAreaInsets.top;
     [self.tableView setContentOffset:CGPointMake(0, -topInset) animated:isAnimated];
 }
 

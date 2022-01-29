@@ -139,7 +139,6 @@ extension ConversationViewController {
             if insetChange != 0 {
                 // The content offset can go negative, up to the size of the top layout guide.
                 // This accounts for the extended layout under the navigation bar.
-                owsAssertDebug(topLayoutGuide.length == view.safeAreaInsets.top)
                 let minYOffset = -view.safeAreaInsets.top
                 let newYOffset = (oldYOffset + insetChange).clamp(minYOffset, safeContentHeight)
                 let newOffset = CGPoint(x: 0, y: newYOffset)
