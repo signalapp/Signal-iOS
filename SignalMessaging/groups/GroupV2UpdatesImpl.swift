@@ -512,7 +512,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
     }
 
-    private let changeCache = LRUCache<String, ChangeCacheItem>(maxSize: 5)
+    private let changeCache = LRUCache<Data, ChangeCacheItem>(maxSize: 5)
 
     private class ChangeCacheItem: NSObject {
         let groupChanges: [GroupV2Change]
@@ -522,22 +522,20 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
     }
 
-    private func addGroupChangesToCache(groupChanges: [GroupV2Change],
-                                        cacheKey: String) {
+    private func addGroupChangesToCache(groupChanges: [GroupV2Change], groupSecretParamsData: Data) {
         guard !groupChanges.isEmpty else {
             Logger.verbose("No group changes.")
-            changeCache.removeObject(forKey: cacheKey)
+            changeCache.removeObject(forKey: groupSecretParamsData)
             return
         }
 
         let revisions = groupChanges.map { $0.revision }
         Logger.verbose("Caching revisions: \(revisions)")
         changeCache.setObject(ChangeCacheItem(groupChanges: groupChanges),
-                              forKey: cacheKey)
+                              forKey: groupSecretParamsData)
     }
 
-    private func cachedGroupChanges(forCacheKey cacheKey: String,
-                                    groupSecretParamsData: Data,
+    private func cachedGroupChanges(groupSecretParamsData: Data,
                                     upToRevision: UInt32?) -> [GroupV2Change]? {
         guard let upToRevision = upToRevision else {
             return nil
@@ -561,10 +559,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return nil
         }
         guard dbRevision < upToRevision else {
-            changeCache.removeObject(forKey: cacheKey)
+            changeCache.removeObject(forKey: groupSecretParamsData)
             return nil
         }
-        guard let cacheItem = changeCache.object(forKey: cacheKey) else {
+        guard let cacheItem = changeCache.object(forKey: groupSecretParamsData) else {
             return nil
         }
         let cachedChanges = cacheItem.groupChanges.filter { groupChange in
@@ -576,7 +574,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
         let revisions = cachedChanges.map { $0.revision }
         guard Set(revisions).contains(upToRevision) else {
-            changeCache.removeObject(forKey: cacheKey)
+            changeCache.removeObject(forKey: groupSecretParamsData)
             return nil
         }
         Logger.verbose("Using cached revisions: \(revisions), dbRevision: \(dbRevision), upToRevision: \(upToRevision)")
@@ -607,12 +605,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }
         }()
 
-        let cacheKey = groupSecretParamsData.hexadecimalString
-
         return firstly(on: .global()) { () -> [GroupV2Change]? in
             // Try to use group changes from the cache.
-            return self.cachedGroupChanges(forCacheKey: cacheKey,
-                                           groupSecretParamsData: groupSecretParamsData,
+            return self.cachedGroupChanges(groupSecretParamsData: groupSecretParamsData,
                                            upToRevision: upToRevision)
         }.then(on: .global()) { (groupChanges: [GroupV2Change]?) -> Promise<GroupsV2Impl.GroupChangePage> in
             if let groupChanges = groupChanges {
@@ -623,7 +618,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                                  includeCurrentRevision: includeCurrentRevision,
                                                                  firstKnownRevision: upToRevision)
             }.map(on: .global()) { (groupChanges: GroupsV2Impl.GroupChangePage) -> GroupsV2Impl.GroupChangePage in
-                self.addGroupChangesToCache(groupChanges: groupChanges.changes, cacheKey: cacheKey)
+                self.addGroupChangesToCache(groupChanges: groupChanges.changes,
+                                            groupSecretParamsData: groupSecretParamsData)
 
                 return groupChanges
             }
