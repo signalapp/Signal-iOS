@@ -1061,8 +1061,9 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             }
 
             SignalServiceAddress *destinationAddress;
-            if ([[NSUUID alloc] initWithUUIDString:destination]) {
-                destinationAddress = [[SignalServiceAddress alloc] initWithUuidString:destination];
+            NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:destination];
+            if (uuid) {
+                destinationAddress = [[SignalServiceAddress alloc] initWithUuid:uuid];
             } else {
                 destinationAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:destination];
             }

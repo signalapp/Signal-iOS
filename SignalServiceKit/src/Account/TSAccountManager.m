@@ -519,7 +519,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     if (localUuid == nil && localNumber == nil) {
         return nil;
     } else {
-        return [[SignalServiceAddress alloc] initWithUuidString:localUuid.UUIDString phoneNumber:localNumber];
+        return [[SignalServiceAddress alloc] initWithUuid:localUuid phoneNumber:localNumber];
     }
 }
 
