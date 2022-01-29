@@ -601,7 +601,6 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         return max(earliestPermittedAttempt, nextScheduledRefresh)
     }
 
-
     private func scheduleNextRefresh() {
         AssertIsOnMainThread()
         refreshTimer?.invalidate()
