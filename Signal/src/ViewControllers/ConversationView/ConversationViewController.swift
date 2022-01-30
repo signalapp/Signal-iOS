@@ -161,8 +161,6 @@ public class ConversationViewController: OWSViewController {
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .leading)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .trailing)
 
-        // TODO: Do we still need to do this?
-        self.collectionView.applyInsetsFix()
         self.collectionView.accessibilityIdentifier = "collectionView"
 
         self.registerReuseIdentifiers()
