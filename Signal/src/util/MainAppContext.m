@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "MainAppContext.h"
@@ -212,11 +212,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
             == UIUserInterfaceLayoutDirectionRightToLeft;
     });
     return isRTL;
-}
-
-- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
-{
-    [[UIApplication sharedApplication] setStatusBarHidden:isHidden animated:isAnimated];
 }
 
 - (CGFloat)statusBarHeight

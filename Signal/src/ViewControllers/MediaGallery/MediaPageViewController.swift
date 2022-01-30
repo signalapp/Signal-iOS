@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -653,7 +653,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         currentViewController.zoomOut(animated: true)
 
         currentViewController.stopAnyVideo()
-        UIApplication.shared.setStatusBarHidden(false, with: .none)
         self.navigationController?.setNavigationBarHidden(false, animated: false)
 
         dismiss(animated: isAnimated, completion: completion)

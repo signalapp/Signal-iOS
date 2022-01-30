@@ -106,8 +106,6 @@ class NSEContext: NSObject, AppContext {
         desiredBadgeNumber.set(value)
     }
 
-    func setStatusBarHidden(_ isHidden: Bool, animated isAnimated: Bool) {}
-
     func frontmostViewController() -> UIViewController? { nil }
     func openSystemSettings() {}
 

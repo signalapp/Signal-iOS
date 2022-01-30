@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -101,8 +101,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (void)ensureSleepBlocking:(BOOL)shouldBeBlocking blockingObjectsDescription:(NSString *)blockingObjectsDescription;
 
 - (void)setMainAppBadgeNumber:(NSInteger)value;
-
-- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated;
 
 @property (nonatomic, readonly) CGFloat statusBarHeight;
 
