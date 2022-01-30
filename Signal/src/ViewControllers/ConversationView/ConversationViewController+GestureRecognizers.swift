@@ -378,8 +378,6 @@ public struct CVLongPressHandler {
             return
         }
 
-        let shouldAllowReply = delegate.cvc_shouldAllowReplyForItem(itemViewModel)
-
         switch gestureLocation {
         case .bodyText(let item):
             delegate.cvc_didLongPressBodyTextItem(.init(item: item))

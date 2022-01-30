@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -106,7 +106,7 @@ public class RegistrationPinAttemptsExhaustedViewController: RegistrationBaseVie
     func primaryButtonPressed() {
         Logger.info("")
 
-        guard let navigationController = navigationController else {
+        guard navigationController != nil else {
             owsFailDebug("Missing navigationController")
             return
         }
