@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "Pastelog.h"
@@ -304,7 +304,9 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                           [UIApplication.sharedApplication
                                               openURL:[NSURL
                                                           URLWithString:[[NSBundle mainBundle]
-                                                                            objectForInfoDictionaryKey:@"LOGS_URL"]]];
+                                                                            objectForInfoDictionaryKey:@"LOGS_URL"]]
+                                              options:@{ }
+                                    completionHandler:nil];
 
                                           completion();
                                       }]];
