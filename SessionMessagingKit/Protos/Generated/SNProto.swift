@@ -2396,6 +2396,12 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         if let _value = profileKey {
             builder.setProfileKey(_value)
         }
+        if hasIsApproved {
+            builder.setIsApproved(isApproved)
+        }
+        if hasIsBlocked {
+            builder.setIsBlocked(isBlocked)
+        }
         return builder
     }
 
@@ -2426,6 +2432,14 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
         @objc public func setProfileKey(_ valueParam: Data) {
             proto.profileKey = valueParam
+        }
+
+        @objc public func setIsApproved(_ valueParam: Bool) {
+            proto.isApproved = valueParam
+        }
+
+        @objc public func setIsBlocked(_ valueParam: Bool) {
+            proto.isBlocked = valueParam
         }
 
         @objc public func build() throws -> SNProtoConfigurationMessageContact {
@@ -2461,6 +2475,20 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
     }
     @objc public var hasProfileKey: Bool {
         return proto.hasProfileKey
+    }
+
+    @objc public var isApproved: Bool {
+        return proto.isApproved
+    }
+    @objc public var hasIsApproved: Bool {
+        return proto.hasIsApproved
+    }
+
+    @objc public var isBlocked: Bool {
+        return proto.isBlocked
+    }
+    @objc public var hasIsBlocked: Bool {
+        return proto.hasIsBlocked
     }
 
     private init(proto: SessionProtos_ConfigurationMessage.Contact,
