@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -147,7 +147,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
                             vibrancyView.frame = bounds
                             let view = UIView(frame: bounds)
                             view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                            view.backgroundColor = Theme.cellSelectedColor
+                            view.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray12
                             if Theme.isDarkThemeEnabled {
                                 vibrancyView.backgroundColor = UIColor.ows_whiteAlpha20
                             }
@@ -168,8 +168,8 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
 
         var maxWidth: CGFloat = 250
         let margin: CGFloat = 16
-        let verticalPadding: CGFloat = 20
-        let iconSize: CGFloat = 22
+        let verticalPadding: CGFloat = 22
+        let iconSize: CGFloat = 20
 
         public init(
             title: String,
@@ -180,6 +180,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             titleLabel = UILabel(frame: CGRect.zero)
             titleLabel.text = title
             titleLabel.font = .ows_dynamicTypeBodyClamped
+            titleLabel.numberOfLines = 2
 
             self.attributes = attributes
             hostEffect = hostBlurEffect
@@ -202,7 +203,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             }
 
             let seperator = UIView(frame: seperatorView.bounds)
-            seperator.backgroundColor = Theme.cellSeparatorColor
+            seperator.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray22
             seperator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             seperatorView.contentView.addSubview(seperator)
             isHighlighted = false
@@ -231,7 +232,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             var iconViewFrame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
 
             titleFrame.y = ceil((bounds.height - titleFrame.height) / 2)
-            iconViewFrame.height = bounds.height
+            iconViewFrame.y = max(0, (bounds.height - iconView.height) / 2)
 
             if !isRTL {
                 titleFrame.x = margin
@@ -255,7 +256,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
         public override func sizeThatFits(
             _ size: CGSize
         ) -> CGSize {
-            let height = ceil(titleLabel.sizeThatFits(CGSize(width: 0, height: 0)).height) + verticalPadding
+            let height = ceil(titleLabel.sizeThatFits(CGSize(width: maxWidth - 3 * margin - iconSize, height: 0)).height) + verticalPadding
             return CGSize(width: maxWidth, height: height)
         }
     }
@@ -342,28 +343,31 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
         backdropView.frame = bounds
         scrollView.frame = bounds
         var yOffset: CGFloat = 0
-        let actionViewSize = actionViewSizeThatFits(bounds.size)
         var maxY: CGFloat = 0
+        var width: CGFloat = 0.0
         for actionView in actionViews {
-            actionView.frame = CGRect(x: 0, y: yOffset, width: actionViewSize.width, height: actionViewSize.height)
-            yOffset += actionViewSize.height
+            let size = actionView.sizeThatFits(.zero)
+            width = max(width, size.width)
+            actionView.frame = CGRect(x: 0, y: yOffset, width: width, height: size.height)
+            yOffset += size.height
             maxY = max(maxY, actionView.frame.maxY)
         }
 
-        scrollView.contentSize = CGSize(width: bounds.width, height: maxY)
+        scrollView.contentSize = CGSize(width: width, height: maxY)
     }
 
     public override func sizeThatFits(
         _ size: CGSize
     ) -> CGSize {
-        let actionViewSize = actionViewSizeThatFits(size)
-        return CGSize(width: actionViewSize.width, height: actionViewSize.height * CGFloat(actionViews.count))
-    }
-
-    private func actionViewSizeThatFits(
-        _ size: CGSize)
-    -> CGSize {
-        return actionViews.first?.sizeThatFits(size) ?? CGSize.zero
+        // every entry may have a different height
+        var height = 0.0
+        var width = 0.0
+        for actionView in actionViews {
+            let size = actionView.sizeThatFits(size)
+            height += size.height
+            width = max(width, size.width)
+        }
+        return CGSize(width: width, height: height)
     }
 
     // MARK: Gestures

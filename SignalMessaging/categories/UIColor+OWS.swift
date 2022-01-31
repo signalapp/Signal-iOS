@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -129,6 +129,11 @@ public extension UIColor {
         return UIColor(rgbHex: 0xf0f0f0)
     }
 
+    @objc(ows_gray12Color)
+    class var ows_gray12: UIColor {
+        return UIColor(rgbHex: 0xe0e0e0)
+    }
+
     @objc(ows_gray15Color)
     class var ows_gray15: UIColor {
         return UIColor(rgbHex: 0xD4D4D4)
@@ -137,6 +142,11 @@ public extension UIColor {
     @objc(ows_gray20Color)
     class var ows_gray20: UIColor {
         return UIColor(rgbHex: 0xCCCCCC)
+    }
+
+    @objc(ows_gray22Color)
+    class var ows_gray22: UIColor {
+        return UIColor(rgbHex: 0xC6C6C6)
     }
 
     @objc(ows_gray25Color)

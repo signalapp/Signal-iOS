@@ -154,6 +154,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             } else {
                 self.getStartedBanner.view.alpha = 1;
             }
+            [self.viewState.multiSelectState
+                moveContextMenuTo:CGPointMake(self.view.safeAreaInsets.left, self.view.safeAreaInsets.top)];
         }
                         completion:nil];
 }
