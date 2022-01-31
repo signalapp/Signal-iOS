@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -49,13 +49,13 @@ public extension SDSModel {
         case .insert:
             anyDidInsert(with: transaction)
 
-            if type(of: self).shouldBeIndexedForFTS {
+            if type(of: self).ftsIndexMode != .never {
                 FullTextSearchFinder().modelWasInserted(model: self, transaction: transaction)
             }
         case .update:
             anyDidUpdate(with: transaction)
 
-            if type(of: self).shouldBeIndexedForFTS {
+            if type(of: self).ftsIndexMode == .always {
                 FullTextSearchFinder().modelWasUpdated(model: self, transaction: transaction)
             }
         }
@@ -83,7 +83,7 @@ public extension SDSModel {
 
         anyDidRemove(with: transaction)
 
-        if type(of: self).shouldBeIndexedForFTS {
+        if type(of: self).ftsIndexMode != .never {
             FullTextSearchFinder().modelWasRemoved(model: self, transaction: transaction)
         }
     }

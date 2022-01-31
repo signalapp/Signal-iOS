@@ -168,6 +168,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
                                             thread.groupModel = [newGroupModel copy];
                                         }];
+    [SDSDatabaseStorage.shared touchThread:self shouldReindex:true transaction:transaction];
 
     if (didAvatarChange) {
         [transaction addAsyncCompletionOnMain:^{ [self fireAvatarChangedNotification]; }];

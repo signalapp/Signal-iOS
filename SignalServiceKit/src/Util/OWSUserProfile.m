@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUserProfile.h"
@@ -826,6 +826,10 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         [self.subscriptionManager reconcileBadgeStatesWithTransaction:transaction];
     }
 
+    if (changes.givenName || changes.familyName) {
+        [self reindexAssociatedModels:transaction];
+    }
+
     // Insert a profile change update in conversations, if necessary
     if (latestInstance && updatedInstance) {
         [TSInfoMessage insertProfileChangeMessagesIfNecessaryWithOldProfile:latestInstance
@@ -1058,8 +1062,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self reindexAssociatedModels:transaction];
-
     [self.modelReadCaches.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
 }
 
@@ -1072,7 +1074,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
 - (void)reindexAssociatedModels:(SDSAnyWriteTransaction *)transaction
 {
-    // The profile can affect how accounts, recipients and contact threads are indexed, so we
+    // The profile can affect how accounts, recipients, contact threads, and group threads are indexed, so we
     // need to re-index them whenever the profile changes.
     FullTextSearchFinder *fullTextSearchFinder = [FullTextSearchFinder new];
 
@@ -1095,6 +1097,13 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     if (contactThread != nil) {
         [fullTextSearchFinder modelWasUpdatedObjcWithModel:contactThread transaction:transaction];
     }
+
+    [TSGroupThread enumerateGroupThreadsWithAddress:self.address
+                                        transaction:transaction
+                                              block:^(TSGroupThread *thread, BOOL *stop) {
+                                                  [fullTextSearchFinder modelWasUpdatedObjcWithModel:thread
+                                                                                         transaction:transaction];
+                                              }];
 }
 
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address

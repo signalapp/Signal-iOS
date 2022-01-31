@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSThread.h"
@@ -50,9 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
     return @"TSThread";
 }
 
-+ (BOOL)shouldBeIndexedForFTS
++ (TSFTSIndexMode)FTSIndexMode
 {
-    return YES;
+    return TSFTSIndexModeManualUpdates;
 }
 
 - (instancetype)init
@@ -458,6 +458,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                     clearIsMarkedUnread:needsToClearIsMarkedUnread
                    updateStorageService:YES
                             transaction:transaction];
+        if (needsToMarkAsVisible) {
+            // Non-visible threads don't get indexed, so if we're becoming visible for the first time...
+            [SDSDatabaseStorage.shared touchThread:self shouldReindex:true transaction:transaction];
+        }
         if (needsToClearLastVisibleSortId) {
             [self clearLastVisibleInteractionWithTransaction:transaction];
         }

@@ -507,7 +507,7 @@ public extension OWSRecipientIdentity {
             }
         }
 
-        if shouldBeIndexedForFTS {
+        if ftsIndexMode != .never {
             FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }
@@ -533,7 +533,7 @@ public extension OWSRecipientIdentity {
             instance.anyRemove(transaction: transaction)
         })
 
-        if shouldBeIndexedForFTS {
+        if ftsIndexMode != .never {
             FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }

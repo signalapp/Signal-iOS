@@ -617,7 +617,7 @@ public extension OWSUserProfile {
             }
         }
 
-        if shouldBeIndexedForFTS {
+        if ftsIndexMode != .never {
             FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }
@@ -643,7 +643,7 @@ public extension OWSUserProfile {
             instance.anyRemove(transaction: transaction)
         })
 
-        if shouldBeIndexedForFTS {
+        if ftsIndexMode != .never {
             FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }

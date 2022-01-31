@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
@@ -53,9 +53,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
-+ (BOOL)shouldBeIndexedForFTS
++ (TSFTSIndexMode)FTSIndexMode
 {
-    return YES;
+    return TSFTSIndexModeAlways;
 }
 
 + (NSString *)collection {

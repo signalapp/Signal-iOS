@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel+NSCoding.h>
@@ -14,6 +14,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateRowId:(int64_t)rowId;
 
 @end
+
+/// Controls whether the full text search index is updated when the model object is updated.
+typedef NS_ENUM(NSUInteger, TSFTSIndexMode) {
+    /// This object is not part of the full text search index.
+    TSFTSIndexModeNever,
+    /// This object is automatically indexed when inserted or removed,
+    /// but updates must be indexed manually (usually by `SDSDatabase.touch(...)`).
+    TSFTSIndexModeManualUpdates,
+    /// This object is automatically (re)indexed when inserted, updated, or removed.
+    TSFTSIndexModeAlways
+};
 
 #pragma mark -
 
@@ -65,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 //            detect at compile time.
 @property (nonatomic, readonly) BOOL shouldBeSaved;
 
-@property (class, nonatomic, readonly) BOOL shouldBeIndexedForFTS;
+@property (class, nonatomic, readonly) TSFTSIndexMode FTSIndexMode;
 
 #pragma mark - Data Store Write Hooks
 

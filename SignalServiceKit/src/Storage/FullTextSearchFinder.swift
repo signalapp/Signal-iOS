@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,7 +24,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     public func modelWasInserted(model: SDSModel, transaction: SDSAnyWriteTransaction) {
-        assert(type(of: model).shouldBeIndexedForFTS)
+        assert(type(of: model).ftsIndexMode != .never)
 
         switch transaction.writeTransaction {
         case .grdbWrite(let grdbWrite):
@@ -42,7 +42,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     public func modelWasUpdated(model: SDSModel, transaction: SDSAnyWriteTransaction) {
-        assert(type(of: model).shouldBeIndexedForFTS)
+        assert(type(of: model).ftsIndexMode != .never)
 
         switch transaction.writeTransaction {
         case .grdbWrite(let grdbWrite):
@@ -51,7 +51,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     public func modelWasRemoved(model: SDSModel, transaction: SDSAnyWriteTransaction) {
-        assert(type(of: model).shouldBeIndexedForFTS)
+        assert(type(of: model).ftsIndexMode != .never)
 
         switch transaction.writeTransaction {
         case .grdbWrite(let grdbWrite):

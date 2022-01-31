@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,7 +18,7 @@ public extension DebugContactsUtils {
                 signalRecipient.anyUpsert(transaction: transaction)
             }
             TSThread.anyEnumerate(transaction: transaction, batched: true) { (thread: TSThread, _) in
-                thread.anyUpsert(transaction: transaction)
+                databaseStorage.touch(thread: thread, shouldReindex: true, transaction: transaction)
             }
         }
     }

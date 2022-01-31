@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalRecipient.h"
@@ -650,9 +650,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     [self.storageServiceManager recordPendingDeletionsWithDeletedAccountIds:@[ self.accountId ]];
 }
 
-+ (BOOL)shouldBeIndexedForFTS
++ (TSFTSIndexMode)FTSIndexMode
 {
-    return YES;
+    return TSFTSIndexModeAlways;
 }
 
 - (void)removePhoneNumberForDatabaseMigration

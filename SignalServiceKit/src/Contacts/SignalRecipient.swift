@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -119,6 +119,11 @@ extension SignalRecipient {
 
         if let contactThread = AnyContactThreadFinder().contactThread(for: address, transaction: transaction.asAnyRead) {
             SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction.asAnyWrite)
+        }
+        TSGroupThread.enumerateGroupThreads(with: address, transaction: transaction.asAnyRead) { thread, _ in
+            SDSDatabaseStorage.shared.touch(thread: thread,
+                                            shouldReindex: true,
+                                            transaction: transaction.asAnyWrite)
         }
 
         // Update SignalServiceAddressCache with the new uuid <-> phone number mapping
