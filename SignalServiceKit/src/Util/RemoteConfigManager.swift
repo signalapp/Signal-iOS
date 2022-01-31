@@ -590,7 +590,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     private var lastAttempt: Date = .distantPast
     private var consecutiveFailures: UInt = 0
-    private func nextPermittedAttemptWithSneakyTransaction() -> Date {
+    private var nextPermittedAttempt: Date {
         AssertIsOnMainThread()
         let backoffDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: consecutiveFailures)
         let earliestPermittedAttempt = lastAttempt.addingTimeInterval(backoffDelay)
@@ -605,7 +605,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         AssertIsOnMainThread()
         refreshTimer?.invalidate()
         refreshTimer = nil
-        let nextAttempt = nextPermittedAttemptWithSneakyTransaction()
+        let nextAttempt = nextPermittedAttempt
 
         if nextAttempt.isBeforeNow {
             refresh()
