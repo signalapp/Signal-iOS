@@ -7,15 +7,33 @@ import UIKit
 @objc
 extension HomeViewController {
 
+    // MARK: - context menu
+
     func showOrHideMenu(_ sender: UIButton) {
         AssertIsOnMainThread()
 
         if viewState.multiSelectState.parentButton == nil {
-            showMenu(button: sender, animated: true)
+            showMenu(from: sender, animated: true)
         } else {
             hideMenu()
         }
     }
+
+    func adjustContextMenuPosition() {
+        guard let menu = viewState.multiSelectState.contextMenuView?.menuContainer else {
+            return
+        }
+
+        var safeAreaInsets = view.safeAreaInsets
+        // if the safeAreaInsets are 0 (eg. on iPads) they can not be used for
+        // calculating the correct position of the context menu
+        if safeAreaInsets == .zero {
+            safeAreaInsets.top = (navigationController?.toolbar.height ?? 0) + UIApplication.shared.statusBarFrame.height
+        }
+        menu.frame.origin = CGPoint(x: safeAreaInsets.left, y: safeAreaInsets.top) + ContextMenuActionsViewContainer.offset
+    }
+
+    // MARK: - multi select mode
 
     func willEnterMultiselectMode() {
         AssertIsOnMainThread()
@@ -90,23 +108,28 @@ extension HomeViewController {
         }
     }
 
+    // MARK: - theme changes
+
     func applyThemeToContextMenuAndToolbar() {
         viewState.multiSelectState.toolbar?.themeChanged()
         // if the context menu is shown
         if let btn = viewState.multiSelectState.parentButton, viewState.multiSelectState.contextMenuView != nil {
             // we have to create it again (changed colors, icons etc.)
             hideMenuAndExecuteWhenVanished(animated: false) {
-                self.showMenu(button: btn, animated: false)
+                self.showMenu(from: btn, animated: false)
             }
         }
     }
 
     // MARK: private helper
 
-    private func showMenu(button: UIButton?, animated: Bool) {
+    private func showMenu(from button: UIButton, animated: Bool) {
         AssertIsOnMainThread()
 
         guard viewState.multiSelectState.contextMenuView == nil else {
+            return
+        }
+        guard let window = button.window else {
             return
         }
 
@@ -150,20 +173,17 @@ extension HomeViewController {
 
         let v = ContextMenuActionsView(menu: ContextMenu(contextMenuActions))
         let size = v.sizeThatFitsMaxSize
-        v.frame = CGRect(x: view.safeAreaInsets.left, y: view.safeAreaInsets.top, width: size.width, height: size.height)
+        v.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         v.delegate = self
 
         viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
-        view.addSubview(viewState.multiSelectState.contextMenuView!)
-        let completion = { [weak self] (_: Bool) in
-            self?.viewState.multiSelectState.contextMenuView!.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
-            self?.navigationController?.navigationBar.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
-        }
-        if animated {
-            animateIn(menu: viewState.multiSelectState.contextMenuView!, from: button, completion: completion)
-        } else {
-            viewState.multiSelectState.contextMenuView?.autoPinEdgesToSuperviewSafeArea()
-            completion(true)
+        viewState.multiSelectState.contextMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
+        window.addSubview(viewState.multiSelectState.contextMenuView!)
+        viewState.multiSelectState.contextMenuView!.frame = window.bounds
+        adjustContextMenuPosition()
+
+        if animated, let menuContainer = viewState.multiSelectState.contextMenuView?.menuContainer {
+            animateIn(menu: menuContainer, from: button)
         }
     }
 
@@ -182,22 +202,15 @@ extension HomeViewController {
     private func hideMenuAndExecuteWhenVanished(animated: Bool = true, completion handler: (() -> Void)? = nil) {
         AssertIsOnMainThread()
 
-        if let navBar = navigationController?.navigationBar {
-            for recognizer in navBar.gestureRecognizers ?? [] {
-                if let tapper = recognizer as? TapToCloseGestureRecognizer {
-                    navBar.removeGestureRecognizer(tapper)
-                }
-            }
-        }
-
         let completion = { [weak self] (_: Bool) in
             self?.viewState.multiSelectState.contextMenuView?.removeFromSuperview()
+            self?.viewState.multiSelectState.parentButton?.alpha = 1
             self?.viewState.multiSelectState.parentButton = nil
             self?.viewState.multiSelectState.contextMenuView = nil
             handler?()
         }
         if animated {
-            animateOut(menu: viewState.multiSelectState.contextMenuView, from: viewState.multiSelectState.parentButton, completion: completion)
+            animateOut(menu: viewState.multiSelectState.contextMenuView?.menuContainer, from: viewState.multiSelectState.parentButton, completion: completion)
         } else {
             completion(true)
         }
@@ -219,7 +232,7 @@ extension HomeViewController {
             menu.transform = .identity
         }) { (result) in
             menu.layer.anchorPoint = oldAnchor
-            menu.autoPinEdgesToSuperviewSafeArea()
+            menu.frame = frame
             from?.isUserInteractionEnabled = true
             completion?(result)
         }
@@ -438,13 +451,6 @@ extension HomeViewController {
         }
         updateCaptions()
     }
-
-    // private tagging interface
-    private class TapToCloseGestureRecognizer: UITapGestureRecognizer {
-        init(target: Any?) {
-            super.init(target: target, action: #selector(hideMenu))
-        }
-    }
 }
 
 // MARK: - implementation of ContextMenuActionsViewDelegate
@@ -457,21 +463,27 @@ extension HomeViewController: ContextMenuActionsViewDelegate {
 // MARK: - view helper class (providing a rounded view *with* a shadow)
 private class ContextMenuActionsViewContainer: UIView {
     static let offset = CGPoint(x: 8, y: 0)
+    fileprivate let menuContainer: UIView
 
     required init(_ target: UIView) {
-        super.init(frame: target.frame)
-        var frame = target.bounds
-        frame.origin = ContextMenuActionsViewContainer.offset
+        let container = UIView(frame: target.bounds)
+        container.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
+        self.menuContainer = container
+
+        super.init(frame: .zero)
+
         let radius = target.layer.cornerRadius
-        let shadowView = UIView(frame: CGRect(x: ContextMenuActionsViewContainer.offset.x + radius,
-                                              y: ContextMenuActionsViewContainer.offset.y + radius,
-                                              width: frame.width - 2 * radius,
-                                              height: frame.height - 2 * radius))
+        let shadowView = UIView(frame: CGRect(x: radius,
+                                              y: radius,
+                                              width: target.bounds.width - 2 * radius,
+                                              height: target.bounds.height - 2 * radius))
         shadowView.backgroundColor = Theme.isDarkThemeEnabled ? .black : .white
-        shadowView.setShadow(radius: 40, opacity: 0.3, offset: CGSize(width: 8, height: 20))
-        target.frame = frame
-        self.addSubview(shadowView)
-        self.addSubview(target)
+        shadowView.setShadow(radius: 40, opacity: 0.8, offset: CGSize(width: 8, height: 20))
+        target.frame = target.bounds
+        container.addSubview(shadowView)
+        container.addSubview(target)
+        self.addSubview(container)
+        self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
 
     required init?(coder: NSCoder) {

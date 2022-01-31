@@ -154,6 +154,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             } else {
                 self.getStartedBanner.view.alpha = 1;
             }
+            [self adjustContextMenuPosition];
         }
                         completion:nil];
 }
