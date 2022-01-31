@@ -544,6 +544,8 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     // MARK: -
 
     @objc func registrationStateDidChange() {
+        AssertIsOnMainThread()
+
         guard tsAccountManager.isRegistered else { return }
         Logger.info("Refreshing and immediately applying new flags due to new registration.")
         refresh().done(on: .global()) {
@@ -585,28 +587,32 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     private static let refreshInterval = 2 * kHourInterval
     private var refreshTimer: Timer?
+
+    private var lastAttempt: Date = .distantPast
+    private var consecutiveFailures: UInt = 0
+    private var nextPermittedAttempt: Date {
+        AssertIsOnMainThread()
+        let backoffDelay = OWSOperation.retryIntervalForExponentialBackoff(failureCount: consecutiveFailures)
+        let earliestPermittedAttempt = lastAttempt.addingTimeInterval(backoffDelay)
+
+        let lastSuccess = databaseStorage.read { keyValueStore.getLastFetched(transaction: $0) }
+        let nextScheduledRefresh = (lastSuccess ?? .distantPast).addingTimeInterval(Self.refreshInterval)
+
+        return max(earliestPermittedAttempt, nextScheduledRefresh)
+    }
+
     private func scheduleNextRefresh() {
         AssertIsOnMainThread()
-
         refreshTimer?.invalidate()
         refreshTimer = nil
+        let nextAttempt = nextPermittedAttempt
 
-        guard let lastFetched = (databaseStorage.read { transaction in
-            self.keyValueStore.getLastFetched(transaction: transaction)
-        }) else {
-            refresh()
-            return
-        }
-
-        let timeSinceLastFetch = abs(lastFetched.timeIntervalSinceNow)
-
-        if timeSinceLastFetch >= Self.refreshInterval {
+        if nextAttempt.isBeforeNow {
             refresh()
         } else {
-            Logger.info("Scheduling remote config refresh in \(Self.refreshInterval - timeSinceLastFetch) seconds.")
-
+            Logger.info("Scheduling remote config refresh for \(nextAttempt).")
             refreshTimer = Timer.scheduledTimer(
-                withTimeInterval: Self.refreshInterval - timeSinceLastFetch,
+                withTimeInterval: nextAttempt.timeIntervalSinceNow,
                 repeats: false
             ) { [weak self] timer in
                 timer.invalidate()
@@ -627,7 +633,9 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     @discardableResult
     private func refresh() -> Promise<Void> {
+        AssertIsOnMainThread()
         Logger.info("Refreshing remote config.")
+        lastAttempt = Date()
 
         return firstly(on: .global()) {
             self.serviceClient.getRemoteConfig()
@@ -698,10 +706,12 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
                 self.checkClientExpiration(valueFlags: valueFlags)
             }
 
+            self.consecutiveFailures = 0
             Logger.info("Stored new remoteConfig. isEnabledFlags: \(isEnabledFlags), valueFlags: \(valueFlags)")
-        }.catch { error in
+        }.catch(on: .main) { error in
             Logger.error("error: \(error)")
-        }.ensure {
+            self.consecutiveFailures += 1
+        }.ensure(on: .main) {
             self.scheduleNextRefresh()
         }
     }
