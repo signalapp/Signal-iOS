@@ -54,6 +54,25 @@ public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
         }
         return description
     }
+
+    override public func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? OWSUserProfileBadgeInfo else {
+            return false
+        }
+        if badgeId != other.badgeId {
+            return false
+        }
+        if badge != other.badge {
+            return false
+        }
+        if expiration != other.expiration {
+            return false
+        }
+        if isVisible != other.isVisible {
+            return false
+        }
+        return true
+    }
 }
 
 @objc
