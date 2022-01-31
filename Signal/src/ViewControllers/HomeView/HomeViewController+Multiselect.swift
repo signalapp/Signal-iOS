@@ -182,8 +182,8 @@ extension HomeViewController {
         viewState.multiSelectState.contextMenuView!.frame = window.bounds
         adjustContextMenuPosition()
 
-        if animated {
-            animateIn(menu: viewState.multiSelectState.contextMenuView?.menuContainer, from: button)
+        if animated, let menuContainer = viewState.multiSelectState.contextMenuView?.menuContainer {
+            animateIn(menu: menuContainer, from: button)
         }
     }
 
@@ -216,11 +216,7 @@ extension HomeViewController {
         }
     }
 
-    private func animateIn(menu: UIView?, from: UIView?, completion: ((Bool) -> Void)? = nil) {
-        guard let menu = menu else {
-            return
-        }
-
+    private func animateIn(menu: UIView, from: UIView?, completion: ((Bool) -> Void)? = nil) {
         let oldAnchor = menu.layer.anchorPoint
         let frame = menu.frame
         menu.layer.anchorPoint = .zero
