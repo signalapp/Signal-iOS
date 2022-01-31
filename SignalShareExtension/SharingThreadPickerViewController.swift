@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -400,7 +400,7 @@ extension SharingThreadPickerViewController {
             self.databaseStorage.write { transaction in
                 for message in self.outgoingMessages {
                     // If we sent the message to anyone, mark it as failed
-                    message.updateWithAllSendingRecipientsMarkedAsFailed(withTansaction: transaction)
+                    message.updateWithAllSendingRecipientsMarkedAsFailed(with: transaction)
                 }
             }
             self.shareViewDelegate?.shareViewWasCancelled()

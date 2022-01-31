@@ -480,7 +480,7 @@ if __name__ == "__main__":
     elif args.ref:
         filepaths = []
 
-        output = commands.getoutput('git diff --name-only --diff-filter=ACMR HEAD %s' % args.ref)
+        output = commands.getoutput('git diff --name-only --diff-filter=ACMR %s HEAD' % args.ref)
         filepaths.extend([line.strip() for line in output.split('\n')])
 
         # Only process each path once.

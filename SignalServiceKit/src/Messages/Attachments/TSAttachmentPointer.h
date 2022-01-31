@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSAttachment.h>
@@ -18,7 +18,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerType) {
     TSAttachmentPointerTypeRestoring = 2,
 };
 
-typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
+typedef NS_CLOSED_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStateEnqueued = 0,
     TSAttachmentPointerStateDownloading = 1,
     TSAttachmentPointerStateFailed = 2,
