@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -377,8 +377,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
                 // loads from landing during the keyboard animation.
                 // It isn't safe to block loads for long, so we cap
                 // how long they will be blocked for.
-                let keyboardAnimationBlockLoadInterval: TimeInterval = kSecondInterval * 1.0
-                let animationCompletionDate = Date().addingTimeInterval(keyboardAnimationBlockLoadInterval)
+                let animationCompletionDate = Date().addingTimeInterval(duration)
                 let lastKeyboardAnimationDate = Date().addingTimeInterval(-1.0)
                 if viewState.lastKeyboardAnimationDate == nil ||
                     viewState.lastKeyboardAnimationDate?.isBefore(lastKeyboardAnimationDate) == true {
