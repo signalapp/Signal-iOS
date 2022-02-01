@@ -270,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Adjust the position of the bottom view to account for the keyboard's
     // intrusion into the view.
     //
-    // On iPhones no physical home button, when no keyboard is present, we include a buffer at the bottom of the screen so the bottom view
+    // On iPhones with no physical home button, when no keyboard is present, we include a buffer at the bottom of the screen so the bottom view
     // clears the floating "home button". But because the keyboard includes it's own buffer, we subtract the size of bottom "safe area",
     // else we'd have an unnecessary buffer between the popped keyboard and the input bar.
     CGFloat newInset = MAX(0,
