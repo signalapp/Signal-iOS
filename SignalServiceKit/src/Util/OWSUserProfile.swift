@@ -62,9 +62,7 @@ public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
         if badgeId != other.badgeId {
             return false
         }
-        if badge != other.badge {
-            return false
-        }
+        // NOTE: We do not compare badges because the badgeId is good enough for equality purposes.
         if expiration != other.expiration {
             return false
         }

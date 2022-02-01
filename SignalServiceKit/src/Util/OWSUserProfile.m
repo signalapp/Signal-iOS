@@ -646,12 +646,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         [self
             anyUpdateWithTransaction:transaction
                                block:^(OWSUserProfile *profile) {
-                                   // Load badges so they can be diffed.
-                                   [profile.profileBadgeInfo enumerateObjectsUsingBlock:^(OWSUserProfileBadgeInfo * _Nonnull badgeInfo,
-                                                                                          NSUInteger idx,
-                                                                                          BOOL * _Nonnull stop) {
-                                       (void)[badgeInfo fetchBadgeContentWithTransaction:transaction];
-                                   }];
                                    NSArray *avatarKeys = @[ @"avatarFileName", @"avatarUrlPath" ];
 
                                    // self might be the latest instance, so take a "before" snapshot
@@ -670,13 +664,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                    [OWSUserProfile applyChanges:changes
                                                         profile:profile
                                               userProfileWriter:userProfileWriter];
-
-                                   // Load after updates in case anything changed.
-                                   [profile.profileBadgeInfo enumerateObjectsUsingBlock:^(OWSUserProfileBadgeInfo * _Nonnull badgeInfo,
-                                                                                          NSUInteger idx,
-                                                                                          BOOL * _Nonnull stop) {
-                                       (void)[badgeInfo fetchBadgeContentWithTransaction:transaction];
-                                   }];
 
                                    profileKeyDidChange = ![NSObject isNullableObject:profileKeyBefore.keyData
                                                                              equalTo:profile.profileKey.keyData];
