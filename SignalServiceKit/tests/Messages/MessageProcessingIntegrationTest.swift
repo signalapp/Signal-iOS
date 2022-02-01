@@ -117,12 +117,9 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         waitForExpectations(timeout: 1.0)
     }
 
-    func test_contactMessage_UuidOnlyEnvelope() throws {
-        // This test is extremely flakey and has been disabled since it leaves our CI unreliable
-        #if BROKEN_TESTS
-            throw XCTSkip()
-        #endif
-
+    // This test is extremely flakey and has been disabled since it leaves our CI unreliable
+    #if BROKEN_TESTS
+    func test_contactMessage_UuidOnlyEnvelope() {
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,
@@ -191,6 +188,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
         waitForExpectations(timeout: 1.0)
     }
+    #endif
 }
 
 // MARK: - Helpers
