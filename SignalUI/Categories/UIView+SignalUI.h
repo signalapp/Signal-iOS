@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <PureLayout/PureLayout.h>
@@ -135,15 +135,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)logHierarchyDownwardWithLabel:(NSString *)label;
 - (void)logHierarchyDownwardLaterWithLabel:(NSString *)label;
 #endif
-
-@end
-
-#pragma mark -
-
-@interface UIScrollView (OWS)
-
-// Returns YES if contentInsetAdjustmentBehavior is disabled.
-- (BOOL)applyScrollViewInsetsFix;
 
 @end
 

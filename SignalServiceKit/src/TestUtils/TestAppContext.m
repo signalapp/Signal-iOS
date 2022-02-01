@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TestAppContext.h"
@@ -88,10 +88,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isRTL
 {
     return NO;
-}
-
-- (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
-{
 }
 
 - (CGFloat)statusBarHeight

@@ -81,7 +81,7 @@ public class AttachmentPrepViewController: OWSViewController {
 
         // We want scroll view content up and behind the system status bar content
         // but we want other content (e.g. bar buttons) to respect the top layout guide.
-        self.automaticallyAdjustsScrollViewInsets = false
+        scrollView.contentInsetAdjustmentBehavior = .never
 
         scrollView.autoPinEdgesToSuperviewEdges()
 

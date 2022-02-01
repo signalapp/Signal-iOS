@@ -436,8 +436,6 @@ class AudioMessageView: ManualStackView {
     }
 
     private func updateViewedState(animated: Bool = true) {
-        var isViewed = self.isViewed
-
         let destination: AnimationProgressTime = isViewed ? 1 : 0
 
         // Do nothing if we're already there.

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -188,7 +188,7 @@ public extension UIViewController {
         let toastController = ToastController(text: text)
         // TODO: There should be a better way to do this.
         // TODO: Take into account the keyboard height.
-        let bottomInset = bottomLayoutGuide.length + 8 + extraVInset
+        let bottomInset = view.safeAreaInsets.bottom + 8 + extraVInset
         toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -536,7 +536,7 @@ extension MessageDetailViewController {
             "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP",
             comment: "Toast indicating that the user has copied the sent timestamp."
         ))
-        toast.presentToastView(fromBottomOfView: view, inset: bottomLayoutGuide.length + 8)
+        toast.presentToastView(fromBottomOfView: view, inset: view.safeAreaInsets.bottom + 8)
     }
 }
 

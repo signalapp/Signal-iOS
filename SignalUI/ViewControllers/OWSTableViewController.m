@@ -621,24 +621,11 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     [self.view addSubview:self.tableView];
 
-    if ([self.tableView applyScrollViewInsetsFix]) {
-        // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
-        // we need to pin to the top and bottom layout guides since UIKit
-        // won't adjust our content insets.
-        [self.tableView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-        [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
-        [self.tableView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-        [self.tableView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-
-        // We don't need a top or bottom insets, since we pin to the top and bottom layout guides.
-        self.automaticallyAdjustsScrollViewInsets = NO;
+    if (self.shouldAvoidKeyboard) {
+        [self.tableView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeBottom];
+        [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableView avoidNotch:YES];
     } else {
-        if (self.shouldAvoidKeyboard) {
-            [self.tableView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeBottom];
-            [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableView avoidNotch:YES];
-        } else {
-            [self.tableView autoPinEdgesToSuperviewEdges];
-        }
+        [self.tableView autoPinEdgesToSuperviewEdges];
     }
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
