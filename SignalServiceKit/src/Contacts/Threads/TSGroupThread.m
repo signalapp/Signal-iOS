@@ -168,6 +168,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
                                             thread.groupModel = [newGroupModel copy];
                                         }];
+    [self updateGroupMemberRecordsWithTransaction:transaction];
     [SDSDatabaseStorage.shared touchThread:self shouldReindex:true transaction:transaction];
 
     if (didAvatarChange) {
@@ -210,7 +211,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     [super anyWillUpdateWithTransaction:transaction];
 
     [self protectV2Migration:transaction];
-    [self updateGroupMemberRecordsWithTransaction:transaction];
+    // We used to update the group member records here, but there are many updates that don't touch membership.
+    // Now it's done explicitly where we update the group model, and not for other updates.
 }
 
 - (void)protectV2Migration:(SDSAnyWriteTransaction *)transaction
