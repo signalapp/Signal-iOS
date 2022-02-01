@@ -155,31 +155,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (_read && readTimestamp >= self.expireStartedAt) {
         return;
     }
-    BOOL isTrusted = YES;
-    TSThread* thread = [self threadWithTransaction:transaction];
-    if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread* contactThread = (TSContactThread*)thread;
-        isTrusted = [[LKStorage shared] getContactWithSessionID:[contactThread contactSessionID] using:transaction].isTrusted;
-    }
-    
-    BOOL areAllAttachmentsDownloaded = YES;
-    if (isTrusted) {
-        for (NSString *attachmentId in self.attachmentIds) {
-            TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-            // If the attachment download failed, we can mark this message as read.
-            // Otherwise, this message will never be marked as read.
-            if ([attachment isKindOfClass:[TSAttachmentPointer class]]
-                && ((TSAttachmentPointer *)attachment).state == TSAttachmentPointerStateFailed) {
-                continue;
-            }
-            areAllAttachmentsDownloaded = areAllAttachmentsDownloaded && attachment.isDownloaded;
-            if (!areAllAttachmentsDownloaded) break;
-        }
-    }
-    
-    if (!areAllAttachmentsDownloaded) {
-        return;
-    }
+    // We just ignore all attachments download state here and mark all messages as read
+    // This is a workaround for a situation that some large attachments won't be downloaded
+    // and just stuck in a downloading state. In that case, the corresponding message won't
+    // be able to be marked as read.
     
     _read = YES;
     [self saveWithTransaction:transaction];
