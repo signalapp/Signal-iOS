@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -370,6 +370,15 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         let keyspec = try keyspec.fetchString()
         try db.execute(sql: "PRAGMA \(prefix)key = \"\(keyspec)\"")
         try db.execute(sql: "PRAGMA \(prefix)cipher_plaintext_header_size = 32")
+        if !CurrentAppContext().isMainApp {
+            let perConnectionCacheSizeInKibibytes = 2000 / (GRDBStorage.maximumReaderCountInExtensions + 1)
+            // Limit the per-connection cache size based on the number of possible readers.
+            // (The default is 2000KiB per connection regardless of how many other connections there are).
+            // The minus sign indicates that this is in KiB rather than the database's page size.
+            // An alternative would be to use SQLite's "shared cache" mode to have a single memory pool,
+            // but unfortunately that changes the locking model in a way GRDB doesn't support.
+            try db.execute(sql: "PRAGMA \(prefix)cache_size = -\(perConnectionCacheSizeInKibibytes)")
+        }
     }
 }
 
@@ -885,6 +894,8 @@ private struct GRDBStorage {
         }
     }
 
+    fileprivate static var maximumReaderCountInExtensions: Int { 4 }
+
     private static func buildConfiguration(keyspec: GRDBKeySpecSource) -> Configuration {
         var configuration = Configuration()
         configuration.readonly = false
@@ -895,7 +906,7 @@ private struct GRDBStorage {
         // Useful when your app opens multiple databases
         configuration.label = "GRDB Storage"
         let isMainApp = CurrentAppContext().isMainApp
-        configuration.maximumReaderCount = isMainApp ? 10 : 5  // The default is 5
+        configuration.maximumReaderCount = isMainApp ? 10 : maximumReaderCountInExtensions
         configuration.busyMode = .callback({ (retryCount: Int) -> Bool in
             // sleep N milliseconds
             let millis = 25
