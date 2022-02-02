@@ -512,8 +512,10 @@ class AnySearchIndexer: Dependencies {
         let groupName = groupThread.groupModel.groupName ?? ""
 
         let memberStrings = groupThread.groupModel.groupMembers.map { address in
-            recipientIndexer.index(address, transaction: transaction)
-            }.joined(separator: " ")
+            autoreleasepool {
+                recipientIndexer.index(address, transaction: transaction)
+            }
+        }.joined(separator: " ")
 
         return "\(groupName) \(memberStrings)"
     }
