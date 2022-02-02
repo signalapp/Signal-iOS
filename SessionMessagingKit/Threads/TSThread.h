@@ -38,6 +38,8 @@ BOOL IsNoteToSelfEnabled(void);
  */
 - (NSString *)name;
 
+- (NSString *)nameWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
 /**
  * @returns recipientId for each recipient in the thread
  */

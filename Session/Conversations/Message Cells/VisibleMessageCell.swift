@@ -65,7 +65,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     
     lazy var bubbleView: UIView = {
         let result = UIView()
-        result.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
+        result.layer.cornerRadius = VisibleMessageCell.largeCornerRadius
         return result
     }()
     
@@ -431,10 +431,12 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     private func updateBubbleViewCorners() {
-        let maskPath = UIBezierPath(roundedRect: bubbleView.bounds, byRoundingCorners: getCornersToRound(),
+        let cornersToRound = getCornersToRound()
+        let maskPath = UIBezierPath(roundedRect: bubbleView.bounds, byRoundingCorners: cornersToRound,
             cornerRadii: CGSize(width: VisibleMessageCell.largeCornerRadius, height: VisibleMessageCell.largeCornerRadius))
         bubbleViewMaskLayer.path = maskPath.cgPath
-        bubbleView.layer.mask = bubbleViewMaskLayer
+        bubbleView.layer.cornerRadius = VisibleMessageCell.largeCornerRadius
+        bubbleView.layer.maskedCorners = getCornerMask(from: cornersToRound)
     }
     
     override func prepareForReuse() {
@@ -470,6 +472,18 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             return abs(v.x) > abs(v.y) // It has to be more horizontal than vertical
         } else {
             return true
+            
+        }
+    }
+    
+    func highlight() {
+        let shawdowColour = isLightMode ? UIColor.black.cgColor : Colors.accent.cgColor
+        let opacity : Float = isLightMode ? 0.5 : 1
+        bubbleView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shawdowColour)
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 1.6) {
+                self.bubbleView.setShadow(radius: 0, opacity: 0, offset: .zero, color: UIColor.clear.cgColor)
+            }
         }
     }
     
@@ -569,6 +583,19 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         case (nil, _): result = .allCorners
         }
         return result
+    }
+    
+    private func getCornerMask(from rectCorner: UIRectCorner) -> CACornerMask {
+        var cornerMask = CACornerMask()
+        if rectCorner.contains(.allCorners) {
+            cornerMask = [ .layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        } else {
+            if rectCorner.contains(.topRight) { cornerMask.insert(.layerMaxXMinYCorner) }
+            if rectCorner.contains(.topLeft) { cornerMask.insert(.layerMinXMinYCorner) }
+            if rectCorner.contains(.bottomRight) { cornerMask.insert(.layerMaxXMaxYCorner) }
+            if rectCorner.contains(.bottomLeft) { cornerMask.insert(.layerMinXMaxYCorner) }
+        }
+        return cornerMask
     }
     
     private static func getFontSize(for viewItem: ConversationViewItem) -> CGFloat {

@@ -139,6 +139,9 @@
 		7B4C75CB26B37E0F0000AC89 /* UnsendRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4C75CA26B37E0F0000AC89 /* UnsendRequest.swift */; };
 		7B4C75CD26BB92060000AC89 /* DeletedMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4C75CC26BB92060000AC89 /* DeletedMessageView.swift */; };
 		7B7CB18B270591630079FF93 /* ShareLogsModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB18A270591630079FF93 /* ShareLogsModal.swift */; };
+		7BA7F4BB279F9F5800B3A466 /* EmptySearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA7F4BA279F9F5800B3A466 /* EmptySearchResultCell.swift */; };
+		7BA7F4BD27A216B600B3A466 /* Storage+RecentSearchResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA7F4BC27A216B600B3A466 /* Storage+RecentSearchResults.swift */; };
+		7BA9057E27911C5800998B3C /* GlobalSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA9057D27911C5800998B3C /* GlobalSearchViewController.swift */; };
 		7BC01A3E241F40AB00BC7C55 /* NotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */; };
 		7BC01A42241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7BDCFC08242186E700641C39 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */; };
@@ -1114,6 +1117,9 @@
 		7B4C75CA26B37E0F0000AC89 /* UnsendRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsendRequest.swift; sourceTree = "<group>"; };
 		7B4C75CC26BB92060000AC89 /* DeletedMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedMessageView.swift; sourceTree = "<group>"; };
 		7B7CB18A270591630079FF93 /* ShareLogsModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLogsModal.swift; sourceTree = "<group>"; };
+		7BA7F4BA279F9F5800B3A466 /* EmptySearchResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptySearchResultCell.swift; sourceTree = "<group>"; };
+		7BA7F4BC27A216B600B3A466 /* Storage+RecentSearchResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+RecentSearchResults.swift"; sourceTree = "<group>"; };
+		7BA9057D27911C5800998B3C /* GlobalSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchViewController.swift; sourceTree = "<group>"; };
 		7BA6F47DAD18D44D75B7110F /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionSnodeKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionSnodeKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionSnodeKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionSnodeKit.debug.xcconfig"; sourceTree = "<group>"; };
 		7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SessionNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtension.swift; sourceTree = "<group>"; };
@@ -2043,6 +2049,16 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
+		7BA7F4B9279F9F3700B3A466 /* GlobalSearch */ = {
+			isa = PBXGroup;
+			children = (
+				7BA9057D27911C5800998B3C /* GlobalSearchViewController.swift */,
+				7BA7F4BA279F9F5800B3A466 /* EmptySearchResultCell.swift */,
+				7BA7F4BC27A216B600B3A466 /* Storage+RecentSearchResults.swift */,
+			);
+			path = GlobalSearch;
+			sourceTree = "<group>";
+		};
 		7BC01A3C241F40AB00BC7C55 /* SessionNotificationServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2801,6 +2817,7 @@
 			children = (
 				B8BB82A4238F627000BA5194 /* HomeVC.swift */,
 				B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */,
+				7BA7F4B9279F9F3700B3A466 /* GlobalSearch */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -4855,6 +4872,7 @@
 				B821494625D4D6FF009C0F2A /* URLModal.swift in Sources */,
 				C374EEEB25DA3CA70073A857 /* ConversationTitleView.swift in Sources */,
 				B88FA7F2260C3EB10049422F /* OpenGroupSuggestionGrid.swift in Sources */,
+				7BA9057E27911C5800998B3C /* GlobalSearchViewController.swift in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,
@@ -4912,6 +4930,7 @@
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				C33100082558FF6D00070591 /* NewConversationButtonSet.swift in Sources */,
+				7BA7F4BB279F9F5800B3A466 /* EmptySearchResultCell.swift in Sources */,
 				C3AAFFF225AE99710089E6DD /* AppDelegate.swift in Sources */,
 				B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */,
 				C31A6C5A247F214E001123EF /* UIView+Glow.swift in Sources */,
@@ -4939,6 +4958,7 @@
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				C33100092558FF6D00070591 /* UserCell.swift in Sources */,
+				7BA7F4BD27A216B600B3A466 /* Storage+RecentSearchResults.swift in Sources */,
 				B8269D2925C7A4B400488AB4 /* InputView.swift in Sources */,
 				C374EEE225DA26740073A857 /* LinkPreviewModal.swift in Sources */,
 				3496956F21A301A100DCFE74 /* OWSBackupLazyRestore.swift in Sources */,
