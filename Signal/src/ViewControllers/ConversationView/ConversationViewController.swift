@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 public enum ConversationUIMode: UInt {
     case normal
@@ -33,6 +34,7 @@ public class ConversationViewController: OWSViewController {
     var selectionToolbar: MessageActionsToolbar?
 
     var otherUsersProfileDidChangeEvent: DebouncedEvent?
+    private var leases = [ModelReadCacheSizeLease]()
 
     // MARK: -
 
@@ -250,6 +252,10 @@ public class ConversationViewController: OWSViewController {
 
         super.viewWillAppear(animated)
 
+        if let groupThread = thread as? TSGroupThread {
+            acquireCacheLeases(groupThread)
+        }
+
         if self.inputToolbar == nil {
             // This will create the input toolbar for the first time.
             // It's important that we do this at the "last moment" to
@@ -285,6 +291,18 @@ public class ConversationViewController: OWSViewController {
         #if TESTABLE_BUILD
         initialLoadBenchSteps.step("viewWillAppear.2")
         #endif
+    }
+
+    private func acquireCacheLeases(_ groupThread: TSGroupThread) {
+        guard leases.isEmpty else {
+            // Hold leases for the CVC's lifetime because a view controller may "viewDidAppear" more than once without
+            // leaving the navigation controller's stack.
+            return
+        }
+        let numberOfGroupMembers = groupThread.groupModel.groupMembers.count
+        leases = [groupThread.profileManager.leaseCacheSize(numberOfGroupMembers),
+                  groupThread.contactsManager.leaseCacheSize(numberOfGroupMembers),
+                  groupThread.modelReadCaches.signalAccountReadCache.leaseCacheSize(numberOfGroupMembers)].compactMap { $0 }
     }
 
     public override func viewDidAppear(_ animated: Bool) {

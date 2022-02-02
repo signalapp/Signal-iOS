@@ -108,4 +108,8 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     public var unknownUserLabel: String {
         "Unknown"
     }
+
+    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
+        return nil
+    }
 }

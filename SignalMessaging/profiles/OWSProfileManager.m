@@ -1906,6 +1906,10 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                                                          profileKey:profileKey];
 }
 
+- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
+    return [self.modelReadCaches.userProfileReadCache leaseCacheSize:size];
+}
+
 #pragma mark - Messaging History
 
 - (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)addressParam

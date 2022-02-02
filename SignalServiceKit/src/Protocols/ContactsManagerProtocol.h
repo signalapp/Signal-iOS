@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class Contact;
+@class ModelReadCacheSizeLease;
 @class NSPersonNameComponents;
 @class PhoneNumber;
 @class SDSAnyReadTransaction;
@@ -67,6 +68,8 @@ NS_SWIFT_NAME(isSystemContactWithSneakyTransaction(address:));
                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 @property (nonatomic, readonly) NSString *unknownUserLabel;
+
+- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size;
 
 #pragma mark - CNContacts
 

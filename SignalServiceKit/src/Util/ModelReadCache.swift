@@ -91,7 +91,7 @@ private class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType: BaseMo
 
 // MARK: -
 
-private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: Dependencies {
+private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: Dependencies, CacheSizeLeasing {
 
     enum Mode {
         // * .read caches can be accessed from any thread.
@@ -136,6 +136,8 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
     }
 
     private let disableCachesInNSE = true
+
+    private var leases = NSHashTable<ModelReadCacheSizeLease>.weakObjects()
 
     init(mode: Mode, adapter: ModelCacheAdapter<KeyType, ValueType>) {
         self.mode = mode
@@ -322,6 +324,28 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
         assert(mode == .read)
         let cacheKey = adapter.cacheKey(forValue: value)
         updateCacheForWrite(cacheKey: cacheKey, value: value, transaction: transaction)
+    }
+
+    func add(lease: ModelReadCacheSizeLease) {
+        performSync {
+            // It's a bug to add an already-added lease.
+            owsAssert(!leases.contains(lease))
+
+            leases.add(lease)
+            updateMaxSize();
+        }
+    }
+
+    func remove(lease: ModelReadCacheSizeLease) {
+        performSync {
+            leases.remove(lease)
+            updateMaxSize();
+        }
+    }
+
+    private func updateMaxSize() {
+        let leasedSize = leases.allObjects.lazy.map { $0.size }.max() ?? 0
+        cache.maxSize = leasedSize + cache.regularMaxSize
     }
 
     private func updateCacheForWrite(cacheKey: ModelCacheKey<KeyType>, value: ValueType?, transaction: SDSAnyWriteTransaction) {
@@ -564,6 +588,11 @@ public class UserProfileReadCache: NSObject {
     public func didReadUserProfile(_ userProfile: OWSUserProfile, transaction: SDSAnyReadTransaction) {
         cache.didRead(value: userProfile, transaction: transaction)
     }
+
+    @objc
+    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease {
+        return ModelReadCacheSizeLease(size, model: cache)
+    }
 }
 
 // MARK: -
@@ -624,6 +653,11 @@ public class SignalAccountReadCache: NSObject {
     @objc(didReadSignalAccount:transaction:)
     public func didReadSignalAccount(_ signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) {
         cache.didRead(value: signalAccount, transaction: transaction)
+    }
+
+    @objc
+    public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease {
+        return ModelReadCacheSizeLease(size, model: cache)
     }
 }
 
@@ -950,6 +984,35 @@ public class InstalledStickerCache: NSObject {
 }
 
 // MARK: -
+
+fileprivate protocol CacheSizeLeasing: AnyObject {
+    func add(lease: ModelReadCacheSizeLease)
+    func remove(lease: ModelReadCacheSizeLease)
+}
+
+// Use a `ModelReadCacheSizeLease` to temporarily increase the size of a `ModelReadCache`.
+@objc
+public class ModelReadCacheSizeLease: NSObject {
+    fileprivate let size: Int
+    private weak var model: CacheSizeLeasing? = nil
+
+    fileprivate init(_ size: Int, model: CacheSizeLeasing) {
+        self.size = size
+        self.model = model
+        super.init()
+        model.add(lease: self)
+    }
+
+    deinit {
+        terminate()
+    }
+
+    @objc
+    public func terminate() {
+        model?.remove(lease: self)
+        model = nil
+    }
+}
 
 // MARK: -
 

@@ -319,6 +319,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [AnyPromise promiseWithValue:@(1)];
 }
 
+- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
+    return nil;
+}
+
 - (BOOL)hasProfileAvatarData:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     return NO;
