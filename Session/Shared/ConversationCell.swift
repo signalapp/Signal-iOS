@@ -118,7 +118,8 @@ final class ConversationCell : UITableViewCell {
     }()
     
     // MARK: Settings
-    private static let unreadCountViewSize: CGFloat = 20
+    
+    public static let unreadCountViewSize: CGFloat = 20
     private static let statusIndicatorSize: CGFloat = 14
     
     // MARK: Initialization
@@ -170,6 +171,7 @@ final class ConversationCell : UITableViewCell {
         labelContainerView.axis = .vertical
         labelContainerView.alignment = .leading
         labelContainerView.spacing = 6
+        labelContainerView.isUserInteractionEnabled = false
         // Main stack view
         let stackView = UIStackView(arrangedSubviews: [ accentLineView, profilePictureView, labelContainerView ])
         stackView.axis = .horizontal

@@ -1,3 +1,4 @@
+import SessionUIKit
 
 // TODO:
 // • Slight paging glitch when scrolling up and loading more content
@@ -11,6 +12,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     var focusedMessageIndexPath: IndexPath?
     var unreadViewItems: [ConversationViewItem] = []
     var scrollButtonConstraint: NSLayoutConstraint?
+    var footerControlsStackViewBottomConstraint: NSLayoutConstraint?
     // Search
     var isShowingSearchUI = false
     var lastSearchedText: String?
@@ -93,7 +95,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return result
     }()
     
-    // MARK: UI Components
+    // MARK: - UI
+    
+    private static let messageRequestButtonHeight: CGFloat = 34
+    
     lazy var titleView: ConversationTitleView = {
         let result = ConversationTitleView(thread: thread)
         result.delegate = self
@@ -101,10 +106,18 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }()
 
     lazy var messagesTableView: MessagesTableView = {
-        let result = MessagesTableView()
-        result.dataSource = self
-        result.delegate = self
-        return result
+        let tableView: MessagesTableView = MessagesTableView()
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.contentInsetAdjustmentBehavior = .never
+        tableView.contentInset = UIEdgeInsets(
+            top: 0,
+            leading: 0,
+            bottom: Values.mediumSpacing,
+            trailing: 0
+        )
+        
+        return tableView
     }()
     
     lazy var snInputView = InputView(delegate: self)
@@ -128,8 +141,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return result
     }()
     
-    lazy var scrollButton = ScrollToBottomButton(delegate: self)
-    
     lazy var blockedBanner: InfoBanner = {
         let name: String
         if let thread = thread as? TSContactThread {
@@ -144,6 +155,104 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(unblock))
         result.addGestureRecognizer(tapGestureRecognizer)
         return result
+    }()
+    
+    lazy var footerControlsStackView: UIStackView = {
+        let stackView: UIStackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.alignment = .trailing
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 10
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        
+        return stackView
+    }()
+    
+    lazy var scrollButton = ScrollToBottomButton(delegate: self)
+    
+    lazy var messageRequestView: UIView = {
+        let view: UIView = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = !thread.isMessageRequest()
+        view.setGradient(Gradients.defaultBackground)
+        
+        return view
+    }()
+    
+    private let messageRequestDescriptionLabel: UILabel = {
+        let label: UILabel = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.text = NSLocalizedString("MESSAGE_REQUESTS_INFO", comment: "")
+        label.textColor = Colors.sessionMessageRequestsInfoText
+        label.textAlignment = .center
+        label.numberOfLines = 2
+        
+        return label
+    }()
+    
+    private let messageRequestAcceptButton: UIButton = {
+        let button: UIButton = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.clipsToBounds = true
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.setTitle(NSLocalizedString("TXT_DELETE_ACCEPT", comment: ""), for: .normal)
+        button.setTitleColor(Colors.sessionHeading, for: .normal)
+        button.setBackgroundImage(
+            Colors.sessionHeading
+                .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
+                .toImage(isDarkMode: isDarkMode),
+            for: .highlighted
+        )
+        button.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
+        button.layer.borderColor = {
+            if #available(iOS 13.0, *) {
+                return Colors.sessionHeading
+                    .resolvedColor(
+                        // Note: This is needed for '.cgColor' to support dark mode
+                        with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
+                    ).cgColor
+            }
+            
+            return Colors.sessionHeading.cgColor
+        }()
+        button.layer.borderWidth = 1
+        button.addTarget(self, action: #selector(acceptMessageRequest), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    private let messageRequestDeleteButton: UIButton = {
+        let button: UIButton = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.clipsToBounds = true
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: .normal)
+        button.setTitleColor(Colors.destructive, for: .normal)
+        button.setBackgroundImage(
+            Colors.destructive
+                .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
+                .toImage(isDarkMode: isDarkMode),
+            for: .highlighted
+        )
+        button.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
+        button.layer.borderColor = {
+            if #available(iOS 13.0, *) {
+                return Colors.destructive
+                    .resolvedColor(
+                        // Note: This is needed for '.cgColor' to support dark mode
+                        with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
+                    ).cgColor
+            }
+            
+            return Colors.destructive.cgColor
+        }()
+        button.layer.borderWidth = 1
+        button.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
+        
+        return button
     }()
     
     // MARK: Settings
@@ -187,9 +296,50 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // Constraints
         view.addSubview(messagesTableView)
         messagesTableView.pin(to: view)
-        view.addSubview(scrollButton)
-        scrollButton.pin(.right, to: .right, of: view, withInset: -16)
-        scrollButtonConstraint = scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -16)
+        
+        // Blocked banner
+        addOrRemoveBlockedBanner()
+        
+        // Message requests view & scroll to bottom
+        view.addSubview(footerControlsStackView)
+        
+        scrollButton.translatesAutoresizingMaskIntoConstraints = false
+        footerControlsStackView.addArrangedSubview(scrollButton)
+        footerControlsStackView.addArrangedSubview(messageRequestView)
+        
+        messageRequestView.addSubview(messageRequestDescriptionLabel)
+        messageRequestView.addSubview(messageRequestAcceptButton)
+        messageRequestView.addSubview(messageRequestDeleteButton)
+        
+        let footerControlsStackViewBottomConstraint: NSLayoutConstraint = footerControlsStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16)
+        self.footerControlsStackViewBottomConstraint = footerControlsStackViewBottomConstraint
+        
+        NSLayoutConstraint.activate([
+            footerControlsStackView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            footerControlsStackView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            footerControlsStackViewBottomConstraint,
+            
+            scrollButton.rightAnchor.constraint(equalTo: footerControlsStackView.rightAnchor, constant: -20),
+            messageRequestView.leftAnchor.constraint(equalTo: footerControlsStackView.leftAnchor),
+            messageRequestView.rightAnchor.constraint(equalTo: footerControlsStackView.rightAnchor),
+            
+            messageRequestDescriptionLabel.topAnchor.constraint(equalTo: messageRequestView.topAnchor, constant: 10),
+            messageRequestDescriptionLabel.leftAnchor.constraint(equalTo: messageRequestView.leftAnchor, constant: 40),
+            messageRequestDescriptionLabel.rightAnchor.constraint(equalTo: messageRequestView.rightAnchor, constant: -40),
+            
+            messageRequestAcceptButton.topAnchor.constraint(equalTo: messageRequestDescriptionLabel.bottomAnchor, constant: 20),
+            messageRequestAcceptButton.leftAnchor.constraint(equalTo: messageRequestView.leftAnchor, constant: 20),
+            messageRequestAcceptButton.bottomAnchor.constraint(equalTo: messageRequestView.bottomAnchor),
+            messageRequestAcceptButton.heightAnchor.constraint(equalToConstant: ConversationVC.messageRequestButtonHeight),
+            
+            messageRequestDeleteButton.topAnchor.constraint(equalTo: messageRequestDescriptionLabel.bottomAnchor, constant: 20),
+            messageRequestDeleteButton.leftAnchor.constraint(equalTo: messageRequestAcceptButton.rightAnchor, constant: 20),
+            messageRequestDeleteButton.rightAnchor.constraint(equalTo: messageRequestView.rightAnchor, constant: -20),
+            messageRequestDeleteButton.bottomAnchor.constraint(equalTo: messageRequestView.bottomAnchor),
+            messageRequestDeleteButton.widthAnchor.constraint(equalTo: messageRequestAcceptButton.widthAnchor),
+            messageRequestDeleteButton.heightAnchor.constraint(equalToConstant: ConversationVC.messageRequestButtonHeight)
+        ])
+        
         // Unread count view
         view.addSubview(unreadCountView)
         unreadCountView.addSubview(unreadCountLabel)
@@ -197,8 +347,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         unreadCountView.centerYAnchor.constraint(equalTo: scrollButton.topAnchor).isActive = true
         unreadCountView.center(.horizontal, in: scrollButton)
         updateUnreadCountView()
-        // Blocked banner
-        addOrRemoveBlockedBanner()
+        
         // Notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -327,24 +476,94 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
-        guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
-        if (newHeight > 0 && baselineKeyboardHeight == 0) {
-            baselineKeyboardHeight = newHeight
-            self.messagesTableView.keyboardHeight = newHeight
+        // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
+        // and https://stackoverflow.com/a/25260930 to better understand what we are
+        // doing with the UIViewAnimationOptions
+        let userInfo: [AnyHashable: Any] = (notification.userInfo ?? [:])
+        let duration = ((userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval) ?? 0)
+        let curveValue: Int = ((userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int) ?? Int(UIView.AnimationOptions.curveEaseInOut.rawValue))
+        let options: UIView.AnimationOptions = UIView.AnimationOptions(rawValue: UInt(curveValue << 16))
+        let keyboardRect: CGRect = ((userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect) ?? CGRect.zero)
+        
+        // Calculate new positions (Need the ensure the 'messageRequestView' has been layed out as it's
+        // needed for proper calculations, so force an initial layout if it doesn't have a size)
+        var hasDoneLayout: Bool = true
+        
+        if messageRequestView.bounds.height <= CGFloat.leastNonzeroMagnitude {
+            hasDoneLayout = false
+            
+            UIView.performWithoutAnimation {
+                self.view.layoutIfNeeded()
+            }
         }
-        scrollButtonConstraint?.constant = -(newHeight + 16)
-        let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
-        self.messagesTableView.contentOffset.y = newContentOffsetY
-        self.messagesTableView.keyboardHeight = newHeight
-        self.scrollButton.alpha = self.getScrollButtonOpacity()
+        
+        let keyboardTop = (UIScreen.main.bounds.height - keyboardRect.minY)
+        let messageRequestsOffset: CGFloat = (messageRequestView.isHidden ? 0 : messageRequestView.bounds.height + 16)
+        let oldContentInset: UIEdgeInsets = messagesTableView.contentInset
+        let newContentInset: UIEdgeInsets = UIEdgeInsets(
+            top: 0,
+            leading: 0,
+            bottom: (Values.mediumSpacing + keyboardTop + messageRequestsOffset),
+            trailing: 0
+        )
+        let newContentOffsetY: CGFloat = (messagesTableView.contentOffset.y + (newContentInset.bottom - oldContentInset.bottom))
+        let changes = { [weak self] in
+            self?.footerControlsStackViewBottomConstraint?.constant = -(keyboardTop + 16)
+            self?.messagesTableView.contentInset = newContentInset
+            self?.messagesTableView.contentOffset.y = newContentOffsetY
+            
+            let scrollButtonOpacity: CGFloat = (self?.getScrollButtonOpacity() ?? 0)
+            self?.scrollButton.alpha = scrollButtonOpacity
+            
+            self?.view.setNeedsLayout()
+            self?.view.layoutIfNeeded()
+        }
+        
+        // Perform the changes (don't animate if the initial layout hasn't been completed)
+        guard hasDoneLayout else {
+            UIView.performWithoutAnimation {
+                changes()
+            }
+            return
+        }
+        
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            options: options,
+            animations: changes,
+            completion: nil
+        )
     }
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
-        self.messagesTableView.contentOffset.y -= (self.messagesTableView.keyboardHeight - self.baselineKeyboardHeight)
-        self.messagesTableView.keyboardHeight = self.baselineKeyboardHeight
-        scrollButtonConstraint?.constant = -(self.baselineKeyboardHeight + 16)
-        self.scrollButton.alpha = self.getScrollButtonOpacity()
-        self.unreadCountView.alpha = self.scrollButton.alpha
+        // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
+        // and https://stackoverflow.com/a/25260930 to better understand what we are
+        // doing with the UIViewAnimationOptions
+        let userInfo: [AnyHashable: Any] = (notification.userInfo ?? [:])
+        let duration = ((userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval) ?? 0)
+        let curveValue: Int = ((userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int) ?? Int(UIView.AnimationOptions.curveEaseInOut.rawValue))
+        let options: UIView.AnimationOptions = UIView.AnimationOptions(rawValue: UInt(curveValue << 16))
+        
+        let keyboardRect: CGRect = ((userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect) ?? CGRect.zero)
+        let keyboardTop = (UIScreen.main.bounds.height - keyboardRect.minY)
+        
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            options: options,
+            animations: { [weak self] in
+                self?.footerControlsStackViewBottomConstraint?.constant = -(keyboardTop + 16)
+                
+                let scrollButtonOpacity: CGFloat = (self?.getScrollButtonOpacity() ?? 0)
+                self?.scrollButton.alpha = scrollButtonOpacity
+                self?.unreadCountView.alpha = scrollButtonOpacity
+                
+                self?.view.setNeedsLayout()
+                self?.view.layoutIfNeeded()
+            },
+            completion: nil
+        )
     }
     
     func conversationViewModelWillUpdate() {

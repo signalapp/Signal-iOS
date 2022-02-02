@@ -575,3 +575,9 @@
 "system_mode_theme" = "System";
 "dark_mode_theme" = "Dark";
 "light_mode_theme" = "Light";
+"MESSAGE_REQUESTS_TITLE" = "Message Requests";
+"MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
+"MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request.";
+"MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
+"TXT_HIDE_TITLE" = "Hide";
+"TXT_DELETE_ACCEPT" = "Accept";

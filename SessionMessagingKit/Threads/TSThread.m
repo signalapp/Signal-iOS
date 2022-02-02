@@ -132,6 +132,11 @@ BOOL IsNoteToSelfEnabled(void)
     return [self.contactSessionID isEqual:[SNGeneralUtilities getUserPublicKey]];
 }
 
+// Override in ContactThread
+- (BOOL)isMessageRequest {
+    return NO;
+}
+
 #pragma mark To be subclassed.
 
 - (BOOL)isGroupThread {

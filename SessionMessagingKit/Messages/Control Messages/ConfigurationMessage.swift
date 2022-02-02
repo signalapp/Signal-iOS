@@ -193,14 +193,21 @@ extension ConfigurationMessage {
         public var displayName: String?
         public var profilePictureURL: String?
         public var profileKey: Data?
+        
+        public var isApproved: Bool
+        public var isBlocked: Bool
+        public var didApproveMe: Bool
 
         public var isValid: Bool { publicKey != nil && displayName != nil }
 
-        public init(publicKey: String, displayName: String, profilePictureURL: String?, profileKey: Data?) {
+        public init(publicKey: String, displayName: String, profilePictureURL: String?, profileKey: Data?, isApproved: Bool, isBlocked: Bool, didApproveMe: Bool) {
             self.publicKey = publicKey
             self.displayName = displayName
             self.profilePictureURL = profilePictureURL
             self.profileKey = profileKey
+            self.isApproved = isApproved
+            self.isBlocked = isBlocked
+            self.didApproveMe = didApproveMe
         }
 
         public required init?(coder: NSCoder) {
@@ -210,6 +217,9 @@ extension ConfigurationMessage {
             self.displayName = displayName
             self.profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String?
             self.profileKey = coder.decodeObject(forKey: "profileKey") as! Data?
+            self.isApproved = (coder.decodeObject(forKey: "isApproved") as? Bool ?? false)
+            self.isBlocked = (coder.decodeObject(forKey: "isBlocked") as? Bool ?? false)
+            self.didApproveMe = (coder.decodeObject(forKey: "didApproveMe") as? Bool ?? false)
         }
 
         public func encode(with coder: NSCoder) {
@@ -217,14 +227,22 @@ extension ConfigurationMessage {
             coder.encode(displayName, forKey: "displayName")
             coder.encode(profilePictureURL, forKey: "profilePictureURL")
             coder.encode(profileKey, forKey: "profileKey")
+            coder.encode(isApproved, forKey: "isApproved")
+            coder.encode(isBlocked, forKey: "isBlocked")
+            coder.encode(didApproveMe, forKey: "didApproveMe")
         }
 
         public static func fromProto(_ proto: SNProtoConfigurationMessageContact) -> Contact? {
-            let publicKey = proto.publicKey.toHexString()
-            let displayName = proto.name
-            let profilePictureURL = proto.profilePicture
-            let profileKey = proto.profileKey
-            let result = Contact(publicKey: publicKey, displayName: displayName, profilePictureURL: profilePictureURL, profileKey: profileKey)
+            let result: Contact = Contact(
+                publicKey: proto.publicKey.toHexString(),
+                displayName: proto.name,
+                profilePictureURL: proto.profilePicture,
+                profileKey: proto.profileKey,
+                isApproved: proto.isApproved,
+                isBlocked: proto.isBlocked,
+                didApproveMe: proto.didApproveMe
+            )
+            
             guard result.isValid else { return nil }
             return result
         }
@@ -235,6 +253,11 @@ extension ConfigurationMessage {
             let result = SNProtoConfigurationMessageContact.builder(publicKey: Data(hex: publicKey), name: displayName)
             if let profilePictureURL = profilePictureURL { result.setProfilePicture(profilePictureURL) }
             if let profileKey = profileKey { result.setProfileKey(profileKey) }
+            
+            result.setIsApproved(isApproved)
+            result.setIsBlocked(isBlocked)
+            result.setDidApproveMe(didApproveMe)
+            
             do {
                 return try result.build()
             } catch {

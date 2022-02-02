@@ -159,6 +159,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
 
         guard !thread.isMuted else { return }
+        guard thread.isGroupThread() || !thread.isMessageRequest() else { return }
         guard let threadId = thread.uniqueId else { return }
         
         let identifier: String = incomingMessage.notificationIdentifier ?? UUID().uuidString

@@ -52,8 +52,8 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         snippet = tsMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
                             ?? "You've got a new message"
                         if let tsIncomingMessage = tsMessage as? TSIncomingMessage {
-                            if thread.isMuted {
-                                // Ignore PNs if the thread is muted
+                            if thread.isMuted || !thread.isMessageRequest() {
+                                // Ignore PNs if the thread is muted or the thread is a message request
                                 return self.completeSilenty()
                             }
                             if let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction), let group = thread as? TSGroupThread,

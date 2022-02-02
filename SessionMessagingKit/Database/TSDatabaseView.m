@@ -9,6 +9,7 @@
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
+#import "OWSBlockingManager.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
@@ -16,6 +17,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TSInboxGroup = @"TSInboxGroup";
+NSString *const TSMessageRequestGroup = @"TSMessageRequestGroup";
 NSString *const TSArchiveGroup = @"TSArchiveGroup";
 
 NSString *const TSUnreadIncomingMessagesGroup = @"TSUnreadIncomingMessagesGroup";
@@ -234,7 +236,15 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         }
         TSThread *thread = (TSThread *)object;
 
-        if (thread.shouldBeVisible) {
+        if (thread.isMessageRequest) {
+            // Don't show blocked threads at all
+            if ([[OWSBlockingManager sharedManager] isThreadBlocked: thread]) {
+                return nil;
+            }
+            
+            return TSMessageRequestGroup;
+        }
+        else if (thread.shouldBeVisible) {
             // Do nothing; we never hide threads that have ever had a message.
         } else {
             YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];

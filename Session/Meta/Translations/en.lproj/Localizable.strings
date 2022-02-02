@@ -583,3 +583,9 @@
 "SEARCH_SECTION_MESSAGES" = "Messages";
 "SEARCH_SECTION_RECENT" = "Recent";
 "RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
+"MESSAGE_REQUESTS_TITLE" = "Message Requests";
+"MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
+"MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request.";
+"MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
+"TXT_HIDE_TITLE" = "Hide";
+"TXT_DELETE_ACCEPT" = "Accept";

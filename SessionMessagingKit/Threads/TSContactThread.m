@@ -57,6 +57,19 @@ NSString *const TSContactThreadPrefix = @"c";
     return @[ self.contactSessionID ];
 }
 
+- (BOOL)isMessageRequest {
+    NSString *sessionID = self.contactSessionID;
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
+    
+    return (
+        self.shouldBeVisible &&
+        !self.isNoteToSelf && (
+           contact == nil ||
+           !contact.isApproved
+        )
+    );
+}
+
 - (BOOL)isGroupThread
 {
     return NO;
