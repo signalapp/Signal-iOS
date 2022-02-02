@@ -581,3 +581,7 @@
 "UNPIN_BUTTON_TEXT" = "Unpin";
 "meida_saved" = "Media saved by %@.";
 "screenshot_taken" = "%@ took a screenshot.";
+"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_RECENT" = "Recent";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";
