@@ -477,9 +477,11 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     }
     
     func highlight() {
-        bubbleView.setShadow(radius: 6, opacity: 1, offset: .zero, color: Colors.accent.cgColor)
+        let shawdowColour = isLightMode ? UIColor.black.cgColor : Colors.accent.cgColor
+        let opacity : Float = isLightMode ? 0.5 : 1
+        bubbleView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shawdowColour)
         DispatchQueue.main.async {
-            UIView.animate(withDuration: 2) {
+            UIView.animate(withDuration: 1.6) {
                 self.bubbleView.setShadow(radius: 0, opacity: 0, offset: .zero, color: UIColor.clear.cgColor)
             }
         }
