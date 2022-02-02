@@ -2,7 +2,6 @@
 // See https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions and
 // https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification for
 // more information on database handling.
-
 final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
     private var threads: YapDatabaseViewMappings!
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
@@ -89,7 +88,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             setUpNavBarStyle()
         }
         updateNavBarButtons()
-        setNavBarTitle(NSLocalizedString("vc_home_title", comment: ""))
+        setUpNavBarSessionHeading()
         // Recovery phrase reminder
         let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
         if !hasViewedSeed {
@@ -266,6 +265,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     private func updateNavBarButtons() {
+        // Profile picture view
         let profilePictureSize = Values.verySmallProfilePictureSize
         let profilePictureView = ProfilePictureView()
         profilePictureView.accessibilityLabel = "Settings button"
@@ -276,32 +276,27 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         profilePictureView.set(.height, to: profilePictureSize)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
+        // Path status indicator
+        let pathStatusView = PathStatusView()
+        pathStatusView.accessibilityLabel = "Current onion routing path indicator"
+        pathStatusView.set(.width, to: PathStatusView.size)
+        pathStatusView.set(.height, to: PathStatusView.size)
+        // Container view
         let profilePictureViewContainer = UIView()
         profilePictureViewContainer.accessibilityLabel = "Settings button"
         profilePictureViewContainer.addSubview(profilePictureView)
-        profilePictureView.pin(.leading, to: .leading, of: profilePictureViewContainer, withInset: 4)
-        profilePictureView.pin(.top, to: .top, of: profilePictureViewContainer)
-        profilePictureView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
-        profilePictureView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
+        profilePictureView.autoPinEdgesToSuperviewEdges()
+        profilePictureViewContainer.addSubview(pathStatusView)
+        pathStatusView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
+        pathStatusView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
+        // Left bar button item
         let leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
         leftBarButtonItem.accessibilityLabel = "Settings button"
         leftBarButtonItem.isAccessibilityElement = true
         navigationItem.leftBarButtonItem = leftBarButtonItem
-        let pathStatusViewContainer = UIView()
-        pathStatusViewContainer.accessibilityLabel = "Current onion routing path button"
-        let pathStatusViewContainerSize = Values.verySmallProfilePictureSize // Match the profile picture view
-        pathStatusViewContainer.set(.width, to: pathStatusViewContainerSize)
-        pathStatusViewContainer.set(.height, to: pathStatusViewContainerSize)
-        let pathStatusView = PathStatusView()
-        pathStatusView.accessibilityLabel = "Current onion routing path button"
-        pathStatusView.set(.width, to: PathStatusView.size)
-        pathStatusView.set(.height, to: PathStatusView.size)
-        pathStatusViewContainer.addSubview(pathStatusView)
-        pathStatusView.center(.horizontal, in: pathStatusViewContainer)
-        pathStatusView.center(.vertical, in: pathStatusViewContainer)
-        pathStatusViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPath)))
-        let rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
-        rightBarButtonItem.accessibilityLabel = "Current onion routing path button"
+        // Right bar button item - search button
+        let rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(showSearchUI))
+        rightBarButtonItem.accessibilityLabel = "Search button"
         rightBarButtonItem.isAccessibilityElement  = true
         navigationItem.rightBarButtonItem = rightBarButtonItem
     }
@@ -418,10 +413,12 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc private func showPath() {
-        let pathVC = PathVC()
-        let navigationController = OWSNavigationController(rootViewController: pathVC)
-        present(navigationController, animated: true, completion: nil)
+    @objc private func showSearchUI() {
+        if let presentedVC = self.presentedViewController {
+            presentedVC.dismiss(animated: false, completion: nil)
+        }
+        let searchController = GlobalSearchViewController()
+        self.navigationController?.setViewControllers([ self, searchController ], animated: true)
     }
     
     @objc func joinOpenGroup() {

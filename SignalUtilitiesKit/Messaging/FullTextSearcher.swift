@@ -65,6 +65,20 @@ public class HomeScreenSearchResultSet: NSObject {
     public class var empty: HomeScreenSearchResultSet {
         return HomeScreenSearchResultSet(searchText: "", conversations: [], messages: [])
     }
+    
+    public class var noteToSelfOnly: HomeScreenSearchResultSet {
+        var conversations: [ConversationSearchResult<ConversationSortKey>] = []
+        Storage.read { transaction in
+            if let thread = TSContactThread.getWithContactSessionID(getUserHexEncodedPublicKey(), transaction: transaction) {
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let sortKey = ConversationSortKey(creationDate: thread.creationDate,
+                                                  lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
+                let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
+                conversations.append(searchResult)
+            }
+        }
+        return HomeScreenSearchResultSet(searchText: "", conversations: conversations, messages: [])
+    }
 
     public var isEmpty: Bool {
         return conversations.isEmpty && messages.isEmpty
@@ -227,6 +241,7 @@ public class FullTextSearcher: NSObject {
     }
 
     public func searchForHomeScreen(searchText: String,
+                                    maxSearchResults: Int? = nil,
                                     transaction: YapDatabaseReadTransaction) -> HomeScreenSearchResultSet {
 
         var conversations: [ConversationSearchResult<ConversationSortKey>] = []
@@ -234,7 +249,7 @@ public class FullTextSearcher: NSObject {
 
         var existingConversationRecipientIds: Set<String> = Set()
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+        self.finder.enumerateObjects(searchText: searchText, maxSearchResults: maxSearchResults, transaction: transaction) { (match: Any, snippet: String?) in
 
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
