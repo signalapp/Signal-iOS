@@ -191,6 +191,7 @@ extension AttachmentApprovalInputAccessoryView: AttachmentCaptionToolbarDelegate
             return
         }
 
+        // TODO: Look at refactoring this behaviour to consolidate attachment mutations
         currentAttachmentItem.attachment.captionText = attachmentCaptionToolbar.textView.text
 
         delegate?.attachmentApprovalInputUpdateMediaRail()

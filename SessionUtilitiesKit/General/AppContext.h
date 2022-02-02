@@ -35,6 +35,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL isMainApp;
 @property (nonatomic, readonly) BOOL isMainAppAndActive;
+@property (nonatomic, readonly) BOOL isShareExtension;
 /// Whether the app was woken up by a silent push notification. This is important for determining whether attachments should be downloaded or not.
 @property (nonatomic) BOOL wasWokenUpByPushNotification;
 

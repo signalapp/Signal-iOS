@@ -32,8 +32,9 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     }
 
     // Layout Constants
-
-    let kMinTextViewHeight: CGFloat = 40
+    
+    static let kToolbarMargin: CGFloat = 8
+    static let kMinTextViewHeight: CGFloat = 40
     var maxTextViewHeight: CGFloat {
         // About ~4 lines in portrait and ~3 lines in landscape.
         // Otherwise we risk obscuring too much of the content.
@@ -46,7 +47,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     init() {
         self.sendButton = UIButton(type: .system)
-        self.textViewHeight = kMinTextViewHeight
+        self.textViewHeight = AttachmentTextToolbar.kMinTextViewHeight
 
         super.init(frame: CGRect.zero)
 
@@ -77,15 +78,19 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         contentView.autoPinEdgesToSuperviewEdges()
 
         // Layout
-        let kToolbarMargin: CGFloat = 8
 
         // We have to wrap the toolbar items in a content view because iOS (at least on iOS10.3) assigns the inputAccessoryView.layoutMargins
         // when resigning first responder (verified by auditing with `layoutMarginsDidChange`).
         // The effect of this is that if we were to assign these margins to self.layoutMargins, they'd be blown away if the
         // user dismisses the keyboard, giving the input accessory view a wonky layout.
-        contentView.layoutMargins = UIEdgeInsets(top: kToolbarMargin, left: kToolbarMargin, bottom: kToolbarMargin, right: kToolbarMargin)
+        contentView.layoutMargins = UIEdgeInsets(
+            top: AttachmentTextToolbar.kToolbarMargin,
+            left: AttachmentTextToolbar.kToolbarMargin,
+            bottom: AttachmentTextToolbar.kToolbarMargin,
+            right: AttachmentTextToolbar.kToolbarMargin
+        )
 
-        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: AttachmentTextToolbar.kMinTextViewHeight)
 
         // We pin all three edges explicitly rather than doing something like:
         //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
@@ -97,7 +102,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         textContainer.autoPinEdge(toSuperviewMargin: .bottom)
         textContainer.autoPinEdge(toSuperviewMargin: .left)
 
-        sendButton.autoPinEdge(.left, to: .right, of: textContainer, withOffset: kToolbarMargin)
+        sendButton.autoPinEdge(.left, to: .right, of: textContainer, withOffset: AttachmentTextToolbar.kToolbarMargin)
         sendButton.autoPinEdge(.bottom, to: .bottom, of: textContainer, withOffset: -3)
 
         sendButton.autoPinEdge(toSuperviewMargin: .right)
@@ -170,7 +175,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         textContainer.layer.borderColor = UIColor.white.cgColor
         textContainer.layer.borderWidth = Values.separatorThickness
-        textContainer.layer.cornerRadius = kMinTextViewHeight / 2
+        textContainer.layer.cornerRadius = (AttachmentTextToolbar.kMinTextViewHeight / 2)
         textContainer.clipsToBounds = true
 
         textContainer.addSubview(placeholderTextView)
@@ -314,6 +319,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
+        return CGFloatClamp(contentSize.height, AttachmentTextToolbar.kMinTextViewHeight, maxTextViewHeight)
     }
 }
