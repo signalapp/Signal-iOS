@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -61,6 +61,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
 
         let expectMessageProcessed = expectation(description: "message processed")
+        // This test fulfills an expectation when a write to the database causes the desired state to be reached.
+        // However, there may still be writes to the database in flight, and the *next* write will also probably
+        // be in the desired state, resulting in the expectation being fulfilled again.
+        expectMessageProcessed.assertForOverFulfill = false
 
         read { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
@@ -117,8 +121,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         waitForExpectations(timeout: 1.0)
     }
 
-    // This test is extremely flakey and has been disabled since it leaves our CI unreliable
-    #if BROKEN_TESTS
     func test_contactMessage_UuidOnlyEnvelope() {
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
@@ -134,6 +136,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
 
         let expectMessageProcessed = expectation(description: "message processed")
+        // This test fulfills an expectation when a write to the database causes the desired state to be reached.
+        // However, there may still be writes to the database in flight, and the *next* write will also probably
+        // be in the desired state, resulting in the expectation being fulfilled again.
+        expectMessageProcessed.assertForOverFulfill = false
 
         read { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
@@ -188,7 +194,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
         waitForExpectations(timeout: 1.0)
     }
-    #endif
 }
 
 // MARK: - Helpers
