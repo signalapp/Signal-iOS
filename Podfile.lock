@@ -90,9 +90,9 @@ PODS:
   - SAMKeychain (1.5.3)
   - SignalArgon2 (1.3.2)
   - SignalArgon2/Tests (1.3.2)
-  - SignalClient (0.12.0):
+  - SignalClient (0.12.2):
     - SignalCoreKit
-  - SignalClient/Tests (0.12.0):
+  - SignalClient/Tests (0.12.2):
     - SignalCoreKit
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
@@ -329,7 +329,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalClient:
-    :commit: 3da7078ffe3f818b0b6c871f12cc4fd6d7c25fa8
+    :commit: 71dac29e42558437008660a07f63c5c5e93876a5
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
     :commit: 500947f098eeaa9acc6d7cdffc9e6e2239b7d9d7
@@ -369,7 +369,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalClient: 2dcc2d86deaf6736af34dfa11caa23d54f5a0aed
+  SignalClient: 80baa3237cc9e8d9b0d1a1ada1a7bc61e58aa88f
   SignalCoreKit: 87da14c58d57760793b892ff03838c5ef2ce1167
   SignalRingRTC: aff816a204229d1d3b9b041faf30be3a9562220f
   SignalServiceKit: 25ca5d50484d3883990bd18a4825ec3d57bbe798
