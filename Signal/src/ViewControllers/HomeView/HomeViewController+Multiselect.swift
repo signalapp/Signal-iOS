@@ -36,6 +36,10 @@ extension HomeViewController {
     // MARK: - multi select mode
 
     func willEnterMultiselectMode() {
+        willEnterMultiselectMode(cancelCurrentEditAction: true)
+    }
+
+    func willEnterMultiselectMode(cancelCurrentEditAction: Bool) {
         AssertIsOnMainThread()
 
         guard !viewState.multiSelectState.isActive else {
@@ -56,7 +60,7 @@ extension HomeViewController {
         }
         searchBar.isUserInteractionEnabled = false
         searchBar.alpha = 0.5
-        viewState.multiSelectState.setIsActive(true, tableView: tableView)
+        viewState.multiSelectState.setIsActive(true, tableView: tableView, cancelCurrentEditAction: cancelCurrentEditAction)
         showToolbar()
     }
 
@@ -503,17 +507,18 @@ public class MultiSelectState: NSObject {
     fileprivate var toolbar: BlurredToolbarContainer?
     private var _isActive = false
     var actionPerformed = false
+    var locked = false
 
     @objc
     var isActive: Bool { return _isActive }
 
-    fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
+    fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil, cancelCurrentEditAction: Bool = true) {
         if active != _isActive {
             AssertIsOnMainThread()
 
             _isActive = active
             // turn off current edit mode if necessary (removes leading and trailing actions)
-            if let tableView = tableView, active && tableView.isEditing {
+            if let tableView = tableView, active && tableView.isEditing && cancelCurrentEditAction {
                 tableView.setEditing(false, animated: true)
             }
             if active || !actionPerformed {

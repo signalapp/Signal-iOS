@@ -236,14 +236,30 @@ extension HVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool {
-        return true
+        return !viewState.multiSelectState.locked
+    }
+
+    public func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        // editing a single row (by swiping to the left or right) calls this method
+        // we have to disable the two-finger gesture for entering the multi-select mode
+        viewState.multiSelectState.locked = true
+    }
+
+    public func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        // this method is called if the current single row edit has ended (even without
+        // explicit user-interaction eg. due to table reload).
+        // we can to enable the two-finger gesture for entering the multi-select mode again
+        viewState.multiSelectState.locked = false
     }
 
     public func tableView(_ tableView: UITableView, didBeginMultipleSelectionInteractionAt indexPath: IndexPath) {
-        guard let viewController = self.viewController, !viewState.multiSelectState.isActive else {
+        guard let viewController = self.viewController, !viewState.multiSelectState.isActive, !viewState.multiSelectState.locked else {
             return
         }
-        viewController.willEnterMultiselectMode()
+
+        // the tableView has be switch to edit mode already (by the OS), we don't want to
+        // change this, because otherwise the selection swipe gesture is cancelled.
+        viewController.willEnterMultiselectMode(cancelCurrentEditAction: false)
     }
 
     public func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
