@@ -57,7 +57,7 @@ import Foundation
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
-        let actionTitle = buttonTitle ?? NSLocalizedString("OK", comment: "")
+        let actionTitle = buttonTitle ?? NSLocalizedString("BUTTON_OK", comment: "")
         let okAction = UIAlertAction(title: actionTitle, style: .default, handler: buttonAction)
         okAction.accessibilityIdentifier = "OWSAlerts.\("ok")"
         alert.addAction(okAction)
@@ -71,7 +71,7 @@ import Foundation
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(self.cancelAction)
 
-        let actionTitle = proceedTitle ?? NSLocalizedString("OK", comment: "")
+        let actionTitle = proceedTitle ?? NSLocalizedString("BUTTON_OK", comment: "")
         let okAction = UIAlertAction(title: actionTitle, style: .default, handler: proceedAction)
         okAction.accessibilityIdentifier = "OWSAlerts.\("ok")"
         alert.addAction(okAction)
