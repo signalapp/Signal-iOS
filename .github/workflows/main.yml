@@ -98,6 +98,13 @@ jobs:
 
           bundle exec fastlane scan --scheme Signal --output_types junit || formatFailures
 
+      - name: Upload build logs
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: Logs
+          path: ~/Library/Logs/scan
+
   lint:
     name: Lint
 
