@@ -28,7 +28,7 @@ final class ConversationCell : UITableViewCell {
         let result = UIView()
         result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
         let size = ConversationCell.unreadCountViewSize
-        result.set(.width, to: size)
+        result.set(.width, greaterThanOrEqualTo: size)
         result.set(.height, to: size)
         result.layer.masksToBounds = true
         result.layer.cornerRadius = size / 2
@@ -150,7 +150,9 @@ final class ConversationCell : UITableViewCell {
         profilePictureView.size = profilePictureViewSize
         // Unread count view
         unreadCountView.addSubview(unreadCountLabel)
-        unreadCountLabel.pin(to: unreadCountView)
+        unreadCountLabel.pin([ VerticalEdge.top, VerticalEdge.bottom ], to: unreadCountView)
+        unreadCountView.pin(.leading, to: .leading, of: unreadCountLabel, withInset: -4)
+        unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
         // Has mention view
         hasMentionView.addSubview(hasMentionLabel)
         hasMentionLabel.pin(to: hasMentionView)
@@ -293,8 +295,8 @@ final class ConversationCell : UITableViewCell {
         isPinnedIcon.isHidden = !threadViewModel.isPinned
         unreadCountView.isHidden = !threadViewModel.hasUnreadMessages
         let unreadCount = threadViewModel.unreadCount
-        unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"
-        let fontSize = (unreadCount < 100) ? Values.verySmallFontSize : 8
+        unreadCountLabel.text = unreadCount < 10000 ? "\(unreadCount)" : "9999+"
+        let fontSize = (unreadCount < 10000) ? Values.verySmallFontSize : 8
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
         hasMentionView.isHidden = !(threadViewModel.hasUnreadMentions && thread.isGroupThread())
         profilePictureView.update(for: thread)
