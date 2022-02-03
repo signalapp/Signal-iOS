@@ -27,7 +27,8 @@ extension HomeViewController {
         var safeAreaInsets = view.safeAreaInsets
         // if the safeAreaInsets are 0 (eg. on iPads) they can not be used for
         // calculating the correct position of the context menu
-        if safeAreaInsets == .zero {
+        Logger.info("safeAreaInsets are \(safeAreaInsets)")
+        if safeAreaInsets.top == 0 {
             safeAreaInsets.top = (navigationController?.toolbar.height ?? 0) + UIApplication.shared.statusBarFrame.height
         }
         menu.frame.origin = CGPoint(x: safeAreaInsets.left, y: safeAreaInsets.top) + ContextMenuActionsViewContainer.offset
