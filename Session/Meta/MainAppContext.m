@@ -160,6 +160,10 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return [UIApplication sharedApplication].applicationState == UIApplicationStateActive;
 }
 
+- (BOOL)isShareExtension {
+    return NO;
+}
+
 - (BOOL)isRTL
 {
     static BOOL isRTL = NO;

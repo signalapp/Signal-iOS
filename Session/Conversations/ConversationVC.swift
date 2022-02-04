@@ -126,7 +126,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let result = UIView()
         result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
         let size = ConversationVC.unreadCountViewSize
-        result.set(.width, to: size)
+        result.set(.width, greaterThanOrEqualTo: size)
         result.set(.height, to: size)
         result.layer.masksToBounds = true
         result.layer.cornerRadius = size / 2
@@ -343,7 +343,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // Unread count view
         view.addSubview(unreadCountView)
         unreadCountView.addSubview(unreadCountLabel)
-        unreadCountLabel.pin(to: unreadCountView)
+        unreadCountLabel.pin(.top, to: .top, of: unreadCountView)
+        unreadCountLabel.pin(.bottom, to: .bottom, of: unreadCountView)
+        unreadCountView.pin(.leading, to: .leading, of: unreadCountLabel, withInset: -4)
+        unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
         unreadCountView.centerYAnchor.constraint(equalTo: scrollButton.topAnchor).isActive = true
         unreadCountView.center(.horizontal, in: scrollButton)
         updateUnreadCountView()
@@ -692,6 +695,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func scrollToBottom(isAnimated: Bool) {
         guard !isUserScrolling else { return }
+        if let interactionID = viewItems.last?.interaction.uniqueId {
+            self.scrollToInteraction(with: interactionID, position: .top, isAnimated: isAnimated)
+            return
+        }
         // Ensure the view is fully up to date before we try to scroll to the bottom, since
         // we use the table view's bounds to determine where the bottom is.
         view.layoutIfNeeded()
@@ -722,8 +729,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             unreadViewItems.remove(at: index)
         }
         let unreadCount = unreadViewItems.count
-        unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"
-        let fontSize = (unreadCount < 100) ? Values.verySmallFontSize : 8
+        unreadCountLabel.text = unreadCount < 10000 ? "\(unreadCount)" : "9999+"
+        let fontSize = (unreadCount < 10000) ? Values.verySmallFontSize : 8
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
         unreadCountView.isHidden = (unreadCount == 0)
     }

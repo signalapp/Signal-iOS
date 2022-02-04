@@ -35,7 +35,9 @@ abstract_target 'GlobalDependencies' do
       pod 'PureLayout', '~> 3.1.8'
       pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
       
-      target 'SessionShareExtension'
+      target 'SessionShareExtension' do
+        pod 'NVActivityIndicatorView'
+      end
       
       target 'SignalUtilitiesKit' do
         pod 'NVActivityIndicatorView'

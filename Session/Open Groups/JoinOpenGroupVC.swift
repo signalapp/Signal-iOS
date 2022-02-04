@@ -143,7 +143,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
             Storage.shared.write { transaction in
                 OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
                 .done(on: DispatchQueue.main) { [weak self] _ in
-                    self?.presentingViewController!.dismiss(animated: true, completion: nil)
+                    self?.presentingViewController?.dismiss(animated: true, completion: nil)
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                 }
@@ -161,7 +161,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     // MARK: Convenience
     private func showError(title: String, message: String = "") {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
         presentAlert(alert)
     }
 }

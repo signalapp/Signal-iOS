@@ -594,7 +594,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             removeAssetRequestFromQueue(assetRequest: assetRequest)
             return
         }
-        guard CurrentAppContext().isMainAppAndActive else {
+        guard CurrentAppContext().isMainAppAndActive || CurrentAppContext().isShareExtension else {
             // If app is not active, fail the asset request.
             assetRequest.state = .failed
             assetRequestDidFail(assetRequest: assetRequest)

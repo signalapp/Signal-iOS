@@ -131,6 +131,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private var bodyLabelTextColor: UIColor {
         switch (direction, AppModeManager.shared.currentAppMode) {
         case (.outgoing, .dark), (.incoming, .light): return .black
+        case (.outgoing, .light): return Colors.grey
         default: return .white
         }
     }
@@ -207,8 +208,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     // MARK: Updating
     override func update() {
         guard let viewItem = viewItem, let message = viewItem.interaction as? TSMessage else { return }
-        let thread = message.thread
-        let isGroupThread = thread.isGroupThread()
+        let isGroupThread = viewItem.isGroupThread
         // Profile picture view
         profilePictureViewLeftConstraint.constant = isGroupThread ? VisibleMessageCell.groupThreadHSpacing : 0
         profilePictureViewWidthConstraint.constant = isGroupThread ? VisibleMessageCell.profilePictureSize : 0
@@ -217,8 +217,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         if let senderSessionID = senderSessionID {
             profilePictureView.update(for: senderSessionID)
         }
-        if let thread = thread as? TSGroupThread, thread.isOpenGroup, let senderSessionID = senderSessionID {
-            if let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
+        if let senderSessionID = senderSessionID, message.isOpenGroupMessage {
+            if let openGroupV2 = Storage.shared.getV2OpenGroup(for: message.uniqueThreadId) {
                 let isUserModerator = OpenGroupAPIV2.isUserModerator(senderSessionID, for: openGroupV2.room, on: openGroupV2.server)
                 moderatorIconImageView.isHidden = !isUserModerator || profilePictureView.isHidden
             } else {
@@ -639,8 +639,15 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let maxAspectRatio = 1 / minAspectRatio
         aspectRatio = aspectRatio.clamp(minAspectRatio, maxAspectRatio)
         let maxSize = CGSize(width: maxMessageWidth, height: maxMessageWidth)
-        var width = with(maxSize.height * aspectRatio) { $0 > maxSize.width ? maxSize.width : $0 }
-        var height = (width > maxSize.width) ? (maxSize.width / aspectRatio) : maxSize.height
+        var width: CGFloat
+        var height: CGFloat
+        if aspectRatio > 1 {
+            width = maxSize.width
+            height = width / aspectRatio
+        } else {
+            height = maxSize.height
+            width = height * aspectRatio
+        }
         // Don't blow up small images unnecessarily
         let minSize: CGFloat = 150
         let shortSourceDimension = min(size.width, size.height)
