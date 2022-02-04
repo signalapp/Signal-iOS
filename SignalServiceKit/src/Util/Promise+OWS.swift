@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 // MARK: -
@@ -9,31 +9,18 @@ public class Promises {
     public static func performWithImmediateRetry<T>(promiseBlock: @escaping () -> Promise<T>,
                                                     remainingRetries: UInt = 3) -> Promise<T> {
 
-        let (promise, future) = Promise<T>.pending()
-
-        firstly(on: .global()) { () -> Promise<T> in
+        return firstly(on: .global()) { () -> Promise<T> in
             return promiseBlock()
-        }.done(on: .global()) { (value: T) -> Void  in
-            future.resolve(value)
-        }.catch(on: .global()) { (error: Error) -> Void in
+        }.recover(on: .global()) { (error: Error) -> Promise<T> in
             guard remainingRetries > 0,
                 error.isNetworkConnectivityFailure else {
-                    future.reject(error)
-                    return
+                    throw error
             }
 
             Logger.warn("Error: \(error)")
 
-            firstly(on: .global()) { () -> Promise<T> in
-                return Self.performWithImmediateRetry(promiseBlock: promiseBlock,
-                                                      remainingRetries: remainingRetries - 1)
-            }.done(on: .global()) { (value: T) in
-                future.resolve(value)
-            }.catch(on: .global()) { (error: Error)in
-                future.reject(error)
-            }
+            return Self.performWithImmediateRetry(promiseBlock: promiseBlock,
+                                                  remainingRetries: remainingRetries - 1)
         }
-
-        return promise
     }
 }
