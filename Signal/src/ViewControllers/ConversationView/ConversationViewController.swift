@@ -248,8 +248,6 @@ public class ConversationViewController: OWSViewController {
 
         Logger.verbose("viewWillAppear")
 
-        self.ensureBannerState()
-
         super.viewWillAppear(animated)
 
         if self.inputToolbar == nil {
@@ -260,6 +258,8 @@ public class ConversationViewController: OWSViewController {
             owsAssertDebug(self.inputToolbar != nil)
 
             self.createGestureRecognizers()
+        } else {
+            self.ensureBannerState()
         }
 
         self.isViewVisible = true
