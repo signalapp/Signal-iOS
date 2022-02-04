@@ -336,7 +336,7 @@ public class OnboardingController: NSObject {
     }
 
     func buildPinSetupViewController() -> PinSetupViewController {
-        return PinSetupViewController.creating { [weak self] pinSetupVC, _ in
+        return PinSetupViewController.onboardingCreating { [weak self] pinSetupVC, _ in
             guard let self = self else { return }
 
             guard let navigationController = pinSetupVC.navigationController else {

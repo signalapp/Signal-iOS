@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -244,7 +244,7 @@ public class PinReminderViewController: OWSViewController {
     @objc func forgotPressed() {
         Logger.info("")
 
-        let vc = PinSetupViewController(mode: .recreating) { [weak self] _, _ in
+        let vc = PinSetupViewController.creating { [weak self] _, _ in
             self?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
         present(OWSNavigationController(rootViewController: vc), animated: true, completion: nil)

@@ -337,7 +337,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     private func showCreatePin(enableRegistrationLock: Bool = false) {
         let vc = PinSetupViewController(
-            mode: .recreating,
+            mode: .creating,
             enableRegistrationLock: enableRegistrationLock
         ) { [weak self] _, _ in
             guard let self = self else { return }
