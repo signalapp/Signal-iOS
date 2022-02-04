@@ -8,6 +8,7 @@ inhibit_all_warnings!
 abstract_target 'GlobalDependencies' do
   pod 'PromiseKit'
   pod 'CryptoSwift'
+  pod 'GoogleWebRTC'
   pod 'Sodium', '~> 0.9.1'
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/oxen-io/session-ios-yap-database.git', branch: 'signal-release'
   

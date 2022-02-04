@@ -21,6 +21,7 @@ PODS:
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
+  - GoogleWebRTC (1.1.31999)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -123,6 +124,7 @@ DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
+  - GoogleWebRTC
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView
   - PromiseKit
@@ -141,6 +143,7 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
+    - GoogleWebRTC
     - NVActivityIndicatorView
     - OpenSSL-Universal
     - PromiseKit
@@ -189,6 +192,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
+  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
@@ -204,6 +208,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 7f961dc4934dd213f5a3277af57d54caef7a4442
+PODFILE CHECKSUM: 9454f14ebd6a737cdabe39a207339de97994877f
 
 COCOAPODS: 1.11.2
