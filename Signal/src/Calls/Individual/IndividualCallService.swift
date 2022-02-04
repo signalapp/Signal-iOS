@@ -548,7 +548,7 @@ import CallKit
             Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
 
             // Tell the Call Manager to proceed with its active call.
-            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController, bandwidthMode: useLowBandwidth ? .low : .normal)
+            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, videoCaptureController: call.videoCaptureController, bandwidthMode: useLowBandwidth ? .low : .normal, audioLevelsIntervalMillis: nil)
         }.catch { error in
             owsFailDebug("\(error)")
             guard call === self.callService.currentCall else {
