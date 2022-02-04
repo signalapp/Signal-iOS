@@ -483,7 +483,7 @@ private class ContextMenuActionsViewContainer: UIView {
                                               width: target.bounds.width - 2 * radius,
                                               height: target.bounds.height - 2 * radius))
         shadowView.backgroundColor = Theme.isDarkThemeEnabled ? .black : .white
-        shadowView.setShadow(radius: 40, opacity: 0.8, offset: CGSize(width: 8, height: 20))
+        shadowView.setShadow(radius: 40, opacity: 0.3, offset: CGSize(width: 8, height: 20))
         target.frame = target.bounds
         container.addSubview(shadowView)
         container.addSubview(target)

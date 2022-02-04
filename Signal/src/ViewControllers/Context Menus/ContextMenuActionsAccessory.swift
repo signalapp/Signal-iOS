@@ -168,7 +168,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
 
         var maxWidth: CGFloat = 250
         let margin: CGFloat = 16
-        let verticalPadding: CGFloat = 22
+        let verticalPadding: CGFloat = 22.5
         let iconSize: CGFloat = 20
 
         public init(
