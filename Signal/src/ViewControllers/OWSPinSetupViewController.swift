@@ -24,10 +24,10 @@ public class PinSetupViewController: OWSViewController {
         let explanationLabel = LinkingTextView()
         let explanationText: String
         switch mode {
-        case .creating:
+        case .onboardingCreating, .creating:
             explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
                                                 comment: "The explanation in the 'pin creation' view.")
-        case .recreating, .changing:
+        case .changing:
             explanationText = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
                                                 comment: "The re-creation explanation in the 'pin creation' view.")
         case .confirming:
@@ -156,9 +156,9 @@ public class PinSetupViewController: OWSViewController {
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
     private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_accentRed, strokeWidth: 2)
 
-    enum Mode {
+    enum Mode: Equatable {
+        case onboardingCreating
         case creating
-        case recreating
         case changing
         case confirming(pinToMatch: String)
 
@@ -229,6 +229,11 @@ public class PinSetupViewController: OWSViewController {
     }
 
     @objc
+    class func onboardingCreating(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
+        return .init(mode: .onboardingCreating, completionHandler: completionHandler)
+    }
+
+    @objc
     class func creating(completionHandler: @escaping (PinSetupViewController, Error?) -> Void) -> PinSetupViewController {
         return .init(mode: .creating, completionHandler: completionHandler)
     }
@@ -258,8 +263,8 @@ public class PinSetupViewController: OWSViewController {
         if navigationController?.isNavigationBarHidden == false {
             [backButton, moreButton, titleLabel].forEach { $0.isHidden = true }
         } else {
-            // If we're in creating mode AND we're the rootViewController, don't allow going back
-            if case .creating = mode, navigationController?.viewControllers.first == self {
+            // If we're in onboarding mode, don't allow going back
+            if case .onboardingCreating = mode {
                 backButton.isHidden = true
             } else {
                 backButton.isHidden = false
@@ -372,8 +377,6 @@ public class PinSetupViewController: OWSViewController {
     var titleText: String {
         if mode.isConfirming {
             return NSLocalizedString("PIN_CREATION_CONFIRM_TITLE", comment: "Title of the 'pin creation' confirmation view.")
-        } else if case .recreating = initialMode {
-            return NSLocalizedString("PIN_CREATION_RECREATION_TITLE", comment: "Title of the 'pin creation' recreation view.")
         } else if initialMode.isChanging {
             return NSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
         } else {
@@ -386,7 +389,8 @@ public class PinSetupViewController: OWSViewController {
     @objc func navigateBack() {
         Logger.info("")
 
-        if case .recreating = mode {
+        // If we're in creation mode AND we're the rootViewController, dismiss rather than pop
+        if case .creating = mode, self.navigationController?.viewControllers.first == self {
             dismiss(animated: true, completion: nil)
         } else {
             navigationController?.popViewController(animated: true)
@@ -472,7 +476,7 @@ public class PinSetupViewController: OWSViewController {
         }
 
         switch mode {
-        case .creating, .changing, .recreating:
+        case .onboardingCreating, .changing, .creating:
             let confirmingVC = PinSetupViewController(
                 mode: .confirming(pinToMatch: pin),
                 initialMode: initialMode,
@@ -623,7 +627,12 @@ public class PinSetupViewController: OWSViewController {
             // can just ask the user to retry without altering any state. We can be
             // confident nothing has changed on the server.
             if case OWSHTTPError.networkFailure = error {
-                throw PinSetupError.networkFailure
+                // We only want to stop for network errors if we're past onboarding.
+                // During onboarding, we want to let the user continue even when
+                // a network issue is encountered during PIN creation.
+                if self.initialMode != .onboardingCreating {
+                    throw PinSetupError.networkFailure
+                }
             }
 
             owsFailDebug("Failed to enable 2FA with error: \(error)")
@@ -710,7 +719,7 @@ public class PinSetupViewController: OWSViewController {
                     )
                 case .enable2FA:
                     switch self.initialMode {
-                    case .creating:
+                    case .onboardingCreating:
                         OWSActionSheets.showActionSheet(
                             title: NSLocalizedString(
                                 "PIN_CREATION_ERROR_TITLE",
@@ -732,7 +741,7 @@ public class PinSetupViewController: OWSViewController {
                         ) { _ in
                             self.completionHandler(self, error)
                         }
-                    case .recreating:
+                    case .creating:
                         OWSActionSheets.showActionSheet(
                             title: NSLocalizedString(
                                 "PIN_RECREATION_ERROR_TITLE",
