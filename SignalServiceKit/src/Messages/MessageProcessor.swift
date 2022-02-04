@@ -240,7 +240,7 @@ public class MessageProcessor: NSObject {
         serialQueue.async {
             guard !self.isDrainingPendingEnvelopes else { return }
             self.isDrainingPendingEnvelopes = true
-            self.drainNextBatch()
+            while self.drainNextBatch() {}
             self.isDrainingPendingEnvelopes = false
             if self.pendingEnvelopes.isEmpty {
                 NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
@@ -248,11 +248,12 @@ public class MessageProcessor: NSObject {
         }
     }
 
-    private func drainNextBatch() {
+    /// Returns whether or not to continue draining the queue.
+    private func drainNextBatch() -> Bool {
         assertOnQueue(serialQueue)
         owsAssertDebug(isDrainingPendingEnvelopes)
 
-        let shouldContinue: Bool = autoreleasepool {
+        return autoreleasepool {
             // We want a value that is just high enough to yield perf benefits.
             let kIncomingMessageBatchSize = 16
             // If the app is in the background, use batch size of 1.
@@ -288,10 +289,6 @@ public class MessageProcessor: NSObject {
             }
             pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopes)
             return true
-        }
-
-        if shouldContinue {
-            self.drainNextBatch()
         }
     }
 
