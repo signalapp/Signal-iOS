@@ -149,6 +149,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             groupId: thread.groupModel.groupId,
             sfuUrl: sfuURL,
             hkdfExtraInfo: Data.init(),
+            audioLevelsIntervalMillis: nil,
             videoCaptureController: videoCaptureController
         ) else {
             owsFailDebug("Failed to create group call")
