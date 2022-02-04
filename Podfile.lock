@@ -44,6 +44,7 @@ PODS:
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
     - OpenSSL-Universal
+  - SocketRocket (0.5.1)
   - Sodium (0.9.1)
   - SQLCipher (4.5.0):
     - SQLCipher/standard (= 4.5.0)
@@ -132,6 +133,7 @@ DEPENDENCIES:
   - Reachability
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/oxen-io/session-ios-core-kit`, branch `session-version`)
+  - SocketRocket (~> 0.5.1)
   - Sodium (~> 0.9.1)
   - SwiftProtobuf (~> 1.5.0)
   - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
@@ -150,6 +152,7 @@ SPEC REPOS:
     - PureLayout
     - Reachability
     - SAMKeychain
+    - SocketRocket
     - Sodium
     - SQLCipher
     - SwiftProtobuf
@@ -201,6 +204,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 1fbd8732163ef76de16cd1107d1fa3684b607e5d
+  SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
   SQLCipher: 98dc22f27c0b1790d39e710d440f22a466ebdb59
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
@@ -208,6 +212,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 9454f14ebd6a737cdabe39a207339de97994877f
+PODFILE CHECKSUM: 610d1ebc4e559cf746dc3ae0ae7c78b011373d4c
 
 COCOAPODS: 1.11.2
