@@ -385,10 +385,16 @@ public class OWSLinkPreview: MTLModel {
         var urlMatches: [URLMatchResult] = []
         let matches = detector.matches(in: body, options: [], range: NSRange(location: 0, length: body.count))
         for match in matches {
-            guard let matchURL = match.url else {
-                continue
-            }
-            let urlString = matchURL.absoluteString
+            guard let matchURL = match.url else { continue }
+            
+            // If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
+            // set the scheme to 'https' instead as we don't load previews for 'http' so this will result
+            // in more previews actually getting loaded without forcing the user to enter 'https://' before
+            // every URL they enter
+            let urlString: String = (matchURL.absoluteString == "http://\(body)" ?
+                "https://\(body)" :
+                matchURL.absoluteString
+            )
             if isValidLinkUrl(urlString) {
                 let matchResult = URLMatchResult(urlString: urlString, matchRange: match.range)
                 urlMatches.append(matchResult)

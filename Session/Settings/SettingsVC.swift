@@ -244,7 +244,21 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             button.set(.height, to: SettingsVC.buttonHeight)
             return button
         }
+        
+        let pathButton = getSettingButton(withTitle: NSLocalizedString("vc_path_title", comment: ""), color: Colors.text, action: #selector(showPath))
+        let pathStatusView = PathStatusView()
+        pathStatusView.set(.width, to: PathStatusView.size)
+        pathStatusView.set(.height, to: PathStatusView.size)
+        
+        pathButton.addSubview(pathStatusView)
+        pathStatusView.pin(.leading, to: .trailing, of: pathButton.titleLabel!, withInset: Values.smallSpacing)
+        pathStatusView.autoVCenterInSuperview()
+        
+        pathButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: Values.smallSpacing)
+        
         return [
+            getSeparator(),
+            pathButton,
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
@@ -377,7 +391,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                         let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : "Couldn't Update Profile"
                         let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
                         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
                         self?.present(alert, animated: true, completion: nil)
                     }
                 }
@@ -443,7 +457,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func handleSaveDisplayNameButtonTapped() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         }
         let displayName = displayNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
@@ -478,6 +492,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
         navigationController!.present(shareVC, animated: true, completion: nil)
+    }
+    
+    @objc private func showPath() {
+        let pathVC = PathVC()
+        navigationController!.pushViewController(pathVC, animated: true)
     }
     
     @objc private func showPrivacySettings() {

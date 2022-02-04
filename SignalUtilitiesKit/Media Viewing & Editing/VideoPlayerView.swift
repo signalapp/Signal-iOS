@@ -88,12 +88,16 @@ public class PlayerProgressBar: UIView {
             let duration: CMTime = item.asset.duration
             slider.maximumValue = Float(CMTimeGetSeconds(duration))
 
-            // OPTIMIZE We need a high frequency observer for smooth slider updates,
-            // but could use a much less frequent observer for label updates
-            progressObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.01, preferredTimescale: kPreferredTimeScale), queue: nil, using: { [weak self] (_) in
-                self?.updateState()
-            }) as AnyObject
             updateState()
+            
+            // OPTIMIZE We need a high frequency observer for smooth slider updates while playing,
+            // but could use a much less frequent observer for label updates
+            progressObserver = player?.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: kPreferredTimeScale), queue: nil, using: { [weak self] _ in
+                // If it is playing update the time
+                if self?.player?.rate != 0 && self?.player?.error == nil {
+                    self?.updateState()
+                }
+            }) as AnyObject
         }
     }
 
@@ -182,7 +186,7 @@ public class PlayerProgressBar: UIView {
 
     // MARK: Render cycle
 
-    private func updateState() {
+    public func updateState() {
         guard let player = player else {
             owsFailDebug("player isn't set.")
             return
@@ -218,5 +222,27 @@ public class PlayerProgressBar: UIView {
     private func time(slider: UISlider) -> CMTime {
         let seconds: Double = Double(slider.value)
         return CMTime(seconds: seconds, preferredTimescale: kPreferredTimeScale)
+    }
+    
+    // MARK: - Functions
+    
+    public func manuallySetValue(_ positionSeconds: CGFloat, durationSeconds: CGFloat) {
+        let remainingSeconds = (durationSeconds - positionSeconds)
+        
+        slider.minimumValue = 0
+        slider.maximumValue = Float(durationSeconds)
+        
+        positionLabel.text = formatter.string(from: positionSeconds)
+        
+        guard let remainingString = formatter.string(from: remainingSeconds) else {
+            owsFailDebug("unable to format time remaining")
+            remainingLabel.text = "0:00"
+            return
+        }
+        
+        // show remaining time as negative
+        remainingLabel.text = "-\(remainingString)"
+        
+        slider.setValue(Float(positionSeconds), animated: false)
     }
 }

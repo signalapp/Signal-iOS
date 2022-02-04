@@ -30,7 +30,7 @@ public class ThreadViewModel: NSObject {
         self.threadRecord = thread
 
         self.isGroupThread = thread.isGroupThread()
-        self.name = thread.name()
+        self.name = thread.name(with: transaction)
         self.isMuted = thread.isMuted
         self.isPinned = thread.isPinned
         self.lastMessageText = thread.lastMessageText(transaction: transaction)

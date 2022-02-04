@@ -2,7 +2,12 @@ import UIKit
 import SessionUIKit
 
 final class ConversationCell : UITableViewCell {
-    var threadViewModel: ThreadViewModel! { didSet { update() } }
+    var isShowingGlobalSearchResult = false
+    var threadViewModel: ThreadViewModel! {
+        didSet {
+            isShowingGlobalSearchResult ? updateForSearchResult() : update()
+        }
+    }
     
     static let reuseIdentifier = "ConversationCell"
     
@@ -23,7 +28,7 @@ final class ConversationCell : UITableViewCell {
         let result = UIView()
         result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
         let size = ConversationCell.unreadCountViewSize
-        result.set(.width, to: size)
+        result.set(.width, greaterThanOrEqualTo: size)
         result.set(.height, to: size)
         result.layer.masksToBounds = true
         result.layer.cornerRadius = size / 2
@@ -96,6 +101,22 @@ final class ConversationCell : UITableViewCell {
         return result
     }()
     
+    private lazy var topLabelStackView: UIStackView = {
+        let result = UIStackView()
+        result.axis = .horizontal
+        result.alignment = .center
+        result.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
+        return result
+    }()
+    
+    private lazy var bottomLabelStackView: UIStackView = {
+        let result = UIStackView()
+        result.axis = .horizontal
+        result.alignment = .center
+        result.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
+        return result
+    }()
+    
     // MARK: Settings
     private static let unreadCountViewSize: CGFloat = 20
     private static let statusIndicatorSize: CGFloat = 14
@@ -129,27 +150,28 @@ final class ConversationCell : UITableViewCell {
         profilePictureView.size = profilePictureViewSize
         // Unread count view
         unreadCountView.addSubview(unreadCountLabel)
-        unreadCountLabel.pin(to: unreadCountView)
+        unreadCountLabel.pin([ VerticalEdge.top, VerticalEdge.bottom ], to: unreadCountView)
+        unreadCountView.pin(.leading, to: .leading, of: unreadCountLabel, withInset: -4)
+        unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
         // Has mention view
         hasMentionView.addSubview(hasMentionLabel)
         hasMentionLabel.pin(to: hasMentionView)
         // Label stack view
         let topLabelSpacer = UIView.hStretchingSpacer()
-        let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, isPinnedIcon, unreadCountView, hasMentionView, topLabelSpacer, timestampLabel ])
-        topLabelStackView.axis = .horizontal
-        topLabelStackView.alignment = .center
-        topLabelStackView.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
+        [ displayNameLabel, isPinnedIcon, unreadCountView, hasMentionView, topLabelSpacer, timestampLabel ].forEach{ view in
+            topLabelStackView.addArrangedSubview(view)
+        }
         let snippetLabelContainer = UIView()
         snippetLabelContainer.addSubview(snippetLabel)
         snippetLabelContainer.addSubview(typingIndicatorView)
         let bottomLabelSpacer = UIView.hStretchingSpacer()
-        let bottomLabelStackView = UIStackView(arrangedSubviews: [ snippetLabelContainer, bottomLabelSpacer, statusIndicatorView ])
-        bottomLabelStackView.axis = .horizontal
-        bottomLabelStackView.alignment = .center
-        bottomLabelStackView.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
-        let labelContainerView = UIView()
-        labelContainerView.addSubview(topLabelStackView)
-        labelContainerView.addSubview(bottomLabelStackView)
+        [ snippetLabelContainer, bottomLabelSpacer, statusIndicatorView ].forEach{ view in
+            bottomLabelStackView.addArrangedSubview(view)
+        }
+        let labelContainerView = UIStackView(arrangedSubviews: [ topLabelStackView, bottomLabelStackView ])
+        labelContainerView.axis = .vertical
+        labelContainerView.alignment = .leading
+        labelContainerView.spacing = 6
         // Main stack view
         let stackView = UIStackView(arrangedSubviews: [ accentLineView, profilePictureView, labelContainerView ])
         stackView.axis = .horizontal
@@ -172,21 +194,84 @@ final class ConversationCell : UITableViewCell {
         snippetLabel.pin(to: snippetLabelContainer)
         typingIndicatorView.pin(.leading, to: .leading, of: snippetLabelContainer)
         typingIndicatorView.centerYAnchor.constraint(equalTo: snippetLabel.centerYAnchor).isActive = true
-        // HACK: Not using a stack view for this is part of a workaround for a weird layout bug
-        topLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
-        topLabelStackView.pin(.top, to: .top, of: labelContainerView, withInset: 12)
-        topLabelStackView.pin(.trailing, to: .trailing, of: labelContainerView)
-        bottomLabelStackView.pin(.leading, to: .leading, of: labelContainerView)
-        bottomLabelStackView.pin(.top, to: .bottom, of: topLabelStackView, withInset: 6)
-        labelContainerView.pin(.bottom, to: .bottom, of: bottomLabelStackView, withInset: 12)
-        // HACK: The two lines below are part of a workaround for a weird layout bug
-        labelContainerView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - Values.mediumSpacing - profilePictureViewSize - Values.mediumSpacing - Values.mediumSpacing)
-        labelContainerView.set(.height, to: cellHeight)
         stackView.pin(.leading, to: .leading, of: contentView)
         stackView.pin(.top, to: .top, of: contentView)
         // HACK: The two lines below are part of a workaround for a weird layout bug
         stackView.set(.width, to: UIScreen.main.bounds.width - Values.mediumSpacing)
         stackView.set(.height, to: cellHeight)
+    }
+    
+    // MARK: Updating for search results
+    private func updateForSearchResult() {
+        AssertIsOnMainThread()
+        guard let thread = threadViewModel?.threadRecord else { return }
+        profilePictureView.update(for: thread)
+        isPinnedIcon.isHidden = true
+        unreadCountView.isHidden = true
+        hasMentionView.isHidden = true
+    }
+    
+    public func configureForRecent() {
+        displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
+        bottomLabelStackView.isHidden = false
+        let snippet = String(format: NSLocalizedString("RECENT_SEARCH_LAST_MESSAGE_DATETIME", comment: ""), DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate))
+        snippetLabel.attributedText = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
+        timestampLabel.isHidden = true
+    }
+    
+    public func configure(messageDate: Date?, snippet: String?, searchText: String, message: TSMessage? = nil) {
+        let normalizedSearchText = searchText.lowercased()
+        if let messageDate = messageDate, let snippet = snippet {
+            // Message
+            displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
+            timestampLabel.isHidden = false
+            timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
+            bottomLabelStackView.isHidden = false
+            var rawSnippet = snippet
+            if let message = message, let name = getMessageAuthorName(message: message) {
+                rawSnippet = "\(name): \(snippet)"
+            }
+            snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
+        } else {
+            // Contact
+            if threadViewModel.isGroupThread, let thread = threadViewModel.threadRecord as? TSGroupThread {
+                displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
+                bottomLabelStackView.isHidden = false
+                let context: Contact.Context = thread.isOpenGroup ? .openGroup : .regular
+                var rawSnippet: String = ""
+                thread.groupModel.groupMemberIds.forEach{ id in
+                    if let displayName = Storage.shared.getContact(with: id)?.displayName(for: context) {
+                        if !rawSnippet.isEmpty {
+                            rawSnippet += ", \(displayName)"
+                        }
+                        if displayName.lowercased().contains(normalizedSearchText) {
+                            rawSnippet = displayName
+                        }
+                    }
+                }
+                snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
+            } else {
+                displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayNameForSearch(threadViewModel.contactSessionID!), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
+                bottomLabelStackView.isHidden = true
+            }
+            timestampLabel.isHidden = true
+        }
+    }
+    
+    private func getHighlightedSnippet(snippet: String, searchText: String, fontSize: CGFloat) -> NSMutableAttributedString {
+        guard snippet != NSLocalizedString("NOTE_TO_SELF", comment: "") else {
+            return NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text])
+        }
+        
+        let result = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
+        let normalizedSnippet = snippet.lowercased() as NSString
+        
+        guard normalizedSnippet.contains(searchText) else { return result }
+        
+        let range = normalizedSnippet.range(of: searchText)
+        result.addAttribute(.foregroundColor, value: Colors.text, range: range)
+        result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: fontSize), range: range)
+        return result
     }
     
     // MARK: Updating
@@ -210,8 +295,8 @@ final class ConversationCell : UITableViewCell {
         isPinnedIcon.isHidden = !threadViewModel.isPinned
         unreadCountView.isHidden = !threadViewModel.hasUnreadMessages
         let unreadCount = threadViewModel.unreadCount
-        unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"
-        let fontSize = (unreadCount < 100) ? Values.verySmallFontSize : 8
+        unreadCountLabel.text = unreadCount < 10000 ? "\(unreadCount)" : "9999+"
+        let fontSize = (unreadCount < 10000) ? Values.verySmallFontSize : 8
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
         hasMentionView.isHidden = !(threadViewModel.hasUnreadMentions && thread.isGroupThread())
         profilePictureView.update(for: thread)
@@ -246,6 +331,27 @@ final class ConversationCell : UITableViewCell {
         }
     }
     
+    private func getMessageAuthorName(message: TSMessage) -> String? {
+        guard threadViewModel.isGroupThread else { return nil }
+        if let incomingMessage = message as? TSIncomingMessage {
+            return Storage.shared.getContact(with: incomingMessage.authorId)?.displayName(for: .regular) ?? "Anonymous"
+        }
+        return nil
+    }
+    
+    private func getDisplayNameForSearch(_ sessionID: String) -> String {
+        if threadViewModel.threadRecord.isNoteToSelf() {
+            return NSLocalizedString("NOTE_TO_SELF", comment: "")
+        } else {
+            var result = sessionID
+            if let contact = Storage.shared.getContact(with: sessionID), let name = contact.name {
+                result = name
+                if let nickname = contact.nickname { result += "(\(nickname))"}
+            }
+            return result
+        }
+    }
+    
     private func getDisplayName() -> String {
         if threadViewModel.isGroupThread {
             if threadViewModel.name.isEmpty {
@@ -275,9 +381,12 @@ final class ConversationCell : UITableViewCell {
             result.append(imageString)
             result.append(NSAttributedString(string: "  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
         }
+        let font = threadViewModel.hasUnreadMessages ? UIFont.boldSystemFont(ofSize: Values.smallFontSize) : UIFont.systemFont(ofSize: Values.smallFontSize)
+        if threadViewModel.isGroupThread, let message = threadViewModel.lastMessageForInbox as? TSMessage, let name = getMessageAuthorName(message: message) {
+            result.append(NSAttributedString(string: "\(name): ", attributes: [ .font : font, .foregroundColor : Colors.text ]))
+        }
         if let rawSnippet = threadViewModel.lastMessageText {
             let snippet = MentionUtilities.highlightMentions(in: rawSnippet, threadID: threadViewModel.threadRecord.uniqueId!)
-            let font = threadViewModel.hasUnreadMessages ? UIFont.boldSystemFont(ofSize: Values.smallFontSize) : UIFont.systemFont(ofSize: Values.smallFontSize)
             result.append(NSAttributedString(string: snippet, attributes: [ .font : font, .foregroundColor : Colors.text ]))
         }
         return result

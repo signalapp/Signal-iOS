@@ -13,6 +13,7 @@ import UIKit
 @objc(LKColors)
 public final class Colors : NSObject {
     
+    @objc public static var grey: UIColor { UIColor(named: "session_grey")! }
     @objc public static var accent: UIColor { UIColor(named: "session_accent")! }
     @objc public static var text: UIColor { UIColor(named: "session_text")! }
     @objc public static var destructive: UIColor { UIColor(named: "session_destructive")! }
@@ -43,4 +44,5 @@ public final class Colors : NSObject {
     @objc public static var pathsBuilding: UIColor { UIColor(named: "session_paths_building")! }
     @objc public static var callMessageBackground: UIColor { UIColor(named: "session_call_message_background")! }
     @objc public static var pinIcon: UIColor { UIColor(named: "session_pin_icon")! }
+    @objc public static var sessionHeading: UIColor { UIColor(named: "session_heading")! }
 }

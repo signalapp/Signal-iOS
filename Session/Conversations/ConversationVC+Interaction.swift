@@ -1,6 +1,8 @@
+import UIKit
 import CoreServices
 import Photos
 import PhotosUI
+import SignalUtilitiesKit
 
 extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate,
     SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate, GifPickerViewControllerDelegate,
@@ -101,11 +103,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
-        sendAttachments(attachments, with: messageText ?? "")
+        sendAttachments(attachments, with: messageText ?? "") { [weak self] in
+            self?.dismiss(animated: true, completion: nil)
+        }
+        
         scrollToBottom(isAnimated: false)
         resetMentions()
         self.snInputView.text = ""
-        dismiss(animated: true) { }
     }
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
@@ -220,7 +224,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     if !attachment.hasError {
                         self?.showAttachmentApprovalDialog(for: [ attachment ])
                     } else {
-                        self?.showErrorAlert(for: attachment)
+                        self?.showErrorAlert(for: attachment, onDismiss: nil)
                     }
                 }
             }.retainUntilComplete()
@@ -270,11 +274,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         })
     }
 
-    func sendAttachments(_ attachments: [SignalAttachment], with text: String) {
+    func sendAttachments(_ attachments: [SignalAttachment], with text: String, onComplete: (() -> ())? = nil) {
         guard !showBlockedModalIfNeeded() else { return }
         for attachment in attachments {
             if attachment.hasError {
-                return showErrorAlert(for: attachment)
+                return showErrorAlert(for: attachment, onDismiss: onComplete)
             }
         }
         let thread = self.thread
@@ -294,6 +298,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 self?.scrollToBottom(isAnimated: false)
             })
             self?.handleMessageSent()
+            
+            // Attachment successfully sent - dismiss the screen
+            onComplete?()
         })
     }
 
@@ -871,7 +878,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         dataSource.sourceFilename = fileName
         let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4Audio as String)
         guard !attachment.hasError else {
-            return showErrorAlert(for: attachment)
+            return showErrorAlert(for: attachment, onDismiss: nil)
         }
         // Send attachment
         sendAttachments([ attachment ], with: "")
@@ -910,10 +917,99 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         }
     }
 
-    // MARK: Convenience
-    func showErrorAlert(for attachment: SignalAttachment) {
+    // MARK: Requesting Permission
+    func requestCameraPermissionIfNeeded() -> Bool {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: return true
+        case .denied, .restricted:
+            let modal = PermissionMissingModal(permission: "camera") { }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+            return false
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
+            return false
+        default: return false
+        }
+    }
+
+    func requestMicrophonePermissionIfNeeded(onNotGranted: @escaping () -> Void) {
+        switch AVAudioSession.sharedInstance().recordPermission {
+        case .granted: break
+        case .denied:
+            onNotGranted()
+            let modal = PermissionMissingModal(permission: "microphone") {
+                onNotGranted()
+            }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+        case .undetermined:
+            onNotGranted()
+            AVAudioSession.sharedInstance().requestRecordPermission { _ in }
+        default: break
+        }
+    }
+
+    func requestLibraryPermissionIfNeeded(onAuthorized: @escaping () -> Void) {
+        let authorizationStatus: PHAuthorizationStatus
+        if #available(iOS 14, *) {
+            authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+            if authorizationStatus == .notDetermined {
+                // When the user chooses to select photos (which is the .limit status),
+                // the PHPhotoUI will present the picker view on the top of the front view.
+                // Since we have the ScreenLockUI showing when we request premissions,
+                // the picker view will be presented on the top of the ScreenLockUI.
+                // However, the ScreenLockUI will dismiss with the permission request alert view, so
+                // the picker view then will dismiss, too. The selection process cannot be finished
+                // this way. So we add a flag (isRequestingPermission) to prevent the ScreenLockUI
+                // from showing when we request the photo library permission.
+                Environment.shared.isRequestingPermission = true
+                let appMode = AppModeManager.shared.currentAppMode
+                // FIXME: Rather than setting the app mode to light and then to dark again once we're done,
+                // it'd be better to just customize the appearance of the image picker. There doesn't currently
+                // appear to be a good way to do so though...
+                AppModeManager.shared.setCurrentAppMode(to: .light)
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
+                    DispatchQueue.main.async {
+                        AppModeManager.shared.setCurrentAppMode(to: appMode)
+                    }
+                    Environment.shared.isRequestingPermission = false
+                    if [ PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited ].contains(status) {
+                        onAuthorized()
+                    }
+                }
+            }
+        } else {
+            authorizationStatus = PHPhotoLibrary.authorizationStatus()
+            if authorizationStatus == .notDetermined {
+                PHPhotoLibrary.requestAuthorization { status in
+                    if status == .authorized {
+                        onAuthorized()
+                    }
+                }
+            }
+        }
+        switch authorizationStatus {
+        case .authorized, .limited:
+            onAuthorized()
+        case .denied, .restricted:
+            let modal = PermissionMissingModal(permission: "library") { }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            present(modal, animated: true, completion: nil)
+        default: return
+        }
+    }
+
+    // MARK: - Convenience
+    func showErrorAlert(for attachment: SignalAttachment, onDismiss: (() -> ())?) {
         let title = NSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE", comment: "")
         let message = attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage
-        OWSAlerts.showAlert(title: title, message: message)
+        
+        OWSAlerts.showAlert(title: title, message: message, buttonTitle: nil) { _ in
+            onDismiss?()
+        }
     }
 }

@@ -29,7 +29,7 @@ enum ProofOfWork {
             value = newValue
         }
         // Encode as base 64
-        let base64EncodedNonce = nonce.bigEndianBytes.toBase64()!
+        let base64EncodedNonce = nonce.bigEndianBytes.toBase64()
         // Return
         return (timestamp, base64EncodedNonce)
     }

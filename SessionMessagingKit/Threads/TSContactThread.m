@@ -69,6 +69,13 @@ NSString *const TSContactThreadPrefix = @"c";
     return [contact displayNameFor:SNContactContextRegular] ?: sessionID;
 }
 
+- (NSString *)nameWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    NSString *sessionID = self.contactSessionID;
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID using:transaction];
+    return [contact displayNameFor:SNContactContextRegular] ?: sessionID;
+}
+
 + (NSString *)threadIDFromContactSessionID:(NSString *)contactSessionID {
     return [TSContactThreadPrefix stringByAppendingString:contactSessionID];
 }

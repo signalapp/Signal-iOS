@@ -26,6 +26,24 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Privitak";
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Pogreška kod slanja privitka";
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Neuspješna pretvorba slike";
+/* Attachment error message for video attachments which could not be converted to MP4 */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Neuspješna obrada videozapisa.";
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Neuspješna analiza slike.";
+/* Attachment error message for image attachments in which metadata could not be removed */
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Neuspješno uklanjanje metapodataka iz slike.";
+/* Attachment error message for image attachments which could not be resized */
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Neuspješna promjena veličine slike.";
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Privitak je prevelik.";
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Privitak sadrži nevažeći sadržaj.";
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Privitak ima nevažeći format datoteke.";
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Privitak je prazan.";
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Odabir dokumenta neuspješan.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
@@ -269,7 +287,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Prikaži";
 /* No comment provided by engineer. */
-"OK" = "OK";
+"BUTTON_OK" = "OK";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je onemogućio nestajuće poruke.";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
@@ -543,6 +561,10 @@
 "vc_share_title" = "Podijeli sa Session-om";
 "vc_share_loading_message" = "Priprema privitaka...";
 "vc_share_sending_message" = "Slanje...";
+"vc_share_link_previews_unsecure" = "Preview not loaded for unsecure link";
+"vc_share_link_previews_error" = "Unable to load preview";
+"vc_share_link_previews_disabled_title" = "Link Previews Disabled";
+"vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "Otvori pozivnicu za grupu";
 "vc_conversation_settings_invite_button_title" = "Dodaj članove";
 "vc_settings_faq_button_title" = "FAQ";

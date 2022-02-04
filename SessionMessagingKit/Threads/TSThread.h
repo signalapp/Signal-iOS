@@ -38,6 +38,8 @@ BOOL IsNoteToSelfEnabled(void);
  */
 - (NSString *)name;
 
+- (NSString *)nameWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
 /**
  *  Returns if there is any outgoing interations in this thread.
  *
