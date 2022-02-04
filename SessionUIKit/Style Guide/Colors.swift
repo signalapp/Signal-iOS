@@ -13,6 +13,7 @@ import UIKit
 @objc(LKColors)
 public final class Colors : NSObject {
     
+    @objc public static var grey: UIColor { UIColor(named: "session_grey")! }
     @objc public static var accent: UIColor { UIColor(named: "session_accent")! }
     @objc public static var text: UIColor { UIColor(named: "session_text")! }
     @objc public static var destructive: UIColor { UIColor(named: "session_destructive")! }
