@@ -693,21 +693,16 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     }
                 }
 
-                let diff = groupChange.diff
-                let changeActionsProto = diff.changeActionsProto
-                // Many change actions have author info, e.g. addedByUserID. But we can
-                // safely assume that all actions in the "change actions" have the same author.
-                guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
-                    throw OWSAssertionError("Missing changeAuthorUuid.")
-                }
-
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
                 }
 
                 let isSingleRevisionUpdate = oldGroupModel.revision + 1 == changeRevision
                 var groupUpdateSourceAddress: SignalServiceAddress?
-                if isSingleRevisionUpdate {
+                if isSingleRevisionUpdate, let changeAuthorUuidData = groupChange.changeActionsProto?.sourceUuid {
+                    // Many change actions have author info, e.g. addedByUserID. But we can
+                    // safely assume that all actions in the "change actions" have the same author.
+                    //
                     // The "group update" info message should only reflect
                     // the "change author" if the change/diff reflects a
                     // single revision.  Eventually there will be gaps in
@@ -717,6 +712,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     // the service. This is one.
                     let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
                     groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
+                } else {
+                    owsAssertDebug(groupChange.changeActionsProto == nil
+                                   || groupChange.changeActionsProto?.sourceUuid != nil,
+                                   "explicit changes should always have authors")
                 }
 
                 // We should only replace placeholder models using
@@ -750,15 +749,18 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     newGroupModel = try builder.build(transaction: transaction)
                     newDisappearingMessageToken = snapshot.disappearingMessageToken
                     newProfileKeys = snapshot.profileKeys
-                } else {
+                } else if let changeActionsProto = groupChange.changeActionsProto {
                     let changedGroupModel = try GroupsV2IncomingChanges.applyChangesToGroupModel(groupThread: groupThread,
                                                                                                  changeActionsProto: changeActionsProto,
-                                                                                                 downloadedAvatars: diff.downloadedAvatars,
+                                                                                                 downloadedAvatars: groupChange.downloadedAvatars,
                                                                                                  groupModelOptions: groupModelOptions,
                                                                                                  transaction: transaction)
                     newGroupModel = changedGroupModel.newGroupModel
                     newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
                     newProfileKeys = changedGroupModel.profileKeys
+                } else {
+                    owsFailDebug("neither a snapshot nor a change action (should have been validated earlier)")
+                    continue
                 }
 
                 // We should only replace placeholder models using
@@ -840,26 +842,30 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let snapshot = firstGroupChange.snapshot else {
                 throw OWSAssertionError("Missing snapshot.")
             }
-            // Many change actions have author info, e.g. addedByUserID. But we can
-            // safely assume that all actions in the "change actions" have the same author.
-            guard let changeAuthorUuidData = firstGroupChange.diff.changeActionsProto.sourceUuid else {
-                throw OWSAssertionError("Missing changeAuthorUuid.")
+
+            var groupUpdateSourceAddress: SignalServiceAddress?
+            if let changeAuthorUuidData = firstGroupChange.changeActionsProto?.sourceUuid {
+                // Many change actions have author info, e.g. addedByUserID. But we can
+                // safely assume that all actions in the "change actions" have the same author.
+                //
+                // Some userIds/uuidCiphertexts can be validated by
+                // the service. This is one.
+                let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+                groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
+            } else {
+                owsAssertDebug(firstGroupChange.changeActionsProto == nil
+                               || firstGroupChange.changeActionsProto?.sourceUuid != nil,
+                               "explicit changes should always have authors")
             }
-            // Some userIds/uuidCiphertexts can be validated by
-            // the service. This is one.
-            let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
 
             var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
                                                                      transaction: transaction)
-            if snapshot.revision == 0,
-               let localUuid = tsAccountManager.localUuid,
-               localUuid == changeAuthorUuid {
+            if snapshot.revision == 0, groupUpdateSourceAddress?.isLocalAddress == true {
                 builder.wasJustCreatedByLocalUser = true
             }
 
             let newGroupModel = try builder.build(transaction: transaction)
 
-            let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
             let newDisappearingMessageToken = snapshot.disappearingMessageToken
             let didAddLocalUserToV2Group = self.didAddLocalUserToV2Group(groupChange: firstGroupChange,
                                                                          groupV2Params: groupV2Params)
@@ -887,12 +893,15 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         guard let localUuid = tsAccountManager.localUuid else {
             return false
         }
-        if groupChange.diff.revision == 0 {
+        if groupChange.revision == 0 {
             // Revision 0 is a special case and won't have actions to
             // reflect the initial membership.
             return true
         }
-        let changeActionsProto = groupChange.diff.changeActionsProto
+        guard let changeActionsProto = groupChange.changeActionsProto else {
+            // We're missing a change here, so we can't assume this is how we got into the group.
+            return false
+        }
 
         for action in changeActionsProto.addMembers {
             do {
