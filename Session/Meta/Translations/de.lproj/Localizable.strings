@@ -26,6 +26,24 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Anhang";
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Fehler beim Senden des Anhangs";
+/* Attachment error message for image attachments which could not be converted to JPEG */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Bild kann nicht konvertiert werden.";
+/* Attachment error message for video attachments which could not be converted to MP4 */
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Video kann nicht verarbeitet werden.";
+/* Attachment error message for image attachments which cannot be parsed */
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Bild kann nicht geparst werden.";
+/* Attachment error message for image attachments in which metadata could not be removed */
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Metadaten können nicht aus dem Bild entfernt werden.";
+/* Attachment error message for image attachments which could not be resized */
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Bildgröße kann nicht geändert werden.";
+/* Attachment error message for attachments whose data exceed file size limits */
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Anhang ist zu groß.";
+/* Attachment error message for attachments with invalid data */
+"ATTACHMENT_ERROR_INVALID_DATA" = "Anhang besitzt ungültigen Inhalt.";
+/* Attachment error message for attachments with an invalid file format */
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Anhang besitzt ein ungültiges Dateiformat.";
+/* Attachment error message for attachments without any data */
+"ATTACHMENT_ERROR_MISSING_DATA" = "Anhang ist leer.";
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Auswählen des Dokuments gescheitert.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
@@ -269,7 +287,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Anzeigen";
 /* No comment provided by engineer. */
-"OK" = "Okay";
+"BUTTON_OK" = "Okay";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ hat verschwindende Nachrichten deaktiviert.";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
@@ -543,6 +561,10 @@
 "vc_share_title" = "Mit Session teilen";
 "vc_share_loading_message" = "Anlagen werden vorbereitet...";
 "vc_share_sending_message" = "Wird gesendet ...";
+"vc_share_link_previews_unsecure" = "Preview not loaded for unsecure link";
+"vc_share_link_previews_error" = "Unable to load preview";
+"vc_share_link_previews_disabled_title" = "Link Previews Disabled";
+"vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "Gruppeneinladung öffnen";
 "vc_conversation_settings_invite_button_title" = "Mitglieder hinzufügen";
 "vc_settings_faq_button_title" = "FAQ";

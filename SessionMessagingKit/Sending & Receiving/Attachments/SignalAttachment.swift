@@ -114,6 +114,9 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var captionText: String?
+    
+    @objc
+    public var linkPreviewDraft: OWSLinkPreviewDraft?
 
     @objc
     public var data: Data {
@@ -291,6 +294,15 @@ public class SignalAttachment: NSObject {
         } catch {
             return nil
         }
+    }
+    
+    @objc
+    public func text() -> String? {
+        guard let text = String(data: dataSource.data(), encoding: .utf8) else {
+            return nil
+        }
+        
+        return text
     }
 
     // Returns the MIME type for this attachment or nil if no MIME type

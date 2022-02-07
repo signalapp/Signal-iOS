@@ -146,13 +146,13 @@ final class NukeDataModal : Modal {
                         message = String(format: NSLocalizedString("dialog_clear_all_data_deletion_failed_2", comment: ""), String(potentiallyMaliciousSnodes.count), potentiallyMaliciousSnodes.joined(separator: ", "))
                     }
                     let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
                     self?.presentAlert(alert)
                 }
             }.catch(on: DispatchQueue.main) { error in
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                 let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
                 self?.presentAlert(alert)
             }
         }
