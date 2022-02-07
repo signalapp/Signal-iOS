@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "BlockListViewController.h"
@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
             @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
 
         for (TSGroupModel *blockedGroup in blockedGroups) {
-            UIImage *_Nullable image = blockedGroup.groupAvatarImage;
+            UIImage *_Nullable image = blockedGroup.avatarImage;
             if (!image) {
                 image = [self.avatarBuilder avatarImageForGroupId:blockedGroup.groupId
                                                    diameterPoints:AvatarBuilder.standardAvatarSizePoints];

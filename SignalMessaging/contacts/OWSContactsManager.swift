@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -144,7 +144,7 @@ fileprivate extension OWSContactsManager {
         if cache.contains(groupThread: groupThread) {
             return false
         }
-        if nil == groupThread.groupModel.groupAvatarData {
+        if nil == groupThread.groupModel.avatarHash {
             // DO NOT add to the cache.
             return false
         }

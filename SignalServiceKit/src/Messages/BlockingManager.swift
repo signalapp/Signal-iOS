@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -133,7 +133,6 @@ public class BlockingManager: NSObject {
             // Reduce memory usage by discarding group avatars.
             var blockedGroupMap = [Data: TSGroupModel]()
             for groupModel in state.blockedGroupMap.values {
-                groupModel.discardGroupAvatarForBlockingManager()
                 blockedGroupMap[groupModel.groupId] = groupModel
             }
 

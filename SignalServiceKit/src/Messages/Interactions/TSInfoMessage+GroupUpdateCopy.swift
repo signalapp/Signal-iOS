@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -331,8 +331,8 @@ extension GroupUpdateCopy {
             }
         }
 
-        if oldGroupModel.groupAvatarData != newGroupModel.groupAvatarData {
-            if let toGroupAvatarData = newGroupModel.groupAvatarData, toGroupAvatarData.count > 0 {
+        if oldGroupModel.avatarHash != newGroupModel.avatarHash {
+            if !newGroupModel.avatarHash.isEmptyOrNil {
                 switch updater {
                 case .localUser:
                     addItem(.groupAvatar, copy: NSLocalizedString("GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER",

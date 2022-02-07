@@ -161,6 +161,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_cullInvalidIdentityKeySendingErrors
         case dataMigration_moveToThreadAssociatedData
         case dataMigration_senderKeyStoreKeyIdMigration
+        case dataMigration_migrateGroupAvatarsToDisk
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -1656,7 +1657,7 @@ public class GRDBSchemaMigrator: NSObject {
 
             TSGroupThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, _) in
                 guard let groupThread = thread as? TSGroupThread else { return }
-                guard let avatarData = groupThread.groupModel.groupAvatarData else { return }
+                guard let avatarData = groupThread.groupModel.legacyAvatarData else { return }
                 guard !TSGroupModel.isValidGroupAvatarData(avatarData) else { return }
 
                 var builder = groupThread.groupModel.asBuilder
@@ -1759,6 +1760,23 @@ public class GRDBSchemaMigrator: NSObject {
             defer { transaction.finalizeTransaction() }
 
             SenderKeyStore.performKeyIdMigration(transaction: transaction.asAnyWrite)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_migrateGroupAvatarsToDisk.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            let cursor = TSThread.grdbFetchCursor(
+                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
+                transaction: transaction
+            )
+
+            while let thread = try cursor.next() as? TSGroupThread {
+                try autoreleasepool {
+                    try thread.groupModel.migrateLegacyAvatarDataToDisk()
+                    thread.anyUpsert(transaction: transaction.asAnyWrite)
+                }
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel+NSCoding.h>
@@ -39,9 +39,9 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSGroupModelComparisonMode) {
 @property (nonatomic, readonly, nullable) SignalServiceAddress *addedByAddress;
 
 #if TARGET_OS_IOS
-@property (nonatomic, readonly, nullable) UIImage *groupAvatarImage;
 // This data should always be in PNG format.
-@property (nonatomic, readonly, nullable) NSData *groupAvatarData;
+@property (nonatomic, nullable) NSData *legacyAvatarData;
+@property (nonatomic, nullable) NSString *avatarHash;
 
 @property (nonatomic, readonly) GroupsVersion groupsVersion;
 @property (nonatomic, readonly) GroupMembership *groupMembership;
@@ -66,9 +66,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSGroupModelComparisonMode) {
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
 
 + (NSData *)generateRandomV1GroupId;
-
-// This method should only be used by the blocking manager.
-- (void)discardGroupAvatarForBlockingManager;
 
 @end
 

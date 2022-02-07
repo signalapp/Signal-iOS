@@ -110,7 +110,7 @@ public class GroupsV2Protos {
         groupBuilder.setTitle(groupTitleEncrypted)
 
         let hasAvatarUrl = groupModel.avatarUrlPath != nil
-        let hasAvatarData = groupModel.groupAvatarData != nil
+        let hasAvatarData = groupModel.avatarData != nil
         guard hasAvatarData == hasAvatarUrl else {
             throw OWSAssertionError("hasAvatarData: (\(hasAvatarData)) != hasAvatarUrl: (\(hasAvatarUrl))")
         }

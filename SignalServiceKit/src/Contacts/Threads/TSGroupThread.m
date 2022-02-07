@@ -148,8 +148,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
             break;
     }
 
-    BOOL didAvatarChange = ![NSObject isNullableObject:newGroupModel.groupAvatarData
-                                               equalTo:self.groupModel.groupAvatarData];
+    BOOL didAvatarChange = ![NSObject isNullableObject:newGroupModel.avatarHash equalTo:self.groupModel.avatarHash];
 
     [self anyUpdateGroupThreadWithTransaction:transaction
                                         block:^(TSGroupThread *thread) {

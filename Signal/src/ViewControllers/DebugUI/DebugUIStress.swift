@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,7 @@ public extension DebugUIStress {
             return GroupManager.localCreateNewGroup(members: oldGroupThread.groupModel.groupMembers,
                                                     groupId: nil,
                                                     name: groupName,
-                                                    avatarData: oldGroupThread.groupModel.groupAvatarData,
+                                                    avatarData: oldGroupThread.groupModel.avatarData,
                                                     disappearingMessageToken: .disabledToken,
                                                     newGroupSeed: nil,
                                                     shouldSendMessage: false)
@@ -54,7 +54,7 @@ public extension DebugUIStress {
             let newGroupThread = try self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
                 let newGroupThread = try GroupManager.createGroupForTests(members: oldGroupThread.groupModel.groupMembers,
                                                                           name: groupName,
-                                                                          avatarData: oldGroupThread.groupModel.groupAvatarData,
+                                                                          avatarData: oldGroupThread.groupModel.avatarData,
                                                                           groupId: nil,
                                                                           groupsVersion: .V1,
                                                                           transaction: transaction)
@@ -105,7 +105,7 @@ public extension DebugUIStress {
             return GroupManager.localCreateNewGroup(members: members,
                                                     groupId: nil,
                                                     name: groupName,
-                                                    avatarData: oldGroupThread.groupModel.groupAvatarData,
+                                                    avatarData: oldGroupThread.groupModel.avatarData,
                                                     disappearingMessageToken: .disabledToken,
                                                     newGroupSeed: nil,
                                                     shouldSendMessage: false)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -94,7 +94,7 @@ public class CVLoader: NSObject {
                         != (prevGroupModel as? TSGroupModelV2)?.descriptionText
                     return (groupModel.groupName != prevGroupModel.groupName ||
                                 groupDescriptionDidChange ||
-                                groupModel.groupAvatarData != prevGroupModel.groupAvatarData ||
+                                groupModel.avatarHash != prevGroupModel.avatarHash ||
                                 groupModel.groupMembership.fullMembers.count != prevGroupModel.groupMembership.fullMembers.count)
                 }()
 

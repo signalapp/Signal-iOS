@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,7 +81,7 @@ class GroupAttributesEditorHelper: NSObject {
             groupId: groupModel.groupId,
             groupNameOriginal: groupModel.groupName,
             groupDescriptionOriginal: (groupModel as? TSGroupModelV2)?.descriptionText,
-            avatarOriginalData: groupModel.groupAvatarData,
+            avatarOriginalData: groupModel.avatarData,
             iconViewSize: iconViewSize,
             renderDefaultAvatarWhenCleared: renderDefaultAvatarWhenCleared
         )

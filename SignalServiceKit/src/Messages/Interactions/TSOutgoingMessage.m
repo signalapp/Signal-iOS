@@ -1250,7 +1250,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupModel.groupId];
     [groupBuilder setType:groupMessageType];
     if (groupMessageType == SSKProtoGroupContextTypeUpdate) {
-        if (groupModel.groupAvatarData != nil && self.attachmentIds.count == 1) {
+        if (groupModel.avatarHash != nil && self.attachmentIds.count == 1) {
             attachmentWasGroupAvatar = YES;
             SSKProtoAttachmentPointer *_Nullable attachmentProto =
                 [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject transaction:transaction];

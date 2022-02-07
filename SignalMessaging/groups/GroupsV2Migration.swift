@@ -574,10 +574,11 @@ fileprivate extension GroupsV2Migration {
                 self.groupsV2Impl.tryToEnsureProfileKeyCredentials(for: Array(membersToMigrate),
                                                                    ignoreMissingProfiles: true)
             }.then(on: .global()) { () throws -> Promise<String?> in
-                guard let avatarData = unmigratedState.groupThread.groupModel.groupAvatarData else {
+                guard let avatarData = unmigratedState.groupThread.groupModel.avatarData else {
                     // No avatar to upload.
                     return Promise.value(nil)
                 }
+
                 // Upload avatar.
                 return firstly(on: .global()) { () -> Promise<String> in
                     return self.groupsV2Impl.uploadGroupAvatar(avatarData: avatarData,
@@ -648,12 +649,12 @@ fileprivate extension GroupsV2Migration {
         groupModelBuilder.isPlaceholderModel = false
 
         // We should either have both avatarData and avatarUrlPath or neither.
-        if let avatarData = v1GroupModel.groupAvatarData,
+        if let avatarData = v1GroupModel.avatarData,
             let avatarUrlPath = avatarUrlPath {
             groupModelBuilder.avatarData = avatarData
             groupModelBuilder.avatarUrlPath = avatarUrlPath
         } else {
-            owsAssertDebug(v1GroupModel.groupAvatarData == nil)
+            owsAssertDebug(v1GroupModel.avatarData == nil)
             owsAssertDebug(avatarUrlPath == nil)
             groupModelBuilder.avatarData = nil
             groupModelBuilder.avatarUrlPath = nil

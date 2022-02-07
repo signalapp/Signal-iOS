@@ -826,13 +826,13 @@ public class GroupManager: NSObject {
         }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
-            guard let avatarData = proposedGroupModel.groupAvatarData else {
-                // No avatar to upload.
-                return Promise.value(nil)
-            }
-            if oldGroupModel.groupAvatarData == avatarData && oldGroupModel.avatarUrlPath != nil {
+            if oldGroupModel.avatarHash == proposedGroupModel.avatarHash && oldGroupModel.avatarUrlPath != nil {
                 // Skip redundant upload; the avatar hasn't changed.
                 return Promise.value(oldGroupModel.avatarUrlPath)
+            }
+            guard let avatarData = proposedGroupModel.avatarData else {
+                // No avatar to upload.
+                return Promise.value(nil)
             }
             return firstly {
                 // Upload avatar.
@@ -969,7 +969,7 @@ public class GroupManager: NSObject {
         }
 
         let hasAvatarUrlPath = proposedGroupModel.avatarUrlPath != nil
-        let hasAvatarData = proposedGroupModel.groupAvatarData != nil
+        let hasAvatarData = proposedGroupModel.avatarData != nil
         guard hasAvatarUrlPath == hasAvatarData else {
             throw OWSAssertionError("hasAvatarUrlPath: \(hasAvatarData) != hasAvatarData.")
         }
@@ -1631,7 +1631,7 @@ public class GroupManager: NSObject {
             // V1 group updates need to include the group avatar (if any)
             // as an attachment.
             if thread.isGroupV1Thread,
-               let avatarData = groupModel.groupAvatarData,
+               let avatarData = groupModel.avatarData,
                avatarData.count > 0 {
                 let imageFormat = (avatarData as NSData).imageMetadata(withPath: nil, mimeType: nil).imageFormat
                 let fileExtension = (imageFormat == .png) ? "png" : "jpg"
@@ -1696,7 +1696,7 @@ public class GroupManager: NSObject {
             // So, if a new v1 group has an avatar, we need to send a group update
             // message.
             guard thread.groupModel.groupsVersion == .V1,
-                  thread.groupModel.groupAvatarData != nil else {
+                  thread.groupModel.avatarHash != nil else {
                 return Promise.value(())
             }
             return self.sendGroupUpdateMessage(thread: thread)

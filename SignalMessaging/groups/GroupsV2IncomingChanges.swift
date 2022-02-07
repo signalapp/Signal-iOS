@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,7 +81,7 @@ public class GroupsV2IncomingChanges: Dependencies {
 
         var newGroupName: String? = oldGroupModel.groupName
         var newGroupDescription: String? = oldGroupModel.descriptionText
-        var newAvatarData: Data? = oldGroupModel.groupAvatarData
+        var newAvatarData: Data? = oldGroupModel.avatarData
         var newAvatarUrlPath = oldGroupModel.avatarUrlPath
         var newInviteLinkPassword: Data? = oldGroupModel.inviteLinkPassword
         var newIsAnnouncementsOnly: Bool = oldGroupModel.isAnnouncementsOnly

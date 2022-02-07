@@ -176,7 +176,7 @@ public class TSGroupModelV2: TSGroupModel {
         result += "groupId: \(groupId.hexadecimalString),\n"
         result += "groupsVersion: \(groupsVersion),\n"
         result += "groupName: \(String(describing: groupName)),\n"
-        result += "groupAvatarData: \(String(describing: groupAvatarData?.hexadecimalString.prefix(32))),\n"
+        result += "avatarHash: \(String(describing: avatarHash)),\n"
         result += "membership: \(groupMembership.debugDescription),\n"
         result += "access: \(access.debugDescription),\n"
         result += "secretParamsData: \(secretParamsData.hexadecimalString.prefix(32)),\n"
@@ -263,5 +263,121 @@ public extension TSGroupModel {
             return []
         }
         return groupModelV2.droppedMembers
+    }
+}
+
+@objc
+public extension TSGroupModel {
+    private static let appSharedDataDirectory = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+    static let avatarsDirectory = URL(fileURLWithPath: "GroupAvatars", isDirectory: true, relativeTo: appSharedDataDirectory)
+    @nonobjc
+    private static let avatarsCache = LRUCache<String, Data>(maxSize: 16, nseMaxSize: 0)
+
+    func migrateLegacyAvatarDataToDisk() throws {
+        guard let legacyAvatarData = legacyAvatarData else { return }
+        try persistAvatarData(legacyAvatarData)
+        self.legacyAvatarData = nil
+    }
+
+    func persistAvatarData(_ data: Data) throws {
+        guard !data.isEmpty else {
+            self.avatarHash = nil
+            return
+        }
+
+        guard Self.isValidGroupAvatarData(data) else {
+            throw OWSAssertionError("Invalid group avatar")
+        }
+
+        let hash = try Self.hash(forAvatarData: data)
+
+        OWSFileSystem.ensureDirectoryExists(Self.avatarsDirectory.path)
+
+        let filePath = Self.avatarFilePath(forHash: hash)
+        guard !OWSFileSystem.fileOrFolderExists(url: filePath) else {
+            // Avatar is already persisted.
+            self.avatarHash = hash
+            return
+        }
+
+        try data.write(to: Self.avatarFilePath(forHash: hash))
+        Self.avatarsCache.set(key: hash, value: data)
+
+        // Note: Old avatars are explicitly not cleaned up from the file
+        // system at this point, as multiple instances of a group model
+        // may be floating around referencing different versions of
+        // the avatar. We only purge old avatars from the file system
+        // when orphan data cleaner deems it safe to do so.
+
+        self.avatarHash = hash
+    }
+
+    class func hash(forAvatarData avatarData: Data) throws -> String {
+        guard let digest = Cryptography.computeSHA256Digest(avatarData) else {
+            throw OWSAssertionError("Unexpectedly failed to calculate avatar digest")
+        }
+
+        return digest.hexadecimalString
+    }
+
+    var avatarData: Data? {
+        if let avatarHash = avatarHash, let cachedData = Self.avatarsCache.object(forKey: avatarHash) {
+            return cachedData
+        }
+
+        guard let fileName = avatarFileName else { return nil }
+        let filePath = URL(fileURLWithPath: fileName, relativeTo: Self.avatarsDirectory)
+
+        let avatarData: Data
+        do {
+            avatarData = try Data(contentsOf: filePath)
+        } catch {
+            owsFailDebug("Failed to read group avatar data \(error)")
+            return nil
+        }
+
+        guard avatarData.ows_isValidImage else {
+            owsFailDebug("Invalid group avatar data.")
+            return nil
+        }
+
+        return avatarData
+    }
+
+    var avatarImage: UIImage? {
+        guard let avatarData = avatarData else {
+            return nil
+        }
+        return UIImage(data: avatarData)
+    }
+
+    var avatarFileName: String? {
+        guard let hash = avatarHash else { return nil }
+        return Self.avatarFileName(forHash: hash)
+    }
+
+    static func avatarFileName(forHash hash: String) -> String {
+        // All group avatars are PNGs, use the appropriate file extension.
+        return "\(hash).png"
+    }
+
+    static func avatarFilePath(forHash hash: String) -> URL {
+        URL(fileURLWithPath: avatarFileName(forHash: hash), relativeTo: avatarsDirectory)
+    }
+
+    class func allGroupAvatarFilePaths(transaction: SDSAnyReadTransaction) throws -> Set<String> {
+        let cursor = TSThread.grdbFetchCursor(
+            sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
+            transaction: transaction.unwrapGrdbRead
+        )
+
+        var filePaths = Set<String>()
+
+        while let thread = try cursor.next() as? TSGroupThread {
+            guard let avatarHash = thread.groupModel.avatarHash else { continue }
+            filePaths.insert(avatarFilePath(forHash: avatarHash).path)
+        }
+
+        return filePaths
     }
 }

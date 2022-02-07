@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -485,7 +485,7 @@ public class AvatarBuilder: NSObject {
                                   diameterPixels: CGFloat,
                                   transaction: SDSAnyReadTransaction) -> RequestType {
         func requestTypeForGroup(groupThread: TSGroupThread) -> RequestType {
-            if let avatarData = groupThread.groupModel.groupAvatarData,
+            if let avatarData = groupThread.groupModel.avatarData,
                avatarData.ows_isValidImage {
                 let digestString = avatarData.sha1Base64DigestString
                 return .group(groupId: groupThread.groupId, avatarData: avatarData, digestString: digestString)

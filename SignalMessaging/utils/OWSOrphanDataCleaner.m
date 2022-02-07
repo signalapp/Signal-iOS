@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOrphanDataCleaner.h"
@@ -298,6 +298,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
+    NSSet<NSString *> *_Nullable allGroupAvatarFilePaths =
+        [self filePathsInDirectorySafe:TSGroupModel.avatarsDirectory.path];
+    if (!allGroupAvatarFilePaths || !self.isMainAppAndActive) {
+        return nil;
+    }
+
     NSString *stickersDirPath = StickerManager.cacheDirUrl.path;
     NSSet<NSString *> *_Nullable allStickerFilePaths = [self filePathsInDirectorySafe:stickersDirPath];
     if (!allStickerFilePaths || !self.isMainAppAndActive) {
@@ -315,6 +321,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths unionSet:sharedDataAttachmentFilePaths];
     [allOnDiskFilePaths unionSet:legacyProfileAvatarsFilePaths];
     [allOnDiskFilePaths unionSet:sharedDataProfileAvatarFilePaths];
+    [allOnDiskFilePaths unionSet:allGroupAvatarFilePaths];
     [allOnDiskFilePaths unionSet:allStickerFilePaths];
     [allOnDiskFilePaths unionSet:allVoiceMessageFilePaths];
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
@@ -364,7 +371,15 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         profileAvatarFilePaths = [OWSProfileManager allProfileAvatarFilePathsWithTransaction:transaction];
     }];
 
-    if (!self.isMainAppAndActive) {
+    __block NSSet<NSString *> *groupAvatarFilePaths;
+    __block NSError *groupAvatarFilePathError;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        groupAvatarFilePaths = [TSGroupModel allGroupAvatarFilePathsWithTransaction:transaction
+                                                                              error:&groupAvatarFilePathError];
+    }];
+
+    if (groupAvatarFilePathError) {
+        OWSFailDebug(@"Failed to query group avatar file paths %@", groupAvatarFilePathError);
         return nil;
     }
 
@@ -571,6 +586,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *orphanFilePaths = [allOnDiskFilePaths mutableCopy];
     [orphanFilePaths minusSet:allAttachmentFilePaths];
     [orphanFilePaths minusSet:profileAvatarFilePaths];
+    [orphanFilePaths minusSet:groupAvatarFilePaths];
     [orphanFilePaths minusSet:voiceMessageDraftFilePaths];
     [orphanFilePaths minusSet:activeStickerFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [allAttachmentFilePaths mutableCopy];

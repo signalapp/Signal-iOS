@@ -448,7 +448,7 @@ public struct GroupV2DownloadedAvatars {
     }
 
     public static func from(groupModel: TSGroupModelV2) -> GroupV2DownloadedAvatars {
-        return from(avatarData: groupModel.groupAvatarData, avatarUrlPath: groupModel.avatarUrlPath)
+        return from(avatarData: groupModel.avatarData, avatarUrlPath: groupModel.avatarUrlPath)
     }
 
     public static func from(changes: GroupsV2OutgoingChanges) -> GroupV2DownloadedAvatars {

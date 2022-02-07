@@ -704,7 +704,7 @@ NS_ASSUME_NONNULL_BEGIN
                     //
                     // In that case, ask the sender for the group details now so we can learn the
                     // members, title, and avatar.
-                    if (groupThread.groupModel.groupName == nil && groupThread.groupModel.groupAvatarData == nil
+                    if (groupThread.groupModel.groupName == nil && groupThread.groupModel.avatarHash == nil
                         && groupThread.groupModel.nonLocalGroupMembers.count == 0) {
                         OWSFailDebug(@"Empty v1 group.");
                     }
@@ -1296,7 +1296,7 @@ NS_ASSUME_NONNULL_BEGIN
             UpsertGroupResult *_Nullable result =
                 [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
                                                                 name:groupContext.name
-                                                          avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                          avatarData:oldGroupThread.groupModel.avatarData
                                                              members:newMembersWithoutLocalUser.allObjects
                                             disappearingMessageToken:disappearingMessageToken
                                             groupUpdateSourceAddress:nil
@@ -1323,7 +1323,7 @@ NS_ASSUME_NONNULL_BEGIN
             UpsertGroupResult *_Nullable result =
                 [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
                                                                 name:groupContext.name
-                                                          avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                          avatarData:oldGroupThread.groupModel.avatarData
                                                              members:newMembers.allObjects
                                             disappearingMessageToken:disappearingMessageToken
                                             groupUpdateSourceAddress:groupUpdateSourceAddress
@@ -1357,7 +1357,7 @@ NS_ASSUME_NONNULL_BEGIN
             UpsertGroupResult *_Nullable result =
                 [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
                                                                 name:oldGroupThread.groupModel.groupName
-                                                          avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                          avatarData:oldGroupThread.groupModel.avatarData
                                                              members:newMembers.allObjects
                                             disappearingMessageToken:nil
                                             groupUpdateSourceAddress:groupUpdateSourceAddress

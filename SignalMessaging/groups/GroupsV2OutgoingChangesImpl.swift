@@ -140,14 +140,14 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
             setDescriptionText(newDescription)
         }
 
-        if oldGroupModel.groupAvatarData != newGroupModel.groupAvatarData {
+        if oldGroupModel.avatarHash != newGroupModel.avatarHash {
             let hasAvatarUrlPath = newGroupModel.avatarUrlPath != nil
-            let hasAvatarData = newGroupModel.groupAvatarData != nil
+            let hasAvatarData = newGroupModel.avatarData != nil
             guard hasAvatarUrlPath == hasAvatarData else {
                 throw OWSAssertionError("hasAvatarUrlPath: \(hasAvatarData) != hasAvatarData.")
             }
 
-            setAvatar(avatarData: newGroupModel.groupAvatarData,
+            setAvatar(avatarData: newGroupModel.avatarData,
                       avatarUrlPath: newGroupModel.avatarUrlPath)
         }
 

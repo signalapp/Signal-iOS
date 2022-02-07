@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -280,7 +280,7 @@ public extension TSGroupModel {
         var builder = TSGroupModelBuilder()
         builder.groupId = self.groupId
         builder.name = self.groupName
-        builder.avatarData = self.groupAvatarData
+        builder.avatarData = self.avatarData
         builder.groupMembership = self.groupMembership
         builder.groupsVersion = self.groupsVersion
         builder.addedByAddress = self.addedByAddress
