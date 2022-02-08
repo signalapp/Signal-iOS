@@ -11,21 +11,6 @@ class AudioMessageView: ManualStackView {
     private var attachment: TSAttachment { audioAttachment.attachment }
     private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
     private var durationSeconds: TimeInterval { audioAttachment.durationSeconds }
-    private var isDownloaded: Bool { audioAttachment.attachmentStream != nil }
-    private var isDownloading: Bool {
-        guard let attachmentPointer = audioAttachment.attachmentPointer else {
-            return false
-        }
-        switch attachmentPointer.state {
-        case .failed, .pendingMessageRequest, .pendingManualDownload:
-            return false
-        case .enqueued, .downloading:
-            return true
-        @unknown default:
-            owsFailDebug("Invalid value.")
-            return false
-        }
-    }
 
     private let isIncoming: Bool
     private weak var componentDelegate: CVComponentDelegate?
@@ -96,7 +81,7 @@ class AudioMessageView: ManualStackView {
         progressSlider.setThumbImage(UIImage(named: "audio_message_thumb")?.asTintedImage(color: thumbColor), for: .normal)
         progressSlider.setMinimumTrackImage(trackImage(color: playedColor), for: .normal)
         progressSlider.setMaximumTrackImage(trackImage(color: unplayedColor), for: .normal)
-        progressSlider.isEnabled = isDownloaded
+        progressSlider.isEnabled = audioAttachment.isDownloaded
         progressSlider.isUserInteractionEnabled = false
 
         waveformContainer.addSubview(progressSlider) { [progressSlider] view in
@@ -112,7 +97,7 @@ class AudioMessageView: ManualStackView {
         playbackTimeLabel.setContentHuggingHigh()
 
         let leftView: UIView
-        if isDownloaded {
+        if audioAttachment.isDownloaded {
             let playPauseAnimation = self.playPauseAnimation
             let playedDotAnimation = self.playedDotAnimation
 

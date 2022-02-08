@@ -3,14 +3,49 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 // Represents a _playable_ audio attachment.
-public class AudioAttachment: NSObject {
-    public enum State {
+public class AudioAttachment {
+    public enum State: Equatable {
         case attachmentStream(attachmentStream: TSAttachmentStream, audioDurationSeconds: TimeInterval)
         case attachmentPointer(attachmentPointer: TSAttachmentPointer)
     }
     public let state: State
+    public let owningMessage: TSMessage?
+
+    // Set at time of init. Value doesn't change even after download completes
+    // to ensure that conversation view diffing catches the need to redraw the cell
+    public let isDownloading: Bool
+
+    public required init?(attachment: TSAttachment, owningMessage: TSMessage?) {
+        if let attachmentStream = attachment as? TSAttachmentStream {
+            let audioDurationSeconds = attachmentStream.audioDurationSeconds()
+            guard audioDurationSeconds > 0 else {
+                return nil
+            }
+            state = .attachmentStream(attachmentStream: attachmentStream, audioDurationSeconds: audioDurationSeconds)
+            isDownloading = false
+        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
+            state = .attachmentPointer(attachmentPointer: attachmentPointer)
+
+            switch attachmentPointer.state {
+            case .failed, .pendingMessageRequest, .pendingManualDownload:
+                isDownloading = false
+            case .enqueued, .downloading:
+                isDownloading = true
+            }
+        } else {
+            owsFailDebug("Invalid attachment.")
+            return nil
+        }
+
+        self.owningMessage = owningMessage
+    }
+}
+
+extension AudioAttachment: Dependencies {
+    var isDownloaded: Bool { attachmentStream != nil }
 
     public var attachment: TSAttachment {
         switch state {
@@ -39,7 +74,6 @@ public class AudioAttachment: NSObject {
         }
     }
 
-    public let owningMessage: TSMessage?
 
     public var durationSeconds: TimeInterval {
         switch state {
@@ -48,23 +82,6 @@ public class AudioAttachment: NSObject {
         case .attachmentPointer:
             return 0
         }
-    }
-
-    public required init?(attachment: TSAttachment, owningMessage: TSMessage?) {
-        if let attachmentStream = attachment as? TSAttachmentStream {
-            let audioDurationSeconds = attachmentStream.audioDurationSeconds()
-            guard audioDurationSeconds > 0 else {
-                return nil
-            }
-            state = .attachmentStream(attachmentStream: attachmentStream, audioDurationSeconds: audioDurationSeconds)
-        } else if let attachmentPointer = attachment as? TSAttachmentPointer {
-            state = .attachmentPointer(attachmentPointer: attachmentPointer)
-        } else {
-            owsFailDebug("Invalid attachment.")
-            return nil
-        }
-
-        self.owningMessage = owningMessage
     }
 
     public func markOwningMessageAsViewed() -> Bool {
@@ -84,5 +101,13 @@ public class AudioAttachment: NSObject {
             )
         }
         return true
+    }
+}
+
+extension AudioAttachment: Equatable {
+    public static func == (lhs: AudioAttachment, rhs: AudioAttachment) -> Bool {
+        lhs.state == rhs.state &&
+        lhs.owningMessage == rhs.owningMessage &&
+        lhs.isDownloading == rhs.isDownloading
     }
 }
