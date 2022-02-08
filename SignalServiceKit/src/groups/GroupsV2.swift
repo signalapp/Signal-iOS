@@ -317,35 +317,22 @@ public protocol GroupV2Snapshot {
 
 // MARK: -
 
-public struct GroupV2Diff {
-    public let changeActionsProto: GroupsProtoGroupChangeActions
+public struct GroupV2Change {
+    public var snapshot: GroupV2Snapshot?
+    public var changeActionsProto: GroupsProtoGroupChangeActions?
     public let downloadedAvatars: GroupV2DownloadedAvatars
 
-    public init(changeActionsProto: GroupsProtoGroupChangeActions,
+    public init(snapshot: GroupV2Snapshot?,
+                changeActionsProto: GroupsProtoGroupChangeActions?,
                 downloadedAvatars: GroupV2DownloadedAvatars) {
+        owsAssert(snapshot != nil || changeActionsProto != nil)
+        self.snapshot = snapshot
         self.changeActionsProto = changeActionsProto
         self.downloadedAvatars = downloadedAvatars
     }
 
     public var revision: UInt32 {
-        return changeActionsProto.revision
-    }
-}
-
-// MARK: -
-
-public struct GroupV2Change {
-    public var snapshot: GroupV2Snapshot?
-    public var diff: GroupV2Diff
-
-    public init(snapshot: GroupV2Snapshot?,
-                diff: GroupV2Diff) {
-        self.snapshot = snapshot
-        self.diff = diff
-    }
-
-    public var revision: UInt32 {
-        return diff.revision
+        return changeActionsProto?.revision ?? snapshot!.revision
     }
 }
 
