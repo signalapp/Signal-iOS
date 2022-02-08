@@ -153,7 +153,7 @@
 		7BA68909272A27BE00EFC32F /* SessionCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA68908272A27BE00EFC32F /* SessionCall.swift */; };
 		7BA6890D27325CCC00EFC32F /* SessionCallManager+CXCallController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */; };
 		7BA6890F27325CE300EFC32F /* SessionCallManager+CXProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */; };
-		7BAADFCC27B0EF23007BCF92 /* RemoteVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAADFCB27B0EF23007BCF92 /* RemoteVideoView.swift */; };
+		7BAADFCC27B0EF23007BCF92 /* CallVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAADFCB27B0EF23007BCF92 /* CallVideoView.swift */; };
 		7BAF54CE27ACCEEC003D12F8 /* Storage+RecentSearchResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54CB27ACCEEC003D12F8 /* Storage+RecentSearchResults.swift */; };
 		7BAF54CF27ACCEEC003D12F8 /* GlobalSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54CC27ACCEEC003D12F8 /* GlobalSearchViewController.swift */; };
 		7BAF54D027ACCEEC003D12F8 /* EmptySearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54CD27ACCEEC003D12F8 /* EmptySearchResultCell.swift */; };
@@ -1162,7 +1162,7 @@
 		7BA68908272A27BE00EFC32F /* SessionCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCall.swift; sourceTree = "<group>"; };
 		7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXCallController.swift"; sourceTree = "<group>"; };
 		7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXProvider.swift"; sourceTree = "<group>"; };
-		7BAADFCB27B0EF23007BCF92 /* RemoteVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteVideoView.swift; sourceTree = "<group>"; };
+		7BAADFCB27B0EF23007BCF92 /* CallVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallVideoView.swift; sourceTree = "<group>"; };
 		7BAF54CB27ACCEEC003D12F8 /* Storage+RecentSearchResults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Storage+RecentSearchResults.swift"; sourceTree = "<group>"; };
 		7BAF54CC27ACCEEC003D12F8 /* GlobalSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalSearchViewController.swift; sourceTree = "<group>"; };
 		7BAF54CD27ACCEEC003D12F8 /* EmptySearchResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptySearchResultCell.swift; sourceTree = "<group>"; };
@@ -2113,7 +2113,7 @@
 				7B7CB18F270FB2150079FF93 /* MiniCallView.swift */,
 				7B1581E727210ECC00848B49 /* RenderView.swift */,
 				7B0EFDF52755CC5400FFAAE7 /* CallMissedTipsModal.swift */,
-				7BAADFCB27B0EF23007BCF92 /* RemoteVideoView.swift */,
+				7BAADFCB27B0EF23007BCF92 /* CallVideoView.swift */,
 			);
 			path = "Views & Modals";
 			sourceTree = "<group>";
@@ -5042,7 +5042,7 @@
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
 				B82149C125D605C6009C0F2A /* InfoBanner.swift in Sources */,
 				C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */,
-				7BAADFCC27B0EF23007BCF92 /* RemoteVideoView.swift in Sources */,
+				7BAADFCC27B0EF23007BCF92 /* CallVideoView.swift in Sources */,
 				B8CCF63F23975CFB0091D419 /* JoinOpenGroupVC.swift in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
 				B85357C323A1BD1200AAF6CD /* SeedVC.swift in Sources */,

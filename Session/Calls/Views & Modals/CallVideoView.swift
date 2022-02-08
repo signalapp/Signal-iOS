@@ -2,6 +2,8 @@
 import WebRTC
 import Foundation
 
+// MARK: RemoteVideoView
+
 class RemoteVideoView: RTCMTLVideoView {
     
     override func renderFrame(_ frame: RTCVideoFrame?) {
@@ -57,6 +59,22 @@ class RemoteVideoView: RTCMTLVideoView {
             if frameRatio < 1.5 {
                 self.videoContentMode = .scaleAspectFit
             }
+        }
+    }
+}
+
+// MARK: LocalVideoView
+
+class LocalVideoView: RTCMTLVideoView {
+    
+    override func renderFrame(_ frame: RTCVideoFrame?) {
+        super.renderFrame(frame)
+        DispatchMainThreadSafe {
+            // This is a workaround for a weird issue that
+            // sometimes the rotationOverride is not working
+            // if it is only set once on initialization
+            self.rotationOverride = NSNumber(value: RTCVideoRotation._0.rawValue)
+            self.videoContentMode = .scaleAspectFill
         }
     }
 }

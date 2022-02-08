@@ -20,11 +20,9 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }()
     
     // MARK: UI Components
-    private lazy var localVideoView: RTCMTLVideoView = {
-        let result = RTCMTLVideoView()
+    private lazy var localVideoView: LocalVideoView = {
+        let result = LocalVideoView()
         result.isHidden = !call.isVideoEnabled
-        result.videoContentMode = .scaleAspectFit
-        result.rotationOverride = NSNumber(value: RTCVideoRotation._0.rawValue) 
         result.set(.width, to: 80)
         result.set(.height, to: 173)
         result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
