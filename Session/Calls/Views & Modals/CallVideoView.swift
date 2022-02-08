@@ -55,7 +55,7 @@ class RemoteVideoView: RTCMTLVideoView {
                     self.videoContentMode = .scaleAspectFit
                 }
             }
-            
+            // if not a mobile ratio, always use .scaleAspectFit
             if frameRatio < 1.5 {
                 self.videoContentMode = .scaleAspectFit
             }
