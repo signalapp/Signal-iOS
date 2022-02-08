@@ -4,9 +4,10 @@ import WebRTC
 final class MiniCallView: UIView {
     var callVC: CallVC
     
-    private lazy var remoteVideoView: RTCMTLVideoView = {
-        let result = RTCMTLVideoView()
-        result.contentMode = .scaleAspectFill
+    private lazy var remoteVideoView: RemoteVideoView = {
+        let result = RemoteVideoView()
+        result.videoContentMode = .scaleAspectFit
+        result.backgroundColor = .black
         return result
     }()
    
@@ -31,8 +32,8 @@ final class MiniCallView: UIView {
     }
     
     private func setUpViewHierarchy() {
-        self.set(.width, to: 80)
-        self.set(.height, to: 173)
+        self.set(.width, to: 160)
+        self.set(.height, to: 160)
         self.layer.masksToBounds = true
         // Background
         let background = getBackgroudView()

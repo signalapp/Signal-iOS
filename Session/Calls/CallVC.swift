@@ -23,17 +23,19 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     private lazy var localVideoView: RTCMTLVideoView = {
         let result = RTCMTLVideoView()
         result.isHidden = !call.isVideoEnabled
-        result.contentMode = .scaleAspectFill
+        result.videoContentMode = .scaleAspectFit
+        result.rotationOverride = NSNumber(value: RTCVideoRotation._0.rawValue) 
         result.set(.width, to: 80)
         result.set(.height, to: 173)
         result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
         return result
     }()
     
-    private lazy var remoteVideoView: RTCMTLVideoView = {
-        let result = RTCMTLVideoView()
+    private lazy var remoteVideoView: RemoteVideoView = {
+        let result = RemoteVideoView()
         result.alpha = 0
-        result.contentMode = .scaleAspectFill
+        result.videoContentMode = .scaleAspectFit
+        result.backgroundColor = .black
         result.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleRemoteVieioViewTapped)))
         return result
     }()
