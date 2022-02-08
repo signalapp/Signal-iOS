@@ -39,3 +39,29 @@ extension Sign {
         return x25519SecretKey
     }
 }
+
+extension Sodium {
+    public typealias SOGSDerivedKey = Data
+    
+    private static let publicKeyBytes: Int = Int(crypto_scalarmult_bytes())
+    private static let sharedSecretBytes: Int = Int(crypto_scalarmult_bytes())
+    
+    public func derivedKey(serverPublicKeyBytes: [UInt8], userKeyBytes: [UInt8]) -> SOGSDerivedKey? {
+        guard serverPublicKeyBytes.count == Sodium.publicKeyBytes && userKeyBytes.count == Sodium.publicKeyBytes else { return nil }
+        
+        let sharedSecretPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.sharedSecretBytes)
+        let result = userKeyBytes.withUnsafeBytes { (userPublicKeyPtr: UnsafeRawBufferPointer) in
+            return serverPublicKeyBytes.withUnsafeBytes { (serverPublicKeyPtr: UnsafeRawBufferPointer) -> Int32 in
+                guard let serverKeyBaseAddress: UnsafePointer<UInt8> = serverPublicKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self), let userKeyBaseAddress: UnsafePointer<UInt8> = userPublicKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
+                    return -1
+                }
+                
+                return crypto_scalarmult(sharedSecretPtr, serverKeyBaseAddress, userKeyBaseAddress)
+            }
+        }
+        
+        guard result == 0 else { return nil }
+        
+        return Data(bytes: sharedSecretPtr, count: Sodium.sharedSecretBytes)
+    }
+}
