@@ -154,6 +154,7 @@
 		7BA6890D27325CCC00EFC32F /* SessionCallManager+CXCallController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */; };
 		7BA6890F27325CE300EFC32F /* SessionCallManager+CXProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */; };
 		7BAADFCC27B0EF23007BCF92 /* CallVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAADFCB27B0EF23007BCF92 /* CallVideoView.swift */; };
+		7BAADFCE27B215FE007BCF92 /* UIView+Draggable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAADFCD27B215FE007BCF92 /* UIView+Draggable.swift */; };
 		7BAF54CE27ACCEEC003D12F8 /* Storage+RecentSearchResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54CB27ACCEEC003D12F8 /* Storage+RecentSearchResults.swift */; };
 		7BAF54CF27ACCEEC003D12F8 /* GlobalSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54CC27ACCEEC003D12F8 /* GlobalSearchViewController.swift */; };
 		7BAF54D027ACCEEC003D12F8 /* EmptySearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54CD27ACCEEC003D12F8 /* EmptySearchResultCell.swift */; };
@@ -1163,6 +1164,7 @@
 		7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXCallController.swift"; sourceTree = "<group>"; };
 		7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXProvider.swift"; sourceTree = "<group>"; };
 		7BAADFCB27B0EF23007BCF92 /* CallVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallVideoView.swift; sourceTree = "<group>"; };
+		7BAADFCD27B215FE007BCF92 /* UIView+Draggable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Draggable.swift"; sourceTree = "<group>"; };
 		7BAF54CB27ACCEEC003D12F8 /* Storage+RecentSearchResults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Storage+RecentSearchResults.swift"; sourceTree = "<group>"; };
 		7BAF54CC27ACCEEC003D12F8 /* GlobalSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalSearchViewController.swift; sourceTree = "<group>"; };
 		7BAF54CD27ACCEEC003D12F8 /* EmptySearchResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptySearchResultCell.swift; sourceTree = "<group>"; };
@@ -2101,6 +2103,7 @@
 				B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */,
 				C31A6C59247F214E001123EF /* UIView+Glow.swift */,
 				C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */,
+				7BAADFCD27B215FE007BCF92 /* UIView+Draggable.swift */,
 				7BFD1A892745C4F000FB91B9 /* Permissions.swift */,
 			);
 			path = Utilities;
@@ -5055,6 +5058,7 @@
 				7B1581E827210ECC00848B49 /* RenderView.swift in Sources */,
 				7BC707F227290ACB002817AD /* SessionCallManager.swift in Sources */,
 				3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */,
+				7BAADFCE27B215FE007BCF92 /* UIView+Draggable.swift in Sources */,
 				45C0DC1B1E68FE9000E04C47 /* UIApplication+OWS.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				B8041A9525C8FA1D003C2166 /* MediaLoaderView.swift in Sources */,

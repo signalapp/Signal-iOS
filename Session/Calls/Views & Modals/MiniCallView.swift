@@ -6,6 +6,7 @@ final class MiniCallView: UIView {
     
     private lazy var remoteVideoView: RemoteVideoView = {
         let result = RemoteVideoView()
+        result.alpha = 0
         result.videoContentMode = .scaleAspectFit
         result.backgroundColor = .black
         return result
@@ -17,7 +18,7 @@ final class MiniCallView: UIView {
     init(from callVC: CallVC) {
         self.callVC = callVC
         super.init(frame: CGRect.zero)
-        self.backgroundColor = .black
+        self.backgroundColor = UIColor.init(white: 0, alpha: 0.8)
         setUpViewHierarchy()
         setUpGestureRecognizers()
         MiniCallView.current = self
@@ -32,8 +33,9 @@ final class MiniCallView: UIView {
     }
     
     private func setUpViewHierarchy() {
-        self.set(.width, to: 160)
-        self.set(.height, to: 160)
+        self.set(.width, to: 100)
+        self.set(.height, to: 100)
+        self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
         // Background
         let background = getBackgroudView()
@@ -57,11 +59,6 @@ final class MiniCallView: UIView {
         imageView.set(.width, to: 64)
         imageView.set(.height, to: 64)
         imageView.center(in: background)
-        let blurView = UIView()
-        blurView.alpha = 0.5
-        blurView.backgroundColor = .black
-        background.addSubview(blurView)
-        blurView.autoPinEdgesToSuperviewEdges()
         return background
     }
     
@@ -69,8 +66,7 @@ final class MiniCallView: UIView {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         tapGestureRecognizer.numberOfTapsRequired = 1
         addGestureRecognizer(tapGestureRecognizer)
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
-        addGestureRecognizer(panGestureRecognizer)
+        makeViewDraggable()
     }
     
     // MARK: Interaction
@@ -80,42 +76,11 @@ final class MiniCallView: UIView {
         presentingVC.present(callVC, animated: true, completion: nil)
     }
     
-    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
-        let location = gesture.location(in: self.superview!)
-        if let draggedView = gesture.view {
-            draggedView.center = location
-            if gesture.state == .ended {
-                let sideMargin = 40 + Values.verySmallSpacing
-                if draggedView.frame.midX >= self.superview!.layer.frame.width / 2 {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.x = self.superview!.layer.frame.width - sideMargin
-                    }, completion: nil)
-                }else{
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.x = sideMargin
-                    }, completion: nil)
-                }
-                let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
-                if draggedView.frame.minY <= topMargin {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = topMargin + draggedView.frame.size.height / 2
-                    }, completion: nil)
-                }
-                let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-                if draggedView.frame.maxY >= self.superview!.layer.frame.height {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = self.layer.frame.height - draggedView.frame.size.height / 2 - bottomMargin
-                    }, completion: nil)
-                }
-            }
-        }
-    }
-    
     public func show() {
         self.alpha = 0.0
         let window = CurrentAppContext().mainWindow!
         window.addSubview(self)
-        self.autoPinEdge(toSuperviewEdge: .right, withInset: Values.smallSpacing)
+        self.autoPinEdge(toSuperviewEdge: .right)
         let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
         self.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {

@@ -25,7 +25,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         result.isHidden = !call.isVideoEnabled
         result.set(.width, to: 80)
         result.set(.height, to: 173)
-        result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
+        result.makeViewDraggable()
         return result
     }()
     
@@ -466,38 +466,6 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 volumeView.setRouteButtonImage(image, for: .normal)
                 volumeView.tintColor = .white
                 volumeView.backgroundColor = UIColor(hex: 0x1F1F1F)
-            }
-        }
-    }
-    
-    // MARK: Pan gesture handling
-    @objc private func handlePanGesture(gesture: UIPanGestureRecognizer) {
-        let location = gesture.location(in: self.view)
-        if let draggedView = gesture.view {
-            draggedView.center = location
-            if gesture.state == .ended {
-                let sideMargin = 40 + Values.verySmallSpacing
-                if draggedView.frame.midX >= self.view.layer.frame.width / 2 {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.x = self.view.layer.frame.width - sideMargin
-                    }, completion: nil)
-                }else{
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.x = sideMargin
-                    }, completion: nil)
-                }
-                let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
-                if draggedView.frame.minY <= topMargin {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = topMargin + draggedView.frame.size.height / 2
-                    }, completion: nil)
-                }
-                let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-                if draggedView.frame.maxY >= self.view.layer.frame.height {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = self.view.layer.frame.height - draggedView.frame.size.height / 2 - bottomMargin
-                    }, completion: nil)
-                }
             }
         }
     }
