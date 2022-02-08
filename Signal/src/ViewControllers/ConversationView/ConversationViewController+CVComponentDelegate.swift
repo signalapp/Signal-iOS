@@ -598,7 +598,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func cvc_didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {
         AssertIsOnMainThread()
-        if spamChallengeResolver.hasOutstandingChallenge {
+        if spamChallengeResolver.isPausingMessages {
             SpamCaptchaViewController.presentActionSheet(from: self)
         } else {
             spamChallengeResolver.retryPausedMessagesIfReady()

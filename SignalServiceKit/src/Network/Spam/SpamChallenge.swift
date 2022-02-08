@@ -17,6 +17,9 @@ class SpamChallenge: Codable {
     /// The date this challenge will expire.
     var expirationDate: Date
 
+    /// Does this challenge pause victim sends for an extended period of time
+    var pausesMessages: Bool { true }
+
     var completionHandler: ((Bool) -> Void)?
 
     enum State: Equatable {

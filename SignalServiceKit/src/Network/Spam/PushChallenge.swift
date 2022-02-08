@@ -7,6 +7,8 @@ class PushChallenge: SpamChallenge, Dependencies {
     private var failureCount: UInt = 0
     private let kMaxFailures = 15
 
+    override var pausesMessages: Bool { false }
+
     init(tokenIn: String? = nil, expiry: Date = .distantFuture) {
         token = tokenIn
         super.init(expiry: expiry)
