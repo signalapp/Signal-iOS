@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -130,8 +130,24 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
-        cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
-        return true
+        if audioAttachment.isDownloaded {
+            cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
+            return true
+
+        } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.uniqueId {
+            Logger.debug("Cancelling in-progress download because of user action: \(interaction.uniqueId):\(pointerId)")
+            Self.attachmentDownloads.cancelDownload(attachmentId: pointerId)
+            return true
+
+        } else if let message = interaction as? TSMessage {
+            Logger.debug("Retrying download for message: \(message.uniqueId)")
+            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            return true
+
+        } else {
+            owsFailDebug("Unexpected message type")
+            return false
+        }
     }
 
     // MARK: - Scrub Audio With Pan
