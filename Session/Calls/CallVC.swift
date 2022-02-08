@@ -34,7 +34,6 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     private lazy var remoteVideoView: RemoteVideoView = {
         let result = RemoteVideoView()
         result.alpha = 0
-        result.videoContentMode = .scaleAspectFit
         result.backgroundColor = .black
         result.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleRemoteVieioViewTapped)))
         return result
