@@ -177,7 +177,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
                 let encryptionKeyPairAsProto = closedGroupControlMessageProto.encryptionKeyPair else { return nil }
             let expirationTimer = closedGroupControlMessageProto.expirationTimer
             do {
-                let encryptionKeyPair = try ECKeyPair(publicKeyData: encryptionKeyPairAsProto.publicKey.removing05PrefixIfNeeded(), privateKeyData: encryptionKeyPairAsProto.privateKey)
+                let encryptionKeyPair = try ECKeyPair(publicKeyData: encryptionKeyPairAsProto.publicKey.removingIdPrefixIfNeeded(), privateKeyData: encryptionKeyPairAsProto.privateKey)
                 kind = .new(publicKey: publicKey, name: name, encryptionKeyPair: encryptionKeyPair,
                     members: closedGroupControlMessageProto.members, admins: closedGroupControlMessageProto.admins, expirationTimer: expirationTimer)
             } catch {

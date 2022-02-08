@@ -325,7 +325,7 @@ public final class OpenGroupAPIV2 : NSObject {
                 return nil
             }
             // Validate the message signature
-            let publicKey = Data(hex: sender.removing05PrefixIfNeeded())
+            let publicKey = Data(hex: sender.removingIdPrefixIfNeeded())
             let isValid = (try? Ed25519.verifySignature(signature, publicKey: publicKey, data: data)) ?? false
             guard isValid else {
                 SNLog("Ignoring message with invalid signature.")

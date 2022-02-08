@@ -377,7 +377,7 @@ public final class SnodeAPI : NSObject {
             return Promise<Set<Snode>> { $0.fulfill(cachedSwarm) }
         } else {
             SNLog("Getting swarm for: \((publicKey == SNSnodeKitConfiguration.shared.storage.getUserPublicKey()) ? "self" : publicKey).")
-            let parameters: [String:Any] = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey ]
+            let parameters: [String:Any] = [ "pubKey" : Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey ]
             return getRandomSnode().then2 { snode in
                 attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
                     invoke(.getSwarm, on: snode, associatedWith: publicKey, parameters: parameters)
@@ -430,7 +430,7 @@ public final class SnodeAPI : NSObject {
 //        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
         // Make the request
         let parameters: JSON = [
-            "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
+            "pubKey" : Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey,
             "lastHash" : lastHash,
 //            "timestamp" : timestamp,
 //            "pubkey_ed25519" : ed25519PublicKey,
@@ -441,7 +441,7 @@ public final class SnodeAPI : NSObject {
 
     public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
         let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
-        let publicKey = Features.useTestnet ? message.recipient.removing05PrefixIfNeeded() : message.recipient
+        let publicKey = Features.useTestnet ? message.recipient.removingIdPrefixIfNeeded() : message.recipient
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
                 let parameters = message.toJSON()
@@ -464,7 +464,7 @@ public final class SnodeAPI : NSObject {
         let storage = SNSnodeKitConfiguration.shared.storage
         guard let userX25519PublicKey = storage.getUserPublicKey(),
             let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
-        let publicKey = Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey
+        let publicKey = Features.useTestnet ? publicKey.removingIdPrefixIfNeeded() : publicKey
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
             getSwarm(for: publicKey).then2 { swarm -> Promise<[String:Bool]> in
                 let snode = swarm.randomElement()!

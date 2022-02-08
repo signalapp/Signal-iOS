@@ -550,7 +550,7 @@ extension MessageReceiver {
         }
         let keyPair: ECKeyPair
         do {
-            keyPair = try ECKeyPair(publicKeyData: proto.publicKey.removing05PrefixIfNeeded(), privateKeyData: proto.privateKey)
+            keyPair = try ECKeyPair(publicKeyData: proto.publicKey.removingIdPrefixIfNeeded(), privateKeyData: proto.privateKey)
         } catch {
             return SNLog("Couldn't parse closed group encryption key pair.")
         }

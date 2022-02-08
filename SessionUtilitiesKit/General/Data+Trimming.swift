@@ -1,18 +1,18 @@
 
 public extension Data {
 
-    func removing05PrefixIfNeeded() -> Data {
+    func removingIdPrefixIfNeeded() -> Data {
         var result = self
-        if result.count == 33 && result.toHexString().hasPrefix("05") { result.removeFirst() }
+        if result.count == 33 && IdPrefix(with: result.toHexString()) != nil { result.removeFirst() }
         return result
     }
 }
 
 @objc public extension NSData {
     
-    @objc func removing05PrefixIfNeeded() -> NSData {
+    @objc func removingIdPrefixIfNeeded() -> NSData {
         var result = self as Data
-        if result.count == 33 && result.toHexString().hasPrefix("05") { result.removeFirst() }
+        if result.count == 33 && IdPrefix(with: result.toHexString()) != nil { result.removeFirst() }
         return result as NSData
     }
 }

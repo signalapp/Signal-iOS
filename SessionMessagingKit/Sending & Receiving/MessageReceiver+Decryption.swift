@@ -6,7 +6,7 @@ extension MessageReceiver {
 
     internal static func decryptWithSessionProtocol(ciphertext: Data, using x25519KeyPair: ECKeyPair) throws -> (plaintext: Data, senderX25519PublicKey: String) {
         let recipientX25519PrivateKey = x25519KeyPair.privateKey
-        let recipientX25519PublicKey = Data(hex: x25519KeyPair.hexEncodedPublicKey.removing05PrefixIfNeeded())
+        let recipientX25519PublicKey = Data(hex: x25519KeyPair.hexEncodedPublicKey.removingIdPrefixIfNeeded())
         let sodium = Sodium()
         let signatureSize = sodium.sign.Bytes
         let ed25519PublicKeySize = sodium.sign.PublicKeyBytes
@@ -25,6 +25,6 @@ extension MessageReceiver {
         // 4. ) Get the sender's X25519 public key
         guard let senderX25519PublicKey = sodium.sign.toX25519(ed25519PublicKey: senderED25519PublicKey) else { throw Error.decryptionFailed }
         
-        return (Data(plaintext), "05" + senderX25519PublicKey.toHexString())
+        return (Data(plaintext), IdPrefix.standard.rawValue + senderX25519PublicKey.toHexString())
     }
 }

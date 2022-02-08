@@ -777,15 +777,16 @@
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
 		FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */; };
 		FD5D201127AA331F00FEA984 /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */; };
+		FD5D201E27B0D87C00FEA984 /* IdPrefix.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201D27B0D87C00FEA984 /* IdPrefix.swift */; };
 		FD659AC027A7649600F12C02 /* MessageRequestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD659ABF27A7649600F12C02 /* MessageRequestsViewController.swift */; };
-		FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */; };
-		FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */; };
 		FD705A8C278CDB5600F16121 /* SAEScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A8B278CDB5600F16121 /* SAEScreenLockViewController.swift */; };
 		FD705A8E278CE29800F16121 /* String+Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A8D278CE29800F16121 /* String+Localization.swift */; };
 		FD705A90278CEBBC00F16121 /* ShareAppExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A8F278CEBBC00F16121 /* ShareAppExtensionContext.swift */; };
 		FD705A92278D051200F16121 /* ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A91278D051200F16121 /* ReusableView.swift */; };
 		FD705A94278D052B00F16121 /* UITableView+ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A93278D052B00F16121 /* UITableView+ReusableView.swift */; };
 		FD705A98278E9F4D00F16121 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A97278E9F4D00F16121 /* UIColor+Extensions.swift */; };
+		FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */; };
+		FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1811,15 +1812,16 @@
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
 		FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
+		FD5D201D27B0D87C00FEA984 /* IdPrefix.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdPrefix.swift; sourceTree = "<group>"; };
 		FD659ABF27A7649600F12C02 /* MessageRequestsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsViewController.swift; sourceTree = "<group>"; };
-		FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsCell.swift; sourceTree = "<group>"; };
-		FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
 		FD705A8B278CDB5600F16121 /* SAEScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAEScreenLockViewController.swift; sourceTree = "<group>"; };
 		FD705A8D278CE29800F16121 /* String+Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localization.swift"; sourceTree = "<group>"; };
 		FD705A8F278CEBBC00F16121 /* ShareAppExtensionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareAppExtensionContext.swift; sourceTree = "<group>"; };
 		FD705A91278D051200F16121 /* ReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableView.swift; sourceTree = "<group>"; };
 		FD705A93278D052B00F16121 /* UITableView+ReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableView.swift"; sourceTree = "<group>"; };
 		FD705A97278E9F4D00F16121 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
+		FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsCell.swift; sourceTree = "<group>"; };
+		FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
 		FD9039443F7CB729CF71350E /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -2362,6 +2364,7 @@
 				C38EF23D255B6D66007E1867 /* UIView+OWS.h */,
 				C38EF23E255B6D66007E1867 /* UIView+OWS.m */,
 				C38EF2EF255B6DBB007E1867 /* Weak.swift */,
+				FD5D201D27B0D87C00FEA984 /* IdPrefix.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -4669,6 +4672,7 @@
 				B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */,
 				C33FDEF8255A656D00E217F9 /* Promise+Delaying.swift in Sources */,
 				B8BC00C0257D90E30032E807 /* General.swift in Sources */,
+				FD5D201E27B0D87C00FEA984 /* IdPrefix.swift in Sources */,
 				C32C5A24256DB7DB003C73A2 /* SNUserDefaults.swift in Sources */,
 				C3D9E41F25676C870040E4F3 /* OWSPrimaryStorageProtocol.swift in Sources */,
 				C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */,

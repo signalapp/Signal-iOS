@@ -44,7 +44,7 @@ public final class SnodeMessage : NSObject, NSCoding { // NSObject/NSCoding conf
     // MARK: JSON Conversion
     public func toJSON() -> JSON {
         return [
-            "pubKey" : Features.useTestnet ? recipient.removing05PrefixIfNeeded() : recipient,
+            "pubKey" : Features.useTestnet ? recipient.removingIdPrefixIfNeeded() : recipient,
             "data" : data.description,
             "ttl" : String(ttl),
             "timestamp" : String(timestamp),
