@@ -5663,7 +5663,7 @@
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Удалить";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Восстановить платёжную учётную запись ";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Восстановить платежный аккаунт";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Убедитесь, что вы правильно ввели свою фразу.";

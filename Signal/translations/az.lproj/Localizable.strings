@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Sancaqla";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Yeni PIN yaradıla bilmədi. Mövcud PIN-iniz sıradan çıxarıldı. Bağlantınızı yoxlayıb yenidən sınayın.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "PIN dəyişdirilmədi";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN, ən azı 4 simvoldan ibarət olmalıdır";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-lər uyğunlaşmır. Yenidən sınayın.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Bağlantınızı yoxlayıb yenidən sınayın.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Şəbəkə bağlantısı yoxdur";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN, ən az 4 rəqəmli olmalıdır";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Qeydiyyat Kilidi söndürülsün?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN uğurla yaradıldı, ancaq qeydiyyat kilidi fəallaşdırıla bilmədi. Bağlantınızı yoxlayıb yenidən sınayın.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Qeydiyyat kilidi fəallaşdırılmadı";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "PIN-i sıradan çıxart";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "PIN yaradılmadı";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "PIN yaradıla bilmədi. Bağlantınızı yoxlayıb yenidən sınayın.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Xatırlamağınıza kömək etmək üçün PIN, mütəmadi olaraq sizdən soruşulacaq. Bir müddət sonra daha az soruşacağıq.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "PIN yarat";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Signal PIN-inin yaradılmasını tamamlayın.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Daha sonra xatırladacağıq. Bir PIN yaratmaq, %ld günə məcburi olacaq.";
@@ -5696,7 +5696,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Bərpa parolunu yapışdır";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Bərpa parolunuz, sizə xas 24 sözdən ibarət bir paroldur. Ödəniş hesabınızı geri yükləmək üçün bunu istifadə edin.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Bərpa parolunu daxil edin";

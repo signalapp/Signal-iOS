@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_STICKER" = "ស្ទីកគ័រ";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Voice message";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "សារសំឡេង";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Voice message %@ seconds";
@@ -1985,7 +1985,7 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ is blocked";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "មានតែអ្នកគ្រប់គ្រងនៃក្រុមនេះ​ អាចចាប់ផ្តើមការហៅ។";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";

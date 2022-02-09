@@ -407,16 +407,16 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "പ്രൊഫൈലിൽ പ്രദർശിപ്പിക്കുക";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "ഫീച്ചേർഡ് ബാഡ്ജ് ഉണ്ടാക്കുക";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "നിങ്ങളുടെ പിന്തുണയ്ക്ക് നന്ദി!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "നിങ്ങൾക്ക് ഒന്നിലധികം ബാഡ്‌ജുകൾ ഉള്ളപ്പോൾ, നിങ്ങളുടെ പ്രൊഫൈലിൽ മറ്റുള്ളവർക്ക് കാണുന്നതിന് ഫീച്ചർ ചെയ്യുന്നതിനായി നിങ്ങൾക്ക് ഒന്ന് തിരഞ്ഞെടുക്കാം.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "നിങ്ങൾ %@ ബാഡ്ജ് നേടി! നിങ്ങളുടെ പ്രൊഫൈലിൽ ഈ ബാഡ്‌ജ് പ്രദർശിപ്പിച്ച് അവബോധം സൃഷ്ടിക്കാൻ Signal-നെ സഹായിക്കുക.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ബാനർ അടയ്‌ക്കുക";
@@ -677,22 +677,22 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "രാ‍ജ്യം തിരഞ്ഞെടുക്കുക";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "ഫോട്ടോ എഡിറ്റ് ചെയ്യുക";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "നിങ്ങളുടെ പുതിയ നമ്പർ പഴയതിന് സമാനമായിരിക്കരുത്. നിങ്ങളുടെ നമ്പർ മാറ്റാൻ ദയവായി ഒരു പുതിയ ഫോൺ നമ്പർ നൽകുക.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "നിങ്ങൾ നൽകിയ ഫോൺ നമ്പർ നിങ്ങളുടെ അക്കൗണ്ടുമായി പൊരുത്തപ്പെടുന്നില്ല.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "പുതിയ ഫോൺ നമ്പർ അസാധുവാണ്. നിങ്ങളുടെ നമ്പർ മാറ്റാൻ സാധുവായ ഒരു ഫോൺ നമ്പർ നൽകുക.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "പഴയ ഫോൺ നമ്പർ അസാധുവാണ്. നിങ്ങളുടെ നമ്പർ മാറ്റാൻ സാധുവായ ഒരു ഫോൺ നമ്പർ നൽകുക.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "പുതിയ ഫോൺ നമ്പറിനായി പിൻ നൽകുക. ഇത് നിങ്ങളുടെ SMS സ്ഥിരീകരണ കോഡിൽ നിന്ന് വ്യത്യസ്തമാണ്.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "ചാറ്റ് നിറത്തിന്റെ ഒരു പ്രിവ്യൂ ഇതാ";
@@ -998,16 +998,16 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ഈ ചാറ്റ് ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കംചെയ്യും.";
 
 /* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "ഈ ചാറ്റുകൾ ഈ ഉപകരണത്തിൽ നിന്ന് ഇല്ലാതാക്കപ്പെടും.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ചാറ്റ് ഇല്ലാതാക്കണോ?";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "%@ ചാറ്റുകൾ ഇല്ലാതാക്കണോ?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "ചാറ്റ് മ്യൂട്ടുചെയ്യുക...";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 ദിവസം";
@@ -1079,7 +1079,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ഓഡിയോ";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal-നെ പിന്തുണച്ച് നിങ്ങളുടെ പ്രൊഫൈലിനായി ബാഡ്ജുകൾ നേടുക. കൂടുതലറിയാൻ ഒരു ബാഡ്ജിൽ തൊടുക.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "ബാഡ്ജുകള്‍";
@@ -1151,7 +1151,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "സന്ദേശം";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ഇതിനായി ഈ ചാറ്റ് മ്യൂട്ടുചെയ്യുക ...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ചാറ്റ് മ്യൂട്ടുചെയ്യുക...";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "എല്ലായ്പ്പോഴും";
@@ -1841,10 +1841,10 @@
 "FAILED_VERIFICATION_TITLE" = "സുരക്ഷാ നമ്പർ പരിശോധിക്കുന്നതിൽ പരാജയപ്പെട്ടു!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "ഒരു ബാഡ്ജ് തിരഞ്ഞെടുക്കുക";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "ഫീച്ചേർഡ് ബാഡ്ജ്";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "പരിശോധിച്ചതായി അടയാളപ്പെടുത്തുക";
@@ -1862,7 +1862,7 @@
 "FORWARD_MESSAGE" = "സന്ദേശം ഫോർവേഡ് ചെയ്യുക";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "കൈമാറിയ സന്ദേശങ്ങള്‍ ഇപ്പോൾ ഉടനടി അയയ്‌ക്കുന്നു.";
 
 /* Label for button to proceed with forwarding a single message. */
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "സന്ദേശം അയയ്ക്കുക";
@@ -1874,7 +1874,7 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "സന്ദേശം അയച്ചു";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "സന്ദേശങ്ങള്‍ അയച്ചു";
@@ -2945,7 +2945,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Title for the 'Select Chats' option in the HomeView. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "ചാറ്റുകൾ തിരഞ്ഞെടുക്കുക";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
@@ -3281,13 +3281,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "സ്റ്റിക്കർ പാക്ക്";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 തിരഞ്ഞെടുത്തു";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 തിരഞ്ഞെടുത്തു";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ എണ്ണം തിരഞ്ഞെടുത്തു";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "സന്ദേശം";
@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "പിൻചെയ്യു";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "നിങ്ങളുടെ പുതിയ പിൻ സൃഷ്‌ടിക്കാനായില്ല. നിങ്ങളുടെ നിലവിലുള്ള പിൻ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "പിൻ മാറ്റം പരാജയപ്പെട്ടു";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN ൽ കുറഞ്ഞത് 4 അക്കങ്ങൾ/അക്ഷരങ്ങൾ ഉണ്ടായിരിക്കണം";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN കൾ പൊരുത്തപ്പെടുന്നില്ല. വീണ്ടും പരിശ്രമിക്കുക.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "നെറ്റ്‌വർക്ക് കണക്ഷനില്ല";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN ൽ കുറഞ്ഞത് 4 അക്കങ്ങൾ ഉണ്ടായിരിക്കണം";
@@ -6098,7 +6098,7 @@
 "SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "സബ്സ്ക്രിപ്ഷൻ FAQ";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "സംഭാവന ചെയ്യുക";

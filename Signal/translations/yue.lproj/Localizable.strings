@@ -668,7 +668,7 @@
 "CAMERA_BUTTON_LABEL" = "相機";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "等您同佢交流過訊息，至驗證到呢個使用者。";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "錯誤";
@@ -1439,16 +1439,16 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "停止轉移";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "閂咗呢個視窗嘅話，將會終止您而家整緊嘅轉移個囉噃。係咪要咁做？";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "係咪要停止轉移？";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "若您有您部舊 iOS 機喺手，您可以安全咁轉移您嘅帳戶同訊息去呢部機度。";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "若您先前喺部連結咗嘅 iPad 度用 Signal，您可以安全咁轉移您嘅帳戶同訊息去呢部機度。";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "唔轉移您嘅帳戶同埋訊息就繼續";
@@ -1613,7 +1613,7 @@
 "DONATION_VIEW_TITLE" = "Signal 應援靠團伙。";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Signal 團隊秉持初心，致力開發開放原始碼嘅私隱技術，去守護表達自由，同時令通訊變得安全、無遠弗屆。擔當呢份使命，全靠您嘅捐款做後援。無廣告、無追蹤、堅過石堅。\n\n您嘅捐款幫手補貼程式開發、伺服器同網絡頻寬等燈油火蠟，等世界上數以百萬計嘅人，都用到同一個 app 做私密即時通訊，開住個「爐」為對方焗一份蘋果派。";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "何解要課金？";
@@ -1628,7 +1628,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "編輯個谷";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "喺呢個使用者升級 Signal 之前，都唔能夠加佢入個谷度。";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "谷嘅人數已經盡晒上限 %@ 位成員。";
@@ -1685,7 +1685,7 @@
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "符號";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "出行";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "您嘅聯絡人都未有用 Signal。";
@@ -3326,7 +3326,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "傳咗畀";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "已飛過";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "上載緊";
@@ -3479,13 +3479,13 @@
 "MESSAGE_STATUS_PENDING" = "傳送已暫停";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "Paused";
+"MESSAGE_STATUS_PENDING_SHORT" = "已暫停";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "睇咗";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "已飛過";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "傳送失敗";
@@ -3578,7 +3578,7 @@
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi 同流動數據";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "用電話冧把搵";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
 "NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 位成員";
@@ -3593,7 +3593,7 @@
 "NEW_GROUP_CREATION_FAILED" = "建立唔到新谷。";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "開唔到新谷。請檢查您嘅連線，然後再試下啦。";
 
 /* Indicates that a group member does not support New Groups. */
 "NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "唔支援新版谷";
@@ -3635,10 +3635,10 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "搜尋";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "搵使用者";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用電話冧把搵聯絡人";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "無有緣相遇嘅谷";
@@ -3791,10 +3791,10 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "允許權限";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "揀選邊個可以喺 Signal 度用您個電話冧把 %@ 搵到您";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "邊個可以用您個冧把搵到您？";
 
 /* Placeholder string for phone number field during registration */
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "您嘅電話冧把";
@@ -3932,7 +3932,7 @@
 "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "款項不足";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "收據送唔到畀收款人";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "無效";
@@ -4214,7 +4214,7 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "我嘅聯絡人";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "淨係得您嘅聯絡人會喺 Signal 度見到您個電話冧把。";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "全世界";
@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "置頂";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "建立唔到您嘅新 PIN 碼。您現有嘅 PIN 碼已經停用。請檢查您嘅連線，然後再試下啦。";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "PIN 碼改唔到";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN 碼至少要有 4 個字元";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN 碼唔夾。請再試一次。";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "請檢查您嘅連線，然後再試下啦。";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "上唔到網";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN 碼至少要係 4 個位數字";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "係咪要閂咗註冊鎖？";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN 碼建立成功，但註冊鎖啟用唔到。請檢查您嘅連線，然後再試下啦。";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "註冊鎖啟用唔到";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "停用 PIN 碼";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "PIN 碼建立唔到";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "建立唔到您嘅 PIN 碼。請檢查您嘅連線，然後再試下啦。";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "為咗幫您記住您個 PIN 碼，我哋定時定候會叫您打一次。慢慢就唔會問得您咁密㗎喇。";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "建立 PIN 碼";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "您個 Signal PIN 碼仲未搞掂，不如整埋佢啦。";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "我哋遲啲再提您啦。不過，個 PIN 碼過多 %ld 日就冇得再拖，要整㗎喇。";
@@ -4460,13 +4460,13 @@
 "PRIVACY_UNVERIFY_BUTTON" = "抹走先前個驗證";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "呢個望落唔多似係您同 %@ 之間嘅安全碼。您係咪驗證緊啱嘅聯絡人？";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this chat.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "您嘅剪貼簿入面嘅數字，望落唔多似係呢個傾偈啱嘅安全碼。";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal 摷勻您嘅剪貼簿都搵唔到安全碼。您係咪真係有複製到？";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
@@ -4664,7 +4664,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "個使用者揀選唔到。";
 
 /* Error message indicating that a user can't be selected until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "This user can't be added to the group until they upgrade Signal.";
+"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "喺呢個使用者升級 Signal 之前，都唔能夠加佢入個谷度。";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "我唔記得我個 PIN 碼。";
@@ -5234,7 +5234,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "轉冧把";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "您即將要將您個電話冧把由 %1$@ 轉做 %2$@。\n\n咁喺繼續之前，請驗證下低個冧把的而且確無錯。";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "您即將要將您個電話冧把由 %1$@ 轉做 %2$@。\n\n喺繼續之前，請先查驗下低呢個冧把的而且確無錯。";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "國碼";
@@ -5258,7 +5258,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "驗證緊 %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "呢度係俾您將您而家用緊個電話冧把轉做一個新嘅電話冧把。一轉咗您就冇得返轉頭㗎喇。\n\n咁喺繼續之前，請確定您個新冧把而家可以收到短訊或者聽到電話。";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "您可以喺度將您而家用緊嗰個電話冧把，轉做一個新嘅電話冧把。喺度一轉咗就冇得返轉頭㗎喇。\n\n喺繼續之前，請先確定您個新冧把，而家可以收到短訊或者接到電話。";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "轉電話冧把";
@@ -6020,7 +6020,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "顯示傾偈";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
+"SMS_INVITE_BODY" = "見字裝 Signal！您話好唔好？條拎喺度：";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "聲音同通知";
@@ -6044,7 +6044,7 @@
 "SPAM_CAPTCHA_SHEET_TITLE" = "驗證完先再繼續發訊息";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "飛過驗證";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "完成驗證";
@@ -6557,7 +6557,7 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "撳住去錄製。";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "請完成 Signal 桌面版嘅設定。";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "聯絡人嘅名";

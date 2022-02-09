@@ -3,4 +3,4 @@
 • 可供選擇的回應如此之多，時間如此之少。 現在你可以輕鬆搜尋你最喜歡的回應。
 • 自定義你的預設回應，這樣你就可以將你最喜歡的表情貼近你的袖子。
 • 通知疲勞？ 只需在聊天清單中向左滑動即可快速靜音或取消靜音。
-• Fixed a bug that would cause parts of long text messages to become invisible in the input box.
+• 修復了會導致部分較長訊息在輸入框中無法完整顯示的錯誤。

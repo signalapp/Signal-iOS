@@ -371,22 +371,22 @@
 "BADGE_CONFIGURATION_TITLE" = "徽章";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "成為贊助人";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "成為長期贊助人";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "加油支持 Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "單次贊助 Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "你的\"加油支持\"徽章已過期，不會再顯示於你的個人資料中。\n\n你可以繼續使用 Signal，但為了支持專為你研發的技術，請考慮成為每月的定期贊助人。";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "你的\"單次贊助\"徽章已過期，不會再顯示於你的個人資料中。\n\n你可以繼續使用 Signal，但為了支持專為你研發的技術，請考慮成為每月的長期贊助人。";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "你的\"加油支持\"徽章已過期，不會再顯示於你的個人資料中。\n\n你可以透過一次性捐款將你的\"加油支持\"徽章再展示 30 天。";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "你的贊助人定期贊助已自動取消，因為你的非活動時間過長。你的 %@ 徽章在你的個人資料中無法顯示。\n\n你可以繼續使用 Signal，但要支援該應用程式並重新展示你的徽章，請立即更新。";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "你的長期贊助訂閱已自動取消，因為你的未活動時間過長。你的 %@ 徽章在你的個人資料中將不會顯示。\n\n你可以繼續使用 Signal，但要支援該應用程式並重新展示你的徽章，請立即更新。";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "成為贊助人";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "成為長期贊助人";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "增加一次加油支持";
@@ -518,7 +518,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "選擇要贊助的金額";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "加油支持 Signal";
+"BOOST_VIEW_TITLE" = "單次贊助 Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "新增";
@@ -938,10 +938,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "操作異常";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "贊助人 & Signal 加油支持";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "長期贊助 & Signal 單次贊助";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "贊助人 & 加油支持";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "長期贊助 & 單次贊助";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal 無法完成你的支援請求。";
@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "釘選";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "無法建立你的新 PIN碼。你現有的 PIN碼 已被停用。 請檢查你的網路連線，然後重試。";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "PIN 碼變更失敗";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN瑪必須至少 4 個字元";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN 碼不符，請再試一次。";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "請檢查你的網路連接並再試一次。";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "沒有網路連接";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN碼必須至少 4 個字元";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "要關閉註冊鎖嗎？";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN 碼建立成功，但無法啟用註冊鎖。 檢查你的網路連接，然後重試。";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "啟用註冊鎖失敗";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "停用PIN碼";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "PIN碼建立失敗";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "無法建立你的 PIN碼。 檢查你的網路連接，然後重試。";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "要幫助你記住你的 PIN碼，我們將定期要求你輸入 PIN 碼。我們只會偶爾詢問你。";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "建立 PIN碼";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "建立Signal PIN碼完成。";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "我們稍後會提醒你。必須在%ld天之內創立 PIN碼。";
@@ -5696,7 +5696,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "貼上回復短語";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "你的回復文字是你唯一的 24 個文字。 使用它來回復你的付款帳號。";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "輸入回復短語";
@@ -5936,10 +5936,10 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "允許 iOS 連結 Signal 聯絡人和聊天以獲取共享建議和通知等功能。";
 
 /* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Signal 加油支持";
+"SETTINGS_SIGNAL_BOOST" = "Signal 單次贊助";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "成為Signal 定期贊助人";
+"SETTINGS_SUBSCRIPTION" = "成為Signal 長期贊助人";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "註冊鎖";
@@ -6110,7 +6110,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "在心中";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "成為定期贊助人";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "成為長期贊助人";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "你與 %@的安全碼相符合。你可以將此聯絡人標記為已驗證。";
@@ -6185,7 +6185,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "仍在處理中";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "增加 Signal 的\"加油支持\"次數";
+"SUSTAINER_VIEW_ADD_BOOST" = "增加 Signal 的\"單次贊助\"次數";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "得到一個 %@ 徽章";

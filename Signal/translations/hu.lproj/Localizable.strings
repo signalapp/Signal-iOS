@@ -2939,13 +2939,13 @@
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nincs találat a kifejezésre: '%@'";
 
 /* Title for the conversation list's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archiválás";
+"HOME_VIEW_TITLE_ARCHIVE" = "Archív";
 
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Title for the 'Select Chats' option in the HomeView. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Beszélgetések kiválasztása";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Kiválasztás";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Mind olvasott";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "PIN létrehozása";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Hozd létre Signal PIN kódod!";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Később újra emlékeztetünk. PIN kódod létrehozása %ld nap múlva kötelezővé válik.";
@@ -6374,7 +6374,7 @@
 "TXT_DELETE_TITLE" = "Törlés";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "Archívumból visszahelyezés";
+"UNARCHIVE_ACTION" = "Nem archív";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Ez a felhasználó nem szerepel a kontaktjaid között. Szeretnéd letiltani?";

@@ -374,7 +374,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "ਸਹਾਇਕ ਬਣੋ";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Signal ਨੂੰ ਸਹਿਯੋਗ ਦਿਓ";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
@@ -401,7 +401,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "ਬੂਸਟ ਲਈ ਧੰਨਵਾਦ ਹੈ!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "ਪ੍ਰੋਫ਼ਾਈਲ ਉੱਤੇ ਦਿਖਾਓ";
@@ -413,7 +413,7 @@
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "ਜਦੋਂ ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਤੋਂ ਵੱਧ ਬਿੱਲੇ ਹੋਣ ਤਾਂ ਤੁਸੀਂ ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਉੱਤੇ ਹੋਰਾਂ ਨੂੰ ਦਿਖਾਉਣ ਲਈ ਇੱਕ ਬਿੱਲਾ ਚੁਣ ਸਕਦੇ ਹੋ।";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
@@ -506,7 +506,7 @@
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "ਪਸੰਦੀਦਾ ਰਕਮ ਦਿਓ";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
+"BOOST_VIEW_OTHER_WAYS" = "ਭੁਗਤਾਨ ਦੇ ਹੋਰ ਢੰਗ";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "ਦਾਨ ਦੇਣ ਲਈ ਵੱਡੀ ਰਕਮ ਚੁਣੋ";
@@ -518,7 +518,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "ਦਾਨ ਦੇਣ ਲਈ ਰਕਮ ਚੁਣੋ";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Signal ਨੂੰ ਸਹਿਯੋਗ ਦਿਓ";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "ਜੋੜੋ";
@@ -1580,7 +1580,7 @@
 "DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "ਪ੍ਰੋਫ਼ਾਈਲ ਉੱਤੇ ਬਿੱਲੇ ਦਿਖਾਓ";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ਸੈਂਸਰਸ਼ਿਪ ਤਰਤੀਬ ਟਿਕਾਣਾ";
@@ -5921,7 +5921,7 @@
 "SETTINGS_SECURITY_TITLE" = "ਐਪ ਦੀ ਸੁਰੱਖਿਆ";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "ਵਧੀਆ ਕੁਆਲਟੀ ਮੀਡੀਆ ਭੇਜਣ ਲਈ ਵੱਧ ਡਾਟਾ ਵਰਤਿਆ ਜਾਵੇਗਾ।";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "ਫੋਟੋ ਤੇ ਵੀਡੀਓ";
@@ -6185,7 +6185,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Add a Signal Boost";
+"SUSTAINER_VIEW_ADD_BOOST" = "Signal ਬੂਸਟ ਜੋੜੋ";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
@@ -6200,7 +6200,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ਪੱਕਾ ਰੱਦ ਕਰਨਾ ਹੈ?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";

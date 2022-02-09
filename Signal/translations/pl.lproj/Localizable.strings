@@ -5999,7 +5999,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Nie udało się wysłać załącznika";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Wysyłanie %1$@ z%2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Wysyłanie %1$@ z %2$@…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Przesyłanie...";

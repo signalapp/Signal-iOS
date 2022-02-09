@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Vastprikken";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Je nieuwe pincode kan niet worden aangemaakt. Je oude pincode is al wel ongeldig geworden. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Het veranderen van je pincode is mislukt";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "Je pincode moet uit ten minste 4 karakters bestaan";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Geen internetverbinding";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "Je pincode moet uit ten minste 4 cijfers bestaan";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Registratievergrendeling uitschakelen?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Het aanmaken van je pincode is geslaagd, maar de registratievergrendeling kan niet worden ingeschakeld. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Registratievergrendeling inschakelen is mislukt";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Pincode uitschakelen";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Het aanmaken van een pincode is mislukt. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden vraagt Signal je periodiek om te bewijzen dat je je pincode nog weet. Als je je pincode een aantal keer juist invoert, dan zal Signal je minder vaak deze vraag stellen. Je kunt deze herinneringen uitschakelen via Instellingen > Jouw registratie.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Pincode aanmaken";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Je hebt nog geen Signal-pincode aangemaakt. Deze zul je nodig hebben als je ooit je apparaat kwijt raakt.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Signal zal je later opnieuw een herinnering geven. Het aanmaken van een pincode wordt verplicht in %ld dagen.";

@@ -680,16 +680,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Breyta mynd";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Nýja símanúmerið þitt ætti ekki að vera það sama og gamla númerið. Settu inn nýtt símanúmer til að skipta um númer.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Símanúmerið sem þú settir inn samsvarar ekki því sem er á aðgangnum þínum.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Ógilt nýtt símanúmer. Settu inn gilt símanúmer til að skipta um símanúmer.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Ógilt eldra símanúmer. Settu inn gilt símanúmer til að skipta um símanúmer.";
 
 /* Title of the 'change phone number PIN' view. */
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Settu inn PIN-númerið fyrir nýja símanúmerið. Það er ekki það sama og SMS-sannvottunarkóðinn þinn.";
@@ -4280,7 +4280,7 @@
 "PIN_ACTION" = "Festa";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Ekki var hægt að útbúa nýja PIN-númerið þitt. Fyrirliggjandi PIN hefur verið gert óvirkt. Athugaðu nettenginguna þína og prófaðu svo aftur.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_TITLE" = "Breyting á PIN-númeri mistókst";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Slökkva á skráningarlæsingu?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Tókst að útbúa PIN-númer, en ekki tókst að virkja skráningarlæsingu. Athugaðu nettenginguna þína og prófaðu svo aftur.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Mistókst að gera PIN-númer skráningarlæsingar óvirkt";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Gera PIN-númer óvirkt";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Gerð PIN-númers mistókst";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Ekki var hægt að útbúa PIN-númer. Athugaðu nettenginguna þína og prófaðu svo aftur.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Til að auðvelda þér að muna PIN-númerið munum við biðja þig öðru hvoru um að staðfesta það. Við spyrjum sjaldnar eftir því sem tímar líða.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Útbúðu PIN-númer";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Ljúktu við að útbúa PIN-númer fyrir Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Við munum áminna þig síðar. Gerð PIN-númera verður skylda eftir %ld daga.";

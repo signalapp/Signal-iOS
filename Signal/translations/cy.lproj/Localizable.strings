@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Pinio";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Methwyd creu eich PIN newydd. Mae'ch PIN cyfredol wedi'i ddiffodd. Gwiriwch eich cysylltiad a rhowch gynnig arall arni.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Methwyd newid PIN";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "Rhaid i PIN fod o leiaf 4 llythyren";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "Nid yw'r PIN yn cyfateb. Rhowch gynnig arall arni.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Gwiriwch eich cysylltiad a rhowch gynnig arall arni.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Dim Cysylltiad Rhwydwaith";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "Rhaid i PIN fod o leiaf 4 digid.";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Diffodd Clo Cofrestru?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Crëwyd eich PIN, ond ni ellir galluogi clo cofrestru. Gwiriwch eich cysylltiad a rhowch gynnig arall arni.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Methwyd Galluogi Clo Cofrestru";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Analluogi'r PIN?";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Methodd creu'r PIN";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Methwyd creu eich PIN. Gwiriwch eich cysylltiad a rhowch gynnig arall arni.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "I helpu i chi gofio'ch PIN, byddwn yn gofyn i chi ei roi o bryd i'w gilydd. Byddwn yn gofyn yn llai aml dros amser.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Crëwch PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Gorffen creu eich PIN Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Byddwn yn eich atgoffa nes ymlaen. Bydd creu PIN yn dod yn orfodol ymhen %ld diwrnod.";

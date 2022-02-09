@@ -3722,16 +3722,16 @@
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "Luo uusi tunnusluku";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Syötä aakkosnumeerinen PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Syötä aakkosnumeerinen tunnusluku";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Syötä numeerinen PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Syötä numeerinen tunnusluku";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Tarvitsetko apua?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Väärä PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "Väärä tunnusluku";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Väärä tunnusluku. %lu yritystä jäljellä.";
@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Kiinnitä";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Uutta tunnuslukua ei voitu luoda. Vanha tunnuslukusi on poistettu käytöstä. Tarkista yhteytesi ja yritä uudelleen.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "PIN-tunnuksen vaihto epäonnistui";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "Vähintään 4 merkkiä";
@@ -4316,7 +4316,7 @@
 "PIN_CREATION_ERROR_MESSAGE" = "Tunnuslukua ei tallennettu. Pyydämme sinua luomaan tunnusluvun myöhemmin.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "Tunnusluvun luominen epäonnistui";
+"PIN_CREATION_ERROR_TITLE" = "Tunnusluvun luonti epäonnistui";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Tunnusluvulla salataan Signaliin tallentamasi tiedot. Profiilisi, asetuksesi ja yhteystietosi palautetaan, kun asennat Signalin uudelleen. Tunnuslukua ei tarvita sovelluksen avaamiseen.";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "Tunnusluvut eivät täsmää. Yritä uudelleen.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Tarkista yhteytesi ja yritä uudelleen.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Ei verkkoyhteyttä";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "Vähintään 4 numeroa";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Poistetaanko rekisteröintiesto käytöstä?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Tunnusluku luotiin, mutta rekisteröintiestoa ei voitu ottaa käyttöön. Tarkista yhteytesi ja yritä uudelleen.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Rekisteröintieston käyttöönotto epäonnistui";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Poista tunnusluku käytöstä";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Tunnusluvun luominen epäonnistui";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Tunnuslukua ei voitu luoda. Tarkista yhteytesi ja yritä uudelleen.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Pyydämme tunnuslukua ajoittain sen muistamisen helpottamiseksi. Pyynnöt harvenevat ajan myötä.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Luo tunnusluku";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Viimeistele Signal-tunnuslukusi luonti.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Muistutamme sinua myöhemmin. Tunnusluku on luotava %ld päivän kuluttua.";
