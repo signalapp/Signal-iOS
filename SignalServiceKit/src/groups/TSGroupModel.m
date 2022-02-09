@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSGroupModel.h"
@@ -211,11 +211,29 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![NSObject isNullableObject:self.addedByAddress equalTo:other.addedByAddress]) {
         return NO;
     }
-    NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];
-    NSSet<SignalServiceAddress *> *otherGroupMembersSet = [NSSet setWithArray:other.groupMembers];
-    if (![myGroupMembersSet isEqualToSet:otherGroupMembersSet]) {
+
+    // If both groups are V2 groups, this is redundant with checking the groupMembership property.
+    // But if a V1 group is being compared user-facing-only to a V2 group, we need to check this explicitly,
+    // and must use the property access to do it.
+    // (And of course two V1 groups must check their membership here regardless.)
+
+    // Check the count...
+    NSArray<SignalServiceAddress *> *myGroupMembers = self.groupMembers;
+    NSArray<SignalServiceAddress *> *otherGroupMembers = other.groupMembers;
+    if (myGroupMembers.count != otherGroupMembers.count) {
         return NO;
     }
+
+    // ...then check for mismatches.
+    NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:myGroupMembers];
+    NSUInteger missingMemberIndex =
+        [otherGroupMembers indexOfObjectPassingTest:^BOOL(SignalServiceAddress *member, NSUInteger idx, BOOL *stop) {
+            return ![myGroupMembersSet containsObject:member];
+        }];
+    if (missingMemberIndex != NSNotFound) {
+        return NO;
+    }
+
     return YES;
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -80,7 +80,7 @@ public class TSGroupModelV2: TSGroupModel {
         super.init(groupId: groupId,
                    name: name,
                    avatarData: avatarData,
-                   members: Array(groupMembership.fullMembers),
+                   members: [],
                    addedBy: addedByAddress)
     }
 
@@ -94,6 +94,14 @@ public class TSGroupModelV2: TSGroupModel {
     @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
+    }
+
+    public override class func storageBehaviorForProperty(withKey propertyKey: String) -> MTLPropertyStorage {
+        if propertyKey == #keyPath(groupMembers) {
+            // This is included in groupMembership.
+            return MTLPropertyStorageNone
+        }
+        return super.storageBehaviorForProperty(withKey: propertyKey)
     }
 
     // MARK: -
