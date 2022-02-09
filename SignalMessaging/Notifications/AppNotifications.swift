@@ -468,7 +468,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        // While batch processing, some of the necessary changes have not been commited.
+        // While batch processing, some of the necessary changes have not been committed.
         let rawMessageText = incomingMessage.previewText(transaction: transaction)
 
         let messageText = rawMessageText.filterStringForDisplay()

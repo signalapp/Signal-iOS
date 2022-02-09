@@ -35,8 +35,8 @@ public class PinSetupViewController: OWSViewController {
                                                 comment: "The explanation of confirmation in the 'pin creation' view.")
         }
 
-        // The font is too long to fit wih dynamic type. Design is looking into
-        // how to design this page to fit dyanmic type. In the meantime, we have
+        // The font is too long to fit with dynamic type. Design is looking into
+        // how to design this page to fit dynamic type. In the meantime, we have
         // to pin the font size.
         let explanationLabelFont = UIFont.systemFont(ofSize: 15)
 

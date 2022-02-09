@@ -987,7 +987,7 @@ public class SignalAttachment: NSObject {
     private class func cgImageSource(for dataSource: DataSource) -> CGImageSource? {
         if dataSource.imageMetadata.imageFormat == ImageFormat.webp {
             // CGImageSource doesn't know how to handle webp, so we have
-            // to pass it through YYImage. This is constly and we could
+            // to pass it through YYImage. This is costly and we could
             // perhaps do better, but webp images are usually small.
             guard let yyImage = YYImage(data: dataSource.data) else {
                 owsFailDebug("Failed to initialized YYImage")

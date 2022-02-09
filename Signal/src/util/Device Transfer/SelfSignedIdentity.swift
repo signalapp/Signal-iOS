@@ -10,7 +10,7 @@ struct SelfSignedIdentity {
     private static let temporaryIdentityKeychainIdentifier = "org.signal.temporaryIdentityKeychainIdentifier"
 
     static func create(name: String, validForDays: Int) throws -> SecIdentity {
-        let (certifcate, key) = try createSelfSignedCertificate(name: name, validForDays: validForDays)
+        let (certificate, key) = try createSelfSignedCertificate(name: name, validForDays: validForDays)
 
         // If there's an existing identity by this name in the keychain,
         // delete it. There should only be one.
@@ -20,7 +20,7 @@ struct SelfSignedIdentity {
         do {
             let addquery: [CFString: Any] = [
                 kSecClass: kSecClassCertificate,
-                kSecValueRef: certifcate,
+                kSecValueRef: certificate,
                 kSecAttrLabel: temporaryIdentityKeychainIdentifier
             ]
             guard SecItemAdd(addquery as CFDictionary, nil) == errSecSuccess else {
@@ -221,7 +221,7 @@ struct SelfSignedIdentity {
                 ] as CFDictionary,
                 nil
             ) else {
-                throw OWSAssertionError("Failed to intiialize SecKey")
+                throw OWSAssertionError("Failed to initialize SecKey")
             }
 
             return privateKey

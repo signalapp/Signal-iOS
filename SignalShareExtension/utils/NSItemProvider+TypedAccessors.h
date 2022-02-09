@@ -6,11 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// The value yeiled by NSItemProvider.loadItemForTypeIdentifier depends on the signature of the
+/// The value yield by NSItemProvider.loadItemForTypeIdentifier depends on the signature of the
 /// completion handler you pass in. However, the Swift compiler mandates that the completion handler exactly matches the
 /// signature, which yields an NSSecureCoding instance.
 ///
-/// This would generally yeild a usable object (Data, URL, String, etc), but in some cases,
+/// This would generally yield a usable object (Data, URL, String, etc), but in some cases,
 /// e.g. sharing a large PDF from Mail.app, we were yielded an unusable private Apple class.
 ///
 /// To address this, we define a bespoke ObjC method for each type we'd want to be yielded.

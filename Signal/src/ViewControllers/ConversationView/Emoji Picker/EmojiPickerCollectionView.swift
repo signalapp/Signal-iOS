@@ -382,7 +382,7 @@ private class EmojiCell: UICollectionViewCell {
         contentView.addSubview(emojiLabel)
         emojiLabel.autoPinEdgesToSuperviewEdges()
 
-        // For whatever reason, some emoji glyphs occassionally have different typographic widths on certain devices
+        // For whatever reason, some emoji glyphs occasionally have different typographic widths on certain devices
         // e.g. 👩‍🦰: 36x38.19, 👱‍♀️: 40x38. (See: commit message for more info)
         // To workaround this, we can clip the label instead of truncating. It appears to only clip the additional
         // typographic space. In either case, it's better than truncating and seeing an ellipsis.

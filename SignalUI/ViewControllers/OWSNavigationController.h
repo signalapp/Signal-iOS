@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSNavigationController : UINavigationController
 
 // If set, this property lets us override prefersStatusBarHidden behavior.
-// This is useful for supressing the status bar while a modal is presented,
+// This is useful for suppressing the status bar while a modal is presented,
 // regardless of which view is currently visible.
 @property (nonatomic, nullable) NSNumber *ows_prefersStatusBarHidden;
 

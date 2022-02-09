@@ -103,7 +103,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: Depen
         // * .read caches can be accessed from any thread.
         // * They are eagerly updated to reflect db writes using the
         //   didInsertOrUpdate() and didRemove() hooks.
-        // * They use "exclusion" to avoid races between reads and uncommited
+        // * They use "exclusion" to avoid races between reads and uncommitted
         //   writes.
         // * They need to be evacuated after cross-process writes.
         case read
@@ -492,7 +492,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel>: Depen
     //   transaction that caused the "exclusion". That should
     //   reflect the _new_ state.
     // * Concurrent gets from read transactions or without a transaction
-    //   during the "exclusion period" should refect the old state.
+    //   during the "exclusion period" should reflect the old state.
     //
     // We achieve this by having all gets ignore the cache during
     // the "exclusion period."

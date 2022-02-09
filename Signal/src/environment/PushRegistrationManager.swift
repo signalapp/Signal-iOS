@@ -180,7 +180,7 @@ public enum PushRegistrationError: Error {
             //
             // You may see a crash here: -[PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes]
             // Or a log message like:
-            // > "Apps receving VoIP pushes must post an incoming call via CallKit in the same run loop as
+            // > "Apps receiving VoIP pushes must post an incoming call via CallKit in the same run loop as
             //    pushRegistry:didReceiveIncomingPushWithPayload:forType:[withCompletionHandler:] without delay"
             // > "Killing app because it never posted an incoming call to the system after receiving a PushKit VoIP push."
             //
@@ -329,7 +329,7 @@ public enum PushRegistrationError: Error {
         guard self.vanillaTokenPromise == nil else {
             let promise = vanillaTokenPromise!
             owsAssertDebug(!promise.isSealed)
-            Logger.info("alreay pending promise for vanilla push token")
+            Logger.info("already pending promise for vanilla push token")
             return promise.map { $0.hexEncodedString }
         }
 
@@ -363,7 +363,7 @@ public enum PushRegistrationError: Error {
             }
         }.map { (pushTokenData: Data) -> String in
             if self.isSusceptibleToFailedPushRegistration {
-                // Sentinal in case this bug is fixed.
+                // Sentinel in case this bug is fixed.
                 owsFailDebug("Device was unexpectedly able to complete push registration even though it was susceptible to failure.")
             }
 

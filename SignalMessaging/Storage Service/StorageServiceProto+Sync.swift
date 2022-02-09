@@ -807,7 +807,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                         ChangePhoneNumber.updateLocalPhoneNumber()
 
                         // The primary should always reflect the latest value.
-                        // If local db state dosn't agree with the storage service state,
+                        // If local db state doesn't agree with the storage service state,
                         // the primary needs to update the storage service.
                         Self.storageServiceManager.recordPendingLocalAccountUpdates()
                     }

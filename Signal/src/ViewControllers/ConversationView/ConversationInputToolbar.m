@@ -169,7 +169,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
                  inputTextViewDelegate:(id<ConversationInputTextViewDelegate>)inputTextViewDelegate
                        mentionDelegate:(id<MentionTextViewDelegate>)mentionDelegate
 {
-    // The input toolbar should *always* be layed out left-to-right, even when using
+    // The input toolbar should *always* be laid out left-to-right, even when using
     // a right-to-left language. The convention for messaging apps is for the send
     // button to always be to the right of the input field, even in RTL layouts.
     // This means, in most places you'll want to pin deliberately to left/right

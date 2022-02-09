@@ -6,7 +6,7 @@ import Foundation
 
 extension ConversationViewController {
 
-    /// The visble content rect in the collection view's coordinate space
+    /// The visible content rect in the collection view's coordinate space
     /// This rect does not include displayed cells occluded by content inset
     @objc var visibleContentRect: CGRect {
         let collectionViewBounds = collectionView.bounds

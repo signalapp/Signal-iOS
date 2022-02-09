@@ -494,7 +494,7 @@ struct ConversationHeaderBuilder: Dependencies {
         let label = OWSLabel()
 
         // Defaults need to be set *before* assigning the attributed text,
-        // or the attributes will get overriden
+        // or the attributes will get overridden
         label.textColor = Theme.secondaryTextAndIconColor
         label.lineBreakMode = .byTruncatingTail
         label.font = .ows_dynamicTypeSubheadlineClamped

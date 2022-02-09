@@ -81,7 +81,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
     // MARK: - Events
 
     override func shouldShowBackButton() -> Bool {
-        // Never show the back buton here
+        // Never show the back button here
         // TODO: Linked phones, clean up state to allow backing out
         return false
     }

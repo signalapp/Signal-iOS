@@ -8,7 +8,7 @@ typedef NS_ENUM(NSUInteger, RemoteAttestationSigningCertificateErrorCode) {
     // AssertionError's indicate either developer or some serious system error that should never happen.
     //
     // Do not use this for an "expected" error, e.g. something that could be induced by user input which
-    // we specifically need to handle gracefull.
+    // we specifically need to handle gracefully.
     RemoteAttestationSigningCertificateError_AssertionError = 1,
 
     RemoteAttestationSigningCertificateError_InvalidPEMSupplied,

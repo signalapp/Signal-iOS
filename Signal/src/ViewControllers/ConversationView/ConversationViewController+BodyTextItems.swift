@@ -22,7 +22,7 @@ import MessageUI
 //   * long press - show phone number + call PSTN / facetime audio / facetime video / send messages / add to contacts / copy
 // * email
 //   * tap - open in default mail app
-//   * long press - show email adress + new email message / facetime audio / facetime video / send message / add to contacts / copy email.
+//   * long press - show email address + new email message / facetime audio / facetime video / send message / add to contacts / copy email.
 extension ConversationViewController {
 
     public func didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {

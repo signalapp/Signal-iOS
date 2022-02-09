@@ -157,7 +157,7 @@ private class CaptionView: UIView {
         override func layoutSubviews() {
             super.layoutSubviews()
 
-            // Enable/disable scrolling depending on wether we've clipped
+            // Enable/disable scrolling depending on whether we've clipped
             // content in `intrinsicContentSize`
             isScrollEnabled = doesContentNeedScroll
         }

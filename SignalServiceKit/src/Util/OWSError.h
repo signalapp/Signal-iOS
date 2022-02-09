@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSSignalServiceKitErrorDomain;
 
-// TODO: These error codes are somtimes persisted, so we should
+// TODO: These error codes are sometimes persisted, so we should
 //       explicitly assign a value to every case in this enum.
 typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeInvalidMethodParameters = 11,
@@ -37,13 +37,13 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeDatabaseConversionFatalError = 777411,
     OWSErrorCodeMoveFileToSharedDataContainerError = 777412,
     OWSErrorCodeDebugLogUploadFailed = 777414,
-    // A non-recoverable error occured while exporting a backup.
+    // A non-recoverable error occurred while exporting a backup.
     OWSErrorCodeExportBackupFailed = 777415,
-    // A possibly recoverable error occured while exporting a backup.
+    // A possibly recoverable error occurred while exporting a backup.
     OWSErrorCodeExportBackupError = 777416,
-    // A non-recoverable error occured while importing a backup.
+    // A non-recoverable error occurred while importing a backup.
     OWSErrorCodeImportBackupFailed = 777417,
-    // A possibly recoverable error occured while importing a backup.
+    // A possibly recoverable error occurred while importing a backup.
     OWSErrorCodeImportBackupError = 777418,
     // A non-recoverable while importing or exporting a backup.
     OWSErrorCodeBackupFailure = 777419,

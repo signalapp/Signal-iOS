@@ -275,7 +275,7 @@ extension ForwardMessageViewController {
                 }
             }
 
-            // TODO: Ideally we would enqueue all with a single write tranasction.
+            // TODO: Ideally we would enqueue all with a single write transaction.
             return firstly { () -> Promise<Void> in
                 // Maintain order of interactions.
                 let sortedItems = content.allItems.sorted { lhs, rhs in

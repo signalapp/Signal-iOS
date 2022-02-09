@@ -136,7 +136,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
         let hostEffect: UIBlurEffect
         let titleLabel: UILabel
         let iconView: UIImageView
-        let seperatorView: UIVisualEffectView
+        let separatorView: UIVisualEffectView
         var highlightedView: UIView?
         var isHighlighted: Bool {
             didSet {
@@ -197,22 +197,22 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             iconView.contentMode = .scaleAspectFit
             iconView.tintColor = titleLabel.textColor
 
-            seperatorView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
+            separatorView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
             if Theme.isDarkThemeEnabled {
-                seperatorView.backgroundColor = UIColor.ows_whiteAlpha20
+                separatorView.backgroundColor = UIColor.ows_whiteAlpha20
             }
 
-            let seperator = UIView(frame: seperatorView.bounds)
-            seperator.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray22
-            seperator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            seperatorView.contentView.addSubview(seperator)
+            let separator = UIView(frame: separatorView.bounds)
+            separator.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray22
+            separator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            separatorView.contentView.addSubview(separator)
             isHighlighted = false
 
             super.init(frame: CGRect.zero)
 
             addSubview(titleLabel)
             addSubview(iconView)
-            addSubview(seperatorView)
+            addSubview(separatorView)
 
             isAccessibilityElement = true
             accessibilityLabel = titleLabel.text
@@ -247,10 +247,10 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             titleLabel.frame = titleFrame
             iconView.frame = iconViewFrame
 
-            var seperatorFrame = bounds
-            seperatorFrame.height = 1.0 / UIScreen.main.scale
-            seperatorFrame.y = bounds.maxY - seperatorFrame.height
-            seperatorView.frame = seperatorFrame
+            var separatorFrame = bounds
+            separatorFrame.height = 1.0 / UIScreen.main.scale
+            separatorFrame.y = bounds.maxY - separatorFrame.height
+            separatorView.frame = separatorFrame
         }
 
         public override func sizeThatFits(
@@ -328,7 +328,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
 
         scrollView.delegate = self
 
-        actionViews.last?.seperatorView.isHidden = true
+        actionViews.last?.separatorView.isHidden = true
     }
 
     required init?(coder: NSCoder) {

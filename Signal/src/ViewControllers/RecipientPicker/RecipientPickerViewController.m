@@ -181,7 +181,7 @@ const NSUInteger kMinimumSearchLength = 1;
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssertIsOnMainThread();
-    OWSLogInfo(@"beggining refreshing.");
+    OWSLogInfo(@"beginning refreshing.");
 
     [self.contactsManagerImpl userRequestedSystemContactsRefresh]
         .then(^(id value) {
@@ -501,12 +501,12 @@ const NSUInteger kMinimumSearchLength = 1;
                 NSInteger sectionIndex =
                     [strongSelf.collation sectionForSectionIndexTitleAtIndex:index] + beforeContactsSectionCount;
                 if (sectionIndex < 0) {
-                    // Sentinal in case we change our section ordering in a surprising way.
+                    // Sentinel in case we change our section ordering in a surprising way.
                     OWSCFailDebug(@"Unexpected negative section index");
                     return 0;
                 }
                 if (sectionIndex >= (NSInteger)strongContents.sections.count) {
-                    // Sentinal in case we change our section ordering in a surprising way.
+                    // Sentinel in case we change our section ordering in a surprising way.
                     OWSCFailDebug(@"Unexpectedly large index");
                     return 0;
                 }

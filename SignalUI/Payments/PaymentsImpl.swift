@@ -1025,7 +1025,7 @@ public extension PaymentsImpl {
                                                 memoMessage: String?) -> Promise<OWSOutgoingPaymentMessage> {
         databaseStorage.write(.promise) { transaction in
             guard let addressUuid = address.uuid else {
-                throw OWSAssertionError("Misisng address.uuid.")
+                throw OWSAssertionError("Missing address.uuid.")
             }
             let requestUuidString = UUID().uuidString
             let paymentRequestModel = TSPaymentRequestModel(requestUuidString: requestUuidString,

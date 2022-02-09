@@ -120,7 +120,7 @@ public class VoiceMessageModel: NSObject {
         OWSFileSystem.deleteContents(ofDirectory: directory.path)
 
         guard audioSession.startAudioActivity(audioActivity) else {
-            throw OWSAssertionError("Could't cofigure audio session")
+            throw OWSAssertionError("Couldn't configure audio session")
         }
 
         let audioRecorder: AVAudioRecorder

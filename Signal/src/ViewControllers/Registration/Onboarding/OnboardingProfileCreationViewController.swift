@@ -260,7 +260,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
     }
 
     public override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
-        // Ignore any minor decreases in height. We want to grow to accomodate the
+        // Ignore any minor decreases in height. We want to grow to accommodate the
         // QuickType bar, but shrinking in response to its dismissal is a bit much.
         let isKeyboardDismissing = (after == 0)
         let isKeyboardGrowing = after > before

@@ -294,7 +294,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             needsLayout = true
         }
 
-        // Ignore any minor decreases in height. We want to grow to accomodate the
+        // Ignore any minor decreases in height. We want to grow to accommodate the
         // QuickType bar, but shrinking in response to its dismissal is a bit much.
         let isKeyboardGrowing = after > -(keyboardBottomConstraint?.constant ?? 0.0)
         let isSignificantlyShrinking = ((before - after) / UIScreen.main.bounds.height) > 0.1

@@ -13,7 +13,7 @@ import SignalMessaging
  * Connects user interface to the CallService using CallKit.
  *
  * User interface is routed to the CallManager which requests CXCallActions, and if the CXProvider accepts them,
- * their corresponding consequences are implmented in the CXProviderDelegate methods, e.g. using the CallService
+ * their corresponding consequences are implemented in the CXProviderDelegate methods, e.g. using the CallService
  */
 final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
@@ -352,7 +352,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         provider.reportOutgoingCall(with: call.individualCall.localId, startedConnectingAt: nil)
 
         // Update the name used in the CallKit UI for outgoing calls when the user prefers not to show names
-        // in ther notifications
+        // in their notifications
         if !showNamesOnCallScreen {
             let update = CXCallUpdate()
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
@@ -458,7 +458,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 //
                 // That is, it calls func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction)
                 //
-                // We don't need this - we have our own mechanism for coallescing audio state, so
+                // We don't need this - we have our own mechanism for coalescing audio state, so
                 // we acknowledge the action, but perform a no-op.
                 //
                 // However, regardless of fulfilling or failing the action, the action "times out"

@@ -28,7 +28,7 @@
 @interface LegacySessionState : NSObject <NSSecureCoding>
 
 /**
- *  AxolotlSessions are either retreived from the database or initiated on new discussions. They are serialized before being stored to make storing abstractions significantly simpler. Because we propose no abstraction for a contact and TextSecure has multi-device (multiple sessions with same identity key) support, the identityKeys need to be added manually.
+ *  AxolotlSessions are either retrieved from the database or initiated on new discussions. They are serialized before being stored to make storing abstractions significantly simpler. Because we propose no abstraction for a contact and TextSecure has multi-device (multiple sessions with same identity key) support, the identityKeys need to be added manually.
  */
 
 @property(nonatomic) int  version;

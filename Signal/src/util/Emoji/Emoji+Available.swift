@@ -108,7 +108,7 @@ private extension String {
 
     // Based on https://stackoverflow.com/a/41393387
     // Check if an emoji is available on the current iOS version
-    // by verifying its image is different than the "unknwon"
+    // by verifying its image is different than the "unknown"
     // reference image
     var isUnicodeStringAvailable: Bool {
         guard isSingleEmoji else { return false }

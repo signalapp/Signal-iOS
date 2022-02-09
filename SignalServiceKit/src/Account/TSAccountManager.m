@@ -140,7 +140,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     // When we enable the ability to change whether you're discoverable
     // by phone number, new registrations must not be discoverable by
-    // default. In order to accomodate this, the default "isDiscoverable"
+    // default. In order to accommodate this, the default "isDiscoverable"
     // flag will be NO until you have successfully registered (aka defined
     // a local phone number).
     BOOL isDiscoverableByDefault = YES;

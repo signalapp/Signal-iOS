@@ -151,7 +151,7 @@ public class MessagePipelineSuspensionHandle: NSObject {
     /// Invalidate the pipeline suspension. This must be invoked before the object is deallocated
     @objc public func invalidate() {
         // Why require an explicit invalidation and not just implicitly invalidate on -deinit?
-        // There's a possiblity that the handle gets captured in an autoreleasepool for an
+        // There's a possibility that the handle gets captured in an autoreleasepool for an
         // indeterminate amount of time. By mandating explicit invalidation, we ensure that we
         // drop the handle when most appropriate.
         performOneshotInvalidation()

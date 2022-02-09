@@ -126,7 +126,7 @@ public class MessageSendLog: NSObject {
             } else if message.isSyncMessage {
                 // If a sync message aliases with another message, it's not great but it's not a major issue.
                 // The MSL is critical for correct behavior of sender key messages. For non sender key messages, it's
-                // a nice-to-have in case some unforseen decryption failure happens.
+                // a nice-to-have in case some unforeseen decryption failure happens.
                 //
                 // Since sync messages aren't ever sent through sender key, just note that we aliased and continue.
                 Logger.warn("Sync message: \(message) aliased with existing payload entry. Skipping MSL record")

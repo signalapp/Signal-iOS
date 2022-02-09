@@ -16,7 +16,7 @@ public class UUIDBackfillTask: NSObject {
     private var didStart: Bool = false
     private var attemptCount = 0
 
-    // MARK: - Properies (External Dependencies)
+    // MARK: - Properties (External Dependencies)
     private let readiness: ReadinessProvider
     private let persistence: PersistenceProvider
 

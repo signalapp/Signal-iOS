@@ -18,7 +18,7 @@ open class CVMeasurementObject: Equatable {
 // CVCellMeasurement captures the measurement state from the load.
 // This lets us pin cell views to their measured sizes.  This is
 // necessary because some UIViews (like UIImageView) set up
-// layout contraints based on their content that we want to override.
+// layout constraints based on their content that we want to override.
 public struct CVCellMeasurement: Equatable {
 
     public typealias Measurement = ManualStackMeasurement

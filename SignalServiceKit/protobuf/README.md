@@ -3,7 +3,7 @@
 These protobuf definitions are copied from Signal-Android, but modified
 to match some iOS conventions.
 
-## Prequisites
+## Prerequisites
 
 Install Apple's `swift-protobuf` (*not* the similarly named `protobuf-swift`)
 

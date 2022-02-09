@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
         thumbnailImage = attachment.blurHash ? [BlurHash imageForBlurHash:attachment.blurHash] : nil;
     } else {
         // If the quoted message has ownership of the thumbnail, but it hasn't been downloaded yet,
-        // we shoud surface this in the view.
+        // we should surface this in the view.
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             failedAttachmentPointer = (TSAttachmentPointer *)attachment;
         }

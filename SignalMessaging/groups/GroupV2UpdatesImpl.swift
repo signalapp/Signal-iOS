@@ -1013,7 +1013,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
                let oldGroupModel = groupThread.groupModel as? TSGroupModelV2,
                oldGroupModel.revision == builder.groupV2Revision {
-                // Perserve certain transient properties if overwriting a model
+                // Preserve certain transient properties if overwriting a model
                 // at the same revision.
                 if oldGroupModel.didJustAddSelfViaGroupLink {
                     builder.didJustAddSelfViaGroupLink = true

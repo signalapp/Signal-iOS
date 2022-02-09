@@ -522,7 +522,7 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
         applyBarStyle(collapsed: true)
 
         // If we're currently showing the placeholder view, we want to do nothing with in
-        // when collapsing into a signle nav controller without a side panel.
+        // when collapsing into a single nav controller without a side panel.
         guard secondaryViewController != detailPlaceholderVC else { return true }
 
         assert(secondaryViewController == detailNavController)
@@ -553,7 +553,7 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
         let allViewControllers = chatListNavController.viewControllers
 
         chatListNavController.viewControllers = Array(allViewControllers[0..<conversationVCIndex]).filter { vc in
-            // Don't ever allow a conversation view controller to be transfered on the master
+            // Don't ever allow a conversation view controller to be transferred on the master
             // stack when expanding from collapsed mode. This should never happen.
             guard let vc = vc as? ConversationViewController else { return true }
             owsFailDebug("Unexpected conversation in view hierarchy: \(vc.thread.uniqueId)")

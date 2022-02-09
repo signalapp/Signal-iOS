@@ -65,7 +65,7 @@ class EmojiMoodPickerView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        // Ensure button stack is layed out early so we can set the correct corner radius
+        // Ensure button stack is laid out early so we can set the correct corner radius
         buttonStack.layoutIfNeeded()
         for button in moodButtons.values {
             let smallerAxis = button.bounds.size.smallerAxis

@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGImageRef imgRef = self.CGImage;
     // the below values are regardless of orientation : for UIImages from Camera, width>height (landscape)
     CGSize srcSize = CGSizeMake(CGImageGetWidth(imgRef),
-        CGImageGetHeight(imgRef)); // not equivalent to self.size (which is dependant on the imageOrientation)!
+        CGImageGetHeight(imgRef)); // not equivalent to self.size (which is dependent on the imageOrientation)!
 
     /* Don't resize if we already meet the required destination size. */
     if (CGSizeEqualToSize(srcSize, dstSize)) {

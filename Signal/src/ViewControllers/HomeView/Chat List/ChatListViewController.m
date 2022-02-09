@@ -790,7 +790,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssertIsOnMainThread();
-    OWSLogInfo(@"beggining refreshing.");
+    OWSLogInfo(@"beginning refreshing.");
 
     [self.messageFetcherJob runObjc]
         .then(^(id value) {

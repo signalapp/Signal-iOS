@@ -419,7 +419,7 @@ extension MessageSender {
                 MessageSender.ensureSessions(forMessageSends: skdmSends, ignoreErrors: true)
             }.then(on: self.senderKeyQueue) { _ -> Guarantee<[Result<OWSMessageSend, Error>]> in
                 // For each SKDM request we kick off a sendMessage promise.
-                // - If it succeeds, great! Propogate along the successful OWSMessageSend
+                // - If it succeeds, great! Propagate along the successful OWSMessageSend
                 // - Otherwise, invoke the sendErrorBlock and rethrow so it gets packaged into the Guarantee
                 // We use when(resolved:) because we want the promise to wait for
                 // all sub-promises to finish, even if some failed.

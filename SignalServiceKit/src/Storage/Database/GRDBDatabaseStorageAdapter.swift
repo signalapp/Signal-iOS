@@ -1036,7 +1036,7 @@ extension GRDBDatabaseStorageAdapter {
         do {
             containerPathItems = try FileManager.default.contentsOfDirectory(atPath: containerDirectory.path)
         } catch {
-            owsFailDebug("Failed to fetch other diretory items: \(error)")
+            owsFailDebug("Failed to fetch other directory items: \(error)")
             containerPathItems = []
         }
 

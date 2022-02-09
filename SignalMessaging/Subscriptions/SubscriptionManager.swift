@@ -493,7 +493,7 @@ public class SubscriptionManager: NSObject {
             return self.getCurrentSubscriptionStatus(for: subscriberID)
         }.done(on: .global()) { subscription in
             guard let subscription = subscription else {
-                throw OWSAssertionError("Failed to fetch valid subscription object afer setSubscription")
+                throw OWSAssertionError("Failed to fetch valid subscription object after setSubscription")
             }
 
             databaseStorage.write { transaction in

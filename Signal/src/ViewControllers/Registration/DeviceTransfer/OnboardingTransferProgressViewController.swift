@@ -107,7 +107,7 @@ public class OnboardingTransferProgressViewController: OnboardingBaseViewControl
     }
 
     override func shouldShowBackButton() -> Bool {
-        // Never show the back buton here
+        // Never show the back button here
         return false
     }
 }
