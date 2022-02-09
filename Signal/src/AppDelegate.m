@@ -1219,7 +1219,9 @@ static void uncaughtExceptionHandler(NSException *exception)
     }
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localAddress: %@", TSAccountManager.localAddress);
+        OWSLogInfo(@"localAddress: %@, deviceId: %u",
+            self.tsAccountManager.localAddress,
+            [self.tsAccountManager storedDeviceId]);
 
         // This should happen at any launch, background or foreground.
         [OWSSyncPushTokensJob run];
