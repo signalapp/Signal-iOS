@@ -1,3 +1,4 @@
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
 • チャットリストから複数のチャットを選択して、それらを一度に既読にしたり、アーカイブ、削除できるようになりました。左上のプロフィール画像をタップして、試すことができます。
 • アーカイブされたチャットに簡単にアクセスできるようになりました。左上のプロフィール画像をタップして、利用できます。
 • たくさんのリアクションの中から、お気に入りのものを簡単に検索できるようになりました。

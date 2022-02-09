@@ -1,3 +1,4 @@
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
 Uusi toiminto: voit valita useita keskusteluja keskustelulistalta ja merkitä ne luetuiksi, arkistoida ne tai poistaa ne. Napauta profiilikuvaasi vasemmassa ylänurkassa ja kokeile.
 Arkistoituihin keskusteluihin pääsee nyt helpommin käsiksi. Napauta vain profiilikuvaasi vasemmassa ylänurkassa.
 Niin paljon reaktioita, niin vähän aikaa. Voit nyt käyttää helppoa hakutoimintoa oikean reaktion löytämiseen.

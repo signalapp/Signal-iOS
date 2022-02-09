@@ -1,3 +1,4 @@
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
 • Je kunt vanaf nu meerdere gesprekken uit de gesprekkenlijst selecteren en ze tegelijk markeren als gelezen, archiveren of wissen. Tik op je profielfoto linksboven om deze optie te vinden.
 • Het is vanaf nu makkelijker om gearchiveerde gesprekken weer te geven. Ook deze vind je door op je profielfoto te tikken.
 • Je kunt nu ook met zoekwoorden zoeken naar de emoji waarmee je wilt reageren.

@@ -1,3 +1,4 @@
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
 • Tính năng đa lựa chọn mới cho phép bạn chọn nhiều cuộc trò chuyện cùng một lúc từ danh sách trò chuyện và đánh dấu chúng đã đọc, lưu trữ hoặc xóa chúng. Nhấn vào ảnh hồ sơ của bạn ở trên cùng bên trái để dùng thử.
 • Các cuộc trò chuyện đã được lưu hiện có thể truy cập nhanh hơn. Chỉ cần nhấn vào ảnh hồ sơ của bạn ở trên cùng bên trái để dễ dàng truy cập chúng.
 • Quá nhiều phản hồi để lựa chọn, thật nhanh và tiện lợi. Giờ đây bạn có thể tìm kiếm phản hồi yêu thích của mình một cách dễ dàng.

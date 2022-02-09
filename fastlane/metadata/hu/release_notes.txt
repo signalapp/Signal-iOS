@@ -1,3 +1,4 @@
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
 • Az új tömeges kijelölés funkcióval egyszerre több beszélgetést jelölhetsz ki, majd olvasottnak jelölheted, archiválhatod, vagy törölheted őket egyszerre. Koppints a profil fotódra a bal felső sarokban.
 • Az archivált beszélgetésekhez gyorsabb lett a hozzáférés. Csak koppints a profil fotódra a bal felső sarokban, hogy könnyebben elérd őket.
 • A reakciók oly bőségesek, az idő viszont szorít. Kedvenc reakció emojid nevére mostantól könnyen rákereshetsz.

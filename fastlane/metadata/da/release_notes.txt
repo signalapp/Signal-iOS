@@ -1,3 +1,4 @@
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
 • Med en ny funktion til at vælge flere samtaler på én gang fra samtalelisten kan du vælge flere samtaler på én gang og markere dem som læste, arkivere eller slette dem. Tryk på dit profilbillede øverst til venstre for at prøve det.
 • Der er nu hurtigere adgang til arkiverede samtaler. Du skal blot trykke på dit profilbillede øverst til venstre for at få adgang til dem.
 • Der er så mange reaktioner at vælge imellem og så lidt tid. Nu kan du nemt søge efter din yndlingsreaktion.

@@ -1,3 +1,4 @@
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
 • מאפיין רב־בחירה חדש מאפשר לך לבחור התכתבויות רבות בבת אחת מתוך רשימת ההתכתבויות ולסמן אותן כנקראו, לארכב, או למחוק אותן. הקש על תמונת הפרופיל שלך בקצה העליון השמאלי כדי לנסות את זה.
 • התכתבויות מאורכבות נגישות עכשיו מהר יותר. פשוט הקש על תמונת הפרופיל שלך בקצה העליון השמאלי כדי להגיע אליהן בקלות.
 • כל כך הרבה תגובות לבחור מתוכן, כה מעט זמן. עכשיו אתה יכול לחפש את התגובה המועדפת עליך בקלות.

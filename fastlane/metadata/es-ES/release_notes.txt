@@ -1,3 +1,4 @@
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
 • La nueva característica de selección múltiple te permite seleccionar más de un chat de la lista para marcar sus mensajes como leídos, archivar los chats o eliminarlos. Toca sobre tu foto de perfil arriba a la izquierda para probarla.
 • Ahora puedes acceder a chats archivados más fácilmente. Toca en tu foto de perfil arriba a la izquierda para encontrarlos.
 • ¡Demasiados emojis disponibles para reaccionar rápidamente a un mensaje! Ahora puedes buscar tu emoji favorito y encontrarlo rápidamente.
