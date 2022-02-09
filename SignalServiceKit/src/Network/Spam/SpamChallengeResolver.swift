@@ -12,12 +12,16 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
         label: "org.signal.SpamChallengeResolver",
         target: .sharedUtility)
 
+    public var isPausingMessages: Bool {
+        challenges?.pausesMessages ?? false
+    }
+
     private var challenges: [SpamChallenge]? {
         didSet {
-            let oldValueHasCaptcha = oldValue?.contains { $0 is CaptchaChallenge } ?? false
-            let newValueHasCaptcha = challenges?.contains { $0 is CaptchaChallenge } ?? false
-            if oldValueHasCaptcha, !newValueHasCaptcha {
-                retryPausedMessages()
+            let oldValuePaused = oldValue?.pausesMessages ?? false
+            let newValuePauses = challenges?.pausesMessages ?? false
+            if oldValuePaused, !newValuePauses {
+                retryPausedMessagesIfReady()
             }
         }
     }
@@ -101,7 +105,11 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
         }
     }
 
-    private func retryPausedMessages() {
+    public func retryPausedMessagesIfReady() {
+        guard !isPausingMessages else {
+            Logger.warn("Can't retry send. \(challenges?.count ?? 0) challenges remain unresolved.")
+            return
+        }
         databaseStorage.asyncWrite { writeTx in
             let pendingInteractionIds = InteractionFinder.pendingInteractionIds(transaction: writeTx)
             Logger.info("retrying paused messages: \(pendingInteractionIds)")
@@ -294,5 +302,11 @@ extension SpamChallengeResolver {
         if challenge.state != .inProgress, challenge.state != priorState {
             workQueue.async { self.recheckChallenges() }
         }
+    }
+}
+
+private extension Sequence where Element == SpamChallenge {
+    var pausesMessages: Bool {
+        contains(where: { $0.pausesMessages == true })
     }
 }
