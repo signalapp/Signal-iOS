@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 class PushChallenge: SpamChallenge, Dependencies {
 
     private var failureCount: UInt = 0
     private let kMaxFailures = 15
+
+    override var pausesMessages: Bool { false }
 
     init(tokenIn: String? = nil, expiry: Date = .distantFuture) {
         token = tokenIn

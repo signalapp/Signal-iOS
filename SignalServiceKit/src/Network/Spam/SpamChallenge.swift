@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 protocol SpamChallengeSchedulingDelegate: AnyObject {
@@ -16,6 +16,9 @@ class SpamChallenge: Codable {
 
     /// The date this challenge will expire.
     var expirationDate: Date
+
+    /// Does this challenge pause victim sends for an extended period of time
+    var pausesMessages: Bool { true }
 
     var completionHandler: ((Bool) -> Void)?
 

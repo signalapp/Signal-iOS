@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -369,14 +369,11 @@ extension OWSHttpHeaders {
     private static var kOWSRetryAfterHeaderKey: String { "Retry-After" }
 
     public var retryAfterDate: Date? {
-        Self.retryAfterDate(responseHeaders: headers)
-    }
-
-    fileprivate static func retryAfterDate(responseHeaders: [String: String]) -> Date? {
-        guard let retryAfterString = responseHeaders[Self.kOWSRetryAfterHeaderKey] else {
+        if let retryAfterValue = value(forHeader: Self.kOWSRetryAfterHeaderKey) {
+            return Self.parseRetryAfterHeaderValue(retryAfterValue)
+        } else {
             return nil
         }
-        return Self.parseRetryAfterHeaderValue(retryAfterString)
     }
 
     static func parseRetryAfterHeaderValue(_ rawValue: String?) -> Date? {
