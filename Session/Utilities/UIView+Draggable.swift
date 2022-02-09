@@ -30,7 +30,7 @@ extension UIView {
                 let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
                 if draggedView.frame.maxY >= self.superview!.layer.frame.height {
                     UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = self.layer.frame.height - draggedView.height() / 2 - bottomMargin
+                        draggedView.center.y = self.superview!.layer.frame.height - draggedView.height() / 2 - bottomMargin
                     }, completion: nil)
                 }
             }
