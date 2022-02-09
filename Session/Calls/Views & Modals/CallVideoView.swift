@@ -67,6 +67,9 @@ class RemoteVideoView: RTCMTLVideoView {
 
 class LocalVideoView: RTCMTLVideoView {
     
+    static let width: CGFloat = 80
+    static let height: CGFloat = 173
+    
     override func renderFrame(_ frame: RTCVideoFrame?) {
         super.renderFrame(frame)
         DispatchMainThreadSafe {

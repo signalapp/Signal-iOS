@@ -23,8 +23,10 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     private lazy var localVideoView: LocalVideoView = {
         let result = LocalVideoView()
         result.isHidden = !call.isVideoEnabled
-        result.set(.width, to: 80)
-        result.set(.height, to: 173)
+        result.layer.cornerRadius = 10
+        result.layer.masksToBounds = true
+        result.set(.width, to: LocalVideoView.width)
+        result.set(.height, to: LocalVideoView.height)
         result.makeViewDraggable()
         return result
     }()
@@ -325,6 +327,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.start() }
         shouldRestartCamera = true
         addLocalVideoView()
+        remoteVideoView.alpha = call.isRemoteVideoEnabled ? 1 : 0
     }
     
     override func viewWillDisappear(_ animated: Bool) {
