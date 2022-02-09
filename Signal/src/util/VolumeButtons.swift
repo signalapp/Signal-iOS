@@ -117,7 +117,7 @@ class VolumeButtons {
     private var longPressTimer: Timer?
     private var longPressingButton: Identifier?
     
-    // It's not possible for up and down to be pressed simulataneously
+    // It's not possible for up and down to be pressed simultaneously
     // (if you press the second button, the OS will end the press on
     // the first), so it allows for simplified handling here.
     private func didPressButton(with identifier: Identifier) {

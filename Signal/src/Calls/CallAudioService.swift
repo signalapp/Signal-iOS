@@ -438,7 +438,7 @@ protocol CallAudioServiceDelegate: AnyObject {
 
     // public so it can be called by timer via selector
     public func ringVibration() {
-        // Since a call notification is more urgent than a message notifaction, we
+        // Since a call notification is more urgent than a message notification, we
         // vibrate twice, like a pulse, to differentiate from a normal notification vibration.
         vibrate()
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + pulseDuration) {

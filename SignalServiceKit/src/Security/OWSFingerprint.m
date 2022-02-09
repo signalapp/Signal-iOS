@@ -105,7 +105,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 - (NSData *)stableDataForAddress:(SignalServiceAddress *)address
 {
     // For now, leave safety number based on phone number unless the feature flag is enabled.
-    // This prevents mismatch from occuring against old apps until we formally roll out the feature.
+    // This prevents mismatch from occurring against old apps until we formally roll out the feature.
     if (RemoteConfig.uuidSafetyNumbers && address.uuid != nil) {
         // TODO UUID: Right now, uuid is nullable, but safety numbers require us to always have
         // the UUID for a user. This will need to be updated once we change this field to nonnull.

@@ -233,7 +233,7 @@ public class AudioWaveform: NSObject {
 
         // Do nothing if we don't yet have any samples.
         guard let decibelSamples = decibelSamples else {
-            owsFailDebug("unexepctedly missing sample data")
+            owsFailDebug("unexpectedly missing sample data")
             return nil
         }
 
@@ -341,7 +341,7 @@ public class AudioWaveform: NSObject {
             return array
         }()
 
-        // If we can ever gurantee that `samples.count` is always a multiple of `sampleCount`, we should
+        // If we can ever guarantee that `samples.count` is always a multiple of `sampleCount`, we should
         // switch to using the faster `vDSP_desamp`. For now, we can't use it since it only supports the
         // integer stride lengths. This should be okay, since this should only be operating on already
         // downsampled data (~100 points) rather than the original millions of points.

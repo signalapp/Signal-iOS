@@ -14,7 +14,7 @@ protocol CVAudioPlayerListener {
 
 // Tool for playing audio attachments and observing playback state.
 //
-// Responsibilites:
+// Responsibilities:
 //
 // * Ensure that no more than one audio attachment is playing at a time.
 // * Ensure playback continuity.

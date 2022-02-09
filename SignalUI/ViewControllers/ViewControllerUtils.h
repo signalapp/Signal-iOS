@@ -28,7 +28,7 @@ extern NSString *const TappedStatusBarNotification;
 
 // This convenience function can be used to reformat the contents of
 // a phone number text field as the user modifies its text by typing,
-// pasting, etc. Applys the incoming edit directly. The text field delegate
+// pasting, etc. Applies the incoming edit directly. The text field delegate
 // should return NO from -textField:shouldChangeCharactersInRange:...
 //
 // "callingCode" should be of the form: "+1".

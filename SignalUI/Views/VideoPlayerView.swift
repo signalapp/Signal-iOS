@@ -302,7 +302,7 @@ public class PlayerProgressBar: UIView {
         slider.addTarget(self, action: #selector(handleSliderValueChanged), for: .valueChanged)
 
         // Panning is a no-op. We just absorb pan gesture's originating in the video controls
-        // from propogating so we don't inadvertently change pages while trying to scrub in
+        // from propagating so we don't inadvertently change pages while trying to scrub in
         // the MediaPageView.
         let panAbsorber = UIPanGestureRecognizer(target: self, action: nil)
         self.addGestureRecognizer(panAbsorber)

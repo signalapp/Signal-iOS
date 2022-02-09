@@ -281,7 +281,7 @@ public extension KnownStickerPack {
     //
     // We should generally use `anyUpdate` to ensure we're not unintentionally
     // clobbering other columns in the database when another concurrent update
-    // has occured.
+    // has occurred.
     //
     // There are cases when this doesn't make sense, e.g. when  we know we've
     // just loaded the model in the same transaction. In those cases it is

@@ -213,7 +213,7 @@ public extension UIView {
             // Calculate the time until we intersect with each edge with
             // a constant velocity.
 
-            // time = (end position - start positon) / velocity
+            // time = (end position - start position) / velocity
 
             let timeUntilVerticalEdge: CGFloat
             if velocity.x > 0 {

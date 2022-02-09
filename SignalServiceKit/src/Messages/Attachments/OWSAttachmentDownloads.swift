@@ -1310,7 +1310,7 @@ public extension OWSAttachmentDownloads {
                                                     jobRequests: [JobRequest],
                                                     attachmentStreams: [TSAttachmentStream]) {
         guard !attachmentStreams.isEmpty else {
-            // Don't bothe
+            // Don't bother
             return
         }
         let quotedMessageThumbnailDownloads = jobRequests.filter { $0.category == .quotedReplyThumbnail }

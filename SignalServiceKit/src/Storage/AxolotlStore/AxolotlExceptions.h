@@ -43,7 +43,7 @@ static NSString *NoSessionException            = @"AxolotlNoSessionException";
 static NSString *InvalidMessageException       = @"AxolotlInvalidMessageException";
 
 /**
- *  Thrown when experiencing issues encrypting/decrypting a message symetrically.
+ *  Thrown when experiencing issues encrypting/decrypting a message symmetrically.
  */
 
 static NSString *CipherException               = @"AxolotlCipherIssue";

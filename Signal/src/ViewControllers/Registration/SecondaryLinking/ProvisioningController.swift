@@ -249,7 +249,7 @@ extension ProvisioningController: ProvisioningSocketDelegate {
     }
 
     public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope) {
-        // After receiving the provisioning message, there's nothing else to retreive from the provisioning socket
+        // After receiving the provisioning message, there's nothing else to retrieve from the provisioning socket
         provisioningSocket.disconnect()
 
         owsAssertDebug(!provisionEnvelopePromise.isSealed)

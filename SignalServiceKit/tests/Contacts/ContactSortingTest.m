@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
         [contacts addObject:c];
     }
     
-    return [contacts copy]; // Return an immutable for good hygene
+    return [contacts copy]; // Return an immutable for good hygiene
 }
 
 + (NSArray*)shuffleArray:(NSArray *)array
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         [shuffled exchangeObjectAtIndex:(i - 1) withObjectAtIndex:j];
     }
     
-    return [shuffled copy]; // Return an immutable for good hygene
+    return [shuffled copy]; // Return an immutable for good hygiene
 }
 
 @end

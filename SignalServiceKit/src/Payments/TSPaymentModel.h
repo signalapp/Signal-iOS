@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 
-// We store payment records seperately from interactions.
+// We store payment records separately from interactions.
 //
 // * Payment records might correspond to transfers to/from exchanges,
 //   without an associated interaction.

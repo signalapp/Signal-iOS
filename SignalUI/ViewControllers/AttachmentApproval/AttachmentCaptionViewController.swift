@@ -172,7 +172,7 @@ class AttachmentCaptionViewController: OWSViewController {
         lengthLimitLabel.text = OWSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the attachment caption.")
         lengthLimitLabel.textAlignment = .center
 
-        // Add shadow in case overlayed on white content
+        // Add shadow in case overlaid on white content
         lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
         lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8

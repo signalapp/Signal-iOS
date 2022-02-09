@@ -392,7 +392,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             // We use cellHOuterMargin _outside_ the background and cellHInnerMargin
             // _inside_.
             //
-            // By applying it to the cell, ensure the correct behavior for accesories.
+            // By applying it to the cell, ensure the correct behavior for accessories.
             cell.layoutMargins = cellOuterInsetsWithMargin(hMargin: Self.cellHInnerMargin, vMargin: 0)
             var contentMargins = UIEdgeInsets(
                 hMargin: 0,

@@ -164,7 +164,7 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func resetLocalData(transaction: SDSAnyWriteTransaction) {
-        Logger.info("Reseting local storage service data.")
+        Logger.info("Resetting local storage service data.")
         StorageServiceOperation.keyValueStore.removeAll(transaction: transaction)
     }
 
@@ -473,7 +473,7 @@ class StorageServiceOperation: OWSOperation {
                 state.accountIdChangeMap.lazy.filter { $0.value == .updated }.compactMap { accountId, _ in
                     do {
                         // If there is an existing identifier for this contact,
-                        // mark it for deletion. We generate a fresh identifer
+                        // mark it for deletion. We generate a fresh identifier
                         // every time a contact record changes so other devices
                         // know which records have changes to fetch.
                         if let storageIdentifier = state.accountIdToIdentifierMap[accountId] {
@@ -533,7 +533,7 @@ class StorageServiceOperation: OWSOperation {
                 state.groupV1ChangeMap.lazy.filter { $0.value == .updated }.compactMap { groupId, _ in
                     do {
                         // If there is an existing identifier for this group,
-                        // mark it for deletion. We generate a fresh identifer
+                        // mark it for deletion. We generate a fresh identifier
                         // every time a contact record changes so other devices
                         // know which records have changes to fetch.
                         if let storageIdentifier = state.groupV1IdToIdentifierMap[groupId] {
@@ -581,7 +581,7 @@ class StorageServiceOperation: OWSOperation {
                 state.groupV2ChangeMap.lazy.filter { $0.value == .updated }.compactMap { groupMasterKey, _ in
                     do {
                         // If there is an existing identifier for this group,
-                        // mark it for deletion. We generate a fresh identifer
+                        // mark it for deletion. We generate a fresh identifier
                         // every time a contact record changes so other devices
                         // know which records have changes to fetch.
                         if let storageIdentifier = state.groupV2MasterKeyToIdentifierMap[groupMasterKey] {
@@ -628,7 +628,7 @@ class StorageServiceOperation: OWSOperation {
                 let accountItem: StorageService.StorageItem? = {
                     do {
                         // If there is an existing identifier, mark it for deletion.
-                        // We generate a fresh identifer every time a contact record
+                        // We generate a fresh identifier every time a contact record
                         // changes so other devices know which records have changes to fetch.
                         if let storageIdentifier = state.localAccountIdentifier {
                             deletedIdentifiers.append(storageIdentifier)
@@ -685,7 +685,7 @@ class StorageServiceOperation: OWSOperation {
 
                 guard let identifier = state.accountIdToIdentifierMap[accountId] else {
                     // This contact doesn't exist in our records, it may have been
-                    // added and then deleted before a backup occured. We can safely skip it.
+                    // added and then deleted before a backup occurred. We can safely skip it.
                     return nil
                 }
 
@@ -704,7 +704,7 @@ class StorageServiceOperation: OWSOperation {
 
                 guard let identifier = state.groupV1IdToIdentifierMap[groupId] else {
                     // This group doesn't exist in our records, it may have been
-                    // added and then deleted before a backup occured. We can safely skip it.
+                    // added and then deleted before a backup occurred. We can safely skip it.
                     return nil
                 }
 
@@ -723,7 +723,7 @@ class StorageServiceOperation: OWSOperation {
 
                 guard let identifier = state.groupV2MasterKeyToIdentifierMap[groupMasterKey] else {
                     // This group doesn't exist in our records, it may have been
-                    // added and then deleted before a backup occured. We can safely skip it.
+                    // added and then deleted before a backup occurred. We can safely skip it.
                     return nil
                 }
 
@@ -760,7 +760,7 @@ class StorageServiceOperation: OWSOperation {
             guard let conflictingManifest = conflictingManifest else {
                 Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
 
-                // Successfuly updated, store our changes.
+                // Successfully updated, store our changes.
                 self.databaseStorage.write { transaction in
                     state.save(clearConsecutiveConflicts: true, transaction: transaction)
                 }
@@ -938,7 +938,7 @@ class StorageServiceOperation: OWSOperation {
 
         Logger.info("Creating a new manifest with manifest version: \(version). Total keys: \(allItems.count)")
 
-        // We want to do this only when absolutely necessarry as it's an expensive
+        // We want to do this only when absolutely necessary as it's an expensive
         // query on the server. When we set this flag, the server will query an
         // purge and orphan records.
         let shouldDeletePreviousRecords = version > 1
@@ -949,7 +949,7 @@ class StorageServiceOperation: OWSOperation {
             deleteAllExistingRecords: shouldDeletePreviousRecords
         ).done(on: .global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
-                // Successfuly updated, store our changes.
+                // Successfully updated, store our changes.
                 self.databaseStorage.write { transaction in
                     state.save(clearConsecutiveConflicts: true, transaction: transaction)
                 }
@@ -1226,7 +1226,7 @@ class StorageServiceOperation: OWSOperation {
 
         state.unknownIdentifiersTypeMap = newUnknownIdentifiersTypeMap
 
-        // If we cleaned up some unknown identifers, we want to re-fetch
+        // If we cleaned up some unknown identifiers, we want to re-fetch
         // the latest manifest even if we've already fetched it, so we
         // can parse the unknown values.
         state.refetchLatestManifest = true
@@ -1250,7 +1250,7 @@ class StorageServiceOperation: OWSOperation {
                     transaction: transaction
                 )
             } else {
-                owsFailDebug("Unexpectedly missing identifer for local account with unknownFields")
+                owsFailDebug("Unexpectedly missing identifier for local account with unknownFields")
                 state.localAccountRecordWithUnknownFields = nil
             }
 
@@ -1265,7 +1265,7 @@ class StorageServiceOperation: OWSOperation {
         if oldCountOfContactRecordsWithUnknownFields != 0 {
             for (accountId, record) in state.accountIdToRecordWithUnknownFields {
                 guard let identifier = state.accountIdToIdentifierMap[accountId] else {
-                    owsFailDebug("Unexpectedly missing identifer for account with unknownFields \(accountId)")
+                    owsFailDebug("Unexpectedly missing identifier for account with unknownFields \(accountId)")
                     state.accountIdToRecordWithUnknownFields[accountId] = nil
                     continue
                 }
@@ -1285,7 +1285,7 @@ class StorageServiceOperation: OWSOperation {
         if oldCountOfGroupV1RecordsWithUnknownFields != 0 {
             for (groupId, record) in state.groupV1IdToRecordWithUnknownFields {
                 guard let identifier = state.groupV1IdToIdentifierMap[groupId] else {
-                    owsFailDebug("Unexpectedly missing identifer for group v1 with unknownFields \(groupId)")
+                    owsFailDebug("Unexpectedly missing identifier for group v1 with unknownFields \(groupId)")
                     state.groupV1IdToRecordWithUnknownFields[groupId] = nil
                     continue
                 }
@@ -1305,7 +1305,7 @@ class StorageServiceOperation: OWSOperation {
         if oldCountOfGroupV2RecordsWithUnknownFields != 0 {
             for (groupMasterKey, record) in state.groupV2MasterKeyToRecordWithUnknownFields {
                 guard let identifier = state.groupV2MasterKeyToIdentifierMap[groupMasterKey] else {
-                    owsFailDebug("Unexpectedly missing identifer for group v2 with unknownFields \(groupMasterKey)")
+                    owsFailDebug("Unexpectedly missing identifier for group v2 with unknownFields \(groupMasterKey)")
                     state.groupV2MasterKeyToRecordWithUnknownFields[groupMasterKey] = nil
                     continue
                 }

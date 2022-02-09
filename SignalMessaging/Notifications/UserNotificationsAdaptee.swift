@@ -210,7 +210,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             }
         } else {
             // Play sound and vibrate, but without a `body` no banner will show.
-            Logger.debug("supressing notification body")
+            Logger.debug("suppressing notification body")
         }
 
         if let threadIdentifier = threadIdentifier {
@@ -286,40 +286,40 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     public static let cancelQueue = DispatchQueue(label: "org.signal.notifications.cancelQueue")
 
-    private enum PendingCancelation: Equatable, Hashable {
+    private enum PendingCancellation: Equatable, Hashable {
         case threadId(String)
         case messageId(String)
         case reactionId(String)
     }
 
-    private let pendingCancelations = AtomicSet<PendingCancelation>()
-    private let isDrainCancelationInFlight = AtomicBool(false)
+    private let pendingCancellations = AtomicSet<PendingCancellation>()
+    private let isDrainCancellationInFlight = AtomicBool(false)
 
     // This method is thread-safe.
-    private func enqueue(pendingCancelation: PendingCancelation) {
-        pendingCancelations.insert(pendingCancelation)
+    private func enqueue(pendingCancellation: PendingCancellation) {
+        pendingCancellations.insert(pendingCancellation)
         Self.cancelQueue.async {
-            self.drainCancelations()
+            self.drainCancellations()
         }
     }
 
-    private func drainCancelations() {
+    private func drainCancellations() {
         assertOnQueue(Self.cancelQueue)
 
-        guard !pendingCancelations.isEmpty else {
+        guard !pendingCancellations.isEmpty else {
             return
         }
-        guard isDrainCancelationInFlight.tryToSetFlag() else {
+        guard isDrainCancellationInFlight.tryToSetFlag() else {
             return
         }
 
         firstly {
             self.getNotificationRequests()
         }.map(on: Self.cancelQueue) { notificationRequests in
-            self.drainCancelations(notificationRequests: notificationRequests)
+            self.drainCancellations(notificationRequests: notificationRequests)
         }.ensure(on: Self.cancelQueue) {
-            self.isDrainCancelationInFlight.set(false)
-            self.drainCancelations()
+            self.isDrainCancellationInFlight.set(false)
+            self.drainCancellations()
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error)")
         }
@@ -343,10 +343,10 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         }
     }
 
-    private func drainCancelations(notificationRequests: [UNNotificationRequest]) {
+    private func drainCancellations(notificationRequests: [UNNotificationRequest]) {
         assertOnQueue(Self.cancelQueue)
 
-        let cancellations = pendingCancelations.removeAllValues()
+        let cancellations = pendingCancellations.removeAllValues()
         guard !cancellations.isEmpty else {
             return
         }
@@ -354,8 +354,8 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         var cancelledThreadIds = Set<String>()
         var cancelledMessageIds = Set<String>()
         var cancelledReactionIds = Set<String>()
-        for cancelation in cancellations {
-            switch cancelation {
+        for cancellation in cancellations {
+            switch cancellation {
             case .threadId(let threadId):
                 cancelledThreadIds.insert(threadId)
             case .messageId(let messageId):
@@ -405,21 +405,21 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     // This method is thread-safe.
     func cancelNotifications(threadId: String) {
-        enqueue(pendingCancelation: .threadId(threadId))
+        enqueue(pendingCancellation: .threadId(threadId))
     }
 
     func cancelNotifications(messageId: String) {
-        enqueue(pendingCancelation: .messageId(messageId))
+        enqueue(pendingCancellation: .messageId(messageId))
     }
 
     // This method is thread-safe.
     func cancelNotifications(reactionId: String) {
-        enqueue(pendingCancelation: .reactionId(reactionId))
+        enqueue(pendingCancellation: .reactionId(reactionId))
     }
 
     // This method is thread-safe.
     func clearAllNotifications() {
-        pendingCancelations.removeAllValues()
+        pendingCancellations.removeAllValues()
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
     }

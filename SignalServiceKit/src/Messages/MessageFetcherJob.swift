@@ -376,7 +376,7 @@ public class MessageFetcherJob: NSObject {
         // the queue has "some/enough" content.
         // However, the NSE needs to process messages with high
         // throughput.
-        // Therfore we need to identify a constant N small enough to
+        // Therefore we need to identify a constant N small enough to
         // place an acceptable upper bound on memory usage of the processor
         // (N + next fetched batch size, fetch size in practice is 100),
         // large enough to avoid introducing latency (e.g. the next fetch

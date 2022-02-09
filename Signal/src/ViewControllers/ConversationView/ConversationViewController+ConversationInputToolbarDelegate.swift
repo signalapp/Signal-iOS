@@ -504,7 +504,7 @@ fileprivate extension ConversationViewController {
         presentFormSheet(pickerController, animated: true)
     }
 
-    // MARK: - Media Libary
+    // MARK: - Media Library
 
     func takePictureOrVideo() {
         AssertIsOnMainThread()

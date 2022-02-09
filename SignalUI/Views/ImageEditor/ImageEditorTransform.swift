@@ -10,7 +10,7 @@ import UIKit
 //   image content, so they are specified relative to the bounds of the image.
 // * Canvas coordinates.  We render the image, strokes and text into the "canvas",
 //   a viewport that has the aspect ratio of the view.  Rendering is transformed, so
-//   this is pre-tranform.
+//   this is pre-transform.
 // * View coordinates.  The coordinates of the actual view (or rendered output).
 //   Bounded by the view's bounds / viewport.
 //
@@ -93,7 +93,7 @@ public class ImageEditorTransform: NSObject {
     public func affineTransform(viewSize: CGSize) -> CGAffineTransform {
         let translation = unitTranslation.fromUnitCoordinates(viewSize: viewSize)
         // Order matters.  We need want SRT (scale-rotate-translate) ordering so that the translation
-        // is not affected affected by the scaling or rotation, which shoud both be about the "origin"
+        // is not affected affected by the scaling or rotation, which should both be about the "origin"
         // (in this case the center of the content).
         //
         // NOTE: CGAffineTransform transforms are composed in reverse order.

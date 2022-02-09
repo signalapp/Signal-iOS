@@ -129,7 +129,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         pendingModalVC?.dismiss {}
         pendingModalVC = nil
 
-        // We need to recyle data sources to maintain continuity.
+        // We need to recycle data sources to maintain continuity.
         var oldInstalledSources = [StickerPackInfo: StickerPackDataSource]()
         var oldTransientSources = [StickerPackInfo: StickerPackDataSource]()
         let updateMapWithOldSources = { (map: inout [StickerPackInfo: StickerPackDataSource], sources: [StickerPackDataSource]) in

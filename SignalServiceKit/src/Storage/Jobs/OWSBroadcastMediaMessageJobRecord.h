@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (class, nonatomic, readonly) NSString *defaultLabel;
 
-/// A map from the AttachmentStream's to upload to their corresponding list of visibile copies in individual
+/// A map from the AttachmentStream's to upload to their corresponding list of visible copies in individual
 /// conversations. e.g. if we're broadcast-sending a picture and a video to 3 recipients, the dictionary would look
 /// like:
 ///     [

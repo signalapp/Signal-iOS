@@ -96,7 +96,7 @@ open class PillView: UIView {
         // Constrain to be a pill that is at least a circle, and maybe wider.
         autoPin(toAspectRatio: 1.0, relation: .greaterThanOrEqual)
 
-        // low priority contstraint to ensure the pill
+        // low priority constraint to ensure the pill
         // is no taller than necessary
         NSLayoutConstraint.autoSetPriority(.defaultLow) {
             self.autoSetDimension(.height, toSize: 0)

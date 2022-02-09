@@ -127,7 +127,7 @@ struct EmojiModel {
             if hasMultipleComponents, skinToneComponents == nil {
                 // If you hit this, this means a new emoji was added where a skintone modifier sequence specifies multiple
                 // skin tones for multiple emoji components: e.g. 👫 -> 🧍‍♀️+🧍‍♂️
-                // These are defind in `skinToneComponents`. You'll need to add a new case.
+                // These are defined in `skinToneComponents`. You'll need to add a new case.
                 throw EmojiError("\(baseEmoji):\(enumName) definition has variants with multiple skintone modifiers but no component emojis defined")
             }
         }
@@ -233,7 +233,7 @@ extension EmojiModel.SkinToneSequence {
 
 extension EmojiGenerator {
     static func writePrimaryFile(from emojiModel: EmojiModel) {
-        // Main enum: Create a string enum definining our enumNames equal to the baseEmoji string
+        // Main enum: Create a string enum defining our enumNames equal to the baseEmoji string
         // e.g. case grinning = "😀"
         writeBlock(fileName: "Emoji.swift") { fileHandle in
             fileHandle.writeLine("/// A sorted representation of all available emoji")
@@ -428,7 +428,7 @@ extension EmojiGenerator {
                             let emoji: [EmojiModel.EmojiDefinition] = {
                                 switch category {
                                 case .smileysAndPeople:
-                                    // Merge smileys & people. It's important we initially bucket these seperately,
+                                    // Merge smileys & people. It's important we initially bucket these separately,
                                     // because we want the emojis to be sorted smileys followed by people
                                     return emojiPerCategory[.smileys]! + emojiPerCategory[.people]!
                                 default:

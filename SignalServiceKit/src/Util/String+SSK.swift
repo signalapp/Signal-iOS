@@ -87,7 +87,7 @@ public extension NSString {
     }
 }
 
-// MARK: - Attributed String Concatentation
+// MARK: - Attributed String Concatenation
 
 public extension NSAttributedString {
 

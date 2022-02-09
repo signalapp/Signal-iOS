@@ -471,7 +471,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         // It's important we don't do this if we've already recently reset the
         // session for a given device, for example if we're processing a backlog
         // of 50 message from Alice that all fail to decrypt we don't want to
-        // reset the session 50 times. We acomplish this by tracking the UUID +
+        // reset the session 50 times. We accomplish this by tracking the UUID +
         // device ID pair that we have recently reset, so we can skip subsequent
         // resets. When the message decrypt queue is drained, the list of recently
         // reset IDs is cleared.

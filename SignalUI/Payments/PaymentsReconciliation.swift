@@ -259,7 +259,7 @@ public class PaymentsReconciliation: Dependencies {
     //
     // Identifying a change TXO if you have Receipt/Transaction models for this block:
     //
-    // * Will be in output TXO list and recieved TXOs list.
+    // * Will be in output TXO list and received TXOs list.
     // * Those TXOs will match value and TXO public key.
     // * Will not match the Receipt recipient TXO public key.
     //

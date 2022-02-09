@@ -738,7 +738,7 @@ extension CallService {
                                                  expectedEraId: String? = nil,
                                                  triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
                                                  completion: (() -> Void)? = nil) {
-        // If the currentCall is for the provided thread, we don't need to perform an explict
+        // If the currentCall is for the provided thread, we don't need to perform an explicit
         // peek. Connected calls will receive automatic updates from RingRTC
         guard currentCall?.thread != thread else {
             Logger.info("Ignoring peek request for the current call")
@@ -791,7 +791,7 @@ extension CallService: CallManagerDelegate {
 
     /**
      * A call message should be sent to the given remote recipient.
-     * Invoked on the main thread, asychronously.
+     * Invoked on the main thread, asynchronously.
      * If there is any error, the UI can reset UI state and invoke the reset() API.
      */
     public func callManager(
@@ -929,7 +929,7 @@ extension CallService: CallManagerDelegate {
 
     /**
      * onNetworkRouteChangedFor will be invoked when changes to the network routing (e.g. wifi/cellular) are detected.
-     * Invoked on the main thread, asychronously.
+     * Invoked on the main thread, asynchronously.
      */
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,

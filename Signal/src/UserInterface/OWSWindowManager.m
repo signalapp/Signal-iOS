@@ -257,7 +257,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         return;
     }
 
-    // Dettach callViewController from window.
+    // Detach callViewController from window.
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     self.callViewController = nil;
 

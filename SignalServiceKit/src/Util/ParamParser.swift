@@ -107,7 +107,7 @@ public class ParamParser {
 
     // MARK: FixedWidthIntegers (e.g. Int, Int32, UInt, UInt32, etc.)
 
-    // You can't blindly cast accross Integer types, so we need to specify and validate which Int type we want.
+    // You can't blindly cast across Integer types, so we need to specify and validate which Int type we want.
     // In general, you'll find numeric types parsed into a Dictionary as `Int`.
 
     public func required<T>(key: Key) throws -> T where T: FixedWidthInteger {

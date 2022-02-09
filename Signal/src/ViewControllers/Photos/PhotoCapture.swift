@@ -701,7 +701,7 @@ class PhotoCapture: NSObject {
                 movieRecordingBox.set(movieRecording)
             }.done {
                 // Don't mark recording as begun if recording has already been cancelled
-                // or superceded by another recording.
+                // or superseded by another recording.
                 let shouldBegin: Bool = {
                     if let lastMovieRecordingEndDate = self.lastMovieRecordingEndDate,
                        lastMovieRecordingEndDate > movieRecordingBox.startDate {
@@ -735,7 +735,7 @@ class PhotoCapture: NSObject {
             AssertIsOnMainThread()
 
             // Don't mark recording as complete if recording has already been cancelled
-            // or superceded by another recording.
+            // or superseded by another recording.
             let shouldComplete: Bool = {
                 if let lastMovieRecordingEndDate = self.lastMovieRecordingEndDate,
                    lastMovieRecordingEndDate > movieRecordingStartDate {

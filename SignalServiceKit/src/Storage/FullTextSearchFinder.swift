@@ -545,12 +545,12 @@ class AnySearchIndexer: Dependencies {
             }
 
             guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
-                owsFailDebug("unexpected unparseable recipientId: \(recipientId)")
+                owsFailDebug("unexpected unparsable recipientId: \(recipientId)")
                 return ""
             }
 
             guard let digitScalars = phoneNumber.nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
-                owsFailDebug("unexpected unparseable recipientId: \(recipientId)")
+                owsFailDebug("unexpected unparsable recipientId: \(recipientId)")
                 return ""
             }
 

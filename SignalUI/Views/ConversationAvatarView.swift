@@ -226,7 +226,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     }
 
     // If the model has been dirtied, performs an update
-    // If an async update is requested, the model is updated immediately with any available chached content
+    // If an async update is requested, the model is updated immediately with any available cached content
     // followed by enqueueing a full model update on a background thread.
     private func updateModelIfNecessary(transaction readTx: SDSAnyReadTransaction?) {
         AssertIsOnMainThread()

@@ -28,7 +28,7 @@ public class ContactDiscoveryTask: NSObject {
     ///
     /// Some ContactDiscoveryTasks are opportunistic, e.g. discovering a user's contacts. Other ContactDiscoveryTasks are important,
     /// e.g. user initiated Find By Phone Number flow. Neither of these are considered "critical priority".
-    /// Occassionally, a ContactDiscoveryTask is so important that all message processing in Signal is hung. In this state, we need a successful
+    /// Occasionally, a ContactDiscoveryTask is so important that all message processing in Signal is hung. In this state, we need a successful
     /// CDS lookup in order to resume message processing.
     ///
     /// To reduce the risk of these less critical discovery tasks starving out more critical tasks, a critical task may set this flag true. Critical priority tasks
@@ -118,7 +118,7 @@ public class ContactDiscoveryTask: NSObject {
         //   (via message send) but has chose to be undiscoverable by CDS lookups.
         //
         // When any of these scenarios occur, we cannot know with certainty if the user is
-        // unregistered or has only turned off discoverability, so we *only* mark the addreses
+        // unregistered or has only turned off discoverability, so we *only* mark the addresses
         // without any UUIDs as unregistered. Everything else we ignore and will identify their
         // current registration status for when either attempting to send a message or fetch
         // their profile in the future.

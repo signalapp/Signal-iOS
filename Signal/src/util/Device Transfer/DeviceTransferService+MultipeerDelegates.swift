@@ -9,7 +9,7 @@ import SignalServiceKit
 
 extension DeviceTransferService: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer newDevicePeerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
-        Logger.info("Notifiying of discovered new device \(newDevicePeerID)")
+        Logger.info("Notifying of discovered new device \(newDevicePeerID)")
         notifyObservers { $0.deviceTransferServiceDiscoveredNewDevice(peerId: newDevicePeerID, discoveryInfo: info) }
     }
 

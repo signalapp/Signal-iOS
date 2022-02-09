@@ -716,7 +716,7 @@ public class StickerManager: NSObject {
                 // RACE: sticker has already been installed between now and when we last checked.
                 //
                 // Initially we check for a stickers presence with a read transaction, to avoid opening
-                // an unecessary write transaction. However, it's possible a race has occurred and the
+                // an unnecessary write transaction. However, it's possible a race has occurred and the
                 // sticker has since been installed, in which case there's nothing more for us to do.
                 return false
             }
@@ -873,7 +873,7 @@ public class StickerManager: NSObject {
     }
 
     private static let cacheQueue = DispatchQueue(label: "stickerManager.cacheQueue")
-    // This cache shoud only be accessed on cacheQueue.
+    // This cache should only be accessed on cacheQueue.
     private var suggestedStickersCache = LRUCache<String, [InstalledSticker]>(maxSize: 5)
 
     // We clear the cache every time we install or uninstall a sticker.

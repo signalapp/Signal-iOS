@@ -57,7 +57,7 @@ public class ProvisioningCipher {
 
         let version = bytes[0]
         guard version == 1 else {
-            throw ProvisioningError.invalidProvisionMessage("Unexpected version on provisioing message: \(bytes[0])")
+            throw ProvisioningError.invalidProvisionMessage("Unexpected version on provisioning message: \(bytes[0])")
         }
 
         let iv = Array(bytes[1..<17])

@@ -49,7 +49,7 @@ public extension ConversationViewController {
 
         bottomViewType = { () -> CVCBottomViewType in
             // The ordering of this method determines
-            // precendence of the bottom views.
+            // precedence of the bottom views.
 
             if !hasViewWillAppearEverBegun {
                 return .none

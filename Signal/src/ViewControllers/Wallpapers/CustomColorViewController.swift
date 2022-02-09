@@ -258,7 +258,7 @@ class CustomColorViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    // A custom spectrum that can ensures accessible constrast.
+    // A custom spectrum that can ensures accessible contrast.
     private static let lightnessSpectrum: LightnessSpectrum = {
         var values: [LightnessValue] = [
             .init(lightness: 0.45, alpha: 0.0 / 360.0),
@@ -1314,7 +1314,7 @@ private class CustomColorPreviewView: UIView {
             // P1                            P4
             //
             // We do this by deriving an "offset vector".
-            // We rotate the axis vector 90 degress.
+            // We rotate the axis vector 90 degrees.
             var offAxisVector = CGPoint(x: axisVector.y, y: -axisVector.x)
             let axisThickness: CGFloat = 8
             // Then scale it to half the thickness of the axis.
