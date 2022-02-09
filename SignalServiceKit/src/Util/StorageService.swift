@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -310,6 +310,9 @@ public struct StorageService: Dependencies {
         Logger.info("")
 
         let keys = StorageIdentifier.deduplicate(identifiers)
+
+        // The server will 500 if we try and request too many keys at once.
+        owsAssertDebug(keys.count <= 1024)
 
         guard !keys.isEmpty else { return Promise.value([]) }
 

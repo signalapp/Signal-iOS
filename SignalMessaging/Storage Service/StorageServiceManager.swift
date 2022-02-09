@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 @objc(OWSStorageServiceManager)
 public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
@@ -1050,82 +1051,47 @@ class StorageServiceOperation: OWSOperation {
                 // Remove any account record identifiers from the new or updated basket. We've processed them.
                 newOrUpdatedItems.removeAll { localAccountIdentifiers.contains($0) }
             }
-        }.then(on: .global()) { () -> Promise<[StorageService.StorageItem]> in
-            // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
-
-            // Update the manifest version to reflect the remote version
-            state.manifestVersion = manifest.version
-
-            // We just did a manifest fetch, so we no longer need to refetch it
-            state.refetchLatestManifest = false
-
+        }.then(on: .global()) { () -> Promise<State> in
             // Cleanup our unknown identifiers type map to only reflect
             // identifiers that still exist in the manifest.
             state.unknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap.mapValues { Array(allManifestItems.intersection($0)) }
 
-            return StorageService.fetchItems(for: newOrUpdatedItems)
-        }.done(on: .global()) { items in
+            // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
+            return self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: state)
+        }.done(on: .global()) { updatedState in
+            var mutableState = updatedState
             self.databaseStorage.write { transaction in
-                for item in items {
-                    if let contactRecord = item.contactRecord {
-                        self.mergeContactRecordWithLocalContactAndUpdateState(
-                            contactRecord,
-                            identifier: item.identifier,
-                            state: &state,
-                            transaction: transaction
-                        )
-                    } else if let groupV1Record = item.groupV1Record {
-                        self.mergeGroupV1RecordWithLocalGroupAndUpdateState(
-                            groupV1Record,
-                            identifier: item.identifier,
-                            state: &state,
-                            transaction: transaction
-                        )
-                    } else if let groupV2Record = item.groupV2Record {
-                        self.mergeGroupV2RecordWithLocalGroupAndUpdateState(
-                            groupV2Record,
-                            identifier: item.identifier,
-                            state: &state,
-                            transaction: transaction
-                        )
-                    } else if case .account = item.identifier.type {
-                        owsFailDebug("unexpectedly found account record in remaining items")
-                    } else {
-                        // This is not a record type we know about yet, so record this identifier in
-                        // our unknown mapping. This allows us to skip fetching it in the future and
-                        // not accidentally blow it away when we push an update.
-                        var unknownIdentifiersOfType = state.unknownIdentifiersTypeMap[item.identifier.type] ?? []
-                        unknownIdentifiersOfType.append(item.identifier)
-                        state.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
-                    }
+                // Update the manifest version to reflect the remote version we just restored to
+                mutableState.manifestVersion = manifest.version
 
-                }
+                // We just did a successful manifest fetch and restore, so we no longer need to refetch it
+                mutableState.refetchLatestManifest = false
 
                 // Mark any orphaned records as pending update so we re-add them to the manifest.
 
                 var orphanedGroupV1Count = 0
-                Set(state.groupV1IdToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
-                    if let groupId = state.groupV1IdToIdentifierMap[identifier] { state.groupV1ChangeMap[groupId] = .updated }
+                Set(mutableState.groupV1IdToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let groupId = mutableState.groupV1IdToIdentifierMap[identifier] { mutableState.groupV1ChangeMap[groupId] = .updated }
                     orphanedGroupV1Count += 1
                 }
 
                 var orphanedGroupV2Count = 0
-                Set(state.groupV2MasterKeyToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
-                    if let groupMasterKey = state.groupV2MasterKeyToIdentifierMap[identifier] { state.groupV2ChangeMap[groupMasterKey] = .updated }
+                Set(mutableState.groupV2MasterKeyToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let groupMasterKey = mutableState.groupV2MasterKeyToIdentifierMap[identifier] { mutableState.groupV2ChangeMap[groupMasterKey] = .updated }
                     orphanedGroupV2Count += 1
                 }
 
                 var orphanedAccountCount = 0
-                Set(state.accountIdToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
-                    if let accountId = state.accountIdToIdentifierMap[identifier] { state.accountIdChangeMap[accountId] = .updated }
+                Set(mutableState.accountIdToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
+                    if let accountId = mutableState.accountIdToIdentifierMap[identifier] { mutableState.accountIdChangeMap[accountId] = .updated }
                     orphanedAccountCount += 1
                 }
 
-                let pendingChangesCount = state.accountIdChangeMap.count + state.groupV1ChangeMap.count + state.groupV2ChangeMap.count
+                let pendingChangesCount = mutableState.accountIdChangeMap.count + mutableState.groupV1ChangeMap.count + mutableState.groupV2ChangeMap.count
 
                 Logger.info("Successfully merged with remote manifest version: \(manifest.version). \(pendingChangesCount) pending updates remaining including \(orphanedAccountCount) orphaned accounts and \(orphanedGroupV1Count) orphaned v1 groups and \(orphanedGroupV2Count) orphaned v2 groups.")
 
-                state.save(clearConsecutiveConflicts: true, transaction: transaction)
+                mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
 
                 if backupAfterSuccess { StorageServiceManager.shared.backupPendingChanges() }
 
@@ -1161,6 +1127,69 @@ class StorageServiceOperation: OWSOperation {
 
             self.reportError(withUndefinedRetry: error)
         }
+    }
+
+    private static var itemsBatchSize: Int { CurrentAppContext().isNSE ? 256 : 1024 }
+    private func fetchAndMergeItemsInBatches(
+        identifiers: [StorageService.StorageIdentifier],
+        manifest: StorageServiceProtoManifestRecord,
+        state: State
+    ) -> Promise<State> {
+        var remainingItems = identifiers.count
+        var mutableState = state
+        var promise = Promise.value(())
+        for batch in identifiers.chunked(by: Self.itemsBatchSize) {
+            promise = promise.then(on: .global()) {
+                StorageService.fetchItems(for: batch)
+            }.done(on: .global()) { items in
+                self.databaseStorage.write { transaction in
+                    for item in items {
+                        if let contactRecord = item.contactRecord {
+                            self.mergeContactRecordWithLocalContactAndUpdateState(
+                                contactRecord,
+                                identifier: item.identifier,
+                                state: &mutableState,
+                                transaction: transaction
+                            )
+                        } else if let groupV1Record = item.groupV1Record {
+                            self.mergeGroupV1RecordWithLocalGroupAndUpdateState(
+                                groupV1Record,
+                                identifier: item.identifier,
+                                state: &mutableState,
+                                transaction: transaction
+                            )
+                        } else if let groupV2Record = item.groupV2Record {
+                            self.mergeGroupV2RecordWithLocalGroupAndUpdateState(
+                                groupV2Record,
+                                identifier: item.identifier,
+                                state: &mutableState,
+                                transaction: transaction
+                            )
+                        } else if case .account = item.identifier.type {
+                            owsFailDebug("unexpectedly found account record in remaining items")
+                        } else {
+                            // This is not a record type we know about yet, so record this identifier in
+                            // our unknown mapping. This allows us to skip fetching it in the future and
+                            // not accidentally blow it away when we push an update.
+                            var unknownIdentifiersOfType = mutableState.unknownIdentifiersTypeMap[item.identifier.type] ?? []
+                            unknownIdentifiersOfType.append(item.identifier)
+                            mutableState.unknownIdentifiersTypeMap[item.identifier.type] = unknownIdentifiersOfType
+                        }
+                    }
+
+                    remainingItems -= batch.count
+
+                    Logger.info("Successfully merged \(batch.count) items from remote manifest version: \(manifest.version). \(remainingItems) items remaining to merge.")
+
+                    // Saving here records the new storage identifiers with the *old* manifest version. This allows us to
+                    // incrementally work through changes in a manifest, even if we fail part way through the update we'll
+                    // continue trying to apply the changes we haven't received yet (since we still know we're on an older
+                    // version overall).
+                    mutableState.save(clearConsecutiveConflicts: true, transaction: transaction)
+                }
+            }
+        }
+        return promise.map { mutableState }
     }
 
     // MARK: - Clean Up
