@@ -6,6 +6,8 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
     
     // MARK: UI
     private static let defaultSize: CGFloat = 100
+    private let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
+    private let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
     
     private var width: NSLayoutConstraint?
     private var height: NSLayoutConstraint?
@@ -105,9 +107,8 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
         left = self.autoPinEdge(toSuperviewEdge: .left)
         left?.isActive = false
         right = self.autoPinEdge(toSuperviewEdge: .right)
-        let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
         top = self.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
-        bottom = self.autoPinEdge(toSuperviewEdge: .bottom)
+        bottom = self.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomMargin)
         bottom?.isActive = false
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 1.0
@@ -144,13 +145,13 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
             right?.isActive = true
         }
         
-        let willTouchTop = currentCenter.y < newSize.height / 2
+        let willTouchTop = currentCenter.y < newSize.height / 2 + topMargin
         let willTouchBottom = currentCenter.y + newSize.height / 2 >= self.superview!.height()
         if willTouchBottom {
             top?.isActive = false
             bottom?.isActive = true
         } else {
-            let constant = willTouchTop ? 0 : currentCenter.y - newSize.height / 2
+            let constant = willTouchTop ? topMargin : currentCenter.y - newSize.height / 2
             top?.constant = constant
             top?.isActive = true
             bottom?.isActive = false
