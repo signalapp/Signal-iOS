@@ -6,7 +6,7 @@ import Foundation
 import SignalUI
 
 protocol MessageReactionPickerDelegate: AnyObject {
-    func didSelectReaction(reaction: String, isRemoving: Bool)
+    func didSelectReaction(reaction: String, isRemoving: Bool, inPosition position: Int)
     func didSelectAnyEmoji()
 }
 
@@ -93,14 +93,14 @@ class MessageReactionPicker: UIStackView {
             }
         }
 
-        for emoji in emojiSet {
+        for (index, emoji) in emojiSet.enumerated() {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
             button.setTitle(title: emoji.rawValue, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
             button.setPressedBlock { [weak self] in
                 // current title of button may have changed in the meantime
                 if let currentEmoji = button.button.title(for: .normal) {
-                    self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji?.rawValue)
+                    self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji?.rawValue, inPosition: index)
                 }
             }
             buttonForEmoji[emoji.rawValue] = button
@@ -131,9 +131,7 @@ class MessageReactionPicker: UIStackView {
         }
     }
 
-    public func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String) {
-        let button = buttonForEmoji[oldEmoji]
-        if let button = button {
+    public func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String, inPosition position: Int) {
             button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
             buttonForEmoji[newEmoji] = button
         }

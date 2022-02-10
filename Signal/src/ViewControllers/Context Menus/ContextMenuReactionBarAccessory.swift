@@ -90,7 +90,9 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
                 didSelectAnyEmoji()
             } else {
                 let isRemoving = focusedEmoji == self.itemViewModel?.reactionState?.localUserEmoji
-                didSelectReaction(reaction: focusedEmoji, isRemoving: isRemoving )
+                if let index = reactionPicker.currentEmojiSet().firstIndex(of: focusedEmoji) {
+                    didSelectReaction(reaction: focusedEmoji, isRemoving: isRemoving, inPosition: index )
+                }
             }
             return true
         }
@@ -101,7 +103,8 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
     // MARK: MessageReactionPickerDelegate
     func didSelectReaction(
         reaction: String,
-        isRemoving: Bool
+        isRemoving: Bool,
+        inPosition position: Int
     ) {
         guard let message = itemViewModel?.interaction as? TSMessage else {
             owsFailDebug("Not sending reaction for unexpected interaction type")
