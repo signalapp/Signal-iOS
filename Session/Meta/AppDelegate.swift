@@ -28,21 +28,20 @@ extension AppDelegate {
     
     private func showCallUIForCall(_ call: SessionCall) {
         DispatchQueue.main.async {
-            if CurrentAppContext().isMainAppAndActive {
-                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-                if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
-                    let callVC = CallVC(for: call)
-                    callVC.conversationVC = conversationVC
-                    conversationVC.inputAccessoryView?.isHidden = true
-                    conversationVC.inputAccessoryView?.alpha = 0
-                    presentingVC.present(callVC, animated: true, completion: nil)
-                }
-            }
             call.reportIncomingCallIfNeeded{ error in
                 if let error = error {
                     SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-                    let incomingCallBanner = IncomingCallBanner(for: call)
-                    incomingCallBanner.show()
+                } else {
+                    if CurrentAppContext().isMainAppAndActive {
+                        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+                        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
+                            let callVC = CallVC(for: call)
+                            callVC.conversationVC = conversationVC
+                            conversationVC.inputAccessoryView?.isHidden = true
+                            conversationVC.inputAccessoryView?.alpha = 0
+                            presentingVC.present(callVC, animated: true, completion: nil)
+                        }
+                    }
                 }
             }
         }
