@@ -257,7 +257,8 @@ public final class MessageSender : NSObject {
         return promise
     }
 
-    // MARK: Open Groups
+    // MARK: - Open Groups
+    
     internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let storage = SNMessagingKitConfiguration.shared.storage
@@ -266,7 +267,15 @@ public final class MessageSender : NSObject {
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
-        message.sender = storage.getUserPublicKey()
+        
+        guard let threadId: String = message.threadID, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) else {
+            preconditionFailure()
+        }
+        
+        if let userDerivedKey: ECKeyPair = try? OWSIdentityManager.shared().identityKeyPair()?.convert(to: .blinded, with: openGroupV2.publicKey) {
+            message.sender = userDerivedKey.hexEncodedPublicKey
+        }
+        
         switch destination {
         case .contact(_): preconditionFailure()
         case .closedGroup(_): preconditionFailure()
@@ -308,9 +317,12 @@ public final class MessageSender : NSObject {
         }
         // Send the result
         guard case .openGroupV2(let room, let server) = destination else { preconditionFailure() }
+        // TODO: Determine if the 'getV2OpenGroup' call will cause issues
+        guard let threadId: String = message.threadID, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) else { preconditionFailure() }
         let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, sentTimestamp: message.sentTimestamp!,
             base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
-        OpenGroupAPIV2.send(openGroupMessage, to: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
+        
+        OpenGroupAPIV2.send(openGroupMessage, to: room, on: server, with: openGroupV2.publicKey).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
             storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: openGroupMessage.sentTimestamp, using: transaction)

@@ -41,27 +41,59 @@ extension Sign {
 }
 
 extension Sodium {
-    public typealias SOGSDerivedKey = Data
+    public typealias SharedSecret = Data
     
     private static let publicKeyBytes: Int = Int(crypto_scalarmult_bytes())
     private static let sharedSecretBytes: Int = Int(crypto_scalarmult_bytes())
     
-    public func derivedKey(serverPublicKeyBytes: [UInt8], userKeyBytes: [UInt8]) -> SOGSDerivedKey? {
-        guard serverPublicKeyBytes.count == Sodium.publicKeyBytes && userKeyBytes.count == Sodium.publicKeyBytes else { return nil }
+    public func sharedSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> SharedSecret? {
+        guard firstKeyBytes.count == Sodium.publicKeyBytes && secondKeyBytes.count == Sodium.publicKeyBytes else {
+            return nil
+        }
         
         let sharedSecretPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.sharedSecretBytes)
-        let result = userKeyBytes.withUnsafeBytes { (userPublicKeyPtr: UnsafeRawBufferPointer) in
-            return serverPublicKeyBytes.withUnsafeBytes { (serverPublicKeyPtr: UnsafeRawBufferPointer) -> Int32 in
-                guard let serverKeyBaseAddress: UnsafePointer<UInt8> = serverPublicKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self), let userKeyBaseAddress: UnsafePointer<UInt8> = userPublicKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
+        let result = secondKeyBytes.withUnsafeBytes { (secondKeyPtr: UnsafeRawBufferPointer) -> Int32 in
+            return firstKeyBytes.withUnsafeBytes { (firstKeyPtr: UnsafeRawBufferPointer) -> Int32 in
+                guard let firstKeyBaseAddress: UnsafePointer<UInt8> = firstKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
+                    return -1
+                }
+                guard let secondKeyBaseAddress: UnsafePointer<UInt8> = secondKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
                     return -1
                 }
                 
-                return crypto_scalarmult(sharedSecretPtr, serverKeyBaseAddress, userKeyBaseAddress)
+                return crypto_scalarmult(sharedSecretPtr, firstKeyBaseAddress, secondKeyBaseAddress)
             }
         }
         
         guard result == 0 else { return nil }
         
         return Data(bytes: sharedSecretPtr, count: Sodium.sharedSecretBytes)
+    }
+}
+
+extension GenericHash {
+    public func hashSaltPersonal(
+        message: Bytes,
+        outputLength: Int,
+        key: Bytes? = nil,
+        salt: Bytes,
+        personal: Bytes
+    ) -> Bytes? {
+        var output: [UInt8] = [UInt8](repeating: 0, count: outputLength)
+        
+        let result = crypto_generichash_blake2b_salt_personal(
+            &output,
+            outputLength,
+            message,
+            UInt64(message.count),
+            key,
+            (key?.count ?? 0),
+            salt,
+            personal
+        )
+        
+        guard result == 0 else { return nil }
+        
+        return output
     }
 }

@@ -45,7 +45,20 @@ extension MessageSender {
             let storage = SNMessagingKitConfiguration.shared.storage
             if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
                 let (promise, seal) = Promise<Void>.pending()
-                AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: { seal.fulfill(()) }, onFailure: { seal.reject($0) })
+                AttachmentUploadJob.upload(
+                    stream,
+                    using: { data in
+                        OpenGroupAPIV2.upload(
+                            data,
+                            to: v2OpenGroup.room,
+                            on: v2OpenGroup.server
+                        )
+                    },
+                    encrypt: false,
+                    onSuccess: { seal.fulfill(()) },
+                    onFailure: { seal.reject($0) }
+                )
+                
                 return promise
             } else {
                 let (promise, seal) = Promise<Void>.pending()
@@ -78,7 +91,19 @@ extension MessageSender {
             let storage = SNMessagingKitConfiguration.shared.storage
             if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
                 let (promise, seal) = Promise<Void>.pending()
-                AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: { seal.fulfill(()) }, onFailure: { seal.reject($0) })
+                AttachmentUploadJob.upload(
+                    stream,
+                    using: { data in
+                        OpenGroupAPIV2.upload(
+                            data,
+                            to: v2OpenGroup.room,
+                            on: v2OpenGroup.server
+                        )
+                    },
+                    encrypt: false,
+                    onSuccess: { seal.fulfill(()) },
+                    onFailure: { seal.reject($0) }
+                )
                 return promise
             } else {
                 let (promise, seal) = Promise<Void>.pending()

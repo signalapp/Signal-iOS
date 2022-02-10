@@ -3,6 +3,16 @@ import SessionSnodeKit
 import SessionUtilitiesKit
 
 public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    struct RequestBody: Codable {
+        enum CodingKeys: String, CodingKey {
+            case data
+            case sendTo = "send_to"
+        }
+        
+        let data: String
+        let sendTo: String
+    }
+    
     public let message: SnodeMessage
     public var delegate: JobDelegate?
     public var id: String?
@@ -32,7 +42,8 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
         coder.encode(failureCount, forKey: "failureCount")
     }
 
-    // MARK: Running
+    // MARK: - Running
+    
     public func execute() {
         let _: Promise<Void> = execute()
     }
@@ -42,10 +53,18 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
             JobQueue.currentlyExecutingJobs.insert(id)
         }
         let server = PushNotificationAPI.server
-        let parameters = [ "data" : message.data.description, "send_to" : message.recipient ]
         let url = URL(string: "\(server)/notify")!
-        let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
+        let requestBody: RequestBody = RequestBody(data: message.data.description, sendTo: message.recipient)
+        
+        guard let body: Data = try? JSONEncoder().encode(requestBody) else {
+            return Promise(error: HTTP.Error.invalidJSON)
+        }
+        
+        var request: URLRequest = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.allHTTPHeaderFields = [ Header.contentType.rawValue: "application/json" ]
+        request.httpBody = body
+        
         let promise = attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
             OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: PushNotificationAPI.serverPublicKey).map { _ in }
         }

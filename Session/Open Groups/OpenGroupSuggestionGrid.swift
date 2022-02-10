@@ -3,7 +3,7 @@ import NVActivityIndicatorView
 
 final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let maxWidth: CGFloat
-    private var rooms: [OpenGroupAPIV2.Info] = [] { didSet { update() } }
+    private var rooms: [OpenGroupAPIV2.RoomInfo] = [] { didSet { update() } }
     private var heightConstraint: NSLayoutConstraint!
     var delegate: OpenGroupSuggestionGridDelegate?
     
@@ -104,7 +104,7 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
 extension OpenGroupSuggestionGrid {
     
     fileprivate final class Cell : UICollectionViewCell {
-        var room: OpenGroupAPIV2.Info? { didSet { update() } }
+        var room: OpenGroupAPIV2.RoomInfo? { didSet { update() } }
         
         static let identifier = "OpenGroupSuggestionGridCell"
         
@@ -183,5 +183,5 @@ extension OpenGroupSuggestionGrid {
 // MARK: Delegate
 protocol OpenGroupSuggestionGridDelegate {
     
-    func join(_ room: OpenGroupAPIV2.Info)
+    func join(_ room: OpenGroupAPIV2.RoomInfo)
 }

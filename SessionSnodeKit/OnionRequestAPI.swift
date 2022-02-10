@@ -1,3 +1,4 @@
+import Foundation
 import CryptoSwift
 import PromiseKit
 import SessionUtilitiesKit
@@ -301,54 +302,54 @@ public enum OnionRequestAPI {
 
     // MARK: Public API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<JSON> {
+    public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<Data> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
-        return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
+        return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<Data> in
             guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json, _) = error else { throw error }
             throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
         }
     }
 
     /// Sends an onion request to `server`. Builds new paths as needed.
-    public static func sendOnionRequest(_ request: NSURLRequest, to server: String, target: String = "/loki/v3/lsrpc", using x25519PublicKey: String) -> Promise<JSON> {
-        var rawHeaders = request.allHTTPHeaderFields ?? [:]
-        rawHeaders.removeValue(forKey: "User-Agent")
-        var headers: JSON = rawHeaders.mapValues { value in
-            switch value.lowercased() {
-            case "true": return true
-            case "false": return false
-            default: return value
-            }
-        }
+    public static func sendOnionRequest(_ request: URLRequest, to server: String, target: String = "/loki/v3/lsrpc", using x25519PublicKey: String) -> Promise<Data> {
         guard let url = request.url, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
-        var endpoint = url.path.removingPrefix("/")
-        if let query = url.query { endpoint += "?\(query)" }
-        let scheme = url.scheme
-        let port = given(url.port) { UInt16($0) }
-        let parametersAsString: String
-        if let tsRequest = request as? TSRequest {
-            headers["Content-Type"] = "application/json"
-            let tsRequestParameters = tsRequest.parameters
-            if !tsRequestParameters.isEmpty {
-                guard let parameters = try? JSONSerialization.data(withJSONObject: tsRequestParameters, options: [ .fragmentsAllowed ]) else {
-                    return Promise(error: HTTP.Error.invalidJSON)
+        
+        var headers: JSON = (request.allHTTPHeaderFields ?? [:])
+            .mapValues { value -> Any in
+                switch value.lowercased() {
+                    case "true": return true
+                    case "false": return false
+                    default: return value
                 }
-                parametersAsString = String(bytes: parameters, encoding: .utf8) ?? "null"
-            } else {
-                parametersAsString = "null"
             }
-        } else {
-            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
-            if let parametersAsInputStream = request.httpBodyStream, let parameters = try? Data(from: parametersAsInputStream) {
-                parametersAsString = "{ \"fileUpload\" : \"\(String(data: parameters.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
-            } else {
-                parametersAsString = "null"
-            }
+            .removingValue(forKey: "User-Agent")
+        
+        // Note: We need to remove the leading forward slash unless we are explicitly hitting a legacy
+        // endpoint (in which case we need it to ensure the request signing works correctly
+        // TODO: Confirm the 'removingPrefix' isn't going to break the request signing on non-legacy endpoints
+        let endpoint: String = url.path
+            .removingPrefix("/", if: !url.path.starts(with: "/legacy"))
+            .appending(url.query.map { value in "?\(value)" })
+        let scheme: String? = url.scheme
+        let port: UInt16? = url.port.map { UInt16($0) }
+        let bodyAsString: String
+        
+        if let body: Data = request.httpBody {
+            headers["Content-Type"] = "application/json"    // Assume data is JSON
+            bodyAsString = (String(data: body, encoding: .utf8) ?? "null")
         }
+        else if let inputStream: InputStream = request.httpBodyStream, let body: Data = try? Data(from: inputStream) {
+            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
+            bodyAsString = "{ \"fileUpload\" : \"\(String(data: body.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
+        }
+        else {
+            bodyAsString = "null"
+        }
+        
         let payload: JSON = [
-            "body" : parametersAsString,
+            "body" : bodyAsString,
             "endpoint" : endpoint,
-            "method" : request.httpMethod!,
+            "method" : (request.httpMethod ?? "GET"),   // Default (if nil) is 'GET'
             "headers" : headers
         ]
         let destination = Destination.server(host: host, target: target, x25519PublicKey: x25519PublicKey, scheme: scheme, port: port)
@@ -359,8 +360,8 @@ public enum OnionRequestAPI {
         return promise
     }
 
-    public static func sendOnionRequest(with payload: JSON, to destination: Destination) -> Promise<JSON> {
-        let (promise, seal) = Promise<JSON>.pending()
+    public static func sendOnionRequest(with payload: JSON, to destination: Destination) -> Promise<Data> {
+        let (promise, seal) = Promise<Data>.pending()
         var guardSnode: Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
@@ -401,12 +402,12 @@ public enum OnionRequestAPI {
                             guard 200...299 ~= statusCode else {
                                 return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body, destination: destination))
                             }
-                            seal.fulfill(body)
+                            seal.fulfill(data)
                         } else {
                             guard 200...299 ~= statusCode else {
                                 return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json, destination: destination))
                             }
-                            seal.fulfill(json)
+                            seal.fulfill(data)
                         }
                     } catch {
                         seal.reject(error)

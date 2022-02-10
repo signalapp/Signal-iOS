@@ -238,7 +238,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         return !suggestionGrid.frame.contains(location)
     }
     
-    func join(_ room: OpenGroupAPIV2.Info) {
+    func join(_ room: OpenGroupAPIV2.RoomInfo) {
         joinOpenGroupVC.joinV2OpenGroup(room: room.id, server: OpenGroupAPIV2.defaultServer, publicKey: OpenGroupAPIV2.defaultServerPublicKey)
     }
     

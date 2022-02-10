@@ -82,6 +82,7 @@ public final class OpenGroupManagerV2 : NSObject {
 
     public func delete(_ openGroup: OpenGroupV2, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         let storage = SNMessagingKitConfiguration.shared.storage
+        
         // Stop the poller if needed
         let openGroups = storage.getAllV2OpenGroups().values.filter { $0.server == openGroup.server }
         if openGroups.count == 1 && openGroups.last == openGroup {
@@ -89,6 +90,7 @@ public final class OpenGroupManagerV2 : NSObject {
             poller?.stop()
             pollers[openGroup.server] = nil
         }
+        
         // Remove all data
         var messageIDs: Set<String> = []
         var messageTimestamps: Set<UInt64> = []
@@ -101,10 +103,14 @@ public final class OpenGroupManagerV2 : NSObject {
         Storage.shared.removeLastMessageServerID(for: openGroup.room, on: openGroup.server, using: transaction)
         Storage.shared.removeLastDeletionServerID(for: openGroup.room, on: openGroup.server, using: transaction)
         let _ = OpenGroupAPIV2.deleteAuthToken(for: openGroup.room, on: openGroup.server)
-        Storage.shared.removeOpenGroupPublicKey(for: openGroup.server, using: transaction)
         thread.removeAllThreadInteractions(with: transaction)
         thread.remove(with: transaction)
         Storage.shared.removeV2OpenGroup(for: thread.uniqueId!, using: transaction)
+        
+        // Only remove the open group public key if the user isn't in any other rooms 
+        if openGroups.count <= 1 {
+            Storage.shared.removeOpenGroupPublicKey(for: openGroup.server, using: transaction)
+        }
     }
     
     // MARK: Convenience
