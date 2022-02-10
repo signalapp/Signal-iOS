@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,8 +27,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private var photoCollectionContents: PhotoCollectionContents
     private let photoMediaSize = PhotoMediaSize()
 
-    var collectionViewFlowLayout: UICollectionViewFlowLayout
-    var titleView: TitleView!
+    private var collectionViewFlowLayout: UICollectionViewFlowLayout
+    private var titleView: TitleView!
 
     init() {
         collectionViewFlowLayout = type(of: self).buildLayout()
@@ -89,11 +89,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let titleView = TitleView()
         titleView.delegate = self
         titleView.text = photoCollection.localizedTitle()
-
         navigationItem.titleView = titleView
         self.titleView = titleView
-
-        collectionView.backgroundColor = .ows_gray95
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
         selectionPanGesture.delegate = self
@@ -101,14 +98,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionView.addGestureRecognizer(selectionPanGesture)
     }
 
-    var selectionPanGesture: UIPanGestureRecognizer?
-    enum BatchSelectionGestureMode {
+    private var selectionPanGesture: UIPanGestureRecognizer?
+    private enum BatchSelectionGestureMode {
         case select, deselect
     }
-    var selectionPanGestureMode: BatchSelectionGestureMode = .select
+    private var selectionPanGestureMode: BatchSelectionGestureMode = .select
 
     @objc
-    func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
+    private func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
         guard let collectionView = collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
@@ -126,6 +123,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         switch selectionPanGesture.state {
         case .possible:
             break
+
         case .began:
             collectionView.isUserInteractionEnabled = false
             collectionView.isScrollEnabled = false
@@ -140,6 +138,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             } else {
                 selectionPanGestureMode = .select
             }
+
         case .changed:
             let velocity = selectionPanGesture.velocity(in: view)
 
@@ -160,15 +159,17 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 return
             }
             tryToToggleBatchSelect(at: indexPath)
+
         case .cancelled, .ended, .failed:
             collectionView.isUserInteractionEnabled = true
             collectionView.isScrollEnabled = true
+
         @unknown default:
             owsFailDebug("unexpected selectionPanGesture.state: \(selectionPanGesture.state)")
         }
     }
 
-    func tryToToggleBatchSelect(at indexPath: IndexPath) {
+    private func tryToToggleBatchSelect(at indexPath: IndexPath) {
         guard let collectionView = collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
@@ -214,7 +215,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         updateLayout()
     }
 
-    var hasEverAppeared: Bool = false
+    private var hasEverAppeared: Bool = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -259,12 +260,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: 
 
-    var lastPageYOffset: CGFloat {
+    private var lastPageYOffset: CGFloat {
         let yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom + view.safeAreaInsets.bottom
         return yOffset
     }
 
-    func scrollToBottom(animated: Bool) {
+    private func scrollToBottom(animated: Bool) {
         self.view.layoutIfNeeded()
 
         guard let collectionView = collectionView else {
@@ -296,7 +297,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    public func reloadData() {
+    private func reloadData() {
         guard let collectionView = collectionView else {
             owsFailDebug("Missing collectionView.")
             return
@@ -309,13 +310,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - Actions
 
     @objc
-    func didPressCancel() {
+    private func didPressCancel() {
         self.delegate?.imagePickerDidCancel(self)
     }
 
     // MARK: - Layout
 
-    static let kInterItemSpacing: CGFloat = 2
+    private static let kInterItemSpacing: CGFloat = 2
     private class func buildLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
 
@@ -327,7 +328,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         return layout
     }
 
-    func updateLayout() {
+    private func updateLayout() {
         let containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
 
         let minItemWidth: CGFloat = 100
@@ -351,7 +352,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - Batch Selection
 
-    func isSelected(indexPath: IndexPath) -> Bool {
+    private func isSelected(indexPath: IndexPath) -> Bool {
         guard let selectedIndexPaths = collectionView.indexPathsForSelectedItems else {
             return false
         }
@@ -386,14 +387,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     // MARK: - PhotoCollectionPicker Presentation
 
-    var isShowingCollectionPickerController: Bool = false
+    private var isShowingCollectionPickerController: Bool = false
 
-    lazy var collectionPickerController: PhotoCollectionPickerController = {
+    private lazy var collectionPickerController: PhotoCollectionPickerController = {
         return PhotoCollectionPickerController(library: library,
                                                collectionDelegate: self)
     }()
 
-    func showCollectionPicker() {
+    private func showCollectionPicker() {
         Logger.debug("")
 
         guard let collectionPickerView = collectionPickerController.view else {
@@ -419,7 +420,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    func hideCollectionPicker() {
+    private func hideCollectionPicker() {
         Logger.debug("")
 
         assert(isShowingCollectionPickerController)
@@ -466,10 +467,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         if delegate.imagePickerCanSelectMoreItems(self) {
             return true
-        } else {
-            delegate.imagePickerDidTryToSelectTooMany(self)
-            return false
         }
+
+        delegate.imagePickerDidTryToSelectTooMany(self)
+        return false
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -489,8 +490,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        Logger.debug("")
+    override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         guard let delegate = delegate else {
             owsFailDebug("delegate was unexpectedly nil")
             return
@@ -532,7 +532,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
     }
 
-    func updateVisibleCells() {
+    private func updateVisibleCells() {
         guard let delegate = delegate else { return }
         for cell in collectionView.visibleCells {
             guard let photoGridViewCell = cell as? PhotoGridViewCell else {
@@ -561,11 +561,11 @@ extension ImagePickerGridController: UIGestureRecognizerDelegate {
     }
 }
 
-protocol TitleViewDelegate: AnyObject {
+private protocol TitleViewDelegate: AnyObject {
     func titleViewWasTapped(_ titleView: TitleView)
 }
 
-class TitleView: UIView {
+private class TitleView: UIView {
 
     // MARK: - Private
 
@@ -606,7 +606,7 @@ class TitleView: UIView {
 
     weak var delegate: TitleViewDelegate?
 
-    public var text: String? {
+    var text: String? {
         get {
             return label.text
         }
@@ -615,11 +615,11 @@ class TitleView: UIView {
         }
     }
 
-    public enum TitleViewRotationDirection {
+    enum TitleViewRotationDirection {
         case up, down
     }
 
-    public func rotateIcon(_ direction: TitleViewRotationDirection) {
+    func rotateIcon(_ direction: TitleViewRotationDirection) {
         switch direction {
         case .up:
             // *slightly* more than `pi` to ensure the chevron animates counter-clockwise
@@ -639,7 +639,7 @@ class TitleView: UIView {
 }
 
 extension ImagePickerGridController: TitleViewDelegate {
-    func titleViewWasTapped(_ titleView: TitleView) {
+    fileprivate func titleViewWasTapped(_ titleView: TitleView) {
         if isShowingCollectionPickerController {
             hideCollectionPicker()
         } else {
