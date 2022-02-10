@@ -774,8 +774,8 @@ extension MessageReceiver {
     public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {
         let userPublicKey = getUserHexEncodedPublicKey()
         
-        // Ignore messages which aren't targeted at the current user
-        guard message.publicKey == userPublicKey else { return }
+        // Ignore messages which were sent from the current user
+        guard message.sender != userPublicKey else { return }
         guard let senderId: String = message.sender else { return }
         
         // Get the existing thead and notify the user

@@ -456,13 +456,13 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
     // MARK: - SNProtoMessageRequestResponseBuilder
 
-    @objc public class func builder(publicKey: Data, isApproved: Bool) -> SNProtoMessageRequestResponseBuilder {
-        return SNProtoMessageRequestResponseBuilder(publicKey: publicKey, isApproved: isApproved)
+    @objc public class func builder(isApproved: Bool) -> SNProtoMessageRequestResponseBuilder {
+        return SNProtoMessageRequestResponseBuilder(isApproved: isApproved)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SNProtoMessageRequestResponseBuilder {
-        let builder = SNProtoMessageRequestResponseBuilder(publicKey: publicKey, isApproved: isApproved)
+        let builder = SNProtoMessageRequestResponseBuilder(isApproved: isApproved)
         return builder
     }
 
@@ -472,15 +472,10 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(publicKey: Data, isApproved: Bool) {
+        @objc fileprivate init(isApproved: Bool) {
             super.init()
 
-            setPublicKey(publicKey)
             setIsApproved(isApproved)
-        }
-
-        @objc public func setPublicKey(_ valueParam: Data) {
-            proto.publicKey = valueParam
         }
 
         @objc public func setIsApproved(_ valueParam: Bool) {
@@ -498,15 +493,11 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
     fileprivate let proto: SessionProtos_MessageRequestResponse
 
-    @objc public let publicKey: Data
-
     @objc public let isApproved: Bool
 
     private init(proto: SessionProtos_MessageRequestResponse,
-                 publicKey: Data,
                  isApproved: Bool) {
         self.proto = proto
-        self.publicKey = publicKey
         self.isApproved = isApproved
     }
 
@@ -521,11 +512,6 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SessionProtos_MessageRequestResponse) throws -> SNProtoMessageRequestResponse {
-        guard proto.hasPublicKey else {
-            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: publicKey")
-        }
-        let publicKey = proto.publicKey
-
         guard proto.hasIsApproved else {
             throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: isApproved")
         }
@@ -536,7 +522,6 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
         // MARK: - End Validation Logic for SNProtoMessageRequestResponse -
 
         let result = SNProtoMessageRequestResponse(proto: proto,
-                                                   publicKey: publicKey,
                                                    isApproved: isApproved)
         return result
     }

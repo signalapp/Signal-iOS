@@ -1046,7 +1046,6 @@ extension ConversationVC {
             // they have been approved and can now use this contact in closed groups)
             if !isNewThread {
                 let messageRequestResponse: MessageRequestResponse = MessageRequestResponse(
-                    publicKey: sessionId,
                     isApproved: true
                 )
                 messageRequestResponse.sentTimestamp = timestamp

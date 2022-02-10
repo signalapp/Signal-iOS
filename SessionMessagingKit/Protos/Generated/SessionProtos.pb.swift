@@ -235,16 +235,6 @@ struct SessionProtos_MessageRequestResponse {
   // methods supported on all messages.
 
   /// @required
-  var publicKey: Data {
-    get {return _publicKey ?? Data()}
-    set {_publicKey = newValue}
-  }
-  /// Returns true if `publicKey` has been explicitly set.
-  var hasPublicKey: Bool {return self._publicKey != nil}
-  /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
-  mutating func clearPublicKey() {self._publicKey = nil}
-
-  /// @required
   var isApproved: Bool {
     get {return _isApproved ?? false}
     set {_isApproved = newValue}
@@ -258,7 +248,6 @@ struct SessionProtos_MessageRequestResponse {
 
   init() {}
 
-  fileprivate var _publicKey: Data? = nil
   fileprivate var _isApproved: Bool? = nil
 }
 
@@ -268,73 +257,79 @@ struct SessionProtos_Content {
   // methods supported on all messages.
 
   var dataMessage: SessionProtos_DataMessage {
-    get {return _storage._dataMessage ?? SessionProtos_DataMessage()}
-    set {_uniqueStorage()._dataMessage = newValue}
+    get {return _dataMessage ?? SessionProtos_DataMessage()}
+    set {_dataMessage = newValue}
   }
   /// Returns true if `dataMessage` has been explicitly set.
-  var hasDataMessage: Bool {return _storage._dataMessage != nil}
+  var hasDataMessage: Bool {return self._dataMessage != nil}
   /// Clears the value of `dataMessage`. Subsequent reads from it will return its default value.
-  mutating func clearDataMessage() {_uniqueStorage()._dataMessage = nil}
+  mutating func clearDataMessage() {self._dataMessage = nil}
 
   var receiptMessage: SessionProtos_ReceiptMessage {
-    get {return _storage._receiptMessage ?? SessionProtos_ReceiptMessage()}
-    set {_uniqueStorage()._receiptMessage = newValue}
+    get {return _receiptMessage ?? SessionProtos_ReceiptMessage()}
+    set {_receiptMessage = newValue}
   }
   /// Returns true if `receiptMessage` has been explicitly set.
-  var hasReceiptMessage: Bool {return _storage._receiptMessage != nil}
+  var hasReceiptMessage: Bool {return self._receiptMessage != nil}
   /// Clears the value of `receiptMessage`. Subsequent reads from it will return its default value.
-  mutating func clearReceiptMessage() {_uniqueStorage()._receiptMessage = nil}
+  mutating func clearReceiptMessage() {self._receiptMessage = nil}
 
   var typingMessage: SessionProtos_TypingMessage {
-    get {return _storage._typingMessage ?? SessionProtos_TypingMessage()}
-    set {_uniqueStorage()._typingMessage = newValue}
+    get {return _typingMessage ?? SessionProtos_TypingMessage()}
+    set {_typingMessage = newValue}
   }
   /// Returns true if `typingMessage` has been explicitly set.
-  var hasTypingMessage: Bool {return _storage._typingMessage != nil}
+  var hasTypingMessage: Bool {return self._typingMessage != nil}
   /// Clears the value of `typingMessage`. Subsequent reads from it will return its default value.
-  mutating func clearTypingMessage() {_uniqueStorage()._typingMessage = nil}
+  mutating func clearTypingMessage() {self._typingMessage = nil}
 
   var configurationMessage: SessionProtos_ConfigurationMessage {
-    get {return _storage._configurationMessage ?? SessionProtos_ConfigurationMessage()}
-    set {_uniqueStorage()._configurationMessage = newValue}
+    get {return _configurationMessage ?? SessionProtos_ConfigurationMessage()}
+    set {_configurationMessage = newValue}
   }
   /// Returns true if `configurationMessage` has been explicitly set.
-  var hasConfigurationMessage: Bool {return _storage._configurationMessage != nil}
+  var hasConfigurationMessage: Bool {return self._configurationMessage != nil}
   /// Clears the value of `configurationMessage`. Subsequent reads from it will return its default value.
-  mutating func clearConfigurationMessage() {_uniqueStorage()._configurationMessage = nil}
+  mutating func clearConfigurationMessage() {self._configurationMessage = nil}
 
   var dataExtractionNotification: SessionProtos_DataExtractionNotification {
-    get {return _storage._dataExtractionNotification ?? SessionProtos_DataExtractionNotification()}
-    set {_uniqueStorage()._dataExtractionNotification = newValue}
+    get {return _dataExtractionNotification ?? SessionProtos_DataExtractionNotification()}
+    set {_dataExtractionNotification = newValue}
   }
   /// Returns true if `dataExtractionNotification` has been explicitly set.
-  var hasDataExtractionNotification: Bool {return _storage._dataExtractionNotification != nil}
+  var hasDataExtractionNotification: Bool {return self._dataExtractionNotification != nil}
   /// Clears the value of `dataExtractionNotification`. Subsequent reads from it will return its default value.
-  mutating func clearDataExtractionNotification() {_uniqueStorage()._dataExtractionNotification = nil}
+  mutating func clearDataExtractionNotification() {self._dataExtractionNotification = nil}
 
   var unsendRequest: SessionProtos_UnsendRequest {
-    get {return _storage._unsendRequest ?? SessionProtos_UnsendRequest()}
-    set {_uniqueStorage()._unsendRequest = newValue}
+    get {return _unsendRequest ?? SessionProtos_UnsendRequest()}
+    set {_unsendRequest = newValue}
   }
   /// Returns true if `unsendRequest` has been explicitly set.
-  var hasUnsendRequest: Bool {return _storage._unsendRequest != nil}
+  var hasUnsendRequest: Bool {return self._unsendRequest != nil}
   /// Clears the value of `unsendRequest`. Subsequent reads from it will return its default value.
-  mutating func clearUnsendRequest() {_uniqueStorage()._unsendRequest = nil}
+  mutating func clearUnsendRequest() {self._unsendRequest = nil}
 
   var messageRequestResponse: SessionProtos_MessageRequestResponse {
-    get {return _storage._messageRequestResponse ?? SessionProtos_MessageRequestResponse()}
-    set {_uniqueStorage()._messageRequestResponse = newValue}
+    get {return _messageRequestResponse ?? SessionProtos_MessageRequestResponse()}
+    set {_messageRequestResponse = newValue}
   }
   /// Returns true if `messageRequestResponse` has been explicitly set.
-  var hasMessageRequestResponse: Bool {return _storage._messageRequestResponse != nil}
+  var hasMessageRequestResponse: Bool {return self._messageRequestResponse != nil}
   /// Clears the value of `messageRequestResponse`. Subsequent reads from it will return its default value.
-  mutating func clearMessageRequestResponse() {_uniqueStorage()._messageRequestResponse = nil}
+  mutating func clearMessageRequestResponse() {self._messageRequestResponse = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
-  fileprivate var _storage = _StorageClass.defaultInstance
+  fileprivate var _dataMessage: SessionProtos_DataMessage? = nil
+  fileprivate var _receiptMessage: SessionProtos_ReceiptMessage? = nil
+  fileprivate var _typingMessage: SessionProtos_TypingMessage? = nil
+  fileprivate var _configurationMessage: SessionProtos_ConfigurationMessage? = nil
+  fileprivate var _dataExtractionNotification: SessionProtos_DataExtractionNotification? = nil
+  fileprivate var _unsendRequest: SessionProtos_UnsendRequest? = nil
+  fileprivate var _messageRequestResponse: SessionProtos_MessageRequestResponse? = nil
 }
 
 struct SessionProtos_KeyPair {
@@ -1676,12 +1671,10 @@ extension SessionProtos_UnsendRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
 extension SessionProtos_MessageRequestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".MessageRequestResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "publicKey"),
-    2: .same(proto: "isApproved"),
+    1: .same(proto: "isApproved"),
   ]
 
   public var isInitialized: Bool {
-    if self._publicKey == nil {return false}
     if self._isApproved == nil {return false}
     return true
   }
@@ -1692,8 +1685,7 @@ extension SessionProtos_MessageRequestResponse: SwiftProtobuf.Message, SwiftProt
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self._publicKey) }()
-      case 2: try { try decoder.decodeSingularBoolField(value: &self._isApproved) }()
+      case 1: try { try decoder.decodeSingularBoolField(value: &self._isApproved) }()
       default: break
       }
     }
@@ -1704,17 +1696,13 @@ extension SessionProtos_MessageRequestResponse: SwiftProtobuf.Message, SwiftProt
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._publicKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    } }()
     try { if let v = self._isApproved {
-      try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 1)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionProtos_MessageRequestResponse, rhs: SessionProtos_MessageRequestResponse) -> Bool {
-    if lhs._publicKey != rhs._publicKey {return false}
     if lhs._isApproved != rhs._isApproved {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -1733,118 +1721,72 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     10: .same(proto: "messageRequestResponse"),
   ]
 
-  fileprivate class _StorageClass {
-    var _dataMessage: SessionProtos_DataMessage? = nil
-    var _receiptMessage: SessionProtos_ReceiptMessage? = nil
-    var _typingMessage: SessionProtos_TypingMessage? = nil
-    var _configurationMessage: SessionProtos_ConfigurationMessage? = nil
-    var _dataExtractionNotification: SessionProtos_DataExtractionNotification? = nil
-    var _unsendRequest: SessionProtos_UnsendRequest? = nil
-    var _messageRequestResponse: SessionProtos_MessageRequestResponse? = nil
-
-    static let defaultInstance = _StorageClass()
-
-    private init() {}
-
-    init(copying source: _StorageClass) {
-      _dataMessage = source._dataMessage
-      _receiptMessage = source._receiptMessage
-      _typingMessage = source._typingMessage
-      _configurationMessage = source._configurationMessage
-      _dataExtractionNotification = source._dataExtractionNotification
-      _unsendRequest = source._unsendRequest
-      _messageRequestResponse = source._messageRequestResponse
-    }
-  }
-
-  fileprivate mutating func _uniqueStorage() -> _StorageClass {
-    if !isKnownUniquelyReferenced(&_storage) {
-      _storage = _StorageClass(copying: _storage)
-    }
-    return _storage
-  }
-
   public var isInitialized: Bool {
-    return withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if let v = _storage._dataMessage, !v.isInitialized {return false}
-      if let v = _storage._receiptMessage, !v.isInitialized {return false}
-      if let v = _storage._typingMessage, !v.isInitialized {return false}
-      if let v = _storage._configurationMessage, !v.isInitialized {return false}
-      if let v = _storage._dataExtractionNotification, !v.isInitialized {return false}
-      if let v = _storage._unsendRequest, !v.isInitialized {return false}
-      if let v = _storage._messageRequestResponse, !v.isInitialized {return false}
-      return true
-    }
+    if let v = self._dataMessage, !v.isInitialized {return false}
+    if let v = self._receiptMessage, !v.isInitialized {return false}
+    if let v = self._typingMessage, !v.isInitialized {return false}
+    if let v = self._configurationMessage, !v.isInitialized {return false}
+    if let v = self._dataExtractionNotification, !v.isInitialized {return false}
+    if let v = self._unsendRequest, !v.isInitialized {return false}
+    if let v = self._messageRequestResponse, !v.isInitialized {return false}
+    return true
   }
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    _ = _uniqueStorage()
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      while let fieldNumber = try decoder.nextFieldNumber() {
-        // The use of inline closures is to circumvent an issue where the compiler
-        // allocates stack space for every case branch when no optimizations are
-        // enabled. https://github.com/apple/swift-protobuf/issues/1034
-        switch fieldNumber {
-        case 1: try { try decoder.decodeSingularMessageField(value: &_storage._dataMessage) }()
-        case 5: try { try decoder.decodeSingularMessageField(value: &_storage._receiptMessage) }()
-        case 6: try { try decoder.decodeSingularMessageField(value: &_storage._typingMessage) }()
-        case 7: try { try decoder.decodeSingularMessageField(value: &_storage._configurationMessage) }()
-        case 8: try { try decoder.decodeSingularMessageField(value: &_storage._dataExtractionNotification) }()
-        case 9: try { try decoder.decodeSingularMessageField(value: &_storage._unsendRequest) }()
-        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._messageRequestResponse) }()
-        default: break
-        }
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._dataMessage) }()
+      case 5: try { try decoder.decodeSingularMessageField(value: &self._receiptMessage) }()
+      case 6: try { try decoder.decodeSingularMessageField(value: &self._typingMessage) }()
+      case 7: try { try decoder.decodeSingularMessageField(value: &self._configurationMessage) }()
+      case 8: try { try decoder.decodeSingularMessageField(value: &self._dataExtractionNotification) }()
+      case 9: try { try decoder.decodeSingularMessageField(value: &self._unsendRequest) }()
+      case 10: try { try decoder.decodeSingularMessageField(value: &self._messageRequestResponse) }()
+      default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every if/case branch local when no optimizations
-      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-      // https://github.com/apple/swift-protobuf/issues/1182
-      try { if let v = _storage._dataMessage {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-      } }()
-      try { if let v = _storage._receiptMessage {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
-      } }()
-      try { if let v = _storage._typingMessage {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
-      } }()
-      try { if let v = _storage._configurationMessage {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
-      } }()
-      try { if let v = _storage._dataExtractionNotification {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
-      } }()
-      try { if let v = _storage._unsendRequest {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
-      } }()
-      try { if let v = _storage._messageRequestResponse {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
-      } }()
-    }
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._dataMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._receiptMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._typingMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+    } }()
+    try { if let v = self._configurationMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    } }()
+    try { if let v = self._dataExtractionNotification {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+    } }()
+    try { if let v = self._unsendRequest {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
+    } }()
+    try { if let v = self._messageRequestResponse {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionProtos_Content, rhs: SessionProtos_Content) -> Bool {
-    if lhs._storage !== rhs._storage {
-      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
-        let _storage = _args.0
-        let rhs_storage = _args.1
-        if _storage._dataMessage != rhs_storage._dataMessage {return false}
-        if _storage._receiptMessage != rhs_storage._receiptMessage {return false}
-        if _storage._typingMessage != rhs_storage._typingMessage {return false}
-        if _storage._configurationMessage != rhs_storage._configurationMessage {return false}
-        if _storage._dataExtractionNotification != rhs_storage._dataExtractionNotification {return false}
-        if _storage._unsendRequest != rhs_storage._unsendRequest {return false}
-        if _storage._messageRequestResponse != rhs_storage._messageRequestResponse {return false}
-        return true
-      }
-      if !storagesAreEqual {return false}
-    }
+    if lhs._dataMessage != rhs._dataMessage {return false}
+    if lhs._receiptMessage != rhs._receiptMessage {return false}
+    if lhs._typingMessage != rhs._typingMessage {return false}
+    if lhs._configurationMessage != rhs._configurationMessage {return false}
+    if lhs._dataExtractionNotification != rhs._dataExtractionNotification {return false}
+    if lhs._unsendRequest != rhs._unsendRequest {return false}
+    if lhs._messageRequestResponse != rhs._messageRequestResponse {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
