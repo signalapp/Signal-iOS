@@ -1,3 +1,4 @@
+• Masz nowy numer telefonu? Teraz możesz zmienić numer zarejestrowany w Signal, nie tracąc swojej historii rozmów, grup i profilu Signal. Przejdź do Ustawienia > Konto > Zmień numer, aby wypróbować tę opcję.
 • Nowa funkcja pozwoli Ci wybierać jednocześnie kilka rozmów z listy i oznaczyć je jako przeczytane, przenieść do archiwum lub usunąć. Stuknij swoje zdjęcie profilowe w lewym górnym rogu, aby ją wypróbować.
 • Masz teraz szybszy dostęp do zarchiwizowanych rozmów. Stuknij swoje zdjęcie profilowe w lewym górnym rogu, aby łatwo do nich dotrzeć.
 • Tyle reakcji do wyboru, a tak mało czasu. Teraz możesz łatwo wyszukać swoją ulubioną reakcję.
