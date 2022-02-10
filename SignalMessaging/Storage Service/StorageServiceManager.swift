@@ -1070,20 +1070,20 @@ class StorageServiceOperation: OWSOperation {
                 // Mark any orphaned records as pending update so we re-add them to the manifest.
 
                 var orphanedGroupV1Count = 0
-                Set(mutableState.groupV1IdToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
-                    if let groupId = mutableState.groupV1IdToIdentifierMap[identifier] { mutableState.groupV1ChangeMap[groupId] = .updated }
+                for (groupId, identifier) in mutableState.groupV1IdToIdentifierMap where !allManifestItems.contains(identifier) {
+                    mutableState.groupV1ChangeMap[groupId] = .updated
                     orphanedGroupV1Count += 1
                 }
 
                 var orphanedGroupV2Count = 0
-                Set(mutableState.groupV2MasterKeyToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
-                    if let groupMasterKey = mutableState.groupV2MasterKeyToIdentifierMap[identifier] { mutableState.groupV2ChangeMap[groupMasterKey] = .updated }
+                for (groupMasterKey, identifier) in mutableState.groupV2MasterKeyToIdentifierMap where !allManifestItems.contains(identifier) {
+                    mutableState.groupV2ChangeMap[groupMasterKey] = .updated
                     orphanedGroupV2Count += 1
                 }
 
                 var orphanedAccountCount = 0
-                Set(mutableState.accountIdToIdentifierMap.backwardKeys).subtracting(allManifestItems).forEach { identifier in
-                    if let accountId = mutableState.accountIdToIdentifierMap[identifier] { mutableState.accountIdChangeMap[accountId] = .updated }
+                for (accountId, identifier) in mutableState.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
+                    mutableState.accountIdChangeMap[accountId] = .updated
                     orphanedAccountCount += 1
                 }
 
@@ -1361,7 +1361,7 @@ class StorageServiceOperation: OWSOperation {
         // period of time we didn't and we need to cleanup after ourselves.
         let orphanedAccountIds = State.current(transaction: transaction)
             .accountIdToIdentifierMap
-            .forwardKeys
+            .keys
             .filter { accountId in
                 guard let address = OWSAccountIdFinder.address(
                     forAccountId: accountId,
@@ -1569,21 +1569,24 @@ class StorageServiceOperation: OWSOperation {
         var localAccountIdentifier: StorageService.StorageIdentifier?
         var localAccountRecordWithUnknownFields: StorageServiceProtoAccountRecord?
 
-        var accountIdToIdentifierMap: BidirectionalDictionary<AccountId, StorageService.StorageIdentifier> = [:]
+        @BidirectionalLegacyDecoding
+        var accountIdToIdentifierMap: [AccountId: StorageService.StorageIdentifier] = [:]
         private var _accountIdToRecordWithUnknownFields: [AccountId: StorageServiceProtoContactRecord]?
         var accountIdToRecordWithUnknownFields: [AccountId: StorageServiceProtoContactRecord] {
             set { _accountIdToRecordWithUnknownFields = newValue }
             get { _accountIdToRecordWithUnknownFields ?? [:] }
         }
 
-        var groupV1IdToIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
+        @BidirectionalLegacyDecoding
+        var groupV1IdToIdentifierMap: [Data: StorageService.StorageIdentifier] = [:]
         private var _groupV1IdToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV1Record]?
         var groupV1IdToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV1Record] {
             set { _groupV1IdToRecordWithUnknownFields = newValue }
             get { _groupV1IdToRecordWithUnknownFields ?? [:] }
         }
 
-        var groupV2MasterKeyToIdentifierMap: BidirectionalDictionary<Data, StorageService.StorageIdentifier> = [:]
+        @BidirectionalLegacyDecoding
+        var groupV2MasterKeyToIdentifierMap: [Data: StorageService.StorageIdentifier] = [:]
         private var _groupV2MasterKeyToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV2Record]?
         var groupV2MasterKeyToRecordWithUnknownFields: [Data: StorageServiceProtoGroupV2Record] {
             set { _groupV2MasterKeyToRecordWithUnknownFields = newValue }
@@ -1610,9 +1613,9 @@ class StorageServiceOperation: OWSOperation {
                 allIdentifiers.append(localAccountIdentifier)
             }
 
-            allIdentifiers += accountIdToIdentifierMap.backwardKeys
-            allIdentifiers += groupV1IdToIdentifierMap.backwardKeys
-            allIdentifiers += groupV2MasterKeyToIdentifierMap.backwardKeys
+            allIdentifiers += accountIdToIdentifierMap.values
+            allIdentifiers += groupV1IdToIdentifierMap.values
+            allIdentifiers += groupV2MasterKeyToIdentifierMap.values
 
             // We must persist any unknown identifiers, as they are potentially associated with
             // valid records that this version of the app doesn't yet understand how to parse.
@@ -1639,5 +1642,36 @@ class StorageServiceOperation: OWSOperation {
             guard let stateData = try? JSONEncoder().encode(self) else { return owsFailDebug("failed to encode state data") }
             keyValueStore.setData(stateData, key: State.stateKey, transaction: transaction)
         }
+    }
+}
+
+/// Optionally attempts decoding a dictionary as a BidirectionalDictionary,
+/// in case it was previously stored in that format.
+@propertyWrapper
+private struct BidirectionalLegacyDecoding<Value: Codable>: Codable {
+    enum BidirectionalDictionaryCodingKeys: String, CodingKey {
+        case forwardDictionary
+        case backwardDictionary
+    }
+
+    var wrappedValue: Value
+    init(wrappedValue: Value) {
+        self.wrappedValue = wrappedValue
+    }
+
+    init(from decoder: Decoder) throws {
+        do {
+            // First, try and decode as if we're just a dictionary.
+            wrappedValue = try Value(from: decoder)
+        } catch DecodingError.keyNotFound, DecodingError.typeMismatch {
+            // If we hit a decoding error, try and decode as if
+            // we were a BidirectionalDictionary.
+            let bidirectionalContainer = try decoder.container(keyedBy: BidirectionalDictionaryCodingKeys.self)
+            wrappedValue = try bidirectionalContainer.decode(Value.self, forKey: .forwardDictionary)
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        try wrappedValue.encode(to: encoder)
     }
 }
