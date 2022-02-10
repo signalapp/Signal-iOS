@@ -43,6 +43,48 @@ public class CircleView: UIView {
     }
 }
 
+@objc (OWSCircleBlurView)
+public class CircleBlurView: UIVisualEffectView {
+
+    @available(*, unavailable, message: "use other constructor instead.")
+    required public init?(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    @objc
+    public override init(effect: UIVisualEffect?) {
+        super.init(effect: effect)
+        frame = .zero
+    }
+
+    @objc
+    public required init(effect: UIVisualEffect, diameter: CGFloat) {
+        super.init(effect: effect)
+        frame = .zero
+
+        autoSetDimensions(to: CGSize(square: diameter))
+    }
+
+    @objc
+    override public var frame: CGRect {
+        didSet {
+            updateRadius()
+        }
+    }
+
+    @objc
+    override public var bounds: CGRect {
+        didSet {
+            updateRadius()
+        }
+    }
+
+    private func updateRadius() {
+        layer.cornerRadius = bounds.size.height / 2
+        clipsToBounds = true
+    }
+}
+
 @objc (OWSPillView)
 public class PillView: UIView {
 
