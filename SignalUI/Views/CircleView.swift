@@ -86,10 +86,12 @@ public class CircleBlurView: UIVisualEffectView {
 }
 
 @objc (OWSPillView)
-public class PillView: UIView {
+open class PillView: UIView {
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
+
+        layer.masksToBounds = true
 
         // Constrain to be a pill that is at least a circle, and maybe wider.
         autoPin(toAspectRatio: 1.0, relation: .greaterThanOrEqual)
@@ -101,7 +103,7 @@ public class PillView: UIView {
         }
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
