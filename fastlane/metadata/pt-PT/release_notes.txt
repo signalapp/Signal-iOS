@@ -1,4 +1,4 @@
-• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
+• Tem um novo número de telefone? Agora você pode alterar o número registado no Signal sem perder o seu histórico de conversas, grupos e perfil do Signal. Vá para Definições > Conta > Alterar o número para o experimentar.
 • Um novo recurso de seleção múltipla permite selecionar várias conversas de uma só vez na lista de conversas e marcá-las como lidas, arquivadas ou eliminadas. Toque na sua fotografia de perfil no canto superior esquerdo para a experimentar.
 • As conversas arquivadas agora são mais rápidas de aceder. Basta tocar na fotografia do seu perfil no canto superior esquerdo para lhes aceder facilmente.
 • Tantas reações para escolher, tão pouco tempo. Agora você pode procurar facilmente a sua reação favorita .

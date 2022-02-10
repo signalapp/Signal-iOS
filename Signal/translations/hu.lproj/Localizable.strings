@@ -6290,7 +6290,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Nincs kapcsolatod ebben a csoportban. A kérelmeket óvatosan tekintsd át.";
 
 /* Tap to Replace Emoji string for reaction configuration */
-"TAP_REPLACE_EMOJI" = "Koppints emoji cseréjéhez";
+"TAP_REPLACE_EMOJI" = "Koppints egy emoji cseréjéhez";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Ez az üzenet törölve lett.";
