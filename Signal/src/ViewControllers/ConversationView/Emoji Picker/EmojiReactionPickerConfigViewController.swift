@@ -87,7 +87,7 @@ extension EmojiReactionPickerConfigViewController: MessageReactionPickerDelegate
         }
         picker.backdropColor = .clear
 
-        reactionPicker.startReplaceAnimation(focusedEmoji: reaction)
+        reactionPicker.startReplaceAnimation(focusedEmoji: reaction, inPosition: position)
         present(picker, animated: true)
     }
 

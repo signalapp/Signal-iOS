@@ -135,6 +135,8 @@ class MessageReactionPicker: UIStackView {
         let buttonTuple = buttonForEmoji[position]
         let button = buttonTuple.button
         button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
+//        buttonForEmoji.remove(at: position)
+        buttonForEmoji.replaceSubrange(position...position, with: [(newEmoji, button)])
     }
 
     public func currentEmojiSet() -> [String] {
@@ -147,13 +149,14 @@ class MessageReactionPicker: UIStackView {
         return emojiSet
     }
 
-    public func startReplaceAnimation(focusedEmoji: String) {
+    public func startReplaceAnimation(focusedEmoji: String, inPosition position: Int) {
         var buttonToWiggle: OWSFlatButton?
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            for view in self.arrangedSubviews {
+            for (index, view) in self.arrangedSubviews.enumerated() {
                 if let button = view as? OWSFlatButton, let emoji = button.button.title(for: .normal) {
                     // Shrink and fade
-                    if emoji != focusedEmoji {
+//                    if emoji != focusedEmoji {
+                    if index != position {
                         button.alpha = 0.3
                         button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
                     } else { // Expand and wiggle
