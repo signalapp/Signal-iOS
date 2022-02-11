@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -412,6 +412,10 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
 
     func avatarImage(forCNContactId contactId: String?) -> UIImage? {
         nil
+    }
+
+    func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease? {
+        return nil
     }
 
     var unknownUserLabel: String = "unknown"
