@@ -60,7 +60,11 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
         case .contactPermissionReminder:
             return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
         case .subscriptionMegaphone:
-            return RemoteConfig.subscriptionMegaphone && !subscriptionManager.hasCurrentSubscription(transaction: transaction.asAnyRead)
+            // Show the subscription megaphone IFF:
+            // - It's remotely enabled
+            // - The user has no / an expired subscription
+            // - Their last subscription has been expired for more than 2 weeks
+            return RemoteConfig.subscriptionMegaphone && (subscriptionManager.timeSinceLastSubscriptionExpiration(transaction: transaction.asAnyRead) > (2 * kWeekInterval))
         }
     }
 

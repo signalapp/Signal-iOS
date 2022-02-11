@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -85,7 +85,10 @@ class AppSettingsViewController: OWSTableViewController2 {
     }()
 
     private lazy var hasExpiredSubscription: Bool = {
-        return SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction() != nil
+        guard let mostRecentlyExpiredBadgeId = SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction() else {
+            return false
+        }
+        return SubscriptionBadgeIds.contains(mostRecentlyExpiredBadgeId)
     }()
 
     func updateTableContents() {
