@@ -394,6 +394,27 @@ public extension OWSRecipientIdentity {
         }
     }
 
+    class func groupContainsUnverifiedMember(_ groupUniqueID: String,
+                                             transaction: SDSAnyReadTransaction) -> Bool {
+        let members = groupMembers(ofGroupWithUniqueID: groupUniqueID,
+                                   withVerificationState: .verified,
+                                   negated: true,
+                                   limit: 1,
+                                   transaction: transaction)
+        return !members.isEmpty
+    }
+
+    @objc(noLongerVerifiedAddressesInGroup:limit:transaction:)
+    class func noLongerVerifiedAddresses(inGroup groupThreadID: String,
+                                         limit: Int,
+                                         transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        return groupMembers(ofGroupWithUniqueID: groupThreadID,
+                            withVerificationState: .noLongerVerified,
+                            negated: false,
+                            limit: limit,
+                            transaction: transaction)
+    }
+
     // Traverses all records.
     // Records are not visited in any particular order.
     class func anyEnumerate(transaction: SDSAnyReadTransaction,
@@ -583,6 +604,76 @@ public extension OWSRecipientIdentity {
         } catch {
             owsFailDebug("error: \(error)")
             return nil
+        }
+    }
+}
+
+fileprivate extension OWSRecipientIdentity {
+    private class func sqlQueryToFetchVerifiedAddresses(groupUniqueID: String,
+                                                        withVerificationState state: OWSVerificationState,
+                                                        negated: Bool,
+                                                        limit: Int) -> String {
+        let limitClause: String
+        if limit < Int.max {
+            limitClause = "LIMIT \(limit)"
+        } else {
+            limitClause = ""
+        }
+        let comparisonOperator = negated ? "!=" : "="
+        let stateClause = "\(recipientIdentityColumnFullyQualified: .verificationState) \(comparisonOperator) \(state.rawValue)"
+
+        let groupMember_phoneNumber = "\(groupMemberColumnFullyQualified: .phoneNumber)"
+        let groupMember_groupThreadID = "\(groupMemberColumnFullyQualified: .groupThreadId)"
+        let groupMember_uuidString = "\(groupMemberColumnFullyQualified: .uuidString)"
+
+        let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"
+        let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified:  .recipientPhoneNumber)"
+        let recipient_recipientUUID = "\(signalRecipientColumnFullyQualified: .recipientUUID)"
+        let recipient_uniqueID = "\(signalRecipientColumnFullyQualified: .uniqueId)"
+
+        let recipientIdentity_uniqueID = "\(recipientIdentityColumnFullyQualified: .uniqueId)"
+
+        let sql =
+        """
+        SELECT \(recipient_recipientUUID), \(recipient_recipientPhoneNumber)
+        FROM \(SignalRecipientRecord.databaseTableName),
+             \(RecipientIdentityRecord.databaseTableName),
+             \(GroupMemberRecord.databaseTableName)
+        WHERE  \(recipient_uniqueID) = \(recipientIdentity_uniqueID) AND
+               \(groupMember_groupThreadID) = ? AND
+               (\(groupMember_uuidString) = \(recipient_recipientUUID) OR
+                \(groupMember_phoneNumber) = \(recipient_recipientPhoneNumber))
+        AND
+               \(stateClause)
+        ORDER BY \(recipient_id)
+        \(limitClause)
+        """
+        return sql
+    }
+
+    class func groupMembers(ofGroupWithUniqueID groupUniqueID: String,
+                            withVerificationState state: OWSVerificationState,
+                            negated: Bool,
+                            limit: Int,
+                            transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbTransaction):
+            let sql = sqlQueryToFetchVerifiedAddresses(groupUniqueID: groupUniqueID,
+                                                       withVerificationState: state,
+                                                       negated: negated,
+                                                       limit: limit)
+            do {
+                let cursor = try Row.fetchCursor(grdbTransaction.database,
+                                                 sql: sql,
+                                                 arguments: StatementArguments([groupUniqueID]))
+                let mapped = cursor.map { row in
+                    return SignalServiceAddress(uuid: row[0], phoneNumber: row[1])
+                }
+                return try Array(mapped)
+            } catch {
+                owsFailDebug("error: \(error)")
+                return []
+            }
         }
     }
 }
