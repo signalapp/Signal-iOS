@@ -328,7 +328,7 @@ public extension OWSMessageContentJob {
 // MARK: - OWSMessageContentJobCursor
 
 @objc
-public class OWSMessageContentJobCursor: NSObject {
+public class OWSMessageContentJobCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<MessageContentJobRecord>?
 

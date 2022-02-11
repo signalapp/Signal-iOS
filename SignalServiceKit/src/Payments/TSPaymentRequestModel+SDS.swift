@@ -339,7 +339,7 @@ public extension TSPaymentRequestModel {
 // MARK: - TSPaymentRequestModelCursor
 
 @objc
-public class TSPaymentRequestModelCursor: NSObject {
+public class TSPaymentRequestModelCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<PaymentRequestModelRecord>?
 

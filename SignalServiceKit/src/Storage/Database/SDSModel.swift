@@ -135,3 +135,10 @@ public extension SDSModel {
         }
     }
 }
+
+// MARK: - Cursors
+
+public protocol SDSCursor {
+    associatedtype Model: SDSModel
+    func next() throws -> Model?
+}

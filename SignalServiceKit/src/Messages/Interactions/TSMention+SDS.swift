@@ -319,7 +319,7 @@ public extension TSMention {
 // MARK: - TSMentionCursor
 
 @objc
-public class TSMentionCursor: NSObject {
+public class TSMentionCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<MentionRecord>?
 

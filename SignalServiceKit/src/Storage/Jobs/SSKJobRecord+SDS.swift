@@ -779,7 +779,7 @@ public extension SSKJobRecord {
 // MARK: - SSKJobRecordCursor
 
 @objc
-public class SSKJobRecordCursor: NSObject {
+public class SSKJobRecordCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<JobRecordRecord>?
 

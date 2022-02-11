@@ -660,7 +660,7 @@ public extension TSAttachment {
 // MARK: - TSAttachmentCursor
 
 @objc
-public class TSAttachmentCursor: NSObject {
+public class TSAttachmentCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<AttachmentRecord>?
 

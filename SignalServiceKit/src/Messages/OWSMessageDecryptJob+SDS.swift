@@ -310,7 +310,7 @@ public extension OWSMessageDecryptJob {
 // MARK: - OWSMessageDecryptJobCursor
 
 @objc
-public class OWSMessageDecryptJobCursor: NSObject {
+public class OWSMessageDecryptJobCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<MessageDecryptJobRecord>?
 
