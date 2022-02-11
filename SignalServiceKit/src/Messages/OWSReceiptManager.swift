@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -114,26 +114,6 @@ public extension OWSReceiptManager {
         } else {
             completion()
         }
-    }
-
-    func sendLinkedDeviceReadReceipt(forMessages messages: [TSOutgoingMessage],
-                                     thread: TSThread,
-                                     transaction: SDSAnyWriteTransaction) {
-        assert(messages.count > 0)
-        guard let localAddress = TSAccountManager.localAddress else {
-            return owsFailDebug("missing local address")
-        }
-        let readTimestamp = Date.ows_millisecondTimestamp()
-        let receiptsForMessage = messages.map {
-            OWSLinkedDeviceReadReceipt(
-                senderAddress: localAddress,
-                messageUniqueId: $0.uniqueId,
-                messageIdTimestamp: $0.timestamp,
-                readTimestamp: readTimestamp
-            )
-        }
-        let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread, readReceipts: receiptsForMessage)
-        self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
     func enqueueLinkedDeviceReadReceipt(forMessage message: TSIncomingMessage,

@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReceiptManager.h"
 #import "AppReadiness.h"
 #import "MessageSender.h"
+#import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReceiptsForSenderMessage.h"
@@ -102,76 +103,107 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
 
-        uint64_t readTimestamp = [NSDate ows_millisecondTimeStamp];
-        __block NSArray<id<OWSReadTracking>> *unreadMessages;
-        __block NSArray<TSOutgoingMessage *> *messagesWithUnreadReactions;
+        __block NSUInteger unreadCount;
+        __block NSUInteger messagesWithUnreadReactionsCount;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            unreadMessages = [interactionFinder unreadMessagesBeforeSortId:sortId
-                                                               transaction:transaction.unwrapGrdbRead];
-
-            messagesWithUnreadReactions =
-                [interactionFinder messagesWithUnreadReactionsBeforeSortId:sortId
-                                                               transaction:transaction.unwrapGrdbRead];
+            unreadCount = [interactionFinder countUnreadMessagesBeforeSortId:sortId
+                                                                 transaction:transaction.unwrapGrdbRead];
+            messagesWithUnreadReactionsCount =
+                [interactionFinder countMessagesWithUnreadReactionsBeforeSortId:sortId
+                                                                    transaction:transaction.unwrapGrdbRead];
         }];
 
-        if (unreadMessages.count < 1 && messagesWithUnreadReactions.count < 1) {
+        if (unreadCount == 0 && messagesWithUnreadReactionsCount == 0) {
             // Avoid unnecessary writes.
             dispatch_async(dispatch_get_main_queue(), completion);
             return;
         }
 
+        SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
+        uint64_t readTimestamp = [NSDate ows_millisecondTimeStamp];
+        OWSReceiptCircumstance circumstance = hasPendingMessageRequest
+            ? OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest
+            : OWSReceiptCircumstanceOnThisDevice;
+
         // Mark as read in batches.
-        NSComparisonResult (^interactionComparator)(id, id) = ^NSComparisonResult(id left, id right) {
-            if (![left isKindOfClass:[TSInteraction class]] || ![right isKindOfClass:[TSInteraction class]]) {
-                OWSFailDebug(@"Unexpected object: %@ %@", [left class], [right class]);
-                return NSOrderedSame;
-            }
-            TSInteraction *leftInteraction = left;
-            TSInteraction *rightInteraction = right;
-            if (leftInteraction.sortId == rightInteraction.sortId) {
-                return NSOrderedSame;
-            } else if (leftInteraction.sortId < rightInteraction.sortId) {
-                return NSOrderedAscending;
-            } else {
-                return NSOrderedDescending;
-            }
-        };
-        unreadMessages = [unreadMessages sortedArrayUsingComparator:interactionComparator];
-        messagesWithUnreadReactions = [messagesWithUnreadReactions sortedArrayUsingComparator:interactionComparator];
-
         const NSUInteger maxBatchSize = 500;
-        while (unreadMessages.count > 0) {
-            NSUInteger batchSize = MIN(unreadMessages.count, maxBatchSize);
-            NSArray<id<OWSReadTracking>> *batch = [unreadMessages subarrayWithRange:NSMakeRange(0, batchSize)];
-            unreadMessages =
-                [unreadMessages subarrayWithRange:NSMakeRange(batchSize, unreadMessages.count - batchSize)];
-            OWSAssertDebug(batch.count > 0);
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                OWSReceiptCircumstance circumstance = hasPendingMessageRequest
-                    ? OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest
-                    : OWSReceiptCircumstanceOnThisDevice;
-                [self markMessagesAsRead:batch
-                                  thread:thread
-                           readTimestamp:readTimestamp
-                            circumstance:circumstance
-                             transaction:transaction];
-            });
-        }
-        while (messagesWithUnreadReactions.count > 0) {
-            NSUInteger batchSize = MIN(messagesWithUnreadReactions.count, maxBatchSize);
-            NSArray<TSOutgoingMessage *> *batch =
-                [messagesWithUnreadReactions subarrayWithRange:NSMakeRange(0, batchSize)];
-            messagesWithUnreadReactions = [messagesWithUnreadReactions
-                subarrayWithRange:NSMakeRange(batchSize, messagesWithUnreadReactions.count - batchSize)];
-            OWSAssertDebug(batch.count > 0);
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                for (TSOutgoingMessage *message in batch) {
-                    [message markUnreadReactionsAsReadWithTransaction:transaction];
-                }
 
-                [self sendLinkedDeviceReadReceiptForMessages:batch thread:thread transaction:transaction];
-            });
+        NSString *reason;
+        switch (circumstance) {
+            case OWSReceiptCircumstanceOnLinkedDevice:
+                reason = @"by linked device";
+                break;
+            case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
+                reason = @"by linked device while pending message request";
+                break;
+            case OWSReceiptCircumstanceOnThisDevice:
+                reason = @"locally";
+                break;
+            case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
+                reason = @"locally while pending message request";
+                break;
         }
+        OWSLogInfo(
+            @"Marking %lu received messages and %lu sent messages with reactions as read %@ (in batches of %lu).",
+            (unsigned long)unreadCount,
+            (unsigned long)messagesWithUnreadReactionsCount,
+            reason,
+            maxBatchSize);
+
+        __block NSUInteger batchQuotaRemaining;
+        do {
+            batchQuotaRemaining = maxBatchSize;
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                [interactionFinder enumerateUnreadMessagesBeforeSortId:sortId
+                                                           transaction:transaction.unwrapGrdbWrite
+                                                                 block:^(id<OWSReadTracking> readItem, BOOL *stop) {
+                                                                     [readItem markAsReadAtTimestamp:readTimestamp
+                                                                                              thread:thread
+                                                                                        circumstance:circumstance
+                                                                                         transaction:transaction];
+                                                                     --batchQuotaRemaining;
+                                                                     if (batchQuotaRemaining == 0) {
+                                                                         *stop = true;
+                                                                     }
+                                                                 }];
+            });
+            // Continue until we process a batch and have some quota left.
+        } while (batchQuotaRemaining == 0);
+
+        // Mark outgoing messages with unread reactions as well.
+        do {
+            batchQuotaRemaining = maxBatchSize;
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                NSMutableArray *receiptsForMessage = [[NSMutableArray alloc] init];
+                [interactionFinder
+                    enumerateMessagesWithUnreadReactionsBeforeSortId:sortId
+                                                         transaction:transaction.unwrapGrdbWrite
+                                                               block:^(TSOutgoingMessage *message, BOOL *stop) {
+                                                                   [message markUnreadReactionsAsReadWithTransaction:
+                                                                                transaction];
+                                                                   OWSLinkedDeviceReadReceipt *receipt =
+                                                                       [[OWSLinkedDeviceReadReceipt alloc]
+                                                                           initWithSenderAddress:localAddress
+                                                                                 messageUniqueId:message.uniqueId
+                                                                              messageIdTimestamp:message.timestamp
+                                                                                   readTimestamp:readTimestamp];
+                                                                   [receiptsForMessage addObject:receipt];
+                                                                   --batchQuotaRemaining;
+                                                                   if (batchQuotaRemaining == 0) {
+                                                                       *stop = true;
+                                                                   }
+                                                               }];
+
+                if ([receiptsForMessage count] > 0) {
+                    OWSReadReceiptsForLinkedDevicesMessage *message =
+                        [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithThread:thread
+                                                                          readReceipts:receiptsForMessage];
+                    [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+                }
+            });
+            // Continue until we process a batch and have some quota left.
+        } while (batchQuotaRemaining == 0);
+
         dispatch_async(dispatch_get_main_queue(), completion);
     });
 }
@@ -562,46 +594,14 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     OWSAssertDebug(transaction);
 
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
-    NSArray<id<OWSReadTracking>> *unreadMessages =
-        [interactionFinder unreadMessagesBeforeSortId:sortId transaction:transaction.unwrapGrdbRead];
-    if (unreadMessages.count < 1) {
-        // Avoid unnecessary writes.
-        return;
-    }
-    [self markMessagesAsRead:unreadMessages
-                      thread:thread
-               readTimestamp:readTimestamp
-                circumstance:circumstance
-                 transaction:transaction];
-}
-
-- (void)markMessagesAsRead:(NSArray<id<OWSReadTracking>> *)unreadMessages
-                    thread:(TSThread *)thread
-             readTimestamp:(uint64_t)readTimestamp
-              circumstance:(OWSReceiptCircumstance)circumstance
-               transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(unreadMessages.count > 0);
-    OWSAssertDebug(transaction);
-
-    switch (circumstance) {
-        case OWSReceiptCircumstanceOnLinkedDevice:
-            OWSLogInfo(@"Marking %lu messages as read by linked device.", (unsigned long)unreadMessages.count);
-            break;
-        case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
-            OWSLogInfo(@"Marking %lu messages as read by linked device while pending message request.",
-                (unsigned long)unreadMessages.count);
-        case OWSReceiptCircumstanceOnThisDevice:
-            OWSLogInfo(@"Marking %lu messages as read locally.", (unsigned long)unreadMessages.count);
-            break;
-        case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
-            OWSLogInfo(@"Marking %lu messages as read locally while pending message request.",
-                (unsigned long)unreadMessages.count);
-            break;
-    }
-    for (id<OWSReadTracking> readItem in unreadMessages) {
-        [readItem markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
-    }
+    [interactionFinder enumerateUnreadMessagesBeforeSortId:sortId
+                                               transaction:transaction.unwrapGrdbWrite
+                                                     block:^(id<OWSReadTracking> readItem, BOOL *_Nonnull stop) {
+                                                         [readItem markAsReadAtTimestamp:readTimestamp
+                                                                                  thread:thread
+                                                                            circumstance:circumstance
+                                                                             transaction:transaction];
+                                                     }];
 }
 
 #pragma mark - Settings
