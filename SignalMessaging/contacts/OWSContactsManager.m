@@ -972,6 +972,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [SignalRecipient isRegisteredRecipient:address transaction:transaction];
 }
 
+- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
+    return [self.modelReadCaches.signalAccountReadCache leaseCacheSize:size];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

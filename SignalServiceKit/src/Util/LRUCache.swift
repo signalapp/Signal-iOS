@@ -68,11 +68,21 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     public var resetCount: UInt {
         _resetCount.get()
     }
+    public let regularMaxSize: Int
+    public var maxSize: Int {
+        get {
+            return cache.countLimit
+        }
+        set {
+            cache.countLimit = newValue
+        }
+    }
 
     public init(maxSize: Int,
                 nseMaxSize: Int = 0,
                 shouldEvacuateInBackground: Bool = false) {
-        self.cache.countLimit = CurrentAppContext().isNSE ? nseMaxSize : maxSize
+        regularMaxSize = CurrentAppContext().isNSE ? nseMaxSize : maxSize
+        self.cache.countLimit = regularMaxSize
 
         if CurrentAppContext().isMainApp,
            shouldEvacuateInBackground {

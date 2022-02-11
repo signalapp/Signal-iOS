@@ -4,6 +4,7 @@
 
 @class AnyPromise;
 @class BadgeStore;
+@class ModelReadCacheSizeLease;
 @class OWSAES256Key;
 @class OWSUserProfile;
 @class OWSUserProfileBadgeInfo;
@@ -168,6 +169,8 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)reuploadLocalProfile;
+
+- (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size;
 
 @end
 
