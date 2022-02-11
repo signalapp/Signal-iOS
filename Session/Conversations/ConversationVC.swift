@@ -106,18 +106,18 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }()
 
     lazy var messagesTableView: MessagesTableView = {
-        let tableView: MessagesTableView = MessagesTableView()
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.contentInsetAdjustmentBehavior = .never
-        tableView.contentInset = UIEdgeInsets(
+        let result: MessagesTableView = MessagesTableView()
+        result.dataSource = self
+        result.delegate = self
+        result.contentInsetAdjustmentBehavior = .never
+        result.contentInset = UIEdgeInsets(
             top: 0,
             leading: 0,
             bottom: Values.mediumSpacing,
             trailing: 0
         )
         
-        return tableView
+        return result
     }()
     
     lazy var snInputView = InputView(delegate: self)
@@ -158,56 +158,56 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }()
     
     lazy var footerControlsStackView: UIStackView = {
-        let stackView: UIStackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.alignment = .trailing
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 10
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-        stackView.isLayoutMarginsRelativeArrangement = true
+        let result: UIStackView = UIStackView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.axis = .vertical
+        result.alignment = .trailing
+        result.distribution = .equalSpacing
+        result.spacing = 10
+        result.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        result.isLayoutMarginsRelativeArrangement = true
         
-        return stackView
+        return result
     }()
     
     lazy var scrollButton = ScrollToBottomButton(delegate: self)
     
     lazy var messageRequestView: UIView = {
-        let view: UIView = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.isHidden = !thread.isMessageRequest()
-        view.setGradient(Gradients.defaultBackground)
+        let result: UIView = UIView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.isHidden = !thread.isMessageRequest()
+        result.setGradient(Gradients.defaultBackground)
         
-        return view
+        return result
     }()
     
     private let messageRequestDescriptionLabel: UILabel = {
-        let label: UILabel = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 12)
-        label.text = NSLocalizedString("MESSAGE_REQUESTS_INFO", comment: "")
-        label.textColor = Colors.sessionMessageRequestsInfoText
-        label.textAlignment = .center
-        label.numberOfLines = 2
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = UIFont.systemFont(ofSize: 12)
+        result.text = NSLocalizedString("MESSAGE_REQUESTS_INFO", comment: "")
+        result.textColor = Colors.sessionMessageRequestsInfoText
+        result.textAlignment = .center
+        result.numberOfLines = 2
         
-        return label
+        return result
     }()
     
     private let messageRequestAcceptButton: UIButton = {
-        let button: UIButton = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.clipsToBounds = true
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.setTitle(NSLocalizedString("TXT_DELETE_ACCEPT", comment: ""), for: .normal)
-        button.setTitleColor(Colors.sessionHeading, for: .normal)
-        button.setBackgroundImage(
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        result.setTitle(NSLocalizedString("TXT_DELETE_ACCEPT", comment: ""), for: .normal)
+        result.setTitleColor(Colors.sessionHeading, for: .normal)
+        result.setBackgroundImage(
             Colors.sessionHeading
                 .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
                 .toImage(isDarkMode: isDarkMode),
             for: .highlighted
         )
-        button.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
-        button.layer.borderColor = {
+        result.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
+        result.layer.borderColor = {
             if #available(iOS 13.0, *) {
                 return Colors.sessionHeading
                     .resolvedColor(
@@ -218,27 +218,27 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             
             return Colors.sessionHeading.cgColor
         }()
-        button.layer.borderWidth = 1
-        button.addTarget(self, action: #selector(acceptMessageRequest), for: .touchUpInside)
+        result.layer.borderWidth = 1
+        result.addTarget(self, action: #selector(acceptMessageRequest), for: .touchUpInside)
         
-        return button
+        return result
     }()
     
     private let messageRequestDeleteButton: UIButton = {
-        let button: UIButton = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.clipsToBounds = true
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: .normal)
-        button.setTitleColor(Colors.destructive, for: .normal)
-        button.setBackgroundImage(
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        result.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: .normal)
+        result.setTitleColor(Colors.destructive, for: .normal)
+        result.setBackgroundImage(
             Colors.destructive
                 .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
                 .toImage(isDarkMode: isDarkMode),
             for: .highlighted
         )
-        button.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
-        button.layer.borderColor = {
+        result.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
+        result.layer.borderColor = {
             if #available(iOS 13.0, *) {
                 return Colors.destructive
                     .resolvedColor(
@@ -249,10 +249,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             
             return Colors.destructive.cgColor
         }()
-        button.layer.borderWidth = 1
-        button.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
+        result.layer.borderWidth = 1
+        result.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
         
-        return button
+        return result
     }()
     
     // MARK: Settings

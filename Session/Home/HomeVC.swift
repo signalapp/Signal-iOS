@@ -289,7 +289,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         }
         
-        // TODO: Crash due to change from Message Requests getting approved?
         inboxRowChanges.forEach { rowChange in
             let rowChange = rowChange as! YapDatabaseViewRowChange
             let key = rowChange.collectionKey.key

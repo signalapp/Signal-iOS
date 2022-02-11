@@ -24,53 +24,54 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     // MARK: - UI
         
     private lazy var tableView: UITableView = {
-        let tableView: UITableView = UITableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none
-        tableView.register(MessageRequestsCell.self, forCellReuseIdentifier: MessageRequestsCell.reuseIdentifier)
-        tableView.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
-        tableView.dataSource = self
-        tableView.delegate = self
+        let result: UITableView = UITableView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.backgroundColor = .clear
+        result.separatorStyle = .none
+        result.register(MessageRequestsCell.self, forCellReuseIdentifier: MessageRequestsCell.reuseIdentifier)
+        result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
+        result.dataSource = self
+        result.delegate = self
         
         let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
-        tableView.showsVerticalScrollIndicator = false
+        result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+        result.showsVerticalScrollIndicator = false
         
-        return tableView
+        return result
     }()
     
     private lazy var fadeView: UIView = {
-        let view: UIView = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.isUserInteractionEnabled = false
-        view.setGradient(Gradients.homeVCFade)
+        let result: UIView = UIView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.isUserInteractionEnabled = false
+        result.setGradient(Gradients.homeVCFade)
         
-        return view
+        return result
     }()
     
     private lazy var clearAllButton: UIButton = {
-        let button: UIButton = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.clipsToBounds = true
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
-        button.setTitleColor(Colors.destructive, for: .normal)
-        button.setBackgroundImage(
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        result.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
+        result.setTitleColor(Colors.destructive, for: .normal)
+        result.setBackgroundImage(
             Colors.destructive
                 .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
                 .toImage(isDarkMode: isDarkMode),
             for: .highlighted
         )
-        button.layer.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
-        button.layer.borderColor = Colors.destructive.cgColor
-        button.layer.borderWidth = 1.5
-        button.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
+        result.layer.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
+        result.layer.borderColor = Colors.destructive.cgColor
+        result.layer.borderWidth = 1.5
+        result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
         
-        return button
+        return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
