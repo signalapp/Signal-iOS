@@ -20,7 +20,6 @@ public struct OpenGroupMessageV2: Codable {
     public let base64EncodedSignature: String?
 
     public func sign(with publicKey: String) -> OpenGroupMessageV2? {
-        // TODO: Swap to use blinded key
         guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { return nil }
         guard let data = Data(base64Encoded: base64EncodedData) else { return nil }
         guard let signature = try? Ed25519.sign(data, with: userKeyPair) else {

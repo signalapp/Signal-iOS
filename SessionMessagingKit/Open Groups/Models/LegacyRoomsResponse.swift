@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPIV2 {
-    struct GetInfoResponse: Codable {
-        let room: RoomInfo
+    struct LegacyRoomsResponse: Codable {
+        let rooms: [LegacyRoomInfo]
     }
 }

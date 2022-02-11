@@ -160,7 +160,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
         // Get default open group rooms if needed
-        OpenGroupAPIV2.getDefaultRoomsIfNeeded()
+        OpenGroupAPIV2.legacyGetDefaultRoomsIfNeeded()
     }
     
     override func viewDidAppear(_ animated: Bool) {

@@ -328,7 +328,7 @@ public enum OnionRequestAPI {
         // endpoint (in which case we need it to ensure the request signing works correctly
         // TODO: Confirm the 'removingPrefix' isn't going to break the request signing on non-legacy endpoints
         let endpoint: String = url.path
-            .removingPrefix("/", if: !url.path.starts(with: "/legacy"))
+//            .removingPrefix("/", if: !url.path.starts(with: "/legacy"))
             .appending(url.query.map { value in "?\(value)" })
         let scheme: String? = url.scheme
         let port: UInt16? = url.port.map { UInt16($0) }
@@ -382,90 +382,148 @@ public enum OnionRequestAPI {
                     return seal.reject(error)
                 }
                 let destinationSymmetricKey = intermediate.destinationSymmetricKey
-                HTTP.execute(.post, url, body: body).done2 { json in
-                    guard let base64EncodedIVAndCiphertext = json["result"] as? String,
-                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= AESGCM.ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
-                    do {
-                        let data = try AESGCM.decrypt(ivAndCiphertext, with: destinationSymmetricKey)
-                        guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
-                            let statusCode = json["status_code"] as? Int ?? json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
-                        if statusCode == 406 { // Clock out of sync
-                            SNLog("The user's clock is out of sync with the service node network.")
-                            seal.reject(SnodeAPI.Error.clockOutOfSync)
-                        } else if let bodyAsString = json["body"] as? String {
-                            guard let bodyAsData = bodyAsString.data(using: .utf8),
-                            let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
-                            if let timestamp = body["t"] as? Int64 {
-                                let offset = timestamp - Int64(NSDate.millisecondTimestamp())
-                                SnodeAPI.clockOffset = offset
+                
+                HTTP.execute(.post, url, body: body)
+                    .done2 { json in
+                        guard let base64EncodedIVAndCiphertext = json["result"] as? String, let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= AESGCM.ivSize else {
+                            return seal.reject(HTTP.Error.invalidJSON)
+                        }
+                        
+                        do {
+                            let data = try AESGCM.decrypt(ivAndCiphertext, with: destinationSymmetricKey)
+                            
+                            // The JSON data can be either an array or an object so can't cast to 'JSON' here
+                            // TODO: Would be nice to ditch this 'JSONSerialization' behaviour if we can
+                            guard let jsonObject = try? JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) else {
+                                return seal.reject(HTTP.Error.invalidJSON)
                             }
-                            guard 200...299 ~= statusCode else {
-                                return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body, destination: destination))
+                            
+                            // TODO: How do we now handle this case when the `status_code` is out of sync now that the value isn't provided?
+                            // TODO: Upgrade to V4?
+                            var customStatusCode: Int = 200
+                            
+                            if let json: JSON = jsonObject as? JSON, let bodyStatusCode: Int = (((json["status_code"] as? Int) ?? json["status"] as? Int) ?? json["code"] as? Int) {
+                                guard bodyStatusCode != 406 else {
+                                    SNLog("The user's clock is out of sync with the service node network.")
+                                    return seal.reject(SnodeAPI.Error.clockOutOfSync)
+                                }
+                                
+                                customStatusCode = bodyStatusCode
                             }
-                            seal.fulfill(data)
-                        } else {
-                            guard 200...299 ~= statusCode else {
-                                return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json, destination: destination))
+                            
+                            if let json: JSON = jsonObject as? JSON, let bodyAsString: String = json["body"] as? String {
+                                guard let bodyAsData = bodyAsString.data(using: .utf8), let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else {
+                                    return seal.reject(HTTP.Error.invalidJSON)
+                                }
+                                
+                                if let timestamp = body["t"] as? Int64 {
+                                    let offset = timestamp - Int64(NSDate.millisecondTimestamp())
+                                    SnodeAPI.clockOffset = offset
+                                }
+                                
+                                guard 200...299 ~= customStatusCode else {
+                                    return seal.reject(
+                                        Error.httpRequestFailedAtDestination(
+                                            statusCode: UInt(customStatusCode),
+                                            json: body,
+                                            destination: destination
+                                        )
+                                    )
+                                }
+                                
+                                return seal.fulfill(data)
                             }
+                            
+                            guard 200...299 ~= customStatusCode else {
+                                return seal.reject(
+                                    Error.httpRequestFailedAtDestination(
+                                        statusCode: UInt(customStatusCode),
+                                        json: json,
+                                        destination: destination
+                                    )
+                                )
+                            }
+                            
                             seal.fulfill(data)
                         }
-                    } catch {
+                        catch {
+                            seal.reject(error)
+                        }
+                    }
+                    .catch2 { error in
                         seal.reject(error)
                     }
-                }.catch2 { error in
-                    seal.reject(error)
-                }
             }.catch2 { error in
                 seal.reject(error)
             }
         }
+        
         promise.catch2 { error in // Must be invoked on Threading.workQueue
-            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error, let guardSnode = guardSnode else { return }
+            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error, let guardSnode = guardSnode else {
+                return
+            }
+            
             let path = paths.first { $0.contains(guardSnode) }
+            
             func handleUnspecificError() {
                 guard let path = path else { return }
+                
                 var pathFailureCount = OnionRequestAPI.pathFailureCount[path] ?? 0
                 pathFailureCount += 1
+                
                 if pathFailureCount >= pathFailureThreshold {
                     dropGuardSnode(guardSnode)
                     path.forEach { snode in
                         SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
                     }
+                    
                     drop(path)
-                } else {
+                }
+                else {
                     OnionRequestAPI.pathFailureCount[path] = pathFailureCount
                 }
             }
+            
             let prefix = "Next node not found: "
+            
             if let message = json?["result"] as? String, message.hasPrefix(prefix) {
                 let ed25519PublicKey = message[message.index(message.startIndex, offsetBy: prefix.count)..<message.endIndex]
+                
                 if let path = path, let snode = path.first(where: { $0.publicKeySet.ed25519Key == ed25519PublicKey }) {
                     var snodeFailureCount = OnionRequestAPI.snodeFailureCount[snode] ?? 0
                     snodeFailureCount += 1
+                    
                     if snodeFailureCount >= snodeFailureThreshold {
                         SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
                         do {
                             try drop(snode)
-                        } catch {
+                        }
+                        catch {
                             handleUnspecificError()
                         }
-                    } else {
+                    }
+                    else {
                         OnionRequestAPI.snodeFailureCount[snode] = snodeFailureCount
                     }
                 } else {
                     // Do nothing
                 }
-            } else if let message = json?["result"] as? String, message == "Loki Server error" {
+            }
+            else if let message = json?["result"] as? String, message == "Loki Server error" {
                 // Do nothing
-            } else if case .server(let host, _, _, _, _) = destination, host == "116.203.70.33" && statusCode == 0 {
+            }
+            else if case .server(let host, _, _, _, _) = destination, host == "116.203.70.33" && statusCode == 0 {
                 // FIXME: Temporary thing to kick out nodes that can't talk to the V2 OGS yet
                 handleUnspecificError()
-            } else if statusCode == 0 { // Timeout
+            }
+            else if statusCode == 0 { // Timeout
                 // Do nothing
-            } else {
+            }
+            else {
                 handleUnspecificError()
             }
         }
+        
         return promise
     }
 }

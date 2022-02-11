@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPIV2 {
-    public struct CompactPollResponse: Codable {
+    public struct LegacyCompactPollResponse: Codable {
         public struct Result: Codable {
             enum CodingKeys: String, CodingKey {
                 case room = "room_id"

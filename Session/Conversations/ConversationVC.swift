@@ -371,8 +371,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             snInputView.text = draft
         }
         // Update member count if this is a V2 open group
+        // TODO: Non-legacy version (I assue this comes through room updates... 'activeUsers'?
         if let v2OpenGroup = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
-            OpenGroupAPIV2.getMemberCount(for: v2OpenGroup.room, on: v2OpenGroup.server).retainUntilComplete()
+            OpenGroupAPIV2.legacyGetMemberCount(for: v2OpenGroup.room, on: v2OpenGroup.server).retainUntilComplete()
         }
     }
     

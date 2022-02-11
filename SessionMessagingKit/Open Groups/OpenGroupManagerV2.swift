@@ -41,42 +41,116 @@ public final class OpenGroupManagerV2 : NSObject {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             // Get the group info
-            OpenGroupAPIV2.getInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { info in
-                // Create the open group model and the thread
-                let openGroup = OpenGroupV2(server: server, room: room, name: info.name, publicKey: publicKey, imageID: info.imageID)
-                let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
-                let model = TSGroupModel(title: openGroup.name, memberIds: [ getUserHexEncodedPublicKey() ], image: nil, groupId: groupID, groupType: .openGroup, adminIds: [])
-                // Store everything
-                storage.write(with: { transaction in
-                    let transaction = transaction as! YapDatabaseReadWriteTransaction
-                    let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
-                    thread.shouldBeVisible = true
-                    thread.save(with: transaction)
-                    storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
-                }, completion: {
-                    // Start the poller if needed
-                    if OpenGroupManagerV2.shared.pollers[server] == nil {
-                        let poller = OpenGroupPollerV2(for: server)
-                        poller.startIfNeeded()
-                        OpenGroupManagerV2.shared.pollers[server] = poller
-                    }
-                    // Fetch the group image
-                    OpenGroupAPIV2.getGroupImage(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
-                        storage.write { transaction in
-                            // Update the thread
+            // TODO: Remove this legacy method
+//            OpenGroupAPIV2.legacyGetRoomInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { info in
+//                // Create the open group model and the thread
+//                let openGroup = OpenGroupV2(server: server, room: room, name: info.name, publicKey: publicKey, imageID: info.imageID)
+//                let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
+//                let model = TSGroupModel(title: openGroup.name, memberIds: [ getUserHexEncodedPublicKey() ], image: nil, groupId: groupID, groupType: .openGroup, adminIds: [])
+//                // Store everything
+//                storage.write(with: { transaction in
+//                    let transaction = transaction as! YapDatabaseReadWriteTransaction
+//                    let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+//                    thread.shouldBeVisible = true
+//                    thread.save(with: transaction)
+//                    storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
+//                }, completion: {
+//                    // Start the poller if needed
+//                    if OpenGroupManagerV2.shared.pollers[server] == nil {
+//                        let poller = OpenGroupPollerV2(for: server)
+//                        poller.startIfNeeded()
+//                        OpenGroupManagerV2.shared.pollers[server] = poller
+//                    }
+//                    // Fetch the group image
+//                    OpenGroupAPIV2.legacyGetGroupImage(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+//                        storage.write { transaction in
+//                            // Update the thread
+//                            let transaction = transaction as! YapDatabaseReadWriteTransaction
+//                            let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+//                            thread.groupModel.groupImage = UIImage(data: data)
+//                            thread.save(with: transaction)
+//                        }
+//                    }.retainUntilComplete()
+//                    // Finish
+//                    seal.fulfill(())
+//                })
+//            }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+//                seal.reject(error)
+//            }
+            
+            OpenGroupAPIV2.room(for: room, on: server)
+                .done(on: DispatchQueue.global(qos: .userInitiated)) { room in
+                    // Create the open group model and the thread
+                    let openGroup: OpenGroupV2 = OpenGroupV2(
+                        server: server,
+                        room: room.token,
+                        name: room.name,
+                        publicKey: publicKey,
+                        imageID: room.imageId.map { "\($0)" }   // TODO: Update this?
+                    )
+
+                    let groupID: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
+                    let model: TSGroupModel = TSGroupModel(
+                        title: openGroup.name,
+                        memberIds: [ getUserHexEncodedPublicKey() ],
+                        image: nil,
+                        groupId: groupID,
+                        groupType: .openGroup,
+                        adminIds: []    // TODO: This is part of the 'room' object
+                    )
+
+                    // Store everything
+                    storage.write(
+                        with: { transaction in
                             let transaction = transaction as! YapDatabaseReadWriteTransaction
                             let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
-                            thread.groupModel.groupImage = UIImage(data: data)
+                            thread.shouldBeVisible = true
                             thread.save(with: transaction)
+                            storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
+                        },
+                        completion: {
+                            // Start the poller if needed
+                            if OpenGroupManagerV2.shared.pollers[server] == nil {
+                                let poller = OpenGroupPollerV2(for: server)
+                                poller.startIfNeeded()
+                                OpenGroupManagerV2.shared.pollers[server] = poller
+                            }
+
+                            // Fetch the group image (if there is one)
+                            // TODO: Need to test this
+                            // TODO: Clean this up (can we avoid the if/else with fancy promise wrangling?)
+                            if let imageId: Int64 = room.imageId {
+                                OpenGroupAPIV2.roomImage(imageId, for: room.token, on: server)
+                                    .done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+                                        storage.write { transaction in
+                                            // Update the thread
+                                            let transaction = transaction as! YapDatabaseReadWriteTransaction
+                                            let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+                                            thread.groupModel.groupImage = UIImage(data: data)
+                                            thread.save(with: transaction)
+                                        }
+                                    }
+                                    .retainUntilComplete()
+                            }
+                            else {
+                                storage.write { transaction in
+                                    // Update the thread
+                                    let transaction = transaction as! YapDatabaseReadWriteTransaction
+                                    let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
+                                    thread.save(with: transaction)
+                                }
+                            }
+
+                            // Finish
+                            seal.fulfill(())
                         }
-                    }.retainUntilComplete()
-                    // Finish
-                    seal.fulfill(())
-                })
-            }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-                seal.reject(error)
-            }
+                    )
+                }
+                .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                    seal.reject(error)
+                }
         }
+        
         return promise
     }
 
@@ -102,7 +176,7 @@ public final class OpenGroupManagerV2 : NSObject {
         Storage.shared.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
         Storage.shared.removeLastMessageServerID(for: openGroup.room, on: openGroup.server, using: transaction)
         Storage.shared.removeLastDeletionServerID(for: openGroup.room, on: openGroup.server, using: transaction)
-        let _ = OpenGroupAPIV2.deleteAuthToken(for: openGroup.room, on: openGroup.server)
+        let _ = OpenGroupAPIV2.legacyDeleteAuthToken(for: openGroup.room, on: openGroup.server)
         thread.removeAllThreadInteractions(with: transaction)
         thread.remove(with: transaction)
         Storage.shared.removeV2OpenGroup(for: thread.uniqueId!, using: transaction)

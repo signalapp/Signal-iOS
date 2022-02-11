@@ -789,29 +789,43 @@
 		FDC4380B27B31D7E00C60D73 /* Request.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4380A27B31D7E00C60D73 /* Request.swift */; };
 		FDC4381527B329CE00C60D73 /* NonceGenerator16Byte.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381427B329CE00C60D73 /* NonceGenerator16Byte.swift */; };
 		FDC4381727B32EC700C60D73 /* Personalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381627B32EC700C60D73 /* Personalization.swift */; };
-		FDC4381A27B34EBA00C60D73 /* CompactPollBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381927B34EBA00C60D73 /* CompactPollBody.swift */; };
+		FDC4381A27B34EBA00C60D73 /* LegacyCompactPollBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381927B34EBA00C60D73 /* LegacyCompactPollBody.swift */; };
 		FDC4381C27B354AC00C60D73 /* PublicKeyBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381B27B354AC00C60D73 /* PublicKeyBody.swift */; };
 		FDC4382027B36ADC00C60D73 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381F27B36ADC00C60D73 /* Endpoint.swift */; };
 		FDC4382627B37F6900C60D73 /* DeletedMessagesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382527B37F6900C60D73 /* DeletedMessagesResponse.swift */; };
 		FDC4382827B37FD300C60D73 /* ModeratorsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382727B37FD300C60D73 /* ModeratorsResponse.swift */; };
-		FDC4382A27B3802D00C60D73 /* RoomsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382927B3802D00C60D73 /* RoomsResponse.swift */; };
+		FDC4382A27B3802D00C60D73 /* LegacyRoomsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382927B3802D00C60D73 /* LegacyRoomsResponse.swift */; };
 		FDC4382C27B380E300C60D73 /* MemberCountResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382B27B380E300C60D73 /* MemberCountResponse.swift */; };
 		FDC4382F27B383AF00C60D73 /* UnregisterResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382E27B383AF00C60D73 /* UnregisterResponse.swift */; };
 		FDC4383127B3841C00C60D73 /* RegisterResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383027B3841C00C60D73 /* RegisterResponse.swift */; };
 		FDC4383827B3863200C60D73 /* VersionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383727B3863200C60D73 /* VersionResponse.swift */; };
 		FDC4383A27B4696200C60D73 /* AuthTokenResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383927B4696200C60D73 /* AuthTokenResponse.swift */; };
 		FDC4383E27B4708600C60D73 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383D27B4708600C60D73 /* Atomic.swift */; };
-		FDC4384027B4746D00C60D73 /* GetInfoResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383F27B4746D00C60D73 /* GetInfoResponse.swift */; };
+		FDC4384027B4746D00C60D73 /* LegacyGetInfoResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383F27B4746D00C60D73 /* LegacyGetInfoResponse.swift */; };
 		FDC4384727B47F4D00C60D73 /* OpenGroupMessageV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384327B47F4D00C60D73 /* OpenGroupMessageV2.swift */; };
-		FDC4384827B47F4D00C60D73 /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384427B47F4D00C60D73 /* RoomInfo.swift */; };
-		FDC4384927B47F4D00C60D73 /* CompactPollResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384527B47F4D00C60D73 /* CompactPollResponse.swift */; };
+		FDC4384827B47F4D00C60D73 /* LegacyRoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384427B47F4D00C60D73 /* LegacyRoomInfo.swift */; };
+		FDC4384927B47F4D00C60D73 /* LegacyCompactPollResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384527B47F4D00C60D73 /* LegacyCompactPollResponse.swift */; };
 		FDC4384A27B47F4D00C60D73 /* Deletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384627B47F4D00C60D73 /* Deletion.swift */; };
 		FDC4384C27B47F7700C60D73 /* OpenGroupV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384B27B47F7700C60D73 /* OpenGroupV2.swift */; };
 		FDC4384F27B4804F00C60D73 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384E27B4804F00C60D73 /* Header.swift */; };
 		FDC4385127B4807400C60D73 /* QueryParam.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385027B4807400C60D73 /* QueryParam.swift */; };
-		FDC4385727B484B700C60D73 /* FileUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385627B484B700C60D73 /* FileUploadResponse.swift */; };
+		FDC4385727B484B700C60D73 /* LegacyFileUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385627B484B700C60D73 /* LegacyFileUploadResponse.swift */; };
 		FDC4385927B484E800C60D73 /* FileUploadBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385827B484E800C60D73 /* FileUploadBody.swift */; };
-		FDC4385B27B485DE00C60D73 /* FileDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385A27B485DE00C60D73 /* FileDownloadResponse.swift */; };
+		FDC4385B27B485DE00C60D73 /* LegacyFileDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385A27B485DE00C60D73 /* LegacyFileDownloadResponse.swift */; };
+		FDC4385D27B4C18900C60D73 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385C27B4C18900C60D73 /* Room.swift */; };
+		FDC4385F27B4C4A200C60D73 /* PinnedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385E27B4C4A200C60D73 /* PinnedMessage.swift */; };
+		FDC4386127B4CDDF00C60D73 /* FileResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386027B4CDDF00C60D73 /* FileResponse.swift */; };
+		FDC4386327B4D94E00C60D73 /* OGMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386227B4D94E00C60D73 /* OGMessage.swift */; };
+		FDC4386527B4DE7600C60D73 /* RoomPollInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386427B4DE7600C60D73 /* RoomPollInfo.swift */; };
+		FDC4386727B4E10E00C60D73 /* Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386627B4E10E00C60D73 /* Capabilities.swift */; };
+		FDC4386927B4E6B800C60D73 /* String+Utlities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386827B4E6B700C60D73 /* String+Utlities.swift */; };
+		FDC4386B27B4E88F00C60D73 /* BatchRequestInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386A27B4E88F00C60D73 /* BatchRequestInfo.swift */; };
+		FDC4386C27B4E90300C60D73 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; platformFilter = ios; };
+		FDC4386D27B4E90300C60D73 /* SessionUtilitiesKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FDC4387227B5BB3B00C60D73 /* FileUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4387127B5BB3B00C60D73 /* FileUploadResponse.swift */; };
+		FDC4387427B5BB9B00C60D73 /* Promise+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4387327B5BB9B00C60D73 /* Promise+Utilities.swift */; };
+		FDC4387627B5BEF300C60D73 /* FileDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4387527B5BEF300C60D73 /* FileDownloadResponse.swift */; };
+		FDC4387827B5C35400C60D73 /* SendMessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4387727B5C35400C60D73 /* SendMessageRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -927,6 +941,13 @@
 			remoteGlobalIDString = C33FD9AA255A548A00E217F9;
 			remoteInfo = SignalUtilitiesKit;
 		};
+		FDC4386E27B4E90300C60D73 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C3C2A678255388CC00C340D1;
+			remoteInfo = SessionUtilitiesKit;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -953,6 +974,17 @@
 				C3C2A5A7255385C100C340D1 /* SessionSnodeKit.framework in Embed Frameworks */,
 				C331FF232558F9D300070591 /* SessionUIKit.framework in Embed Frameworks */,
 				C3C2A6F825539DE700C340D1 /* SessionMessagingKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDC4387027B4E90300C60D73 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				FDC4386D27B4E90300C60D73 /* SessionUtilitiesKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1850,29 +1882,41 @@
 		FDC4380A27B31D7E00C60D73 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
 		FDC4381427B329CE00C60D73 /* NonceGenerator16Byte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonceGenerator16Byte.swift; sourceTree = "<group>"; };
 		FDC4381627B32EC700C60D73 /* Personalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Personalization.swift; sourceTree = "<group>"; };
-		FDC4381927B34EBA00C60D73 /* CompactPollBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactPollBody.swift; sourceTree = "<group>"; };
+		FDC4381927B34EBA00C60D73 /* LegacyCompactPollBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyCompactPollBody.swift; sourceTree = "<group>"; };
 		FDC4381B27B354AC00C60D73 /* PublicKeyBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicKeyBody.swift; sourceTree = "<group>"; };
 		FDC4381F27B36ADC00C60D73 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		FDC4382527B37F6900C60D73 /* DeletedMessagesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedMessagesResponse.swift; sourceTree = "<group>"; };
 		FDC4382727B37FD300C60D73 /* ModeratorsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModeratorsResponse.swift; sourceTree = "<group>"; };
-		FDC4382927B3802D00C60D73 /* RoomsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomsResponse.swift; sourceTree = "<group>"; };
+		FDC4382927B3802D00C60D73 /* LegacyRoomsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyRoomsResponse.swift; sourceTree = "<group>"; };
 		FDC4382B27B380E300C60D73 /* MemberCountResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberCountResponse.swift; sourceTree = "<group>"; };
 		FDC4382E27B383AF00C60D73 /* UnregisterResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnregisterResponse.swift; sourceTree = "<group>"; };
 		FDC4383027B3841C00C60D73 /* RegisterResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterResponse.swift; sourceTree = "<group>"; };
 		FDC4383727B3863200C60D73 /* VersionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionResponse.swift; sourceTree = "<group>"; };
 		FDC4383927B4696200C60D73 /* AuthTokenResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTokenResponse.swift; sourceTree = "<group>"; };
 		FDC4383D27B4708600C60D73 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
-		FDC4383F27B4746D00C60D73 /* GetInfoResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetInfoResponse.swift; sourceTree = "<group>"; };
+		FDC4383F27B4746D00C60D73 /* LegacyGetInfoResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyGetInfoResponse.swift; sourceTree = "<group>"; };
 		FDC4384327B47F4D00C60D73 /* OpenGroupMessageV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroupMessageV2.swift; sourceTree = "<group>"; };
-		FDC4384427B47F4D00C60D73 /* RoomInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
-		FDC4384527B47F4D00C60D73 /* CompactPollResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompactPollResponse.swift; sourceTree = "<group>"; };
+		FDC4384427B47F4D00C60D73 /* LegacyRoomInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyRoomInfo.swift; sourceTree = "<group>"; };
+		FDC4384527B47F4D00C60D73 /* LegacyCompactPollResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyCompactPollResponse.swift; sourceTree = "<group>"; };
 		FDC4384627B47F4D00C60D73 /* Deletion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deletion.swift; sourceTree = "<group>"; };
 		FDC4384B27B47F7700C60D73 /* OpenGroupV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroupV2.swift; sourceTree = "<group>"; };
 		FDC4384E27B4804F00C60D73 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		FDC4385027B4807400C60D73 /* QueryParam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryParam.swift; sourceTree = "<group>"; };
-		FDC4385627B484B700C60D73 /* FileUploadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadResponse.swift; sourceTree = "<group>"; };
+		FDC4385627B484B700C60D73 /* LegacyFileUploadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyFileUploadResponse.swift; sourceTree = "<group>"; };
 		FDC4385827B484E800C60D73 /* FileUploadBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadBody.swift; sourceTree = "<group>"; };
-		FDC4385A27B485DE00C60D73 /* FileDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadResponse.swift; sourceTree = "<group>"; };
+		FDC4385A27B485DE00C60D73 /* LegacyFileDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyFileDownloadResponse.swift; sourceTree = "<group>"; };
+		FDC4385C27B4C18900C60D73 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
+		FDC4385E27B4C4A200C60D73 /* PinnedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessage.swift; sourceTree = "<group>"; };
+		FDC4386027B4CDDF00C60D73 /* FileResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileResponse.swift; sourceTree = "<group>"; };
+		FDC4386227B4D94E00C60D73 /* OGMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OGMessage.swift; sourceTree = "<group>"; };
+		FDC4386427B4DE7600C60D73 /* RoomPollInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomPollInfo.swift; sourceTree = "<group>"; };
+		FDC4386627B4E10E00C60D73 /* Capabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Capabilities.swift; sourceTree = "<group>"; };
+		FDC4386827B4E6B700C60D73 /* String+Utlities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Utlities.swift"; sourceTree = "<group>"; };
+		FDC4386A27B4E88F00C60D73 /* BatchRequestInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRequestInfo.swift; sourceTree = "<group>"; };
+		FDC4387127B5BB3B00C60D73 /* FileUploadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadResponse.swift; sourceTree = "<group>"; };
+		FDC4387327B5BB9B00C60D73 /* Promise+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promise+Utilities.swift"; sourceTree = "<group>"; };
+		FDC4387527B5BEF300C60D73 /* FileDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadResponse.swift; sourceTree = "<group>"; };
+		FDC4387727B5C35400C60D73 /* SendMessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessageRequest.swift; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1944,6 +1988,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDC4386C27B4E90300C60D73 /* SessionUtilitiesKit.framework in Frameworks */,
 				C3C2A70B25539E1E00C340D1 /* SessionSnodeKit.framework in Frameworks */,
 				9B0A583E9B89FEF0916B793A /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionMessagingKit.framework in Frameworks */,
 			);
@@ -3294,7 +3339,9 @@
 				C33FDA6C255A57FA00E217F9 /* ProtoUtils.m */,
 				C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */,
 				C3E7134E251C867C009649BB /* Sodium+Utilities.swift */,
+				FDC4386827B4E6B700C60D73 /* String+Utlities.swift */,
 				FD5D202127B1D74F00FEA984 /* ECKeyPair+Conversion.swift */,
+				FDC4387327B5BB9B00C60D73 /* Promise+Utilities.swift */,
 				C33FDB31255A580A00E217F9 /* SSKEnvironment.h */,
 				C33FDAF4255A580600E217F9 /* SSKEnvironment.m */,
 				C33FDB32255A580A00E217F9 /* SSKIncrementingIdFinder.swift */,
@@ -3707,16 +3754,24 @@
 			children = (
 				FDC4384B27B47F7700C60D73 /* OpenGroupV2.swift */,
 				FDC4381B27B354AC00C60D73 /* PublicKeyBody.swift */,
-				FDC4381927B34EBA00C60D73 /* CompactPollBody.swift */,
-				FDC4384527B47F4D00C60D73 /* CompactPollResponse.swift */,
-				FDC4383F27B4746D00C60D73 /* GetInfoResponse.swift */,
-				FDC4382927B3802D00C60D73 /* RoomsResponse.swift */,
-				FDC4384427B47F4D00C60D73 /* RoomInfo.swift */,
+				FDC4386A27B4E88F00C60D73 /* BatchRequestInfo.swift */,
+				FDC4385C27B4C18900C60D73 /* Room.swift */,
+				FDC4386427B4DE7600C60D73 /* RoomPollInfo.swift */,
+				FDC4385E27B4C4A200C60D73 /* PinnedMessage.swift */,
+				FDC4386027B4CDDF00C60D73 /* FileResponse.swift */,
+				FDC4387727B5C35400C60D73 /* SendMessageRequest.swift */,
+				FDC4386227B4D94E00C60D73 /* OGMessage.swift */,
 				FDC4382B27B380E300C60D73 /* MemberCountResponse.swift */,
-				FDC4384327B47F4D00C60D73 /* OpenGroupMessageV2.swift */,
 				FDC4382527B37F6900C60D73 /* DeletedMessagesResponse.swift */,
 				FDC4384627B47F4D00C60D73 /* Deletion.swift */,
+				FDC4386627B4E10E00C60D73 /* Capabilities.swift */,
 				FDC4382727B37FD300C60D73 /* ModeratorsResponse.swift */,
+				FDC4381927B34EBA00C60D73 /* LegacyCompactPollBody.swift */,
+				FDC4384527B47F4D00C60D73 /* LegacyCompactPollResponse.swift */,
+				FDC4383F27B4746D00C60D73 /* LegacyGetInfoResponse.swift */,
+				FDC4382927B3802D00C60D73 /* LegacyRoomsResponse.swift */,
+				FDC4384427B47F4D00C60D73 /* LegacyRoomInfo.swift */,
+				FDC4384327B47F4D00C60D73 /* OpenGroupMessageV2.swift */,
 				FDC4383927B4696200C60D73 /* AuthTokenResponse.swift */,
 			);
 			path = Models;
@@ -3753,8 +3808,10 @@
 			isa = PBXGroup;
 			children = (
 				FDC4385827B484E800C60D73 /* FileUploadBody.swift */,
-				FDC4385627B484B700C60D73 /* FileUploadResponse.swift */,
-				FDC4385A27B485DE00C60D73 /* FileDownloadResponse.swift */,
+				FDC4387127B5BB3B00C60D73 /* FileUploadResponse.swift */,
+				FDC4387527B5BEF300C60D73 /* FileDownloadResponse.swift */,
+				FDC4385627B484B700C60D73 /* LegacyFileUploadResponse.swift */,
+				FDC4385A27B485DE00C60D73 /* LegacyFileDownloadResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4053,10 +4110,12 @@
 				C3C2A6EC25539DE700C340D1 /* Sources */,
 				C3C2A6ED25539DE700C340D1 /* Frameworks */,
 				C3C2A6EE25539DE700C340D1 /* Resources */,
+				FDC4387027B4E90300C60D73 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FDC4386F27B4E90300C60D73 /* PBXTargetDependency */,
 			);
 			name = SessionMessagingKit;
 			productName = SessionMessagingKit;
@@ -4821,7 +4880,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B8856D08256F10F1001CE70E /* DeviceSleepManager.swift in Sources */,
-				FDC4382A27B3802D00C60D73 /* RoomsResponse.swift in Sources */,
+				FDC4382A27B3802D00C60D73 /* LegacyRoomsResponse.swift in Sources */,
 				C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */,
 				C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */,
 				C3A3A156256E1B91004D228D /* ProtoUtils.m in Sources */,
@@ -4832,11 +4891,14 @@
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
 				C32C5AAD256DBE8F003C73A2 /* TSInfoMessage.m in Sources */,
 				FD5D201127AA331F00FEA984 /* ConfigurationMessage+Convenience.swift in Sources */,
+				FDC4386927B4E6B800C60D73 /* String+Utlities.swift in Sources */,
 				C32C5A13256DB7A5003C73A2 /* PushNotificationAPI.swift in Sources */,
+				FDC4385F27B4C4A200C60D73 /* PinnedMessage.swift in Sources */,
 				C32A026325A801AA000ED5D4 /* NSData+messagePadding.m in Sources */,
-				FDC4384927B47F4D00C60D73 /* CompactPollResponse.swift in Sources */,
+				FDC4384927B47F4D00C60D73 /* LegacyCompactPollResponse.swift in Sources */,
 				C352A3932557883D00338F3E /* JobDelegate.swift in Sources */,
 				C32C5B84256DC54F003C73A2 /* SSKEnvironment.m in Sources */,
+				FDC4386527B4DE7600C60D73 /* RoomPollInfo.swift in Sources */,
 				C3A3A108256E1A5C004D228D /* OWSIncomingMessageFinder.m in Sources */,
 				C352A31325574F5200338F3E /* MessageReceiveJob.swift in Sources */,
 				C32C5BDD256DC88D003C73A2 /* OWSReadReceiptManager.m in Sources */,
@@ -4844,7 +4906,7 @@
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
 				B8B32021258B1A650020074B /* Contact.swift in Sources */,
 				FDC4380B27B31D7E00C60D73 /* Request.swift in Sources */,
-				FDC4384027B4746D00C60D73 /* GetInfoResponse.swift in Sources */,
+				FDC4384027B4746D00C60D73 /* LegacyGetInfoResponse.swift in Sources */,
 				C32C5C89256DD0D2003C73A2 /* Storage+Jobs.swift in Sources */,
 				C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */,
 				7B1581E2271E743B00848B49 /* OWSSounds.swift in Sources */,
@@ -4853,9 +4915,10 @@
 				C32C5CA4256DD1DC003C73A2 /* TSAccountManager.m in Sources */,
 				C352A3892557876500338F3E /* JobQueue.swift in Sources */,
 				C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */,
+				FDC4386727B4E10E00C60D73 /* Capabilities.swift in Sources */,
 				C32C59C1256DB41F003C73A2 /* TSGroupThread.m in Sources */,
 				C3A3A08F256E1728004D228D /* FullTextSearchFinder.swift in Sources */,
-				FDC4381A27B34EBA00C60D73 /* CompactPollBody.swift in Sources */,
+				FDC4381A27B34EBA00C60D73 /* LegacyCompactPollBody.swift in Sources */,
 				B8856D1A256F114D001CE70E /* ProximityMonitoringManager.swift in Sources */,
 				C32C5B9F256DC739003C73A2 /* OWSBlockingManager.m in Sources */,
 				C3D9E52725677DF20040E4F3 /* OWSThumbnailService.swift in Sources */,
@@ -4866,6 +4929,7 @@
 				C379DCF4256735770002D4EB /* VisibleMessage+Attachment.swift in Sources */,
 				B8856D34256F1192001CE70E /* Environment.m in Sources */,
 				B8B320B7258C30D70020074B /* HTMLMetadata.swift in Sources */,
+				FDC4387427B5BB9B00C60D73 /* Promise+Utilities.swift in Sources */,
 				C32C5AB1256DBE8F003C73A2 /* TSIncomingMessage.m in Sources */,
 				C3A3A107256E1A5C004D228D /* OWSDisappearingMessagesFinder.m in Sources */,
 				C32C59C3256DB41F003C73A2 /* TSGroupModel.m in Sources */,
@@ -4873,6 +4937,7 @@
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C32C5DC0256DD743003C73A2 /* Poller.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
+				FDC4386127B4CDDF00C60D73 /* FileResponse.swift in Sources */,
 				C3A3A171256E1D25004D228D /* SSKReachabilityManager.swift in Sources */,
 				C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */,
 				B8F5F60325EDE16F003BF8D4 /* DataExtractionNotification.swift in Sources */,
@@ -4887,6 +4952,7 @@
 				FD5D202227B1D74F00FEA984 /* ECKeyPair+Conversion.swift in Sources */,
 				FDC4381C27B354AC00C60D73 /* PublicKeyBody.swift in Sources */,
 				FDC4382F27B383AF00C60D73 /* UnregisterResponse.swift in Sources */,
+				FDC4386327B4D94E00C60D73 /* OGMessage.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
 				C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */,
@@ -4904,9 +4970,11 @@
 				B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */,
 				FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */,
 				FDC4381727B32EC700C60D73 /* Personalization.swift in Sources */,
+				FDC4387827B5C35400C60D73 /* SendMessageRequest.swift in Sources */,
 				C32C5EDC256DF501003C73A2 /* YapDatabaseConnection+OWS.m in Sources */,
 				FDC4381527B329CE00C60D73 /* NonceGenerator16Byte.swift in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
+				FDC4387627B5BEF300C60D73 /* FileDownloadResponse.swift in Sources */,
 				C35D76DB26606304009AA5FB /* ThreadUpdateBatcher.swift in Sources */,
 				FDC4382C27B380E300C60D73 /* MemberCountResponse.swift in Sources */,
 				B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */,
@@ -4920,6 +4988,7 @@
 				C32C5A02256DB658003C73A2 /* MessageSender+Convenience.swift in Sources */,
 				B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */,
 				B8D0A25925E367AC00C1835E /* Notification+MessageReceiver.swift in Sources */,
+				FDC4387227B5BB3B00C60D73 /* FileUploadResponse.swift in Sources */,
 				C32C599E256DB02B003C73A2 /* TypingIndicators.swift in Sources */,
 				FDC4380927B31D4E00C60D73 /* Error.swift in Sources */,
 				FDC4382027B36ADC00C60D73 /* Endpoint.swift in Sources */,
@@ -4946,7 +5015,7 @@
 				C300A5E72554B07300555489 /* ExpirationTimerUpdate.swift in Sources */,
 				B88A1AC725C90A4700E6D421 /* TypingIndicatorInteraction.swift in Sources */,
 				C3D9E3C025676AD70040E4F3 /* TSAttachment.m in Sources */,
-				FDC4384827B47F4D00C60D73 /* RoomInfo.swift in Sources */,
+				FDC4384827B47F4D00C60D73 /* LegacyRoomInfo.swift in Sources */,
 				C32C598A256D0664003C73A2 /* SNProtoEnvelope+Conversion.swift in Sources */,
 				C352A2FF25574B6300338F3E /* MessageSendJob.swift in Sources */,
 				B8856D11256F112A001CE70E /* OWSAudioSession.swift in Sources */,
@@ -4974,16 +5043,18 @@
 				C32C5A75256DBBCF003C73A2 /* TSAttachmentPointer+Conversion.swift in Sources */,
 				C32C5AF8256DC051003C73A2 /* OWSDisappearingMessagesConfiguration.m in Sources */,
 				C32C5EBA256DE130003C73A2 /* OWSQuotedReplyModel.m in Sources */,
+				FDC4386B27B4E88F00C60D73 /* BatchRequestInfo.swift in Sources */,
 				FDC4385127B4807400C60D73 /* QueryParam.swift in Sources */,
 				C32C5B62256DC333003C73A2 /* OWSDisappearingConfigurationUpdateInfoMessage.m in Sources */,
 				C352A2F525574B4700338F3E /* Job.swift in Sources */,
-				FDC4385727B484B700C60D73 /* FileUploadResponse.swift in Sources */,
-				FDC4385B27B485DE00C60D73 /* FileDownloadResponse.swift in Sources */,
+				FDC4385727B484B700C60D73 /* LegacyFileUploadResponse.swift in Sources */,
+				FDC4385B27B485DE00C60D73 /* LegacyFileDownloadResponse.swift in Sources */,
 				C32C5C01256DC9A0003C73A2 /* OWSIdentityManager.m in Sources */,
 				C32C59C4256DB41F003C73A2 /* TSContactThread.m in Sources */,
 				FDC4383127B3841C00C60D73 /* RegisterResponse.swift in Sources */,
 				C32C5AB0256DBE8F003C73A2 /* TSOutgoingMessage.m in Sources */,
 				B82A0C3826B9098200C1BCE3 /* MessageInvalidator.swift in Sources */,
+				FDC4385D27B4C18900C60D73 /* Room.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5243,6 +5314,12 @@
 			isa = PBXTargetDependency;
 			target = C33FD9AA255A548A00E217F9 /* SignalUtilitiesKit */;
 			targetProxy = C3D90A7025773A44002C9DF5 /* PBXContainerItemProxy */;
+		};
+		FDC4386F27B4E90300C60D73 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = C3C2A678255388CC00C340D1 /* SessionUtilitiesKit */;
+			targetProxy = FDC4386E27B4E90300C60D73 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

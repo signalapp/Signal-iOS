@@ -68,7 +68,7 @@ public enum HTTP {
     }
 
     // MARK: Verb
-    public enum Verb : String {
+    public enum Verb: String, Codable {
         case get = "GET"
         case put = "PUT"
         case post = "POST"

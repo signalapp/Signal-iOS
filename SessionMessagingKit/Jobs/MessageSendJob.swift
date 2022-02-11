@@ -9,49 +9,111 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     public var id: String?
     public var failureCount: UInt = 0
 
-    // MARK: Settings
+    // MARK: - Settings
+    
     public class var collection: String { return "MessageSendJobCollection" }
     public static let maxFailureCount: UInt = 10
 
-    // MARK: Initialization
-    @objc public convenience init(message: Message, publicKey: String) { self.init(message: message, destination: .contact(publicKey: publicKey)) }
-    @objc public convenience init(message: Message, groupPublicKey: String) { self.init(message: message, destination: .closedGroup(groupPublicKey: groupPublicKey)) }
+    // MARK: - Initialization
+    
+    @objc public convenience init(message: Message, publicKey: String) {
+        self.init(message: message, destination: .contact(publicKey: publicKey))
+    }
+    
+    @objc public convenience init(message: Message, groupPublicKey: String) {
+        self.init(message: message, destination: .closedGroup(groupPublicKey: groupPublicKey))
+    }
 
     public init(message: Message, destination: Message.Destination) {
         self.message = message
         self.destination = destination
     }
 
-    // MARK: Coding
+    // MARK: - Coding
+    
     public init?(coder: NSCoder) {
-        guard let message = coder.decodeObject(forKey: "message") as! Message?,
-            var rawDestination = coder.decodeObject(forKey: "destination") as! String?,
-            let id = coder.decodeObject(forKey: "id") as! String? else { return nil }
-        self.message = message
-        if rawDestination.removePrefix("contact(") {
-            guard rawDestination.removeSuffix(")") else { return nil }
-            let publicKey = rawDestination
-            destination = .contact(publicKey: publicKey)
-        } else if rawDestination.removePrefix("closedGroup(") {
-            guard rawDestination.removeSuffix(")") else { return nil }
-            let groupPublicKey = rawDestination
-            destination = .closedGroup(groupPublicKey: groupPublicKey)
-        } else if rawDestination.removePrefix("openGroup(") {
-            guard rawDestination.removeSuffix(")") else { return nil }
-            let components = rawDestination.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
-            guard components.count == 2, let channel = UInt64(components[0]) else { return nil }
-            let server = components[1]
-            destination = .openGroup(channel: channel, server: server)
-        } else if rawDestination.removePrefix("openGroupV2(") {
-            guard rawDestination.removeSuffix(")") else { return nil }
-            let components = rawDestination.split(separator: ",").map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
-            guard components.count == 2 else { return nil }
-            let room = components[0]
-            let server = components[1]
-            destination = .openGroupV2(room: room, server: server)
-        } else {
+        guard let message = coder.decodeObject(forKey: "message") as! Message?, var rawDestination = coder.decodeObject(forKey: "destination") as! String?, let id = coder.decodeObject(forKey: "id") as! String? else {
             return nil
         }
+        
+        self.message = message
+        
+        if rawDestination.removePrefix("contact(") {
+            guard rawDestination.removeSuffix(")") else { return nil }
+            
+            let publicKey = rawDestination
+            destination = .contact(publicKey: publicKey)
+        }
+        else if rawDestination.removePrefix("closedGroup(") {
+            guard rawDestination.removeSuffix(")") else { return nil }
+            
+            let groupPublicKey = rawDestination
+            destination = .closedGroup(groupPublicKey: groupPublicKey)
+        }
+        else if rawDestination.removePrefix("openGroup(") {
+            guard rawDestination.removeSuffix(")") else { return nil }
+            
+            let components = rawDestination
+                .split(separator: ",")
+                .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            
+            guard components.count == 2, let channel = UInt64(components[0]) else { return nil }
+            
+            let server = components[1]
+            destination = .legacyOpenGroup(channel: channel, server: server)
+        }
+        else if rawDestination.removePrefix("openGroupV2(") {
+            guard rawDestination.removeSuffix(")") else { return nil }
+            
+            let components = rawDestination
+                .split(separator: ",")
+                .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            
+            guard components.count == 2 else { return nil }
+            
+            let roomToken: String = components[0]
+            let server: String = components[1]
+            
+            destination = .openGroup(
+                roomToken: roomToken,
+                server: server
+            )
+        }
+        else if rawDestination.removePrefix("openGroupV4(") {
+            guard rawDestination.removeSuffix(")") else { return nil }
+            
+            let components = rawDestination
+                .split(separator: ",")
+                .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            
+            guard components.count == 5 else { return nil }
+            
+            let roomToken: String = components[0]
+            let server: String = components[1]
+            let whisperTo: String? = (!components[2].isEmpty ?
+                components[2] :
+                nil
+            )
+            let whisperMods: Bool = (components[3] == "true")
+            let fileIdStrings: [String] = components[4]
+                .replacingOccurrences(of: "[", with: "")
+                .replacingOccurrences(of: "]", with: "")
+                .split(separator: "|")
+                .map { String($0) }
+            let fileIds: [Int64]? = (fileIdStrings.isEmpty ? nil : fileIdStrings.compactMap { Int64($0) })
+            
+            destination = .openGroup(
+                roomToken: roomToken,
+                server: server,
+                whisperTo: whisperTo,
+                whisperMods: whisperMods,
+                fileIds: fileIds
+            )
+        }
+        else {
+            return nil
+        }
+        
         self.id = id
         self.failureCount = coder.decodeObject(forKey: "failureCount") as! UInt? ?? 0
     }
@@ -59,11 +121,28 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     public func encode(with coder: NSCoder) {
         coder.encode(message, forKey: "message")
         switch destination {
-        case .contact(let publicKey): coder.encode("contact(\(publicKey))", forKey: "destination")
-        case .closedGroup(let groupPublicKey): coder.encode("closedGroup(\(groupPublicKey))", forKey: "destination")
-        case .openGroup(let channel, let server): coder.encode("openGroup(\(channel), \(server))", forKey: "destination")
-        case .openGroupV2(let room, let server): coder.encode("openGroupV2(\(room), \(server))", forKey: "destination")
+            case .contact(let publicKey):
+                coder.encode("contact(\(publicKey))", forKey: "destination")
+                
+            case .closedGroup(let groupPublicKey):
+                coder.encode("closedGroup(\(groupPublicKey))", forKey: "destination")
+                
+            case .legacyOpenGroup(let channel, let server):
+                coder.encode("openGroup(\(channel), \(server))", forKey: "destination")
+                
+            case .openGroup(let room, let server, let whisperTo, let whisperMods, let fileIds):
+                let whisperToString: String = (whisperTo ?? "")
+                let whisperModsString: String = (whisperMods ? "true" : "false")
+                let fileIdString: String = (fileIds ?? [])
+                    .map { String($0) }
+                    .joined(separator: "|")
+                
+                coder.encode(
+                    "openGroupV4(\(room), \(server), \(whisperToString), \(whisperModsString), [\(fileIdString)])",
+                    forKey: "destination"
+                )
         }
+        
         coder.encode(id, forKey: "id")
         coder.encode(failureCount, forKey: "failureCount")
     }

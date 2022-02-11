@@ -112,7 +112,7 @@ public final class FileServerAPIV2 : NSObject {
         
         let request = Request(verb: .post, endpoint: "files", body: body)
         return send(request, useOldServer: false).map(on: DispatchQueue.global(qos: .userInitiated)) { data in
-            let response: FileUploadResponse = try data.decoded(as: FileUploadResponse.self, customError: Error.parsingFailed)
+            let response: LegacyFileUploadResponse = try data.decoded(as: LegacyFileUploadResponse.self, customError: Error.parsingFailed)
             
             return response.fileId
         }
@@ -128,7 +128,7 @@ public final class FileServerAPIV2 : NSObject {
         let request = Request(verb: .get, endpoint: "files/\(file)")
         
         return send(request, useOldServer: useOldServer).map(on: DispatchQueue.global(qos: .userInitiated)) { data in
-            let response: FileDownloadResponse = try data.decoded(as: FileDownloadResponse.self, customError: Error.parsingFailed)
+            let response: LegacyFileDownloadResponse = try data.decoded(as: LegacyFileDownloadResponse.self, customError: Error.parsingFailed)
             
             return response.data
         }

@@ -1,12 +1,13 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import SessionUtilitiesKit
 
 extension OpenGroupAPIV2 {
     struct Request {
-        let verb: HTTP.Verb
-        let room: String?
+        let method: HTTP.Verb
         let server: String
+        let room: String?   // TODO: Remove this?
         let endpoint: Endpoint
         let queryParameters: [QueryParam: String]
         let body: Data?
@@ -17,9 +18,9 @@ extension OpenGroupAPIV2 {
         let useOnionRouting: Bool
 
         init(
-            verb: HTTP.Verb,
-            room: String?,
+            method: HTTP.Verb = .get,
             server: String,
+            room: String? = nil,
             endpoint: Endpoint,
             queryParameters: [QueryParam: String] = [:],
             body: Data? = nil,
@@ -27,9 +28,9 @@ extension OpenGroupAPIV2 {
             isAuthRequired: Bool = true,
             useOnionRouting: Bool = true
         ) {
-            self.verb = verb
-            self.room = room
+            self.method = method
             self.server = server
+            self.room = room
             self.endpoint = endpoint
             self.queryParameters = queryParameters
             self.body = body
@@ -39,19 +40,21 @@ extension OpenGroupAPIV2 {
         }
         
         var url: URL? {
-            guard verb == .get else { return URL(string: "\(server)/\(endpoint.path)") }
+            return URL(string: "\(server)\(urlPathAndParamsString)")
+        }
+        
+        var urlPathAndParamsString: String {
+            guard method == .get else { return "/\(endpoint.path)" }
             
-            return URL(
-                string: [
-                    "\(server)/\(endpoint.path)",
-                    queryParameters
-                        .map { key, value in "\(key.rawValue)=\(value)" }
-                        .joined(separator: "&")
-                ]
-                    .compactMap { $0 }
-                    .filter { !$0.isEmpty }
-                    .joined(separator: "?")
-            )
+            return [
+                "/\(endpoint.path)",
+                queryParameters
+                    .map { key, value in "\(key.rawValue)=\(value)" }
+                    .joined(separator: "&")
+            ]
+            .compactMap { $0 }
+            .filter { !$0.isEmpty }
+            .joined(separator: "?")
         }
     }
 }

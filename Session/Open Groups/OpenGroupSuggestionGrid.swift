@@ -3,7 +3,7 @@ import NVActivityIndicatorView
 
 final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let maxWidth: CGFloat
-    private var rooms: [OpenGroupAPIV2.RoomInfo] = [] { didSet { update() } }
+    private var rooms: [OpenGroupAPIV2.LegacyRoomInfo] = [] { didSet { update() } }
     private var heightConstraint: NSLayoutConstraint!
     var delegate: OpenGroupSuggestionGridDelegate?
     
@@ -60,9 +60,10 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         heightConstraint = set(.height, to: OpenGroupSuggestionGrid.cellHeight)
         widthAnchor.constraint(greaterThanOrEqualToConstant: OpenGroupSuggestionGrid.cellHeight).isActive = true
         if OpenGroupAPIV2.defaultRoomsPromise == nil {
-            OpenGroupAPIV2.getDefaultRoomsIfNeeded()
+            OpenGroupAPIV2.legacyGetDefaultRoomsIfNeeded()
         }
-        let _ = OpenGroupAPIV2.defaultRoomsPromise?.done { [weak self] rooms in
+        let _ = OpenGroupAPIV2.legacyDefaultRoomsPromise?.done { [weak self] rooms in
+            // TODO: Update this for the new rooms API
             self?.rooms = rooms
         }
     }
@@ -104,7 +105,7 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
 extension OpenGroupSuggestionGrid {
     
     fileprivate final class Cell : UICollectionViewCell {
-        var room: OpenGroupAPIV2.RoomInfo? { didSet { update() } }
+        var room: OpenGroupAPIV2.LegacyRoomInfo? { didSet { update() } }
         
         static let identifier = "OpenGroupSuggestionGridCell"
         
@@ -172,7 +173,7 @@ extension OpenGroupSuggestionGrid {
         
         private func update() {
             guard let room = room else { return }
-            let promise = OpenGroupAPIV2.getGroupImage(for: room.id, on: OpenGroupAPIV2.defaultServer)
+            let promise = OpenGroupAPIV2.legacyGetGroupImage(for: room.id, on: OpenGroupAPIV2.defaultServer)
             imageView.image = given(promise.value) { UIImage(data: $0)! }
             imageView.isHidden = (imageView.image == nil)
             label.text = room.name
@@ -183,5 +184,5 @@ extension OpenGroupSuggestionGrid {
 // MARK: Delegate
 protocol OpenGroupSuggestionGridDelegate {
     
-    func join(_ room: OpenGroupAPIV2.RoomInfo)
+    func join(_ room: OpenGroupAPIV2.LegacyRoomInfo)
 }

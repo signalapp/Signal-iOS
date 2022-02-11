@@ -97,8 +97,11 @@ public final class MessageSender : NSObject {
     // MARK: Convenience
     public static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
         switch destination {
-        case .contact(_), .closedGroup(_): return sendToSnodeDestination(destination, message: message, using: transaction)
-        case .openGroup(_, _), .openGroupV2(_, _): return sendToOpenGroupDestination(destination, message: message, using: transaction)
+            case .contact, .closedGroup:
+                return sendToSnodeDestination(destination, message: message, using: transaction)
+                
+            case .legacyOpenGroup, .openGroup:
+                return sendToOpenGroupDestination(destination, message: message, using: transaction)
         }
     }
 
@@ -117,11 +120,13 @@ public final class MessageSender : NSObject {
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
         message.sender = userPublicKey
+        
         switch destination {
-        case .contact(let publicKey): message.recipient = publicKey
-        case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey
-        case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
+            case .contact(let publicKey): message.recipient = publicKey
+            case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey
+            case .legacyOpenGroup, .openGroup: preconditionFailure()
         }
+        
         let isSelfSend = (message.recipient == userPublicKey)
         // Set the failure handler (need it here already for precondition failure handling)
         func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
@@ -167,29 +172,41 @@ public final class MessageSender : NSObject {
         let ciphertext: Data
         do {
             switch destination {
-            case .contact(let publicKey): ciphertext = try encryptWithSessionProtocol(plaintext, for: publicKey)
-            case .closedGroup(let groupPublicKey):
-                guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else { throw Error.noKeyPair }
-                ciphertext = try encryptWithSessionProtocol(plaintext, for: encryptionKeyPair.hexEncodedPublicKey)
-            case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
+                case .contact(let publicKey):
+                    ciphertext = try encryptWithSessionProtocol(plaintext, for: publicKey)
+                    
+                case .closedGroup(let groupPublicKey):
+                    guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else {
+                        throw Error.noKeyPair
+                    }
+                    
+                    ciphertext = try encryptWithSessionProtocol(plaintext, for: encryptionKeyPair.hexEncodedPublicKey)
+                    
+                case .legacyOpenGroup, .openGroup: preconditionFailure()
             }
-        } catch {
+        }
+        catch {
             SNLog("Couldn't encrypt message for destination: \(destination) due to error: \(error).")
             handleFailure(with: error, using: transaction)
             return promise
         }
+        
         // Wrap the result
         let kind: SNProtoEnvelope.SNProtoEnvelopeType
         let senderPublicKey: String
+        
         switch destination {
-        case .contact(_):
-            kind = .sessionMessage
-            senderPublicKey = ""
-        case .closedGroup(let groupPublicKey):
-            kind = .closedGroupMessage
-            senderPublicKey = groupPublicKey
-        case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
+            case .contact:
+                kind = .sessionMessage
+                senderPublicKey = ""
+                
+            case .closedGroup(let groupPublicKey):
+                kind = .closedGroupMessage
+                senderPublicKey = groupPublicKey
+                
+            case .legacyOpenGroup, .openGroup: preconditionFailure()
         }
+        
         let wrappedMessage: Data
         do {
             wrappedMessage = try MessageWrapper.wrap(type: kind, timestamp: message.sentTimestamp!,
@@ -277,16 +294,27 @@ public final class MessageSender : NSObject {
         }
         
         switch destination {
-        case .contact(_): preconditionFailure()
-        case .closedGroup(_): preconditionFailure()
-        case .openGroup(let channel, let server): message.recipient = "\(server).\(channel)"
-        case .openGroupV2(let room, let server): message.recipient = "\(server).\(room)"
+            case .contact(_): preconditionFailure()
+            case .closedGroup(_): preconditionFailure()
+            case .legacyOpenGroup(let channel, let server): message.recipient = "\(server).\(channel)"
+            
+            case .openGroup(let room, let server, let whisperTo, let whisperMods, _):
+                message.recipient = [
+                    server,
+                    room,
+                    whisperTo,
+                    (whisperTo == nil && whisperMods ? "mods" : nil)
+                ]
+                .compactMap { $0 }
+                .joined(separator: ".")
         }
+        
         // Set the failure handler (need it here already for precondition failure handling)
         func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
             MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
             seal.reject(error)
         }
+        
         // Validate the message
         guard let message = message as? VisibleMessage else {
             #if DEBUG
@@ -296,45 +324,84 @@ public final class MessageSender : NSObject {
             return promise
             #endif
         }
-        guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
+        guard message.isValid else {
+            handleFailure(with: Error.invalidMessage, using: transaction)
+            return promise
+        }
+        
         // Attach the user's profile
-        guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
+        guard let name = storage.getUser()?.name else {
+            handleFailure(with: Error.noUsername, using: transaction)
+            return promise
+        }
+        
         if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
             message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
-        } else {
+        }
+        else {
             message.profile = VisibleMessage.Profile(displayName: name)
         }
+        
         // Convert it to protobuf
-        guard let proto = message.toProto(using: transaction) else { handleFailure(with: Error.protoConversionFailed, using: transaction); return promise }
+        guard let proto = message.toProto(using: transaction) else {
+            handleFailure(with: Error.protoConversionFailed, using: transaction)
+            return promise
+        }
+        
         // Serialize the protobuf
         let plaintext: Data
+        
         do {
             plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
-        } catch {
+        }
+        catch {
             SNLog("Couldn't serialize proto due to error: \(error).")
             handleFailure(with: error, using: transaction)
             return promise
         }
-        // Send the result
-        guard case .openGroupV2(let room, let server) = destination else { preconditionFailure() }
-        // TODO: Determine if the 'getV2OpenGroup' call will cause issues
-        guard let threadId: String = message.threadID, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) else { preconditionFailure() }
-        let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, sentTimestamp: message.sentTimestamp!,
-            base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
         
-        OpenGroupAPIV2.send(openGroupMessage, to: room, on: server, with: openGroupV2.publicKey).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
-            message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
-            storage.write(with: { transaction in
-                MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: openGroupMessage.sentTimestamp, using: transaction)
-                seal.fulfill(())
-            }, completion: { })
-        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            storage.write(with: { transaction in
-                handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
-            }, completion: { })
+        // Send the result
+        
+        guard case .openGroup(let room, let server, let whisperTo, let whisperMods, _) = destination else {
+            preconditionFailure()
         }
-        // Return
-        return promise
+
+        // TODO: Determine if the 'getV2OpenGroup' call will cause issues.
+        guard let threadId: String = message.threadID, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) else {
+            preconditionFailure()
+        }
+
+//        let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, sentTimestamp: message.sentTimestamp!,
+//            base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
+
+        //OpenGroupAPIV2.send(openGroupMessage, to: room, on: server, with: openGroupV2.publicKey)
+        return promise  // TODO: Remove!!!
+//        OpenGroupAPIV2
+//            .send(
+//                plaintext,
+//                to: room,
+//                on: server,
+//                whisperTo: whisperTo,
+//                whisperMods: whisperMods,
+//                with: openGroupV2.publicKey
+//            )
+//            .done(on: DispatchQueue.global(qos: .userInitiated)) { response in
+//                print("RAWR")
+////                message.openGroupServerMessageID = given(response.serverID) { UInt64($0) }
+////                storage.write(with: { transaction in
+////                    Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp, using: transaction)
+////
+////                    MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: response.sentTimestamp, using: transaction)
+////                    seal.fulfill(())
+////                }, completion: { })
+//            }
+//            .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+//                storage.write(with: { transaction in
+//                    handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
+//                }, completion: { })
+//            }
+//        // Return
+//        return promise
     }
 
     // MARK: Success & Failure Handling

@@ -174,7 +174,6 @@ private extension MentionSelectionView {
 
 // MARK: - Delegate
 
-protocol MentionSelectionViewDelegate : class {
-
+protocol MentionSelectionViewDelegate: AnyObject {
     func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView)
 }
