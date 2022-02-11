@@ -1102,12 +1102,12 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         [fullTextSearchFinder modelWasUpdatedObjcWithModel:contactThread transaction:transaction];
     }
 
-    [TSGroupThread enumerateGroupThreadsWithAddress:self.address
-                                        transaction:transaction
-                                              block:^(TSGroupThread *thread, BOOL *stop) {
-                                                  [fullTextSearchFinder modelWasUpdatedObjcWithModel:thread
-                                                                                         transaction:transaction];
-                                              }];
+    [TSGroupMember enumerateGroupMembersForAddress:self.address
+                                   withTransaction:transaction
+                                             block:^(TSGroupMember *groupMember, BOOL *stop) {
+                                                 [fullTextSearchFinder modelWasUpdatedObjcWithModel:groupMember
+                                                                                        transaction:transaction];
+                                             }];
 }
 
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address

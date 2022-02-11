@@ -395,6 +395,12 @@ class GRDBFullTextSearchFinder: NSObject {
                                                         return nil
             }
             return model
+        case TSGroupMember.collection():
+            guard let model = TSGroupMember.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) else {
+                owsFailDebug("Couldn't load record: \(collection)")
+                return nil
+            }
+            return model
         default:
             owsFailDebug("Unexpected record type: \(collection)")
             return nil
@@ -508,16 +514,12 @@ class AnySearchIndexer: Dependencies {
 
     // MARK: - Index Building
 
-    private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) in
-        let groupName = groupThread.groupModel.groupName ?? ""
+    private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread, _: SDSAnyReadTransaction) in
+        return groupThread.groupModel.groupNameOrDefault
+    }
 
-        let memberStrings = groupThread.groupModel.groupMembers.map { address in
-            autoreleasepool {
-                recipientIndexer.index(address, transaction: transaction)
-            }
-        }.joined(separator: " ")
-
-        return "\(groupName) \(memberStrings)"
+    private static let groupMemberIndexer: SearchIndexer<TSGroupMember> = SearchIndexer { (groupMember: TSGroupMember, transaction: SDSAnyReadTransaction) in
+        return recipientIndexer.index(groupMember.address, transaction: transaction)
     }
 
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread, transaction: SDSAnyReadTransaction) in
@@ -568,6 +570,8 @@ class AnySearchIndexer: Dependencies {
     class func indexContent(object: Any, transaction: SDSAnyReadTransaction) -> String? {
         if let groupThread = object as? TSGroupThread {
             return self.groupThreadIndexer.index(groupThread, transaction: transaction)
+        } else if let groupMember = object as? TSGroupMember {
+            return self.groupMemberIndexer.index(groupMember, transaction: transaction)
         } else if let contactThread = object as? TSContactThread {
             guard contactThread.shouldThreadBeVisible else {
                 // If we've never sent/received a message in a TSContactThread,

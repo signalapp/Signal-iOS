@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -469,6 +469,7 @@ public class FullTextSearcher: NSObject {
 
         var contactThreads: [ConversationSearchResult<ConversationSortKey>] = []
         var groupThreads: [GroupSearchResult] = []
+        var groupThreadIds = Set<String>()
         var contactsMap: [SignalServiceAddress: ContactSearchResult] = [:]
         var messages: [UInt64: ConversationSearchResult<MessageSortKey>] = [:]
 
@@ -588,6 +589,7 @@ public class FullTextSearcher: NSObject {
                     return owsFailDebug("Unexpectedly failed to determine members snippet")
                 }
                 groupThreads.append(searchResult)
+                groupThreadIds.insert(thread.uniqueId)
             case let contactThread as TSContactThread:
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
                 existingConversationAddresses.insert(contactThread.contactAddress)
@@ -595,6 +597,40 @@ public class FullTextSearcher: NSObject {
             default:
                 owsFailDebug("unexpected thread: \(type(of: thread))")
             }
+        }
+
+        finder.enumerateObjects(
+            searchText: searchText,
+            maxResults: remainingAllowedResults,
+            transaction: transaction
+        ) { (groupMember: TSGroupMember, _, stop) in
+            guard !hasReachedMaxResults else {
+                stop.pointee = true
+                return
+            }
+            guard !groupThreadIds.contains(groupMember.groupThreadId) else { return }
+            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupMember.groupThreadId, transaction: transaction) else {
+                return owsFailDebug("Unexpectedly missing group thread for group member")
+            }
+
+            let threadViewModel = getThreadViewModel(groupThread)
+            let sortKey = ConversationSortKey(
+                isContactThread: false,
+                creationDate: groupThread.creationDate,
+                lastInteractionRowId: groupThread.lastInteractionRowId
+            )
+
+            guard let searchResult = GroupSearchResult.withMatchedMembersSnippet(
+                thread: threadViewModel,
+                sortKey: sortKey,
+                searchText: searchText,
+                transaction: transaction
+            ) else {
+                return owsFailDebug("Unexpectedly failed to determine members snippet")
+            }
+
+            groupThreads.append(searchResult)
+            groupThreadIds.insert(groupThread.uniqueId)
         }
 
         finder.enumerateObjects(

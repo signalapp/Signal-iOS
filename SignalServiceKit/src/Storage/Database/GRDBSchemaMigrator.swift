@@ -161,11 +161,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_cullInvalidIdentityKeySendingErrors
         case dataMigration_moveToThreadAssociatedData
         case dataMigration_senderKeyStoreKeyIdMigration
-        case dataMigration_migrateGroupAvatarsToDisk
+        case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 31
+    public static let grdbSchemaVersionLatest: UInt = 32
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1762,19 +1762,29 @@ public class GRDBSchemaMigrator: NSObject {
             SenderKeyStore.performKeyIdMigration(transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_migrateGroupAvatarsToDisk.rawValue) { db in
+        migrator.registerMigration(MigrationId.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            let cursor = TSThread.grdbFetchCursor(
+            let threadCursor = TSThread.grdbFetchCursor(
                 sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
                 transaction: transaction
             )
 
-            while let thread = try cursor.next() as? TSGroupThread {
+            while let thread = try threadCursor.next() as? TSGroupThread {
                 try autoreleasepool {
                     try thread.groupModel.migrateLegacyAvatarDataToDisk()
-                    thread.anyUpsert(transaction: transaction.asAnyWrite)
+                    GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: transaction)
+                }
+            }
+
+            let memberCursor = TSGroupMember.grdbFetchCursor(
+                transaction: transaction
+            )
+
+            while let member = try memberCursor.next() {
+                autoreleasepool {
+                    GRDBFullTextSearchFinder.modelWasInserted(model: member, transaction: transaction)
                 }
             }
         }

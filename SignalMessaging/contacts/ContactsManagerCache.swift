@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -301,9 +301,7 @@ public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
     public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
         unfairLock.withLock {
             guard let contactsMaps = contactsMapsCache else {
-                owsFailDebug("Missing contactsMaps.")
-                // Don't bother failing over to contactsManagerCacheInDatabase.
-                return nil
+                return contactsManagerCacheInDatabase.contact(forPhoneNumber: phoneNumber, transaction: transaction)
             }
             return contactsMaps.phoneNumberToContactMap[phoneNumber]
         }
@@ -313,9 +311,7 @@ public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
     public func allContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
         unfairLock.withLock {
             guard let contactsMaps = contactsMapsCache else {
-                owsFailDebug("Missing contactsMaps.")
-                // Don't bother failing over to contactsManagerCacheInDatabase.
-                return []
+                return contactsManagerCacheInDatabase.allContacts(transaction: transaction)
             }
             return Array(contactsMaps.phoneNumberToContactMap.values)
         }
@@ -325,9 +321,7 @@ public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
     public func contactsMaps(transaction: SDSAnyReadTransaction) -> ContactsMaps {
         unfairLock.withLock {
             guard let contactsMaps = contactsMapsCache else {
-                owsFailDebug("Missing contactsMaps.")
-                // Don't bother failing over to contactsManagerCacheInDatabase.
-                return .empty
+                return contactsManagerCacheInDatabase.contactsMaps(transaction: transaction)
             }
             return contactsMaps
         }

@@ -149,6 +149,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     }
 
     BOOL didAvatarChange = ![NSObject isNullableObject:newGroupModel.avatarHash equalTo:self.groupModel.avatarHash];
+    BOOL didNameChange = ![newGroupModel.groupNameOrDefault isEqualToString:self.groupModel.groupNameOrDefault];
 
     [self anyUpdateGroupThreadWithTransaction:transaction
                                         block:^(TSGroupThread *thread) {
@@ -168,7 +169,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                             thread.groupModel = [newGroupModel copy];
                                         }];
     [self updateGroupMemberRecordsWithTransaction:transaction];
-    [SDSDatabaseStorage.shared touchThread:self shouldReindex:true transaction:transaction];
+
+    // We only need to re-index the group if the group name changed.
+    [SDSDatabaseStorage.shared touchThread:self shouldReindex:didNameChange transaction:transaction];
 
     if (didAvatarChange) {
         [transaction addAsyncCompletionOnMain:^{ [self fireAvatarChangedNotification]; }];

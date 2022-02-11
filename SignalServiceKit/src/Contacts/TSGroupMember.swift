@@ -24,6 +24,31 @@ public extension TSGroupMember {
         )
     }
 
+    @objc(enumerateGroupMembersForAddress:withTransaction:block:)
+    class func enumerateGroupMembers(
+        for address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (TSGroupMember, UnsafeMutablePointer<ObjCBool>
+    ) -> Void) {
+        let sql = """
+            SELECT * FROM \(GroupMemberRecord.databaseTableName)
+            WHERE (\(groupMemberColumn: .uuidString) = ? OR \(groupMemberColumn: .uuidString) IS NULL)
+            AND (\(groupMemberColumn: .phoneNumber) = ? OR \(groupMemberColumn: .phoneNumber) IS NULL)
+            AND NOT (\(groupMemberColumn: .uuidString) IS NULL AND \(groupMemberColumn: .phoneNumber) IS NULL)
+        """
+
+        let cursor = TSGroupMember.grdbFetchCursor(
+            sql: sql,
+            arguments: [address.uuidString, address.phoneNumber],
+            transaction: transaction.unwrapGrdbRead
+        )
+        while let member = try! cursor.next() {
+            var stop: ObjCBool = false
+            block(member, &stop)
+            if stop.boolValue { break }
+        }
+    }
+
     @objc(groupMembersInGroupThreadId:transaction:)
     class func groupMembers(in groupThreadId: String, transaction: SDSAnyReadTransaction) -> [TSGroupMember] {
         let sql = """

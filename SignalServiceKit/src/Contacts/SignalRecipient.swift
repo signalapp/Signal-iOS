@@ -120,10 +120,8 @@ extension SignalRecipient {
         if let contactThread = AnyContactThreadFinder().contactThread(for: address, transaction: transaction.asAnyRead) {
             SDSDatabaseStorage.shared.touch(thread: contactThread, shouldReindex: true, transaction: transaction.asAnyWrite)
         }
-        TSGroupThread.enumerateGroupThreads(with: address, transaction: transaction.asAnyRead) { thread, _ in
-            SDSDatabaseStorage.shared.touch(thread: thread,
-                                            shouldReindex: true,
-                                            transaction: transaction.asAnyWrite)
+        TSGroupMember.enumerateGroupMembers(for: address, transaction: transaction.asAnyRead) { member, _ in
+            GRDBFullTextSearchFinder.modelWasUpdated(model: member, transaction: transaction)
         }
 
         // Update SignalServiceAddressCache with the new uuid <-> phone number mapping
