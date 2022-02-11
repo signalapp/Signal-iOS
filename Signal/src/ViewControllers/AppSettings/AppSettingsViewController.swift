@@ -85,7 +85,6 @@ class AppSettingsViewController: OWSTableViewController2 {
     }()
 
     private lazy var hasExpiredSubscription: Bool = {
-        guard !hasCurrentSubscription else { return false }
         guard let mostRecentlyExpiredBadgeId = SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction() else {
             return false
         }

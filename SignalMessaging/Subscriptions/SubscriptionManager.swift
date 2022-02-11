@@ -1235,6 +1235,18 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
         return lastSubscriptionExpiryDate.isAfterNow
     }
 
+    public func timeSinceLastSubscriptionExpiration(transaction: SDSAnyReadTransaction) -> TimeInterval {
+        guard let lastSubscriptionExpiryDate = Self.lastSubscriptionExpirationDate(transaction: transaction) else {
+            return -Date.distantPast.timeIntervalSinceNow
+        }
+
+        guard lastSubscriptionExpiryDate.isBeforeNow else {
+            return 0
+        }
+
+        return -lastSubscriptionExpiryDate.timeIntervalSinceNow
+    }
+
     public func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool {
         return Self.userManuallyCancelledSubscription(transaction: transaction)
     }

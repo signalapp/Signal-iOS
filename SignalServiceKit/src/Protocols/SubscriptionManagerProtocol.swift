@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,6 +8,7 @@ import Foundation
 public protocol SubscriptionManagerProtocol {
     func reconcileBadgeStates(transaction: SDSAnyWriteTransaction)
     func hasCurrentSubscription(transaction: SDSAnyReadTransaction) -> Bool
+    func timeSinceLastSubscriptionExpiration(transaction: SDSAnyReadTransaction) -> TimeInterval
 
     func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool
     func setUserManuallyCancelledSubscription(_ userCancelled: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction)

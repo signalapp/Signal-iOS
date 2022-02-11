@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,10 @@ public class MockSubscriptionManager: NSObject, SubscriptionManagerProtocol {
 
     public func hasCurrentSubscription(transaction: SDSAnyReadTransaction) -> Bool {
         return false
+    }
+
+    public func timeSinceLastSubscriptionExpiration(transaction: SDSAnyReadTransaction) -> TimeInterval {
+        return 0
     }
 
     public func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool { false }
