@@ -601,5 +601,6 @@
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
 "MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request.";
 "MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
+"MESSAGE_REQUESTS_DISABLED_INPUT" = "Your message request is currently pending.";
 "TXT_HIDE_TITLE" = "Hide";
 "TXT_DELETE_ACCEPT" = "Accept";

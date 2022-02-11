@@ -370,6 +370,12 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         if !draft.isEmpty {
             snInputView.text = draft
         }
+        
+        // Update the input state if this is a contact thread
+        if let contactThread: TSContactThread = thread as? TSContactThread, let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()) {
+            self.snInputView.setEnabled(contact.didApproveMe, message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized())
+        }
+        
         // Update member count if this is a V2 open group
         if let v2OpenGroup = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
             OpenGroupAPIV2.getMemberCount(for: v2OpenGroup.room, on: v2OpenGroup.server).retainUntilComplete()
@@ -610,6 +616,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             if shouldScrollToBottom {
                 self.scrollToBottom(isAnimated: false)
             }
+        }
+        
+        // Update the input state if this is a contact thread
+        if let contactThread: TSContactThread = thread as? TSContactThread, let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()) {
+            self.snInputView.setEnabled(contact.didApproveMe, message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized())
         }
     }
     

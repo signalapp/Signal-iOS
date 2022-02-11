@@ -316,6 +316,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         resetMentions()
         self.snInputView.text = ""
         self.snInputView.quoteDraftInfo = nil
+        
+        if let contactThread: TSContactThread = thread as? TSContactThread, let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()) {
+            self.snInputView.setEnabled(contact.didApproveMe, message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized())
+        }
+        
         self.markAllAsRead()
         if Environment.shared.preferences.soundInForeground() {
             let soundID = OWSSounds.systemSoundID(for: .messageSent, quiet: true)

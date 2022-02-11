@@ -1,3 +1,4 @@
+import UIKit
 
 final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewDelegate, MentionSelectionViewDelegate {
     private weak var delegate: InputViewDelegate?
@@ -16,10 +17,18 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         set { inputTextView.text = newValue }
     }
     
+    var isEnabled: Bool = true {
+        didSet {
+            setEnabled(isEnabled, message: nil)
+        }
+    }
+    
     override var intrinsicContentSize: CGSize { CGSize.zero }
     var lastSearchedText: String? { nil }
     
     // MARK: UI Components
+    
+    private var bottomStackView: UIStackView?
     private lazy var attachmentsButton = ExpandingAttachmentsButton(delegate: delegate)
     
     private lazy var voiceMessageButton: InputViewButton = {
@@ -28,6 +37,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         result.accessibilityHint = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE", comment: "")
         return result
     }()
+    
     
     private lazy var sendButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
@@ -65,6 +75,17 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         let adjustment = (InputViewButton.expandedSize - InputViewButton.size) / 2
         let maxWidth = UIScreen.main.bounds.width - 2 * InputViewButton.expandedSize - 2 * Values.smallSpacing - 2 * (Values.mediumSpacing - adjustment)
         return InputTextView(delegate: self, maxWidth: maxWidth)
+    }()
+    
+    private lazy var disabledInputLabel: UILabel = {
+        let label: UILabel = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: Values.smallFontSize)
+        label.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        label.textAlignment = .center
+        label.alpha = 0
+        
+        return label
     }()
 
     private lazy var additionalContentContainer = UIView()
@@ -109,6 +130,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         bottomStackView.axis = .horizontal
         bottomStackView.spacing = Values.smallSpacing
         bottomStackView.alignment = .center
+        self.bottomStackView = bottomStackView
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ additionalContentContainer, bottomStackView ])
         mainStackView.axis = .vertical
@@ -119,6 +141,16 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         mainStackView.pin(.top, to: .bottom, of: separator)
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
         mainStackView.pin(.bottom, to: .bottom, of: self)
+        
+        addSubview(disabledInputLabel)
+        
+        NSLayoutConstraint.activate([
+            disabledInputLabel.topAnchor.constraint(equalTo: mainStackView.topAnchor),
+            disabledInputLabel.leftAnchor.constraint(equalTo: mainStackView.leftAnchor),
+            disabledInputLabel.rightAnchor.constraint(equalTo: mainStackView.rightAnchor),
+            disabledInputLabel.heightAnchor.constraint(equalToConstant: InputViewButton.expandedSize)
+        ])
+        
         // Mentions
         insertSubview(mentionsViewContainer, belowSubview: mainStackView)
         mentionsViewContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
@@ -214,6 +246,19 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
             self.linkPreviewInfo = nil
             self.additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
         }.retainUntilComplete()
+    }
+    
+    func setEnabled(_ enabled: Bool, message: String?) {
+        guard isEnabled != enabled else { return }
+        
+        isEnabled = enabled
+        disabledInputLabel.text = (message ?? "")
+        
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.bottomStackView?.alpha = (enabled ? 1 : 0)
+            self?.voiceMessageButton.alpha = (enabled ? 1 : 0)
+            self?.disabledInputLabel.alpha = (enabled ? 0 : 1)
+        }
     }
     
     // MARK: Interaction
