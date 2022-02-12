@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -97,8 +97,7 @@ public extension ConversationViewController {
         // We initiated a call, so if there was a pending message request we should accept it.
         ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
 
-        outboundIndividualCallInitiator.initiateCall(address: contactThread.contactAddress,
-                                                     isVideo: withVideo)
+        outboundIndividualCallInitiator.initiateCall(thread: contactThread, isVideo: withVideo)
         NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
     }
 

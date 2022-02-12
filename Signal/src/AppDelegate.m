@@ -902,10 +902,11 @@ static void uncaughtExceptionHandler(NSException *exception)
                 }
             }
 
+            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
             OutboundIndividualCallInitiator *outboundIndividualCallInitiator
                 = AppEnvironment.shared.outboundIndividualCallInitiator;
             OWSAssertDebug(outboundIndividualCallInitiator);
-            [outboundIndividualCallInitiator initiateCallWithAddress:address];
+            [outboundIndividualCallInitiator initiateCallWithThread:thread isVideo:YES];
         });
         return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
@@ -942,10 +943,11 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
+            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
             OutboundIndividualCallInitiator *outboundIndividualCallInitiator
                 = AppEnvironment.shared.outboundIndividualCallInitiator;
             OWSAssertDebug(outboundIndividualCallInitiator);
-            [outboundIndividualCallInitiator initiateCallWithAddress:address];
+            [outboundIndividualCallInitiator initiateCallWithThread:thread isVideo:NO];
         });
         return YES;
 
@@ -990,10 +992,11 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
+            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
             OutboundIndividualCallInitiator *outboundIndividualCallInitiator
                 = AppEnvironment.shared.outboundIndividualCallInitiator;
             OWSAssertDebug(outboundIndividualCallInitiator);
-            [outboundIndividualCallInitiator initiateCallWithAddress:address];
+            [outboundIndividualCallInitiator initiateCallWithThread:thread isVideo:NO];
         });
         return YES;
     } else if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {

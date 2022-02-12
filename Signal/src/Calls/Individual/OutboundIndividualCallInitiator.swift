@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,24 +18,11 @@ import SignalMessaging
     }
 
     /**
-     * |address| is a SignalServiceAddress
-     */
-    @discardableResult
-    @objc
-    public func initiateCall(address: SignalServiceAddress) -> Bool {
-        Logger.info("with address: \(address)")
-
-        guard address.isValid else { return false }
-
-        return initiateCall(address: address, isVideo: false)
-    }
-
-    /**
      * |address| is a SignalServiceAddress.
      */
     @discardableResult
     @objc
-    public func initiateCall(address: SignalServiceAddress, isVideo: Bool) -> Bool {
+    public func initiateCall(thread: TSContactThread, isVideo: Bool) -> Bool {
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("aborting due to user not being onboarded.")
             OWSActionSheets.showActionSheet(title: NSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
@@ -53,11 +40,11 @@ import SignalMessaging
         }
 
         let showedAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
-            address: address,
+            address: thread.contactAddress,
             confirmationText: CallStrings.confirmAndCallButtonTitle
         ) { didConfirmIdentity in
             guard didConfirmIdentity else { return }
-            _ = self.initiateCall(address: address, isVideo: isVideo)
+            _ = self.initiateCall(thread: thread, isVideo: isVideo)
         }
         guard !showedAlert else {
             return false
@@ -77,10 +64,10 @@ import SignalMessaging
                         return
                     }
 
-                    callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: true)
+                    callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: true)
                 }
             } else {
-                callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
+                callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
             }
         }
 
