@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -258,7 +258,7 @@ public extension TSThread {
             : .onThisDevice
 
         let finder = InteractionFinder(threadUniqueId: uniqueId)
-        for message in finder.allUnreadMessages(transaction: transaction.unwrapGrdbRead) {
+        finder.enumerateAllUnreadMessages(transaction: transaction.unwrapGrdbRead) { message, _ in
             message.markAsRead(
                 atTimestamp: Date.ows_millisecondTimestamp(),
                 thread: self,
@@ -268,6 +268,6 @@ public extension TSThread {
         }
 
         // Just to be defensive, we'll also check for unread messages.
-        owsAssertDebug(finder.allUnreadMessages(transaction: transaction.unwrapGrdbRead).isEmpty)
+        owsAssertDebug(finder.unreadCount(transaction: transaction.unwrapGrdbRead) == 0)
     }
 }
