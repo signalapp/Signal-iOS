@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,23 +38,8 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
     }
 }
 
-public let fixedBottomSafeAreaInset: CGFloat = 20
-public let fixedHorizontalMargin: CGFloat = 16
-
 @objc
 class SendMediaNavigationController: OWSNavigationController {
-    static var bottomButtonsCenterOffset: CGFloat {
-        if UIDevice.current.hasIPhoneXNotch {
-            // we pin to a constant rather than margin, because on notched devices the
-            // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
-            // is locked to portrait.
-            return -1 * (CaptureButton.recordingDiameter / 2 + 4) - fixedBottomSafeAreaInset
-        } else {
-            return -1 * (CaptureButton.recordingDiameter / 2 + 4)
-        }
-    }
-
-    static var trailingButtonsOffset: CGFloat = -28
 
     var attachmentCount: Int {
         return attachmentDraftCollection.count
@@ -66,7 +51,6 @@ class SendMediaNavigationController: OWSNavigationController {
         guard !CurrentAppContext().hasActiveCall else {
             return false
         }
-
         return true
     }
 
@@ -74,61 +58,12 @@ class SendMediaNavigationController: OWSNavigationController {
         super.viewDidLoad()
 
         self.delegate = self
-
-        let bottomButtonsCenterOffset = SendMediaNavigationController.bottomButtonsCenterOffset
-
-        view.addSubview(batchModeButton)
-        batchModeButton.setCompressionResistanceHigh()
-
-        view.addSubview(doneButton)
-        doneButton.setCompressionResistanceHigh()
-
-        view.addSubview(cameraModeButton)
-        cameraModeButton.setCompressionResistanceHigh()
-
-        view.addSubview(mediaLibraryModeButton)
-        mediaLibraryModeButton.setCompressionResistanceHigh()
-
-        if UIDevice.current.isIPad {
-            let buttonSpacing: CGFloat = 28
-            // `doneButton` is our widest button, so we position it relative to the superview
-            // margin, and position other buttons relative to `doneButton`. This ensures
-            // `donebutton` has a good distance from the edge *and* that all the buttons in the
-            // cluster are centered WRT eachother.
-            doneButton.autoPinEdge(toSuperviewMargin: .trailing)
-            doneButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -buttonSpacing).isActive = true
-
-            batchModeButton.autoAlignAxis(.vertical, toSameAxisOf: doneButton)
-            batchModeButton.autoAlignAxis(.horizontal, toSameAxisOf: doneButton)
-
-            cameraModeButton.autoAlignAxis(.vertical, toSameAxisOf: doneButton)
-            cameraModeButton.autoPinEdge(.bottom, to: .top, of: doneButton, withOffset: -buttonSpacing)
-
-            mediaLibraryModeButton.autoAlignAxis(.vertical, toSameAxisOf: cameraModeButton)
-            mediaLibraryModeButton.autoAlignAxis(.horizontal, toSameAxisOf: cameraModeButton)
-        } else {
-            // we pin to edges rather than margin, because on notched devices the safeAreaInsets/margins change
-            // as the device rotates *EVEN THOUGH* the interface is locked to portrait.
-
-            batchModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-            batchModeButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
-
-            doneButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-            doneButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
-
-            cameraModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-            cameraModeButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-
-            mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-            mediaLibraryModeButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         DispatchQueue.main.async {
-            // pre-layout views for snappier response should the user
-            // decide to switch
+            // Pre-layout views for snappier response should the user decide to switch.
 
             if PHPhotoLibrary.authorizationStatus() == .authorized {
                 self.mediaLibraryViewController.view.layoutIfNeeded()
@@ -184,96 +119,6 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
-    private var isForcingBatchSelectInMediaLibrary = true
-
-    private var isShowingMediaLibrary = false
-    private var isRecordingMovie = false
-
-    var isInBatchSelectMode: Bool {
-        get {
-            if isForcingBatchSelectInMediaLibrary && isShowingMediaLibrary {
-                return true
-            }
-            return self.batchModeButton.isSelected
-        }
-
-        set {
-            let didChange = newValue != isInBatchSelectMode
-            self.batchModeButton.isSelected = newValue
-
-            if didChange {
-                mediaLibraryViewController.batchSelectModeDidChange()
-                guard let topViewController = viewControllers.last else {
-                    return
-                }
-                updateViewState(topViewController: topViewController, animated: false)
-            }
-        }
-    }
-
-    func updateViewState(topViewController: UIViewController, animated: Bool) {
-        let changes: () -> Void
-        switch topViewController {
-        case is AttachmentApprovalViewController:
-            changes = {
-                self.isShowingMediaLibrary = false
-                self.batchModeButton.alpha = 0
-                self.doneButton.alpha = 0
-                self.cameraModeButton.alpha = 0
-                self.mediaLibraryModeButton.alpha = 0
-            }
-        case let mediaLibraryView as ImagePickerGridController:
-            changes = {
-                self.isShowingMediaLibrary = true
-                let showDoneButton = self.isInBatchSelectMode && self.attachmentCount > 0
-                self.doneButton.alpha = showDoneButton ? 1 : 0
-
-                self.batchModeButton.alpha = showDoneButton || self.isForcingBatchSelectInMediaLibrary ? 0 : 1
-                self.batchModeButton.isBeingPresentedOverPhotoCapture = false
-
-                self.cameraModeButton.alpha = 1
-                self.cameraModeButton.isBeingPresentedOverPhotoCapture = false
-
-                self.mediaLibraryModeButton.alpha = 0
-                self.mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
-
-                mediaLibraryView.applyBatchSelectMode()
-            }
-        case is PhotoCaptureViewController:
-            changes = {
-                self.isShowingMediaLibrary = false
-                let showDoneButton = self.isInBatchSelectMode && self.attachmentCount > 0
-                self.doneButton.alpha = !showDoneButton || self.isRecordingMovie ? 0 : 1
-
-                self.batchModeButton.alpha = showDoneButton || self.isRecordingMovie ? 0 : 1
-                self.batchModeButton.isBeingPresentedOverPhotoCapture = true
-
-                self.cameraModeButton.alpha = 0
-                self.cameraModeButton.isBeingPresentedOverPhotoCapture = true
-
-                self.mediaLibraryModeButton.alpha = self.isRecordingMovie ? 0 : 1
-                self.mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
-            }
-        case is ConversationPickerViewController:
-            changes = {
-                self.doneButton.alpha = 0
-                self.batchModeButton.alpha = 0
-                self.cameraModeButton.alpha = 0
-                self.mediaLibraryModeButton.alpha = 0
-            }
-        default:
-            owsFailDebug("unexpected topViewController: \(topViewController)")
-            changes = { }
-        }
-
-        if animated {
-            UIView.animate(withDuration: 0.3, animations: changes)
-        } else {
-            changes()
-        }
-        doneButton.updateCount()
-    }
-
     func fadeTo(viewControllers: [UIViewController], duration: CFTimeInterval) {
         AssertIsOnMainThread()
 
@@ -283,63 +128,6 @@ class SendMediaNavigationController: OWSNavigationController {
         view.layer.add(transition, forKey: nil)
         setViewControllers(viewControllers, animated: false)
     }
-
-    // MARK: - Events
-
-    private func didTapBatchModeButton() {
-        isInBatchSelectMode = !isInBatchSelectMode
-        owsAssertDebug(isInBatchSelectMode || attachmentCount <= 1)
-    }
-
-    private func didTapCameraModeButton() {
-        self.ows_askForCameraPermissions { isGranted in
-            guard isGranted else { return }
-
-            BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
-            self.fadeTo(viewControllers: [self.captureViewController], duration: 0.08)
-        }
-    }
-
-    private func didTapMediaLibraryModeButton() {
-        self.ows_askForMediaLibraryPermissions { isGranted in
-            guard isGranted else { return }
-
-            BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
-            self.fadeTo(viewControllers: [self.mediaLibraryViewController], duration: 0.08)
-        }
-    }
-
-    // MARK: Views
-    public static let bottomButtonWidth: CGFloat = 44
-
-    private lazy var doneButton: DoneButton = {
-        let button = DoneButton()
-        button.delegate = self
-        button.setShadow()
-
-        return button
-    }()
-
-    private lazy var batchModeButton: SendMediaBottomButton = {
-        return SendMediaBottomButton(imageName: "create-album-filled-28",
-                                     tintColor: .ows_white,
-                                     diameter: type(of: self).bottomButtonWidth,
-                                     block: { [weak self] in self?.didTapBatchModeButton() })
-    }()
-
-    private lazy var cameraModeButton: SendMediaBottomButton = {
-        return SendMediaBottomButton(imageName: "camera-outline-28",
-                                     tintColor: .ows_white,
-                                     diameter: type(of: self).bottomButtonWidth,
-                                     block: { [weak self] in self?.didTapCameraModeButton() })
-    }()
-
-    private lazy var mediaLibraryModeButton: SendMediaBottomButton = {
-        return SendMediaBottomButton(imageName: "photo-outline-28",
-                                     tintColor: .ows_white,
-                                     diameter: type(of: self).bottomButtonWidth,
-                                     block: { [weak self] in self?.didTapMediaLibraryModeButton() })
-    }()
 
     // MARK: State
 
@@ -354,22 +142,19 @@ class SendMediaNavigationController: OWSNavigationController {
     fileprivate lazy var captureViewController: PhotoCaptureViewController = {
         let vc = PhotoCaptureViewController()
         vc.delegate = self
-
+        vc.dataSource = self
         return vc
     }()
 
     private lazy var mediaLibraryViewController: ImagePickerGridController = {
         let vc = ImagePickerGridController()
         vc.delegate = self
-
         return vc
     }()
 
-    private func pushApprovalViewController(
-        attachmentApprovalItems: [AttachmentApprovalItem],
-        options: AttachmentApprovalViewControllerOptions = .canAddMore,
-        animated: Bool
-    ) {
+    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem],
+                                            options: AttachmentApprovalViewControllerOptions = .canAddMore,
+                                            animated: Bool) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
@@ -396,49 +181,44 @@ class SendMediaNavigationController: OWSNavigationController {
 
             let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM", comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
             let confirmAbandonAction = ActionSheetAction(title: confirmAbandonText,
-                                                     style: .destructive,
-                                                     handler: { [weak self] _ in
-                                                        guard let self = self else { return }
-                                                        self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
+                                                         style: .destructive,
+                                                         handler: { [weak self] _ in
+                guard let self = self else { return }
+                self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
             })
             alert.addAction(confirmAbandonAction)
             let dontAbandonAction = ActionSheetAction(title: dontAbandonText,
-                                                  style: .default,
-                                                  handler: { _ in  })
+                                                      style: .default,
+                                                      handler: { _ in  })
             alert.addAction(dontAbandonAction)
 
             self.presentActionSheet(alert)
         }
     }
+
 }
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
+
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         updateNavbarTheme(for: viewController, animated: animated)
 
         switch viewController {
         case is PhotoCaptureViewController:
-            if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
+            if attachmentDraftCollection.count == 1 {
                 // User is navigating "back" to the previous view, indicating
                 // they want to discard the previously captured item
                 discardDraft()
             }
-        case is ImagePickerGridController:
-            if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
-                isInBatchSelectMode = true
-                mediaLibraryViewController.reloadData()
-            }
+
         default:
             break
         }
-
-        updateViewState(topViewController: viewController, animated: false)
     }
 
     // In case back navigation was canceled, we re-apply whatever is showing.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         updateNavbarTheme(for: viewController, animated: animated)
-        updateViewState(topViewController: viewController, animated: false)
     }
 
     func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
@@ -479,34 +259,23 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
     // MARK: - Too Many
 
     func showTooManySelectedToast() {
-        Logger.info("")
-
         let toastFormat = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
                                             comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
 
         let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
-
         let toastController = ToastController(text: toastText)
-
-        let kToastInset: CGFloat = 10
-        let bottomInset = kToastInset + view.layoutMargins.bottom
-
-        toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
+        toastController.presentToastView(fromBottomOfView: view, inset: view.layoutMargins.bottom + 10)
     }
 }
 
 extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
 
-    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment) {
-        guard let sendMediaNavDelegate = self.sendMediaNavDelegate else { return }
-        let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: sendMediaNavDelegate.sendMediaNavCanSaveAttachments)
-        attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
-        if isInBatchSelectMode {
-            updateViewState(topViewController: photoCaptureViewController, animated: false)
-        } else {
-            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
-                                       animated: true)
+    func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController) {
+        guard attachmentDraftCollection.count > 0 else {
+            owsFailDebug("No camera attachments found")
+            return
         }
+        showApprovalAfterProcessingAnyMediaLibrarySelections()
     }
 
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController) {
@@ -530,16 +299,51 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         owsAssertDebug(attachmentDraftCollection.attachmentDrafts.count == 0)
     }
 
-    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, isRecordingMovie: Bool) {
-        self.isRecordingMovie = isRecordingMovie
-        updateViewState(topViewController: photoCaptureViewController, animated: true)
+    func photoCaptureViewControllerDidRequestPresentPhotoLibrary(_ photoCaptureViewController: PhotoCaptureViewController) {
+        self.ows_askForMediaLibraryPermissions { isGranted in
+            guard isGranted else { return }
+
+            BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
+            self.pushViewController(self.mediaLibraryViewController, animated: true)
+        }
+    }
+
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didRequestSwitchBatchMode batchMode: Bool) -> Bool {
+        if batchMode {
+            // Always can be enabled
+            return true
+        }
+        // Can only be disabled if there's one or less media item.
+        return attachmentCount > 1
+    }
+}
+
+extension SendMediaNavigationController: PhotoCaptureViewControllerDataSource {
+
+    var numberOfMediaItems: Int {
+        attachmentCount
+    }
+
+    func addMedia(attachment: SignalAttachment) {
+        guard let sendMediaNavDelegate = self.sendMediaNavDelegate else { return }
+        let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment, canSave: sendMediaNavDelegate.sendMediaNavCanSaveAttachments)
+        attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
     }
 }
 
 extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
-    func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController) {
+    func imagePickerDidRequestSendMedia(_ imagePicker: ImagePickerGridController) {
         showApprovalAfterProcessingAnyMediaLibrarySelections()
+    }
+
+    func imagePickerDidRequestPresentCamera(_ imagePicker: ImagePickerGridController) {
+        if let cameraViewController = viewControllers.first as? PhotoCaptureViewController {
+            popToViewController(cameraViewController, animated: true)
+            return
+        }
+
+        fadeTo(viewControllers: [ captureViewController ], duration: 0.2)
     }
 
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController) {
@@ -600,8 +404,6 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
         let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: attachmentApprovalItemPromise)
         attachmentDraftCollection.append(.picker(attachment: libraryMedia))
-
-        updateViewState(topViewController: imagePicker, animated: false)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset) {
@@ -609,8 +411,6 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             return
         }
         attachmentDraftCollection.remove(.picker(attachment: draft))
-
-        updateViewState(topViewController: imagePicker, animated: false)
     }
 
     func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
@@ -625,7 +425,6 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
 
     func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        updateViewState(topViewController: attachmentApproval, animated: true)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
@@ -652,9 +451,6 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
     func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
         // Current design dicates we'll go "back" to the single thing before us.
         owsAssertDebug(viewControllers.count == 2)
-
-        // regardless of which VC we're going "back" to, we're in "batch" mode at this point.
-        isInBatchSelectMode = true
 
         popViewController(animated: true)
     }
@@ -794,100 +590,5 @@ private struct MediaLibraryAttachment: Hashable, Equatable {
 
     static func ==(lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {
         return lhs.asset == rhs.asset
-    }
-}
-
-extension SendMediaNavigationController: DoneButtonDelegate {
-    var doneButtonCount: Int {
-        return attachmentCount
-    }
-
-    fileprivate func doneButtonWasTapped(_ doneButton: DoneButton) {
-        owsAssertDebug(attachmentDraftCollection.count > 0)
-        showApprovalAfterProcessingAnyMediaLibrarySelections()
-    }
-}
-
-private protocol DoneButtonDelegate: AnyObject {
-    func doneButtonWasTapped(_ doneButton: DoneButton)
-    var doneButtonCount: Int { get }
-}
-
-private class DoneButton: UIView {
-    weak var delegate: DoneButtonDelegate?
-
-    init() {
-        super.init(frame: .zero)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(tapGesture:)))
-        addGestureRecognizer(tapGesture)
-
-        let container = PillView()
-        container.backgroundColor = .ows_white
-        container.layoutMargins = UIEdgeInsets(top: 7, leading: 8, bottom: 7, trailing: 8)
-
-        addSubview(container)
-        container.autoPinEdgesToSuperviewMargins()
-
-        let stackView = UIStackView(arrangedSubviews: [badge, chevron])
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 9
-
-        container.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-    }
-
-    let numberFormatter: NumberFormatter = NumberFormatter()
-
-    func updateCount() {
-        guard let delegate = delegate else {
-            return
-        }
-
-        badgeLabel.text = numberFormatter.string(for: delegate.doneButtonCount)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    // MARK: - Subviews
-
-    private lazy var badge: UIView = {
-        let badge = PillView()
-        badge.layoutMargins = UIEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
-        badge.backgroundColor = .ows_accentBlue
-        badge.addSubview(badgeLabel)
-        badgeLabel.autoPinEdgesToSuperviewMargins()
-
-        return badge
-    }()
-
-    private lazy var badgeLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .ows_white
-        label.font = UIFont.ows_dynamicTypeSubheadline.ows_monospaced
-        label.textAlignment = .center
-        return label
-    }()
-
-    private lazy var chevron: UIView = {
-        let image: UIImage
-        if CurrentAppContext().isRTL {
-            image = #imageLiteral(resourceName: "small_chevron_left")
-        } else {
-            image = #imageLiteral(resourceName: "small_chevron_right")
-        }
-        let chevron = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
-        chevron.contentMode = .scaleAspectFit
-        chevron.tintColor = .ows_gray60
-        chevron.autoSetDimensions(to: CGSize(width: 10, height: 18))
-
-        return chevron
-    }()
-
-    @objc
-    func didTap(tapGesture: UITapGestureRecognizer) {
-        delegate?.doneButtonWasTapped(self)
     }
 }
