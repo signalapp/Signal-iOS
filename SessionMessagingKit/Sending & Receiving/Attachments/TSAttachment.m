@@ -241,6 +241,10 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     return [MIMETypeUtil isText:self.contentType];
 }
 
+- (BOOL)isMicrosoftDoc {
+    return [MIMETypeUtil isMicrosoftDoc:self.contentType];
+}
+
 - (BOOL)isOversizeText
 {
     return [self.contentType isEqualToString:OWSMimeTypeOversizeTextMessage];

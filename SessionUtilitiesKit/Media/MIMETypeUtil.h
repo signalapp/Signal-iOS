@@ -42,6 +42,7 @@ extern NSString *const kSyncMessageFileExtension;
 + (BOOL)isVideo:(NSString *)contentType;
 + (BOOL)isAudio:(NSString *)contentType;
 + (BOOL)isText:(NSString *)contentType;
++ (BOOL)isMicrosoftDoc:(NSString *)contentType;
 + (BOOL)isVisualMedia:(NSString *)contentType;
 
 // filename is optional and should not be trusted.
