@@ -279,6 +279,17 @@ NSString *const kSyncMessageFileExtension = @"bin";
     return [MIMETypeUtil isSupportedAudioMIMEType:contentType];
 }
 
++ (BOOL)isText:(NSString *)contentType {
+    return [
+        @[
+            @"text/plain",
+            @"text/csv",
+            @"text/tab-separated-values"
+        ]
+        containsObject:contentType
+    ];
+}
+
 + (BOOL)isVisualMedia:(NSString *)contentType
 {
     if ([self isImage:contentType]) {

@@ -472,7 +472,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                     confirmDownload()
                 }
-                else if viewItem.attachmentStream?.contentType == OWSMimeTypeApplicationPdf, let filePathString: String = viewItem.attachmentStream?.originalFilePath {
+                else if (viewItem.attachmentStream?.isText == true || viewItem.attachmentStream?.contentType == OWSMimeTypeApplicationPdf), let filePathString: String = viewItem.attachmentStream?.originalFilePath {
                     let fileUrl: URL = URL(fileURLWithPath: filePathString)
                     let interactionController: UIDocumentInteractionController = UIDocumentInteractionController(url: fileUrl)
                     interactionController.delegate = self
