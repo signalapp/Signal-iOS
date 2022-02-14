@@ -358,6 +358,13 @@ CGFloat kIconViewLength = 24;
             switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
             [switchView addTarget:strongSelf action:@selector(disappearingMessagesSwitchValueDidChange:)
                 forControlEvents:UIControlEventValueChanged];
+            
+            // Disable Disappearing Messages if the conversation hasn't been approved
+            if (!self.thread.isGroupThread) {
+                TSContactThread *thread = (TSContactThread *)self.thread;
+                SNContact *contact = [LKStorage.shared getContactWithSessionID:thread.contactSessionID];
+                [switchView setEnabled:contact.didApproveMe];
+            }
 
             UIStackView *topRow =
                 [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];

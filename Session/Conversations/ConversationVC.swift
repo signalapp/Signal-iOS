@@ -120,7 +120,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return result
     }()
     
-    lazy var snInputView = InputView(delegate: self)
+    lazy var snInputView: InputView = InputView(delegate: self)
     
     lazy var unreadCountView: UIView = {
         let result = UIView()
@@ -303,7 +303,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // Message requests view & scroll to bottom
         view.addSubview(footerControlsStackView)
         
-        scrollButton.translatesAutoresizingMaskIntoConstraints = false
         footerControlsStackView.addArrangedSubview(scrollButton)
         footerControlsStackView.addArrangedSubview(messageRequestView)
         
@@ -311,34 +310,33 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         messageRequestView.addSubview(messageRequestAcceptButton)
         messageRequestView.addSubview(messageRequestDeleteButton)
         
-        let footerControlsStackViewBottomConstraint: NSLayoutConstraint = footerControlsStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16)
-        self.footerControlsStackViewBottomConstraint = footerControlsStackViewBottomConstraint
+        scrollButton.pin(.right, to: .right, of: footerControlsStackView, withInset: -20)
+        messageRequestView.pin(.left, to: .left, of: footerControlsStackView)
+        messageRequestView.pin(.right, to: .right, of: footerControlsStackView)
+        footerControlsStackView.pin(.left, to: .left, of: view)
+        footerControlsStackView.pin(.right, to: .right, of: view)
+        self.footerControlsStackViewBottomConstraint = footerControlsStackView.pin(.bottom, to: .bottom, of: view, withInset: -16)
         
-        NSLayoutConstraint.activate([
-            footerControlsStackView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            footerControlsStackView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            footerControlsStackViewBottomConstraint,
-            
-            scrollButton.rightAnchor.constraint(equalTo: footerControlsStackView.rightAnchor, constant: -20),
-            messageRequestView.leftAnchor.constraint(equalTo: footerControlsStackView.leftAnchor),
-            messageRequestView.rightAnchor.constraint(equalTo: footerControlsStackView.rightAnchor),
-            
-            messageRequestDescriptionLabel.topAnchor.constraint(equalTo: messageRequestView.topAnchor, constant: 10),
-            messageRequestDescriptionLabel.leftAnchor.constraint(equalTo: messageRequestView.leftAnchor, constant: 40),
-            messageRequestDescriptionLabel.rightAnchor.constraint(equalTo: messageRequestView.rightAnchor, constant: -40),
-            
-            messageRequestAcceptButton.topAnchor.constraint(equalTo: messageRequestDescriptionLabel.bottomAnchor, constant: 20),
-            messageRequestAcceptButton.leftAnchor.constraint(equalTo: messageRequestView.leftAnchor, constant: 20),
-            messageRequestAcceptButton.bottomAnchor.constraint(equalTo: messageRequestView.bottomAnchor),
-            messageRequestAcceptButton.heightAnchor.constraint(equalToConstant: ConversationVC.messageRequestButtonHeight),
-            
-            messageRequestDeleteButton.topAnchor.constraint(equalTo: messageRequestDescriptionLabel.bottomAnchor, constant: 20),
-            messageRequestDeleteButton.leftAnchor.constraint(equalTo: messageRequestAcceptButton.rightAnchor, constant: 20),
-            messageRequestDeleteButton.rightAnchor.constraint(equalTo: messageRequestView.rightAnchor, constant: -20),
-            messageRequestDeleteButton.bottomAnchor.constraint(equalTo: messageRequestView.bottomAnchor),
-            messageRequestDeleteButton.widthAnchor.constraint(equalTo: messageRequestAcceptButton.widthAnchor),
-            messageRequestDeleteButton.heightAnchor.constraint(equalToConstant: ConversationVC.messageRequestButtonHeight)
-        ])
+        messageRequestDescriptionLabel.pin(.top, to: .top, of: messageRequestView, withInset: 10)
+        messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
+        messageRequestDescriptionLabel.pin(.right, to: .right, of: messageRequestView, withInset: -40)
+        
+        messageRequestAcceptButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
+        messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
+        messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
+        messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
+        
+        messageRequestAcceptButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
+        messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
+        messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
+        messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
+        
+        messageRequestDeleteButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
+        messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: 20)
+        messageRequestDeleteButton.pin(.right, to: .right, of: messageRequestView, withInset: -20)
+        messageRequestDeleteButton.pin(.bottom, to: .bottom, of: messageRequestView)
+        messageRequestDeleteButton.set(.width, to: .width, of: messageRequestAcceptButton)
+        messageRequestDeleteButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
         
         // Unread count view
         view.addSubview(unreadCountView)
@@ -372,8 +370,18 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
         
         // Update the input state if this is a contact thread
-        if let contactThread: TSContactThread = thread as? TSContactThread, let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()) {
-            self.snInputView.setEnabled(contact.didApproveMe, message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized())
+        if let contactThread: TSContactThread = thread as? TSContactThread {
+            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            
+            // If the contact doesn't exist yet then it's a message request without the first message sent
+            // so only allow text-based messages
+            self.snInputView.setEnabledMessageTypes(
+                (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
+                    .all :
+                    (contact != nil ? .none : .textOnly)
+                ),
+                message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized()
+            )
         }
         
         // Update member count if this is a V2 open group
@@ -619,8 +627,18 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
         
         // Update the input state if this is a contact thread
-        if let contactThread: TSContactThread = thread as? TSContactThread, let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()) {
-            self.snInputView.setEnabled(contact.didApproveMe, message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized())
+        if let contactThread: TSContactThread = thread as? TSContactThread {
+            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            
+            // If the contact doesn't exist yet then it's a message request without the first message sent
+            // so only allow text-based messages
+            self.snInputView.setEnabledMessageTypes(
+                (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
+                    .all :
+                    (contact != nil ? .none : .textOnly)
+                ),
+                message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized()
+            )
         }
     }
     

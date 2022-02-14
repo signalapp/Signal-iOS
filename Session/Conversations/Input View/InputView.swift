@@ -1,6 +1,13 @@
 import UIKit
+import SessionUIKit
 
 final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewDelegate, MentionSelectionViewDelegate {
+    enum MessageTypes {
+        case all
+        case textOnly
+        case none
+    }
+    
     private weak var delegate: InputViewDelegate?
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
@@ -17,9 +24,9 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         set { inputTextView.text = newValue }
     }
     
-    var isEnabled: Bool = true {
+    var enabledMessageTypes: MessageTypes = .all {
         didSet {
-            setEnabled(isEnabled, message: nil)
+            setEnabledMessageTypes(enabledMessageTypes, message: nil)
         }
     }
     
@@ -144,12 +151,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         
         addSubview(disabledInputLabel)
         
-        NSLayoutConstraint.activate([
-            disabledInputLabel.topAnchor.constraint(equalTo: mainStackView.topAnchor),
-            disabledInputLabel.leftAnchor.constraint(equalTo: mainStackView.leftAnchor),
-            disabledInputLabel.rightAnchor.constraint(equalTo: mainStackView.rightAnchor),
-            disabledInputLabel.heightAnchor.constraint(equalToConstant: InputViewButton.expandedSize)
-        ])
+        disabledInputLabel.pin(.top, to: .top, of: mainStackView)
+        disabledInputLabel.pin(.left, to: .left, of: mainStackView)
+        disabledInputLabel.pin(.right, to: .right, of: mainStackView)
+        disabledInputLabel.set(.height, to: InputViewButton.expandedSize)
         
         // Mentions
         insertSubview(mentionsViewContainer, belowSubview: mainStackView)
@@ -248,16 +253,26 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         }.retainUntilComplete()
     }
     
-    func setEnabled(_ enabled: Bool, message: String?) {
-        guard isEnabled != enabled else { return }
+    func setEnabledMessageTypes(_ messageTypes: MessageTypes, message: String?) {
+        guard enabledMessageTypes != messageTypes else { return }
         
-        isEnabled = enabled
+        enabledMessageTypes = messageTypes
         disabledInputLabel.text = (message ?? "")
         
+        attachmentsButton.isUserInteractionEnabled = (messageTypes == .all)
+        voiceMessageButton.isUserInteractionEnabled = (messageTypes == .all)
+        
         UIView.animate(withDuration: 0.3) { [weak self] in
-            self?.bottomStackView?.alpha = (enabled ? 1 : 0)
-            self?.voiceMessageButton.alpha = (enabled ? 1 : 0)
-            self?.disabledInputLabel.alpha = (enabled ? 0 : 1)
+            self?.bottomStackView?.alpha = (messageTypes != .none ? 1 : 0)
+            self?.attachmentsButton.alpha = (messageTypes == .all ?
+                1 :
+                (messageTypes == .textOnly ? 0.4 : 0)
+            )
+            self?.voiceMessageButton.alpha =  (messageTypes == .all ?
+                1 :
+                (messageTypes == .textOnly ? 0.4 : 0)
+            )
+            self?.disabledInputLabel.alpha = (messageTypes != .none ? 0 : 1)
         }
     }
     

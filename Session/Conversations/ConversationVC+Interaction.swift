@@ -317,8 +317,19 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         self.snInputView.text = ""
         self.snInputView.quoteDraftInfo = nil
         
-        if let contactThread: TSContactThread = thread as? TSContactThread, let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()) {
-            self.snInputView.setEnabled(contact.didApproveMe, message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized())
+        // Update the input state if this is a contact thread
+        if let contactThread: TSContactThread = thread as? TSContactThread {
+            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            
+            // If the contact doesn't exist yet then it's a message request without the first message sent
+            // so only allow text-based messages
+            self.snInputView.setEnabledMessageTypes(
+                (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
+                    .all :
+                    (contact != nil ? .none : .textOnly)
+                ),
+                message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized()
+            )
         }
         
         self.markAllAsRead()

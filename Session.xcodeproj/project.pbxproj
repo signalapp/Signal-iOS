@@ -778,14 +778,16 @@
 		FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */; };
 		FD5D201127AA331F00FEA984 /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */; };
 		FD659AC027A7649600F12C02 /* MessageRequestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD659ABF27A7649600F12C02 /* MessageRequestsViewController.swift */; };
-		FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */; };
-		FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */; };
 		FD705A8C278CDB5600F16121 /* SAEScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A8B278CDB5600F16121 /* SAEScreenLockViewController.swift */; };
 		FD705A8E278CE29800F16121 /* String+Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A8D278CE29800F16121 /* String+Localization.swift */; };
 		FD705A90278CEBBC00F16121 /* ShareAppExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A8F278CEBBC00F16121 /* ShareAppExtensionContext.swift */; };
 		FD705A92278D051200F16121 /* ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A91278D051200F16121 /* ReusableView.swift */; };
 		FD705A94278D052B00F16121 /* UITableView+ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A93278D052B00F16121 /* UITableView+ReusableView.swift */; };
 		FD705A98278E9F4D00F16121 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A97278E9F4D00F16121 /* UIColor+Extensions.swift */; };
+		FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */; };
+		FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */; };
+		FDC4389E27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; platformFilter = ios; };
+		FDC4389F27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -901,6 +903,13 @@
 			remoteGlobalIDString = C33FD9AA255A548A00E217F9;
 			remoteInfo = SignalUtilitiesKit;
 		};
+		FDC438A027BA2B8A00C60D73 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C3C2A678255388CC00C340D1;
+			remoteInfo = SessionUtilitiesKit;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -927,6 +936,17 @@
 				C3C2A5A7255385C100C340D1 /* SessionSnodeKit.framework in Embed Frameworks */,
 				C331FF232558F9D300070591 /* SessionUIKit.framework in Embed Frameworks */,
 				C3C2A6F825539DE700C340D1 /* SessionMessagingKit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDC438A227BA2B8A00C60D73 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				FDC4389F27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1812,14 +1832,14 @@
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
 		FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
 		FD659ABF27A7649600F12C02 /* MessageRequestsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsViewController.swift; sourceTree = "<group>"; };
-		FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsCell.swift; sourceTree = "<group>"; };
-		FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
 		FD705A8B278CDB5600F16121 /* SAEScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SAEScreenLockViewController.swift; sourceTree = "<group>"; };
 		FD705A8D278CE29800F16121 /* String+Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localization.swift"; sourceTree = "<group>"; };
 		FD705A8F278CEBBC00F16121 /* ShareAppExtensionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareAppExtensionContext.swift; sourceTree = "<group>"; };
 		FD705A91278D051200F16121 /* ReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableView.swift; sourceTree = "<group>"; };
 		FD705A93278D052B00F16121 /* UITableView+ReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableView.swift"; sourceTree = "<group>"; };
 		FD705A97278E9F4D00F16121 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
+		FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsCell.swift; sourceTree = "<group>"; };
+		FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
 		FD9039443F7CB729CF71350E /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -1892,6 +1912,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDC4389E27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Frameworks */,
 				C3C2A70B25539E1E00C340D1 /* SessionSnodeKit.framework in Frameworks */,
 				9B0A583E9B89FEF0916B793A /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionMessagingKit.framework in Frameworks */,
 			);
@@ -3928,10 +3949,12 @@
 				C3C2A6EC25539DE700C340D1 /* Sources */,
 				C3C2A6ED25539DE700C340D1 /* Frameworks */,
 				C3C2A6EE25539DE700C340D1 /* Resources */,
+				FDC438A227BA2B8A00C60D73 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FDC438A127BA2B8A00C60D73 /* PBXTargetDependency */,
 			);
 			name = SessionMessagingKit;
 			productName = SessionMessagingKit;
@@ -5091,6 +5114,12 @@
 			isa = PBXTargetDependency;
 			target = C33FD9AA255A548A00E217F9 /* SignalUtilitiesKit */;
 			targetProxy = C3D90A7025773A44002C9DF5 /* PBXContainerItemProxy */;
+		};
+		FDC438A127BA2B8A00C60D73 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			platformFilter = ios;
+			target = C3C2A678255388CC00C340D1 /* SessionUtilitiesKit */;
+			targetProxy = FDC438A027BA2B8A00C60D73 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
