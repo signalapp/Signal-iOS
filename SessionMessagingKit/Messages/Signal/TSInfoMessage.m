@@ -111,7 +111,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     if ([thread isKindOfClass: [TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         NSString *sessionID = contactThread.contactSessionID;
-        NSString *name = contactThread.name;
+        NSString *name = [contactThread nameWithTransaction:transaction];
         if ([name isEqual:sessionID]) {
             name = [NSString stringWithFormat:@"%@...%@", [sessionID substringToIndex:4], [sessionID substringFromIndex:sessionID.length - 4]];
         }
