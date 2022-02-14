@@ -13,6 +13,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         }
     }
     var recentSearchResults: [String] = Array(Storage.shared.getRecentSearchResults().reversed())
+    var defaultSearchResults: HomeScreenSearchResultSet = HomeScreenSearchResultSet.noteToSelfOnly
     var searchResultSet: HomeScreenSearchResultSet = HomeScreenSearchResultSet.empty
     private var lastSearchText: String?
     var searcher: FullTextSearcher {
@@ -106,30 +107,10 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     var refreshTimer: Timer?
     
     private func refreshSearchResults() {
-
-        guard !searchResultSet.isEmpty else {
-            // To avoid incorrectly showing the "no results" state,
-            // always search immediately if the current result set is empty.
-            refreshTimer?.invalidate()
-            refreshTimer = nil
-
-            updateSearchResults(searchText: searchText)
-            return
-        }
-
-        if refreshTimer != nil {
-            // Don't start a new refresh timer if there's already one active.
-            return
-        }
-
         refreshTimer?.invalidate()
         refreshTimer = WeakTimer.scheduledTimer(timeInterval: 0.1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
-            guard let self = self else {
-                return
-            }
-
+            guard let self = self else { return }
             self.updateSearchResults(searchText: self.searchText)
-            self.refreshTimer = nil
         }
     }
     
@@ -137,7 +118,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
         let searchText = rawSearchText.stripped
         guard searchText.count > 0 else {
-            searchResultSet = HomeScreenSearchResultSet.noteToSelfOnly
+            searchResultSet = defaultSearchResults
             lastSearchText = nil
             reloadTableData()
             return
@@ -159,6 +140,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
             self.searchResultSet = results
             self.isLoading = false
             self.reloadTableData()
+            self.refreshTimer = nil
         })
     }
     
