@@ -256,10 +256,12 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 }
             }
         }
+        setupOrientationMonitoring()
         NotificationCenter.default.addObserver(self, selector: #selector(audioRouteDidChange), name: AVAudioSession.routeChangeNotification, object: nil)
     }
     
     deinit {
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -334,6 +336,41 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         super.viewWillDisappear(animated)
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.stop() }
         localVideoView.removeFromSuperview()
+    }
+    
+    // MARK: - Orientation
+
+    private func setupOrientationMonitoring() {
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self, selector: #selector(didChangeDeviceOrientation), name: UIDevice.orientationDidChangeNotification, object: UIDevice.current)
+    }
+    
+    @objc func didChangeDeviceOrientation(notification: Notification) {
+        
+        func rotateAllButtons(rotationAngle: CGFloat) {
+            let transform = CGAffineTransform(rotationAngle: rotationAngle)
+            UIView.animate(withDuration: 0.2) {
+                self.answerButton.transform = transform
+                self.hangUpButton.transform = transform
+                self.switchAudioButton.transform = transform
+                self.switchCameraButton.transform = transform
+                self.videoButton.transform = transform
+                self.volumeView.transform = transform
+            }
+        }
+        
+        switch UIDevice.current.orientation {
+        case .portrait:
+            rotateAllButtons(rotationAngle: 0)
+        case .portraitUpsideDown:
+            rotateAllButtons(rotationAngle: .pi)
+        case .landscapeLeft:
+            rotateAllButtons(rotationAngle: .halfPi)
+        case .landscapeRight:
+            rotateAllButtons(rotationAngle: .pi + .halfPi)
+        default:
+            break
+        }
     }
     
     // MARK: Call signalling
