@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPreferences.h"
@@ -50,6 +50,7 @@ NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
 NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlurTooltipShown";
 NSString *const OWSPreferencesKeyWasGroupCallTooltipShown = @"OWSPreferencesKeyWasGroupCallTooltipShown";
 NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreferencesKeyWasGroupCallTooltipShownCount";
+NSString *const OWSPreferencesKeyDeviceScale = @"OWSPreferencesKeyDeviceScale";
 
 @interface OWSPreferences ()
 
@@ -72,6 +73,13 @@ NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreference
     _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPreferencesSignalDatabaseCollection];
 
     OWSSingletonAssert();
+
+    // In the NSE, the main screen scale is inaccurate so we need to record it
+    // when we're in a context that has a valid UI / screen for use later.
+    if (CurrentAppContext().hasUI) {
+        [CurrentAppContext().appUserDefaults setObject:@(UIScreen.mainScreen.scale)
+                                                forKey:OWSPreferencesKeyDeviceScale];
+    }
 
     return self;
 }
@@ -304,6 +312,17 @@ NSString *const OWSPreferencesKeyWasGroupCallTooltipShownCount = @"OWSPreference
 - (void)setShouldNotifyOfNewAccounts:(BOOL)newValue transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.keyValueStore setBool:newValue key:OWSPreferencesKeyShouldNotifyOfNewAccountKey transaction:transaction];
+}
+
+- (CGFloat)cachedDeviceScale
+{
+    NSNumber *scale = [CurrentAppContext().appUserDefaults objectForKey:OWSPreferencesKeyDeviceScale];
+
+    if (!scale || CurrentAppContext().hasUI) {
+        return UIScreen.mainScreen.scale;
+    }
+
+    return scale.floatValue;
 }
 
 #pragma mark - Calling

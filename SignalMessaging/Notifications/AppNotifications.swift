@@ -265,7 +265,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         var interaction: INInteraction?
         if #available(iOS 15, *),
             previewType != .noNameNoPreview,
-            let intent = thread.generateStartCallIntent() {
+            let intent = thread.generateStartCallIntent(callerAddress: remoteAddress) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -315,7 +315,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         var interaction: INInteraction?
         if #available(iOS 15, *),
             previewType != .noNameNoPreview,
-            let intent = thread.generateStartCallIntent() {
+            let intent = thread.generateStartCallIntent(callerAddress: remoteAddress) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -848,12 +848,39 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.messageId: previewableInteraction.uniqueId,
             AppNotificationUserInfoKey.defaultAction: preferredDefaultAction.rawValue
         ]
+
+        // Some types of generic messages (locally generated notifications) have a defacto
+        // "sender". If so, generate an interaction so the notification renders as if it
+        // is from that user.
         var interaction: INInteraction?
-        if previewType != .noNameNoPreview,
-            let intent = thread.generateSendMessageIntent(transaction: transaction, sender: nil) {
-            let wrapper = INInteraction(intent: intent, response: nil)
-            wrapper.direction = .incoming
-            interaction = wrapper
+        if previewType != .noNameNoPreview {
+            func wrapIntent(_ intent: INIntent) {
+                let wrapper = INInteraction(intent: intent, response: nil)
+                wrapper.direction = .incoming
+                interaction = wrapper
+            }
+
+            if let infoMessage = previewableInteraction as? TSInfoMessage {
+                switch infoMessage.messageType {
+                case .typeGroupUpdate:
+                    if let groupUpdateAuthor = infoMessage.infoMessageUserInfo?[.groupUpdateSourceAddress] as? SignalServiceAddress,
+                       let intent = thread.generateSendMessageIntent(transaction: transaction, sender: groupUpdateAuthor) {
+                        wrapIntent(intent)
+                    }
+                case .userJoinedSignal:
+                    if let thread = thread as? TSContactThread,
+                        let intent = thread.generateSendMessageIntent(transaction: transaction, sender: thread.contactAddress) {
+                        wrapIntent(intent)
+                    }
+                default:
+                    break
+                }
+            } else if #available(iOS 15, *),
+                      let callMessage = previewableInteraction as? OWSGroupCallMessage,
+                      let callCreator = callMessage.creatorAddress,
+                      let intent = thread.generateSendMessageIntent(transaction: transaction, sender: callCreator) {
+                wrapIntent(intent)
+            }
         }
 
         notifyInAsyncCompletion(transaction: transaction) { completion in

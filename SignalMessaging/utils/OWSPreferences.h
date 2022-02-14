@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -71,6 +71,8 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setShouldNotifyOfNewAccounts:(BOOL)newValue
                          transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(shouldNotifyOfNewAccounts(_:transaction:));
+
+@property (nonatomic, readonly) CGFloat cachedDeviceScale;
 
 - (BOOL)wasViewOnceTooltipShown;
 - (void)setWasViewOnceTooltipShown;
