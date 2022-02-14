@@ -4,7 +4,8 @@ extension OpenGroupAPIV2 {
 
     @objc(deleteMessageWithServerID:fromRoom:onServer:)
     public static func objc_deleteMessage(with serverID: Int64, from room: String, on server: String) -> AnyPromise {
-        return AnyPromise.from(deleteMessage(with: serverID, from: room, on: server))
+        // TODO: Upgrade this to use the non-legacy version
+        return AnyPromise.from(legacyDeleteMessage(with: serverID, from: room, on: server))
     }
 
     @objc(isUserModerator:forRoom:onServer:)

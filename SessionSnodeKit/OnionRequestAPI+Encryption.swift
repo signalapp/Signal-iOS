@@ -14,29 +14,62 @@ internal extension OnionRequestAPI {
     }
 
     /// Encrypts `payload` for `destination` and returns the result. Use this to build the core of an onion request.
+    static func encrypt(_ payload: String, for destination: Destination) -> Promise<AESGCM.EncryptionResult> {
+        let (promise, seal) = Promise<AESGCM.EncryptionResult>.pending()
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                guard let data = payload.data(using: .utf8) else {
+                    throw Error.invalidRequestInfo
+                }
+                
+                let result = try encrypt(data, for: destination)
+                seal.fulfill(result)
+            }
+            catch (let error) {
+                seal.reject(error)
+            }
+        }
+        
+        return promise
+    }
+    
     static func encrypt(_ payload: JSON, for destination: Destination) -> Promise<AESGCM.EncryptionResult> {
         let (promise, seal) = Promise<AESGCM.EncryptionResult>.pending()
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 guard JSONSerialization.isValidJSONObject(payload) else { return seal.reject(HTTP.Error.invalidJSON) }
+                
                 // Wrapping isn't needed for file server or open group onion requests
                 switch destination {
-                case .snode(let snode):
-                    let snodeX25519PublicKey = snode.publicKeySet.x25519Key
-                    let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
-                    let plaintext = try encode(ciphertext: payloadAsData, json: [ "headers" : "" ])
-                    let result = try AESGCM.encrypt(plaintext, for: snodeX25519PublicKey)
-                    seal.fulfill(result)
-                case .server(_, _, let serverX25519PublicKey, _, _):
-                    let plaintext = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
-                    let result = try AESGCM.encrypt(plaintext, for: serverX25519PublicKey)
-                    seal.fulfill(result)
+                    case .snode:
+                        let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
+                        let data = try encode(ciphertext: payloadAsData, json: [ "headers" : "" ])
+                        let result = try encrypt(data, for: destination)
+                        seal.fulfill(result)
+                        
+                    case .server:
+                        let data = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
+                        let result = try encrypt(data, for: destination)
+                        seal.fulfill(result)
                 }
-            } catch (let error) {
+            }
+            catch (let error) {
                 seal.reject(error)
             }
         }
+        
         return promise
+    }
+    
+    private static func encrypt(_ payload: Data, for destination: Destination) throws -> AESGCM.EncryptionResult {
+        switch destination {
+            case .snode(let snode):
+                let snodeX25519PublicKey = snode.publicKeySet.x25519Key
+                return try AESGCM.encrypt(payload, for: snodeX25519PublicKey)
+                
+            case .server(_, _, let serverX25519PublicKey, _, _):
+                return try AESGCM.encrypt(payload, for: serverX25519PublicKey)
+        }
     }
 
     /// Encrypts the previous encryption result (i.e. that of the hop after this one) for this hop. Use this to build the layers of an onion request.

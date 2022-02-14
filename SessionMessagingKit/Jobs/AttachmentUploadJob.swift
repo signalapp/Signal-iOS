@@ -69,7 +69,16 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         guard !stream.isUploaded else { return handleSuccess() } // Should never occur
         let storage = SNMessagingKitConfiguration.shared.storage
         if let v2OpenGroup = storage.getV2OpenGroup(for: threadID) {
-            AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: handleSuccess, onFailure: handleFailure)
+            AttachmentUploadJob.upload(
+                stream,
+                using: { data in
+                    // TODO: Upgrade this to use the non-legacy version
+                    return OpenGroupAPIV2.legacyUpload(data, to: v2OpenGroup.room, on: v2OpenGroup.server)
+                },
+                encrypt: false,
+                onSuccess: handleSuccess,
+                onFailure: handleFailure
+            )
         } else {
             AttachmentUploadJob.upload(stream, using: FileServerAPIV2.upload, encrypt: true, onSuccess: handleSuccess, onFailure: handleFailure)
         }

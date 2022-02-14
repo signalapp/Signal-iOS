@@ -216,6 +216,7 @@ public final class MessageSender : NSObject {
             handleFailure(with: error, using: transaction)
             return promise
         }
+        
         // Send the result
         let base64EncodedData = wrappedMessage.base64EncodedString()
         let timestamp = UInt64(Int64(message.sentTimestamp!) + SnodeAPI.clockOffset)
@@ -280,6 +281,7 @@ public final class MessageSender : NSObject {
         let (promise, seal) = Promise<Void>.pending()
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        
         // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
@@ -371,37 +373,30 @@ public final class MessageSender : NSObject {
             preconditionFailure()
         }
 
-//        let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, sentTimestamp: message.sentTimestamp!,
-//            base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
+        OpenGroupAPIV2
+            .send(
+                plaintext,
+                to: room,
+                on: server,
+                whisperTo: whisperTo,
+                whisperMods: whisperMods,
+                with: openGroupV2.publicKey
+            )
+            .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
+                message.openGroupServerMessageID = given(data.seqNo) { UInt64($0) }
 
-        //OpenGroupAPIV2.send(openGroupMessage, to: room, on: server, with: openGroupV2.publicKey)
-        return promise  // TODO: Remove!!!
-//        OpenGroupAPIV2
-//            .send(
-//                plaintext,
-//                to: room,
-//                on: server,
-//                whisperTo: whisperTo,
-//                whisperMods: whisperMods,
-//                with: openGroupV2.publicKey
-//            )
-//            .done(on: DispatchQueue.global(qos: .userInitiated)) { response in
-//                print("RAWR")
-////                message.openGroupServerMessageID = given(response.serverID) { UInt64($0) }
-////                storage.write(with: { transaction in
-////                    Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp, using: transaction)
-////
-////                    MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: response.sentTimestamp, using: transaction)
-////                    seal.fulfill(())
-////                }, completion: { })
-//            }
-//            .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-//                storage.write(with: { transaction in
-//                    handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
-//                }, completion: { })
-//            }
-//        // Return
-//        return promise
+                Storage.shared.write { transaction in
+                    MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: UInt64(floor(data.posted)), using: transaction)
+                    seal.fulfill(())
+                }
+            }
+            .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                storage.write(with: { transaction in
+                    handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
+                }, completion: { })
+            }
+        
+        return promise
     }
 
     // MARK: Success & Failure Handling

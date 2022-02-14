@@ -79,7 +79,7 @@ public final class OpenGroupManagerV2 : NSObject {
 //            }
             
             OpenGroupAPIV2.room(for: room, on: server)
-                .done(on: DispatchQueue.global(qos: .userInitiated)) { room in
+                .done(on: DispatchQueue.global(qos: .userInitiated)) { _, room in
                     // Create the open group model and the thread
                     let openGroup: OpenGroupV2 = OpenGroupV2(
                         server: server,

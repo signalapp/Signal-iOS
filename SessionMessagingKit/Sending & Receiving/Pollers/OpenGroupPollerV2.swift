@@ -47,25 +47,22 @@ public final class OpenGroupPollerV2 : NSObject {
         let (promise, seal) = Promise<Void>.pending()
         promise.retainUntilComplete()
         
-        // TODO: Update to use the non-legacy version
-//        OpenGroupAPIV2.compactPoll(server)
-        OpenGroupAPIV2.legacyCompactPoll(server)
-            .done(on: OpenGroupAPIV2.workQueue) { [weak self] response in
-                guard let self = self else { return }
-                self.isPolling = false
-                response.results.forEach { self.handleCompactPollBody($0, isBackgroundPoll: isBackgroundPoll) }
+        OpenGroupAPIV2.poll(server)
+            .done(on: OpenGroupAPIV2.workQueue) { [weak self] _ in
+                self?.isPolling = false
+                // TODO: Handle response
                 seal.fulfill(())
             }
-            .catch(on: OpenGroupAPIV2.workQueue) { error in
+            .catch(on: OpenGroupAPIV2.workQueue) { [weak self] error in
                 SNLog("Open group polling failed due to error: \(error).")
-                self.isPolling = false
+                self?.isPolling = false
                 seal.fulfill(()) // The promise is just used to keep track of when we're done
             }
         
         return promise
     }
 
-    private func handleCompactPollBody(_ body: OpenGroupAPIV2.CompactPollResponse.Result, isBackgroundPoll: Bool) {
+    private func handleCompactPollBody(_ body: OpenGroupAPIV2.LegacyCompactPollResponse.Result, isBackgroundPoll: Bool) {
         let storage = SNMessagingKitConfiguration.shared.storage
         // - Messages
         // Sorting the messages by server ID before importing them fixes an issue where messages that quote older messages can't find those older messages

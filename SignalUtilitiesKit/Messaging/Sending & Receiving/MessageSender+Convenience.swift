@@ -48,7 +48,8 @@ extension MessageSender {
                 AttachmentUploadJob.upload(
                     stream,
                     using: { data in
-                        OpenGroupAPIV2.upload(
+                        // TODO: Update to non-legacy version
+                        OpenGroupAPIV2.legacyUpload(
                             data,
                             to: v2OpenGroup.room,
                             on: v2OpenGroup.server
@@ -94,7 +95,8 @@ extension MessageSender {
                 AttachmentUploadJob.upload(
                     stream,
                     using: { data in
-                        OpenGroupAPIV2.upload(
+                        // TODO: Update to non-legacy version
+                        OpenGroupAPIV2.legacyUpload(
                             data,
                             to: v2OpenGroup.room,
                             on: v2OpenGroup.server

@@ -1,20 +1,9 @@
-import Foundation
 import CryptoSwift
 import PromiseKit
 import SessionUtilitiesKit
 
-public protocol OnionRequestAPIType {
-    static func sendOnionRequest(_ request: URLRequest, to server: String, target: String, using x25519PublicKey: String) -> Promise<(OnionRequestAPI.ResponseInfo, Data?)>
-}
-
-public extension OnionRequestAPIType {
-    static func sendOnionRequest(_ request: URLRequest, to server: String, using x25519PublicKey: String) -> Promise<(OnionRequestAPI.ResponseInfo, Data?)> {
-        sendOnionRequest(request, to: server, target: "/oxen/v4/lsrpc", using: x25519PublicKey)
-    }
-}
-
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
-public enum OnionRequestAPI: OnionRequestAPIType {
+public enum LegacyOnionRequestAPI: OnionRequestAPIType {
     private static var buildPathsPromise: Promise<[Path]>? = nil
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     private static var pathFailureCount: [Path:UInt] = [:]
@@ -23,7 +12,6 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var guardSnodes: Set<Snode> = []
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
-
     // MARK: Settings
     public static let maxRequestSize = 10_000_000 // 10 MB
     /// The number of snodes (including the guard snode) in a path.
@@ -37,29 +25,15 @@ public enum OnionRequestAPI: OnionRequestAPIType {
 
     /// The number of guard snodes required to maintain `targetPathCount` paths.
     private static var targetGuardSnodeCount: UInt { return targetPathCount } // One per path
-
-    // MARK: Destination
-    public enum Destination : CustomStringConvertible {
-        case snode(Snode)
-        case server(host: String, target: String, x25519PublicKey: String, scheme: String?, port: UInt16?)
-        
-        public var description: String {
-            switch self {
-            case .snode(let snode): return "Service node \(snode.ip):\(snode.port)"
-            case .server(let host, _, _, _, _): return host
-            }
-        }
-    }
-
+    
     // MARK: Error
     public enum Error : LocalizedError {
-        case httpRequestFailedAtDestination(statusCode: UInt, json: JSON, destination: Destination)
+        case httpRequestFailedAtDestination(statusCode: UInt, json: JSON, destination: OnionRequestAPI.Destination)
         case insufficientSnodes
         case invalidURL
         case missingSnodeVersion
         case snodePublicKeySetMissing
         case unsupportedSnodeVersion(String)
-        case invalidRequestInfo
 
         public var errorDescription: String? {
             switch self {
@@ -74,21 +48,8 @@ public enum OnionRequestAPI: OnionRequestAPIType {
             case .missingSnodeVersion: return "Missing Service Node version."
             case .snodePublicKeySetMissing: return "Missing Service Node public key set."
             case .unsupportedSnodeVersion(let version): return "Unsupported Service Node version: \(version)."
-            case .invalidRequestInfo: return "Invalid Request Info"
             }
         }
-    }
-    
-    // MARK: RequestInfo
-    private struct RequestInfo: Codable {
-        let method: String
-        let endpoint: String
-        let headers: [String: String]
-    }
-    
-    public struct ResponseInfo: Codable {
-        let code: Int
-        let headers: [String: String]
     }
 
     // MARK: Path
@@ -251,7 +212,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         // We repair the path here because we can do it sync. In the case where we drop a whole
         // path we leave the re-building up to getPath(excluding:) because re-building the path
         // in that case is async.
-        OnionRequestAPI.snodeFailureCount[snode] = 0
+        LegacyOnionRequestAPI.snodeFailureCount[snode] = 0
         var oldPaths = paths
         guard let pathIndex = oldPaths.firstIndex(where: { $0.contains(snode) }) else { return }
         var path = oldPaths[pathIndex]
@@ -275,8 +236,8 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
-        OnionRequestAPI.pathFailureCount[path] = 0
-        var paths = OnionRequestAPI.paths
+        LegacyOnionRequestAPI.pathFailureCount[path] = 0
+        var paths = LegacyOnionRequestAPI.paths
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
         OnionRequestAPI.paths = paths
@@ -292,7 +253,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: String, targetedAt destination: Destination) -> Promise<OnionBuildingResult> {
+    private static func buildOnion(around payload: JSON, targetedAt destination: OnionRequestAPI.Destination) -> Promise<OnionBuildingResult> {
         var guardSnode: Snode!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the destination
         var encryptionResult: AESGCM.EncryptionResult!
@@ -301,7 +262,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         return getPath(excluding: snodeToExclude).then2 { path -> Promise<AESGCM.EncryptionResult> in
             guardSnode = path.first!
             // Encrypt in reverse order, i.e. the destination first
-            return encrypt(payload, for: destination).then2 { r -> Promise<AESGCM.EncryptionResult> in
+            return OnionRequestAPI.encrypt(payload, for: destination).then2 { r -> Promise<AESGCM.EncryptionResult> in
                 targetSnodeSymmetricKey = r.symmetricKey
                 // Recursively encrypt the layers of the onion (again in reverse order)
                 encryptionResult = r
@@ -311,7 +272,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     if path.isEmpty {
                         return Promise<AESGCM.EncryptionResult> { $0.fulfill(encryptionResult) }
                     } else {
-                        let lhs = Destination.snode(path.removeLast())
+                        let lhs = OnionRequestAPI.Destination.snode(path.removeLast())
                         return OnionRequestAPI.encryptHop(from: lhs, to: rhs, using: encryptionResult).then2 { r -> Promise<AESGCM.EncryptionResult> in
                             encryptionResult = r
                             rhs = lhs
@@ -325,77 +286,66 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     }
 
     // MARK: Public API
-//    /// Sends an onion request to `snode`. Builds new paths as needed.
-//    public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<Data> {
-//        let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
-//        return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<Data> in
-//            guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json, _) = error else { throw error }
-//            throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
-//        }
-//    }
-
+    /// Sends an onion request to `snode`. Builds new paths as needed.
+    public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<JSON> {
+        let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
+        return sendOnionRequest(with: payload, to: OnionRequestAPI.Destination.snode(snode)).recover2 { error -> Promise<JSON> in
+            guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json, _) = error else { throw error }
+            throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
+        }
+    }
+    
     /// Sends an onion request to `server`. Builds new paths as needed.
-    public static func sendOnionRequest(_ request: URLRequest, to server: String, target: String = "/oxen/v4/lsrpc", using x25519PublicKey: String) -> Promise<(ResponseInfo, Data?)> {
-        guard server == "https://chat.lokinet.dev" else {  // TODO: Remove this
-            return LegacyOnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v3/lsrpc", using: x25519PublicKey)
+    public static func sendOnionRequest(_ request: URLRequest, to server: String, target: String = "/loki/v3/lsrpc", using x25519PublicKey: String) -> Promise<(OnionRequestAPI.ResponseInfo, Data?)> {
+        var rawHeaders = request.allHTTPHeaderFields ?? [:]
+        rawHeaders.removeValue(forKey: "User-Agent")
+        var headers: JSON = rawHeaders.mapValues { value in
+            switch value.lowercased() {
+            case "true": return true
+            case "false": return false
+            default: return value
+            }
         }
         guard let url = request.url, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
-        
-        // Note: We need to remove the leading forward slash unless we are explicitly hitting a legacy
-        // endpoint (in which case we need it to ensure the request signing works correctly
-        // TODO: Confirm the 'removingPrefix' isn't going to break the request signing on non-legacy endpoints.
-        let endpoint: String = url.path
-            .appending(url.query.map { value in "?\(value)" })
-        let scheme: String? = url.scheme
-        let port: UInt16? = url.port.map { UInt16($0) }
-        
-        let requestInfo: RequestInfo = RequestInfo(
-            method: (request.httpMethod ?? "GET"),   // Default (if nil) is 'GET'
-            endpoint: endpoint,
-            headers: (request.allHTTPHeaderFields ?? [:])
-                .setting(
-                    "Content-Type",
-                    // TODO: Determine what 'Content-Type' 'httpBodyStream' should have???
-                    (request.httpBody == nil && request.httpBodyStream == nil ? nil :
-                        ((request.allHTTPHeaderFields ?? [:])["Content-Type"] ?? "application/json")    // Default to JSON if not defined
-                    )
-                )
-                .removingValue(forKey: "User-Agent")
-        )
-        
-        guard let requestInfoData: Data = try? JSONEncoder().encode(requestInfo), let requestInfoString: String = String(data: requestInfoData, encoding: .ascii) else {
-            return Promise(error: Error.invalidRequestInfo)
-        }
-        
-        let payload: String
+        var endpoint = url.path.removingPrefix("/")
+        if let query = url.query { endpoint += "?\(query)" }
+        let scheme = url.scheme
+        let port = given(url.port) { UInt16($0) }
+        let bodyAsString: String
         
         if let body: Data = request.httpBody {
-            guard let bodyString: String = String(data: body, encoding: .ascii) else {
-                return Promise(error: Error.invalidRequestInfo)
-            }
-            
-            payload = "l\(requestInfoString.count):\(requestInfoString)\(bodyString.count):\(bodyString)e"
+            headers["Content-Type"] = "application/json"    // Assume data is JSON
+            bodyAsString = (String(data: body, encoding: .utf8) ?? "null")
         }
-        else if let inputStream: InputStream = request.httpBodyStream, let body: Data = try? Data(from: inputStream), let bodyString: String = String(data: body, encoding: .ascii) {
-            // TODO: Handle this properly
-//            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
-//            bodyAsString = "{ \"fileUpload\" : \"\(String(data: body.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
-            payload = "l\(requestInfoString.count):\(requestInfoString)\(bodyString.count):\(bodyString)e"
+        else if let inputStream: InputStream = request.httpBodyStream, let body: Data = try? Data(from: inputStream) {
+            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
+            bodyAsString = "{ \"fileUpload\" : \"\(String(data: body.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
         }
         else {
-            payload = "l\(requestInfoString.count):\(requestInfoString)e"
+            bodyAsString = "null"
         }
         
-        let destination = Destination.server(host: host, target: target, x25519PublicKey: x25519PublicKey, scheme: scheme, port: port)
+        let payload: JSON = [
+            "body" : bodyAsString,
+            "endpoint" : endpoint,
+            "method" : request.httpMethod!,
+            "headers" : headers
+        ]
+        let destination = OnionRequestAPI.Destination.server(host: host, target: target, x25519PublicKey: x25519PublicKey, scheme: scheme, port: port)
         let promise = sendOnionRequest(with: payload, to: destination)
+            .map { (json: JSON) -> (OnionRequestAPI.ResponseInfo, Data?) in
+                guard let data = try? JSONSerialization.data(withJSONObject: json, options: []) else { throw HTTP.Error.invalidJSON }
+                
+                return (OnionRequestAPI.ResponseInfo(code: 200, headers: [:]), data)
+            }
         promise.catch2 { error in
             SNLog("Couldn't reach server: \(url) due to error: \(error).")
         }
         return promise
     }
 
-    public static func sendOnionRequest(with payload: String, to destination: Destination) -> Promise<(ResponseInfo, Data?)> {
-        let (promise, seal) = Promise<(ResponseInfo, Data?)>.pending()
+    public static func sendOnionRequest(with payload: JSON, to destination: OnionRequestAPI.Destination) -> Promise<JSON> {
+        let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
@@ -403,7 +353,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 let url = "\(guardSnode!.address):\(guardSnode!.port)/onion_req/v2"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
                 let onion = finalEncryptionResult.ciphertext
-                if case Destination.server = destination, Double(onion.count) > 0.75 * Double(maxRequestSize) {
+                if case OnionRequestAPI.Destination.server = destination, Double(onion.count) > 0.75 * Double(maxRequestSize) {
                     SNLog("Approaching request size limit: ~\(onion.count) bytes.")
                 }
                 let parameters: JSON = [
@@ -411,163 +361,95 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 ]
                 let body: Data
                 do {
-                    body = try encode(ciphertext: onion, json: parameters)
+                    body = try OnionRequestAPI.encode(ciphertext: onion, json: parameters)
                 } catch {
                     return seal.reject(error)
                 }
                 let destinationSymmetricKey = intermediate.destinationSymmetricKey
-                
-                HTTP.updatedExecute(.post, url, body: body)
-                    .done2 { responseData in
-                        guard responseData.count >= AESGCM.ivSize else { return seal.reject(HTTP.Error.invalidResponse) }
-                        
-                        do {
-                            let data: Data = try AESGCM.decrypt(responseData, with: destinationSymmetricKey)
-                            
-                            // The data will be in the form of `l123:jsone` or `l123:json456:bodye` so we need to break the data into
-                            // parts to properly process it
-                            guard let responseString: String = String(data: data, encoding: .ascii), responseString.starts(with: "l") else {
-                                return seal.reject(HTTP.Error.invalidResponse)
+                HTTP.execute(.post, url, body: body).done2 { json in
+                    guard let base64EncodedIVAndCiphertext = json["result"] as? String,
+                        let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext), ivAndCiphertext.count >= AESGCM.ivSize else { return seal.reject(HTTP.Error.invalidJSON) }
+                    do {
+                        let data = try AESGCM.decrypt(ivAndCiphertext, with: destinationSymmetricKey)
+                        guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
+                            let statusCode = json["status_code"] as? Int ?? json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
+                        if statusCode == 406 { // Clock out of sync
+                            SNLog("The user's clock is out of sync with the service node network.")
+                            seal.reject(SnodeAPI.Error.clockOutOfSync)
+                        } else if let bodyAsString = json["body"] as? String {
+                            guard let bodyAsData = bodyAsString.data(using: .utf8),
+                            let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
+                            if let timestamp = body["t"] as? Int64 {
+                                let offset = timestamp - Int64(NSDate.millisecondTimestamp())
+                                SnodeAPI.clockOffset = offset
                             }
-                            
-                            let stringParts: [String.SubSequence] = responseString.split(separator: ":")
-                            
-                            guard stringParts.count > 1, let infoLength: Int = Int(stringParts[0].suffix(from: stringParts[0].index(stringParts[0].startIndex, offsetBy: 1))) else {
-                                return seal.reject(HTTP.Error.invalidResponse)
+                            guard 200...299 ~= statusCode else {
+                                return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body, destination: destination))
                             }
-                            
-                            let infoStringStartIndex: String.Index = responseString.index(responseString.startIndex, offsetBy: "l\(infoLength):".count)
-                            let infoStringEndIndex: String.Index = responseString.index(infoStringStartIndex, offsetBy: infoLength)
-                            let infoString: String = String(responseString[infoStringStartIndex..<infoStringEndIndex])
-
-                            guard let infoStringData: Data = infoString.data(using: .utf8), let responseInfo: ResponseInfo = try? JSONDecoder().decode(ResponseInfo.self, from: infoStringData) else {
-                                return seal.reject(HTTP.Error.invalidResponse)
+                            seal.fulfill(body)
+                        } else {
+                            guard 200...299 ~= statusCode else {
+                                return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json, destination: destination))
                             }
-
-                            // Custom handle a clock out of sync error
-                            guard responseInfo.code != 406 else {
-                                SNLog("The user's clock is out of sync with the service node network.")
-                                return seal.reject(SnodeAPI.Error.clockOutOfSync)
-                            }
-                            
-                            // Handle error status codes
-                            guard 200...299 ~= responseInfo.code else {
-                                return seal.reject(
-                                    Error.httpRequestFailedAtDestination(
-                                        statusCode: UInt(responseInfo.code),
-                                        json: [:],  // TODO: Remove the 'json' value??
-                                        destination: destination
-                                    )
-                                )
-                            }
-                            
-                            // If there is no data in the response then just return the ResponseInfo
-                            guard responseString.count > "l\(infoLength)\(infoString)e".count else {
-                                return seal.fulfill((responseInfo, nil))
-                            }
-                            
-                            // TODO: Is this going to be done anymore...???
-//                            if let timestamp = body["t"] as? Int64 {
-//                                let offset = timestamp - Int64(NSDate.millisecondTimestamp())
-//                                SnodeAPI.clockOffset = offset
-//                            }
-                            
-                            // Extract the response data as well
-                            let dataString: String = String(responseString.suffix(from: infoStringEndIndex))
-                            let dataStringParts: [String.SubSequence] = dataString.split(separator: ":")
-                            
-                            guard dataStringParts.count > 1, let finalDataLength: Int = Int(dataStringParts[0]) else {
-                                return seal.reject(HTTP.Error.invalidResponse)
-                            }
-                            
-                            let finalDataStringStartIndex: String.Index = responseString.index(infoStringEndIndex, offsetBy: "\(finalDataLength):".count)
-                            let finalDataStringEndIndex: String.Index = responseString.index(finalDataStringStartIndex, offsetBy: finalDataLength)
-                            let finalDataString: String = String(responseString[finalDataStringStartIndex..<finalDataStringEndIndex])
-                            
-                            guard let finalData: Data = finalDataString.data(using: .ascii) else {
-                                return seal.reject(HTTP.Error.invalidResponse)
-                            }
-                            
-                            return seal.fulfill((responseInfo, finalData))
+                            seal.fulfill(json)
                         }
-                        catch {
-                            seal.reject(error)
-                        }
-                    }
-                    .catch2 { error in
+                    } catch {
                         seal.reject(error)
                     }
+                }.catch2 { error in
+                    seal.reject(error)
+                }
             }.catch2 { error in
                 seal.reject(error)
             }
         }
-        
         promise.catch2 { error in // Must be invoked on Threading.workQueue
-            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error, let guardSnode = guardSnode else {
-                return
-            }
-            
+            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error, let guardSnode = guardSnode else { return }
             let path = paths.first { $0.contains(guardSnode) }
-            
             func handleUnspecificError() {
                 guard let path = path else { return }
-                
-                var pathFailureCount = OnionRequestAPI.pathFailureCount[path] ?? 0
+                var pathFailureCount = LegacyOnionRequestAPI.pathFailureCount[path] ?? 0
                 pathFailureCount += 1
-                
                 if pathFailureCount >= pathFailureThreshold {
                     dropGuardSnode(guardSnode)
                     path.forEach { snode in
                         SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
                     }
-                    
                     drop(path)
-                }
-                else {
-                    OnionRequestAPI.pathFailureCount[path] = pathFailureCount
+                } else {
+                    LegacyOnionRequestAPI.pathFailureCount[path] = pathFailureCount
                 }
             }
-            
             let prefix = "Next node not found: "
-            
             if let message = json?["result"] as? String, message.hasPrefix(prefix) {
                 let ed25519PublicKey = message[message.index(message.startIndex, offsetBy: prefix.count)..<message.endIndex]
-                
                 if let path = path, let snode = path.first(where: { $0.publicKeySet.ed25519Key == ed25519PublicKey }) {
-                    var snodeFailureCount = OnionRequestAPI.snodeFailureCount[snode] ?? 0
+                    var snodeFailureCount = LegacyOnionRequestAPI.snodeFailureCount[snode] ?? 0
                     snodeFailureCount += 1
-                    
                     if snodeFailureCount >= snodeFailureThreshold {
                         SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
                         do {
                             try drop(snode)
-                        }
-                        catch {
+                        } catch {
                             handleUnspecificError()
                         }
-                    }
-                    else {
-                        OnionRequestAPI.snodeFailureCount[snode] = snodeFailureCount
+                    } else {
+                        LegacyOnionRequestAPI.snodeFailureCount[snode] = snodeFailureCount
                     }
                 } else {
                     // Do nothing
                 }
-            }
-            else if let message = json?["result"] as? String, message == "Loki Server error" {
+            } else if let message = json?["result"] as? String, message == "Loki Server error" {
                 // Do nothing
-            }
-            else if case .server(let host, _, _, _, _) = destination, host == "116.203.70.33" && statusCode == 0 {
+            } else if case .server(let host, _, _, _, _) = destination, host == "116.203.70.33" && statusCode == 0 {
                 // FIXME: Temporary thing to kick out nodes that can't talk to the V2 OGS yet
                 handleUnspecificError()
-            }
-            else if statusCode == 0 { // Timeout
+            } else if statusCode == 0 { // Timeout
                 // Do nothing
-            }
-            else {
+            } else {
                 handleUnspecificError()
             }
         }
-        
         return promise
     }
 }

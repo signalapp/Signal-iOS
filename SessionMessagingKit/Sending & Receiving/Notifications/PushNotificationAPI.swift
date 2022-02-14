@@ -51,14 +51,17 @@ public final class PushNotificationAPI : NSObject {
         request.httpBody = body
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey).map2 { response in
-                guard let response: UnregisterResponse = try? response.decoded(as: UnregisterResponse.self) else {
-                    return SNLog("Couldn't unregister from push notifications.")
+            // TODO: Update this to use the V4 union requests once supported
+            LegacyOnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey)
+                .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
+                .map2 { response in
+                    guard let response: UnregisterResponse = try? response.decoded(as: UnregisterResponse.self) else {
+                        return SNLog("Couldn't unregister from push notifications.")
+                    }
+                    guard response.code != 0 else {
+                        return SNLog("Couldn't unregister from push notifications due to error: \(response.message ?? "nil").")
+                    }
                 }
-                guard response.code != 0 else {
-                    return SNLog("Couldn't unregister from push notifications due to error: \(response.message ?? "nil").")
-                }
-            }
         }
         promise.catch2 { error in
             SNLog("Couldn't unregister from push notifications.")
@@ -99,18 +102,21 @@ public final class PushNotificationAPI : NSObject {
         request.httpBody = body
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey).map2 { response in
-                guard let response: RegisterResponse = try? response.decoded(as: RegisterResponse.self) else {
-                    return SNLog("Couldn't register device token.")
+            // TODO: Update this to use the V4 union requests once supported
+            LegacyOnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey)
+                .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
+                .map2 { response in
+                    guard let response: RegisterResponse = try? response.decoded(as: RegisterResponse.self) else {
+                        return SNLog("Couldn't register device token.")
+                    }
+                    guard response.code != 0 else {
+                        return SNLog("Couldn't register device token due to error: \(response.message ?? "nil").")
+                    }
+                    
+                    userDefaults[.deviceToken] = hexEncodedToken
+                    userDefaults[.lastDeviceTokenUpload] = now
+                    userDefaults[.isUsingFullAPNs] = true
                 }
-                guard response.code != 0 else {
-                    return SNLog("Couldn't register device token due to error: \(response.message ?? "nil").")
-                }
-                
-                userDefaults[.deviceToken] = hexEncodedToken
-                userDefaults[.lastDeviceTokenUpload] = now
-                userDefaults[.isUsingFullAPNs] = true
-            }
         }
         promise.catch2 { error in
             SNLog("Couldn't register device token.")
@@ -144,14 +150,17 @@ public final class PushNotificationAPI : NSObject {
         request.httpBody = body
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey).map2 { response in
-                guard let response: RegisterResponse = try? response.decoded(as: RegisterResponse.self) else {
-                    return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey).")
+            // TODO: Update this to use the V4 union requests once supported
+            LegacyOnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey)
+                .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
+                .map2 { response in
+                    guard let response: RegisterResponse = try? response.decoded(as: RegisterResponse.self) else {
+                        return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey).")
+                    }
+                    guard response.code != 0 else {
+                        return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(response.message ?? "nil").")
+                    }
                 }
-                guard response.code != 0 else {
-                    return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(response.message ?? "nil").")
-                }
-            }
         }
         promise.catch2 { error in
             SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey).")

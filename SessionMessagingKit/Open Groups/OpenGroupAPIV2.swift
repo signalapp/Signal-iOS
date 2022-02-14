@@ -156,7 +156,9 @@ public final class OpenGroupAPIV2: NSObject {
         )
         
         return send(request)
-            .then(on: OpenGroupAPIV2.workQueue) { data -> Promise<LegacyCompactPollResponse> in
+            .then(on: OpenGroupAPIV2.workQueue) { _, maybeData -> Promise<LegacyCompactPollResponse> in
+                guard let data: Data = maybeData else { throw Error.parsingFailed }
+                
                 let response: LegacyCompactPollResponse = try data.decoded(as: LegacyCompactPollResponse.self, customError: Error.parsingFailed)
                 
                 return when(
@@ -241,7 +243,7 @@ public final class OpenGroupAPIV2: NSObject {
     
     // MARK: - Capabilities
     
-    public static func capabilities(on server: String) -> Promise<Capabilities> {
+    public static func capabilities(on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, Capabilities)> {
         let request: Request = Request(
             server: server,
             endpoint: .capabilities,
@@ -255,7 +257,7 @@ public final class OpenGroupAPIV2: NSObject {
     
     // MARK: - Room
     
-    public static func rooms(for server: String) -> Promise<[Room]> {
+    public static func rooms(for server: String) -> Promise<(OnionRequestAPI.ResponseInfo, [Room])> {
         let request: Request = Request(
             server: server,
             endpoint: .rooms
@@ -265,7 +267,7 @@ public final class OpenGroupAPIV2: NSObject {
             .decoded(as: [Room].self, on: OpenGroupAPIV2.workQueue, error: Error.parsingFailed)
     }
     
-    public static func room(for roomToken: String, on server: String) -> Promise<Room> {
+    public static func room(for roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, Room)> {
         let request: Request = Request(
             server: server,
             endpoint: .room(roomToken)
@@ -275,7 +277,7 @@ public final class OpenGroupAPIV2: NSObject {
             .decoded(as: Room.self, on: OpenGroupAPIV2.workQueue, error: Error.parsingFailed)
     }
     
-    public static func roomPollInfo(lastUpdated: Int64, for roomToken: String, on server: String) -> Promise<RoomPollInfo> {
+    public static func roomPollInfo(lastUpdated: Int64, for roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, RoomPollInfo)> {
         let request: Request = Request(
             server: server,
             endpoint: .roomPollInfo(roomToken, lastUpdated)
@@ -294,7 +296,7 @@ public final class OpenGroupAPIV2: NSObject {
         whisperTo: String?,
         whisperMods: Bool,
         with serverPublicKey: String
-    ) -> Promise<Message> {
+    ) -> Promise<(OnionRequestAPI.ResponseInfo, Message)> {
         // TODO: Change this to use '.blinded' once it's working
         guard let signedRequest: (data: Data, signature: Data) = SendMessageRequest.sign(message: plaintext, for: .standard, with: serverPublicKey) else {
             return Promise(error: Error.signingFailed)
@@ -322,9 +324,8 @@ public final class OpenGroupAPIV2: NSObject {
         return send(request)
             .decoded(as: Message.self, on: OpenGroupAPIV2.workQueue, error: Error.parsingFailed)
     }
-    
-    
-    public static func recentMessages(in roomToken: String, on server: String) -> Promise<[Message]> {
+
+    public static func recentMessages(in roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, [Message])> {
         // TODO: Recent vs. Since?
         let request: Request = Request(
             server: server,
@@ -337,12 +338,13 @@ public final class OpenGroupAPIV2: NSObject {
 
         return send(request)
             .decoded(as: [Message].self, on: OpenGroupAPIV2.workQueue, error: Error.parsingFailed)
-            .then(on: OpenGroupAPIV2.workQueue) { messages -> Promise<[Message]> in
+            .then(on: OpenGroupAPIV2.workQueue) { responseInfo, messages -> Promise<(OnionRequestAPI.ResponseInfo, [Message])> in
                 process(messages: messages, for: roomToken, on: server)
+                    .map { processedMessages in (responseInfo, processedMessages) }
             }
     }
     
-    public static func messagesBefore(messageId: Int64, in roomToken: String, on server: String) -> Promise<[Message]> {
+    public static func messagesBefore(messageId: Int64, in roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, [Message])> {
         // TODO: Recent vs. Since?
         let request: Request = Request(
             server: server,
@@ -355,12 +357,13 @@ public final class OpenGroupAPIV2: NSObject {
 
         return send(request)
             .decoded(as: [Message].self, on: OpenGroupAPIV2.workQueue, error: Error.parsingFailed)
-            .then(on: OpenGroupAPIV2.workQueue) { messages -> Promise<[Message]> in
+            .then(on: OpenGroupAPIV2.workQueue) { responseInfo, messages -> Promise<(OnionRequestAPI.ResponseInfo, [Message])> in
                 process(messages: messages, for: roomToken, on: server)
+                    .map { processedMessages in (responseInfo, processedMessages) }
             }
     }
     
-    public static func messagesSince(seqNo: Int64, in roomToken: String, on server: String) -> Promise<[Message]> {
+    public static func messagesSince(seqNo: Int64, in roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, [Message])> {
         // TODO: Recent vs. Since?
         let request: Request = Request(
             server: server,
@@ -373,9 +376,45 @@ public final class OpenGroupAPIV2: NSObject {
 
         return send(request)
             .decoded(as: [Message].self, on: OpenGroupAPIV2.workQueue, error: Error.parsingFailed)
-            .then(on: OpenGroupAPIV2.workQueue) { messages -> Promise<[Message]> in
+            .then(on: OpenGroupAPIV2.workQueue) { responseInfo, messages -> Promise<(OnionRequestAPI.ResponseInfo, [Message])> in
                 process(messages: messages, for: roomToken, on: server)
+                    .map { processedMessages in (responseInfo, processedMessages) }
             }
+    }
+    
+    // MARK: - Pinning
+    
+    public static func pinMessage(id: Int64, in roomToken: String, on server: String) -> Promise<OnionRequestAPI.ResponseInfo> {
+        let request: Request = Request(
+            method: .post,
+            server: server,
+            endpoint: .roomPinMessage(roomToken, id: id)
+        )
+
+        return send(request)
+            .map { responseInfo, _ in responseInfo }
+    }
+    
+    public static func unpinMessage(id: Int64, in roomToken: String, on server: String) -> Promise<OnionRequestAPI.ResponseInfo> {
+        let request: Request = Request(
+            method: .post,
+            server: server,
+            endpoint: .roomUnpinMessage(roomToken, id: id)
+        )
+
+        return send(request)
+            .map { responseInfo, _ in responseInfo }
+    }
+
+    public static func unpinAll(in roomToken: String, on server: String) -> Promise<OnionRequestAPI.ResponseInfo> {
+        let request: Request = Request(
+            method: .post,
+            server: server,
+            endpoint: .roomUnpinAll(roomToken)
+        )
+
+        return send(request)
+            .map { responseInfo, _ in responseInfo }
     }
     
     // MARK: - Files
@@ -405,6 +444,7 @@ public final class OpenGroupAPIV2: NSObject {
         }
         
         let promise: Promise<Data> = downloadFile(fileId, from: roomToken, on: server)
+            .map { _, data in data }
         _ = promise.done(on: OpenGroupAPIV2.workQueue) { imageData in
             if server == defaultServer {
                 Storage.shared.write { transaction in
@@ -418,7 +458,7 @@ public final class OpenGroupAPIV2: NSObject {
         return promise
     }
     
-    public static func uploadFile(_ bytes: [UInt8], fileName: String? = nil, to roomToken: String, on server: String) -> Promise<FileUploadResponse> {
+    public static func uploadFile(_ bytes: [UInt8], fileName: String? = nil, to roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, FileUploadResponse)> {
         let request: Request = Request(
             method: .post,
             server: server,
@@ -433,7 +473,7 @@ public final class OpenGroupAPIV2: NSObject {
     
     /// Warning: This approach is less efficient as it expects the data to be base64Encoded (with is 33% larger than binary), please use the binary approach
     /// whenever possible
-    public static func uploadFile(_ base64EncodedString: String, fileName: String? = nil, to roomToken: String, on server: String) -> Promise<FileUploadResponse> {
+    public static func uploadFile(_ base64EncodedString: String, fileName: String? = nil, to roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, FileUploadResponse)> {
         let request: Request = Request(
             method: .post,
             server: server,
@@ -446,21 +486,26 @@ public final class OpenGroupAPIV2: NSObject {
             .decoded(as: FileUploadResponse.self, on: OpenGroupAPIV2.workQueue, error: Error.parsingFailed)
     }
     
-    public static func downloadFile(_ fileId: Int64, from roomToken: String, on server: String) -> Promise<Data> {
+    public static func downloadFile(_ fileId: Int64, from roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, Data)> {
         let request: Request = Request(
             server: server,
             endpoint: .roomFileIndividual(roomToken, fileId)
         )
         
         return send(request)
+            .map { responseInfo, maybeData in
+                guard let data: Data = maybeData else { throw Error.parsingFailed }
+                
+                return (responseInfo, data)
+            }
     }
     
-    public static func downloadFileJson(_ fileId: Int64, from roomToken: String, on server: String) -> Promise<FileDownloadResponse> {
+    public static func downloadFileJson(_ fileId: Int64, from roomToken: String, on server: String) -> Promise<(OnionRequestAPI.ResponseInfo, FileDownloadResponse)> {
         let request: Request = Request(
             server: server,
             endpoint: .roomFileIndividualJson(roomToken, fileId)
         )
-        
+        // TODO: This endpoint is getting rewritten to return just data (properties would come through as headers)
         return send(request)
             .decoded(as: FileDownloadResponse.self, on: OpenGroupAPIV2.workQueue, error: Error.parsingFailed)
     }
@@ -532,6 +577,7 @@ public final class OpenGroupAPIV2: NSObject {
             completion: {
                 let promise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
                     OpenGroupAPIV2.rooms(for: defaultServer)
+                        .map { _, data in data }
                 }
                 _ = promise.done(on: OpenGroupAPIV2.workQueue) { items in
                     items
@@ -555,7 +601,7 @@ public final class OpenGroupAPIV2: NSObject {
     
     // MARK: - Convenience
     
-    private static func send(_ request: Request) -> Promise<Data> {
+    private static func send(_ request: Request, through api: OnionRequestAPIType.Type = OnionRequestAPI.self) -> Promise<(OnionRequestAPI.ResponseInfo, Data?)> {
         guard let url: URL = request.url else { return Promise(error: Error.invalidURL) }
         
         var urlRequest: URLRequest = URLRequest(url: url)
@@ -571,39 +617,6 @@ public final class OpenGroupAPIV2: NSObject {
             }
             
             if request.isAuthRequired {
-                // Determine if we should be using legacy auth for this endpoint
-                // TODO: Might need to store this at an OpenGroup level (so all requests can use the appropriate method).
-                if request.endpoint.useLegacyAuth {
-                    // Because legacy auth happens on a per-room basis, we need to have a room to
-                    // make an authenticated request
-                    guard let room = request.room else {
-                        return OnionRequestAPI.sendOnionRequest(urlRequest, to: request.server, using: publicKey)
-                    }
-                    
-                    return legacyGetAuthToken(for: room, on: request.server)
-                        .then(on: OpenGroupAPIV2.workQueue) { authToken -> Promise<Data> in
-                            urlRequest.setValue(authToken, forHTTPHeaderField: Header.authorization.rawValue)
-                            
-                            let promise = OnionRequestAPI.sendOnionRequest(urlRequest, to: request.server, using: publicKey)
-                            promise.catch(on: OpenGroupAPIV2.workQueue) { error in
-                                // A 401 means that we didn't provide a (valid) auth token for a route
-                                // that required one. We use this as an indication that the token we're
-                                // using has expired. Note that a 403 has a different meaning; it means
-                                // that we provided a valid token but it doesn't have a high enough
-                                // permission level for the route in question.
-                                if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _, _) = error, statusCode == 401 {
-                                    let storage = SNMessagingKitConfiguration.shared.storage
-                                    
-                                    storage.writeSync { transaction in
-                                        storage.removeAuthToken(for: room, on: request.server, using: transaction)
-                                    }
-                                }
-                            }
-                            
-                            return promise
-                        }
-                }
-                
                 // Attempt to sign the request with the new auth
                 guard let signedRequest: URLRequest = sign(urlRequest, with: publicKey) else {
                     return Promise(error: Error.signingFailed)
@@ -679,7 +692,8 @@ public final class OpenGroupAPIV2: NSObject {
             isAuthRequired: false
         )
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { data in
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+            guard let data: Data = maybeData else { throw Error.parsingFailed }
             let response = try data.decoded(as: AuthTokenResponse.self, customError: Error.parsingFailed)
             let symmetricKey = try AESGCM.generateSymmetricKey(x25519PublicKey: response.challenge.ephemeralPublicKey, x25519PrivateKey: userKeyPair.privateKey)
             
@@ -711,7 +725,7 @@ public final class OpenGroupAPIV2: NSObject {
             isAuthRequired: false
         )
 
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in authToken }
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _ in authToken }
     }
 
     /// Should be called when leaving a group.
@@ -723,7 +737,7 @@ public final class OpenGroupAPIV2: NSObject {
             endpoint: .legacyAuthToken(legacyAuth: true)
         )
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _ in
             let storage = SNMessagingKitConfiguration.shared.storage
             
             storage.write { transaction in
@@ -796,8 +810,9 @@ public final class OpenGroupAPIV2: NSObject {
                     isAuthRequired: false
                 )
         
-                return send(request)
-                    .then(on: OpenGroupAPIV2.workQueue) { data -> Promise<LegacyCompactPollResponse> in
+                return legacySend(request)
+                    .then(on: OpenGroupAPIV2.workQueue) { _, maybeData -> Promise<LegacyCompactPollResponse> in
+                        guard let data: Data = maybeData else { throw Error.parsingFailed }
                         let response: LegacyCompactPollResponse = try data.decoded(as: LegacyCompactPollResponse.self, customError: Error.parsingFailed)
 
                         return when(
@@ -853,8 +868,9 @@ public final class OpenGroupAPIV2: NSObject {
             isAuthRequired: false
         )
         
-        return send(request)
-            .map(on: OpenGroupAPIV2.workQueue) { data in
+        return legacySend(request)
+            .map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+                guard let data: Data = maybeData else { throw Error.parsingFailed }
                 let response: LegacyRoomsResponse = try data.decoded(as: LegacyRoomsResponse.self, customError: Error.parsingFailed)
                 
                 return response.rooms
@@ -869,8 +885,9 @@ public final class OpenGroupAPIV2: NSObject {
             isAuthRequired: false
         )
         
-        return send(request)
-            .map(on: OpenGroupAPIV2.workQueue) { data in
+        return legacySend(request)
+            .map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+                guard let data: Data = maybeData else { throw Error.parsingFailed }
                 let response: LegacyGetInfoResponse = try data.decoded(as: LegacyGetInfoResponse.self, customError: Error.parsingFailed)
                 
                 return response.room
@@ -907,7 +924,8 @@ public final class OpenGroupAPIV2: NSObject {
             isAuthRequired: false
         )
         
-        let promise: Promise<Data> = send(request).map(on: OpenGroupAPIV2.workQueue) { data in
+        let promise: Promise<Data> = legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+            guard let data: Data = maybeData else { throw Error.parsingFailed }
             let response: LegacyFileDownloadResponse = try data.decoded(as: LegacyFileDownloadResponse.self, customError: Error.parsingFailed)
             
             if server == defaultServer {
@@ -931,8 +949,9 @@ public final class OpenGroupAPIV2: NSObject {
             endpoint: .legacyMemberCount(legacyAuth: true)
         )
         
-        return send(request)
-            .map(on: OpenGroupAPIV2.workQueue) { data in
+        return legacySend(request)
+            .map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+                guard let data: Data = maybeData else { throw Error.parsingFailed }
                 let response: MemberCountResponse = try data.decoded(as: MemberCountResponse.self, customError: Error.parsingFailed)
                 
                 let storage = SNMessagingKitConfiguration.shared.storage
@@ -946,7 +965,7 @@ public final class OpenGroupAPIV2: NSObject {
     
     // MARK: - Legacy File Storage
     
-    public static func upload(_ file: Data, to room: String, on server: String) -> Promise<UInt64> {
+    public static func legacyUpload(_ file: Data, to room: String, on server: String) -> Promise<UInt64> {
         let requestBody: FileUploadBody = FileUploadBody(file: file.base64EncodedString())
         
         guard let body: Data = try? JSONEncoder().encode(requestBody) else {
@@ -955,17 +974,19 @@ public final class OpenGroupAPIV2: NSObject {
         
         let request = Request(method: .post, server: server, room: room, endpoint: .legacyFiles, body: body)
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { data in
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+            guard let data: Data = maybeData else { throw Error.parsingFailed }
             let response: LegacyFileUploadResponse = try data.decoded(as: LegacyFileUploadResponse.self, customError: Error.parsingFailed)
             
             return response.fileId
         }
     }
     
-    public static func download(_ file: UInt64, from room: String, on server: String) -> Promise<Data> {
+    public static func legacyDownload(_ file: UInt64, from room: String, on server: String) -> Promise<Data> {
         let request = Request(server: server, room: room, endpoint: .legacyFile(file))
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { data in
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+            guard let data: Data = maybeData else { throw Error.parsingFailed }
             let response: LegacyFileDownloadResponse = try data.decoded(as: LegacyFileDownloadResponse.self, customError: Error.parsingFailed)
             
             return response.data
@@ -981,7 +1002,8 @@ public final class OpenGroupAPIV2: NSObject {
         }
         let request = Request(method: .post, server: server, room: room, endpoint: .legacyMessages, body: body)
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { data in
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+            guard let data: Data = maybeData else { throw Error.parsingFailed }
             let message: OpenGroupMessageV2 = try data.decoded(as: OpenGroupMessageV2.self, customError: Error.parsingFailed)
             Storage.shared.write { transaction in
                 Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp, using: transaction)
@@ -1001,7 +1023,8 @@ public final class OpenGroupAPIV2: NSObject {
             ].compactMapValues { $0 }
         )
         
-        return send(request).then(on: OpenGroupAPIV2.workQueue) { data -> Promise<[OpenGroupMessageV2]> in
+        return legacySend(request).then(on: OpenGroupAPIV2.workQueue) { _, maybeData -> Promise<[OpenGroupMessageV2]> in
+            guard let data: Data = maybeData else { throw Error.parsingFailed }
             let messages: [OpenGroupMessageV2] = try data.decoded(as: [OpenGroupMessageV2].self, customError: Error.parsingFailed)
             
             return legacyProcess(messages: messages, for: room, on: server)
@@ -1010,7 +1033,7 @@ public final class OpenGroupAPIV2: NSObject {
     
     // MARK: - Legacy Message Deletion
     
-    public static func deleteMessage(with serverID: Int64, from room: String, on server: String) -> Promise<Void> {
+    public static func legacyDeleteMessage(with serverID: Int64, from room: String, on server: String) -> Promise<Void> {
         let request: Request = Request(
             method: .delete,
             server: server,
@@ -1018,10 +1041,10 @@ public final class OpenGroupAPIV2: NSObject {
             endpoint: .legacyMessagesForServer(serverID)
         )
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
     
-    public static func getDeletedMessages(for room: String, on server: String) -> Promise<[Deletion]> {
+    public static func legacyGetDeletedMessages(for room: String, on server: String) -> Promise<[Deletion]> {
         let storage = SNMessagingKitConfiguration.shared.storage
         
         let request: Request = Request(
@@ -1033,7 +1056,8 @@ public final class OpenGroupAPIV2: NSObject {
             ].compactMapValues { $0 }
         )
         
-        return send(request).then(on: OpenGroupAPIV2.workQueue) { data -> Promise<[Deletion]> in
+        return legacySend(request).then(on: OpenGroupAPIV2.workQueue) { _, maybeData -> Promise<[Deletion]> in
+            guard let data: Data = maybeData else { throw Error.parsingFailed }
             let response: DeletedMessagesResponse = try data.decoded(as: DeletedMessagesResponse.self, customError: Error.parsingFailed)
             
             return process(deletions: response.deletions, for: room, on: server)
@@ -1042,15 +1066,16 @@ public final class OpenGroupAPIV2: NSObject {
     
     // MARK: - Legacy Moderation
     
-    public static func getModerators(for room: String, on server: String) -> Promise<[String]> {
+    public static func legacyGetModerators(for room: String, on server: String) -> Promise<[String]> {
         let request: Request = Request(
             server: server,
             room: room,
             endpoint: .legacyModerators
         )
         
-        return send(request)
-            .map(on: OpenGroupAPIV2.workQueue) { data in
+        return legacySend(request)
+            .map(on: OpenGroupAPIV2.workQueue) { _, maybeData in
+                guard let data: Data = maybeData else { throw Error.parsingFailed }
                 let response: ModeratorsResponse = try data.decoded(as: ModeratorsResponse.self, customError: Error.parsingFailed)
                 
                 if var x = self.moderators[server] {
@@ -1065,7 +1090,7 @@ public final class OpenGroupAPIV2: NSObject {
             }
     }
     
-    public static func ban(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
+    public static func legacyBan(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
         let requestBody: PublicKeyBody = PublicKeyBody(publicKey: getUserHexEncodedPublicKey())
         
         guard let body: Data = try? JSONEncoder().encode(requestBody) else {
@@ -1080,10 +1105,10 @@ public final class OpenGroupAPIV2: NSObject {
             body: body
         )
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
     
-    public static func banAndDeleteAllMessages(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
+    public static func legacyBanAndDeleteAllMessages(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
         let requestBody: PublicKeyBody = PublicKeyBody(publicKey: getUserHexEncodedPublicKey())
         
         guard let body: Data = try? JSONEncoder().encode(requestBody) else {
@@ -1098,10 +1123,10 @@ public final class OpenGroupAPIV2: NSObject {
             body: body
         )
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
     
-    public static func unban(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
+    public static func legacyUnban(_ publicKey: String, from room: String, on server: String) -> Promise<Void> {
         let request: Request = Request(
             method: .delete,
             server: server,
@@ -1109,7 +1134,7 @@ public final class OpenGroupAPIV2: NSObject {
             endpoint: .legacyBlockListIndividual(publicKey)
         )
         
-        return send(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
+        return legacySend(request).map(on: OpenGroupAPIV2.workQueue) { _ in }
     }
     
     // MARK: - Processing
@@ -1163,5 +1188,59 @@ public final class OpenGroupAPIV2: NSObject {
         }
         
         return Promise.value(deletions)
+    }
+    
+    // MARK: - Legacy Convenience
+    
+    private static func legacySend(_ request: Request, through api: OnionRequestAPIType.Type = LegacyOnionRequestAPI.self) -> Promise<(OnionRequestAPI.ResponseInfo, Data?)> {
+        guard let url: URL = request.url else { return Promise(error: Error.invalidURL) }
+        
+        var urlRequest: URLRequest = URLRequest(url: url)
+        urlRequest.httpMethod = request.method.rawValue
+        urlRequest.allHTTPHeaderFields = request.headers
+            .setting(.room, request.room)   // TODO: Is this needed anymore? Add at the request level?.
+            .toHTTPHeaders()
+        urlRequest.httpBody = request.body
+        
+        if request.useOnionRouting {
+            guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else {
+                return Promise(error: Error.noPublicKey)
+            }
+            
+            if request.isAuthRequired {
+                // Because legacy auth happens on a per-room basis, we need to have a room to
+                // make an authenticated request
+                guard let room = request.room else {
+                    return api.sendOnionRequest(urlRequest, to: request.server, target: "/loki/v3/lsrpc", using: publicKey)
+                }
+                
+                return legacyGetAuthToken(for: room, on: request.server)
+                    .then(on: OpenGroupAPIV2.workQueue) { authToken -> Promise<(OnionRequestAPI.ResponseInfo, Data?)> in
+                        urlRequest.setValue(authToken, forHTTPHeaderField: Header.authorization.rawValue)
+                        
+                        let promise = api.sendOnionRequest(urlRequest, to: request.server, target: "/loki/v3/lsrpc", using: publicKey)
+                        promise.catch(on: OpenGroupAPIV2.workQueue) { error in
+                            // A 401 means that we didn't provide a (valid) auth token for a route
+                            // that required one. We use this as an indication that the token we're
+                            // using has expired. Note that a 403 has a different meaning; it means
+                            // that we provided a valid token but it doesn't have a high enough
+                            // permission level for the route in question.
+                            if case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, _, _) = error, statusCode == 401 {
+                                let storage = SNMessagingKitConfiguration.shared.storage
+                                
+                                storage.writeSync { transaction in
+                                    storage.removeAuthToken(for: room, on: request.server, using: transaction)
+                                }
+                            }
+                        }
+                        
+                        return promise
+                    }
+            }
+            
+            return api.sendOnionRequest(urlRequest, to: request.server, target: "/loki/v3/lsrpc", using: publicKey)
+        }
+        
+        preconditionFailure("It's currently not allowed to send non onion routed requests.")
     }
 }

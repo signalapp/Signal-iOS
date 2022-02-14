@@ -94,7 +94,9 @@ public final class FileServerAPIV2 : NSObject {
             preconditionFailure("It's currently not allowed to send non onion routed requests.")
         }
         
-        return OnionRequestAPI.sendOnionRequest(urlRequest, to: server, using: serverPublicKey)
+        // TODO: Upgrade this to use the V4 onion requests once supported
+        return LegacyOnionRequestAPI.sendOnionRequest(urlRequest, to: server, using: serverPublicKey)
+            .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
     }
     
     // MARK: File Storage

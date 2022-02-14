@@ -101,7 +101,8 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
                 return handleFailure(Error.invalidURL)
             }
-            OpenGroupAPIV2.download(file, from: v2OpenGroup.room, on: v2OpenGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+            // TODO: Upgrade this to use the non-legacy version
+            OpenGroupAPIV2.legacyDownload(file, from: v2OpenGroup.room, on: v2OpenGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                 self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)

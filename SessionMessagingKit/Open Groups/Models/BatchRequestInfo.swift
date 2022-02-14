@@ -3,6 +3,7 @@
 import Foundation
 import PromiseKit
 import SessionUtilitiesKit
+import SessionSnodeKit
 
 extension OpenGroupAPIV2 {
     // MARK: - BatchSubRequest
@@ -66,10 +67,11 @@ public extension Decodable {
     }
 }
 
-extension Promise where T == Data {
+extension Promise where T == (OnionRequestAPI.ResponseInfo, Data?) {
     func decoded(as types: OpenGroupAPIV2.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error? = nil) -> Promise<OpenGroupAPIV2.BatchResponse> {
-        self.map(on: queue) { data -> OpenGroupAPIV2.BatchResponse in
+        self.map(on: queue) { responseInfo, maybeData -> OpenGroupAPIV2.BatchResponse in
             // Need to split the data into an array of data so each item can be Decoded correctly
+            guard let data: Data = maybeData else { throw OpenGroupAPIV2.Error.parsingFailed }
             guard let jsonObject: Any = try? JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed]) else {
                 throw OpenGroupAPIV2.Error.parsingFailed
             }
