@@ -800,41 +800,6 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
 // MARK: - Views
 
-private class PhotoControl: UIView {
-    let button: OWSButton
-    
-    private static let visibleButtonSize: CGFloat = 36  // both height and width
-    private static let layoutMargin: CGFloat = 4        // both horizontal and vertical
-    
-    init(imageName: String, block: @escaping () -> Void) {
-        self.button = OWSButton(imageName: imageName, tintColor: .ows_white, block: block)
-        
-        super.init(frame: CGRect(origin: .zero, size: CGSize(square: Self.visibleButtonSize + 2*Self.layoutMargin)))
-        
-        layoutMargins = UIEdgeInsets(margin: Self.layoutMargin)
-        
-        let blurView = CircleBlurView(effect: UIBlurEffect(style: .dark))
-        addSubview(blurView)
-        blurView.autoPinEdgesToSuperviewMargins()
-        
-        addSubview(button)
-        button.autoPinEdgesToSuperviewMargins()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override var intrinsicContentSize: CGSize {
-        return CGSize(width: Self.visibleButtonSize + layoutMargins.leading + layoutMargins.trailing,
-                      height: Self.visibleButtonSize + layoutMargins.top + layoutMargins.bottom)
-    }
-    
-    func setImage(imageName: String) {
-        button.setImage(imageName: imageName)
-    }
-}
-
 private class MediaPickerThumbnailButton: UIButton {
     
     private static let visibleSize = CGSize(square: 36)
