@@ -218,24 +218,24 @@ public class ConversationMessageMapping: NSObject {
             return IndexPath(row: oldIndex, section: 0)
         }
         guard let view = transaction.ext(viewName) as? YapDatabaseAutoViewTransaction else {
-            owsFailDebug("Could not load view.")
+            SNLog("Could not load view.")
             return nil
         }
         guard let group = group else {
-            owsFailDebug("No group.")
+            SNLog("No group.")
             return nil
         }
 
         let indexPtr: UnsafeMutablePointer<UInt> = UnsafeMutablePointer<UInt>.allocate(capacity: 1)
         let wasFound = view.getGroup(nil, index: indexPtr, forKey: uniqueId, inCollection: TSInteraction.collection())
         guard wasFound else {
-            owsFailDebug("Could not find interaction.")
+            SNLog("Could not find interaction.")
             return nil
         }
         let index = indexPtr.pointee
         let threadInteractionCount = view.numberOfItems(inGroup: group)
         guard index < threadInteractionCount else {
-            owsFailDebug("Invalid index.")
+            SNLog("Invalid index.")
             return nil
         }
         // This math doesn't take into account the number of items loaded _after_ the pivot.
@@ -244,7 +244,7 @@ public class ConversationMessageMapping: NSObject {
         self.update(withDesiredLength: desiredWindowSize, transaction: transaction)
 
         guard let newIndex = loadedUniqueIds().firstIndex(of: uniqueId) else {
-            owsFailDebug("Couldn't find interaction.")
+            SNLog("Couldn't find interaction.")
             return nil
         }
         return IndexPath(row: newIndex, section: 0)

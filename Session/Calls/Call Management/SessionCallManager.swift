@@ -94,7 +94,6 @@ public final class SessionCallManager: NSObject {
             guard error == nil else {
                 self.reportCurrentCallEnded(reason: .failed)
                 completion(error)
-                Logger.error("failed to report new incoming call, error: \(error!)")
                 return
             }
             completion(nil)
