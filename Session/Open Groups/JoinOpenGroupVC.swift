@@ -127,7 +127,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     fileprivate func joinOpenGroup(with string: String) {
         // A V2 open group URL will look like: <optional scheme> + <host> + <optional port> + <room> + <public key>
         // The host doesn't parse if no explicit scheme is provided
-        if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: string) {
+        if let (room, server, publicKey) = OpenGroupManager.parseV2OpenGroup(from: string) {
             joinV2OpenGroup(room: room, server: server, publicKey: publicKey)
         } else {
             let title = NSLocalizedString("invalid_url", comment: "")
@@ -141,7 +141,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         isJoining = true
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             Storage.shared.write { transaction in
-                OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
+                OpenGroupManager.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
                 .done(on: DispatchQueue.main) { [weak self] _ in
                     self?.presentingViewController?.dismiss(animated: true, completion: nil)
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate

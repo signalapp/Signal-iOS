@@ -752,8 +752,8 @@
 		C3D9E52725677DF20040E4F3 /* OWSThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAF1255A580500E217F9 /* OWSThumbnailService.swift */; };
 		C3DA9C0725AE7396008F7C7E /* ConfigurationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DA9C0625AE7396008F7C7E /* ConfigurationMessage.swift */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
-		C3DB66AC260ACA42001EFC55 /* OpenGroupManagerV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DB66AB260ACA42001EFC55 /* OpenGroupManagerV2.swift */; };
-		C3DB66C3260ACCE6001EFC55 /* OpenGroupPollerV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DB66C2260ACCE6001EFC55 /* OpenGroupPollerV2.swift */; };
+		C3DB66AC260ACA42001EFC55 /* OpenGroupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DB66AB260ACA42001EFC55 /* OpenGroupManager.swift */; };
+		C3DB66C3260ACCE6001EFC55 /* OpenGroupPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DB66C2260ACCE6001EFC55 /* OpenGroupPoller.swift */; };
 		C3DB66CC260AF1F3001EFC55 /* OpenGroupAPI+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DB66CB260AF1F3001EFC55 /* OpenGroupAPI+ObjC.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
 		C3E5C2FA251DBABB0040DFFC /* EditClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */; };
@@ -1859,8 +1859,8 @@
 		C3D9E43025676D3D0040E4F3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		C3DA9C0625AE7396008F7C7E /* ConfigurationMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationMessage.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
-		C3DB66AB260ACA42001EFC55 /* OpenGroupManagerV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupManagerV2.swift; sourceTree = "<group>"; };
-		C3DB66C2260ACCE6001EFC55 /* OpenGroupPollerV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupPollerV2.swift; sourceTree = "<group>"; };
+		C3DB66AB260ACA42001EFC55 /* OpenGroupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupManager.swift; sourceTree = "<group>"; };
+		C3DB66C2260ACCE6001EFC55 /* OpenGroupPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupPoller.swift; sourceTree = "<group>"; };
 		C3DB66CB260AF1F3001EFC55 /* OpenGroupAPI+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenGroupAPI+ObjC.swift"; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		C3E5C2F9251DBABB0040DFFC /* EditClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditClosedGroupVC.swift; sourceTree = "<group>"; };
@@ -2748,7 +2748,7 @@
 			isa = PBXGroup;
 			children = (
 				C33FDB34255A580B00E217F9 /* ClosedGroupPoller.swift */,
-				C3DB66C2260ACCE6001EFC55 /* OpenGroupPollerV2.swift */,
+				C3DB66C2260ACCE6001EFC55 /* OpenGroupPoller.swift */,
 				C33FDB3A255A580B00E217F9 /* Poller.swift */,
 			);
 			path = Pollers;
@@ -3357,7 +3357,7 @@
 				FDC4380727B31D3A00C60D73 /* Types */,
 				B88FA7B726045D100049422F /* OpenGroupAPI.swift */,
 				C3DB66CB260AF1F3001EFC55 /* OpenGroupAPI+ObjC.swift */,
-				C3DB66AB260ACA42001EFC55 /* OpenGroupManagerV2.swift */,
+				C3DB66AB260ACA42001EFC55 /* OpenGroupManager.swift */,
 			);
 			path = "Open Groups";
 			sourceTree = "<group>";
@@ -5131,7 +5131,7 @@
 				C3D9E52725677DF20040E4F3 /* OWSThumbnailService.swift in Sources */,
 				C32C5E75256DE020003C73A2 /* YapDatabaseTransaction+OWS.m in Sources */,
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
-				C3DB66AC260ACA42001EFC55 /* OpenGroupManagerV2.swift in Sources */,
+				C3DB66AC260ACA42001EFC55 /* OpenGroupManager.swift in Sources */,
 				B8F5F61B25EDE4BF003BF8D4 /* DataExtractionNotificationInfoMessage.swift in Sources */,
 				FDC438A427BB107F00C60D73 /* UserBanRequest.swift in Sources */,
 				C379DCF4256735770002D4EB /* VisibleMessage+Attachment.swift in Sources */,
@@ -5230,7 +5230,7 @@
 				C352A2FF25574B6300338F3E /* MessageSendJob.swift in Sources */,
 				FDC438C327BB512200C60D73 /* SodiumProtocols.swift in Sources */,
 				B8856D11256F112A001CE70E /* OWSAudioSession.swift in Sources */,
-				C3DB66C3260ACCE6001EFC55 /* OpenGroupPollerV2.swift in Sources */,
+				C3DB66C3260ACCE6001EFC55 /* OpenGroupPoller.swift in Sources */,
 				FDC438AE27BB148700C60D73 /* UserDeleteMessagesResponse.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
 				C32C5FBB256E0206003C73A2 /* OWSBackgroundTask.m in Sources */,

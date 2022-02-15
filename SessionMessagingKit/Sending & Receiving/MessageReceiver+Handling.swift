@@ -233,8 +233,8 @@ extension MessageReceiver {
             }
             // Open groups
             for openGroupURL in message.openGroups {
-                if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: openGroupURL) {
-                    OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction).retainUntilComplete()
+                if let (room, server, publicKey) = OpenGroupManager.parseV2OpenGroup(from: openGroupURL) {
+                    OpenGroupManager.shared.add(room: room, server: server, publicKey: publicKey, using: transaction).retainUntilComplete()
                 }
             }
         }

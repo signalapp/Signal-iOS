@@ -697,11 +697,11 @@ static NSTimeInterval launchStartedAt;
 
 - (void)startOpenGroupPollersIfNeeded
 {
-    [SNOpenGroupManagerV2.shared startPolling];
+    [SNOpenGroupManager.shared startPolling];
 }
 
 - (void)stopOpenGroupPollers {
-    [SNOpenGroupManagerV2.shared stopPolling];
+    [SNOpenGroupManager.shared stopPolling];
 }
 
 # pragma mark - App Mode

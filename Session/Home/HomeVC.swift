@@ -525,7 +525,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         Storage.write { transaction in
             Storage.shared.cancelPendingMessageSendJobs(for: thread.uniqueId!, using: transaction)
             if let openGroupV2 = openGroupV2 {
-                OpenGroupManagerV2.shared.delete(openGroupV2, associatedWith: thread, using: transaction)
+                OpenGroupManager.shared.delete(openGroupV2, associatedWith: thread, using: transaction)
             } else if let thread = thread as? TSGroupThread, thread.isClosedGroup == true {
                 let groupID = thread.groupModel.groupId
                 let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)

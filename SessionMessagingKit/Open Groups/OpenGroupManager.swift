@@ -1,26 +1,26 @@
 import PromiseKit
 
-@objc(SNOpenGroupManagerV2)
-public final class OpenGroupManagerV2 : NSObject {
-    private var pollers: [String:OpenGroupPollerV2] = [:] // One for each server
+@objc(SNOpenGroupManager)
+public final class OpenGroupManager: NSObject {
+    @objc public static let shared = OpenGroupManager()
+    
+    private var pollers: [String: OpenGroupAPI.Poller] = [:] // One for each server
     private var isPolling = false
 
-    // MARK: Initialization
-    @objc public static let shared = OpenGroupManagerV2()
-
-    private override init() { }
-
-    // MARK: Polling
+    // MARK: - Polling
     @objc public func startPolling() {
         guard !isPolling else { return }
+        
         isPolling = true
-        let servers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
-        servers.forEach { server in
-            if let poller = pollers[server] { poller.stop() } // Should never occur
-            let poller = OpenGroupPollerV2(for: server)
-            poller.startIfNeeded()
-            pollers[server] = poller
-        }
+        pollers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
+            .reduce(into: [:]) { prev, server in
+                pollers[server]?.stop() // Should never occur
+                
+                let poller = OpenGroupAPI.Poller(for: server)
+                poller.startIfNeeded()
+                
+                prev[server] = poller
+            }
     }
 
     @objc public func stopPolling() {
@@ -28,17 +28,22 @@ public final class OpenGroupManagerV2 : NSObject {
         pollers.removeAll()
     }
 
-    // MARK: Adding & Removing
+    // MARK: - Adding & Removing
+    
     public func add(room: String, server: String, publicKey: String, using transaction: Any) -> Promise<Void> {
         let storage = Storage.shared
+        
         // Clear any existing data if needed
         storage.removeLastMessageServerID(for: room, on: server, using: transaction)
         storage.removeLastDeletionServerID(for: room, on: server, using: transaction)
         storage.removeAuthToken(for: room, on: server, using: transaction)
+        
         // Store the public key
         storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
+        
         let (promise, seal) = Promise<Void>.pending()
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        
         transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             // Get the group info
             // TODO: Remove this legacy method
@@ -56,10 +61,10 @@ public final class OpenGroupManagerV2 : NSObject {
 //                    storage.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
 //                }, completion: {
 //                    // Start the poller if needed
-//                    if OpenGroupManagerV2.shared.pollers[server] == nil {
+//                    if OpenGroupManager.shared.pollers[server] == nil {
 //                        let poller = OpenGroupPollerV2(for: server)
 //                        poller.startIfNeeded()
-//                        OpenGroupManagerV2.shared.pollers[server] = poller
+//                        OpenGroupManager.shared.pollers[server] = poller
 //                    }
 //                    // Fetch the group image
 //                    OpenGroupAPI.legacyGetGroupImage(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
@@ -110,15 +115,15 @@ public final class OpenGroupManagerV2 : NSObject {
                         },
                         completion: {
                             // Start the poller if needed
-                            if OpenGroupManagerV2.shared.pollers[server] == nil {
-                                let poller = OpenGroupPollerV2(for: server)
+                            if OpenGroupManager.shared.pollers[server] == nil {
+                                let poller = OpenGroupAPI.Poller(for: server)
                                 poller.startIfNeeded()
-                                OpenGroupManagerV2.shared.pollers[server] = poller
+                                OpenGroupManager.shared.pollers[server] = poller
                             }
 
                             // Fetch the group image (if there is one)
-                            // TODO: Need to test this
-                            // TODO: Clean this up (can we avoid the if/else with fancy promise wrangling?)
+                            // TODO: Need to test this.
+                            // TODO: Clean this up (can we avoid the if/else with fancy promise wrangling?).
                             if let imageId: Int64 = room.imageId {
                                 OpenGroupAPI.roomImage(imageId, for: room.token, on: server)
                                     .done(on: DispatchQueue.global(qos: .userInitiated)) { data in

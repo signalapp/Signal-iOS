@@ -63,23 +63,24 @@ final class JoinOpenGroupModal : Modal {
     
     // MARK: Interaction
     @objc private func joinOpenGroup() {
-        guard let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: url) else {
+        guard let (room, server, publicKey) = OpenGroupManager.parseV2OpenGroup(from: url) else {
             let alert = UIAlertController(title: "Couldn't Join", message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
             return presentingViewController!.present(alert, animated: true, completion: nil)
         }
         presentingViewController!.dismiss(animated: true, completion: nil)
         Storage.shared.write { [presentingViewController = self.presentingViewController!] transaction in
-            OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
-            .done(on: DispatchQueue.main) { _ in
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
-            }
-            .catch(on: DispatchQueue.main) { error in
-                let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                presentingViewController.present(alert, animated: true, completion: nil)
-            }
+            OpenGroupManager.shared
+                .add(room: room, server: server, publicKey: publicKey, using: transaction)
+                .done(on: DispatchQueue.main) { _ in
+                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                    appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                }
+                .catch(on: DispatchQueue.main) { error in
+                    let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+                    presentingViewController.present(alert, animated: true, completion: nil)
+                }
         }
     }
 }

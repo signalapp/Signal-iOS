@@ -87,7 +87,7 @@ public final class OpenGroupAPI: NSObject {
                 }
         )
         
-        // TODO: Handle response (maybe in the poller or the OpenGroupManagerV2?).
+        // TODO: Handle response (maybe in the poller or the OpenGroupManager?)
         return batch(server, requests: requestResponseType, using: dependencies)
     }
     
@@ -127,7 +127,7 @@ public final class OpenGroupAPI: NSObject {
         let rooms: [String] = dependencies.storage.getAllV2OpenGroups().values
             .filter { $0.server == server }
             .map { $0.room }
-        let useMessageLimit = (hasPerformedInitialPoll[server] != true && timeSinceLastOpen > OpenGroupPollerV2.maxInactivityPeriod)
+        let useMessageLimit = (hasPerformedInitialPoll[server] != true && timeSinceLastOpen > OpenGroupAPI.Poller.maxInactivityPeriod)
         
         hasPerformedInitialPoll[server] = true
         
@@ -666,7 +666,7 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - General
     
-    // TODO: Shift this to the OpenGroupManagerV2? (seems more at place there than in the API).
+    // TODO: Shift this to the OpenGroupManager? (seems more at place there than in the API)
     public static func getDefaultRoomsIfNeeded(using dependencies: Dependencies = Dependencies()) {
         Storage.shared.write(
             with: { transaction in
@@ -922,7 +922,7 @@ public final class OpenGroupAPI: NSObject {
             .filter { $0.server == server }
             .map { $0.room }
         var getAuthTokenPromises: [String: Promise<String>] = [:]
-        let useMessageLimit = (hasPerformedInitialPoll[server] != true && timeSinceLastOpen > OpenGroupPollerV2.maxInactivityPeriod)
+        let useMessageLimit = (hasPerformedInitialPoll[server] != true && timeSinceLastOpen > OpenGroupAPI.Poller.maxInactivityPeriod)
 
         hasPerformedInitialPoll[server] = true
         
