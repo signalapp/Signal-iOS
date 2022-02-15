@@ -196,12 +196,12 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, state: CallState, remoteAddress: SignalServiceAddress, sentAtTimestamp: UInt64, callAdapterType: CallAdapterType) {
+    init(direction: CallDirection, localId: UUID, state: CallState, thread: TSContactThread, sentAtTimestamp: UInt64, callAdapterType: CallAdapterType) {
         self.direction = direction
         self.localId = localId
         self.state = state
-        self.remoteAddress = remoteAddress
-        self.thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+        self.remoteAddress = thread.contactAddress
+        self.thread = thread
         self.sentAtTimestamp = sentAtTimestamp
         self.callAdapterType = callAdapterType
     }

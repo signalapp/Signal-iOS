@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalServiceKit
 
 @objc
 public class NotificationActionHandler: NSObject {
@@ -98,8 +99,9 @@ public class NotificationActionHandler: NSObject {
         guard address.isValid else {
             throw OWSAssertionError("Missing or invalid address.")
         }
+        let thread = TSContactThread.getOrCreateThread(contactAddress: address)
 
-        individualCallUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
+        individualCallUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
         return Promise.value(())
     }
 
