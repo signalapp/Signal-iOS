@@ -1,5 +1,10 @@
 
-extension Storage {
+public protocol SessionMessagingKitOpenGroupStorageProtocol {
+    func getOpenGroupImage(for room: String, on server: String) -> Data?
+    func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any)
+}
+
+extension Storage: SessionMessagingKitOpenGroupStorageProtocol {
     
     // MARK: - Open Groups
     

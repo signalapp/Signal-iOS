@@ -3,6 +3,7 @@
 import XCTest
 import Nimble
 import PromiseKit
+import Sodium
 import SessionSnodeKit
 
 @testable import SessionMessagingKit
@@ -66,14 +67,21 @@ class OpenGroupAPIV2Tests: XCTestCase {
     }
     
     var testStorage: TestStorage!
+    var dependencies: OpenGroupAPIV2.Dependencies!
 
     // MARK: - Configuration
     
     override func setUpWithError() throws {
         testStorage = TestStorage()
+        dependencies = OpenGroupAPIV2.Dependencies(
+            api: TestApi.self,
+            storage: testStorage,
+            nonceGenerator: TestNonceGenerator(),
+            date: Date(timeIntervalSince1970: 1234567890)
+        )
         
         testStorage.mockData[.allV2OpenGroups] = [
-            "0": OpenGroupV2(server: "testServer", room: "test1", name: "Test", publicKey: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d", imageID: nil)
+            "0": OpenGroupV2(server: "testServer", room: "testRoom", name: "Test", publicKey: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d", imageID: nil)
         ]
         testStorage.mockData[.openGroupPublicKeys] = ["testServer": "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"]
         
@@ -85,14 +93,14 @@ class OpenGroupAPIV2Tests: XCTestCase {
     }
 
     override func tearDownWithError() throws {
+        dependencies = nil
         testStorage = nil
     }
     
     // MARK: - Batching & Polling
     
     func testPollGeneratesTheCorrectRequest() throws {
-        // Define a custom TestApi class so we can override the response
-        class TestApi1: TestApi {
+        class LocalTestApi: TestApi {
             override class var mockResponse: Data? {
                 let responses: [Data] = [
                     try! JSONEncoder().encode(
@@ -106,36 +114,7 @@ class OpenGroupAPIV2Tests: XCTestCase {
                         OpenGroupAPIV2.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: OpenGroupAPIV2.RoomPollInfo(
-                                token: nil,
-                                created: nil,
-                                name: nil,
-                                description: nil,
-                                imageId: nil,
-                                
-                                infoUpdates: nil,
-                                messageSequence: nil,
-                                activeUsers: nil,
-                                activeUsersCutoff: nil,
-                                pinnedMessages: nil,
-                                
-                                admin: nil,
-                                globalAdmin: nil,
-                                admins: nil,
-                                hiddenAdmins: nil,
-                                
-                                moderator: nil,
-                                globalModerator: nil,
-                                moderators: nil,
-                                hiddenModerators: nil,
-                                read: nil,
-                                defaultRead: nil,
-                                write: nil,
-                                defaultWrite: nil,
-                                upload: nil,
-                                defaultUpload: nil,
-                                details: nil
-                            )
+                            body: try! JSONDecoder().decode(OpenGroupAPIV2.RoomPollInfo.self, from: "{}".data(using: .utf8)!)
                         )
                     ),
                     try! JSONEncoder().encode(
@@ -150,60 +129,304 @@ class OpenGroupAPIV2Tests: XCTestCase {
                 return "[\(responses.map { String(data: $0, encoding: .utf8)! }.joined(separator: ","))]".data(using: .utf8)
             }
         }
+        dependencies = dependencies.with(api: LocalTestApi.self)
         
-        var pollResponse: [Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var response: [Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var error: Error? = nil
         
-        OpenGroupAPIV2.poll("testServer", through: TestApi1.self, using: testStorage, nonceGenerator: TestNonceGenerator(), date: Date(timeIntervalSince1970: 1234567890))
-            .map { result -> [Endpoint: (OnionRequestResponseInfoType, Codable)] in
-                pollResponse = result
-                return result
-            }
+        OpenGroupAPIV2.poll("testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
             .retainUntilComplete()
         
-        expect(pollResponse)
+        expect(response)
             .toEventuallyNot(
                 beNil(),
-                timeout: .milliseconds(10000)
+                timeout: .milliseconds(100)
             )
+        expect(error?.localizedDescription).to(beNil())
         
         // Validate the response data
-        expect(pollResponse?.values).to(haveCount(3))
-        expect(pollResponse?.keys).to(contain(.capabilities))
-        expect(pollResponse?.keys).to(contain(.roomPollInfo("test1", 0)))
-        expect(pollResponse?.keys).to(contain(.roomMessagesRecent("test1")))
-        expect(pollResponse?[.capabilities]?.0).to(beAKindOf(TestResponseInfo.self))
+        expect(response?.values).to(haveCount(3))
+        expect(response?.keys).to(contain(.capabilities))
+        expect(response?.keys).to(contain(.roomPollInfo("testRoom", 0)))
+        expect(response?.keys).to(contain(.roomMessagesRecent("testRoom")))
+        expect(response?[.capabilities]?.0).to(beAKindOf(TestResponseInfo.self))
         
         // Validate request data
-        let requestData: TestApi.RequestData? = (pollResponse?[.capabilities]?.0 as? TestResponseInfo)?.requestData
+        let requestData: TestApi.RequestData? = (response?[.capabilities]?.0 as? TestResponseInfo)?.requestData
         expect(requestData?.urlString).to(equal("testServer/batch"))
         expect(requestData?.httpMethod).to(equal("POST"))
         expect(requestData?.server).to(equal("testServer"))
         expect(requestData?.publicKey).to(equal("7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
     }
     
-    // MARK: - Authentication
+    func testPollReturnsAnErrorWhenGivenNoData() throws {
+        var response: [Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.poll("testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.parsingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
     
-    func testItSignsTheRequestCorrectly() throws {
-        class TestApi1: TestApi {
+    func testPollReturnsAnErrorWhenGivenInvalidData() throws {
+        class LocalTestApi: TestApi {
+            override class var mockResponse: Data? { return Data() }
+        }
+        dependencies = dependencies.with(api: LocalTestApi.self)
+        
+        var response: [Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.poll("testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.parsingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    func testPollReturnsAnErrorWhenGivenAnEmptyResponse() throws {
+        class LocalTestApi: TestApi {
+            override class var mockResponse: Data? { return "[]".data(using: .utf8) }
+        }
+        dependencies = dependencies.with(api: LocalTestApi.self)
+        
+        var response: [Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.poll("testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.parsingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    func testPollReturnsAnErrorWhenGivenAnObjectResponse() throws {
+        class LocalTestApi: TestApi {
+            override class var mockResponse: Data? { return "{}".data(using: .utf8) }
+        }
+        dependencies = dependencies.with(api: LocalTestApi.self)
+        
+        var response: [Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.poll("testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.parsingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    func testPollReturnsAnErrorWhenGivenAnDifferentNumberOfResponses() throws {
+        class LocalTestApi: TestApi {
             override class var mockResponse: Data? {
-                return try! JSONEncoder().encode([OpenGroupAPIV2.Room]())
+                let responses: [Data] = [
+                    try! JSONEncoder().encode(
+                        OpenGroupAPIV2.BatchSubResponse(
+                            code: 200,
+                            headers: [:],
+                            body: OpenGroupAPIV2.Capabilities(capabilities: [], missing: nil)
+                        )
+                    ),
+                    try! JSONEncoder().encode(
+                        OpenGroupAPIV2.BatchSubResponse(
+                            code: 200,
+                            headers: [:],
+                            body: try! JSONDecoder().decode(OpenGroupAPIV2.RoomPollInfo.self, from: "{}".data(using: .utf8)!)
+                        )
+                    )
+                ]
+                
+                return "[\(responses.map { String(data: $0, encoding: .utf8)! }.joined(separator: ","))]".data(using: .utf8)
             }
         }
+        dependencies = dependencies.with(api: LocalTestApi.self)
         
-        var response: (OnionRequestResponseInfoType, [OpenGroupAPIV2.Room])? = nil
+        var response: [Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var error: Error? = nil
         
-        OpenGroupAPIV2.rooms(for: "testServer", through: TestApi1.self, using: testStorage, nonceGenerator: TestNonceGenerator(), date: Date(timeIntervalSince1970: 1234567890))
-            .map { result -> (OnionRequestResponseInfoType, [OpenGroupAPIV2.Room]) in
-                response = result
-                return result
+        OpenGroupAPIV2.poll("testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.parsingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    func testPollReturnsAnErrorWhenGivenAnUnexpectedResponse() throws {
+        class LocalTestApi: TestApi {
+            override class var mockResponse: Data? {
+                let responses: [Data] = [
+                    try! JSONEncoder().encode(
+                        OpenGroupAPIV2.BatchSubResponse(
+                            code: 200,
+                            headers: [:],
+                            body: OpenGroupAPIV2.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: "")
+                        )
+                    ),
+                    try! JSONEncoder().encode(
+                        OpenGroupAPIV2.BatchSubResponse(
+                            code: 200,
+                            headers: [:],
+                            body: OpenGroupAPIV2.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: "")
+                        )
+                    ),
+                    try! JSONEncoder().encode(
+                        OpenGroupAPIV2.BatchSubResponse(
+                            code: 200,
+                            headers: [:],
+                            body: OpenGroupAPIV2.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: "")
+                        )
+                    )
+                ]
+                
+                return "[\(responses.map { String(data: $0, encoding: .utf8)! }.joined(separator: ","))]".data(using: .utf8)
             }
+        }
+        dependencies = dependencies.with(api: LocalTestApi.self)
+        
+        var response: [Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.poll("testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.parsingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    // MARK: - Files
+    
+    func testItDoesNotAddAFileNameHeaderWhenNotProvided() throws {
+        class LocalTestApi: TestApi {
+            override class var mockResponse: Data? {
+                return try! JSONEncoder().encode(FileUploadResponse(id: 1))
+            }
+        }
+        dependencies = dependencies.with(api: LocalTestApi.self)
+        
+        var response: (OnionRequestResponseInfoType, FileUploadResponse)? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.uploadFile([], to: "testRoom", on: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
             .retainUntilComplete()
         
         expect(response)
             .toEventuallyNot(
                 beNil(),
-                timeout: .milliseconds(10000)
+                timeout: .milliseconds(100)
             )
+        expect(error?.localizedDescription).to(beNil())
+        
+        // Validate signature headers
+        let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+        expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
+        expect(requestData?.httpMethod).to(equal("POST"))
+        expect(requestData?.headers).to(haveCount(4))
+        expect(requestData?.headers.keys).toNot(contain(Header.fileName.rawValue))
+    }
+    
+    func testItAddsAFileNameHeaderWhenProvided() throws {
+        class LocalTestApi: TestApi {
+            override class var mockResponse: Data? {
+                return try! JSONEncoder().encode(FileUploadResponse(id: 1))
+            }
+        }
+        dependencies = dependencies.with(api: LocalTestApi.self)
+        
+        var response: (OnionRequestResponseInfoType, FileUploadResponse)? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.uploadFile([], fileName: "TestFileName", to: "testRoom", on: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(response)
+            .toEventuallyNot(
+                beNil(),
+                timeout: .milliseconds(100)
+            )
+        expect(error?.localizedDescription).to(beNil())
+        
+        // Validate signature headers
+        let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+        expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
+        expect(requestData?.httpMethod).to(equal("POST"))
+        expect(requestData?.headers).to(haveCount(5))
+        expect(requestData?.headers[Header.fileName.rawValue]).to(equal("TestFileName"))
+    }
+    
+    // MARK: - Authentication
+    
+    func testItSignsTheRequestCorrectly() throws {
+        class LocalTestApi: TestApi {
+            override class var mockResponse: Data? {
+                return try! JSONEncoder().encode([OpenGroupAPIV2.Room]())
+            }
+        }
+        dependencies = dependencies.with(api: LocalTestApi.self)
+        
+        var response: (OnionRequestResponseInfoType, [OpenGroupAPIV2.Room])? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.rooms(for: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(response)
+            .toEventuallyNot(
+                beNil(),
+                timeout: .milliseconds(100)
+            )
+        expect(error?.localizedDescription).to(beNil())
         
         // Validate signature headers
         let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
@@ -216,5 +439,129 @@ class OpenGroupAPIV2Tests: XCTestCase {
         expect(requestData?.headers[Header.sogsNonce.rawValue]).to(equal("pK6YRtQApl4NhECGizF0Cg=="))
         expect(requestData?.headers[Header.sogsHash.rawValue]).to(equal("fxqLy5ZDWCsLQpwLw0Dax+4xe7cG2vPRk1NlHORIm0DPd3o9UA24KLZY"))
         expect(requestData?.headers[Header.sogsTimestamp.rawValue]).to(equal("1234567890"))
+    }
+    
+    func testItFailsToSignIfTheServerPublicKeyIsInvalid() throws {
+        testStorage.mockData[.openGroupPublicKeys] = ["testServer": ""]
+        
+        var response: Any? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.rooms(for: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.signingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    func testItFailsToSignIfThereIsNoUserKeyPair() throws {
+        testStorage.mockData[.userKeyPair] = nil
+        
+        var response: Any? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.rooms(for: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.signingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    func testItFailsToSignIfTheSharedSecretDoesNotGetGenerated() throws {
+        class InvalidSodium: SodiumType {
+            func getGenericHash() -> GenericHashType { return Sodium().genericHash }
+            func sharedSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Sodium.SharedSecret? { return nil }
+        }
+        
+        dependencies = dependencies.with(sodium: InvalidSodium())
+        
+        var response: Any? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.rooms(for: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.signingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    func testItFailsToSignIfTheIntermediateHashDoesNotGetGenerated() throws {
+        class InvalidGenericHash: GenericHashType {
+            func hashSaltPersonal(message: Bytes, outputLength: Int, key: Bytes?, salt: Bytes, personal: Bytes) -> Bytes? {
+                return nil
+            }
+        }
+        
+        dependencies = dependencies.with(genericHash: InvalidGenericHash())
+        
+        var response: Any? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.rooms(for: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.signingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
+    }
+    
+    func testItFailsToSignIfTheSecretHashDoesNotGetGenerated() throws {
+        class InvalidSecondGenericHash: GenericHashType {
+            static var didSucceedOnce: Bool = false
+            
+            func hashSaltPersonal(message: Bytes, outputLength: Int, key: Bytes?, salt: Bytes, personal: Bytes) -> Bytes? {
+                if !InvalidSecondGenericHash.didSucceedOnce {
+                    InvalidSecondGenericHash.didSucceedOnce = true
+                    return Data().bytes
+                }
+                
+                return nil
+            }
+        }
+        
+        dependencies = dependencies.with(genericHash: InvalidSecondGenericHash())
+        
+        var response: Any? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPIV2.rooms(for: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPIV2.Error.signingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
     }
 }

@@ -1,7 +1,7 @@
 import PromiseKit
 import Sodium
 
-public protocol SessionMessagingKitStorageProtocol {
+public protocol SessionMessagingKitStorageProtocol: SessionMessagingKitOpenGroupStorageProtocol {
 
     // MARK: - Shared
 

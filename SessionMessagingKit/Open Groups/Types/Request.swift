@@ -10,8 +10,8 @@ extension OpenGroupAPIV2 {
         let room: String?   // TODO: Remove this?
         let endpoint: Endpoint
         let queryParameters: [QueryParam: String]
-        let body: Data?
         let headers: [Header: String]
+        let body: Data?
         let isAuthRequired: Bool
         /// Always `true` under normal circumstances. You might want to disable
         /// this when running over Lokinet.
@@ -23,8 +23,8 @@ extension OpenGroupAPIV2 {
             room: String? = nil,
             endpoint: Endpoint,
             queryParameters: [QueryParam: String] = [:],
-            body: Data? = nil,
             headers: [Header: String] = [:],
+            body: Data? = nil,
             isAuthRequired: Bool = true,
             useOnionRouting: Bool = true
         ) {
@@ -33,8 +33,8 @@ extension OpenGroupAPIV2 {
             self.room = room
             self.endpoint = endpoint
             self.queryParameters = queryParameters
-            self.body = body
             self.headers = headers
+            self.body = body
             self.isAuthRequired = isAuthRequired
             self.useOnionRouting = useOnionRouting
         }
@@ -44,8 +44,6 @@ extension OpenGroupAPIV2 {
         }
         
         var urlPathAndParamsString: String {
-            guard method == .get else { return "/\(endpoint.path)" }
-            
             return [
                 "/\(endpoint.path)",
                 queryParameters

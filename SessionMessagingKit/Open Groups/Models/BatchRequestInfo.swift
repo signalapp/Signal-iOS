@@ -68,7 +68,7 @@ public extension Decodable {
 }
 
 extension Promise where T == (OnionRequestResponseInfoType, Data?) {
-    func decoded(as types: OpenGroupAPIV2.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error? = nil) -> Promise<OpenGroupAPIV2.BatchResponse> {
+    func decoded(as types: OpenGroupAPIV2.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error) -> Promise<OpenGroupAPIV2.BatchResponse> {
         self.map(on: queue) { responseInfo, maybeData -> OpenGroupAPIV2.BatchResponse in
             // Need to split the data into an array of data so each item can be Decoded correctly
             guard let data: Data = maybeData else { throw OpenGroupAPIV2.Error.parsingFailed }
@@ -85,8 +85,8 @@ extension Promise where T == (OnionRequestResponseInfoType, Data?) {
                     .map { data, type in try type.decoded(from: data) }
                     .map { data in (responseInfo, data) }
             }
-            catch let thrownError {
-                throw (error ?? thrownError)
+            catch _ {
+                throw error
             }
         }
     }

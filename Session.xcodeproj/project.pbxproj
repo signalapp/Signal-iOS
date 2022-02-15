@@ -151,6 +151,7 @@
 		A1C32D5017A06538000A904E /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4F17A06537000A904E /* AddressBookUI.framework */; };
 		A1C32D5117A06544000A904E /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C32D4D17A0652C000A904E /* AddressBook.framework */; };
 		A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A5509EC91A69AB8B00ABA4BC /* Main.storyboard */; };
+		B5FE70D512E75D659386BAD4 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionMessagingKit_SessionMessagingKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1E0F51F17E4443731B94D32 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionMessagingKit_SessionMessagingKitTests.framework */; };
 		B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B66DBF4919D5BBC8006EA940 /* Images.xcassets */; };
 		B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B67EBF5C19194AC60084CCFD /* Settings.bundle */; };
 		B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6B226961BE4B7D200860F4D /* ContactsUI.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -767,7 +768,6 @@
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D48CEFD2222D323FEFEFC6CC /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8962372EEC51D3F56FE3A68A /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SignalUtilitiesKit.framework */; };
-		E197F4A653289312F13926E6 /* Pods_SessionMessagingKitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF061FF98D2BFA3ECCF8C6F6 /* Pods_SessionMessagingKitTests.framework */; };
 		EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */; };
 		F5765D284BC6ECAC0C1D33F0 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_SessionNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4A93ECA93B3DE800CC7D7F6 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_SessionNotificationServiceExtension.framework */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
@@ -842,6 +842,8 @@
 		FDC438B727BB160000C60D73 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438B627BB160000C60D73 /* Error.swift */; };
 		FDC438B927BB161E00C60D73 /* Version.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438B827BB161E00C60D73 /* Version.swift */; };
 		FDC438BD27BB2AB400C60D73 /* Mockable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438BC27BB2AB400C60D73 /* Mockable.swift */; };
+		FDC438C127BB4E6800C60D73 /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438C027BB4E6800C60D73 /* Dependencies.swift */; };
+		FDC438C327BB512200C60D73 /* SodiumProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438C227BB512200C60D73 /* SodiumProtocols.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1022,6 +1024,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0208C84C4D15048D699BEC10 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		038A3BABD5BA0CE41D8C17F5 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0840117FDFD286D1CC14A2E1 /* Pods-SessionTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionTests/Pods-SessionTests.debug.xcconfig"; sourceTree = "<group>"; };
 		0D3D13FEE4FF6A2E2ED85322 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -1227,6 +1230,7 @@
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
 		8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
 		948239851C08032C842937CC /* Pods-SignalMessaging.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.test.xcconfig"; sourceTree = "<group>"; };
+		949F269926ABA08C125DCA9D /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		9AE1058A3BB2148A279432B2 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit.debug.xcconfig"; sourceTree = "<group>"; };
 		9B3329176C10E9640865E65B /* Pods-GlobalDependencies-Session.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-Session.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-Session/Pods-GlobalDependencies-Session.debug.xcconfig"; sourceTree = "<group>"; };
 		9B533A9FA46206D3D99C9ADA /* Pods-SignalMessaging.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1869,7 +1873,6 @@
 		C8153B96A292A25045BE2C54 /* Pods-SessionTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionTests/Pods-SessionTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		C88965DE4F4EC4FC919BEC4E /* Pods-SessionUIKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionUIKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionUIKit/Pods-SessionUIKit.debug.xcconfig"; sourceTree = "<group>"; };
 		C98441E849C3CA7FE8220D33 /* Pods-SessionNotificationServiceExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionNotificationServiceExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionNotificationServiceExtension/Pods-SessionNotificationServiceExtension.app store release.xcconfig"; sourceTree = "<group>"; };
-		CF061FF98D2BFA3ECCF8C6F6 /* Pods_SessionMessagingKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SessionMessagingKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2179CFB16BB0B3A0006F3AB /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		D2179CFD16BB0B480006F3AB /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		D221A089169C9E5E00537ABF /* Session.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Session.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1894,6 +1897,7 @@
 		EF764C331DB67CC5000D9A87 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Permissions.h"; sourceTree = "<group>"; };
 		EF764C341DB67CC5000D9A87 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Permissions.m"; sourceTree = "<group>"; };
 		F121FB43E2A1C1CF7F2AFC23 /* Pods-SessionPushNotificationExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionPushNotificationExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionPushNotificationExtension/Pods-SessionPushNotificationExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		F1E0F51F17E4443731B94D32 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionMessagingKit_SessionMessagingKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionMessagingKit_SessionMessagingKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4DC483F404B65C59D9C2CF8 /* Pods-SessionMessagingKitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKitTests/Pods-SessionMessagingKitTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F62ECF7B8AF4F8089AA705B3 /* Pods-LokiPushNotificationService.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LokiPushNotificationService.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LokiPushNotificationService/Pods-LokiPushNotificationService.debug.xcconfig"; sourceTree = "<group>"; };
 		F9BBF530D71905BA9007675F /* Pods-SessionShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionShareExtension/Pods-SessionShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1968,6 +1972,8 @@
 		FDC438B627BB160000C60D73 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		FDC438B827BB161E00C60D73 /* Version.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version.swift; sourceTree = "<group>"; };
 		FDC438BC27BB2AB400C60D73 /* Mockable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mockable.swift; sourceTree = "<group>"; };
+		FDC438C027BB4E6800C60D73 /* Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dependencies.swift; sourceTree = "<group>"; };
+		FDC438C227BB512200C60D73 /* SodiumProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SodiumProtocols.swift; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2089,7 +2095,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FDC4389227B9FFC700C60D73 /* SessionMessagingKit.framework in Frameworks */,
-				E197F4A653289312F13926E6 /* Pods_SessionMessagingKitTests.framework in Frameworks */,
+				B5FE70D512E75D659386BAD4 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionMessagingKit_SessionMessagingKitTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2303,6 +2309,8 @@
 				A0FB43B511403A5FAFAC88B8 /* Pods-SessionMessagingKitTests.app store release.xcconfig */,
 				0840117FDFD286D1CC14A2E1 /* Pods-SessionTests.debug.xcconfig */,
 				C8153B96A292A25045BE2C54 /* Pods-SessionTests.app store release.xcconfig */,
+				949F269926ABA08C125DCA9D /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.debug.xcconfig */,
+				0208C84C4D15048D699BEC10 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.app store release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -3761,8 +3769,8 @@
 				038A3BABD5BA0CE41D8C17F5 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionShareExtension.framework */,
 				C5060C3B36A848B71CCE4685 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionUtilitiesKit.framework */,
 				8962372EEC51D3F56FE3A68A /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SignalUtilitiesKit.framework */,
-				CF061FF98D2BFA3ECCF8C6F6 /* Pods_SessionMessagingKitTests.framework */,
 				D2C155B76C8483CB9A6EA9B4 /* Pods_SessionTests.framework */,
+				F1E0F51F17E4443731B94D32 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionMessagingKit_SessionMessagingKitTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -3814,6 +3822,8 @@
 				FDC4380827B31D4E00C60D73 /* Error.swift */,
 				FDC4381627B32EC700C60D73 /* Personalization.swift */,
 				FDC4381427B329CE00C60D73 /* NonceGenerator16Byte.swift */,
+				FDC438C027BB4E6800C60D73 /* Dependencies.swift */,
+				FDC438C227BB512200C60D73 /* SodiumProtocols.swift */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -4666,15 +4676,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SessionMessagingKitTests/Pods-SessionMessagingKitTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SessionMessagingKitTests/Pods-SessionMessagingKitTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SessionMessagingKitTests/Pods-SessionMessagingKitTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7E2D14F857C70F98DED3B8E9 /* [CP] Check Pods Manifest.lock */ = {
@@ -4736,7 +4746,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SessionMessagingKitTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -5210,6 +5220,7 @@
 				FDC4384827B47F4D00C60D73 /* LegacyRoomInfo.swift in Sources */,
 				C32C598A256D0664003C73A2 /* SNProtoEnvelope+Conversion.swift in Sources */,
 				C352A2FF25574B6300338F3E /* MessageSendJob.swift in Sources */,
+				FDC438C327BB512200C60D73 /* SodiumProtocols.swift in Sources */,
 				B8856D11256F112A001CE70E /* OWSAudioSession.swift in Sources */,
 				C3DB66C3260ACCE6001EFC55 /* OpenGroupPollerV2.swift in Sources */,
 				FDC438AE27BB148700C60D73 /* UserDeleteMessagesResponse.swift in Sources */,
@@ -5230,6 +5241,7 @@
 				C32C5FD6256E0346003C73A2 /* Notification+Thread.swift in Sources */,
 				FDC438A827BB11CD00C60D73 /* UserPermissionsRequest.swift in Sources */,
 				C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */,
+				FDC438C127BB4E6800C60D73 /* Dependencies.swift in Sources */,
 				FDC4383827B3863200C60D73 /* VersionResponse.swift in Sources */,
 				C32C5C88256DD0D2003C73A2 /* Storage+Messaging.swift in Sources */,
 				C32C59C7256DB41F003C73A2 /* TSThread.m in Sources */,
@@ -6878,7 +6890,7 @@
 		};
 		FDC4389627B9FFC700C60D73 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F4DC483F404B65C59D9C2CF8 /* Pods-SessionMessagingKitTests.debug.xcconfig */;
+			baseConfigurationReference = 949F269926ABA08C125DCA9D /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -6919,7 +6931,7 @@
 		};
 		FDC4389727B9FFC700C60D73 /* App Store Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A0FB43B511403A5FAFAC88B8 /* Pods-SessionMessagingKitTests.app store release.xcconfig */;
+			baseConfigurationReference = 0208C84C4D15048D699BEC10 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionMessagingKit-SessionMessagingKitTests.app store release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

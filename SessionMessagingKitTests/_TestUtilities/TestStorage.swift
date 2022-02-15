@@ -13,6 +13,7 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
         case allV2OpenGroups
         case openGroupPublicKeys
         case userKeyPair
+        case openGroupImage
     }
     
     typealias Key = DataKey
@@ -111,4 +112,11 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func persist(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String] { return [] }
     func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any) {}
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any) {}
+}
+
+// MARK: - SessionMessagingKitOpenGroupStorageProtocol
+
+extension TestStorage: SessionMessagingKitOpenGroupStorageProtocol {
+    func getOpenGroupImage(for room: String, on server: String) -> Data? { return (mockData[.openGroupImage] as? Data) }
+    func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any) {}
 }

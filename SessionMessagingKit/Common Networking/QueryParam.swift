@@ -7,6 +7,5 @@ enum QueryParam: String {
     case fromServerId = "from_server_id"
     
     case required = "required"
-    case fileName = "X-Filename"
     case limit                      // For messages - number between 1 and 256 (default is 100)
 }

@@ -4,7 +4,7 @@ import Foundation
 
 extension String {
     public func dataFromHex() -> Data? {
-        guard (self.count % 2) == 0 else { return nil }
+        guard self.count > 0 && (self.count % 2) == 0 else { return nil }
 
         let chars = self.map { $0 }
         let bytes: [UInt8] = stride(from: 0, to: chars.count, by: 2)
