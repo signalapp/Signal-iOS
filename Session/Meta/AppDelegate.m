@@ -194,7 +194,7 @@ static NSTimeInterval launchStartedAt;
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
 
-    LKAppMode appMode = [self getCurrentAppMode];
+    LKAppMode appMode = [LKAppModeManager getAppModeOrSystemDefault];
     [self adaptAppMode:appMode];
 
     // This must happen in appDidFinishLaunching or earlier to ensure we don't
@@ -244,7 +244,7 @@ static NSTimeInterval launchStartedAt;
 
     [self ensureRootViewController];
 
-    LKAppMode appMode = [self getCurrentAppMode];
+    LKAppMode appMode = [LKAppModeManager getAppModeOrSystemDefault];
     [self adaptAppMode:appMode];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -734,12 +734,6 @@ static NSTimeInterval launchStartedAt;
     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.appModeChanged object:nil];
 }
 
-- (LKAppMode)getCurrentAppMode
-{
-    LKAppMode appMode = [self getAppModeOrSystemDefault];
-    return appMode;
-}
-
 - (void)setCurrentAppMode:(LKAppMode)appMode
 {
     [NSUserDefaults.standardUserDefaults setInteger:appMode forKey:@"appMode"];
@@ -749,7 +743,7 @@ static NSTimeInterval launchStartedAt;
 - (void)setAppModeToSystemDefault
 {
     [NSUserDefaults.standardUserDefaults removeObjectForKey:@"appMode"];
-    LKAppMode appMode = [self getCurrentAppMode];
+    LKAppMode appMode = [LKAppModeManager getAppModeOrSystemDefault];
     [self adaptAppMode:appMode];
 }
 

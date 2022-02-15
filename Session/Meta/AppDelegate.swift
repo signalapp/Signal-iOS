@@ -178,19 +178,5 @@ extension AppDelegate {
     @objc func stopClosedGroupPoller() {
         ClosedGroupPoller.shared.stop()
     }
-    
-    // MARK: Theme
-    @objc func getAppModeOrSystemDefault() -> AppMode {
-        let userDefaults = UserDefaults.standard
-        if userDefaults.dictionaryRepresentation().keys.contains("appMode") {
-            let mode = userDefaults.integer(forKey: "appMode")
-            return AppMode(rawValue: mode) ?? .light
-        } else {
-            if #available(iOS 13.0, *) {
-                return UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light
-            } else {
-                return .light
-            }
-        }
-    }
+
 }
