@@ -65,6 +65,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = Theme.darkThemeBackgroundColor
+
         library.add(delegate: self)
 
         guard let collectionView = collectionView else {
@@ -72,14 +74,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         collectionView.allowsMultipleSelection = true
-        collectionView.backgroundColor = Theme.backgroundColor
+        collectionView.backgroundColor = Theme.darkThemeBackgroundColor
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
+        cancelButton.tintColor = .ows_gray05
         navigationItem.leftBarButtonItem = cancelButton
 
         let titleView = TitleView()
         titleView.delegate = self
+        titleView.tintColor = .ows_gray05
         titleView.text = photoCollection.localizedTitle()
         navigationItem.titleView = titleView
         self.titleView = titleView
@@ -90,7 +94,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         bottomBar.autoPinBottomToSuperviewMargin()
         bottomBar.autoPinHorizontalEdges(toEdgesOf: view)
 
-        cameraButton = PhotoControl(imageName: "media-composer-camera-outline-28") { [weak self] in
+        cameraButton = PhotoControl(imageName: "media-composer-camera-outline-28", userInterfaceStyleOverride: .dark) { [weak self] in
             guard let self = self else { return }
             self.didTapCameraButton()
         }
@@ -102,6 +106,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         cameraButton.autoPinBottomToSuperviewMargin()
 
         doneButton = MediaDoneButton()
+        doneButton.userInterfaceStyleOverride = .dark
         doneButton.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
         bottomBar.addSubview(doneButton)
         doneButton.autoPinTopToSuperviewMargin()
@@ -265,11 +270,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             // pre-layout collectionPicker for snappier response
             self.collectionPickerController.view.layoutIfNeeded()
         }
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        collectionView.backgroundColor = Theme.backgroundColor
     }
 
     private func updateDoneButtonAppearance() {

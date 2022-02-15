@@ -248,7 +248,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
         case is AttachmentApprovalViewController:
             showNavbar(.alwaysDarkAndClear)
         case is ImagePickerGridController:
-            showNavbar(.default)
+            showNavbar(.alwaysDarkAndClear)
         case is ConversationPickerViewController:
             showNavbar(.default)
         default:
