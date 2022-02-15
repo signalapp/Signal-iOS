@@ -128,7 +128,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         // A V2 open group URL will look like: <optional scheme> + <host> + <optional port> + <room> + <public key>
         // The host doesn't parse if no explicit scheme is provided
         if let (room, server, publicKey) = OpenGroupManager.parseV2OpenGroup(from: string) {
-            joinV2OpenGroup(room: room, server: server, publicKey: publicKey)
+            joinV2OpenGroup(roomToken: room, server: server, publicKey: publicKey)
         } else {
             let title = NSLocalizedString("invalid_url", comment: "")
             let message = "Please check the URL you entered and try again."
@@ -136,24 +136,25 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         }
     }
     
-    fileprivate func joinV2OpenGroup(room: String, server: String, publicKey: String) {
+    fileprivate func joinV2OpenGroup(roomToken: String, server: String, publicKey: String) {
         guard !isJoining else { return }
         isJoining = true
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             Storage.shared.write { transaction in
-                OpenGroupManager.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
-                .done(on: DispatchQueue.main) { [weak self] _ in
-                    self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
-                }
-                .catch(on: DispatchQueue.main) { [weak self] error in
-                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                    let title = "Couldn't Join"
-                    let message = error.localizedDescription
-                    self?.isJoining = false
-                    self?.showError(title: title, message: message)
-                }
+                OpenGroupManager.shared
+                    .add(roomToken: roomToken, server: server, publicKey: publicKey, using: transaction)
+                    .done(on: DispatchQueue.main) { [weak self] _ in
+                        self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                    }
+                    .catch(on: DispatchQueue.main) { [weak self] error in
+                        self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                        let title = "Couldn't Join"
+                        let message = error.localizedDescription
+                        self?.isJoining = false
+                        self?.showError(title: title, message: message)
+                    }
             }
         }
     }
@@ -166,10 +167,11 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     }
 }
 
-private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, OpenGroupSuggestionGridDelegate {
+private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, OpenGroupSuggestionGridDelegate {
     weak var joinOpenGroupVC: JoinOpenGroupVC!
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var urlTextView: TextView = {
         let result = TextView(placeholder: NSLocalizedString("vc_enter_chat_url_text_field_hint", comment: ""))
         result.keyboardType = .URL
@@ -185,7 +187,8 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
@@ -223,7 +226,8 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         view.addGestureRecognizer(tapGestureRecognizer)
     }
     
-    // MARK: General
+    // MARK: - General
+    
     func constrainHeight(to height: CGFloat) {
         view.set(.height, to: height)
     }
@@ -232,14 +236,15 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         urlTextView.resignFirstResponder()
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         let location = gestureRecognizer.location(in: view)
         return !suggestionGrid.frame.contains(location)
     }
     
-    func join(_ room: OpenGroupAPI.LegacyRoomInfo) {
-        joinOpenGroupVC.joinV2OpenGroup(room: room.id, server: OpenGroupAPI.defaultServer, publicKey: OpenGroupAPI.defaultServerPublicKey)
+    func join(_ room: OpenGroupAPI.Room) {
+        joinOpenGroupVC.joinV2OpenGroup(roomToken: room.token, server: OpenGroupAPI.defaultServer, publicKey: OpenGroupAPI.defaultServerPublicKey)
     }
     
     @objc private func joinOpenGroup() {

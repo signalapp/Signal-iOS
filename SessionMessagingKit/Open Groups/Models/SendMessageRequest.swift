@@ -45,23 +45,5 @@ extension OpenGroupAPI {
             try container.encode(whisperMods, forKey: .whisperMods)
             try container.encodeIfPresent(fileIds, forKey: .fileIds)
         }
-        
-        // MARK: - Signing
-        
-        public static func sign(message: Data, for idType: IdPrefix, with publicKey: String) -> (data: Data, signature: Data)? {
-            guard let userKeyPair: ECKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else {
-                return nil
-            }
-            guard let targetKeyPair: ECKeyPair = try? userKeyPair.convert(to: idType, with: publicKey) else {
-                return nil
-            }
-            
-            guard let signature = try? Ed25519.sign(message, with: targetKeyPair) else {
-                SNLog("Failed to sign open group message.")
-                return nil
-            }
-            
-            return (message, signature)
-        }
     }
 }

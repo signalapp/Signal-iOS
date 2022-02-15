@@ -163,7 +163,7 @@ private extension MentionSelectionView {
             profilePictureView.publicKey = mentionCandidate.publicKey
             profilePictureView.update()
             if let server = openGroupServer, let room = openGroupRoom {
-                let isUserModerator = OpenGroupAPI.isUserModerator(mentionCandidate.publicKey, for: room, on: server)
+                let isUserModerator = OpenGroupManager.isUserModerator(mentionCandidate.publicKey, for: room, on: server)
                 moderatorIconImageView.isHidden = !isUserModerator
             } else {
                 moderatorIconImageView.isHidden = true

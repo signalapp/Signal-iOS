@@ -2,6 +2,12 @@
 public protocol SessionMessagingKitOpenGroupStorageProtocol {
     func getOpenGroupImage(for room: String, on server: String) -> Data?
     func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any)
+    
+    func getV2OpenGroup(for threadID: String) -> OpenGroupV2?
+    func setV2OpenGroup(_ openGroup: OpenGroupV2, for threadID: String, using transaction: Any)
+    
+    func getUserCount(forV2OpenGroupWithID openGroupID: String) -> UInt64?
+    func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any)
 }
 
 extension Storage: SessionMessagingKitOpenGroupStorageProtocol {

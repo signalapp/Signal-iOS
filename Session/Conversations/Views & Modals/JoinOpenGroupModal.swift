@@ -69,9 +69,10 @@ final class JoinOpenGroupModal : Modal {
             return presentingViewController!.present(alert, animated: true, completion: nil)
         }
         presentingViewController!.dismiss(animated: true, completion: nil)
+        
         Storage.shared.write { [presentingViewController = self.presentingViewController!] transaction in
             OpenGroupManager.shared
-                .add(room: room, server: server, publicKey: publicKey, using: transaction)
+                .add(roomToken: room, server: server, publicKey: publicKey, using: transaction)
                 .done(on: DispatchQueue.main) { _ in
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)

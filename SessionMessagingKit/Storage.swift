@@ -67,10 +67,6 @@ public protocol SessionMessagingKitStorageProtocol: SessionMessagingKitOpenGroup
     func setLastDeletionServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any)
     func removeLastDeletionServerID(for room: String, on server: String, using transaction: Any)
 
-    // MARK: - Open Group Metadata
-
-    func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any)
-
     // MARK: - Message Handling
 
     func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64]

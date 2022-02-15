@@ -81,9 +81,19 @@ class OpenGroupAPITests: XCTestCase {
         )
         
         testStorage.mockData[.allV2OpenGroups] = [
-            "0": OpenGroupV2(server: "testServer", room: "testRoom", name: "Test", publicKey: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d", imageID: nil)
+            "0": OpenGroupV2(
+                server: "testServer",
+                room: "testRoom",
+                publicKey: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d",
+                name: "Test",
+                groupDescription: nil,
+                imageID: nil,
+                infoUpdates: 0
+            )
         ]
-        testStorage.mockData[.openGroupPublicKeys] = ["testServer": "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"]
+        testStorage.mockData[.openGroupPublicKeys] = [
+            "testServer": "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"
+        ]
         
         // Test Private key, not actually used (from here https://www.notion.so/oxen/SOGS-Authentication-dc64cc846cb24b2abbf7dd4bfd74abbb)
         testStorage.mockData[.userKeyPair] = try! ECKeyPair(

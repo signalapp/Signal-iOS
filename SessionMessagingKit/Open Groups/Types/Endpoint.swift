@@ -20,7 +20,7 @@ extension OpenGroupAPI {
         // Messages
         
         case roomMessage(String)
-        case roomMessageIndividual(String, String)
+        case roomMessageIndividual(String, id: Int64)
         case roomMessagesRecent(String)
         case roomMessagesBefore(String, id: Int64)
         case roomMessagesSince(String, seqNo: Int64)

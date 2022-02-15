@@ -1,7 +1,7 @@
 import Foundation
 import SessionUtilitiesKit
 
-public struct OpenGroupMessageV2: Codable {
+public struct LegacyOpenGroupMessageV2: Codable {
     enum CodingKeys: String, CodingKey {
         case serverID = "server_id"
         case sender = "public_key"
@@ -19,7 +19,7 @@ public struct OpenGroupMessageV2: Codable {
     /// a receiving user can verify that the message wasn't tampered with.
     public let base64EncodedSignature: String?
 
-    public func sign(with publicKey: String) -> OpenGroupMessageV2? {
+    public func sign(with publicKey: String) -> LegacyOpenGroupMessageV2? {
         guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { return nil }
         guard let data = Data(base64Encoded: base64EncodedData) else { return nil }
         guard let signature = try? Ed25519.sign(data, with: userKeyPair) else {
@@ -27,7 +27,7 @@ public struct OpenGroupMessageV2: Codable {
             return nil
         }
         
-        return OpenGroupMessageV2(
+        return LegacyOpenGroupMessageV2(
             serverID: serverID,
             sender: sender,
             sentTimestamp: sentTimestamp,
@@ -39,7 +39,7 @@ public struct OpenGroupMessageV2: Codable {
 
 // MARK: - Decoder
 
-extension OpenGroupMessageV2 {
+extension LegacyOpenGroupMessageV2 {
     public init(from decoder: Decoder) throws {
         let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
     
@@ -60,7 +60,7 @@ extension OpenGroupMessageV2 {
             throw OpenGroupAPI.Error.parsingFailed
         }
         
-        self = OpenGroupMessageV2(
+        self = LegacyOpenGroupMessageV2(
             serverID: try? container.decode(Int64.self, forKey: .serverID),
             sender: sender,
             sentTimestamp: try container.decode(UInt64.self, forKey: .sentTimestamp),

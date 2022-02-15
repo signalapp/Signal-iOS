@@ -15,8 +15,8 @@ extension OpenGroupAPI {
             
             public let room: String
             public let statusCode: UInt
-            public let messages: [OpenGroupMessageV2]?
-            public let deletions: [Deletion]?
+            public let messages: [LegacyOpenGroupMessageV2]?
+            public let deletions: [LegacyDeletion]?
             public let moderators: [String]?
         }
         

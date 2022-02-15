@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPI {
-    struct AuthTokenResponse: Codable {
+    struct LegacyAuthTokenResponse: Codable {
          struct Challenge: Codable {
              enum CodingKeys: String, CodingKey {
                  case ciphertext = "ciphertext"
@@ -20,7 +20,7 @@ extension OpenGroupAPI {
 
 // MARK: - Codable
 
-extension OpenGroupAPI.AuthTokenResponse.Challenge {
+extension OpenGroupAPI.LegacyAuthTokenResponse.Challenge {
     init(from decoder: Decoder) throws {
         let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -31,7 +31,7 @@ extension OpenGroupAPI.AuthTokenResponse.Challenge {
             throw OpenGroupAPI.Error.parsingFailed
         }
         
-        self = OpenGroupAPI.AuthTokenResponse.Challenge(
+        self = OpenGroupAPI.LegacyAuthTokenResponse.Challenge(
             ciphertext: ciphertext,
             ephemeralPublicKey: ephemeralPublicKey
         )

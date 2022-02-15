@@ -26,7 +26,9 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "NO">
+      shouldUseLaunchSchemeArgsEnv = "NO"
+      codeCoverageEnabled = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -43,6 +45,64 @@
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D221A088169C9E5E00537ABF"
+            BuildableName = "Session.app"
+            BlueprintName = "Session"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7BC01A3A241F40AB00BC7C55"
+            BuildableName = "SessionNotificationServiceExtension.appex"
+            BlueprintName = "SessionNotificationServiceExtension"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "453518671FC635DD00210559"
+            BuildableName = "SessionShareExtension.appex"
+            BlueprintName = "SessionShareExtension"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C3C2A6EF25539DE700C340D1"
+            BuildableName = "SessionMessagingKit.framework"
+            BlueprintName = "SessionMessagingKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C3C2A59E255385C100C340D1"
+            BuildableName = "SessionSnodeKit.framework"
+            BlueprintName = "SessionSnodeKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C331FF1A2558F9D300070591"
+            BuildableName = "SessionUIKit.framework"
+            BlueprintName = "SessionUIKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C3C2A678255388CC00C340D1"
+            BuildableName = "SessionUtilitiesKit.framework"
+            BlueprintName = "SessionUtilitiesKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C33FD9AA255A548A00E217F9"
+            BuildableName = "SignalUtilitiesKit.framework"
+            BlueprintName = "SignalUtilitiesKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
       <Testables>
          <TestableReference
             skipped = "NO">

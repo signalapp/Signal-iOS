@@ -71,3 +71,37 @@ extension OpenGroupAPI {
         public let details: Room?
     }
 }
+
+// MARK: - Convenience
+
+extension OpenGroupAPI.RoomPollInfo {
+    init(room: OpenGroupAPI.Room) {
+        self.init(
+            token: room.token,
+            created: room.created,
+            name: room.name,
+            description: room.description,
+            imageId: room.imageId,
+            infoUpdates: room.infoUpdates,
+            messageSequence: room.messageSequence,
+            activeUsers: room.activeUsers,
+            activeUsersCutoff: room.activeUsersCutoff,
+            pinnedMessages: room.pinnedMessages,
+            admin: room.admin,
+            globalAdmin: room.globalAdmin,
+            admins: room.admins,
+            hiddenAdmins: room.hiddenAdmins,
+            moderator: room.moderator,
+            globalModerator: room.globalModerator,
+            moderators: room.moderators,
+            hiddenModerators: room.hiddenModerators,
+            read: room.read,
+            defaultRead: room.defaultRead,
+            write: room.write,
+            defaultWrite: room.defaultWrite,
+            upload: room.upload,
+            defaultUpload: room.defaultUpload,
+            details: nil
+        )
+    }
+}

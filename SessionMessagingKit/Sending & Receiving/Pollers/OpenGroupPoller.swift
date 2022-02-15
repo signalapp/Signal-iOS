@@ -80,120 +80,38 @@ extension OpenGroupAPI {
         }
         
         private func handlePollResponse(_ response: [OpenGroupAPI.Endpoint: (info: OnionRequestResponseInfoType, data: Codable)], isBackgroundPoll: Bool) {
-            let storage = SNMessagingKitConfiguration.shared.storage
-            
             response.forEach { endpoint, response in
                 switch endpoint {
                     case .roomMessagesRecent(let roomToken), .roomMessagesBefore(let roomToken, _), .roomMessagesSince(let roomToken, _):
                         guard let responseData: [OpenGroupAPI.Message] = response.data as? [OpenGroupAPI.Message] else {
-                            //SNLog("Open group polling failed due to error: \(error).")
-                            return  // TODO: Throw error?
+                            SNLog("Open group polling failed due to invalid data.")
+                            return
                         }
                         
-                        handleMessages(responseData, roomToken: roomToken, isBackgroundPoll: isBackgroundPoll, using: storage)
+                        OpenGroupManager.handleMessages(
+                            responseData,
+                            for: roomToken,
+                            on: server,
+                            isBackgroundPoll: isBackgroundPoll
+                        )
                         
                     case .roomPollInfo(let roomToken, _):
                         guard let responseData: OpenGroupAPI.RoomPollInfo = response.data as? OpenGroupAPI.RoomPollInfo else {
-                            //SNLog("Open group polling failed due to error: \(error).")
-                            return  // TODO: Throw error?
+                            SNLog("Open group polling failed due to invalid data.")
+                            return
                         }
                         
-                        handlePollInfo(responseData, roomToken: roomToken, isBackgroundPoll: isBackgroundPoll, using: storage)
+                        OpenGroupManager.handlePollInfo(
+                            responseData,
+                            publicKey: nil,
+                            for: roomToken,
+                            on: server,
+                            isBackgroundPoll: isBackgroundPoll
+                        )
                         
                     default: break // No custom handling needed
                 }
             }
-        }
-        
-        // MARK: - Custom response handling
-        // TODO: Shift this logic to the OpenGroupManager? (seems like the place it should belong?)
-        
-        private func handleMessages(_ messages: [OpenGroupAPI.Message], roomToken: String, isBackgroundPoll: Bool, using storage: SessionMessagingKitStorageProtocol) {
-            // Sorting the messages by server ID before importing them fixes an issue where messages that quote older messages can't find those older messages
-            let openGroupID = "\(server).\(roomToken)"
-            let sortedMessages: [OpenGroupAPI.Message] = messages
-                .sorted { lhs, rhs in lhs.seqNo < rhs.seqNo }
-            
-            storage.write { transaction in
-                var messageServerIDsToRemove: [UInt64] = []
-                
-                sortedMessages.forEach { message in
-                    guard let base64EncodedString: String = message.base64EncodedData, let data = Data(base64Encoded: base64EncodedString), let sender: String = message.sender else {
-                        // A message with no data has been deleted so add it to the list to remove
-                        messageServerIDsToRemove.append(UInt64(message.seqNo))
-                        return
-                    }
-                    
-                    let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted)))
-                    envelope.setContent(data)
-                    envelope.setSource(sender)
-                    
-                    do {
-                        let data = try envelope.buildSerializedData()
-                        let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: UInt64(message.seqNo), isRetry: false, using: transaction)
-                        try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
-                    }
-                    catch {
-                        SNLog("Couldn't receive open group message due to error: \(error).")
-                    }
-                }
-
-                // Handle any deletions that are needed
-                guard !messageServerIDsToRemove.isEmpty else { return }
-                guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else { return }
-                guard let threadID = storage.v2GetThreadID(for: openGroupID), let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-                    return
-                }
-                
-                var messagesToRemove: [TSMessage] = []
-                
-                thread.enumerateInteractions(with: transaction) { interaction, stop in
-                    guard let message: TSMessage = interaction as? TSMessage, messageServerIDsToRemove.contains(message.openGroupServerMessageID) else { return }
-                    messagesToRemove.append(message)
-                }
-                
-                messagesToRemove.forEach { $0.remove(with: transaction) }
-            }
-        }
-        
-        private func handlePollInfo(_ pollInfo: OpenGroupAPI.RoomPollInfo, roomToken: String, isBackgroundPoll: Bool, using storage: SessionMessagingKitStorageProtocol) {
-            // TODO: Handle other properties???.
-
-    //        public let token: String?
-    //        public let created: TimeInterval?
-    //        public let name: String?
-    //        public let description: String?
-    //        public let imageId: Int64?
-    //
-    //        public let infoUpdates: Int64?
-    //        public let messageSequence: Int64?
-    //        public let activeUsers: Int64?
-    //        public let activeUsersCutoff: Int64?
-    //        public let pinnedMessages: [PinnedMessage]?
-    //
-    //        public let admin: Bool?
-    //        public let globalAdmin: Bool?
-    //        public let admins: [String]?
-    //        public let hiddenAdmins: [String]?
-    //
-    //        public let moderator: Bool?
-    //        public let globalModerator: Bool?
-    //        public let moderators: [String]?
-    //        public let hiddenModerators: [String]?
-            
-            // - Moderators
-            OpenGroupAPI.moderators[server] = (OpenGroupAPI.moderators[server] ?? [:])
-                .setting(roomToken, Set(pollInfo.moderators ?? []))
-
-    //        public let read: Bool?
-    //        public let defaultRead: Bool?
-    //        public let write: Bool?
-    //        public let defaultWrite: Bool?
-    //        public let upload: Bool?
-    //        public let defaultUpload: Bool?
-    //
-    //        /// Only populated and different if the `info_updates` counter differs from the provided `info_updated` value
-    //        public let details: Room?
         }
         
         // MARK: - Legacy Handling

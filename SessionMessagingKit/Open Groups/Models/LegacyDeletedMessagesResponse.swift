@@ -3,11 +3,11 @@
 import Foundation
 
 extension OpenGroupAPI {
-    struct PublicKeyBody: Codable {
+    struct LegacyDeletedMessagesResponse: Codable {
         enum CodingKeys: String, CodingKey {
-            case publicKey = "public_key"
+            case deletions = "ids"
         }
         
-        let publicKey: String
+        let deletions: [LegacyDeletion]
     }
 }

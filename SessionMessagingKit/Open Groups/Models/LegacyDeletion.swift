@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPI {
-    public struct Deletion: Codable {
+    public struct LegacyDeletion: Codable {
         enum CodingKeys: String, CodingKey {
             case id
             case deletedMessageID = "deleted_message_id"
@@ -12,12 +12,12 @@ extension OpenGroupAPI {
         let id: Int64
         let deletedMessageID: Int64
         
-        public static func from(_ json: JSON) -> Deletion? {
+        public static func from(_ json: JSON) -> LegacyDeletion? {
             guard let id = json["id"] as? Int64, let deletedMessageID = json["deleted_message_id"] as? Int64 else {
                 return nil
             }
             
-            return Deletion(id: id, deletedMessageID: deletedMessageID)
+            return LegacyDeletion(id: id, deletedMessageID: deletedMessageID)
         }
     }
 }
