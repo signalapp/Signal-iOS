@@ -24,6 +24,7 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
+  - Nimble (9.2.1)
   - NVActivityIndicatorView (5.1.1):
     - NVActivityIndicatorView/Base (= 5.1.1)
   - NVActivityIndicatorView/Base (5.1.1)
@@ -124,6 +125,7 @@ DEPENDENCIES:
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
+  - Nimble
   - NVActivityIndicatorView
   - PromiseKit
   - PureLayout (~> 3.1.8)
@@ -141,6 +143,7 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
+    - Nimble
     - NVActivityIndicatorView
     - OpenSSL-Universal
     - PromiseKit
@@ -190,6 +193,7 @@ SPEC CHECKSUMS:
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
+  Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
   PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
@@ -204,6 +208,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 19ce2820c263e8f3c114817f7ca2da73a9382b6a
+PODFILE CHECKSUM: a4acbe047a767c48a709e93318532fbf345330dd
 
 COCOAPODS: 1.11.2

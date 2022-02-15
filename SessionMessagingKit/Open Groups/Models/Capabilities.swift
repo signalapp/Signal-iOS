@@ -4,8 +4,8 @@ import Foundation
 
 extension OpenGroupAPIV2 {
     public struct Capabilities: Codable {
-        enum Capability: CaseIterable, Codable {
-            static var allCases: [Capability] {
+        public enum Capability: CaseIterable, Codable {
+            public static var allCases: [Capability] {
                 [.pysogs]
             }
             
@@ -16,7 +16,7 @@ extension OpenGroupAPIV2 {
             
             // MARK: - Convenience
             
-            var rawValue: String {
+            public var rawValue: String {
                 switch self {
                     case .unsupported(let originalValue): return originalValue
                     default: return "\(self)"
@@ -25,7 +25,7 @@ extension OpenGroupAPIV2 {
             
             // MARK: - Codable
             
-            init(from decoder: Decoder) throws {
+            public init(from decoder: Decoder) throws {
                 let container: SingleValueDecodingContainer = try decoder.singleValueContainer()
                 let valueString: String = try container.decode(String.self)
                 let maybeValue: Capability? = Capability.allCases.first { $0.rawValue == valueString }
@@ -34,7 +34,7 @@ extension OpenGroupAPIV2 {
             }
         }
         
-        let capabilities: [Capability]
-        let missing: [Capability]?
+        public let capabilities: [Capability]
+        public let missing: [Capability]?
     }
 }

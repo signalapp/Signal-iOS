@@ -2,7 +2,7 @@
 
 import Foundation
 
-enum Endpoint {
+public enum Endpoint: Hashable {
     // Utility
     
     case onion
@@ -47,28 +47,28 @@ enum Endpoint {
     
     // Legacy endpoints (to be deprecated and removed)
     
-    case legacyFiles
-    case legacyFile(UInt64)
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyFiles
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyFile(UInt64)
     
-    case legacyMessages
-    case legacyMessagesForServer(Int64)
-    case legacyDeletedMessages
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyMessages
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyMessagesForServer(Int64)
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyDeletedMessages
     
-    case legacyModerators
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyModerators
     
-    case legacyBlockList
-    case legacyBlockListIndividual(String)
-    case legacyBanAndDeleteAll
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyBlockList
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyBlockListIndividual(String)
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyBanAndDeleteAll
     
-    case legacyCompactPoll(legacyAuth: Bool)
-    case legacyAuthToken(legacyAuth: Bool)
-    case legacyAuthTokenChallenge(legacyAuth: Bool)
-    case legacyAuthTokenClaim(legacyAuth: Bool)
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyCompactPoll(legacyAuth: Bool)
+    @available(*, deprecated, message: "Use request signing") case legacyAuthToken(legacyAuth: Bool)
+    @available(*, deprecated, message: "Use request signing") case legacyAuthTokenChallenge(legacyAuth: Bool)
+    @available(*, deprecated, message: "Use request signing") case legacyAuthTokenClaim(legacyAuth: Bool)
     
-    case legacyRooms
-    case legacyRoomInfo(String)
-    case legacyRoomImage(String)
-    case legacyMemberCount(legacyAuth: Bool)
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyRooms
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyRoomInfo(String)
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyRoomImage(String)
+    @available(*, deprecated, message: "Use v4 endpoint") case legacyMemberCount(legacyAuth: Bool)
     
     var path: String {
         switch self {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1020"
+   LastUpgradeVersion = "1320"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D221A088169C9E5E00537ABF"
-               BuildableName = "Session.app"
-               BlueprintName = "Session"
+               BlueprintIdentifier = "C3C2A6EF25539DE700C340D1"
+               BuildableName = "SessionMessagingKit.framework"
+               BlueprintName = "SessionMessagingKit"
                ReferencedContainer = "container:Session.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,23 +26,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "NO">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D221A088169C9E5E00537ABF"
-            BuildableName = "Session.app"
-            BlueprintName = "Session"
-            ReferencedContainer = "container:Session.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "runningTests_dontStartApp"
-            value = "YES"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      codeCoverageEnabled = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -60,46 +45,12 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      enableUBSanitizer = "YES"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
-      migratedStopOnEveryIssue = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D221A088169C9E5E00537ABF"
-            BuildableName = "Session.app"
-            BlueprintName = "Session"
-            ReferencedContainer = "container:Session.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "OS_ACTIVITY_MODE"
-            value = "disable"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "UBSAN_OPTIONS"
-            value = "suppressions=SignalUBSan.supp"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "TSAN_OPTIONS"
-            value = "suppressions=SignalTSan.supp"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "DYLD_PRINT_STATISTICS"
-            value = "1"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "App Store Release"
@@ -107,16 +58,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D221A088169C9E5E00537ABF"
-            BuildableName = "Session.app"
-            BlueprintName = "Session"
+            BlueprintIdentifier = "C3C2A6EF25539DE700C340D1"
+            BuildableName = "SessionMessagingKit.framework"
+            BlueprintName = "SessionMessagingKit"
             ReferencedContainer = "container:Session.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

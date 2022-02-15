@@ -20,7 +20,7 @@ extension OpenGroupAPIV2 {
             self.path = request.urlPathAndParamsString
             self.headers = (request.headers.isEmpty ? nil : request.headers.toHTTPHeaders())
             
-            // TODO: Differentiate between JSON and b64 body
+            // TODO: Differentiate between JSON and b64 body.
             if let body: Data = request.body, let bodyString: String = String(data: body, encoding: .utf8) {
                 self.json = bodyString
             }
@@ -56,7 +56,7 @@ extension OpenGroupAPIV2 {
     
     typealias BatchRequest = [BatchSubRequest]
     typealias BatchResponseTypes = [Codable.Type]
-    typealias BatchResponse = [Codable]
+    typealias BatchResponse = [(OnionRequestResponseInfoType, Codable)]
 }
 
 // MARK: - Convenience
@@ -67,7 +67,7 @@ public extension Decodable {
     }
 }
 
-extension Promise where T == (OnionRequestAPI.ResponseInfo, Data?) {
+extension Promise where T == (OnionRequestResponseInfoType, Data?) {
     func decoded(as types: OpenGroupAPIV2.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error? = nil) -> Promise<OpenGroupAPIV2.BatchResponse> {
         self.map(on: queue) { responseInfo, maybeData -> OpenGroupAPIV2.BatchResponse in
             // Need to split the data into an array of data so each item can be Decoded correctly
@@ -83,6 +83,7 @@ extension Promise where T == (OnionRequestAPI.ResponseInfo, Data?) {
             do {
                 return try zip(dataArray, types)
                     .map { data, type in try type.decoded(from: data) }
+                    .map { data in (responseInfo, data) }
             }
             catch let thrownError {
                 throw (error ?? thrownError)

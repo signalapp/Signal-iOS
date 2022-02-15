@@ -51,6 +51,12 @@ abstract_target 'GlobalDependencies' do
         pod 'Reachability'
         pod 'SAMKeychain'
         pod 'SwiftProtobuf', '~> 1.5.0'
+        
+        target 'SessionMessagingKitTests' do
+          inherit! :complete
+          
+          pod 'Nimble'
+        end
       end
       
       target 'SessionUtilitiesKit' do

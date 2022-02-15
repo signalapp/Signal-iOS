@@ -12,9 +12,9 @@ extension Promise where T == Data {
     }
 }
 
-extension Promise where T == (OnionRequestAPI.ResponseInfo, Data?) {
-    func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, error: Error? = nil) -> Promise<(OnionRequestAPI.ResponseInfo, R)> {
-        self.map(on: queue) { responseInfo, maybeData -> (OnionRequestAPI.ResponseInfo, R) in
+extension Promise where T == (OnionRequestResponseInfoType, Data?) {
+    func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, error: Error? = nil) -> Promise<(OnionRequestResponseInfoType, R)> {
+        self.map(on: queue) { responseInfo, maybeData -> (OnionRequestResponseInfoType, R) in
             guard let data: Data = maybeData else {
                 throw OpenGroupAPIV2.Error.parsingFailed
             }

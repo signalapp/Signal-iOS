@@ -66,7 +66,8 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
         request.httpBody = body
         
         let promise = attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: PushNotificationAPI.serverPublicKey).map { _ in }
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: PushNotificationAPI.serverPublicKey)
+                .map { _ in }
         }
         let _ = promise.done(on: DispatchQueue.global()) { // Intentionally capture self
             self.handleSuccess()

@@ -52,7 +52,7 @@ public final class PushNotificationAPI : NSObject {
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             // TODO: Update this to use the V4 union requests once supported
-            LegacyOnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey)
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
                 .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
                 .map2 { response in
                     guard let response: UnregisterResponse = try? response.decoded(as: UnregisterResponse.self) else {
@@ -103,7 +103,7 @@ public final class PushNotificationAPI : NSObject {
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             // TODO: Update this to use the V4 union requests once supported
-            LegacyOnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey)
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
                 .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
                 .map2 { response in
                     guard let response: RegisterResponse = try? response.decoded(as: RegisterResponse.self) else {
@@ -151,7 +151,7 @@ public final class PushNotificationAPI : NSObject {
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             // TODO: Update this to use the V4 union requests once supported
-            LegacyOnionRequestAPI.sendOnionRequest(request, to: server, target: "/loki/v2/lsrpc", using: serverPublicKey)
+            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
                 .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
                 .map2 { response in
                     guard let response: RegisterResponse = try? response.decoded(as: RegisterResponse.self) else {
