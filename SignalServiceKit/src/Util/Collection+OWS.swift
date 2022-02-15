@@ -10,14 +10,15 @@ public extension Collection {
     }
 }
 
-public extension Array {
-    func chunked(by chunkSize: Int) -> [[Element]] {
+public extension Collection where Index == Int  {
+
+    func chunked(by chunkSize: Int) -> [SubSequence] {
         return stride(from: 0, to: self.count, by: chunkSize).map {
-            Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
+            self[$0..<Swift.min($0 + chunkSize, self.count)]
         }
     }
 
-    var nilIfEmpty: [Element]? {
+    var nilIfEmpty: Self? {
         isEmpty ? nil : self
     }
 }

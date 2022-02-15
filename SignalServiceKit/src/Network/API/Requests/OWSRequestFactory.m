@@ -645,6 +645,12 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 
++ (TSRequest *)hsmDirectoryAuthRequest
+{
+    NSURL *url = [NSURL URLWithString:@"v2/directory/auth"];
+    return [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
+}
+
 #pragma mark - KBS
 
 + (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName

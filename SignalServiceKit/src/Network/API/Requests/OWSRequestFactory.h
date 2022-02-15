@@ -141,6 +141,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
                                      reason:(nullable NSString *)reason NS_SWIFT_NAME(cdsFeedbackRequest(status:reason:));
 
++ (TSRequest *)hsmDirectoryAuthRequest;
+
 #pragma mark - KBS
 
 + (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName

@@ -25,7 +25,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             // First, build a bunch of batch Promises
             let batchOperationPromises = Array(e164sToLookup)
                 .chunked(by: Self.batchSize)
-                .map { makeContactDiscoveryRequest(e164sToLookup: $0) }
+                .map { makeContactDiscoveryRequest(e164sToLookup: Array($0)) }
 
             // Then, wait for them all to be fulfilled before joining the subsets together
             return Promise.when(fulfilled: batchOperationPromises)

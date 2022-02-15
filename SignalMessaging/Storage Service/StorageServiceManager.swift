@@ -1140,7 +1140,7 @@ class StorageServiceOperation: OWSOperation {
         var promise = Promise.value(())
         for batch in identifiers.chunked(by: Self.itemsBatchSize) {
             promise = promise.then(on: .global()) {
-                StorageService.fetchItems(for: batch)
+                StorageService.fetchItems(for: Array(batch))
             }.done(on: .global()) { items in
                 self.databaseStorage.write { transaction in
                     for item in items {
