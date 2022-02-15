@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -70,7 +70,12 @@ extension ProvisioningSocket: SSKWebSocketDelegate {
         }
     }
 
-    public func websocket(_ socket: SSKWebSocket, didReceiveMessage message: WebSocketProtoWebSocketMessage) {
+    public func websocket(_ socket: SSKWebSocket, didReceiveResponse response: SSKWebSocketResponse) {
+        guard let message = response.unwrapMessage else {
+            owsFailDebug("Unexpected message format")
+            return
+        }
+
         guard let request = message.request else {
             owsFailDebug("unexpected message: \(message)")
             return

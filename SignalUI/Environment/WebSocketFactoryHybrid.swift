@@ -138,9 +138,9 @@ extension SSKWebSocketStarScream: WebSocketDelegate {
         assertOnQueue(callbackQueue)
         do {
             let message = try WebSocketProtoWebSocketMessage(serializedData: data)
-            delegate?.websocket(self, didReceiveMessage: message)
+            delegate?.websocket(self, didReceiveResponse: .message(message))
         } catch {
-            owsFailDebug("error: \(error)")
+            delegate?.websocket(self, didReceiveResponse: .data(data))
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -68,12 +68,51 @@ public extension SSKWebSocket {
 // MARK: -
 
 @objc
+public class SSKWebSocketResponse: NSObject {
+    private enum Underlying {
+        case message(WebSocketProtoWebSocketMessage)
+        case data(Data)
+    }
+
+    private let underlying: Underlying
+    private init(underlying: Underlying) {
+        self.underlying = underlying
+    }
+
+    public static func message(_ message: WebSocketProtoWebSocketMessage) -> SSKWebSocketResponse {
+        SSKWebSocketResponse(underlying: .message(message))
+    }
+
+    public static func data(_ data: Data) -> SSKWebSocketResponse {
+        SSKWebSocketResponse(underlying: .data(data))
+    }
+
+    public var unwrapMessage: WebSocketProtoWebSocketMessage? {
+        switch underlying {
+        case .message(let message):
+            return message
+        case .data:
+            return nil
+        }
+    }
+
+    public var unwrapData: Data? {
+        switch underlying {
+        case .message:
+            return nil
+        case .data(let data):
+            return data
+        }
+    }
+}
+
+@objc
 public protocol SSKWebSocketDelegate: AnyObject {
     func websocketDidConnect(socket: SSKWebSocket)
 
     func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error?)
 
-    func websocket(_ socket: SSKWebSocket, didReceiveMessage message: WebSocketProtoWebSocketMessage)
+    func websocket(_ socket: SSKWebSocket, didReceiveResponse response: SSKWebSocketResponse)
 }
 
 // MARK: -
@@ -209,15 +248,17 @@ public class SSKWebSocketNative: SSKWebSocket {
                 case .success(let message):
                     switch message {
                     case .data(let data):
+                        guard let self = self else { return }
+                        let response: SSKWebSocketResponse
                         do {
-                            let message = try WebSocketProtoWebSocketMessage(serializedData: data)
-                            guard let self = self else { return }
-                            self.callbackQueue.async {
-                                self.delegate?.websocket(self, didReceiveMessage: message)
-                            }
+                            response = try .message(WebSocketProtoWebSocketMessage(serializedData: data))
                         } catch {
-                            owsFailDebug("error: \(error)")
+                            response = .data(data)
                         }
+                        self.callbackQueue.async {
+                            self.delegate?.websocket(self, didReceiveResponse: response)
+                        }
+
                     case .string:
                         owsFailDebug("We only expect binary frames.")
                     @unknown default:
