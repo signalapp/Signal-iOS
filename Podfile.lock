@@ -35,8 +35,7 @@ PODS:
   - LibMobileCoin (1.1.0):
     - gRPC-Swift (~> 1.0.0)
     - SwiftProtobuf (~> 1.5)
-  - libPhoneNumber-iOS (0.9.15):
-    - CocoaLumberjack
+  - libPhoneNumber-iOS (0.9.15)
   - libwebp (1.0.2):
     - libwebp/core (= 1.0.2)
     - libwebp/dec (= 1.0.2)
@@ -310,7 +309,7 @@ CHECKOUT OPTIONS:
     :commit: efc71bf035bd960aff8f572920c01fca77b2096f
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
   libPhoneNumber-iOS:
-    :commit: c119db518a7a1eae808218213dc33f450e2962f3
+    :commit: 4c4341c5b89040559810a3e38c7a47c77eeaeabb
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
@@ -357,7 +356,7 @@ SPEC CHECKSUMS:
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
   gRPC-Swift: 77154009a019e97f8c4bd8f2bb75fe9726801157
   LibMobileCoin: b6f5200b484ceac10bf988a42c1168e1d443bacc
-  libPhoneNumber-iOS: 404263437409b2c75c1f2468021cf1e419ec7d0f
+  libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
