@@ -233,10 +233,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
                     if let error = error {
                         self.handleSuccess(for: content)
-                        owsFailDebug("Failed to notify main app of call message: \(error)")
+                        SNLog("Failed to notify main app of call message: \(error)")
                     } else {
                         self.completeSilenty()
-                        Logger.info("Successfully notified main app of call message.")
+                        SNLog("Successfully notified main app of call message.")
                     }
                 }
             }

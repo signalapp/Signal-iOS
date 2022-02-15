@@ -197,13 +197,11 @@ static NSTimeInterval launchStartedAt;
     LKAppMode appMode = [self getCurrentAppMode];
     [self adaptAppMode:appMode];
 
-    if (@available(iOS 11, *)) {
-        // This must happen in appDidFinishLaunching or earlier to ensure we don't
-        // miss notifications.
-        // Setting the delegate also seems to prevent us from getting the legacy notification
-        // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
-        UNUserNotificationCenter.currentNotificationCenter.delegate = self;
-    }
+    // This must happen in appDidFinishLaunching or earlier to ensure we don't
+    // miss notifications.
+    // Setting the delegate also seems to prevent us from getting the legacy notification
+    // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
+    UNUserNotificationCenter.currentNotificationCenter.delegate = self;
 
     [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
     [[OWSWindowManager sharedManager] setupWithRootWindow:self.window

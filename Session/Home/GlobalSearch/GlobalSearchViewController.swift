@@ -13,6 +13,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         }
     }
     var recentSearchResults: [String] = Array(Storage.shared.getRecentSearchResults().reversed())
+    var defaultSearchResults: HomeScreenSearchResultSet = HomeScreenSearchResultSet.noteToSelfOnly
     var searchResultSet: HomeScreenSearchResultSet = HomeScreenSearchResultSet.empty
     private var lastSearchText: String?
     var searcher: FullTextSearcher {
@@ -137,7 +138,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
         let searchText = rawSearchText.stripped
         guard searchText.count > 0 else {
-            searchResultSet = HomeScreenSearchResultSet.noteToSelfOnly
+            searchResultSet = defaultSearchResults
             lastSearchText = nil
             reloadTableData()
             return

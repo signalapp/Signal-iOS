@@ -21,7 +21,7 @@ extension SessionCallManager: CXProviderDelegate {
             if let _ = CurrentAppContext().frontmostViewController() as? CallVC {
                 call.answerSessionCall()
             } else {
-                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // FIXME: Handle more gracefully
                 let callVC = CallVC(for: self.currentCall!)
                 if let conversationVC = presentingVC as? ConversationVC {
                     callVC.conversationVC = conversationVC

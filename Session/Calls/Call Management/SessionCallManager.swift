@@ -92,9 +92,8 @@ public final class SessionCallManager: NSObject {
         // Report the incoming call to the system
         self.provider.reportNewIncomingCall(with: call.callID, update: update) { error in
             guard error == nil else {
-                self.currentCall = nil
+                self.reportCurrentCallEnded(reason: .failed)
                 completion(error)
-                Logger.error("failed to report new incoming call, error: \(error!)")
                 return
             }
             completion(nil)
@@ -115,7 +114,7 @@ public final class SessionCallManager: NSObject {
         } else {
             call.updateCallMessage(mode: .local)
         }
-        self.currentCall?.webRTCSession.dropConnection()
+        call.webRTCSession.dropConnection()
         self.currentCall = nil
         WebRTCSession.current = nil
     }

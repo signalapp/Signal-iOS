@@ -8,7 +8,7 @@ struct TurnServerInfo {
     let username: String
     let urls: [String]
 
-    init?(attributes: JSON) {
+    init?(attributes: JSON, random: Int? = nil) {
         if let passwordAttribute = (attributes["password"] as? String) {
             password = passwordAttribute
         } else {
@@ -22,7 +22,12 @@ struct TurnServerInfo {
         }
 
         if let urlsAttribute = attributes["urls"] as? [String] {
-            urls = urlsAttribute
+            if let random = random {
+                urls = Array(urlsAttribute.shuffled()[0..<random])
+            } else {
+                urls = urlsAttribute
+            }
+            
         } else {
             return nil
         }

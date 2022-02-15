@@ -22,7 +22,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         let url = Bundle.main.url(forResource: "Session-Turn-Server", withExtension: nil)!
         let data = try! Data(contentsOf: url)
         let json = try! JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as! JSON
-        return TurnServerInfo(attributes: json)
+        return TurnServerInfo(attributes: json, random: 2)
     }()
     
     internal lazy var factory: RTCPeerConnectionFactory = {
@@ -36,9 +36,8 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     /// remote peer, maintain and monitor the connection, and close the connection once it's no longer needed.
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
-        configuration.iceServers = [ RTCIceServer(urlStrings: ["stun:freyr.getsession.org:5349"]), RTCIceServer(urlStrings: ["turn:freyr.getsession.org"], username: "session", credential: "session") ]
         if let defaultICEServer = defaultICEServer {
-            configuration.iceServers.append(RTCIceServer(urlStrings: defaultICEServer.urls, username: defaultICEServer.username, credential: defaultICEServer.password))
+            configuration.iceServers = [ RTCIceServer(urlStrings: defaultICEServer.urls, username: defaultICEServer.username, credential: defaultICEServer.password) ]
         }
         configuration.sdpSemantics = .unifiedPlan
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])

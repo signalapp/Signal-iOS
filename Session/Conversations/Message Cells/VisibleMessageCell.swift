@@ -319,11 +319,13 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
             if let linkPreview = viewItem.linkPreview {
                 let linkPreviewView = LinkPreviewView(for: viewItem, maxWidth: maxWidth, delegate: self)
+                linkPreviewView.layer.mask = bubbleViewMaskLayer
                 linkPreviewView.linkPreviewState = LinkPreviewSent(linkPreview: linkPreview, imageAttachment: viewItem.linkPreviewAttachment)
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
             } else if let openGroupInvitationName = message.openGroupInvitationName, let openGroupInvitationURL = message.openGroupInvitationURL {
                 let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor, isOutgoing: isOutgoing)
+                openGroupInvitationView.layer.mask = bubbleViewMaskLayer
                 snContentView.addSubview(openGroupInvitationView)
                 openGroupInvitationView.pin(to: snContentView)
             } else {

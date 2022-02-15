@@ -20,20 +20,21 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }()
     
     // MARK: UI Components
-    private lazy var localVideoView: RTCMTLVideoView = {
-        let result = RTCMTLVideoView()
+    private lazy var localVideoView: LocalVideoView = {
+        let result = LocalVideoView()
         result.isHidden = !call.isVideoEnabled
-        result.contentMode = .scaleAspectFill
-        result.set(.width, to: 80)
-        result.set(.height, to: 173)
-        result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
+        result.layer.cornerRadius = 10
+        result.layer.masksToBounds = true
+        result.set(.width, to: LocalVideoView.width)
+        result.set(.height, to: LocalVideoView.height)
+        result.makeViewDraggable()
         return result
     }()
     
-    private lazy var remoteVideoView: RTCMTLVideoView = {
-        let result = RTCMTLVideoView()
+    private lazy var remoteVideoView: RemoteVideoView = {
+        let result = RemoteVideoView()
         result.alpha = 0
-        result.contentMode = .scaleAspectFill
+        result.backgroundColor = .black
         result.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleRemoteVieioViewTapped)))
         return result
     }()
@@ -255,10 +256,12 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 }
             }
         }
+        setupOrientationMonitoring()
         NotificationCenter.default.addObserver(self, selector: #selector(audioRouteDidChange), name: AVAudioSession.routeChangeNotification, object: nil)
     }
     
     deinit {
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -326,12 +329,48 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.start() }
         shouldRestartCamera = true
         addLocalVideoView()
+        remoteVideoView.alpha = call.isRemoteVideoEnabled ? 1 : 0
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.stop() }
         localVideoView.removeFromSuperview()
+    }
+    
+    // MARK: - Orientation
+
+    private func setupOrientationMonitoring() {
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self, selector: #selector(didChangeDeviceOrientation), name: UIDevice.orientationDidChangeNotification, object: UIDevice.current)
+    }
+    
+    @objc func didChangeDeviceOrientation(notification: Notification) {
+        
+        func rotateAllButtons(rotationAngle: CGFloat) {
+            let transform = CGAffineTransform(rotationAngle: rotationAngle)
+            UIView.animate(withDuration: 0.2) {
+                self.answerButton.transform = transform
+                self.hangUpButton.transform = transform
+                self.switchAudioButton.transform = transform
+                self.switchCameraButton.transform = transform
+                self.videoButton.transform = transform
+                self.volumeView.transform = transform
+            }
+        }
+        
+        switch UIDevice.current.orientation {
+        case .portrait:
+            rotateAllButtons(rotationAngle: 0)
+        case .portraitUpsideDown:
+            rotateAllButtons(rotationAngle: .pi)
+        case .landscapeLeft:
+            rotateAllButtons(rotationAngle: .halfPi)
+        case .landscapeRight:
+            rotateAllButtons(rotationAngle: .pi + .halfPi)
+        default:
+            break
+        }
     }
     
     // MARK: Call signalling
@@ -467,38 +506,6 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 volumeView.setRouteButtonImage(image, for: .normal)
                 volumeView.tintColor = .white
                 volumeView.backgroundColor = UIColor(hex: 0x1F1F1F)
-            }
-        }
-    }
-    
-    // MARK: Pan gesture handling
-    @objc private func handlePanGesture(gesture: UIPanGestureRecognizer) {
-        let location = gesture.location(in: self.view)
-        if let draggedView = gesture.view {
-            draggedView.center = location
-            if gesture.state == .ended {
-                let sideMargin = 40 + Values.verySmallSpacing
-                if draggedView.frame.midX >= self.view.layer.frame.width / 2 {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.x = self.view.layer.frame.width - sideMargin
-                    }, completion: nil)
-                }else{
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.x = sideMargin
-                    }, completion: nil)
-                }
-                let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
-                if draggedView.frame.minY <= topMargin {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = topMargin + draggedView.frame.size.height / 2
-                    }, completion: nil)
-                }
-                let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-                if draggedView.frame.maxY >= self.view.layer.frame.height {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = self.view.layer.frame.height - draggedView.frame.size.height / 2 - bottomMargin
-                    }, completion: nil)
-                }
             }
         }
     }

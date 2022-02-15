@@ -1,12 +1,27 @@
 import UIKit
 import WebRTC
 
-final class MiniCallView: UIView {
+final class MiniCallView: UIView, RTCVideoViewDelegate {
     var callVC: CallVC
+    
+    // MARK: UI
+    private static let defaultSize: CGFloat = 100
+    private let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
+    private let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+    
+    private var width: NSLayoutConstraint?
+    private var height: NSLayoutConstraint?
+    private var left: NSLayoutConstraint?
+    private var right: NSLayoutConstraint?
+    private var top: NSLayoutConstraint?
+    private var bottom: NSLayoutConstraint?
     
     private lazy var remoteVideoView: RTCMTLVideoView = {
         let result = RTCMTLVideoView()
-        result.contentMode = .scaleAspectFill
+        result.delegate = self
+        result.alpha = self.callVC.call.isRemoteVideoEnabled ? 1 : 0
+        result.videoContentMode = .scaleAspectFit
+        result.backgroundColor = .black
         return result
     }()
    
@@ -16,10 +31,21 @@ final class MiniCallView: UIView {
     init(from callVC: CallVC) {
         self.callVC = callVC
         super.init(frame: CGRect.zero)
-        self.backgroundColor = .black
+        self.backgroundColor = UIColor.init(white: 0, alpha: 0.8)
         setUpViewHierarchy()
         setUpGestureRecognizers()
         MiniCallView.current = self
+        self.callVC.call.remoteVideoStateDidChange = { isEnabled in
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: 0.25) {
+                    self.remoteVideoView.alpha = isEnabled ? 1 : 0
+                    if !isEnabled {
+                        self.width?.constant = MiniCallView.defaultSize
+                        self.height?.constant = MiniCallView.defaultSize
+                    }
+                }
+            }
+        }
     }
     
     override init(frame: CGRect) {
@@ -31,8 +57,9 @@ final class MiniCallView: UIView {
     }
     
     private func setUpViewHierarchy() {
-        self.set(.width, to: 80)
-        self.set(.height, to: 173)
+        self.width = self.set(.width, to: MiniCallView.defaultSize)
+        self.height = self.set(.height, to: MiniCallView.defaultSize)
+        self.layer.cornerRadius = 10
         self.layer.masksToBounds = true
         // Background
         let background = getBackgroudView()
@@ -56,11 +83,6 @@ final class MiniCallView: UIView {
         imageView.set(.width, to: 64)
         imageView.set(.height, to: 64)
         imageView.center(in: background)
-        let blurView = UIView()
-        blurView.alpha = 0.5
-        blurView.backgroundColor = .black
-        background.addSubview(blurView)
-        blurView.autoPinEdgesToSuperviewEdges()
         return background
     }
     
@@ -68,55 +90,26 @@ final class MiniCallView: UIView {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         tapGestureRecognizer.numberOfTapsRequired = 1
         addGestureRecognizer(tapGestureRecognizer)
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
-        addGestureRecognizer(panGestureRecognizer)
+        makeViewDraggable()
     }
     
     // MARK: Interaction
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
         dismiss()
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // FIXME: Handle more gracefully
         presentingVC.present(callVC, animated: true, completion: nil)
-    }
-    
-    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
-        let location = gesture.location(in: self.superview!)
-        if let draggedView = gesture.view {
-            draggedView.center = location
-            if gesture.state == .ended {
-                let sideMargin = 40 + Values.verySmallSpacing
-                if draggedView.frame.midX >= self.superview!.layer.frame.width / 2 {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.x = self.superview!.layer.frame.width - sideMargin
-                    }, completion: nil)
-                }else{
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.x = sideMargin
-                    }, completion: nil)
-                }
-                let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
-                if draggedView.frame.minY <= topMargin {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = topMargin + draggedView.frame.size.height / 2
-                    }, completion: nil)
-                }
-                let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
-                if draggedView.frame.maxY >= self.superview!.layer.frame.height {
-                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                        draggedView.center.y = self.layer.frame.height - draggedView.frame.size.height / 2 - bottomMargin
-                    }, completion: nil)
-                }
-            }
-        }
     }
     
     public func show() {
         self.alpha = 0.0
         let window = CurrentAppContext().mainWindow!
         window.addSubview(self)
-        self.autoPinEdge(toSuperviewEdge: .right, withInset: Values.smallSpacing)
-        let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
-        self.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        left = self.autoPinEdge(toSuperviewEdge: .left)
+        left?.isActive = false
+        right = self.autoPinEdge(toSuperviewEdge: .right)
+        top = self.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        bottom = self.autoPinEdge(toSuperviewEdge: .bottom, withInset: bottomMargin)
+        bottom?.isActive = false
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 1.0
         }, completion: nil)
@@ -127,9 +120,42 @@ final class MiniCallView: UIView {
             self.alpha = 0.0
         }, completion: { _ in
             self.callVC.call.removeRemoteVideoRenderer(self.remoteVideoView)
+            self.callVC.setupStateChangeCallbacks()
             MiniCallView.current = nil
             self.removeFromSuperview()
         })
+    }
+    
+    // MARK: RTCVideoViewDelegate
+    func videoView(_ videoView: RTCVideoRenderer, didChangeVideoSize size: CGSize) {
+        let newSize = CGSize(width: min(160.0, 160.0 * size.width / size.height), height: min(160.0, 160.0 * size.height / size.width))
+        persistCurrentPosition(newSize: newSize)
+        self.width?.constant = newSize.width
+        self.height?.constant = newSize.height
+    }
+    
+    func persistCurrentPosition(newSize: CGSize) {
+        let currentCenter = self.center
+        
+        if currentCenter.x < self.superview!.width() / 2 {
+            left?.isActive = true
+            right?.isActive = false
+        } else {
+            left?.isActive = false
+            right?.isActive = true
+        }
+        
+        let willTouchTop = currentCenter.y < newSize.height / 2 + topMargin
+        let willTouchBottom = currentCenter.y + newSize.height / 2 >= self.superview!.height()
+        if willTouchBottom {
+            top?.isActive = false
+            bottom?.isActive = true
+        } else {
+            let constant = willTouchTop ? topMargin : currentCenter.y - newSize.height / 2
+            top?.constant = constant
+            top?.isActive = true
+            bottom?.isActive = false
+        }
     }
 
 }

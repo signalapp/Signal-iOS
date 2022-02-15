@@ -9,8 +9,9 @@ extension AppDelegate {
     // MARK: Call handling
     @objc func handleAppActivatedWithOngoingCallIfNeeded() {
         guard let call = AppEnvironment.shared.callManager.currentCall else { return }
+        guard MiniCallView.current == nil else { return }
         if let callVC = CurrentAppContext().frontmostViewController() as? CallVC, callVC.call == call { return }
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // FIXME: Handle more gracefully
         let callVC = CallVC(for: call)
         if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
             callVC.conversationVC = conversationVC
@@ -28,21 +29,20 @@ extension AppDelegate {
     
     private func showCallUIForCall(_ call: SessionCall) {
         DispatchQueue.main.async {
-            if CurrentAppContext().isMainAppAndActive {
-                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-                if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
-                    let callVC = CallVC(for: call)
-                    callVC.conversationVC = conversationVC
-                    conversationVC.inputAccessoryView?.isHidden = true
-                    conversationVC.inputAccessoryView?.alpha = 0
-                    presentingVC.present(callVC, animated: true, completion: nil)
-                }
-            }
             call.reportIncomingCallIfNeeded{ error in
                 if let error = error {
                     SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-                    let incomingCallBanner = IncomingCallBanner(for: call)
-                    incomingCallBanner.show()
+                } else {
+                    if CurrentAppContext().isMainAppAndActive {
+                        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // FIXME: Handle more gracefully
+                        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
+                            let callVC = CallVC(for: call)
+                            callVC.conversationVC = conversationVC
+                            conversationVC.inputAccessoryView?.isHidden = true
+                            conversationVC.inputAccessoryView?.alpha = 0
+                            presentingVC.present(callVC, animated: true, completion: nil)
+                        }
+                    }
                 }
             }
         }

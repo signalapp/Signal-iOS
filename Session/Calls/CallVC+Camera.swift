@@ -7,7 +7,15 @@ extension CallVC : CameraManagerDelegate {
         let rtcPixelBuffer = RTCCVPixelBuffer(pixelBuffer: pixelBuffer)
         let timestamp = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         let timestampNs = Int64(timestamp * 1000000000)
-        let frame = RTCVideoFrame(buffer: rtcPixelBuffer, rotation: RTCVideoRotation._0, timeStampNs: timestampNs)
+        let rotation: RTCVideoRotation = {
+            switch UIDevice.current.orientation {
+            case .landscapeRight: return RTCVideoRotation._90
+            case .portraitUpsideDown: return RTCVideoRotation._180
+            case .landscapeLeft: return RTCVideoRotation._270
+            default: return RTCVideoRotation._0
+            }
+        }()
+        let frame = RTCVideoFrame(buffer: rtcPixelBuffer, rotation: rotation, timeStampNs: timestampNs)
         frame.timeStamp = Int32(timestamp)
         call.webRTCSession.handleLocalFrameCaptured(frame)
     }
