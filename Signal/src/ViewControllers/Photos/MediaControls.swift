@@ -423,29 +423,92 @@ class CameraCaptureControl: UIView {
     }
 }
 
+@available(iOS, deprecated: 13.0, message: "Use `overrideUserInterfaceStyle` instead.")
+private protocol UserInterfaceStyleOverride {
 
-class PhotoControl: UIView {
-    let button: OWSButton
+    var userInterfaceStyleOverride: UIUserInterfaceStyle { get set }
+
+    var effectiveUserInterfaceStyle: UIUserInterfaceStyle { get }
+
+}
+
+private extension UserInterfaceStyleOverride {
+
+    var effectiveUserInterfaceStyle: UIUserInterfaceStyle {
+        if userInterfaceStyleOverride != .unspecified {
+            return userInterfaceStyleOverride
+        }
+        if let uiView = self as? UIView {
+            return uiView.traitCollection.userInterfaceStyle
+        }
+        return .unspecified
+    }
+
+    static func blurEffectStyle(for userInterfaceStyle: UIUserInterfaceStyle) -> UIBlurEffect.Style {
+        switch userInterfaceStyle {
+        case .dark:
+            return .dark
+        case .light:
+            return .prominent
+        default:
+            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+        }
+    }
+
+    static func tintColor(for userInterfaceStyle: UIUserInterfaceStyle) -> UIColor {
+        switch userInterfaceStyle {
+        case .dark:
+            return Theme.darkThemePrimaryColor
+        case .light:
+            return Theme.lightThemePrimaryColor
+        default:
+            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+        }
+    }
+}
+
+
+class PhotoControl: UIView, UserInterfaceStyleOverride {
+
+    var userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified {
+        didSet {
+            if oldValue != userInterfaceStyleOverride {
+                updateStyle()
+            }
+        }
+    }
+
+    private var backgroundView: UIVisualEffectView!
+    private let button: OWSButton
 
     private static let visibleButtonSize: CGFloat = 36  // both height and width
-    private static let layoutMargin: CGFloat = 4        // both horizontal and vertical
+    private static let defaultInset: CGFloat = 4
 
-    init(imageName: String, block: @escaping () -> Void) {
-        self.button = OWSButton(imageName: imageName, tintColor: .ows_white, block: block)
+    var contentInsets: UIEdgeInsets = UIEdgeInsets(margin: PhotoControl.defaultInset) {
+        didSet {
+            layoutMargins = contentInsets
+        }
+    }
 
-        super.init(frame: CGRect(origin: .zero, size: CGSize(square: Self.visibleButtonSize + 2*Self.layoutMargin)))
+    init(imageName: String, userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified, block: @escaping () -> Void) {
+        button = OWSButton(imageName: imageName, tintColor: nil, block: block)
 
-        layoutMargins = UIEdgeInsets(margin: Self.layoutMargin)
+        super.init(frame: CGRect(origin: .zero, size: CGSize(square: Self.visibleButtonSize + 2*Self.defaultInset)))
 
-        let blurView = CircleBlurView(effect: UIBlurEffect(style: .dark))
-        addSubview(blurView)
-        blurView.autoPinEdgesToSuperviewMargins()
+        layoutMargins = contentInsets
+        self.userInterfaceStyleOverride = userInterfaceStyleOverride
+
+        backgroundView = CircleBlurView(effect: UIBlurEffect(style: PhotoControl.blurEffectStyle(for: effectiveUserInterfaceStyle)))
+        addSubview(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewMargins()
 
         addSubview(button)
         button.autoPinEdgesToSuperviewMargins()
+
+        updateStyle()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -454,18 +517,38 @@ class PhotoControl: UIView {
                       height: Self.visibleButtonSize + layoutMargins.top + layoutMargins.bottom)
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle, userInterfaceStyleOverride == .unspecified {
+            updateStyle()
+        }
+    }
+
+    private func updateStyle() {
+        backgroundView.effect = UIBlurEffect(style: PhotoControl.blurEffectStyle(for: effectiveUserInterfaceStyle))
+        button.tintColor = PhotoControl.tintColor(for: effectiveUserInterfaceStyle)
+    }
+
     func setImage(imageName: String) {
         button.setImage(imageName: imageName)
     }
 }
 
 
-class MediaDoneButton: UIButton {
+class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
 
     var badgeNumber: Int = 0 {
         didSet {
             textLabel.text = numberFormatter.string(for: badgeNumber)
             invalidateIntrinsicContentSize()
+        }
+    }
+
+    var userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified {
+        didSet {
+            if oldValue != userInterfaceStyleOverride {
+                updateStyle()
+            }
         }
     }
 
@@ -493,6 +576,7 @@ class MediaDoneButton: UIButton {
         return label
     }()
     private var pillView: PillView!
+    private var blurBackgroundView: UIVisualEffectView!
     private var chevronImageView: UIImageView!
     private var dimmerView: UIView!
 
@@ -503,7 +587,7 @@ class MediaDoneButton: UIButton {
         addSubview(pillView)
         pillView.autoPinEdgesToSuperviewEdges()
 
-        let blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: MediaDoneButton.blurEffectStyle(for: effectiveUserInterfaceStyle)))
         pillView.addSubview(blurBackgroundView)
         blurBackgroundView.autoPinEdgesToSuperviewEdges()
 
@@ -521,7 +605,6 @@ class MediaDoneButton: UIButton {
         }
         chevronImageView = UIImageView(image: image!.withRenderingMode(.alwaysTemplate))
         chevronImageView.contentMode = .center
-        chevronImageView.tintColor = .ows_white
         if #available(iOS 13, *) {
             chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: textLabel.font.pointSize)
         }
@@ -530,15 +613,19 @@ class MediaDoneButton: UIButton {
         hStack.spacing = 6
         pillView.addSubview(hStack)
         hStack.autoPinEdgesToSuperviewMargins()
+
+        updateStyle()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        guard traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory else {
-            return
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            textLabel.font = .ows_dynamicTypeSubheadline.ows_monospaced
+            if #available(iOS 13, *) {
+                chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: textLabel.font.pointSize)
+            }
         }
-        textLabel.font = .ows_dynamicTypeSubheadline.ows_monospaced
-        if #available(iOS 13, *) {
-            chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: textLabel.font.pointSize)
+        if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
+            updateStyle()
         }
     }
 
@@ -557,5 +644,10 @@ class MediaDoneButton: UIButton {
                 dimmerView.alpha = 0
             }
         }
+    }
+
+    private func updateStyle() {
+        blurBackgroundView.effect = UIBlurEffect(style: MediaDoneButton.blurEffectStyle(for: effectiveUserInterfaceStyle))
+        chevronImageView.tintColor = MediaDoneButton.tintColor(for: effectiveUserInterfaceStyle)
     }
 }

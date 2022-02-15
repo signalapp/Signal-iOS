@@ -398,33 +398,33 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }()
     
     private lazy var dismissControl: PhotoControl = {
-        return PhotoControl(imageName: "media-composer-close") { [weak self] in
+        return PhotoControl(imageName: "media-composer-close", userInterfaceStyleOverride: .dark) { [weak self] in
             self?.didTapClose()
         }
     }()
     
     private lazy var switchCameraControl: PhotoControl = {
-        return PhotoControl(imageName: "media-composer-switch-camera-24") { [weak self] in
+        return PhotoControl(imageName: "media-composer-switch-camera-24", userInterfaceStyleOverride: .dark) { [weak self] in
             self?.didTapSwitchCamera()
         }
     }()
     
     private lazy var flashModeControl: PhotoControl = {
-        return PhotoControl(imageName: "media-composer-flash-auto-24") { [weak self] in
+        return PhotoControl(imageName: "media-composer-flash-auto-24", userInterfaceStyleOverride: .dark) { [weak self] in
             self?.didTapFlashMode()
         }
     }()
     
     private lazy var batchModeControl: PhotoControl = {
-        let control = PhotoControl(imageName: "media-composer-create-album-outline-24") { [weak self] in
+        return PhotoControl(imageName: "media-composer-create-album-outline-24", userInterfaceStyleOverride: .dark) { [weak self] in
             self?.didTapBatchMode()
         }
-        return control
     }()
     
     private lazy var doneButton: MediaDoneButton = {
         let button = MediaDoneButton(type: .custom)
         button.badgeNumber = 0
+        button.userInterfaceStyleOverride = .dark
         return button
     }()
     
