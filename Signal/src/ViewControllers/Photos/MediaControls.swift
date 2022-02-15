@@ -449,7 +449,7 @@ private extension UserInterfaceStyleOverride {
         case .dark:
             return .dark
         case .light:
-            return .prominent
+            return .extraLight
         default:
             fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
         }
@@ -460,7 +460,7 @@ private extension UserInterfaceStyleOverride {
         case .dark:
             return Theme.darkThemePrimaryColor
         case .light:
-            return Theme.lightThemePrimaryColor
+            return .ows_gray60
         default:
             fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
         }

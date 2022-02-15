@@ -94,7 +94,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         bottomBar.autoPinBottomToSuperviewMargin()
         bottomBar.autoPinHorizontalEdges(toEdgesOf: view)
 
-        cameraButton = PhotoControl(imageName: "media-composer-camera-outline-28", userInterfaceStyleOverride: .dark) { [weak self] in
+        cameraButton = PhotoControl(imageName: "media-composer-camera-outline-28", userInterfaceStyleOverride: .light) { [weak self] in
             guard let self = self else { return }
             self.didTapCameraButton()
         }
@@ -106,7 +106,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         cameraButton.autoPinBottomToSuperviewMargin()
 
         doneButton = MediaDoneButton()
-        doneButton.userInterfaceStyleOverride = .dark
+        doneButton.userInterfaceStyleOverride = .light
         doneButton.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
         bottomBar.addSubview(doneButton)
         doneButton.autoPinTopToSuperviewMargin()

@@ -1,6 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
+
+import SignalUI
+import UIKit
 
 public enum PhotoGridItemType {
     case photo, animated, video
@@ -18,8 +21,8 @@ public class PhotoGridViewCell: UICollectionViewCell {
     public let imageView: UIImageView
 
     private let contentTypeBadgeView: UIImageView
-    private let unselectedBadgeView: UIView
-    private let selectedBadgeView: UIImageView
+    private let outlineBadgeView: UIView
+    private let selectedBadgeView: UIView
 
     private let highlightedMaskView: UIView
     private let selectedMaskView: UIView
@@ -28,7 +31,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
     private static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
     private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
-    private static let selectedBadgeImage = #imageLiteral(resourceName: "image_editor_checkmark_full").withRenderingMode(.alwaysTemplate)
+    private static let selectedBadgeImage = UIImage(named: "media-composer-checkmark")
     public var loadingColor = Theme.washColor
 
     override public var isSelected: Bool {
@@ -45,15 +48,15 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
     func updateSelectionState() {
         if isSelected {
-            unselectedBadgeView.isHidden = true
+            outlineBadgeView.isHidden = false
             selectedBadgeView.isHidden = false
             selectedMaskView.isHidden = false
         } else if allowsMultipleSelection {
-            unselectedBadgeView.isHidden = false
+            outlineBadgeView.isHidden = false
             selectedBadgeView.isHidden = true
             selectedMaskView.isHidden = true
         } else {
-            unselectedBadgeView.isHidden = true
+            outlineBadgeView.isHidden = true
             selectedBadgeView.isHidden = true
             selectedMaskView.isHidden = true
         }
@@ -66,43 +69,49 @@ public class PhotoGridViewCell: UICollectionViewCell {
     }
 
     override init(frame: CGRect) {
-        self.imageView = UIImageView()
+        let selectionBadgeSize: CGFloat = 22
+        let contentTypeBadgeSize: CGFloat = 12
+
+        imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
 
-        self.contentTypeBadgeView = UIImageView()
+        contentTypeBadgeView = UIImageView()
         contentTypeBadgeView.isHidden = true
 
-        self.selectedBadgeView = UIImageView()
-        selectedBadgeView.image = PhotoGridViewCell.selectedBadgeImage
+        selectedBadgeView = CircleView(diameter: selectionBadgeSize)
+        selectedBadgeView.backgroundColor = .ows_accentBlue
         selectedBadgeView.isHidden = true
-        selectedBadgeView.tintColor = .white
+        let checkmarkImageView = UIImageView(image: PhotoGridViewCell.selectedBadgeImage)
+        checkmarkImageView.tintColor = .white
+        selectedBadgeView.addSubview(checkmarkImageView)
+        checkmarkImageView.autoCenterInSuperview()
 
-        self.unselectedBadgeView = CircleView()
-        unselectedBadgeView.backgroundColor = .clear
-        unselectedBadgeView.layer.borderWidth = 0.5
-        unselectedBadgeView.layer.borderColor = UIColor.white.cgColor
+        outlineBadgeView = CircleView()
+        outlineBadgeView.backgroundColor = .clear
+        outlineBadgeView.layer.borderWidth = 1.5
+        outlineBadgeView.layer.borderColor = UIColor.ows_white.cgColor
         selectedBadgeView.isHidden = true
 
-        self.highlightedMaskView = UIView()
+        highlightedMaskView = UIView()
         highlightedMaskView.alpha = 0.2
         highlightedMaskView.backgroundColor = Theme.darkThemePrimaryColor
         highlightedMaskView.isHidden = true
 
-        self.selectedMaskView = UIView()
+        selectedMaskView = UIView()
         selectedMaskView.alpha = 0.3
         selectedMaskView.backgroundColor = Theme.darkThemeBackgroundColor
         selectedMaskView.isHidden = true
 
         super.init(frame: frame)
 
-        self.clipsToBounds = true
+        clipsToBounds = true
 
-        self.contentView.addSubview(imageView)
-        self.contentView.addSubview(contentTypeBadgeView)
-        self.contentView.addSubview(highlightedMaskView)
-        self.contentView.addSubview(selectedMaskView)
-        self.contentView.addSubview(unselectedBadgeView)
-        self.contentView.addSubview(selectedBadgeView)
+        contentView.addSubview(imageView)
+        contentView.addSubview(contentTypeBadgeView)
+        contentView.addSubview(highlightedMaskView)
+        contentView.addSubview(selectedMaskView)
+        contentView.addSubview(selectedBadgeView)
+        contentView.addSubview(outlineBadgeView)
 
         imageView.autoPinEdgesToSuperviewEdges()
         highlightedMaskView.autoPinEdgesToSuperviewEdges()
@@ -110,20 +119,17 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
         // Note assets were rendered to match exactly. We don't want to re-size with
         // content mode lest they become less legible.
-        let kContentTypeBadgeSize = CGSize(square: 12)
+        contentTypeBadgeView.autoSetDimensions(to: CGSize(square: contentTypeBadgeSize))
         contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
         contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
-        contentTypeBadgeView.autoSetDimensions(to: kContentTypeBadgeSize)
 
-        let kUnselectedBadgeSize = CGSize(square: 22)
-        unselectedBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 4)
-        unselectedBadgeView.autoPinEdge(toSuperviewEdge: .top, withInset: 4)
-        unselectedBadgeView.autoSetDimensions(to: kUnselectedBadgeSize)
+        outlineBadgeView.autoSetDimensions(to: CGSize(square: selectionBadgeSize))
+        outlineBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
+        outlineBadgeView.autoPinEdge(toSuperviewEdge: .top, withInset: 6)
 
-        let kSelectedBadgeSize = CGSize(square: 22)
-        selectedBadgeView.autoSetDimensions(to: kSelectedBadgeSize)
-        selectedBadgeView.autoAlignAxis(.vertical, toSameAxisOf: unselectedBadgeView)
-        selectedBadgeView.autoAlignAxis(.horizontal, toSameAxisOf: unselectedBadgeView)
+        selectedBadgeView.autoSetDimensions(to: CGSize(square: selectionBadgeSize))
+        selectedBadgeView.autoAlignAxis(.vertical, toSameAxisOf: outlineBadgeView)
+        selectedBadgeView.autoAlignAxis(.horizontal, toSameAxisOf: outlineBadgeView)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -191,6 +197,6 @@ public class PhotoGridViewCell: UICollectionViewCell {
         highlightedMaskView.isHidden = true
         selectedMaskView.isHidden = true
         selectedBadgeView.isHidden = true
-        unselectedBadgeView.isHidden = true
+        outlineBadgeView.isHidden = true
     }
 }
