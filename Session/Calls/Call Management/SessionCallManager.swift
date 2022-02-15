@@ -114,7 +114,7 @@ public final class SessionCallManager: NSObject {
         } else {
             call.updateCallMessage(mode: .local)
         }
-        self.currentCall?.webRTCSession.dropConnection()
+        call.webRTCSession.dropConnection()
         self.currentCall = nil
         WebRTCSession.current = nil
     }

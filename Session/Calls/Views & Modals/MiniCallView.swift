@@ -96,7 +96,7 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
     // MARK: Interaction
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
         dismiss()
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // FIXME: Handle more gracefully
         presentingVC.present(callVC, animated: true, completion: nil)
     }
     

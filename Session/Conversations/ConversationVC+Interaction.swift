@@ -44,11 +44,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             present(callVC, animated: true, completion: nil)
         }
     }
-    
-    internal func showCallVCIfNeeded() {
-        guard let incomingCallBanner = IncomingCallBanner.current else { return }
-        incomingCallBanner.showCallVC(answer: false)
-    }
 
     // MARK: Blocking
     @objc func unblock() {

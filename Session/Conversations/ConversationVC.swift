@@ -263,7 +263,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         didFinishInitialLayout = true
         markAllAsRead()
         self.becomeFirstResponder()
-        showCallVCIfNeeded()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
