@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -55,7 +55,7 @@ public struct ContactDiscoveryService: Dependencies {
             )
             guard let requestUrl = request.url else {
                 owsFailDebug("Missing requestUrl.")
-                let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.contactDiscoveryURL)!
+                let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.contactDiscoverySGXURL)!
                 throw OWSHTTPError.missingRequest(requestUrl: url)
             }
             return firstly {

@@ -61,7 +61,7 @@ public extension RemoteAttestation {
             config: EnclaveConfig(
                 enclaveName: TSConstants.contactDiscoveryEnclaveName,
                 mrenclave: TSConstants.contactDiscoveryMrEnclave,
-                host: TSConstants.contactDiscoveryURL,
+                host: TSConstants.contactDiscoverySGXURL,
                 censorshipCircumventionPrefix: TSConstants.contactDiscoveryCensorshipPrefix
             )
         ).map { attestationResponse -> CDSAttestation in
