@@ -149,6 +149,7 @@ class SendMediaNavigationController: OWSNavigationController {
     private lazy var mediaLibraryViewController: ImagePickerGridController = {
         let vc = ImagePickerGridController()
         vc.delegate = self
+        vc.dataSource = self
         return vc
     }()
 
@@ -205,7 +206,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
         switch viewController {
         case is PhotoCaptureViewController:
-            if attachmentDraftCollection.count == 1 {
+            if attachmentCount == 1, navigationController.topViewController is AttachmentApprovalViewController {
                 // User is navigating "back" to the previous view, indicating
                 // they want to discard the previously captured item
                 discardDraft()
@@ -247,7 +248,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
         case is AttachmentApprovalViewController:
             showNavbar(.alwaysDarkAndClear)
         case is ImagePickerGridController:
-            showNavbar(.alwaysDark)
+            showNavbar(.default)
         case is ConversationPickerViewController:
             showNavbar(.default)
         default:
@@ -313,8 +314,8 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             // Always can be enabled
             return true
         }
-        // Can only be disabled if there's one or less media item.
-        return attachmentCount > 1
+        // Can only be disabled if there's no media attachments yet.
+        return attachmentCount > 0
     }
 }
 
@@ -386,16 +387,9 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
                                                      backgroundBlock: backgroundBlock)
     }
 
-    func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool {
-        return attachmentDraftCollection.hasPickerAttachment(forAsset: asset)
-    }
-
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>) {
         guard let sendMediaNavDelegate = sendMediaNavDelegate else { return }
-
-        guard !attachmentDraftCollection.hasPickerAttachment(forAsset: asset) else {
-            return
-        }
+        guard !attachmentDraftCollection.hasPickerAttachment(forAsset: asset) else { return }
 
         let attachmentApprovalItemPromise = attachmentPromise.map { attachment in
             AttachmentApprovalItem(attachment: attachment,
@@ -413,13 +407,21 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         attachmentDraftCollection.remove(.picker(attachment: draft))
     }
 
+    func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController) {
+        showTooManySelectedToast()
+    }
+}
+
+extension SendMediaNavigationController: ImagePickerGridControllerDataSource {
+
+    func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool {
+        return attachmentDraftCollection.hasPickerAttachment(forAsset: asset)
+    }
+
     func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
         return attachmentCount < SignalAttachment.maxAttachmentsAllowed
     }
 
-    func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController) {
-        showTooManySelectedToast()
-    }
 }
 
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {

@@ -203,6 +203,11 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         photoCapture.updateVideoPreviewConnection(toOrientation: previewOrientation)
         updateIconOrientations(isAnimated: false, captureOrientation: previewOrientation)
         resumePhotoCapture()
+
+        if let dataSource = dataSource, dataSource.numberOfMediaItems > 0 {
+            isInBatchMode = true
+        }
+        updateDoneButtonAppearance()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -300,7 +305,12 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             bottomBar.isHidden = isRecordingVideo
         }
     }
-    private var isInBatchMode: Bool = false
+    private var isInBatchMode: Bool = false {
+        didSet {
+            let imageName = isInBatchMode ? "media-composer-create-album-solid-24" : "media-composer-create-album-outline-24"
+            batchModeControl.setImage(imageName: imageName)
+        }
+    }
     
     private class TopBar: UIView {
         let recordingTimerView = RecordingTimerView(frame: .zero)
@@ -379,8 +389,13 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
                                  switchCameraControl])
     }()
     
-    func updateBottomBarItems () {
-        
+    func updateDoneButtonAppearance () {
+        if isInBatchMode, let badgeNumber = dataSource?.numberOfMediaItems {
+            doneButton.badgeNumber = badgeNumber
+            doneButton.isHidden = false
+        } else {
+            doneButton.isHidden = true
+        }
     }
     
     // MARK: - Views
@@ -492,8 +507,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             return
         }
         isInBatchMode = delegate.photoCaptureViewController(self, didRequestSwitchBatchMode: !isInBatchMode)
-        let imageName = isInBatchMode ? "media-composer-create-album-solid-24" : "media-composer-create-album-outline-24"
-        batchModeControl.setImage(imageName: imageName)
     }
     
     @objc
@@ -728,13 +741,10 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     
     func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessing attachment: SignalAttachment) {
         dataSource?.addMedia(attachment: attachment)
-        
-        if isInBatchMode, let badgeNumber = dataSource?.numberOfMediaItems {
-            doneButton.badgeNumber = badgeNumber
-            doneButton.isHidden = false
-        } else {
-            doneButton.isHidden = true
-            
+
+        updateDoneButtonAppearance()
+
+        if !isInBatchMode {
             delegate?.photoCaptureViewControllerDidFinish(self)
         }
     }

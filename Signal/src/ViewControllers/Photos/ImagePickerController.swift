@@ -4,23 +4,29 @@
 
 import Foundation
 import Photos
+import UIKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidRequestSendMedia(_ imagePicker: ImagePickerGridController)
     func imagePickerDidRequestPresentCamera(_ imagePicker: ImagePickerGridController)
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController)
 
-    func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>)
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset)
 
-    func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool
     func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController)
+}
+
+protocol ImagePickerGridControllerDataSource: AnyObject {
+    func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool
+    func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool
+    var numberOfMediaItems: Int { get }
 }
 
 class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate {
 
     weak var delegate: ImagePickerGridControllerDelegate?
+    weak var dataSource: ImagePickerGridControllerDataSource?
 
     private let library: PhotoLibrary = PhotoLibrary()
     private var photoCollection: PhotoCollection
@@ -29,6 +35,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     private var collectionViewFlowLayout: UICollectionViewFlowLayout
     private var titleView: TitleView!
+
+    private var bottomBar: UIView!
+    private var cameraButton: PhotoControl!
+    private var doneButton: MediaDoneButton!
 
     init() {
         collectionViewFlowLayout = type(of: self).buildLayout()
@@ -62,10 +72,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         collectionView.allowsMultipleSelection = true
+        collectionView.backgroundColor = Theme.backgroundColor
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCancel))
-        cancelButton.tintColor = .ows_gray05
         navigationItem.leftBarButtonItem = cancelButton
 
         let titleView = TitleView()
@@ -73,6 +83,30 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         titleView.text = photoCollection.localizedTitle()
         navigationItem.titleView = titleView
         self.titleView = titleView
+
+        bottomBar = UIView()
+        view.addSubview(bottomBar)
+        bottomBar.preservesSuperviewLayoutMargins = true
+        bottomBar.autoPinBottomToSuperviewMargin()
+        bottomBar.autoPinHorizontalEdges(toEdgesOf: view)
+
+        cameraButton = PhotoControl(imageName: "media-composer-camera-outline-28") { [weak self] in
+            guard let self = self else { return }
+            self.didTapCameraButton()
+        }
+        bottomBar.addSubview(cameraButton)
+        cameraButton.contentInsets = .zero
+        cameraButton.autoSetDimensions(to: .square(40))
+        cameraButton.autoPinLeadingToSuperviewMargin()
+        cameraButton.autoPinTopToSuperviewMargin()
+        cameraButton.autoPinBottomToSuperviewMargin()
+
+        doneButton = MediaDoneButton()
+        doneButton.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
+        bottomBar.addSubview(doneButton)
+        doneButton.autoPinTopToSuperviewMargin()
+        doneButton.autoPinBottomToSuperviewMargin()
+        doneButton.autoPinTrailingToSuperviewMargin()
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
         selectionPanGesture.delegate = self
@@ -93,8 +127,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        guard let delegate = delegate else {
-            owsFailDebug("delegate was unexpectedly nil")
+        guard let dataSource = dataSource else {
+            owsFailDebug("dataSource was unexpectedly nil")
             return
         }
 
@@ -111,7 +145,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 return
             }
             let asset = photoCollectionContents.asset(at: indexPath.item)
-            if delegate.imagePicker(self, isAssetSelected: asset) {
+            if dataSource.imagePicker(self, isAssetSelected: asset) {
                 selectionPanGestureMode = .deselect
             } else {
                 selectionPanGestureMode = .select
@@ -153,8 +187,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        guard let delegate = delegate else {
-            owsFailDebug("delegate was unexpectedly nil")
+        guard let delegate = delegate, let dataSource = dataSource else {
+            owsFailDebug("delegate or dataSource was unexpectedly nil")
             return
         }
 
@@ -165,7 +199,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 return
             }
 
-            guard delegate.imagePickerCanSelectMoreItems(self) else {
+            guard dataSource.imagePickerCanSelectMoreItems(self) else {
                 delegate.imagePickerDidTryToSelectTooMany(self)
                 return
             }
@@ -201,6 +235,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         if !hasEverAppeared {
             scrollToBottom(animated: false)
         }
+
+        updateDoneButtonAppearance()
     }
 
     override func viewSafeAreaInsetsDidChange() {
@@ -231,7 +267,19 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    // MARK:
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        collectionView.backgroundColor = Theme.backgroundColor
+    }
+
+    private func updateDoneButtonAppearance() {
+        guard let dataSource = dataSource else { return }
+
+        doneButton.badgeNumber = dataSource.numberOfMediaItems
+        doneButton.isHidden = doneButton.badgeNumber == 0
+    }
+
+    // MARK: - Scrolling
 
     private var lastPageYOffset: CGFloat {
         let yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom + view.safeAreaInsets.bottom
@@ -285,6 +333,15 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     @objc
     private func didPressCancel() {
         self.delegate?.imagePickerDidCancel(self)
+    }
+
+    private func didTapCameraButton() {
+        delegate?.imagePickerDidRequestPresentCamera(self)
+    }
+
+    @objc
+    private func didTapDoneButton() {
+        delegate?.imagePickerDidRequestSendMedia(self)
     }
 
     // MARK: - Layout
@@ -350,8 +407,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }()
 
     private func showCollectionPicker() {
-        Logger.debug("")
-
         guard let collectionPickerView = collectionPickerController.view else {
             owsFailDebug("collectionView was unexpectedly nil")
             return
@@ -376,8 +431,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     private func hideCollectionPicker() {
-        Logger.debug("")
-
         assert(isShowingCollectionPickerController)
         isShowingCollectionPickerController = false
 
@@ -418,9 +471,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - UICollectionView
 
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        guard let delegate = delegate else { return false }
+        guard let delegate = delegate, let dataSource = dataSource else { return false }
 
-        if delegate.imagePickerCanSelectMoreItems(self) {
+        if dataSource.imagePickerCanSelectMoreItems(self) {
             return true
         }
 
@@ -437,6 +490,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let asset: PHAsset = photoCollectionContents.asset(at: indexPath.item)
         let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
         delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
+        updateDoneButtonAppearance()
     }
 
     override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
@@ -447,6 +501,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         let asset = photoCollectionContents.asset(at: indexPath.item)
         delegate.imagePicker(self, didDeselectAsset: asset)
+        updateDoneButtonAppearance()
     }
 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -465,13 +520,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let delegate = delegate else { return }
+        guard let dataSource = dataSource else { return }
         guard let photoGridViewCell = cell as? PhotoGridViewCell else {
             owsFailDebug("unexpected cell: \(cell)")
             return
         }
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
-        let isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+        let isSelected = dataSource.imagePicker(self, isAssetSelected: assetItem.asset)
         if isSelected {
             collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
         } else {
@@ -482,7 +537,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     private func updateVisibleCells() {
-        guard let delegate = delegate else { return }
+        guard let dataSource = dataSource else { return }
+
         for cell in collectionView.visibleCells {
             guard let photoGridViewCell = cell as? PhotoGridViewCell else {
                 owsFailDebug("unexpected cell: \(cell)")
@@ -494,13 +550,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 continue
             }
 
-            photoGridViewCell.isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+            photoGridViewCell.isSelected = dataSource.imagePicker(self, isAssetSelected: assetItem.asset)
             photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
         }
     }
 }
 
 extension ImagePickerGridController: UIGestureRecognizerDelegate {
+
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer == selectionPanGesture else {
             return true
@@ -516,39 +573,65 @@ private protocol TitleViewDelegate: AnyObject {
 
 private class TitleView: UIView {
 
-    // MARK: - Private
-
     private let label = UILabel()
     private let iconView = UIImageView()
-    private let stackView: UIStackView
+    private var stackView: UIStackView!
+
+    // Returns same font as UIBarButtonItem uses.
+    private func titleLabelFont() -> UIFont {
+        let fontDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .body)
+        return UIFont(descriptor: fontDescriptor, size: fontDescriptor.pointSize.clamp(17, 21))
+    }
 
     // MARK: - Initializers
 
     override init(frame: CGRect) {
-        let stackView = UIStackView(arrangedSubviews: [label, iconView])
+        super.init(frame: frame)
+        commonInit()
+
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        commonInit()
+    }
+
+    private func commonInit() {
+        stackView = UIStackView(arrangedSubviews: [label, iconView])
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = 5
         stackView.isUserInteractionEnabled = true
-
-        self.stackView = stackView
-
-        super.init(frame: frame)
-
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
 
-        label.textColor = .ows_gray05
-        label.font = UIFont.ows_dynamicTypeBody.ows_semibold
+        label.textColor = tintColor
+        label.font = titleLabelFont()
 
-        iconView.tintColor = .ows_gray05
-        iconView.image = UIImage(named: "media-composer-navbar-chevron")
+        iconView.tintColor = tintColor
+        if #available(iOS 13, *) {
+            iconView.image = UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(font: label.font))
+        } else {
+            iconView.image = UIImage(named: "media-composer-navbar-chevron")
+        }
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+        label.textColor = tintColor
+        iconView.tintColor = tintColor
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            label.font = titleLabelFont()
+            if #available(iOS 13, *) {
+                iconView.image = UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(font: label.font))
+            }
+        }
     }
 
     // MARK: - Public
