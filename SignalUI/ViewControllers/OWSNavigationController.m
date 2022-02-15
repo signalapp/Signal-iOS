@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSNavigationController.h"
@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(themeDidChange:)
                                                  name:ThemeDidChangeNotification
                                                object:nil];
+    self.ows_preferredStatusBarStyle = UIStatusBarStyleDefault;
 
     return self;
 }
@@ -139,6 +140,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (!CurrentAppContext().isMainApp) {
         return super.preferredStatusBarStyle;
     } else {
+        if (self.ows_preferredStatusBarStyle != UIStatusBarStyleDefault) {
+            return self.ows_preferredStatusBarStyle;
+        }
+
         UIViewController *presentedViewController = self.presentedViewController;
         if (presentedViewController != nil && !presentedViewController.isBeingDismissed) {
             return presentedViewController.preferredStatusBarStyle;

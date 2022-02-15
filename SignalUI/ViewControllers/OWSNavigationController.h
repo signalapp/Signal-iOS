@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -27,6 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This is useful for supressing the status bar while a modal is presented,
 // regardless of which view is currently visible.
 @property (nonatomic, nullable) NSNumber *ows_prefersStatusBarHidden;
+
+// Defaults to UIStatusBarStyleDefault. If set to a non-default value, this status bar style will be used.
+@property (nonatomic, assign) UIStatusBarStyle ows_preferredStatusBarStyle;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithNavigationBarClass:(nullable Class)navigationBarClass
