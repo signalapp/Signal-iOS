@@ -10,7 +10,7 @@ extension NonceGenerator16ByteType {
     
 }
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public class NonceGenerator16Byte: NonceGenerator, NonceGenerator16ByteType {
         public var NonceBytes: Int { 16 }
         

@@ -49,7 +49,7 @@ extension MessageSender {
                     stream,
                     using: { data in
                         // TODO: Update to non-legacy version
-                        OpenGroupAPIV2.legacyUpload(
+                        OpenGroupAPI.legacyUpload(
                             data,
                             to: v2OpenGroup.room,
                             on: v2OpenGroup.server
@@ -96,7 +96,7 @@ extension MessageSender {
                     stream,
                     using: { data in
                         // TODO: Update to non-legacy version
-                        OpenGroupAPIV2.legacyUpload(
+                        OpenGroupAPI.legacyUpload(
                             data,
                             to: v2OpenGroup.room,
                             on: v2OpenGroup.server

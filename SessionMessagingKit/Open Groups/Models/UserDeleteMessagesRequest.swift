@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct UserDeleteMessagesRequest: Codable {
         let rooms: [String]?
         let global: Bool?

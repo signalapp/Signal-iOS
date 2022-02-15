@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public struct FileResponse: Codable {
         enum CodingKeys: String, CodingKey {
             case fileName = "filename"

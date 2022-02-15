@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct UserUnbanRequest: Codable {
         let rooms: [String]?
         let global: Bool?

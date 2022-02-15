@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct MemberCountResponse: Codable {
         enum CodingKeys: String, CodingKey {
             case memberCount = "member_count"

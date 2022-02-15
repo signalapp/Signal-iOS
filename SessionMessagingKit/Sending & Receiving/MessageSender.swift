@@ -373,7 +373,7 @@ public final class MessageSender : NSObject {
             preconditionFailure()
         }
 
-        OpenGroupAPIV2
+        OpenGroupAPI
             .send(
                 plaintext,
                 to: room,

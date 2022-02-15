@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     /// This only contains ephemeral data
     public struct RoomPollInfo: Codable {
         enum CodingKeys: String, CodingKey {

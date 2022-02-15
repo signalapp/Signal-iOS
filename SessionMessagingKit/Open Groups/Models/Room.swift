@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public struct Room: Codable {
         enum CodingKeys: String, CodingKey {
             case token
@@ -68,11 +68,11 @@ extension OpenGroupAPIV2 {
 
 // MARK: - Decoding
 
-extension OpenGroupAPIV2.Room {
+extension OpenGroupAPI.Room {
     public init(from decoder: Decoder) throws {
         let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
         
-        self = OpenGroupAPIV2.Room(
+        self = OpenGroupAPI.Room(
             token: try container.decode(String.self, forKey: .token),
             created: try container.decode(TimeInterval.self, forKey: .created),
             name: try container.decode(String.self, forKey: .name),
@@ -83,7 +83,7 @@ extension OpenGroupAPIV2.Room {
             messageSequence: try container.decode(Int64.self, forKey: .messageSequence),
             activeUsers: try container.decode(Int64.self, forKey: .activeUsers),
             activeUsersCutoff: try container.decode(Int64.self, forKey: .activeUsersCutoff),
-            pinnedMessages: try? container.decode([OpenGroupAPIV2.PinnedMessage].self, forKey: .pinnedMessages),
+            pinnedMessages: try? container.decode([OpenGroupAPI.PinnedMessage].self, forKey: .pinnedMessages),
             
             admin: ((try? container.decode(Bool.self, forKey: .admin)) ?? false),
             globalAdmin: ((try? container.decode(Bool.self, forKey: .globalAdmin)) ?? false),

@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public enum Error: LocalizedError {
         case generic
         case parsingFailed

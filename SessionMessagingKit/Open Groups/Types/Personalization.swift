@@ -3,7 +3,7 @@
 import Foundation
 import Sodium
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public enum Personalization: String {
         case sharedKeys = "sogs.shared_keys"
         case authHeader = "sogs.auth_header"

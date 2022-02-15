@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public struct Capabilities: Codable {
         public enum Capability: CaseIterable, Codable {
             public static var allCases: [Capability] {

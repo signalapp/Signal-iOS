@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct LegacyCompactPollBody: Codable {
         struct Room: Codable {
             enum CodingKeys: String, CodingKey {

@@ -42,7 +42,7 @@ public final class OpenGroupManagerV2 : NSObject {
         transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             // Get the group info
             // TODO: Remove this legacy method
-//            OpenGroupAPIV2.legacyGetRoomInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { info in
+//            OpenGroupAPI.legacyGetRoomInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { info in
 //                // Create the open group model and the thread
 //                let openGroup = OpenGroupV2(server: server, room: room, name: info.name, publicKey: publicKey, imageID: info.imageID)
 //                let groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
@@ -62,7 +62,7 @@ public final class OpenGroupManagerV2 : NSObject {
 //                        OpenGroupManagerV2.shared.pollers[server] = poller
 //                    }
 //                    // Fetch the group image
-//                    OpenGroupAPIV2.legacyGetGroupImage(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+//                    OpenGroupAPI.legacyGetGroupImage(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
 //                        storage.write { transaction in
 //                            // Update the thread
 //                            let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -78,7 +78,7 @@ public final class OpenGroupManagerV2 : NSObject {
 //                seal.reject(error)
 //            }
             
-            OpenGroupAPIV2.room(for: room, on: server)
+            OpenGroupAPI.room(for: room, on: server)
                 .done(on: DispatchQueue.global(qos: .userInitiated)) { _, room in
                     // Create the open group model and the thread
                     let openGroup: OpenGroupV2 = OpenGroupV2(
@@ -120,7 +120,7 @@ public final class OpenGroupManagerV2 : NSObject {
                             // TODO: Need to test this
                             // TODO: Clean this up (can we avoid the if/else with fancy promise wrangling?)
                             if let imageId: Int64 = room.imageId {
-                                OpenGroupAPIV2.roomImage(imageId, for: room.token, on: server)
+                                OpenGroupAPI.roomImage(imageId, for: room.token, on: server)
                                     .done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                                         storage.write { transaction in
                                             // Update the thread
@@ -176,7 +176,7 @@ public final class OpenGroupManagerV2 : NSObject {
         Storage.shared.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
         Storage.shared.removeLastMessageServerID(for: openGroup.room, on: openGroup.server, using: transaction)
         Storage.shared.removeLastDeletionServerID(for: openGroup.room, on: openGroup.server, using: transaction)
-        let _ = OpenGroupAPIV2.legacyDeleteAuthToken(for: openGroup.room, on: openGroup.server)
+        let _ = OpenGroupAPI.legacyDeleteAuthToken(for: openGroup.room, on: openGroup.server)
         thread.removeAllThreadInteractions(with: transaction)
         thread.remove(with: transaction)
         Storage.shared.removeV2OpenGroup(for: thread.uniqueId!, using: transaction)

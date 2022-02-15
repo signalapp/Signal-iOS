@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public struct LegacyRoomInfo: Codable {
         enum CodingKeys: String, CodingKey {
             case id

@@ -5,7 +5,7 @@ import PromiseKit
 import SessionUtilitiesKit
 import SessionSnodeKit
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     // MARK: - BatchSubRequest
     
     struct BatchSubRequest: Codable {
@@ -68,17 +68,17 @@ public extension Decodable {
 }
 
 extension Promise where T == (OnionRequestResponseInfoType, Data?) {
-    func decoded(as types: OpenGroupAPIV2.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error) -> Promise<OpenGroupAPIV2.BatchResponse> {
-        self.map(on: queue) { responseInfo, maybeData -> OpenGroupAPIV2.BatchResponse in
+    func decoded(as types: OpenGroupAPI.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error) -> Promise<OpenGroupAPI.BatchResponse> {
+        self.map(on: queue) { responseInfo, maybeData -> OpenGroupAPI.BatchResponse in
             // Need to split the data into an array of data so each item can be Decoded correctly
-            guard let data: Data = maybeData else { throw OpenGroupAPIV2.Error.parsingFailed }
+            guard let data: Data = maybeData else { throw OpenGroupAPI.Error.parsingFailed }
             guard let jsonObject: Any = try? JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed]) else {
-                throw OpenGroupAPIV2.Error.parsingFailed
+                throw OpenGroupAPI.Error.parsingFailed
             }
-            guard let anyArray: [Any] = jsonObject as? [Any] else { throw OpenGroupAPIV2.Error.parsingFailed }
+            guard let anyArray: [Any] = jsonObject as? [Any] else { throw OpenGroupAPI.Error.parsingFailed }
             
             let dataArray: [Data] = anyArray.compactMap { try? JSONSerialization.data(withJSONObject: $0) }
-            guard dataArray.count == types.count else { throw OpenGroupAPIV2.Error.parsingFailed }
+            guard dataArray.count == types.count else { throw OpenGroupAPI.Error.parsingFailed }
             
             do {
                 return try zip(dataArray, types)

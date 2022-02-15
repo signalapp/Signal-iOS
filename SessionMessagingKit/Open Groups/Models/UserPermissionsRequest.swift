@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct UserPermissionsRequest: Codable {
         let rooms: [String]
         let timeout: TimeInterval

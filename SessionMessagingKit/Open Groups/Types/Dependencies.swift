@@ -4,7 +4,7 @@ import Foundation
 import Sodium
 import SessionSnodeKit
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public struct Dependencies {
         let api: OnionRequestAPIType.Type
         let storage: SessionMessagingKitStorageProtocol

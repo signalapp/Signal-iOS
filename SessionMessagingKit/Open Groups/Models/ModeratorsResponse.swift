@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct ModeratorsResponse: Codable {
         let moderators: [String]
     }

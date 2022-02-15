@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public struct Deletion: Codable {
         enum CodingKeys: String, CodingKey {
             case id

@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct AuthTokenResponse: Codable {
          struct Challenge: Codable {
              enum CodingKeys: String, CodingKey {
@@ -20,7 +20,7 @@ extension OpenGroupAPIV2 {
 
 // MARK: - Codable
 
-extension OpenGroupAPIV2.AuthTokenResponse.Challenge {
+extension OpenGroupAPI.AuthTokenResponse.Challenge {
     init(from decoder: Decoder) throws {
         let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -28,10 +28,10 @@ extension OpenGroupAPIV2.AuthTokenResponse.Challenge {
         let base64EncodedEphemeralPublicKey: String = try container.decode(String.self, forKey: .ephemeralPublicKey)
         
         guard let ciphertext = Data(base64Encoded: base64EncodedCiphertext), let ephemeralPublicKey = Data(base64Encoded: base64EncodedEphemeralPublicKey) else {
-            throw OpenGroupAPIV2.Error.parsingFailed
+            throw OpenGroupAPI.Error.parsingFailed
         }
         
-        self = OpenGroupAPIV2.AuthTokenResponse.Challenge(
+        self = OpenGroupAPI.AuthTokenResponse.Challenge(
             ciphertext: ciphertext,
             ephemeralPublicKey: ephemeralPublicKey
         )

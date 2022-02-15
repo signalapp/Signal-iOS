@@ -700,7 +700,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             let publicKey = message.authorId
             guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) else { return }
-            OpenGroupAPIV2.legacyBan(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
+            OpenGroupAPI.legacyBan(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
@@ -714,7 +714,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             let publicKey = message.authorId
             guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) else { return }
-            OpenGroupAPIV2.legacyBanAndDeleteAllMessages(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
+            OpenGroupAPI.legacyBanAndDeleteAllMessages(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)

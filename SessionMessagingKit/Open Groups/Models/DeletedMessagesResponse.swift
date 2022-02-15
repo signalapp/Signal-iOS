@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct DeletedMessagesResponse: Codable {
         enum CodingKeys: String, CodingKey {
             case deletions = "ids"

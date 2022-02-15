@@ -3,7 +3,7 @@
 import Foundation
 import SessionUtilitiesKit
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct Request {
         let method: HTTP.Verb
         let server: String

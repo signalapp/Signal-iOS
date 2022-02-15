@@ -48,13 +48,13 @@ public final class OpenGroupPollerV2 : NSObject {
         let (promise, seal) = Promise<Void>.pending()
         promise.retainUntilComplete()
         
-        OpenGroupAPIV2.poll(server)
-            .done(on: OpenGroupAPIV2.workQueue) { [weak self] response in
+        OpenGroupAPI.poll(server)
+            .done(on: OpenGroupAPI.workQueue) { [weak self] response in
                 self?.isPolling = false
                 self?.handlePollResponse(response, isBackgroundPoll: isBackgroundPoll)
                 seal.fulfill(())
             }
-            .catch(on: OpenGroupAPIV2.workQueue) { [weak self] error in
+            .catch(on: OpenGroupAPI.workQueue) { [weak self] error in
                 SNLog("Open group polling failed due to error: \(error).")
                 self?.isPolling = false
                 seal.fulfill(()) // The promise is just used to keep track of when we're done
@@ -63,13 +63,13 @@ public final class OpenGroupPollerV2 : NSObject {
         return promise
     }
     
-    private func handlePollResponse(_ response: [Endpoint: (info: OnionRequestResponseInfoType, data: Codable)], isBackgroundPoll: Bool) {
+    private func handlePollResponse(_ response: [OpenGroupAPI.Endpoint: (info: OnionRequestResponseInfoType, data: Codable)], isBackgroundPoll: Bool) {
         let storage = SNMessagingKitConfiguration.shared.storage
         
         response.forEach { endpoint, response in
             switch endpoint {
                 case .roomMessagesRecent(let roomToken), .roomMessagesBefore(let roomToken, _), .roomMessagesSince(let roomToken, _):
-                    guard let responseData: [OpenGroupAPIV2.Message] = response.data as? [OpenGroupAPIV2.Message] else {
+                    guard let responseData: [OpenGroupAPI.Message] = response.data as? [OpenGroupAPI.Message] else {
                         //SNLog("Open group polling failed due to error: \(error).")
                         return  // TODO: Throw error?
                     }
@@ -77,7 +77,7 @@ public final class OpenGroupPollerV2 : NSObject {
                     handleMessages(responseData, roomToken: roomToken, isBackgroundPoll: isBackgroundPoll, using: storage)
                     
                 case .roomPollInfo(let roomToken, _):
-                    guard let responseData: OpenGroupAPIV2.RoomPollInfo = response.data as? OpenGroupAPIV2.RoomPollInfo else {
+                    guard let responseData: OpenGroupAPI.RoomPollInfo = response.data as? OpenGroupAPI.RoomPollInfo else {
                         //SNLog("Open group polling failed due to error: \(error).")
                         return  // TODO: Throw error?
                     }
@@ -92,10 +92,10 @@ public final class OpenGroupPollerV2 : NSObject {
     // MARK: - Custom response handling
     // TODO: Shift this logic to the OpenGroupManagerV2? (seems like the place it should belong?)
     
-    private func handleMessages(_ messages: [OpenGroupAPIV2.Message], roomToken: String, isBackgroundPoll: Bool, using storage: SessionMessagingKitStorageProtocol) {
+    private func handleMessages(_ messages: [OpenGroupAPI.Message], roomToken: String, isBackgroundPoll: Bool, using storage: SessionMessagingKitStorageProtocol) {
         // Sorting the messages by server ID before importing them fixes an issue where messages that quote older messages can't find those older messages
         let openGroupID = "\(server).\(roomToken)"
-        let sortedMessages: [OpenGroupAPIV2.Message] = messages
+        let sortedMessages: [OpenGroupAPI.Message] = messages
             .sorted { lhs, rhs in lhs.seqNo < rhs.seqNo }
         
         storage.write { transaction in
@@ -140,18 +140,18 @@ public final class OpenGroupPollerV2 : NSObject {
         }
     }
     
-    private func handlePollInfo(_ pollInfo: OpenGroupAPIV2.RoomPollInfo, roomToken: String, isBackgroundPoll: Bool, using storage: SessionMessagingKitStorageProtocol) {
+    private func handlePollInfo(_ pollInfo: OpenGroupAPI.RoomPollInfo, roomToken: String, isBackgroundPoll: Bool, using storage: SessionMessagingKitStorageProtocol) {
         // TODO: Handle other properties???
         
         // - Moderators
-        OpenGroupAPIV2.moderators[server] = (OpenGroupAPIV2.moderators[server] ?? [:])
+        OpenGroupAPI.moderators[server] = (OpenGroupAPI.moderators[server] ?? [:])
             .setting(roomToken, Set(pollInfo.moderators ?? []))
 
     }
     
     // MARK: - Legacy Handling
 
-    private func handleCompactPollBody(_ body: OpenGroupAPIV2.LegacyCompactPollResponse.Result, isBackgroundPoll: Bool) {
+    private func handleCompactPollBody(_ body: OpenGroupAPI.LegacyCompactPollResponse.Result, isBackgroundPoll: Bool) {
         let storage = SNMessagingKitConfiguration.shared.storage
         // - Messages
         // Sorting the messages by server ID before importing them fixes an issue where messages that quote older messages can't find those older messages
@@ -177,12 +177,12 @@ public final class OpenGroupPollerV2 : NSObject {
         }
         
         // - Moderators
-        if var x = OpenGroupAPIV2.moderators[server] {
+        if var x = OpenGroupAPI.moderators[server] {
             x[body.room] = Set(body.moderators ?? [])
-            OpenGroupAPIV2.moderators[server] = x
+            OpenGroupAPI.moderators[server] = x
         }
         else {
-            OpenGroupAPIV2.moderators[server] = [ body.room : Set(body.moderators ?? []) ]
+            OpenGroupAPI.moderators[server] = [ body.room : Set(body.moderators ?? []) ]
         }
         
         // - Deletions

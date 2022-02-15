@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     struct PublicKeyBody: Codable {
         enum CodingKeys: String, CodingKey {
             case publicKey = "public_key"

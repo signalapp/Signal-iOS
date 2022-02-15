@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension OpenGroupAPIV2 {
+extension OpenGroupAPI {
     public struct Message: Codable {
         enum CodingKeys: String, CodingKey {
             case id
@@ -34,7 +34,7 @@ extension OpenGroupAPIV2 {
 
 // MARK: - Decoder
 
-extension OpenGroupAPIV2.Message {
+extension OpenGroupAPI.Message {
     public init(from decoder: Decoder) throws {
         let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
     
@@ -45,7 +45,7 @@ extension OpenGroupAPIV2.Message {
         // If we have data and a signature (ie. the message isn't a deletion) then validate the signature
         if let base64EncodedData: String = maybeBase64EncodedData, let base64EncodedSignature: String = maybeBase64EncodedSignature {
             guard let sender: String = maybeSender, let data = Data(base64Encoded: base64EncodedData), let signature = Data(base64Encoded: base64EncodedSignature) else {
-                throw OpenGroupAPIV2.Error.parsingFailed
+                throw OpenGroupAPI.Error.parsingFailed
             }
             
             let publicKey: Data = Data(hex: sender.removingIdPrefixIfNeeded())
@@ -53,11 +53,11 @@ extension OpenGroupAPIV2.Message {
             
             guard isValid else {
                 SNLog("Ignoring message with invalid signature.")
-                throw OpenGroupAPIV2.Error.parsingFailed
+                throw OpenGroupAPI.Error.parsingFailed
             }
         }
         
-        self = OpenGroupAPIV2.Message(
+        self = OpenGroupAPI.Message(
             id: try container.decode(Int64.self, forKey: .id),
             sender: try? container.decode(String.self, forKey: .sender),
             posted: try container.decode(TimeInterval.self, forKey: .posted),

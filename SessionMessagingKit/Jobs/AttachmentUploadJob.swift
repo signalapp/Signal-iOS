@@ -73,7 +73,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
                 stream,
                 using: { data in
                     // TODO: Upgrade this to use the non-legacy version
-                    return OpenGroupAPIV2.legacyUpload(data, to: v2OpenGroup.room, on: v2OpenGroup.server)
+                    return OpenGroupAPI.legacyUpload(data, to: v2OpenGroup.room, on: v2OpenGroup.server)
                 },
                 encrypt: false,
                 onSuccess: handleSuccess,
