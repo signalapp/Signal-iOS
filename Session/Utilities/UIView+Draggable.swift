@@ -3,11 +3,11 @@
 extension UIView {
     
     func makeViewDraggable() {
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePanForDragging))
         addGestureRecognizer(panGestureRecognizer)
     }
     
-    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+    @objc private func handlePanForDragging(_ gesture: UIPanGestureRecognizer) {
         let location = gesture.location(in: self.superview!)
         if let draggedView = gesture.view {
             draggedView.center = location
