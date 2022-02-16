@@ -142,7 +142,7 @@ PODS:
   - SQLCipher/standard (4.3.0):
     - SQLCipher/common
   - SSZipArchive (2.1.4)
-  - Starscream (3.0.6)
+  - Starscream (3.1.1)
   - SwiftNIO (2.27.0):
     - CNIODarwin (= 2.27.0)
     - CNIOLinux (= 2.27.0)
@@ -334,7 +334,7 @@ CHECKOUT OPTIONS:
     :commit: 500947f098eeaa9acc6d7cdffc9e6e2239b7d9d7
     :git: "git@github.com:signalapp/SignalCoreKit"
   Starscream:
-    :commit: b09ea163c3cb305152c65b299cb024610f52e735
+    :commit: 71ebc08f248256497a237ece262e42e7ad05c4a5
     :git: https://github.com/signalapp/Starscream.git
   YYImage:
     :commit: 62a4cede20bcf31da73d18163408e46a92f171c6
@@ -374,7 +374,7 @@ SPEC CHECKSUMS:
   SignalServiceKit: 25ca5d50484d3883990bd18a4825ec3d57bbe798
   SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
-  Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
+  Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
   SwiftNIO: 81d33ce8c500b7e41b6cdde5f2f12330b9750219
   SwiftNIOConcurrencyHelpers: 23fc68bac541a465162d7225d2c743edd2f1012c
   SwiftNIOExtras: aa561b71020cd6844f722cf4513fb176c577414d
