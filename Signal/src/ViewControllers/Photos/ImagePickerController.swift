@@ -95,7 +95,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         bottomBar = UIView()
         view.addSubview(bottomBar)
         bottomBar.preservesSuperviewLayoutMargins = true
-        bottomBar.autoPinBottomToSuperviewMargin()
+        bottomBar.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 0 : 8)
         bottomBar.autoPinHorizontalEdges(toEdgesOf: view)
 
         cameraButton = PhotoControl(imageName: "media-composer-camera-outline-28", userInterfaceStyleOverride: .light) { [weak self] in

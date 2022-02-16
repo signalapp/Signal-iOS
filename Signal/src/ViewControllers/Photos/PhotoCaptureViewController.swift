@@ -92,7 +92,8 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         
         view.addSubview(bottomBar)
         bottomBar.autoPinWidthToSuperview()
-        bottomBarOffsetFromBottom = bottomBar.autoPinEdge(toSuperviewEdge: .bottom)
+        bottomBarOffsetFromBottom = view.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor)
+        view.addConstraint(bottomBarOffsetFromBottom)
         
         view.addSubview(cameraCaptureControl)
         if UIDevice.current.isIPad {
@@ -100,7 +101,8 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             //            captureButton.autoPinTrailing(toEdgeOf: view, offset: -captureButtonMargin)
             //            captureButton.movieLockView.autoSetDimension(.width, toSize: 120)
         } else {
-            captureButtonVPositionConstraint = cameraCaptureControl.autoPinEdge(toSuperviewEdge: .bottom)
+            captureButtonVPositionConstraint = view.bottomAnchor.constraint(equalTo: cameraCaptureControl.bottomAnchor)
+            view?.addConstraint(captureButtonVPositionConstraint)
             cameraCaptureControl.autoPinLeadingToSuperviewMargin()
             cameraCaptureControl.autoPinTrailingToSuperviewMargin()
         }
@@ -129,9 +131,9 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        guard !UIDevice.current.isIPad else {
-            return
-        }
+        guard !UIDevice.current.isIPad else { return }
+
+        guard !interactiveDismiss.interactionInProgress else { return }
         
         // Clamp capture view to 16:9
         var previewFrame = view.bounds
@@ -147,18 +149,22 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         previewView.frame = previewFrame
         previewView.previewLayer.cornerRadius = cornerRadius
         
-        // Bottom bar is pinned to the bottom of the screen, residing either directly above safe area
+        // Bottom bar is pinned to the bottom of the screen, residing either directly above safe area / bottom margin
         // or (for taller screens) floating in the center of the black area between the bottom of the capture view and safe area.
         let bottomBarHeight = bottomBar.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize,
                                                                 withHorizontalFittingPriority: .fittingSizeLevel,
                                                                 verticalFittingPriority: .fittingSizeLevel).height
-        let blackBarHeight = max(0, view.bounds.maxY - previewFrame.maxY - view.safeAreaInsets.bottom)
-        bottomBarOffsetFromBottom.constant = -(max(0, (blackBarHeight - bottomBarHeight) / 2) + view.safeAreaInsets.bottom)
+        let blackBarHeight = view.bounds.maxY - previewFrame.maxY - view.safeAreaInsets.bottom
+        var bottomBarOffset = UIDevice.current.hasIPhoneXNotch ? view.safeAreaInsets.bottom : 16
+        if blackBarHeight > bottomBarHeight {
+            bottomBarOffset += 0.5*(blackBarHeight - bottomBarHeight)
+        }
+        bottomBarOffsetFromBottom.constant = bottomBarOffset
         
-        // Bottom edge of the capture button is 16pts above either bottom edge of the camera capture view
-        // or top of the bottom bar, whatever is higher.
-        let captureButtonBaseline = view.bounds.maxY - view.safeAreaInsets.bottom - max(blackBarHeight, bottomBarHeight)
-        captureButtonVPositionConstraint.constant = -(view.bounds.height - captureButtonBaseline + 16)
+        // Bottom edge of the capture button is either 16pts above bottom edge of the camera capture view
+        // or directly adjacent to the top of the bottom bar, whatever is higher.
+        let captureButtonOffsetFromBottom = max(view.bounds.maxY - (previewFrame.maxY - 16), bottomBarOffset + bottomBarHeight)
+        captureButtonVPositionConstraint.constant = captureButtonOffsetFromBottom
     }
     
     private var topBarOffsetFromTop: NSLayoutConstraint!
