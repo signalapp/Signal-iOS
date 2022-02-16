@@ -97,7 +97,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         return self.completeSilenty()
                     }
                     notificationContent.userInfo = userInfo
-                    notificationContent.badge = 1
+                    notificationContent.badge = NSNumber(value: OWSMessageUtils.sharedManager().unreadMessagesCount() + 1)
                     let notificationsPreference = Environment.shared.preferences!.notificationPreviewType()
                     switch notificationsPreference {
                     case .namePreview:
