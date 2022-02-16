@@ -7,7 +7,8 @@
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let isUnsendRequestsEnabled = true // Set to true once unsend requests are done on all platforms
     let thread: TSThread
-    let focusedMessageID: String? // This isn't actually used ATM
+    let focusedMessageID: String? // This is used for global search
+    var focusedMessageIndexPath: IndexPath?
     var unreadViewItems: [ConversationViewItem] = []
     var scrollButtonConstraint: NSLayoutConstraint?
     // Search
@@ -112,7 +113,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let result = UIView()
         result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
         let size = ConversationVC.unreadCountViewSize
-        result.set(.width, to: size)
+        result.set(.width, greaterThanOrEqualTo: size)
         result.set(.height, to: size)
         result.layer.masksToBounds = true
         result.layer.cornerRadius = size / 2
@@ -192,7 +193,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // Unread count view
         view.addSubview(unreadCountView)
         unreadCountView.addSubview(unreadCountLabel)
-        unreadCountLabel.pin(to: unreadCountView)
+        unreadCountLabel.pin(.top, to: .top, of: unreadCountView)
+        unreadCountLabel.pin(.bottom, to: .bottom, of: unreadCountView)
+        unreadCountView.pin(.leading, to: .leading, of: unreadCountLabel, withInset: -4)
+        unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
         unreadCountView.centerYAnchor.constraint(equalTo: scrollButton.topAnchor).isActive = true
         unreadCountView.center(.horizontal, in: scrollButton)
         updateUnreadCountView()
@@ -236,13 +240,17 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             // unreadIndicatorIndex is calculated during loading of the viewItems, so it's
             // supposed to be accurate.
             DispatchQueue.main.async {
-                let firstUnreadMessageIndex = self.viewModel.viewState.unreadIndicatorIndex?.intValue
-                    ?? (self.viewItems.count - self.unreadViewItems.count)
-                if unreadCount > 0, let viewItem = self.viewItems[ifValid: firstUnreadMessageIndex], let interactionID = viewItem.interaction.uniqueId {
-                    self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
-                    self.unreadCountView.alpha = self.scrollButton.alpha
+                if let focusedMessageID = self.focusedMessageID {
+                    self.scrollToInteraction(with: focusedMessageID, isAnimated: false, highlighted: true)
                 } else {
-                    self.scrollToBottom(isAnimated: false)
+                    let firstUnreadMessageIndex = self.viewModel.viewState.unreadIndicatorIndex?.intValue
+                        ?? (self.viewItems.count - self.unreadViewItems.count)
+                    if unreadCount > 0, let viewItem = self.viewItems[ifValid: firstUnreadMessageIndex], let interactionID = viewItem.interaction.uniqueId {
+                        self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
+                        self.unreadCountView.alpha = self.scrollButton.alpha
+                    } else {
+                        self.scrollToBottom(isAnimated: false)
+                    }
                 }
                 self.scrollButton.alpha = self.getScrollButtonOpacity()
             }
@@ -251,6 +259,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        highlightFocusedMessageIfNeeded()
         didFinishInitialLayout = true
         markAllAsRead()
     }
@@ -310,6 +319,13 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             rightBarButtonItem.accessibilityLabel = "Settings button"
             rightBarButtonItem.isAccessibilityElement = true
             navigationItem.rightBarButtonItem = rightBarButtonItem
+        }
+    }
+    
+    private func highlightFocusedMessageIfNeeded() {
+        if let indexPath = focusedMessageIndexPath, let cell = messagesTableView.cellForRow(at: indexPath) as? VisibleMessageCell {
+            cell.highlight()
+            focusedMessageIndexPath = nil
         }
     }
     
@@ -460,6 +476,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func scrollToBottom(isAnimated: Bool) {
         guard !isUserScrolling else { return }
+        if let interactionID = viewItems.last?.interaction.uniqueId {
+            self.scrollToInteraction(with: interactionID, position: .top, isAnimated: isAnimated)
+            return
+        }
         // Ensure the view is fully up to date before we try to scroll to the bottom, since
         // we use the table view's bounds to determine where the bottom is.
         view.layoutIfNeeded()
@@ -490,8 +510,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             unreadViewItems.remove(at: index)
         }
         let unreadCount = unreadViewItems.count
-        unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"
-        let fontSize = (unreadCount < 100) ? Values.verySmallFontSize : 8
+        unreadCountLabel.text = unreadCount < 10000 ? "\(unreadCount)" : "9999+"
+        let fontSize = (unreadCount < 10000) ? Values.verySmallFontSize : 8
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
         unreadCountView.isHidden = (unreadCount == 0)
     }
@@ -538,6 +558,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     func showSearchUI() {
         isShowingSearchUI = true
         // Search bar
+        // FIXME: This code is duplicated with SearchBar
         let searchBar = searchController.uiSearchController.searchBar
         searchBar.searchBarStyle = .minimal
         searchBar.barStyle = .black
@@ -616,8 +637,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         scrollToInteraction(with: interactionID)
     }
     
-    func scrollToInteraction(with interactionID: String, position: UITableView.ScrollPosition = .middle, isAnimated: Bool = true) {
+    func scrollToInteraction(with interactionID: String, position: UITableView.ScrollPosition = .middle, isAnimated: Bool = true, highlighted: Bool = false) {
         guard let indexPath = viewModel.ensureLoadWindowContainsInteractionId(interactionID) else { return }
         messagesTableView.scrollToRow(at: indexPath, at: position, animated: isAnimated)
+        if highlighted {
+            focusedMessageIndexPath = indexPath
+        }
     }
 }

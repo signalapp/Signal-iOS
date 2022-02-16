@@ -114,6 +114,9 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var captionText: String?
+    
+    @objc
+    public var linkPreviewDraft: OWSLinkPreviewDraft?
 
     @objc
     public var data: Data {
@@ -292,6 +295,15 @@ public class SignalAttachment: NSObject {
             return nil
         }
     }
+    
+    @objc
+    public func text() -> String? {
+        guard let text = String(data: dataSource.data(), encoding: .utf8) else {
+            return nil
+        }
+        
+        return text
+    }
 
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
@@ -450,7 +462,12 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var isText: Bool {
-        return UTTypeConformsTo(dataUTI as CFString, kUTTypeText) || isOversizeText
+        return (
+            isConvertibleToTextMessage && (
+                UTTypeConformsTo(dataUTI as CFString, kUTTypeText) ||
+                isOversizeText
+            )
+        )
     }
 
     @objc

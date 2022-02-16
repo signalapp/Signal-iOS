@@ -123,7 +123,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
             let alert = UIAlertController(title: NSLocalizedString("invalid_session_id", comment: ""), message: NSLocalizedString("Please check the Session ID and try again.", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         } else {
             let thread = TSContactThread.getOrCreateThread(contactSessionID: hexEncodedPublicKey)

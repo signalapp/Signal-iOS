@@ -84,6 +84,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 @property (nonatomic, readonly) BOOL isAudio;
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 @property (nonatomic, readonly) BOOL isVisualMedia;
+@property (nonatomic, readonly) BOOL isText;
+@property (nonatomic, readonly) BOOL isMicrosoftDoc;
 @property (nonatomic, readonly) BOOL isOversizeText;
 
 + (NSString *)emojiForMimeType:(NSString *)contentType;

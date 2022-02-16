@@ -10,17 +10,25 @@ import SessionUIKit
 import CoreServices
 
 @objc
-public protocol AttachmentApprovalViewControllerDelegate: class {
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                            didApproveAttachments attachments: [SignalAttachment], messageText: String?)
+public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
+    func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didApproveAttachments attachments: [SignalAttachment],
+        messageText: String?
+    )
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController)
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                            didChangeMessageText newMessageText: String?)
+    func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didChangeMessageText newMessageText: String?
+    )
 
     @objc
-    optional func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment)
+    optional func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didRemoveAttachment attachment: SignalAttachment
+    )
 
     @objc
     optional func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
@@ -38,18 +46,71 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 
 @objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+    @objc public enum Mode: UInt {
+        case modal
+        case sharedNavigation
+    }
 
     // MARK: - Properties
 
-    private let mode: AttachmentApprovalViewControllerMode
+    private let mode: Mode
     private let isAddMoreVisible: Bool
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
     public var isEditingCaptions = false {
-        didSet {
-            updateContents()
+        didSet { updateContents() }
+    }
+    
+    let attachmentItemCollection: AttachmentItemCollection
+
+    var attachmentItems: [SignalAttachmentItem] {
+        return attachmentItemCollection.attachmentItems
+    }
+
+    var attachments: [SignalAttachment] {
+        return attachmentItems.map { (attachmentItem) in
+            autoreleasepool {
+                return self.processedAttachment(forAttachmentItem: attachmentItem)
+            }
         }
+    }
+    
+    public var pageViewControllers: [AttachmentPrepViewController]? {
+        return viewControllers?.compactMap { $0 as? AttachmentPrepViewController }
+    }
+    
+    public var currentPageViewController: AttachmentPrepViewController? {
+        return pageViewControllers?.first
+    }
+    
+    var currentItem: SignalAttachmentItem? {
+        get { return currentPageViewController?.attachmentItem }
+        set { setCurrentItem(newValue, direction: .forward, animated: false) }
+    }
+    
+    private var cachedPages: [SignalAttachmentItem: AttachmentPrepViewController] = [:]
+
+    public var shouldHideControls: Bool {
+        guard let pageViewController: AttachmentPrepViewController = pageViewControllers?.first else {
+            return false
+        }
+        
+        return pageViewController.shouldHideControls
+    }
+    
+    override public var inputAccessoryView: UIView? {
+        bottomToolView.layoutIfNeeded()
+        return bottomToolView
+    }
+
+    override public var canBecomeFirstResponder: Bool {
+        return !shouldHideControls
+    }
+    
+    public var messageText: String? {
+        get { return bottomToolView.attachmentTextToolbar.messageText }
+        set { bottomToolView.attachmentTextToolbar.messageText = newValue }
     }
 
     // MARK: - Initializers
@@ -59,29 +120,34 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         notImplemented()
     }
 
-    let kSpacingBetweenItems: CGFloat = 20
-
     @objc
-    required public init(mode: AttachmentApprovalViewControllerMode,
-                         attachments: [SignalAttachment]) {
+    required public init(
+        mode: Mode,
+        attachments: [SignalAttachment]
+    ) {
         assert(attachments.count > 0)
         self.mode = mode
         let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
-        self.isAddMoreVisible = mode == .sharedNavigation
+        self.isAddMoreVisible = (mode == .sharedNavigation)
 
         self.attachmentItemCollection = AttachmentItemCollection(attachmentItems: attachmentItems, isAddMoreVisible: isAddMoreVisible)
 
-        let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
-        super.init(transitionStyle: .scroll,
-                   navigationOrientation: .horizontal,
-                   options: options)
+        super.init(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal,
+            options: [
+                .interPageSpacing: kSpacingBetweenItems
+            ]
+        )
         self.dataSource = self
         self.delegate = self
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil
+        )
     }
 
     deinit {
@@ -89,62 +155,78 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     @objc
-    public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
+    public class func wrappedInNavController(
+        attachments: [SignalAttachment],
+        approvalDelegate: AttachmentApprovalViewControllerDelegate
+    ) -> OWSNavigationController {
         let vc = AttachmentApprovalViewController(mode: .modal, attachments: attachments)
         vc.approvalDelegate = approvalDelegate
+        
         let navController = OWSNavigationController(rootViewController: vc)
         navController.ows_prefersStatusBarHidden = true
+        
         return navController
     }
 
-    // MARK: - Notifications
-
-    @objc func didBecomeActive() {
-        AssertIsOnMainThread()
-
-        updateContents()
-    }
-
-    // MARK: - Subviews
-
-    var galleryRailView: GalleryRailView {
-        return bottomToolView.galleryRailView
-    }
-
-    var attachmentTextToolbar: AttachmentTextToolbar {
-        return bottomToolView.attachmentTextToolbar
-    }
-
-    lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
+    // MARK: - UI
+    
+    private let kSpacingBetweenItems: CGFloat = 20
+    
+    public override var prefersStatusBarHidden: Bool { return true }
+    
+    private lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
         let bottomToolView = AttachmentApprovalInputAccessoryView()
         bottomToolView.delegate = self
+        bottomToolView.attachmentTextToolbar.attachmentTextToolbarDelegate = self
+        bottomToolView.galleryRailView.delegate = self
 
         return bottomToolView
     }()
 
-    lazy var touchInterceptorView = UIView()
+    private var galleryRailView: GalleryRailView { return bottomToolView.galleryRailView }
 
-    // MARK: - View Lifecycle
+    private lazy var touchInterceptorView: UIView = {
+        let view: UIView = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapTouchInterceptorView(gesture:))
+        )
+        view.addGestureRecognizer(tapGesture)
+        
+        return view
+    }()
 
-    public override var prefersStatusBarHidden: Bool {
-        return true
-    }
+    private lazy var pagerScrollView: UIScrollView? = {
+        // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
+        // we traverse the view hierarchy until we find it.
+        let pagerScrollView = view.subviews.first { $0 is UIScrollView } as? UIScrollView
+        assert(pagerScrollView != nil)
+
+        return pagerScrollView
+    }()
+
+    // MARK: - Lifecycle
 
     override public func viewDidLoad() {
         super.viewDidLoad()
 
         self.view.backgroundColor = Colors.navigationBarBackground
-
-        // avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
-        pagerScrollView?.isScrollEnabled = attachmentItems.count > 1
-
-        // Bottom Toolbar
-        galleryRailView.delegate = self
-        attachmentTextToolbar.attachmentTextToolbarDelegate = self
-
-        // Navigation
-
+        
+        let backgroundImage: UIImage = UIImage(color: Colors.navigationBarBackground)
         self.navigationItem.title = nil
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.barTintColor = Colors.navigationBarBackground
+        (self.navigationController?.navigationBar as? OWSNavigationBar)?.respectsTheme = true
+        self.navigationController?.navigationBar.backgroundColor = Colors.navigationBarBackground
+        self.navigationController?.navigationBar.setBackgroundImage(backgroundImage, for: .default)
+
+        // Avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
+        pagerScrollView?.isScrollEnabled = (attachmentItems.count > 1)
 
         guard let firstItem = attachmentItems.first else {
             owsFailDebug("firstItem was unexpectedly nil")
@@ -152,35 +234,26 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         self.setCurrentItem(firstItem, direction: .forward, animated: false)
+        
+        view.addSubview(touchInterceptorView)
 
         // layout immediately to avoid animating the layout process during the transition
-        self.currentPageViewController.view.layoutIfNeeded()
+        UIView.performWithoutAnimation {
+            self.currentPageViewController?.view.layoutIfNeeded()
+        }
+        
+        // If the first item is just text, or is a URL and LinkPreviews are disabled
+        // then just fill the 'message' box with it
+        if firstItem.attachment.isText || (firstItem.attachment.isUrl && OWSLinkPreview.previewURL(forRawBodyText: firstItem.attachment.text()) == nil) {
+            bottomToolView.attachmentTextToolbar.messageText = firstItem.attachment.text()
+        }
 
-        view.addSubview(touchInterceptorView)
-        touchInterceptorView.autoPinEdgesToSuperviewEdges()
-        touchInterceptorView.isHidden = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
-        touchInterceptorView.addGestureRecognizer(tapGesture)
+        setupLayout()
     }
 
     override public func viewWillAppear(_ animated: Bool) {
         Logger.debug("")
         super.viewWillAppear(animated)
-
-        guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
-            owsFailDebug("navigationBar was nil or unexpected class")
-            return
-        }
-        
-        // Loki: Set navigation bar background color
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
-        navigationBar.respectsTheme = true
-        navigationBar.backgroundColor = Colors.navigationBarBackground
-        let backgroundImage = UIImage(color: Colors.navigationBarBackground)
-        navigationBar.setBackgroundImage(backgroundImage, for: .default)
 
         updateContents()
     }
@@ -197,7 +270,23 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.debug("")
         super.viewWillDisappear(animated)
     }
+    
+    // MARK: - Layout
+    
+    private func setupLayout() {
+        touchInterceptorView.autoPinEdgesToSuperviewEdges()
+    }
+    
+    // MARK: - Notifications
 
+    @objc func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        updateContents()
+    }
+    
+    // MARK: - Contents
+    
     private func updateContents() {
         updateNavigationBar()
         updateInputAccessory()
@@ -207,40 +296,26 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Input Accessory
 
-    override public var inputAccessoryView: UIView? {
-        bottomToolView.layoutIfNeeded()
-        return bottomToolView
-    }
-
-    override public var canBecomeFirstResponder: Bool {
-        return !shouldHideControls
-    }
-
     public func updateInputAccessory() {
         var currentPageViewController: AttachmentPrepViewController?
-        if pageViewControllers.count == 1 {
-            currentPageViewController = pageViewControllers.first
+        
+        if pageViewControllers?.count == 1 {
+            currentPageViewController = pageViewControllers?.first
         }
         let currentAttachmentItem: SignalAttachmentItem? = currentPageViewController?.attachmentItem
 
-        let hasPresentedView = self.presentedViewController != nil
+        let hasPresentedView = (self.presentedViewController != nil)
         let isToolbarFirstResponder = bottomToolView.hasFirstResponder
+        
         if !shouldHideControls, !isFirstResponder, !hasPresentedView, !isToolbarFirstResponder {
             becomeFirstResponder()
         }
 
-        bottomToolView.update(isEditingCaptions: isEditingCaptions,
-                              currentAttachmentItem: currentAttachmentItem,
-                              shouldHideControls: shouldHideControls)
-    }
-
-    public var messageText: String? {
-        get {
-            return attachmentTextToolbar.messageText
-        }
-        set {
-            attachmentTextToolbar.messageText = newValue
-        }
+        bottomToolView.update(
+            isEditingCaptions: isEditingCaptions,
+            currentAttachmentItem: currentAttachmentItem,
+            shouldHideControls: shouldHideControls
+        )
     }
 
     // MARK: - Navigation Bar
@@ -254,10 +329,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         guard !isEditingCaptions else {
             // Hide all navigation bar items while the caption view is open.
-            self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_TITLE", comment: "Title for 'caption' mode of the attachment approval view."), style: .plain, target: nil, action: nil)
+            self.navigationItem.leftBarButtonItem = UIBarButtonItem(
+                //"Title for 'caption' mode of the attachment approval view."
+                title: "ATTACHMENT_APPROVAL_CAPTION_TITLE".localized(),
+                style: .plain,
+                target: nil,
+                action: nil
+            )
 
-            let doneButton = navigationBarButton(imageName: "image_editor_checkmark_full",
-                                                 selector: #selector(didTapCaptionDone(sender:)))
+            let doneButton = navigationBarButton(
+                imageName: "image_editor_checkmark_full",
+                selector: #selector(didTapCaptionDone(sender:))
+            )
             let navigationBarItems = [doneButton]
             updateNavigationBar(navigationBarItems: navigationBarItems)
             return
@@ -265,29 +348,23 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         var navigationBarItems = [UIView]()
 
-        if let viewControllers = viewControllers,
-            viewControllers.count == 1,
-            let firstViewController = viewControllers.first as? AttachmentPrepViewController {
+        if viewControllers?.count == 1, let firstViewController: AttachmentPrepViewController = viewControllers?.first as? AttachmentPrepViewController {
             navigationBarItems = firstViewController.navigationBarItems()
 
             // Show the caption UI if there's more than one attachment
             // OR if the attachment already has a caption.
-            let attachmentCount = attachmentItemCollection.count
-            var shouldShowCaptionUI = attachmentCount > 0
-            if let captionText = firstViewController.attachmentItem.captionText, captionText.count > 0 {
-                shouldShowCaptionUI = true
-            }
-            if shouldShowCaptionUI {
-                let captionButton = navigationBarButton(imageName: "image_editor_caption",
-                                                        selector: #selector(didTapCaption(sender:)))
+            if attachmentItemCollection.count > 0, (firstViewController.attachmentItem.captionText?.count ?? 0) > 0 {
+                let captionButton = navigationBarButton(
+                    imageName: "image_editor_caption",
+                    selector: #selector(didTapCaption(sender:))
+                )
                 navigationBarItems.append(captionButton)
             }
         }
 
         updateNavigationBar(navigationBarItems: navigationBarItems)
 
-        let hasCancel = (mode != .sharedNavigation)
-        if hasCancel {
+        if mode != .sharedNavigation {
             // Mimic a UIBarButtonItem of type .cancel, but with a shadow.
             let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
                 self?.cancelPressed()
@@ -300,10 +377,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
             cancelButton.sizeToFit()
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
-        } else {
+        }
+        else {
             // Mimic a conventional back button, but with a shadow.
             let isRTL = CurrentAppContext().isRTL
-            let imageName = isRTL ? "NavBarBackRTL" : "NavBarBack"
+            let imageName = (isRTL ? "NavBarBackRTL" : "NavBarBack")
             let backButton = OWSButton(imageName: imageName, tintColor: Colors.text) { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             }
@@ -328,29 +406,31 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
             // Default back button is 1.5 pixel lower than our extracted image.
             let kTopInsetPadding: CGFloat = 1.5
-            backButton.imageEdgeInsets = UIEdgeInsets(top: kTopInsetPadding, left: kExtraLeftPadding, bottom: 0, right: 0)
+            backButton.imageEdgeInsets = UIEdgeInsets(
+                top: kTopInsetPadding,
+                left: kExtraLeftPadding,
+                bottom: 0,
+                right: 0
+            )
 
             var backImageSize = CGSize.zero
             if let backImage = UIImage(named: imageName) {
                 backImageSize = backImage.size
-            } else {
+            }
+            else {
                 owsFailDebug("Missing backImage.")
             }
-            backButton.frame = CGRect(origin: .zero, size: CGSize(width: backImageSize.width + kExtraRightPadding,
-                                                                  height: backImageSize.height + kExtraHeightPadding))
+            backButton.frame = CGRect(
+                origin: .zero,
+                size: CGSize(
+                    width: backImageSize.width + kExtraRightPadding,
+                    height: backImageSize.height + kExtraHeightPadding
+                )
+            )
 
             // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
         }
-    }
-
-    // MARK: - Control Visibility
-
-    public var shouldHideControls: Bool {
-        guard let pageViewController = pageViewControllers.first else {
-            return false
-        }
-        return pageViewController.shouldHideControls
     }
 
     // MARK: - View Helpers
@@ -359,9 +439,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         if attachmentItem == currentItem {
             if let nextItem = attachmentItemCollection.itemAfter(item: attachmentItem) {
                 setCurrentItem(nextItem, direction: .forward, animated: true)
-            } else if let prevItem = attachmentItemCollection.itemBefore(item: attachmentItem) {
+            }
+            else if let prevItem = attachmentItemCollection.itemBefore(item: attachmentItem) {
                 setCurrentItem(prevItem, direction: .reverse, animated: true)
-            } else {
+            }
+            else {
                 owsFailDebug("removing last item shouldn't be possible because rail should not be visible")
                 return
             }
@@ -372,29 +454,26 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
-        UIView.animate(withDuration: 0.2,
-                       animations: {
-                        // shrink stack view item until it disappears
-                        cell.isHidden = true
-
-                        // simultaneously fade out
-                        cell.alpha = 0
-        },
-                       completion: { _ in
-                        self.attachmentItemCollection.remove(item: attachmentItem)
-                        self.approvalDelegate?.attachmentApproval?(self, didRemoveAttachment: attachmentItem.attachment)
-                        self.updateMediaRail()
-        })
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                // shrink stack view item until it disappears
+                cell.isHidden = true
+                
+                // simultaneously fade out
+                cell.alpha = 0
+            },
+            completion: { [weak self] _ in
+                self?.attachmentItemCollection.remove(item: attachmentItem)
+                
+                if let strongSelf: AttachmentApprovalViewController = self {
+                    self?.approvalDelegate?.attachmentApproval?(strongSelf, didRemoveAttachment: attachmentItem.attachment)
+                }
+                
+                self?.updateMediaRail()
+            }
+        )
     }
-
-    lazy var pagerScrollView: UIScrollView? = {
-        // This is kind of a hack. Since we don't have first class access to the superview's `scrollView`
-        // we traverse the view hierarchy until we find it.
-        let pagerScrollView = view.subviews.first { $0 is UIScrollView } as? UIScrollView
-        assert(pagerScrollView != nil)
-
-        return pagerScrollView
-    }()
 
     // MARK: - UIPageViewControllerDelegate
 
@@ -440,10 +519,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         let currentItem = currentViewController.attachmentItem
-        guard let previousItem = attachmentItem(before: currentItem) else {
-            return nil
-        }
-
+        guard let previousItem = attachmentItem(before: currentItem) else { return nil }
         guard let previousPage: AttachmentPrepViewController = buildPage(item: previousItem) else {
             return nil
         }
@@ -460,10 +536,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         let currentItem = currentViewController.attachmentItem
-        guard let nextItem = attachmentItem(after: currentItem) else {
-            return nil
-        }
-
+        guard let nextItem = attachmentItem(after: currentItem) else { return nil }
         guard let nextPage: AttachmentPrepViewController = buildPage(item: nextItem) else {
             return nil
         }
@@ -471,38 +544,19 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return nextPage
     }
 
-    public var currentPageViewController: AttachmentPrepViewController {
-        return pageViewControllers.first!
-    }
-
-    public var pageViewControllers: [AttachmentPrepViewController] {
-        return super.viewControllers!.map { $0 as! AttachmentPrepViewController }
-    }
-
     @objc
     public override func setViewControllers(_ viewControllers: [UIViewController]?, direction: UIPageViewController.NavigationDirection, animated: Bool, completion: ((Bool) -> Void)? = nil) {
-        super.setViewControllers(viewControllers,
-                                 direction: direction,
-                                 animated: animated) { [weak self] (finished) in
-                                    if let completion = completion {
-                                        completion(finished)
-                                    }
-                                    self?.updateContents()
+        super.setViewControllers(
+            viewControllers,
+            direction: direction,
+            animated: animated
+        ) { [weak self] finished in
+            completion?(finished)
+            self?.updateContents()
         }
     }
 
-    var currentItem: SignalAttachmentItem! {
-        get {
-            return currentPageViewController.attachmentItem
-        }
-        set {
-            setCurrentItem(newValue, direction: .forward, animated: false)
-        }
-    }
-
-    private var cachedPages: [SignalAttachmentItem: AttachmentPrepViewController] = [:]
     private func buildPage(item: SignalAttachmentItem) -> AttachmentPrepViewController? {
-
         if let cachedPage = cachedPages[item] {
             Logger.debug("cache hit.")
             return cachedPage
@@ -516,8 +570,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return viewController
     }
 
-    private func setCurrentItem(_ item: SignalAttachmentItem, direction: UIPageViewController.NavigationDirection, animated isAnimated: Bool) {
-        guard let page = self.buildPage(item: item) else {
+    private func setCurrentItem(_ item: SignalAttachmentItem?, direction: UIPageViewController.NavigationDirection, animated isAnimated: Bool) {
+        guard let item: SignalAttachmentItem = item, let page = self.buildPage(item: item) else {
             owsFailDebug("unexpectedly unable to build new page")
             return
         }
@@ -536,42 +590,34 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         let cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView = { [weak self] railItem in
             switch railItem {
-            case is AddMoreRailItem:
-                return GalleryRailCellView()
-            case is SignalAttachmentItem:
-                let cell = ApprovalRailCellView()
-                cell.approvalRailCellDelegate = self
-                return cell
-            default:
-                owsFailDebug("unexpted rail item type: \(railItem)")
-                return GalleryRailCellView()
+                case is AddMoreRailItem:
+                    return GalleryRailCellView()
+                    
+                case is SignalAttachmentItem:
+                    let cell = ApprovalRailCellView()
+                    cell.approvalRailCellDelegate = self
+                    return cell
+                    
+                default:
+                    owsFailDebug("unexpted rail item type: \(railItem)")
+                    return GalleryRailCellView()
             }
         }
 
-        galleryRailView.configureCellViews(itemProvider: attachmentItemCollection,
-                                           focusedItem: currentItem,
-                                           cellViewBuilder: cellViewBuilder)
+        galleryRailView.configureCellViews(
+            itemProvider: attachmentItemCollection,
+            focusedItem: currentItem,
+            cellViewBuilder: cellViewBuilder
+        )
 
         if isAddMoreVisible {
             galleryRailView.isHidden = false
-        } else if attachmentItemCollection.attachmentItems.count > 1 {
-            galleryRailView.isHidden = false
-        } else {
-            galleryRailView.isHidden = true
         }
-    }
-
-    let attachmentItemCollection: AttachmentItemCollection
-
-    var attachmentItems: [SignalAttachmentItem] {
-        return attachmentItemCollection.attachmentItems
-    }
-
-    var attachments: [SignalAttachment] {
-        return attachmentItems.map { (attachmentItem) in
-            autoreleasepool {
-                return self.processedAttachment(forAttachmentItem: attachmentItem)
-            }
+        else if attachmentItemCollection.attachmentItems.count > 1 {
+            galleryRailView.isHidden = false
+        }
+        else {
+            galleryRailView.isHidden = true
         }
     }
 
@@ -596,18 +642,24 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return attachmentItem.attachment
         }
         var dataUTI = kUTTypeImage as String
-        guard let dstData: Data = {
-            let isLossy: Bool = attachmentItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
+        let maybeDstData: Data? = {
+            let isLossy: Bool = (
+                attachmentItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
+            )
+            
             if isLossy {
                 dataUTI = kUTTypeJPEG as String
                 return dstImage.jpegData(compressionQuality: 0.9)
-            } else {
+            }
+            else {
                 dataUTI = kUTTypePNG as String
                 return dstImage.pngData()
             }
-            }() else {
-                owsFailDebug("Could not export for output.")
-                return attachmentItem.attachment
+        }()
+        
+        guard let dstData: Data = maybeDstData else {
+            owsFailDebug("Could not export for output.")
+            return attachmentItem.attachment
         }
         guard let dataSource = DataSourceValue.dataSource(with: dstData, utiType: dataUTI) else {
             owsFailDebug("Could not prepare data source for output.")
@@ -693,18 +745,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
 extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController.setAttachmentViewScale(.compact, animated: true)
+        currentPageViewController?.setAttachmentViewScale(.compact, animated: true)
     }
 
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController.setAttachmentViewScale(.fullsize, animated: true)
+        currentPageViewController?.setAttachmentViewScale(.fullsize, animated: true)
     }
 
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar) {
         // Toolbar flickers in and out if there are errors
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
-        currentPageViewController.shouldAllowAttachmentViewResizing = false
+        currentPageViewController?.shouldAllowAttachmentViewResizing = false
         attachmentTextToolbar.isUserInteractionEnabled = false
         attachmentTextToolbar.isHidden = true
 
@@ -769,7 +821,7 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
             return
         }
 
-        guard let currentIndex = attachmentItems.firstIndex(of: currentItem) else {
+        guard let currentItem: SignalAttachmentItem = currentItem, let currentIndex = attachmentItems.firstIndex(of: currentItem) else {
             owsFailDebug("currentIndex was unexpectedly nil")
             return
         }
@@ -779,16 +831,10 @@ extension AttachmentApprovalViewController: GalleryRailViewDelegate {
             return
         }
 
-        let direction: UIPageViewController.NavigationDirection = currentIndex < targetIndex ? .forward : .reverse
+        let direction: UIPageViewController.NavigationDirection = (currentIndex < targetIndex ? .forward : .reverse)
 
         self.setCurrentItem(targetItem, direction: direction, animated: true)
     }
-}
-
-// MARK: -
-
-enum KeyboardScenario {
-    case hidden, editingMessage, editingCaption
 }
 
 // MARK: -

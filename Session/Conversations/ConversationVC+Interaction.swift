@@ -1,6 +1,9 @@
+import UIKit
 import CoreServices
 import Photos
 import PhotosUI
+import SessionUtilitiesKit
+import SignalUtilitiesKit
 
 extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuActionDelegate, ScrollToBottomButtonDelegate,
     SendMediaNavDelegate, UIDocumentPickerDelegate, AttachmentApprovalViewControllerDelegate, GifPickerViewControllerDelegate,
@@ -79,11 +82,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
-        sendAttachments(attachments, with: messageText ?? "")
+        sendAttachments(attachments, with: messageText ?? "") { [weak self] in
+            self?.dismiss(animated: true, completion: nil)
+        }
+        
         scrollToBottom(isAnimated: false)
         resetMentions()
         self.snInputView.text = ""
-        dismiss(animated: true) { }
     }
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
@@ -198,7 +203,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     if !attachment.hasError {
                         self?.showAttachmentApprovalDialog(for: [ attachment ])
                     } else {
-                        self?.showErrorAlert(for: attachment)
+                        self?.showErrorAlert(for: attachment, onDismiss: nil)
                     }
                 }
             }.retainUntilComplete()
@@ -248,11 +253,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         })
     }
 
-    func sendAttachments(_ attachments: [SignalAttachment], with text: String) {
+    func sendAttachments(_ attachments: [SignalAttachment], with text: String, onComplete: (() -> ())? = nil) {
         guard !showBlockedModalIfNeeded() else { return }
         for attachment in attachments {
             if attachment.hasError {
-                return showErrorAlert(for: attachment)
+                return showErrorAlert(for: attachment, onDismiss: onComplete)
             }
         }
         let thread = self.thread
@@ -272,6 +277,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 self?.scrollToBottom(isAnimated: false)
             })
             self?.handleMessageSent()
+            
+            // Attachment successfully sent - dismiss the screen
+            onComplete?()
         })
     }
 
@@ -463,7 +471,18 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     let thread = self.thread as? TSContactThread,
                     Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                     confirmDownload()
-                } else {
+                }
+                else if (
+                    viewItem.attachmentStream?.isText == true ||
+                    viewItem.attachmentStream?.isMicrosoftDoc == true ||
+                    viewItem.attachmentStream?.contentType == OWSMimeTypeApplicationPdf
+                ), let filePathString: String = viewItem.attachmentStream?.originalFilePath {
+                    let fileUrl: URL = URL(fileURLWithPath: filePathString)
+                    let interactionController: UIDocumentInteractionController = UIDocumentInteractionController(url: fileUrl)
+                    interactionController.delegate = self
+                    interactionController.presentPreview(animated: true)
+                }
+                else {
                     // Open the document if possible
                     guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
                     let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
@@ -849,7 +868,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         dataSource.sourceFilename = fileName
         let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4Audio as String)
         guard !attachment.hasError else {
-            return showErrorAlert(for: attachment)
+            return showErrorAlert(for: attachment, onDismiss: nil)
         }
         // Send attachment
         sendAttachments([ attachment ], with: "")
@@ -974,10 +993,22 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         }
     }
 
-    // MARK: Convenience
-    func showErrorAlert(for attachment: SignalAttachment) {
+    // MARK: - Convenience
+    
+    func showErrorAlert(for attachment: SignalAttachment, onDismiss: (() -> ())?) {
         let title = NSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE", comment: "")
         let message = attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage
-        OWSAlerts.showAlert(title: title, message: message)
+        
+        OWSAlerts.showAlert(title: title, message: message, buttonTitle: nil) { _ in
+            onDismiss?()
+        }
+    }
+}
+
+// MARK: - UIDocumentInteractionControllerDelegate
+
+extension ConversationVC: UIDocumentInteractionControllerDelegate {
+    func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
+        return self
     }
 }

@@ -124,7 +124,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     func continueWithSeed(_ seed: Data) {
         if (seed.count != 16) {
             let alert = UIAlertController(title: NSLocalizedString("invalid_recovery_phrase", comment: ""), message: NSLocalizedString("Please check the Recovery Phrase and try again.", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: { _ in
+            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: { _ in
                 self.scanQRCodeWrapperVC.startCapture()
             }))
             presentAlert(alert)
@@ -273,7 +273,7 @@ private final class RecoveryPhraseVC : UIViewController {
     @objc private func handleContinueButtonTapped() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         }
         let mnemonic = mnemonicTextView.text!.lowercased()

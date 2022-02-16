@@ -192,6 +192,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return self.groupModel.groupName ?: self.class.defaultGroupName;
 }
 
+- (NSString *)nameWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self name];
+}
+
 + (NSString *)defaultGroupName
 {
     return @"Group";
