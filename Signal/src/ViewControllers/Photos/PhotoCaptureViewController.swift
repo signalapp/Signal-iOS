@@ -79,6 +79,17 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         view.preservesSuperviewLayoutMargins = true
         
         definesPresentationContext = true
+
+        // This background footer doesn't let view controller underneath current VC
+        // to be visible at the bottom of the screen during interactive dismiss.
+        if UIDevice.current.hasIPhoneXNotch {
+            let blackFooter = UIView()
+            blackFooter.backgroundColor = view.backgroundColor
+            view.addSubview(blackFooter)
+            blackFooter.autoPinWidthToSuperview()
+            blackFooter.autoPinEdge(toSuperviewEdge: .bottom)
+            blackFooter.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5).isActive = true
+        }
         
         view.addSubview(previewView)
         if UIDevice.current.isIPad {
@@ -282,6 +293,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     // MARK: - Interactive Dismiss
     
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        view.backgroundColor = .clear
     }
     
     func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
@@ -289,6 +301,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
     
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        view.backgroundColor = Theme.darkThemeBackgroundColor
     }
     
     // MARK: - Top Bar
