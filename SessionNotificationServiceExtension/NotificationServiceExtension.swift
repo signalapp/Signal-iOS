@@ -223,22 +223,18 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
 private extension String {
     
     func replacingMentions(for threadID: String, using transaction: YapDatabaseReadWriteTransaction) -> String {
-        MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
         var result = self
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]{66}", options: [])
-        let knownPublicKeys = MentionsManager.userPublicKeyCache[threadID] ?? []
         var mentions: [(range: NSRange, publicKey: String)] = []
         var m0 = regex.firstMatch(in: result, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: result.utf16.count))
         while let m1 = m0 {
             let publicKey = String((result as NSString).substring(with: m1.range).dropFirst()) // Drop the @
             var matchEnd = m1.range.location + m1.range.length
-            if knownPublicKeys.contains(publicKey) {
-                let displayName = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular)
-                if let displayName = displayName {
-                    result = (result as NSString).replacingCharacters(in: m1.range, with: "@\(displayName)")
-                    mentions.append((range: NSRange(location: m1.range.location, length: displayName.utf16.count + 1), publicKey: publicKey)) // + 1 to include the @
-                    matchEnd = m1.range.location + displayName.utf16.count
-                }
+            let displayName = Storage.shared.getContact(with: publicKey, using: transaction)?.displayName(for: .regular)
+            if let displayName = displayName {
+                result = (result as NSString).replacingCharacters(in: m1.range, with: "@\(displayName)")
+                mentions.append((range: NSRange(location: m1.range.location, length: displayName.utf16.count + 1), publicKey: publicKey)) // + 1 to include the @
+                matchEnd = m1.range.location + displayName.utf16.count
             }
             m0 = regex.firstMatch(in: result, options: .withoutAnchoringBounds, range: NSRange(location: matchEnd, length: result.utf16.count - matchEnd))
         }
