@@ -14,6 +14,7 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
     private var socketClosePromise: Promise<CDSHResult>?
     private var socketCloseFuture: Future<CDSHResult>?
 
+    private let format = Format.v1
     private var resultData = Data()
 
     required init(e164sToLookup: Set<String>) {
@@ -36,6 +37,7 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
 
         }.then(on: queue) { _ -> Promise<CDSHResult> in
             try self.sendRequestBody()
+
             if let resultPromise = self.socketClosePromise {
                 return resultPromise
             } else {
@@ -112,14 +114,20 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
 
         try batches.enumerated().lazy.forEach { idx, batch in
             var builder = ContactDiscoveryMessageClientRequest.builder()
-            let encodedE164s = try Self.encodePhoneNumbers(batch)
+            let encodedE164s = try encodeE164s(batch)
             builder.setNewE164List(encodedE164s)
 
             let lastBatchIdx = batches.count - 1
             builder.setMoreComing(idx != lastBatchIdx)
 
             var requestBody = Data()
-            requestBody.append(1)
+            switch format {
+            case .v1:
+                requestBody.append(1)
+            case .v2:
+                requestBody.append(2)
+                throw ContactDiscoveryError.assertionError(description: "v2 unsupported")
+            }
             requestBody.append(try builder.buildSerializedData())
             self.websocket.sendBytes(requestBody)
         }
@@ -129,33 +137,61 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
         let clientResponse = try ContactDiscoveryMessageClientResponse(serializedData: self.resultData)
         guard let triples = clientResponse.e164PniAciTriples else { return Set() }
 
-        return triples.chunked(by: 40).reduce(into: Set()) { builder, triple in
-            guard triple.count == 40 else {
-                owsFailDebug("Unexpected byte format")
-                return
+        return try triples.chunked(by: 40).reduce(into: Set()) { builder, tripleBytes in
+            if let triple = try parseTriple(tripleBytes) {
+                builder.insert(triple.discoveredContact)
             }
-            let e164Buffer = triple[0..<8]
-            let aciBuffer = triple[24..<40]
+        }
+    }
 
-//            For now, we don't need to parse PNIs. v1 CDSH won't vend them anyway
-//            let pniBuffer = triple[8..<24]
+    struct Triple {
+        let e164: String
+        let pni: UUID?
+        let aci: UUID
 
-            guard e164Buffer.contains(where: { $0 != 0 }) else { return }
-            guard aciBuffer.contains(where: { $0 != 0 }) else { return }
+        var discoveredContact: DiscoveredContactInfo {
+            DiscoveredContactInfo(e164: e164, uuid: aci)
+        }
+    }
 
-            let (e164, parsedAci) = triple.withUnsafeBytes { buffer -> (String, UUID) in
+    private func parseTriple(_ bytes: Data) throws -> Triple? {
+        guard bytes.count == 40 else {
+            owsFailDebug("Invalid triple bytes")
+            return nil
+        }
+
+        switch format {
+        case .v1:
+            let e164Buffer = bytes[0..<8]
+            let aciBuffer = bytes[24..<40]
+
+            // Nil values indicate this wasn't found
+            guard e164Buffer.contains(where: { $0 != 0 }) else { return nil }
+            guard aciBuffer.contains(where: { $0 != 0 }) else { return nil }
+
+            return bytes.withUnsafeBytes { buffer -> Triple in
                 let bigEndianE164 = buffer.load(fromByteOffset: 0, as: UInt64.self)
                 let hostE164 = UInt64(bigEndian: bigEndianE164)
+                let e164String = "+\(hostE164)"
                 let aci = UUID(uuid: buffer.load(fromByteOffset: 24, as: uuid_t.self))
-                return ("+\(hostE164)", aci)
+
+                return Triple(e164: e164String, pni: nil, aci: aci)
             }
-            builder.insert(DiscoveredContactInfo(e164: e164, uuid: parsedAci))
+
+        case .v2:
+            throw ContactDiscoveryError.assertionError(description: "v2 unsupported")
         }
     }
 
     private func parseRetryAfterDate() -> Date {
-        // TODO: Currently unspecified for v1. Let's default to 30s for now
-        Date(timeIntervalSinceNow: 30)
+        switch format {
+        case .v1:
+            // TODO: Currently unspecified for v1. Let's default to 30s for now
+            return Date(timeIntervalSinceNow: 30)
+        case .v2:
+            owsFailDebug("v2 unsupported")
+            return Date(timeIntervalSinceNow: 30)
+        }
     }
 
     // MARK: - Delegate
@@ -167,36 +203,11 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
     func socketDidClose(_ socket: CDSHWebSocket, result: CDSHResult) {
         socketCloseFuture?.resolve(result)
     }
+}
 
-    class func encodePhoneNumbers<T>(_ phoneNumbers: T) throws -> Data where T: Sequence, T.Element == String {
-        var output = Data()
-
-        for phoneNumber in phoneNumbers {
-            guard phoneNumber.prefix(1) == "+" else {
-                throw ContactDiscoveryError.assertionError(description: "unexpected id format")
-            }
-
-            let numericPortionIndex = phoneNumber.index(after: phoneNumber.startIndex)
-            let numericPortion = phoneNumber.suffix(from: numericPortionIndex)
-
-            guard let numericIdentifier = UInt64(numericPortion), numericIdentifier > 99 else {
-                throw ContactDiscoveryError.assertionError(description: "unexpectedly short identifier")
-            }
-
-            var bigEndian: UInt64 = CFSwapInt64HostToBig(numericIdentifier)
-            withUnsafePointer(to: &bigEndian) { pointer in
-                output.append(UnsafeBufferPointer(start: pointer, count: 1))
-            }
-        }
-
-        return output
-    }
-
-    class func uuidArray(from data: Data) -> [UUID] {
-        return data.withUnsafeBytes {
-            [uuid_t]($0.bindMemory(to: uuid_t.self))
-        }.map {
-            UUID(uuid: $0)
-        }
+private extension HSMContactDiscoveryOperation {
+    enum Format {
+        case v1
+        case v2
     }
 }

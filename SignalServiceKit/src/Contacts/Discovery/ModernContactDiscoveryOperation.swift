@@ -118,7 +118,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
 
     func buildIntersectionQuery(e164sToLookup: [String], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
         let noncePlainTextData = Randomness.generateRandomBytes(32)
-        let addressPlainTextData = try type(of: self).encodePhoneNumbers(e164sToLookup)
+        let addressPlainTextData = try encodeE164s(e164sToLookup)
         let queryData = Data.join([noncePlainTextData, addressPlainTextData])
 
         let key = OWSAES256Key.generateRandom()
@@ -154,30 +154,6 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                                                          iv: encryptionResult.initializationVector,
                                                          mac: encryptionResult.authTag,
                                                          envelopes: queryEnvelopes)
-    }
-
-    class func encodePhoneNumbers(_ phoneNumbers: [String]) throws -> Data {
-        var output = Data()
-
-        for phoneNumber in phoneNumbers {
-            guard phoneNumber.prefix(1) == "+" else {
-                throw ContactDiscoveryError.assertionError(description: "unexpected id format")
-            }
-
-            let numericPortionIndex = phoneNumber.index(after: phoneNumber.startIndex)
-            let numericPortion = phoneNumber.suffix(from: numericPortionIndex)
-
-            guard let numericIdentifier = UInt64(numericPortion), numericIdentifier > 99 else {
-                throw ContactDiscoveryError.assertionError(description: "unexpectedly short identifier")
-            }
-
-            var bigEndian: UInt64 = CFSwapInt64HostToBig(numericIdentifier)
-            withUnsafePointer(to: &bigEndian) { pointer in
-                output.append(UnsafeBufferPointer(start: pointer, count: 1))
-            }
-        }
-
-        return output
     }
 
     class func uuidArray(from data: Data) -> [UUID] {
