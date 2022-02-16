@@ -2729,7 +2729,7 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Kan ik een verouderde groep omzetten in een nieuwe groep?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Om een nieuwe-stijl groep aan te maken moeten alle leden hun Signal app bijwerken naar de meest recente versie.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Om een nieuwe-stijl groep aan te maken moeten alle leden hun Signal-app bijwerken naar de meest recente versie.";
 
 /* Title for the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Verouderde groepen tegenover nieuwe-stijl groepen";
@@ -3566,7 +3566,7 @@
 "NETWORK_ERROR_RECOVERY" = "Controleer of je met internet verbonden bent en probeer het opnieuw.";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Alleen bij mobiele-dataoverdracht";
+"NETWORK_INTERFACE_SET_CELLULAR" = "Alleen bij mobieledata";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "Nooit";
@@ -3575,7 +3575,7 @@
 "NETWORK_INTERFACE_SET_WIFI" = "Alleen bij wifi";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Bij wifi & mobiele-dataoverdracht";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Bij wifi & mobieledata";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Op telefoonnummer zoeken";
@@ -5024,7 +5024,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Kan koppelcode niet ophalen";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Je moet de Signal app eerst wissen voor je dit apparaat kunt koppelen aan een ander geregistreerd telefoonnummer. Weet je zeker dat je alle gespreksgeschiedenis (berichten, bijlagen, oproepgeschiedenis, enzovoort) wil wissen? Deze actie kan niet ongedaan worden gemaakt.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Je moet de Signal-app eerst wissen voor je dit apparaat kunt koppelen aan een ander geregistreerd telefoonnummer. Weet je zeker dat je alle gespreksgeschiedenis (berichten, bijlagen, oproepgeschiedenis, enzovoort) wil wissen? Deze actie kan niet ongedaan worden gemaakt.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Alles wissen";
@@ -5297,7 +5297,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automatisch downloaden";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Herstel automatischedownload-instellingen";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Bovenstaande instellingen terug naar standaardinstelling";
 
 /* Item title for the sent media quality setting */
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Media verzendkwaliteit";
@@ -5375,7 +5375,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Nooit";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wifi & mobiele-dataoverdracht";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wifi & mobieledata";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wifi";
@@ -5978,7 +5978,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Je veiligheidsnummer met %@ is recentelijk veranderd.  Het wordt aanbevolen om dit nieuwe nummer te verifiëren is de Signal app.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Je veiligheidsnummer met %@ is recentelijk veranderd.  Het wordt aanbevolen om dit nieuwe nummer te verifiëren is de Signal-app.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Aan het laden …";

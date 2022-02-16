@@ -1,26 +1,26 @@
-Des millions de personnes utilisent Signal tous les jours pour communiquer gratuitement et instantanément partout dans le monde. Envoyez et recevez des messages haute-fidélité, participez à des appels voix/vidéo HD et découvrez un nombre sans cesse croissant de nouvelles fonctionnalités qui vous aident à rester connecté. La technologie avancée de protection de la vie privée de Signal est toujours active, vous permettant de vous concentrer sur une seule chose : partager les moments qui comptent avec vos proches.
+Millions of people use Signal every day for free and instantaneous communication anywhere in the world. Send and receive high-fidelity messages, participate in HD voice/video calls, and explore a growing set of new features that help you stay connected. Signal’s advanced privacy-preserving technology is always enabled, so you can focus on sharing the moments that matter with the people who matter to you.
 
-• Parlez librement : un chiffrement de bout en bout à la pointe de la technologie (optimisé par le protocole open source Signal Protocol™) assure la sécurité de vos conversations. Sur Signal, la confidentialité n'est pas une option mais un principe de base, pour tous vos messages et appels sans exception.
+• Say anything – State-of-the-art end-to-end encryption (powered by the open source Signal Protocol™) keeps your conversations secure. Privacy isn’t an optional mode — it’s just the way that Signal works. Every message, every call, every time.
 
-• Communiquez rapidement : les messages sont transmis rapidement et avec fiabilité, même sur les réseaux lents. Signal est optimisé de façon à fonctionner même dans les environnements les plus contraignants.
+• Go fast – Messages are delivered quickly and reliably, even on slow networks. Signal is optimized to operate in the most constrained environment possible.
 
-• Restez libre : Signal est une organisation à but non lucratif entièrement indépendante (501c3). Son développement est assuré par des utilisateurs comme vous. Elle ne vous réserve aucune publicité, aucun tracker et aucune autre mauvaise surprise.
+• Feel free – Signal is a completely independent 501c3 nonprofit. Development is supported by users like you. No advertisements. No trackers. No kidding.
 
-• Soyez vous-même : vous pouvez utiliser votre numéro de téléphone et votre répertoire existants pour communiquer en toute sécurité avec vos amis.
+• Be yourself – You can use your existing phone number and address book to securely communicate with your friends.
 
-• Communiquez avec spontanéité : la qualité audio et vidéo améliorée de Signal vous rapprochera de votre famille et de vos amis, qu'ils vivent de l'autre côté de la ville ou de l'océan.
+• Speak up – Whether they live across town or across the ocean, Signal’s enhanced audio and video quality will make your friends and family feel closer.
 
-• Passez du côté obscur : adoptez le thème sombre pour soulager vos yeux et économiser de l'énergie.
+• Whisper in the shadows – Switch to the dark theme if you refuse to see the light.
 
-• Personnalisez votre application : choisissez des alertes personnalisées pour chaque contact ou désactivez complètement le son. La parole est d'argent mais le silence est d'or : configurez la sonnerie d'alerte sur "Aucune" pour profiter d'un peu de calme.
+• Sound familiar – Choose custom alerts for each contact, or disable noises completely. Simon & Garfunkel wrote a hit song about it in 1964, and you can experience the sound of silence whenever you want by choosing “None” as your notification ringtone.
 
-• Dessinez, c'est gagné : utilisez les fonctions de retouche d'image intégrées pour recadrer, pivoter et dessiner sur vos photos. Un outil de texte vous permet même d'ajouter des commentaires pour encore plus de convivialité.
+• Picture this – Use the built-in image editing features to sketch, crop, and flip your outgoing photos. There’s even a text tool so that you can add more words to the 1,000 that your picture is already worth.
 
 
-Pour de l’assistance, des questions ou plus de renseignements, visitez :
+For support, questions, or more information, please visit:
 https://support.signal.org
 
-Code source :
+Source code:
 https://github.com/signalapp
 
-Suivez-nous sur Twitter (@signalapp) et Instagram (@signal_app) pour toutes les dernières mises à jour et actualités.
+Follow us on Twitter (@signalapp) and Instagram (@signal_app) for all of the latest updates and announcements.

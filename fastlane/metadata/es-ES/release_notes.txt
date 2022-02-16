@@ -4,4 +4,4 @@
 • ¡Demasiados emojis disponibles para reaccionar rápidamente a un mensaje! Ahora puedes buscar tu emoji favorito y encontrarlo rápidamente.
 • Personaliza tus reacciones por defecto para usar rápidamente ese emoji que te gusta tanto.
 • ¿Recibes demasiadas notificaciones? Arrastra un chat de la lista hacia la izquierda para silenciarlo rápidamente.
-• Fixed a bug that would cause parts of long text messages to become invisible in the input box.
+• Hemos reparado un fallo donde no se mostraban mensajes completos en la bandeja de entrada.

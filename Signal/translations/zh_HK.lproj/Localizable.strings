@@ -6104,7 +6104,7 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "我捐款";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "不論一表人才，還是年輕有為，唯獨這麼三個字撈起 Signal 的位位多麼似您。請隨心捐款，並笑納一枚徽章聊作謝意。";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "萬家燈火照，將點點光輝，放進 Signal。凡捐獻即獲贈徽章。";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "在心中";

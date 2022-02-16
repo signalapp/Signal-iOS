@@ -689,7 +689,7 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Virheellinen uusi puhelinnumero. Syötä voimassa oleva puhelinnumero vaihtaaksesi numeroa.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Virheellinen vanha puhelinnumero. Syötä kelvollinen puhelinnumero vaihtaaksesi numeroa.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Tarkista vanha puhelinnumero.";
 
 /* Title of the 'change phone number PIN' view. */
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Syötä tunnusluku uudelle puhelinnumerollesi. Se ei ole sama kuin tekstiviestivahvistuskoodisi.";
@@ -3797,16 +3797,16 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Ketkä voivat löytää sinut puhelinnumerollasi?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Puhelinnumerosi";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Puhelinnumero";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Odota muutama minuutti ennen kuin yrität uudelleen. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Syötä puhelinnumerosi";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Syötä puhelinnumero";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Sinun puhelinnumerosi";
+"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Puhelinnumero";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Virheellinen puhelinnumero. Syötä voimassa oleva puhelinnumero rekisteröidäksesi.";
@@ -4529,7 +4529,7 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ muutti profiilinimekseen %@.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Sinun nimi";
+"PROFILE_NAME_VIEW_TITLE" = "Nimi";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Tietoja";
@@ -5246,10 +5246,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Esimerkki: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Uusi puhelinnumerosi";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Uusi puhelinnumero";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Vanha puhelinnumerosi";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Vanha puhelinnumero";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Puhelinnumero";
@@ -5258,7 +5258,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Vahvistetaan %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Käytä tätä toimintoa vaihtaaksesi nykyisen puhelinnumerosi uudeksi. Et voi kumota tätä muutosta.\n\nEnnen kuin jatkat, varmista että uusi numerosi pystyy vastaanottamaan tekstiviestejä tai puheluja.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Voit vaihtaa Signaliin kytketyn puhelinnumeron toiseen. Toimintoa ei voi kumota.\n\nVarmista ensin, että uuteen numeroon voi vastaanottaa tekstiviestejä tai puheluja.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Vaihda puhelinnumeroa";
@@ -6290,7 +6290,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Ei kontakteja tässä ryhmässä. Tarkista pyynnöt huolellisesti.";
 
 /* Tap to Replace Emoji string for reaction configuration */
-"TAP_REPLACE_EMOJI" = "Napauta vaihtaaksesi emojin";
+"TAP_REPLACE_EMOJI" = "Vaihda emoji napauttamalla";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Tämä viesti poistettiin.";

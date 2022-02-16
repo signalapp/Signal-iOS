@@ -692,7 +692,7 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Neteisingas senas telefono numeris. Norėdami pasikeisti numerį, įveskite tinkamą telefono numerį.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Įveskite naujo telefono numerio PIN kodą. Tai yra kas kita, nei jūsų SMS patvirtinimo kodas.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Štai pokalbio spalvos peržiūra.";

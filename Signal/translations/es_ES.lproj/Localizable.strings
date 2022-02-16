@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Fijar";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "No se ha podido crear tu nuevo PIN. Tu PIN actual se ha desactivado. Comprueba tu conexión en inténtalo de nuevo.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Fallo al cambiar el PIN";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN de al menos 4 caracteres";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "Los PINs no coinciden. Inténtalo de nuevo.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Sin conexión de red";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN de al menos 4 cifras";
@@ -4358,10 +4358,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "¿Desactivar el bloqueo de registro?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "El PIN se ha creado con éxito, pero no se ha podido activar el bloqueo de registro. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Fallo activando bloqueo de registro";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Desactivar PIN";
@@ -4382,7 +4382,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Fallo al crear el PIN";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Fallo al crear tu PIN. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Para ayudarte a memorizar el PIN, te lo solicitaremos de vez en cuando. Con el tiempo lo haremos con menos frecuencia.";
@@ -4430,7 +4430,7 @@
 "PINS_MEGAPHONE_ACTION" = "Crear PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Completa el registro de tu PIN de Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Te lo recordaremos más tarde. Crear tu PIN será obligatorio en %ld días.";
@@ -5696,7 +5696,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Pegar frase de recuperación";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Tu frase de recuperación son las 24 palabras que solo tú conoces. Úsala para recuperar tu cartera de pagos.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Introducir frase de recuperación";

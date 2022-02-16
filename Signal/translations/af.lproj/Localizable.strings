@@ -23,7 +23,7 @@
 "ACCESSIBILITY_LABEL_MEDIA" = "Media";
 
 /* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "Jy";
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "U";
 
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Plakker";
@@ -74,10 +74,10 @@
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Voeg lede by";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Wil jy jou profiel met hierdie groep deel?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Wil u uu profiel met hierdie groep deel?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Wil jy hierdie gebruiker by jou kontakte voeg?";
+"ADD_TO_CONTACTS_OFFER" = "Wil u hierdie gebruiker by u kontakte voeg?";
 
 /* Label for button or row which allows users to add to another group. */
 "ADD_TO_GROUP" = "Voeg by 'n ander groep";
@@ -107,7 +107,7 @@
 "ADD_TO_GROUP_TITLE" = "Voeg toe tot ’n groep";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Wil jy jou profiel met hierdie gebruiker deel?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Wil u u profiel met hierdie gebruiker deel?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
 "ALERT_ACTION_ACKNOWLEDGE" = "Ek verstaan";
@@ -146,7 +146,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Antwoord";
 
 /* notification body */
-"APN_Message" = "Jy het moontlik nuwe boodskappe";
+"APN_Message" = "U het moontlik nuwe boodskappe";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Kan nie Signal begin nie. Stuur ’n ontfout-log na support@signal.org sodat ons hierdie kwessie kan oplos.";
@@ -164,19 +164,19 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Onbekende databasisweergawe.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Die data wat van jou ou toestel oorgedra is, kon nie teruggelaai word nie. Stuur ’n ontfout-log na support@signal.org sodat ons hierdie kwessie kan oplos. As jy Signal herinstalleer, sal jou boodskapgeskiedenis dalk verlore gaan.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Die data wat van u ou toestel oorgedra is, kon nie teruggelaai word nie. Stuur ’n ontfout-log na support@signal.org sodat ons hierdie kwessie kan oplos. As u Signal herinstalleer, sal u boodskapgeskiedenis dalk verlore gaan.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Kon nie die oordrag voltooi nie";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Voer jou naam in";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Voer u naam in";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Nie nou nie";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Weergawe %@ is nou beskikbaar in die App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Weergawe %@ is nou beskikbaar in die Toepwinkel.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "’n Nuwe weergawe van Signal is beskikbaar";
@@ -212,7 +212,7 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Kon nie aanhegsel uitstuur nie.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Kon nie stoor nie";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Kon nie bewaar nie";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Lêertipe: %@";
@@ -221,7 +221,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Grootte: %@";
 
 /* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Gestoor";
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Bewaar";
 
 /* Subtitle for the 'high' option for media quality. */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Stadiger, meer data";
@@ -365,58 +365,58 @@
 "BACK_BUTTON" = "Terug";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My wapens";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Wapens";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Word ’n onderhouer";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Gee Signal ’n hupstoot";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "U hupstoot-wapen het verstryk en is nie meer op u profiel sigbaar nie.\n\nU kan steeds Signal gebruik maar oorweeg dit asb. om ’n maandelikse onderhouer te word om tegnologie te ondersteun wat beter vir u is.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "U hupstoot-wapen het verstryk en is nie meer op u profiel sigbaar nie.\n\nU kan u hupstoot-wapen vir ’n verdere 30 dae met ’n eenmalige bydrae heraktiveer ";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "U onderhouer-intekening is outomaties gekanselleer omdat u vir te lank onakfief was. U %@-wapen is nie meer op u profiel sigbaar nie.\n\nU kan steeds Signal gebruik maar om die toep te ondersteun en u wapen te heraktiveer moet u nou hernieu.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Word ’n onderhouer";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Voeg ’n hupstoot toe";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Wapen het verstryk";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Hernieu intekening";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Intekening gekanselleer";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "Dankie vir die hupstoot";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Vertoon op profiel";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "Maak vertoonwapen";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Dankie vir u ondersteuning!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Wanneer u meer as een wapen het kan u een kies om te vertoon sodat ander dit op u profielprent kan sien.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "U het die %@-wapen verdien! Help Signal om bewustheid te kweek deur hierdie wapen op u profiel te vertoon.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Sluit banier";
@@ -494,19 +494,19 @@
 "BLUR_TOOLTIP" = "Nuut: Vervaag gesigte of teken op enige plek om te vervaag.";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Stel geldeenheid";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Sê “Dankie!” en verdien die hupstoot-wapen vir 30 dae.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "U hupstootwapen sal op %@ verstryk.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Voer eie bedrag in";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
+"BOOST_VIEW_OTHER_WAYS" = "Nog betaalopsies";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Kies ’n groter bedrag te skenk";
@@ -518,7 +518,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Kies ’n bedrag om by te dra";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Gee Signal ’n hupstoot";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Voeg toe";
@@ -677,22 +677,22 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Kies land";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Wysig foto";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "U nuwe nommer moet nie dieselfde as u oue wees nie. Vier asb. ’n nuwe telefoonnommer in om u nommer te verander.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Die foonnommer wat u ingevoer het stem nie met dié van u rekening ooreen nie.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Ongeldige nuwe telefoonnommer. Voer asb. ’n geldige telefoonnommer in om u nommer te verander.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Ongeldige ou telefoonnommer. Voer asb. ’n geldige ou telefoonnommer in om u nommer te verander.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Voer die PIN vir die nuwe telefoonnommer in. Dit verskil van u SMS-bevestigingskode.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Hier is ’n voorskou van die kletskleur.";
@@ -764,7 +764,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "U kan in die iOS Instellingstoep toegang tot kontakte aktiveer om te kyk watter van u kontakte is Signal-gebruikers.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Configure Reactions";
+"CONFIGURE_REACTIONS" = "Stel reaksies op";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Dit sal die toepassing terugstel deur u boodskappe te skrap. Die toep sal toemaak nadat die proses voltooi is.";
@@ -998,16 +998,16 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Hierdie klets sal van hierdie toestel af geskrap word.";
 
 /* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "Hierdie kletse sal van hierdie toestel af geskrap word.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Skrap klets?";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Skrap %@ kletse?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Demp hierdie klets vir…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dag";
@@ -1580,7 +1580,7 @@
 "DISMISS_CONTEXT_MENU" = "Wys kontekskieslys af";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Vertoon wapens op profiel";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Ligging van sensuuromseiling";
@@ -1841,7 +1841,7 @@
 "FAILED_VERIFICATION_TITLE" = "Kon nie veiligheidsnommer verifieer nie!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Kies ’n wapen";
 
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
@@ -2945,10 +2945,10 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Title for the 'Select Chats' option in the HomeView. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Kies kletse";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Lees alles";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Teken op enige plek te vervaag";
@@ -3017,7 +3017,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "U kan gesinchroniseerde boodskappe vanaf u foon of iPad stuur of ontvang.  Ter wille van sekuriteit word kletsgeskiedenis nie na nuwe gekoppelde toestelle oorgedra nie.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ het hul telefoonnommer verander.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is op Signal!";
@@ -3389,7 +3389,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Skrap en verlaat groep?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Hersien versoeke met sorf. Signal het ’n ander kontak met dieselfde naam gevind.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Hersien versoeke met sorg. Signal het ’n ander kontak met dieselfde naam gevind.";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "U kontak";
@@ -3440,7 +3440,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Wil u u klets met heirdie groep voortsit en u naam en foto met sy lede deel?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Laat %@ vir u boodskappe stuur en u naam en foto met hulel deel? Hulle sal nie weet dat u hulle boodskappe gesien het nie tot u aanvaar.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Laat %@ vir u boodskappe stuur en u naam en foto met hulle deel? Hulle sal nie weet dat u hulle boodskappe gesien het nie tot u aanvaar.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Sluit by hierdie groep aan en deel u naam en foto met die lede? Hulle sal nie weet dat u hulle boodskappe gesien het nie tot u aanvaar.";
@@ -3581,7 +3581,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Vind volgens telefoonnommer";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 lid";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nuwe groep";
@@ -4331,7 +4331,7 @@
 "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Geen netwerkverbinding";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN moet ten minste 4 syfers wees.";
@@ -5222,19 +5222,19 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Herlei alle oproepe via ’n Signal-bediener om te verhoed dat u IP-adres aan u kontak bekend word. As u dit aktiveer, sal dit oproepgehalte verlaag.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Wysig nommer";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Verander telefoonnommer";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "U telefoonnommer het na %@ verander";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Verander nommer";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "U gaan nou u telefoonnommer van %1$@ na %2$@ verander.\n\nBevestig asb. of die onderstaande nommer korrek is voor u voortgaan.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Landkode";
@@ -5246,25 +5246,25 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Voorbeeld: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "U nuwe nommer";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "U ou nommer";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Telefoonnommer";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Bevestig tans %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Gebruik dit om u huidige telefoonnommer na ’n nuwe een te verander. U kan dit altyd terug verander.\n\nMaak seker u nuwe nommer kan SMS’e of oproepe ontvang voor u voortgaan.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Verander telefoonnommer";
 
 /* Title for the 'change phone number' views in settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Verander nommer";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "Kletse";
@@ -5276,7 +5276,7 @@
 "SETTINGS_COPYRIGHT" = "Kopiereg Signal Messenger\nGelisensieer onder die GPLv3";
 
 /* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Subscription";
+"SETTINGS_CURRENT_SUBSCRIPTION" = "Intekening";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Datagebruik";
@@ -5291,7 +5291,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Oproepe";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Voice messages, view-once media, and stickers (under 100kb) are always auto-downloaded.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Stemboodskappe, eenkeerkykmedia en plakkers (onder 100kG) word altyd outomaties afgelaai.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Outo-aflaai";
@@ -5393,7 +5393,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Video’s";
 
 /* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Messaging";
+"SETTINGS_MESSAGING" = "Boodskappe";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "See and share when messages are being read and typed. If disabled, you won’t see read receipts or typing indicators from others.";
@@ -5405,7 +5405,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Wapenteller";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
@@ -5696,7 +5696,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Plak herwinfrase";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "U herwinfrase is ’n 24-woordfrase wat uniek tot u is. Gebruik dit om u betalingsrekening terug te stel.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Voer herwinfrase in";
@@ -5936,10 +5936,10 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Gee iOS toegang tot Signal-kontakte en -kletse vir funksies soos deelvoorstelle en kennisgewings.";
 
 /* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Signal Boost";
+"SETTINGS_SIGNAL_BOOST" = "Signal-hupstoot";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+"SETTINGS_SUBSCRIPTION" = "Word ’n Signal-onderhouer";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registrasieslot";
@@ -6095,22 +6095,22 @@
 "SUBSCRIBER_BADGES" = "Wapens";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Bestuur intekening";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Intekening Gereelde Vrae";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Dra by";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal word deur mense soos u aangedryf. Dra by en verdien ’n wapen.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Nee dankie";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Word ’n onderhouer";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "U veiligheidsnommer met %@ is korrek. U kan hierdie kontak merk as geverifieer.";
@@ -6170,28 +6170,28 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Laai tans";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is niewinsgewend sonder adverteerders of beleggers en word slegs onderhou deur diegene wat die gebruik en waardeer. Maak ’n herhalende maandelikse betaling en ontvang ’n profielwapen om u steun te wys.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Steun die tegnologie wat vir u – nie vir u data nie – gebou is deur aan te sluit by die gemeenskap wat dit onderhou.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Contribute?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Waarom bydra?";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Verwerk steeds";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Add a Signal Boost";
+"SUSTAINER_VIEW_ADD_BOOST" = "Voeg ’n Signal-hupstoot toe";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Kry ’n %@-wapen";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Kanselleer intekening";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Bevestig";
@@ -6200,58 +6200,58 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Bevestig kansellasie?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Kon nie wapen toevoeg nie. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "U wapen kon nie tot u rekening toegevoeg word nie. Kontak asb. ondersteuning.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Kon nie wapen toevoeg nie";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Kontak asb. ondersteuning.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Stel geldeenheid";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Kon nie betaling verwerk nie";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "My steun";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Kon nie betaling verwerk nie. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/maand";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Verstryk %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Hernieu %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Betaling word verwerk…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Transaksie word verwerk…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Lees meer";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "Hernieu %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "U betaling word nog verwerk. Dit kan ’n paar minute duur afhangend van u verbinding.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "U intekening is gekanselleer";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Nie nou nie";
@@ -6260,16 +6260,16 @@
 "SUSTAINER_VIEW_TITLE" = "Signal word aangedryf deur mense soos u.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Die volle bedrag (%@) van die nuwe intekeningprys sal vandag gehef word. U nuwe intekening sal maandeliks hernieu.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Werk intekening by?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Werk by";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Steun die tegnologie wat vir u – nie vir u data nie – gebou is deur aan te sluit by die mense wat dit onderhou.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Af";
@@ -6290,7 +6290,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Geen kontakte in hierdie groep nie. Gaan versoeke noukeurig na.";
 
 /* Tap to Replace Emoji string for reaction configuration */
-"TAP_REPLACE_EMOJI" = "Tap to replace an emoji";
+"TAP_REPLACE_EMOJI" = "Tik om ’n emoji te vervang";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Hierdie boodskap is geskrap.";
