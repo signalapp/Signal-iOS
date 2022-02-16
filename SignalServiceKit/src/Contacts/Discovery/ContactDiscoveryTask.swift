@@ -100,7 +100,7 @@ public class ContactDiscoveryTask: NSObject {
         if TSConstants.isUsingProductionService {
             return ModernContactDiscoveryOperation(e164sToLookup: e164FetchSet)
         } else {
-            return HSM1ContactDiscoveryOperation(e164sToLookup: e164FetchSet)
+            return HSMContactDiscoveryOperation(e164sToLookup: e164FetchSet)
         }
     }
 
