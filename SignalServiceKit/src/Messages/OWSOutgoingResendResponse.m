@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingResendResponse.h"
@@ -86,7 +86,10 @@
         return nil;
     }
 
-    TSThread *originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
+    TSThread *originalThread = nil;
+    if (self.originalThreadId) {
+        originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
+    }
     if (originalThread.isGroupThread && [originalThread.recipientAddresses containsObject:recipient]) {
         TSGroupThread *groupThread = (TSGroupThread *)originalThread;
         NSData *skdmBytes = [self.senderKeyStore skdmBytesForGroupThread:groupThread writeTx:transaction];
@@ -113,7 +116,10 @@
 
     // Message was sent! Re-mark the recipient as having been sent an SKDM
     if (self.didAppendSKDM) {
-        TSThread *originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
+        TSThread *originalThread = nil;
+        if (self.originalThreadId) {
+            originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
+        }
         if (originalThread.isGroupThread) {
             NSError *error = nil;
             TSGroupThread *groupThread = (TSGroupThread *)originalThread;
