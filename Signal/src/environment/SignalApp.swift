@@ -9,11 +9,15 @@ extension SignalApp {
     @objc
     func warmCachesAsync() {
         DispatchQueue.global(qos: .background).async {
-            Emoji.warmAvailableCache()
+            InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmEmojiCache") {
+                Emoji.warmAvailableCache()
+            }
         }
 
         DispatchQueue.global(qos: .background).async {
-            Wallpaper.warmCaches()
+            InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmWallpaperCaches") {
+                Wallpaper.warmCaches()
+            }
         }
     }
 

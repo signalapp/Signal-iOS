@@ -456,6 +456,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super viewDidAppear:animated];
 
+    [InstrumentsMonitor trackEventWithName:@"HomeViewController.viewDidAppear"];
+
     if (!self.getStartedBanner && !self.hasEverPresentedExperienceUpgrade &&
         [ExperienceUpgradeManager presentNextFromViewController:self]) {
         self.hasEverPresentedExperienceUpgrade = YES;
@@ -488,6 +490,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [InstrumentsMonitor trackEventWithName:@"HomeViewController.viewDidDisappear"];
+
     [super viewDidDisappear:animated];
 
     [self.searchResultsController viewDidDisappear:animated];

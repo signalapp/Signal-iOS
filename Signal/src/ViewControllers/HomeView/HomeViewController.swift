@@ -21,26 +21,27 @@ public extension HomeViewController {
 
     func reloadTableData() {
         AssertIsOnMainThread()
-
-        var selectedThreadIds: Set<String> = []
-        for indexPath in tableView.indexPathsForSelectedRows ?? [] {
-            if let key = tableDataSource.thread(forIndexPath: indexPath, expectsSuccess: false)?.uniqueId {
-                selectedThreadIds.insert(key)
+        InstrumentsMonitor.measure(category: "runtime", parent:"HomeViewController", name: "reloadTableData") {
+            var selectedThreadIds: Set<String> = []
+            for indexPath in tableView.indexPathsForSelectedRows ?? [] {
+                if let key = tableDataSource.thread(forIndexPath: indexPath, expectsSuccess: false)?.uniqueId {
+                    selectedThreadIds.insert(key)
+                }
             }
-        }
 
-        tableView.reloadData()
+            tableView.reloadData()
 
-        if !selectedThreadIds.isEmpty {
-            var threadIdsToBeSelected = selectedThreadIds
-            for section in 0..<tableDataSource.numberOfSections(in: tableView) {
-                for row in 0..<tableDataSource.tableView(tableView, numberOfRowsInSection: section) {
-                    let indexPath = IndexPath(row: row, section: section)
-                    if let key = tableDataSource.thread(forIndexPath: indexPath, expectsSuccess: false)?.uniqueId, threadIdsToBeSelected.contains(key) {
-                        tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
-                        threadIdsToBeSelected.remove(key)
-                        if threadIdsToBeSelected.isEmpty {
-                            return
+            if !selectedThreadIds.isEmpty {
+                var threadIdsToBeSelected = selectedThreadIds
+                for section in 0..<tableDataSource.numberOfSections(in: tableView) {
+                    for row in 0..<tableDataSource.tableView(tableView, numberOfRowsInSection: section) {
+                        let indexPath = IndexPath(row: row, section: section)
+                        if let key = tableDataSource.thread(forIndexPath: indexPath, expectsSuccess: false)?.uniqueId, threadIdsToBeSelected.contains(key) {
+                            tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+                            threadIdsToBeSelected.remove(key)
+                            if threadIdsToBeSelected.isEmpty {
+                                return
+                            }
                         }
                     }
                 }

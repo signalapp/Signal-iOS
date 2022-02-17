@@ -278,9 +278,10 @@ public class OWSURLSession: NSObject {
     }
 
     private class func uploadOrDataTaskCompletionPromise(requestConfig: RequestConfig,
-                                                         responseData: Data?) -> Promise<HTTPResponse> {
+                                                         responseData: Data?,
+                                                         monitorId: UInt64? = nil) -> Promise<HTTPResponse> {
         firstly {
-            baseCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+            baseCompletionPromise(requestConfig: requestConfig, responseData: responseData, monitorId: monitorId)
         }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> HTTPResponse in
             HTTPResponseImpl.build(requestUrl: requestConfig.requestUrl,
                                    httpUrlResponse: httpUrlResponse,
@@ -289,9 +290,10 @@ public class OWSURLSession: NSObject {
     }
 
     private class func downloadTaskCompletionPromise(requestConfig: RequestConfig,
-                                                     downloadUrl: URL) -> Promise<OWSUrlDownloadResponse> {
+                                                     downloadUrl: URL,
+                                                     monitorId: UInt64? = nil) -> Promise<OWSUrlDownloadResponse> {
         firstly {
-            baseCompletionPromise(requestConfig: requestConfig, responseData: nil)
+            baseCompletionPromise(requestConfig: requestConfig, responseData: nil, monitorId: monitorId)
         }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> OWSUrlDownloadResponse in
             return OWSUrlDownloadResponse(task: requestConfig.task,
                                           httpUrlResponse: httpUrlResponse,
@@ -300,8 +302,8 @@ public class OWSURLSession: NSObject {
     }
 
     private class func baseCompletionPromise(requestConfig: RequestConfig,
-                                             responseData: Data?) -> Promise<HTTPURLResponse> {
-
+                                             responseData: Data?,
+                                             monitorId: UInt64? = nil) -> Promise<HTTPURLResponse> {
         firstly(on: .global()) { () -> HTTPURLResponse in
             let task = requestConfig.task
 
@@ -383,6 +385,12 @@ public class OWSURLSession: NSObject {
                 HTTPUtils.logCurl(for: task)
             }
 #endif
+
+            InstrumentsMonitor.stopSpan(category: "traffic",
+                                        hash: monitorId,
+                                        success: httpUrlResponse.statusCode >= 200 && httpUrlResponse.statusCode < 300,
+                                        httpUrlResponse.statusCode,
+                                        responseData?.count ?? httpUrlResponse.expectedContentLength)
 
             return httpUrlResponse
         }
@@ -607,11 +615,16 @@ public class OWSURLSession: NSObject {
         taskState.future.resolve((task, downloadUrl))
     }
 
-    private func uploadOrDataTaskDidSucceed(_ task: URLSessionTask, responseData: Data?) {
+    private func uploadOrDataTaskDidSucceed(_ task: URLSessionTask, httpUrlResponse: HTTPURLResponse?, responseData: Data?, monitorId: UInt64? = nil) {
         guard let taskState = removeCompletedTaskState(task) as? UploadOrDataTaskState else {
             owsFailDebug("Missing TaskState.")
             return
         }
+        InstrumentsMonitor.stopSpan(category: "traffic",
+                                    hash: monitorId,
+                                    success: true,
+                                    httpUrlResponse?.statusCode ?? -1,
+                                    responseData?.count ?? (httpUrlResponse?.expectedContentLength ?? -1))
         taskState.future.resolve((task, responseData))
     }
 
@@ -883,12 +896,12 @@ public extension OWSURLSession {
         let request = prepareRequest(request: request)
         let taskState = UploadOrDataTaskState(progressBlock: progressBlock)
         var requestConfig: RequestConfig?
-        let task = uploadTaskBuilder.build(session: session, request: request) { [weak self] (responseData: Data?, _: URLResponse?, _: Error?) in
+        let task = uploadTaskBuilder.build(session: session, request: request) { [weak self] (responseData: Data?, urlResponse: URLResponse?, _: Error?) in
             guard let requestConfig = requestConfig else {
                 owsFailDebug("Missing requestConfig.")
                 return
             }
-            self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
+            self?.uploadOrDataTaskDidSucceed(requestConfig.task, httpUrlResponse: urlResponse as? HTTPURLResponse, responseData: responseData)
         }
 
         addTask(task, taskState: taskState)
@@ -896,6 +909,7 @@ public extension OWSURLSession {
             owsFail("Request missing url.")
         }
         requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
+        let monitorId = InstrumentsMonitor.startSpan(category: "traffic", parent: "uploadTask", name: requestUrl.absoluteString)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
@@ -905,7 +919,8 @@ public extension OWSURLSession {
                 throw OWSAssertionError("Missing requestConfig.")
             }
             return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
-                                                          responseData: responseData)
+                                                          responseData: responseData,
+                                                          monitorId: monitorId)
         }
     }
 
@@ -947,7 +962,7 @@ public extension OWSURLSession {
         let request = prepareRequest(request: request)
         let taskState = UploadOrDataTaskState(progressBlock: nil)
         var requestConfig: RequestConfig?
-        let task = session.dataTask(with: request) { [weak self] (responseData: Data?, _: URLResponse?, _: Error?) in
+        let task = session.dataTask(with: request) { [weak self] (responseData: Data?, urlResponse: URLResponse?, _: Error?) in
             guard let self = self else {
                 owsFailDebug("Missing session.")
                 return
@@ -963,13 +978,14 @@ public extension OWSURLSession {
                     return
                 }
             }
-            self.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
+            self.uploadOrDataTaskDidSucceed(requestConfig.task, httpUrlResponse: urlResponse as? HTTPURLResponse, responseData: responseData)
         }
         addTask(task, taskState: taskState)
         guard let requestUrl = request.url else {
             owsFail("Request missing url.")
         }
         requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
+        let monitorId = InstrumentsMonitor.startSpan(category: "traffic", parent: "dataTask", name: requestUrl.absoluteString)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
@@ -979,7 +995,8 @@ public extension OWSURLSession {
                 throw OWSAssertionError("Missing requestConfig.")
             }
             return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
-                                                          responseData: responseData)
+                                                          responseData: responseData,
+                                                          monitorId: monitorId)
         }
     }
 
@@ -1030,6 +1047,8 @@ public extension OWSURLSession {
         let task = taskBlock()
         addTask(task, taskState: taskState)
         requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
+
+        let monitorId = InstrumentsMonitor.startSpan(category: "traffic", parent: "downloadTask", name: requestUrl.absoluteString)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, URL)> in
@@ -1038,7 +1057,7 @@ public extension OWSURLSession {
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.downloadTaskCompletionPromise(requestConfig: requestConfig, downloadUrl: downloadUrl)
+            return Self.downloadTaskCompletionPromise(requestConfig: requestConfig, downloadUrl: downloadUrl, monitorId: monitorId)
         }
     }
 }

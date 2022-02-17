@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKEnvironment.h"
@@ -263,19 +263,39 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 - (void)warmCaches
 {
-    [self.tsAccountManager warmCaches];
-    [self.signalServiceAddressCache warmCaches];
-    [self.remoteConfigManager warmCaches];
-    [self.udManager warmCaches];
-    [self.blockingManager warmCaches];
-    [self.profileManager warmCaches];
-    [self.receiptManager prepareCachedValues];
-    [OWSKeyBackupService warmCaches];
-    [PinnedThreadManager warmCaches];
-    [self.typingIndicatorsImpl warmCaches];
-    [self.paymentsHelper warmCaches];
-    [self.paymentsCurrencies warmCaches];
-    
+    NSArray *specs = @[
+        @"tsAccountManager",
+        ^{ [self.tsAccountManager warmCaches]; },
+        @"signalServiceAddressCache",
+        ^{ [self.signalServiceAddressCache warmCaches]; },
+        @"remoteConfigManager",
+        ^{ [self.remoteConfigManager warmCaches]; },
+        @"udManager",
+        ^{ [self.udManager warmCaches]; },
+        @"blockingManager",
+        ^{ [self.blockingManager warmCaches]; },
+        @"profileManager",
+        ^{ [self.profileManager warmCaches]; },
+        @"receiptManager",
+        ^{ [self.receiptManager prepareCachedValues]; },
+        @"OWSKeyBackupService",
+        ^{ [OWSKeyBackupService warmCaches]; },
+        @"PinnedThreadManager",
+        ^{ [PinnedThreadManager warmCaches]; },
+        @"typingIndicatorsImpl",
+        ^{ [self.typingIndicatorsImpl warmCaches]; },
+        @"paymentsHelper",
+        ^{ [self.paymentsHelper warmCaches]; },
+        @"paymentsCurrencies",
+        ^{ [self.paymentsCurrencies warmCaches]; }
+    ];
+
+    for (int i = 0; i < specs.count / 2; i++) {
+        [InstrumentsMonitor measureWithCategory:@"appstart"
+                                         parent:@"caches"
+                                           name:[specs objectAtIndex:2 * i]
+                                          block:[specs objectAtIndex:2 * i + 1]];
+    }
     [NSNotificationCenter.defaultCenter postNotificationName:WarmCachesNotification object:nil];
 }
 

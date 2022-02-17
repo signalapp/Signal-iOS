@@ -308,6 +308,8 @@ public class ConversationViewController: OWSViewController {
     public override func viewDidAppear(_ animated: Bool) {
         self.viewDidAppearDidBegin()
 
+        InstrumentsMonitor.trackEvent(name: "ConversationViewController.viewDidAppear")
+
         #if TESTABLE_BUILD
         initialLoadBenchSteps.step("viewDidAppear.1")
         #endif
@@ -414,6 +416,8 @@ public class ConversationViewController: OWSViewController {
         Logger.verbose("")
 
         super.viewDidDisappear(animated)
+
+        InstrumentsMonitor.trackEvent(name: "ConversationViewController.viewDidDisappear")
 
         self.userHasScrolled = false
         self.isViewVisible = false

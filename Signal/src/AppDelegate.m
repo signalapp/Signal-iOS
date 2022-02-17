@@ -163,6 +163,11 @@ static void uncaughtExceptionHandler(NSException *exception)
     launchStartedAt = CACurrentMediaTime();
 
     BOOL isLoggingEnabled;
+    [InstrumentsMonitor enable];
+    unsigned long long monitorId = [InstrumentsMonitor startSpanWithCategory:@"appstart"
+                                                                      parent:@"application"
+                                                                        name:@"didFinishLaunchingWithOptions"];
+
 #ifdef DEBUG
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
     // the phone directory being looked up during tests.
@@ -201,6 +206,8 @@ static void uncaughtExceptionHandler(NSException *exception)
     // XXX - careful when moving this. It must happen before we load GRDB.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
+    [InstrumentsMonitor trackEventWithName:@"AppStart"];
+
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access the database, files on disk, or NSUserDefaults.
     NSError *_Nullable launchError = nil;
@@ -218,6 +225,7 @@ static void uncaughtExceptionHandler(NSException *exception)
         launchFailure = LaunchFailure_DatabaseUnrecoverablyCorrupted;
     }
     if (launchFailure != LaunchFailure_None) {
+        [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
         OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
         [self showUIForLaunchFailure:launchFailure];
 
@@ -229,6 +237,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     [self setupNSEInteroperation];
 
     if (CurrentAppContext().isRunningTests) {
+        [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
         return YES;
     }
 
@@ -304,6 +313,7 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     [OWSAnalytics appLaunchDidBegin];
 
+    [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
     return YES;
 }
 
