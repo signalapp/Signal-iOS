@@ -161,7 +161,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_cullInvalidIdentityKeySendingErrors
         case dataMigration_moveToThreadAssociatedData
         case dataMigration_senderKeyStoreKeyIdMigration
-        case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData
+        case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -1762,7 +1762,7 @@ public class GRDBSchemaMigrator: NSObject {
             SenderKeyStore.performKeyIdMigration(transaction: transaction.asAnyWrite)
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData.rawValue) { db in
+        migrator.registerMigration(MigrationId.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
@@ -1774,9 +1774,15 @@ public class GRDBSchemaMigrator: NSObject {
             while let thread = try threadCursor.next() as? TSGroupThread {
                 try autoreleasepool {
                     try thread.groupModel.migrateLegacyAvatarDataToDisk()
+                    thread.anyUpsert(transaction: transaction.asAnyWrite)
                     GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: transaction)
                 }
             }
+
+            // There was a broken version of this migration that did not persist the avatar migration. It's now fixed, but for
+            // users who ran it we need to skip the re-index of the group members because we can't perform a second "insert"
+            // query. This is superfluous anyways, so it's safe to skip.
+            guard !hasRunMigration("dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData", transaction: transaction) else { return }
 
             let memberCursor = TSGroupMember.grdbFetchCursor(
                 transaction: transaction
