@@ -163,17 +163,21 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                   successParam(url);
                               }];
                           }
-                          failure:^(NSString *localizedErrorMessage) {
+                          failure:^(NSString *localizedErrorMessage, NSString *logArchiveOrDirectoryPath) {
                               OWSAssertIsOnMainThread();
 
                               if (modalActivityIndicator.wasCancelled) {
+                                  if (logArchiveOrDirectoryPath) {
+                                      (void)[OWSFileSystem deleteFile:logArchiveOrDirectoryPath];
+                                  }
                                   return;
                               }
 
                               [modalActivityIndicator dismissWithCompletion:^{
                                   OWSAssertIsOnMainThread();
 
-                                  [Pastelog showFailureAlertWithMessage:localizedErrorMessage];
+                                  [Pastelog showFailureAlertWithMessage:localizedErrorMessage
+                                              logArchiveOrDirectoryPath:logArchiveOrDirectoryPath];
                               }];
                           }];
                   }];
@@ -194,10 +198,8 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
             successParam(url);
         });
     };
-    UploadDebugLogsFailure failure = ^(NSString *localizedErrorMessage) {
-        DispatchMainThreadSafe(^{
-            failureParam(localizedErrorMessage);
-        });
+    UploadDebugLogsFailure failure = ^(NSString *localizedErrorMessage, NSString *_Nullable logArchiveOrDirectoryPath) {
+        DispatchMainThreadSafe(^{ failureParam(localizedErrorMessage, logArchiveOrDirectoryPath); });
     };
 
     // Phase 1. Make a local copy of all of the log files.
@@ -241,13 +243,14 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                                     AES:NO
                                         progressHandler:nil];
     if (!zipSuccess) {
-        failure(NSLocalizedString(
-            @"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS", @"Error indicating that the debug logs could not be packaged."));
+        failure(NSLocalizedString(@"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS",
+                    @"Error indicating that the debug logs could not be packaged."),
+            zipDirPath);
         return;
     }
 
     [OWSFileSystem protectFileOrFolderAtPath:zipFilePath];
-    [OWSFileSystem deleteFile:zipDirPath];
+    (void)[OWSFileSystem deleteFile:zipDirPath];
 
     // Phase 3. Upload the log files.
 
@@ -260,7 +263,7 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                 // Ignore events from obsolete uploaders.
                 return;
             }
-            [OWSFileSystem deleteFile:zipFilePath];
+            (void)[OWSFileSystem deleteFile:zipFilePath];
             success(url);
         }
         failure:^(DebugLogUploader *uploader, NSError *error) {
@@ -268,19 +271,40 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                 // Ignore events from obsolete uploaders.
                 return;
             }
-            [OWSFileSystem deleteFile:zipFilePath];
-            failure(NSLocalizedString(
-                @"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG", @"Error indicating that a debug log could not be uploaded."));
+            failure(NSLocalizedString(@"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
+                        @"Error indicating that a debug log could not be uploaded."),
+                zipFilePath);
         }];
 }
 
 + (void)showFailureAlertWithMessage:(NSString *)message
+          logArchiveOrDirectoryPath:(nullable NSString *)logArchiveOrDirectoryPath
 {
+    void (^deleteArchive)(void) = ^{
+        if (logArchiveOrDirectoryPath) {
+            (void)[OWSFileSystem deleteFile:logArchiveOrDirectoryPath];
+        }
+    };
+
     ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:nil message:message];
+    if (logArchiveOrDirectoryPath) {
+        [alert addAction:[[ActionSheetAction alloc]
+                                       initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
+                                                         @"Label for the 'Export Logs' fallback option for the alert "
+                                                         @"when debug log uploading fails.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"export_log_archive")
+                                               style:ActionSheetActionStyleDefault
+                                             handler:^(ActionSheetAction *action) {
+                                                 [AttachmentSharing
+                                                     showShareUIForURL:[NSURL fileURLWithPath:logArchiveOrDirectoryPath]
+                                                                sender:nil
+                                                            completion:deleteArchive];
+                                             }]];
+    }
     [alert addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.okButton
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
                                                         style:ActionSheetActionStyleDefault
-                                                      handler:nil]];
+                                                      handler:^(ActionSheetAction *action) { deleteArchive(); }]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
     [presentingViewController presentActionSheet:alert];
 }
