@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -202,7 +202,7 @@ public class CDSHWebSocket: Dependencies, SSKWebSocketDelegate {
 
 private extension HsmCodeHashList {
     mutating func append(_ data: Data) throws {
-        let byteArray = Array<UInt8>(data)
+        let byteArray = [UInt8](data)
         try append(byteArray)
     }
 }
