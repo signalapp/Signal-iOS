@@ -214,18 +214,20 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
 
     NSArray<NSString *> *logFilePaths = DebugLogger.shared.allLogFilePaths;
     if (logFilePaths.count < 1) {
-        failure(NSLocalizedString(@"DEBUG_LOG_ALERT_NO_LOGS", @"Error indicating that no debug logs could be found."));
+        failure(
+            NSLocalizedString(@"DEBUG_LOG_ALERT_NO_LOGS", @"Error indicating that no debug logs could be found."), nil);
         return;
     }
 
     for (NSString *logFilePath in logFilePaths) {
         NSString *copyFilePath = [zipDirPath stringByAppendingPathComponent:logFilePath.lastPathComponent];
         NSError *error;
-        [[NSFileManager defaultManager] copyItemAtPath:logFilePath toPath:copyFilePath error:&error];
-        if (error) {
-            failure(NSLocalizedString(
-                @"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS", @"Error indicating that the debug logs could not be copied."));
-            return;
+        if (![[NSFileManager defaultManager] copyItemAtPath:logFilePath toPath:copyFilePath error:&error]) {
+            OWSLogError(@"could not copy log file at %@: %@", logFilePath, error);
+            // Write the error to the file that would have been copied.
+            [[error description] writeToFile:copyFilePath atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+            // We still want to get *some* of the logs.
+            continue;
         }
         [OWSFileSystem protectFileOrFolderAtPath:copyFilePath];
     }
