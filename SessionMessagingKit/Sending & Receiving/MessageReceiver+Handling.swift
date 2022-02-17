@@ -190,15 +190,23 @@ extension MessageReceiver {
         SNLog("Configuration message received.")
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let messageSentTimestamp: TimeInterval = TimeInterval((message.sentTimestamp ?? 0) / 1000)   // `sentTimestamp` is in ms
+        let lastConfigTimestamp: TimeInterval = (UserDefaults.standard[.lastConfigurationSync]?.timeIntervalSince1970 ?? Date(timeIntervalSince1970: 0).timeIntervalSince1970)
+        
         // Profile
         var userProfileKey: OWSAES256Key? = nil
         if let profileKey = message.profileKey { userProfileKey = OWSAES256Key(data: profileKey) }
         updateProfileIfNeeded(publicKey: userPublicKey, name: message.displayName, profilePictureURL: message.profilePictureURL,
             profileKey: userProfileKey, sentTimestamp: message.sentTimestamp!, transaction: transaction)
-        // Initial configuration sync
-        if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
-            UserDefaults.standard[.hasSyncedInitialConfiguration] = true
-            NotificationCenter.default.post(name: .initialConfigurationMessageReceived, object: nil)
+        
+        if !UserDefaults.standard[.hasSyncedInitialConfiguration] || messageSentTimestamp > lastConfigTimestamp {
+            if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
+                UserDefaults.standard[.hasSyncedInitialConfiguration] = true
+                NotificationCenter.default.post(name: .initialConfigurationMessageReceived, object: nil)
+            }
+            
+            UserDefaults.standard[.lastConfigurationSync] = Date(timeIntervalSince1970: messageSentTimestamp)
+            
             // Contacts
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!

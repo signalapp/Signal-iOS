@@ -14,7 +14,12 @@ extension AppDelegate {
             let job = MessageSendJob(message: configurationMessage, destination: destination)
             JobQueue.shared.add(job, using: transaction)
         }
-        userDefaults[.lastConfigurationSync] = Date()
+        
+        // Only update the 'lastConfigurationSync' timestamp if we have done the first sync (Don't want
+        // a new device config sync to override config syncs from other devices)
+        if userDefaults[.hasSyncedInitialConfiguration] {
+            userDefaults[.lastConfigurationSync] = Date()
+        }
     }
 
     func forceSyncConfigurationNowIfNeeded() -> Promise<Void> {
