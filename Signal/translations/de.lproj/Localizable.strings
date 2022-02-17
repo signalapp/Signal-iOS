@@ -539,7 +539,7 @@
 "BUTTON_EDIT" = "Bearbeiten";
 
 /* Label for the 'mute' button. */
-"BUTTON_MUTE" = "Stummschalten";
+"BUTTON_MUTE" = "Stumm";
 
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Weiter";

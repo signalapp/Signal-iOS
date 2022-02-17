@@ -5312,7 +5312,7 @@
 "SETTINGS_DATA_TITLE" = "Uso de datos";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Tiempo de desaparición de mensajes en chats nuevos";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Desaparición en chats nuevos";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Eliminar cuenta";
@@ -5339,7 +5339,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Eliminar todo";
 
 /* Label for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES" = "Mensajes que desaparecen";
+"SETTINGS_DISAPPEARING_MESSAGES" = "Desaparición de mensajes";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Fija la desaparición de mensajes para nuevos chats iniciados por ti.";

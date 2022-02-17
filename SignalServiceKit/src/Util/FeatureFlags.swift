@@ -89,7 +89,7 @@ public class FeatureFlags: BaseFlags {
     public static let groupRings = false
 
     @objc
-    public static let canUseNativeWebsocket = false
+    public static let canUseNativeWebsocket = build.includes(.beta)
 
     @objc
     public static var notificationServiceExtension: Bool {
