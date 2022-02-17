@@ -1,7 +1,7 @@
 import PromiseKit
 import Sodium
 
-public protocol SessionMessagingKitStorageProtocol: SessionMessagingKitOpenGroupStorageProtocol {
+public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Shared
 
@@ -45,10 +45,21 @@ public protocol SessionMessagingKitStorageProtocol: SessionMessagingKitOpenGroup
 
     // MARK: - Open Groups
 
-    func getAllV2OpenGroups() -> [String:OpenGroupV2]
-    func getV2OpenGroup(for threadID: String) -> OpenGroupV2?
-    func v2GetThreadID(for v2OpenGroupID: String) -> String?
+    func getAllOpenGroups() -> [String: OpenGroup]
+    func getThreadID(for openGroupID: String) -> String?
     func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any)
+    
+    func getOpenGroupImage(for room: String, on server: String) -> Data?
+    func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any)
+    
+    func getOpenGroup(for threadID: String) -> OpenGroup?
+    func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any)
+    
+    func getUserCount(forOpenGroupWithID openGroupID: String) -> UInt64?
+    func setUserCount(to newValue: UInt64, forOpenGroupWithID openGroupID: String, using transaction: Any)
+    
+    func getOpenGroupServer(name: String) -> OpenGroupAPI.Server?
+    func storeOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any)
     
     // MARK: - Open Group Public Keys
 

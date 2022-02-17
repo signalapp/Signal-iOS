@@ -82,31 +82,41 @@ extension OpenGroupAPI {
         private func handlePollResponse(_ response: [OpenGroupAPI.Endpoint: (info: OnionRequestResponseInfoType, data: Codable)], isBackgroundPoll: Bool) {
             response.forEach { endpoint, response in
                 switch endpoint {
+                    case .capabilities:
+                        guard let responseData: BatchSubResponse<Capabilities> = response.data as? BatchSubResponse<Capabilities> else {
+                            SNLog("Open group polling failed due to invalid data.")
+                            return
+                        }
+                        
+                        OpenGroupManager.handleCapabilities(
+                            responseData.body,
+                            on: server
+                        )
+                        
                     case .roomMessagesRecent(let roomToken), .roomMessagesBefore(let roomToken, _), .roomMessagesSince(let roomToken, _):
-                        guard let responseData: [OpenGroupAPI.Message] = response.data as? [OpenGroupAPI.Message] else {
+                        guard let responseData: BatchSubResponse<[Message]> = response.data as? BatchSubResponse<[Message]> else {
                             SNLog("Open group polling failed due to invalid data.")
                             return
                         }
                         
                         OpenGroupManager.handleMessages(
-                            responseData,
+                            responseData.body,
                             for: roomToken,
                             on: server,
                             isBackgroundPoll: isBackgroundPoll
                         )
                         
                     case .roomPollInfo(let roomToken, _):
-                        guard let responseData: OpenGroupAPI.RoomPollInfo = response.data as? OpenGroupAPI.RoomPollInfo else {
+                        guard let responseData: BatchSubResponse<RoomPollInfo> = response.data as? BatchSubResponse<RoomPollInfo> else {
                             SNLog("Open group polling failed due to invalid data.")
                             return
                         }
                         
                         OpenGroupManager.handlePollInfo(
-                            responseData,
+                            responseData.body,
                             publicKey: nil,
                             for: roomToken,
-                            on: server,
-                            isBackgroundPoll: isBackgroundPoll
+                            on: server
                         )
                         
                     default: break // No custom handling needed
@@ -154,7 +164,7 @@ extension OpenGroupAPI {
             let deletedMessageServerIDs = Set((body.deletions ?? []).map { UInt64($0.deletedMessageID) })
             storage.write { transaction in
                 let transaction = transaction as! YapDatabaseReadWriteTransaction
-                guard let threadID = storage.v2GetThreadID(for: openGroupID),
+                guard let threadID = storage.getThreadID(for: openGroupID),
                     let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
                 var messagesToRemove: [TSMessage] = []
                 

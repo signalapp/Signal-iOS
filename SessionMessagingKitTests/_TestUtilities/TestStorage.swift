@@ -10,10 +10,11 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     // MARK: - Mockable
     
     enum DataKey: Hashable {
-        case allV2OpenGroups
+        case allOpenGroups
         case openGroupPublicKeys
         case userKeyPair
         case openGroup
+        case openGroupServer
         case openGroupImage
         case openGroupUserCount
     }
@@ -72,10 +73,27 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
 
     // MARK: - Open Groups
     
-    func getAllV2OpenGroups() -> [String: OpenGroupV2] { return (mockData[.allV2OpenGroups] as! [String: OpenGroupV2]) }
-    func getV2OpenGroup(for threadID: String) -> OpenGroupV2? { return (mockData[.openGroup] as? OpenGroupV2) }
-    func v2GetThreadID(for v2OpenGroupID: String) -> String? { return nil }
+    func getAllOpenGroups() -> [String: OpenGroup] { return (mockData[.allOpenGroups] as! [String: OpenGroup]) }
+    func getThreadID(for v2OpenGroupID: String) -> String? { return nil }
     func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any) {}
+    
+    func getOpenGroupImage(for room: String, on server: String) -> Data? { return (mockData[.openGroupImage] as? Data) }
+    func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any) {
+        mockData[.openGroupImage] = data
+    }
+    
+    func getOpenGroup(for threadID: String) -> OpenGroup? { return (mockData[.openGroup] as? OpenGroup) }
+    func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any) { mockData[.openGroup] = openGroup }
+    func getOpenGroupServer(name: String) -> OpenGroupAPI.Server? { return mockData[.openGroupServer] as? OpenGroupAPI.Server }
+    func storeOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any) { mockData[.openGroupServer] = server }
+    
+    func getUserCount(forOpenGroupWithID openGroupID: String) -> UInt64? {
+        return (mockData[.openGroupUserCount] as? UInt64)
+    }
+    
+    func setUserCount(to newValue: UInt64, forOpenGroupWithID openGroupID: String, using transaction: Any) {
+        mockData[.openGroupUserCount] = newValue
+    }
     
     // MARK: - Open Group Public Keys
     
@@ -110,25 +128,4 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func persist(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String] { return [] }
     func setAttachmentState(to state: TSAttachmentPointerState, for pointer: TSAttachmentPointer, associatedWith tsIncomingMessageID: String, using transaction: Any) {}
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any) {}
-}
-
-// MARK: - SessionMessagingKitOpenGroupStorageProtocol
-
-extension TestStorage: SessionMessagingKitOpenGroupStorageProtocol {
-    func getOpenGroupImage(for room: String, on server: String) -> Data? { return (mockData[.openGroupImage] as? Data) }
-    func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any) {
-        mockData[.openGroupImage] = data
-    }
-    
-    func setV2OpenGroup(_ openGroup: OpenGroupV2, for threadID: String, using transaction: Any) {
-        mockData[.openGroup] = openGroup
-    }
-    
-    func getUserCount(forV2OpenGroupWithID openGroupID: String) -> UInt64? {
-        return (mockData[.openGroupUserCount] as? UInt64)
-    }
-    
-    func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any) {
-        mockData[.openGroupUserCount] = newValue
-    }
 }

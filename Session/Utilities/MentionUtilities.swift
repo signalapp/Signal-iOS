@@ -9,7 +9,7 @@ public final class MentionUtilities : NSObject {
     }
 
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
-        let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID)
+        let openGroup = Storage.shared.getOpenGroup(for: threadID)
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadID, in: transaction)
         }
@@ -22,7 +22,7 @@ public final class MentionUtilities : NSObject {
             let publicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
             let matchEnd: Int
             if knownPublicKeys.contains(publicKey) {
-                let context: Contact.Context = (openGroupV2 != nil) ? .openGroup : .regular
+                let context: Contact.Context = (openGroup != nil) ? .openGroup : .regular
                 let displayName = Storage.shared.getContact(with: publicKey)?.displayName(for: context)
                 if let displayName = displayName {
                     string = (string as NSString).replacingCharacters(in: match.range, with: "@\(displayName)")

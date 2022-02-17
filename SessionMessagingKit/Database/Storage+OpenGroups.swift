@@ -1,46 +1,35 @@
 
-public protocol SessionMessagingKitOpenGroupStorageProtocol {
-    func getOpenGroupImage(for room: String, on server: String) -> Data?
-    func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any)
-    
-    func getV2OpenGroup(for threadID: String) -> OpenGroupV2?
-    func setV2OpenGroup(_ openGroup: OpenGroupV2, for threadID: String, using transaction: Any)
-    
-    func getUserCount(forV2OpenGroupWithID openGroupID: String) -> UInt64?
-    func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any)
-}
-
-extension Storage: SessionMessagingKitOpenGroupStorageProtocol {
+extension Storage {
     
     // MARK: - Open Groups
     
     private static let openGroupCollection = "SNOpenGroupCollection"
     
-    @objc public func getAllV2OpenGroups() -> [String:OpenGroupV2] {
-        var result = [String:OpenGroupV2]()
+    @objc public func getAllOpenGroups() -> [String: OpenGroup] {
+        var result = [String: OpenGroup]()
         Storage.read { transaction in
             transaction.enumerateKeysAndObjects(inCollection: Storage.openGroupCollection) { threadID, object, _ in
-                guard let openGroup = object as? OpenGroupV2 else { return }
+                guard let openGroup = object as? OpenGroup else { return }
                 result[threadID] = openGroup
             }
         }
         return result
     }
 
-    @objc(getV2OpenGroupForThreadID:)
-    public func getV2OpenGroup(for threadID: String) -> OpenGroupV2? {
-        var result: OpenGroupV2?
+    @objc(getOpenGroupForThreadID:)
+    public func getOpenGroup(for threadID: String) -> OpenGroup? {
+        var result: OpenGroup?
         Storage.read { transaction in
-            result = transaction.object(forKey: threadID, inCollection: Storage.openGroupCollection) as? OpenGroupV2
+            result = transaction.object(forKey: threadID, inCollection: Storage.openGroupCollection) as? OpenGroup
         }
         return result
     }
     
-    public func v2GetThreadID(for v2OpenGroupID: String) -> String? {
+    public func getThreadID(for openGroupID: String) -> String? {
         var result: String?
         Storage.read { transaction in
             transaction.enumerateKeysAndObjects(inCollection: Storage.openGroupCollection, using: { threadID, object, stop in
-                guard let openGroup = object as? OpenGroupV2, openGroup.id == v2OpenGroupID else { return }
+                guard let openGroup = object as? OpenGroup, openGroup.id == openGroupID else { return }
                 result = threadID
                 stop.pointee = true
             })
@@ -48,17 +37,27 @@ extension Storage: SessionMessagingKitOpenGroupStorageProtocol {
         return result
     }
 
-    @objc(setV2OpenGroup:forThreadWithID:using:)
-    public func setV2OpenGroup(_ openGroup: OpenGroupV2, for threadID: String, using transaction: Any) {
+    @objc(setOpenGroup:forThreadWithID:using:)
+    public func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(openGroup, forKey: threadID, inCollection: Storage.openGroupCollection)
     }
 
-    @objc(removeV2OpenGroupForThreadID:using:)
-    public func removeV2OpenGroup(for threadID: String, using transaction: Any) {
+    @objc(removeOpenGroupForThreadID:using:)
+    public func removeOpenGroup(for threadID: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: threadID, inCollection: Storage.openGroupCollection)
     }
     
+    public func getOpenGroupServer(name: String) -> OpenGroupAPI.Server? {
+        var result: OpenGroupAPI.Server?
+        Storage.read { transaction in
+            result = transaction.object(forKey: "SOGS.\(name)", inCollection: Storage.openGroupCollection) as? OpenGroupAPI.Server
+        }
+        return result
+    }
     
+    public func storeOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(server, forKey: "SOGS.\(server.name)", inCollection: Storage.openGroupCollection)
+    }
     
     // MARK: - Authorization
 
@@ -171,7 +170,7 @@ extension Storage: SessionMessagingKitOpenGroupStorageProtocol {
     private static let openGroupUserCountCollection = "SNOpenGroupUserCountCollection"
     private static let openGroupImageCollection = "SNOpenGroupImageCollection"
     
-    public func getUserCount(forV2OpenGroupWithID openGroupID: String) -> UInt64? {
+    public func getUserCount(forOpenGroupWithID openGroupID: String) -> UInt64? {
         var result: UInt64?
         Storage.read { transaction in
             result = transaction.object(forKey: openGroupID, inCollection: Storage.openGroupUserCountCollection) as? UInt64
@@ -179,7 +178,7 @@ extension Storage: SessionMessagingKitOpenGroupStorageProtocol {
         return result
     }
     
-    public func setUserCount(to newValue: UInt64, forV2OpenGroupWithID openGroupID: String, using transaction: Any) {
+    public func setUserCount(to newValue: UInt64, forOpenGroupWithID openGroupID: String, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: openGroupID, inCollection: Storage.openGroupUserCountCollection)
     }
     

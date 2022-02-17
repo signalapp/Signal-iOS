@@ -14,7 +14,7 @@ public final class BackgroundPoller: NSObject {
             .appending(pollForMessages())
             .appending(pollForClosedGroupMessages())
             .appending(
-                Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
+                Set(Storage.shared.getAllOpenGroups().values.map { $0.server })
                     .map { server in
                         let poller = OpenGroupAPI.Poller(for: server)
                         poller.stop()

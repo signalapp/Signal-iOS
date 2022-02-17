@@ -287,11 +287,11 @@ public final class MessageSender : NSObject {
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
         
-        guard let threadId: String = message.threadID, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) else {
+        guard let threadId: String = message.threadID, let openGroup = Storage.shared.getOpenGroup(for: threadId) else {
             preconditionFailure()
         }
-        
-        if let userDerivedKey: ECKeyPair = try? OWSIdentityManager.shared().identityKeyPair()?.convert(to: .blinded, with: openGroupV2.publicKey) {
+        // TODO: Check if blinding is enabled on this server?
+        if let userDerivedKey: ECKeyPair = try? OWSIdentityManager.shared().identityKeyPair()?.convert(to: .blinded, with: openGroup.publicKey) {
             message.sender = userDerivedKey.hexEncodedPublicKey
         }
         
@@ -368,19 +368,13 @@ public final class MessageSender : NSObject {
             preconditionFailure()
         }
 
-        // TODO: Determine if the 'getV2OpenGroup' call will cause issues.
-        guard let threadId: String = message.threadID, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) else {
-            preconditionFailure()
-        }
-
         OpenGroupAPI
             .send(
                 plaintext,
                 to: room,
                 on: server,
                 whisperTo: whisperTo,
-                whisperMods: whisperMods,
-                with: openGroupV2.publicKey
+                whisperMods: whisperMods
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
                 message.openGroupServerMessageID = given(data.seqNo) { UInt64($0) }

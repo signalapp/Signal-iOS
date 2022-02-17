@@ -946,7 +946,7 @@ CGFloat kIconViewLength = 24;
 - (void)inviteUsersToOpenGroup
 {
     NSString *threadID = self.thread.uniqueId;
-    SNOpenGroupV2 *openGroup = [LKStorage.shared getV2OpenGroupForThreadID:threadID];
+    SNOpenGroupV2 *openGroup = [LKStorage.shared getOpenGroupForThreadID:threadID];
     NSString *url = [NSString stringWithFormat:@"%@/%@?public_key=%@", openGroup.server, openGroup.room, openGroup.publicKey];
     SNUserSelectionVC *userSelectionVC = [[SNUserSelectionVC alloc] initWithTitle:NSLocalizedString(@"vc_conversation_settings_invite_button_title", @"")
                                                                         excluding:[NSSet new]

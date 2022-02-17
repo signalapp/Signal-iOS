@@ -53,9 +53,8 @@ public final class PushNotificationAPI : NSObject {
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             // TODO: Update this to use the V4 union requests once supported
             OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
-                .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
-                .map2 { response in
-                    guard let response: UnregisterResponse = try? response.decoded(as: UnregisterResponse.self) else {
+                .map2 { _, response in
+                    guard let response: UnregisterResponse = try? response?.decoded(as: UnregisterResponse.self) else {
                         return SNLog("Couldn't unregister from push notifications.")
                     }
                     guard response.code != 0 else {
@@ -104,9 +103,8 @@ public final class PushNotificationAPI : NSObject {
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             // TODO: Update this to use the V4 union requests once supported
             OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
-                .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
-                .map2 { response in
-                    guard let response: RegisterResponse = try? response.decoded(as: RegisterResponse.self) else {
+                .map2 { _, response in
+                    guard let response: RegisterResponse = try? response?.decoded(as: RegisterResponse.self) else {
                         return SNLog("Couldn't register device token.")
                     }
                     guard response.code != 0 else {
@@ -152,9 +150,8 @@ public final class PushNotificationAPI : NSObject {
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
             // TODO: Update this to use the V4 union requests once supported
             OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
-                .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
-                .map2 { response in
-                    guard let response: RegisterResponse = try? response.decoded(as: RegisterResponse.self) else {
+                .map2 { _, response in
+                    guard let response: RegisterResponse = try? response?.decoded(as: RegisterResponse.self) else {
                         return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey).")
                     }
                     guard response.code != 0 else {

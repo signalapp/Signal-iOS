@@ -25,7 +25,7 @@ public extension Message {
             }
             
             if let thread = thread as? TSGroupThread, thread.isOpenGroup {
-                let openGroup: OpenGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!)!
+                let openGroup: OpenGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!)!
                 
                 return .openGroup(roomToken: openGroup.room, server: openGroup.server)
             }

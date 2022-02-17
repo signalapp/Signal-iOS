@@ -19,7 +19,7 @@ public final class OpenGroupManager: NSObject {
         guard !isPolling else { return }
         
         isPolling = true
-        pollers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
+        pollers = Set(Storage.shared.getAllOpenGroups().values.map { $0.server })
             .reduce(into: [:]) { prev, server in
                 pollers[server]?.stop() // Should never occur
                 
@@ -58,8 +58,7 @@ public final class OpenGroupManager: NSObject {
                         room,
                         publicKey: publicKey,
                         for: roomToken,
-                        on: server,
-                        isBackgroundPoll: false
+                        on: server
                     ) {
                         seal.fulfill(())
                     }
@@ -72,11 +71,11 @@ public final class OpenGroupManager: NSObject {
         return promise
     }
 
-    public func delete(_ openGroup: OpenGroupV2, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+    public func delete(_ openGroup: OpenGroup, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         let storage = SNMessagingKitConfiguration.shared.storage
         
         // Stop the poller if needed
-        let openGroups = storage.getAllV2OpenGroups().values.filter { $0.server == openGroup.server }
+        let openGroups = storage.getAllOpenGroups().values.filter { $0.server == openGroup.server }
         if openGroups.count == 1 && openGroups.last == openGroup {
             let poller = pollers[openGroup.server]
             poller?.stop()
@@ -97,7 +96,7 @@ public final class OpenGroupManager: NSObject {
         let _ = OpenGroupAPI.legacyDeleteAuthToken(for: openGroup.room, on: openGroup.server)
         thread.removeAllThreadInteractions(with: transaction)
         thread.remove(with: transaction)
-        Storage.shared.removeV2OpenGroup(for: thread.uniqueId!, using: transaction)
+        Storage.shared.removeOpenGroup(for: thread.uniqueId!, using: transaction)
         
         // Only remove the open group public key if the user isn't in any other rooms 
         if openGroups.count <= 1 {
@@ -106,6 +105,21 @@ public final class OpenGroupManager: NSObject {
     }
     
     // MARK: - Response Processing
+    
+    internal static func handleCapabilities(
+        _ capabilities: OpenGroupAPI.Capabilities,
+        on server: String,
+        using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
+    ) {
+        dependencies.storage.write { transaction in
+            let updatedServer: OpenGroupAPI.Server = OpenGroupAPI.Server(
+                name: server,
+                capabilities: capabilities
+            )
+            
+            dependencies.storage.storeOpenGroupServer(updatedServer, using: transaction)
+        }
+    }
     
     internal static func handleMessages(
         _ messages: [OpenGroupAPI.Message],
@@ -154,7 +168,7 @@ public final class OpenGroupManager: NSObject {
             // Handle any deletions that are needed
             guard !messageServerIDsToRemove.isEmpty else { return }
             guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else { return }
-            guard let threadID = dependencies.storage.v2GetThreadID(for: openGroupID), let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
+            guard let threadID = dependencies.storage.getThreadID(for: openGroupID), let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
                 return
             }
             
@@ -174,7 +188,6 @@ public final class OpenGroupManager: NSObject {
         publicKey: String,
         for roomToken: String,
         on server: String,
-        isBackgroundPoll: Bool,
         using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies(),
         completion: (() -> ())? = nil
     ) {
@@ -183,7 +196,6 @@ public final class OpenGroupManager: NSObject {
             publicKey: publicKey,
             for: roomToken,
             on: server,
-            isBackgroundPoll: isBackgroundPoll,
             using: dependencies,
             completion: completion
         )
@@ -194,7 +206,6 @@ public final class OpenGroupManager: NSObject {
         publicKey maybePublicKey: String?,
         for roomToken: String,
         on server: String,
-        isBackgroundPoll: Bool,
         using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies(),
         completion: (() -> ())? = nil
     ) {
@@ -215,8 +226,8 @@ public final class OpenGroupManager: NSObject {
             with: { transaction in
                 let transaction = transaction as! YapDatabaseReadWriteTransaction
                 let thread = TSGroupThread.getOrCreateThread(with: initialModel, transaction: transaction)
-                let existingOpenGroup: OpenGroupV2? = thread.uniqueId.flatMap { uniqueId -> OpenGroupV2? in
-                    dependencies.storage.getV2OpenGroup(for: uniqueId)
+                let existingOpenGroup: OpenGroup? = thread.uniqueId.flatMap { uniqueId -> OpenGroup? in
+                    dependencies.storage.getOpenGroup(for: uniqueId)
                 }
 
                 guard let threadUniqueId: String = thread.uniqueId else { return }
@@ -230,7 +241,7 @@ public final class OpenGroupManager: NSObject {
                     groupType: .openGroup,
                     adminIds: (pollInfo.admins ?? thread.groupModel.groupAdminIds)
                 )
-                let updatedOpenGroup: OpenGroupV2 = OpenGroupV2(
+                let updatedOpenGroup: OpenGroup = OpenGroup(
                     server: server,
                     room: (pollInfo.token ?? roomToken),
                     publicKey: publicKey,
@@ -239,7 +250,7 @@ public final class OpenGroupManager: NSObject {
                     imageID: (pollInfo.imageId.map { "\($0)" } ?? existingOpenGroup?.imageID),
                     infoUpdates: ((pollInfo.infoUpdates ?? existingOpenGroup?.infoUpdates) ?? 0)
                 )
-                let existingUserCount: UInt64? = dependencies.storage.getUserCount(forV2OpenGroupWithID: updatedOpenGroup.id)
+                let existingUserCount: UInt64? = dependencies.storage.getUserCount(forOpenGroupWithID: updatedOpenGroup.id)
                 
                 // - Thread changes
                 thread.shouldBeVisible = true
@@ -247,12 +258,12 @@ public final class OpenGroupManager: NSObject {
                 thread.save(with: transaction)
                 
                 // - Open Group changes
-                dependencies.storage.setV2OpenGroup(updatedOpenGroup, for: threadUniqueId, using: transaction)
+                dependencies.storage.setOpenGroup(updatedOpenGroup, for: threadUniqueId, using: transaction)
                 
                 // - User Count
                 dependencies.storage.setUserCount(
                     to: ((pollInfo.activeUsers.map { UInt64($0) } ?? existingUserCount) ?? 0),
-                    forV2OpenGroupWithID: updatedOpenGroup.id,
+                    forOpenGroupWithID: updatedOpenGroup.id,
                     using: transaction
                 )
             },

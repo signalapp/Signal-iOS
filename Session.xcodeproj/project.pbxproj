@@ -807,7 +807,7 @@
 		FDC4384827B47F4D00C60D73 /* LegacyRoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384427B47F4D00C60D73 /* LegacyRoomInfo.swift */; };
 		FDC4384927B47F4D00C60D73 /* LegacyCompactPollResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384527B47F4D00C60D73 /* LegacyCompactPollResponse.swift */; };
 		FDC4384A27B47F4D00C60D73 /* LegacyDeletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384627B47F4D00C60D73 /* LegacyDeletion.swift */; };
-		FDC4384C27B47F7700C60D73 /* OpenGroupV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384B27B47F7700C60D73 /* OpenGroupV2.swift */; };
+		FDC4384C27B47F7700C60D73 /* OpenGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384B27B47F7700C60D73 /* OpenGroup.swift */; };
 		FDC4384F27B4804F00C60D73 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384E27B4804F00C60D73 /* Header.swift */; };
 		FDC4385127B4807400C60D73 /* QueryParam.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385027B4807400C60D73 /* QueryParam.swift */; };
 		FDC4385727B484B700C60D73 /* LegacyFileUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385627B484B700C60D73 /* LegacyFileUploadResponse.swift */; };
@@ -848,6 +848,7 @@
 		FDC438C927BB706500C60D73 /* SendDirectMessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438C827BB706500C60D73 /* SendDirectMessageRequest.swift */; };
 		FDC438CB27BB7DB100C60D73 /* UpdateMessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438CA27BB7DB100C60D73 /* UpdateMessageRequest.swift */; };
 		FDC438CD27BC641200C60D73 /* Set+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438CC27BC641200C60D73 /* Set+Utilities.swift */; };
+		FDC438CF27BCA45400C60D73 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438CE27BCA45400C60D73 /* Server.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1943,7 +1944,7 @@
 		FDC4384427B47F4D00C60D73 /* LegacyRoomInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyRoomInfo.swift; sourceTree = "<group>"; };
 		FDC4384527B47F4D00C60D73 /* LegacyCompactPollResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyCompactPollResponse.swift; sourceTree = "<group>"; };
 		FDC4384627B47F4D00C60D73 /* LegacyDeletion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyDeletion.swift; sourceTree = "<group>"; };
-		FDC4384B27B47F7700C60D73 /* OpenGroupV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroupV2.swift; sourceTree = "<group>"; };
+		FDC4384B27B47F7700C60D73 /* OpenGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroup.swift; sourceTree = "<group>"; };
 		FDC4384E27B4804F00C60D73 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		FDC4385027B4807400C60D73 /* QueryParam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryParam.swift; sourceTree = "<group>"; };
 		FDC4385627B484B700C60D73 /* LegacyFileUploadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyFileUploadResponse.swift; sourceTree = "<group>"; };
@@ -1982,6 +1983,7 @@
 		FDC438C827BB706500C60D73 /* SendDirectMessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendDirectMessageRequest.swift; sourceTree = "<group>"; };
 		FDC438CA27BB7DB100C60D73 /* UpdateMessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateMessageRequest.swift; sourceTree = "<group>"; };
 		FDC438CC27BC641200C60D73 /* Set+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+Utilities.swift"; sourceTree = "<group>"; };
+		FDC438CE27BCA45400C60D73 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -3840,7 +3842,8 @@
 		FDC4381827B34EAD00C60D73 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				FDC4384B27B47F7700C60D73 /* OpenGroupV2.swift */,
+				FDC438CE27BCA45400C60D73 /* Server.swift */,
+				FDC4384B27B47F7700C60D73 /* OpenGroup.swift */,
 				FDC4386A27B4E88F00C60D73 /* BatchRequestInfo.swift */,
 				FDC4386627B4E10E00C60D73 /* Capabilities.swift */,
 				FDC4385C27B4C18900C60D73 /* Room.swift */,
@@ -5129,6 +5132,7 @@
 				C32C5CA4256DD1DC003C73A2 /* TSAccountManager.m in Sources */,
 				C352A3892557876500338F3E /* JobQueue.swift in Sources */,
 				C3BBE0B52554F0E10050F1E3 /* ProofOfWork.swift in Sources */,
+				FDC438CF27BCA45400C60D73 /* Server.swift in Sources */,
 				FDC4386727B4E10E00C60D73 /* Capabilities.swift in Sources */,
 				C32C59C1256DB41F003C73A2 /* TSGroupThread.m in Sources */,
 				C3A3A08F256E1728004D228D /* FullTextSearchFinder.swift in Sources */,
@@ -5211,7 +5215,7 @@
 				C3DB66CC260AF1F3001EFC55 /* OpenGroupAPI+ObjC.swift in Sources */,
 				C32C5BEF256DC8EE003C73A2 /* OWSDisappearingMessagesJob.m in Sources */,
 				C34A977425A3E34A00852C71 /* ClosedGroupControlMessage.swift in Sources */,
-				FDC4384C27B47F7700C60D73 /* OpenGroupV2.swift in Sources */,
+				FDC4384C27B47F7700C60D73 /* OpenGroup.swift in Sources */,
 				FDC4382627B37F6900C60D73 /* LegacyDeletedMessagesResponse.swift in Sources */,
 				B88FA7B826045D100049422F /* OpenGroupAPI.swift in Sources */,
 				C32C5E97256DE0CB003C73A2 /* OWSPrimaryStorage.m in Sources */,

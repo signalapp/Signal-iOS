@@ -699,8 +699,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let threadID = thread.uniqueId!
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             let publicKey = message.authorId
-            guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) else { return }
-            OpenGroupAPI.legacyBan(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
+            guard let openGroup = Storage.shared.getOpenGroup(for: threadID) else { return }
+            OpenGroupAPI.legacyBan(publicKey, from: openGroup.room, on: openGroup.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
@@ -713,8 +713,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let threadID = thread.uniqueId!
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
             let publicKey = message.authorId
-            guard let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID) else { return }
-            OpenGroupAPI.legacyBanAndDeleteAllMessages(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
+            guard let openGroup = Storage.shared.getOpenGroup(for: threadID) else { return }
+            OpenGroupAPI.legacyBanAndDeleteAllMessages(publicKey, from: openGroup.room, on: openGroup.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)

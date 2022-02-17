@@ -43,16 +43,16 @@ extension MessageSender {
         let attachmentsToUpload = attachments.filter { !$0.isUploaded }
         let attachmentUploadPromises: [Promise<Void>] = attachmentsToUpload.map { stream in
             let storage = SNMessagingKitConfiguration.shared.storage
-            if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
+            if let openGroup = storage.getOpenGroup(for: thread.uniqueId!) {
                 let (promise, seal) = Promise<Void>.pending()
                 AttachmentUploadJob.upload(
                     stream,
                     using: { data in
-                        // TODO: Update to non-legacy version
+                        // TODO: Update to non-legacy version.
                         OpenGroupAPI.legacyUpload(
                             data,
-                            to: v2OpenGroup.room,
-                            on: v2OpenGroup.server
+                            to: openGroup.room,
+                            on: openGroup.server
                         )
                     },
                     encrypt: false,
@@ -90,7 +90,7 @@ extension MessageSender {
         let attachmentsToUpload = attachments.filter { !$0.isUploaded }
         let attachmentUploadPromises: [Promise<Void>] = attachmentsToUpload.map { stream in
             let storage = SNMessagingKitConfiguration.shared.storage
-            if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
+            if let openGroup = storage.getOpenGroup(for: thread.uniqueId!) {
                 let (promise, seal) = Promise<Void>.pending()
                 AttachmentUploadJob.upload(
                     stream,
@@ -98,8 +98,8 @@ extension MessageSender {
                         // TODO: Update to non-legacy version
                         OpenGroupAPI.legacyUpload(
                             data,
-                            to: v2OpenGroup.room,
-                            on: v2OpenGroup.server
+                            to: openGroup.room,
+                            on: openGroup.server
                         )
                     },
                     encrypt: false,

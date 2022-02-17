@@ -39,8 +39,8 @@ extension ConfigurationMessage {
                         closedGroups.insert(closedGroup)
                         
                     case .openGroup:
-                        if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
-                            openGroups.insert("\(v2OpenGroup.server)/\(v2OpenGroup.room)?public_key=\(v2OpenGroup.publicKey)")
+                        if let openGroup = storage.getOpenGroup(for: thread.uniqueId!) {
+                            openGroups.insert("\(openGroup.server)/\(openGroup.room)?public_key=\(openGroup.publicKey)")
                         }
                         
                     default: break

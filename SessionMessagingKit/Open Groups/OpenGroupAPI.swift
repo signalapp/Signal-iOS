@@ -62,8 +62,8 @@ public final class OpenGroupAPI: NSObject {
             )
         ]
         .appending(
-            dependencies.storage.getAllV2OpenGroups().values
-                .filter { $0.server == server.lowercased() }    // Note: The `OpenGroupV2` type converts to lowercase in init
+            dependencies.storage.getAllOpenGroups().values
+                .filter { $0.server == server.lowercased() }    // Note: The `OpenGroup` type converts to lowercase in init
                 .flatMap { openGroup -> [BatchRequestInfo] in
                     let lastSeqNo: Int64? = dependencies.storage.getLastMessageServerID(for: openGroup.room, on: server)
                     let targetSeqNo: Int64 = (lastSeqNo ?? 0)
@@ -219,11 +219,9 @@ public final class OpenGroupAPI: NSObject {
         on server: String,
         whisperTo: String?,
         whisperMods: Bool,
-        with serverPublicKey: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Message)> {
-        // TODO: Change this to use '.blinded' once it's working.
-        guard let signedMessage: (data: Data, signature: Data) = sign(message: plaintext, for: .standard, with: serverPublicKey) else {
+        guard let signedMessage: (data: Data, signature: Data) = sign(message: plaintext, to: roomToken, on: server, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
@@ -265,11 +263,9 @@ public final class OpenGroupAPI: NSObject {
         plaintext: Data,
         in roomToken: String,
         on server: String,
-        with serverPublicKey: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        // TODO: Change this to use '.blinded' once it's working.
-        guard let signedMessage: (data: Data, signature: Data) = sign(message: plaintext, for: .standard, with: serverPublicKey) else {
+        guard let signedMessage: (data: Data, signature: Data) = sign(message: plaintext, to: roomToken, on: server, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
@@ -453,15 +449,14 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
     }
     
-    public static func sendMessageRequest(_ plaintext: Data, to sessionId: String, on server: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
-        // TODO: Change this to use '.blinded' once it's working
-        guard let signedMessage: (data: Data, signature: Data) = sign(message: plaintext, for: .standard, with: serverPublicKey) else {
+    public static func sendMessageRequest(_ plaintext: Data, to blindedSessionId: String, on server: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
+        guard let signedMessage: Data = sign(message: plaintext, to: blindedSessionId, on: server, with: serverPublicKey, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
         let requestBody: SendDirectMessageRequest = SendDirectMessageRequest(
-            data: signedMessage.data,
-            signature: signedMessage.signature
+            data: signedMessage
+//            signature: signedMessage.signature    // TODO: Confirm whether this needs a signature??
         )
         
         guard let body: Data = try? JSONEncoder().encode(requestBody) else {
@@ -471,7 +466,7 @@ public final class OpenGroupAPI: NSObject {
         let request: Request = Request(
             method: .post,
             server: server,
-            endpoint: .inboxFor(sessionId: sessionId),
+            endpoint: .inboxFor(sessionId: blindedSessionId),
             body: body
         )
         
@@ -591,12 +586,31 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Authentication
     
-    public static func sign(message: Data, for idType: IdPrefix, with publicKey: String, using dependencies: Dependencies = Dependencies()) -> (data: Data, signature: Data)? {
-        guard let userKeyPair: ECKeyPair = dependencies.storage.getUserKeyPair() else {
-            return nil
+    /// Sign a message to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
+    public static func sign(message: Data, to roomToken: String, on serverName: String, using dependencies: Dependencies = Dependencies()) -> (data: Data, signature: Data)? {
+        let server: Server? = dependencies.storage.getOpenGroupServer(name: serverName)
+        let targetKeyPair: ECKeyPair
+
+        // Determine if we want to sign using standard or blinded keys based on the server capabilities (assume
+        // unblinded if we have none)
+        // TODO: Remove this (blinding will be required)
+        if server?.capabilities.capabilities.contains(.blinding) == true {
+            // TODO: Validate this 'openGroupId' is correct for the 'getOpenGroup' call
+            let openGroupId: String = "\(serverName).\(roomToken)"
+            
+            // TODO: Validate this is the correct logic (Most likely not)
+            guard let openGroup: OpenGroup = Storage.shared.getOpenGroup(for: openGroupId) else { return nil }
+            guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
+            guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroup.publicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
+                return nil
+            }
+
+            targetKeyPair = blindedKeyPair
         }
-        guard let targetKeyPair: ECKeyPair = try? userKeyPair.convert(to: idType, with: publicKey) else {
-            return nil
+        else {
+            guard let userKeyPair: ECKeyPair = dependencies.storage.getUserKeyPair() else { return nil }
+
+            targetKeyPair = userKeyPair
         }
         
         guard let signature = try? Ed25519.sign(message, with: targetKeyPair) else {
@@ -607,7 +621,43 @@ public final class OpenGroupAPI: NSObject {
         return (message, signature)
     }
     
-    private static func sign(_ request: URLRequest, with publicKey: String, using dependencies: Dependencies = Dependencies()) -> URLRequest? {
+    /// Sign a blinded message request to be sent to a users inbox via SOGS v4
+    private static func sign(message: Data, to blindedSessionId: String, on serverName: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> Data? {
+        guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
+        guard let blindedKeyPair: BlindedECKeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
+            return nil
+        }
+        guard let blindedRecipientPublicKey: Data = String(blindedSessionId.suffix(from: blindedSessionId.index(blindedSessionId.startIndex, offsetBy: IdPrefix.blinded.rawValue.count))).dataFromHex() else {
+            return nil
+        }
+        
+        /// Generate the sharedSecret by "a kB || kA || kB" where
+        /// a, A are the users private and public keys respectively,
+        /// kA is the users blinded public key
+        /// kB is the recipients blinded public key
+        let maybeSharedSecret: Data? = dependencies.sodium
+            .sharedEdSecret(userEdKeyPair.secretKey, blindedRecipientPublicKey.bytes)?
+            .appending(blindedKeyPair.publicKey.bytes)
+            .appending(blindedRecipientPublicKey.bytes)
+        
+        guard let sharedSecret: Data = maybeSharedSecret else { return nil }
+        guard let intermediateHash: Bytes = dependencies.genericHash.hash(message: sharedSecret.bytes) else { return nil }
+        
+        /// Generate the inner message by "message || A" where
+        /// A is the sender's ed25519 master pubkey (**not** kA blinded pubkey)
+        let innerMessage: Bytes = (message.bytes + userEdKeyPair.publicKey)
+        guard let (ciphertext, nonce) = dependencies.aeadXChaCha20Poly1305Ietf.encrypt(message: innerMessage, secretKey: intermediateHash) else {
+            return nil
+        }
+        
+        /// Generate the final data by "b'\x00' + ciphertext + nonce"
+        let finalData: Bytes = [0] + ciphertext + nonce
+        
+        return Data(finalData)
+    }
+    
+    /// Sign a request to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
+    private static func sign(_ request: URLRequest, for serverName: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> URLRequest? {
         guard let url: URL = request.url else { return nil }
         
         var updatedRequest: URLRequest = request
@@ -616,55 +666,78 @@ public final class OpenGroupAPI: NSObject {
         let method: String = (request.httpMethod ?? "GET")
         let timestamp: Int = Int(floor(dependencies.date.timeIntervalSince1970))
         let nonce: Data = Data(dependencies.nonceGenerator.nonce())
+        let server: Server? = dependencies.storage.getOpenGroupServer(name: serverName)
+        let userPublicKeyHex: String
+        let signatureBytes: Bytes
         
-        guard let publicKeyData: Data = publicKey.dataFromHex() else { return nil }
-        guard let userKeyPair: ECKeyPair = dependencies.storage.getUserKeyPair() else {
-            return nil
-        }
-//        guard let blindedKeyPair: ECKeyPair = try? userKeyPair.convert(to: .blinded, with: publicKey) else {
-//            return nil
-//        }
-        // TODO: Change this back once you figure out why it's busted.
-        let blindedKeyPair: ECKeyPair = userKeyPair
+        guard let serverPublicKeyData: Data = serverPublicKey.dataFromHex() else { return nil }
+        guard let timestampBytes: Bytes = "\(timestamp)".data(using: .ascii)?.bytes else { return nil }
+        guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
         
-        /// Generate the sharedSecret by "aB || A || B" where
-        /// a, A are the users private and public keys respectively,
-        /// B is the SOGS public key
-        let maybeSharedSecret: Data? = dependencies.sodium.sharedSecret(blindedKeyPair.privateKey.bytes, publicKeyData.bytes)?
-            .appending(blindedKeyPair.publicKey)
-            .appending(publicKeyData.bytes)
+        /// Get a hash of any body content
+        let bodyHash: Bytes? = {
+            // Note: We need the `!body.isEmpty` check because of the default `Data()` value when trying to
+            // init data from the httpBodyStream
+            guard let body: Data = (request.httpBody ?? request.httpBodyStream.map { ((try? Data(from: $0)) ?? Data()) }), !body.isEmpty else {
+                return nil
+            }
+            
+            return dependencies.genericHash.hash(message: body.bytes, outputLength: 64)
+        }()
         
-        /// Generate the hash to be sent along with the request
-        ///      intermediateHash = Blake2B(sharedSecret, size=42, salt=noncebytes, person='sogs.shared_keys')
-        ///      secretHash = Blake2B(
-        ///          Method || Path || Timestamp || Body,
-        ///          size=42,
-        ///          key=r,
-        ///          salt=noncebytes,
-        ///          person='sogs.auth_header'
-        ///      )
-        let secretHashMessage: Bytes = method.bytes
+        /// Generate the signature message
+        /// "ServerPubkey || Nonce || Timestamp || Method || Path || Blake2b Hash(Body)
+        ///     `ServerPubkey`
+        ///     `Nonce`
+        ///     `Timestamp` is the bytes of an ascii decimal string
+        ///     `Method`
+        ///     `Path`
+        ///     `Body` is a Blake2b hash of the data (if there is a body)
+        let signatureMessageBytes: Bytes = serverPublicKeyData.bytes
+            .appending(nonce.bytes)
+            .appending(timestampBytes)
+            .appending(method.bytes)
             .appending(path.bytes)
-            .appending("\(timestamp)".bytes)
-            .appending(request.httpBody?.bytes ?? [])   // TODO: Might need to do the 'httpBodyStream' as well???.
-        print("RAWR 1 \(blindedKeyPair.hexEncodedPublicKey)")
-        print("RAWR 2 \(maybeSharedSecret?.hexadecimalString)")
-        print("RAWR '\(String(describing: String(data: Data(secretHashMessage), encoding: .utf8)))'")
-        guard let sharedSecret: Data = maybeSharedSecret else { return nil }
-        guard let intermediateHash: Bytes = dependencies.genericHash.hashSaltPersonal(message: sharedSecret.bytes, outputLength: 42, key: nil, salt: nonce.bytes, personal: Personalization.sharedKeys.bytes) else {
-            return nil
+            .appending(bodyHash ?? [])
+        
+        // Determine if we want to sign using standard or blinded keys based on the server capabilities (assume
+        // unblinded if we have none)
+        // TODO: Remove this (blinding will be required)
+        if server?.capabilities.capabilities.contains(.blinding) == true {
+            // TODO: More testing of this blinded id signing (though it seems to be working!!!)
+            guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
+                return nil
+            }
+            
+            userPublicKeyHex = IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey)
+            
+            guard let signatureResult: Bytes = Sodium().sogsSignature(message: signatureMessageBytes, secretKey: userEdKeyPair.secretKey, blindedSecretKey: blindedKeyPair.secretKey, blindedPublicKey: blindedKeyPair.publicKey) else {
+                return nil
+            }
+            
+            signatureBytes = signatureResult
         }
-        guard let secretHash: Bytes = dependencies.genericHash.hashSaltPersonal(message: secretHashMessage, outputLength: 42, key: intermediateHash, salt: nonce.bytes, personal: Personalization.authHeader.bytes) else {
-            return nil
+        else {
+            userPublicKeyHex = IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey)
+            
+            // TODO: shift this to dependencies
+            guard let signatureResult: Bytes = Sodium().sign.signature(message: signatureMessageBytes, secretKey: userEdKeyPair.secretKey) else {
+                return nil
+            }
+            
+            signatureBytes = signatureResult
         }
-        print("RAWR3 '\(intermediateHash.toHexString())'")  // This is the one we can compare
-        print("RAWR4 '\(secretHash.toHexString())'")
+        
+        print("RAWR X-SOGS-Pubkey: \(userPublicKeyHex)")
+        print("RAWR X-SOGS-Timestamp: \(timestamp)")
+        print("RAWR X-SOGS-Nonce: \(nonce.base64EncodedString())")
+        print("RAWR X-SOGS-Signature: \(signatureBytes.toBase64())")
         updatedRequest.allHTTPHeaderFields = (request.allHTTPHeaderFields ?? [:])
             .updated(with: [
-                Header.sogsPubKey.rawValue: blindedKeyPair.hexEncodedPublicKey,
+                Header.sogsPubKey.rawValue: userPublicKeyHex,
                 Header.sogsTimestamp.rawValue: "\(timestamp)",
                 Header.sogsNonce.rawValue: nonce.base64EncodedString(),
-                Header.sogsHash.rawValue: secretHash.toBase64()
+                Header.sogsSignature.rawValue: signatureBytes.toBase64()
             ])
         
         return updatedRequest
@@ -683,13 +756,13 @@ public final class OpenGroupAPI: NSObject {
         urlRequest.httpBody = request.body
         
         if request.useOnionRouting {
-            guard let publicKey = dependencies.storage.getOpenGroupPublicKey(for: request.server) else {
+            guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else {
                 return Promise(error: Error.noPublicKey)
             }
             
             if request.isAuthRequired {
                 // Attempt to sign the request with the new auth
-                guard let signedRequest: URLRequest = sign(urlRequest, with: publicKey, using: dependencies) else {
+                guard let signedRequest: URLRequest = sign(urlRequest, for: request.server, with: publicKey, using: dependencies) else {
                     return Promise(error: Error.signingFailed)
                 }
                 
@@ -826,7 +899,7 @@ public final class OpenGroupAPI: NSObject {
     @available(*, deprecated, message: "Use poll or batch instead")
     public static func legacyCompactPoll(_ server: String) -> Promise<LegacyCompactPollResponse> {
         let storage: SessionMessagingKitStorageProtocol = SNMessagingKitConfiguration.shared.storage
-        let rooms: [String] = storage.getAllV2OpenGroups().values
+        let rooms: [String] = storage.getAllOpenGroups().values
             .filter { $0.server == server }
             .map { $0.room }
         var getAuthTokenPromises: [String: Promise<String>] = [:]
@@ -1037,7 +1110,7 @@ public final class OpenGroupAPI: NSObject {
                 
                 let storage = SNMessagingKitConfiguration.shared.storage
                 storage.write { transaction in
-                    storage.setUserCount(to: response.memberCount, forV2OpenGroupWithID: "\(server).\(room)", using: transaction)
+                    storage.setUserCount(to: response.memberCount, forOpenGroupWithID: "\(server).\(room)", using: transaction)
                 }
                 
                 return response.memberCount

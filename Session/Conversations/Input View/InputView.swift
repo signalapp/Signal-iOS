@@ -319,9 +319,9 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     func showMentionsUI(for candidates: [Mention], in thread: TSThread) {
-        if let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
-            mentionsView.openGroupServer = openGroupV2.server
-            mentionsView.openGroupRoom = openGroupV2.room
+        if let openGroup = Storage.shared.getOpenGroup(for: thread.uniqueId!) {
+            mentionsView.openGroupServer = openGroup.server
+            mentionsView.openGroupRoom = openGroup.room
         }
         mentionsView.candidates = candidates
         let mentionCellHeight = Values.smallProfilePictureSize + 2 * Values.smallSpacing

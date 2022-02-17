@@ -20,9 +20,3 @@ public extension ECKeyPair {
         return true
     }
 }
-
-public extension BlindedECKeyPair {
-    @objc override var hexEncodedPublicKey: String {
-        return IdPrefix.blinded.rawValue + publicKey.map { String(format: "%02hhx", $0) }.joined()
-    }
-}

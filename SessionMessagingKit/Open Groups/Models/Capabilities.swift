@@ -4,12 +4,13 @@ import Foundation
 
 extension OpenGroupAPI {
     public struct Capabilities: Codable {
-        public enum Capability: CaseIterable, Codable {
+        public enum Capability: Equatable, CaseIterable, Codable {
             public static var allCases: [Capability] {
-                [.pysogs]
+                [.sogs, .blinding]
             }
             
-            case pysogs
+            case sogs
+            case blinding   // TODO: Get official name
             
             /// Fallback case if the capability isn't supported by this version of the app
             case unsupported(String)
@@ -25,9 +26,7 @@ extension OpenGroupAPI {
             
             // MARK: - Codable
             
-            public init(from decoder: Decoder) throws {
-                let container: SingleValueDecodingContainer = try decoder.singleValueContainer()
-                let valueString: String = try container.decode(String.self)
+            public init(from valueString: String) {
                 let maybeValue: Capability? = Capability.allCases.first { $0.rawValue == valueString }
 
                 self = (maybeValue ?? .unsupported(valueString))
@@ -36,5 +35,16 @@ extension OpenGroupAPI {
         
         public let capabilities: [Capability]
         public let missing: [Capability]?
+    }
+}
+
+extension OpenGroupAPI.Capabilities.Capability {
+    // MARK: - Codable
+    
+    public init(from decoder: Decoder) throws {
+        let container: SingleValueDecodingContainer = try decoder.singleValueContainer()
+        let valueString: String = try container.decode(String.self)
+        
+        self = OpenGroupAPI.Capabilities.Capability(from: valueString)
     }
 }

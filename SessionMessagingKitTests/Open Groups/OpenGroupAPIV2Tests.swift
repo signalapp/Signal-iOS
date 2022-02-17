@@ -80,8 +80,8 @@ class OpenGroupAPITests: XCTestCase {
             date: Date(timeIntervalSince1970: 1234567890)
         )
         
-        testStorage.mockData[.allV2OpenGroups] = [
-            "0": OpenGroupV2(
+        testStorage.mockData[.allOpenGroups] = [
+            "0": OpenGroup(
                 server: "testServer",
                 room: "testRoom",
                 publicKey: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d",
@@ -446,9 +446,9 @@ class OpenGroupAPITests: XCTestCase {
         expect(requestData?.publicKey).to(equal("7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
         expect(requestData?.headers).to(haveCount(4))
         expect(requestData?.headers[Header.sogsPubKey.rawValue]).to(equal("057aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
-        expect(requestData?.headers[Header.sogsNonce.rawValue]).to(equal("pK6YRtQApl4NhECGizF0Cg=="))
-        expect(requestData?.headers[Header.sogsHash.rawValue]).to(equal("fxqLy5ZDWCsLQpwLw0Dax+4xe7cG2vPRk1NlHORIm0DPd3o9UA24KLZY"))
         expect(requestData?.headers[Header.sogsTimestamp.rawValue]).to(equal("1234567890"))
+        expect(requestData?.headers[Header.sogsNonce.rawValue]).to(equal("pK6YRtQApl4NhECGizF0Cg=="))
+        expect(requestData?.headers[Header.sogsSignature.rawValue]).to(equal("fxqLy5ZDWCsLQpwLw0Dax+4xe7cG2vPRk1NlHORIm0DPd3o9UA24KLZY"))
     }
     
     func testItFailsToSignIfTheServerPublicKeyIsInvalid() throws {
@@ -495,6 +495,11 @@ class OpenGroupAPITests: XCTestCase {
         class InvalidSodium: SodiumType {
             func getGenericHash() -> GenericHashType { return Sodium().genericHash }
             func sharedSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Sodium.SharedSecret? { return nil }
+            func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Sodium.SharedSecret? { return nil }
+            func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return Sodium().aead.xchacha20poly1305ietf }
+            func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
+                return nil
+            }
         }
         
         dependencies = dependencies.with(sodium: InvalidSodium())
@@ -518,6 +523,7 @@ class OpenGroupAPITests: XCTestCase {
     
     func testItFailsToSignIfTheIntermediateHashDoesNotGetGenerated() throws {
         class InvalidGenericHash: GenericHashType {
+            func hash(message: Bytes, key: Bytes?) -> Bytes? { return nil }
             func hashSaltPersonal(message: Bytes, outputLength: Int, key: Bytes?, salt: Bytes, personal: Bytes) -> Bytes? {
                 return nil
             }
@@ -546,6 +552,7 @@ class OpenGroupAPITests: XCTestCase {
         class InvalidSecondGenericHash: GenericHashType {
             static var didSucceedOnce: Bool = false
             
+            func hash(message: Bytes, key: Bytes?) -> Bytes? { return nil }
             func hashSaltPersonal(message: Bytes, outputLength: Int, key: Bytes?, salt: Bytes, personal: Bytes) -> Bytes? {
                 if !InvalidSecondGenericHash.didSucceedOnce {
                     InvalidSecondGenericHash.didSucceedOnce = true

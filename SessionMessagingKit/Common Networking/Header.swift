@@ -12,7 +12,7 @@ enum Header: String {
     case sogsPubKey = "X-SOGS-Pubkey"
     case sogsNonce = "X-SOGS-Nonce"
     case sogsTimestamp = "X-SOGS-Timestamp"
-    case sogsHash = "X-SOGS-Hash"
+    case sogsSignature = "X-SOGS-Signature"
 }
 
 // MARK: - Convenience

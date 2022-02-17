@@ -218,8 +218,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             profilePictureView.update(for: senderSessionID)
         }
         if let senderSessionID = senderSessionID, message.isOpenGroupMessage {
-            if let openGroupV2 = Storage.shared.getV2OpenGroup(for: message.uniqueThreadId) {
-                let isUserModerator = OpenGroupManager.isUserModerator(senderSessionID, for: openGroupV2.room, on: openGroupV2.server)
+            if let openGroup = Storage.shared.getOpenGroup(for: message.uniqueThreadId) {
+                let isUserModerator = OpenGroupManager.isUserModerator(senderSessionID, for: openGroup.room, on: openGroup.server)
                 moderatorIconImageView.isHidden = !isUserModerator || profilePictureView.isHidden
             } else {
                 moderatorIconImageView.isHidden = true

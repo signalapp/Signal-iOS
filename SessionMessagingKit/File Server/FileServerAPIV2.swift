@@ -96,7 +96,11 @@ public final class FileServerAPIV2 : NSObject {
         
         // TODO: Upgrade this to use the V4 onion requests once supported.
         return OnionRequestAPI.sendOnionRequest(urlRequest, to: server, using: .v3, with: serverPublicKey)
-            .map2 { json in try JSONSerialization.data(withJSONObject: json, options: []) }
+            .map2 { _, response in
+                guard let response: Data = response else { throw Error.parsingFailed }
+                
+                return response
+            }
     }
     
     // MARK: File Storage
