@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalClient
-import Starscream
 
 public enum CDSHResult {
     case completed
@@ -157,8 +156,8 @@ public class CDSHWebSocket: Dependencies, SSKWebSocketDelegate {
         Logger.info("Socket did disconnect with error: \(String(describing: error))")
 
         let resultCode: CDSHResult
-        if let underlyingError = (error as? StarscreamError)?.underlyingError {
-            switch underlyingError.code {
+        if let error = error {
+            switch webSocketFactory.statusCode(forError: error) {
             case 1000: resultCode = .completed
             case 4003: resultCode = .invalidArgument
             case 4008: resultCode = .rateLimited

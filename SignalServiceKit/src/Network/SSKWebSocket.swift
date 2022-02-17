@@ -131,7 +131,12 @@ public class WebSocketFactoryNative: NSObject, WebSocketFactory {
     }
 
     public func statusCode(forError error: Error) -> Int {
-        error.httpStatusCode ?? 0
+        switch error {
+        case SSKWebSocketNativeError.remoteClosed(let statusCode, _):
+            return statusCode
+        default:
+            return error.httpStatusCode ?? 0
+        }
     }
 }
 
@@ -191,12 +196,11 @@ public class SSKWebSocketNative: SSKWebSocket {
             self.callbackQueue.async {
                 self.delegate?.websocketDidConnect(socket: self)
             }
-        }, didCloseBlock: { [weak self] closeCode, _ in
+        }, didCloseBlock: { [weak self] closeCode, reason in
             guard let self = self else { return }
             self.isConnected.set(false)
             self.webSocketTask.set(nil)
-
-            self.reportError(OWSGenericError("WebSocket did close with code \(closeCode), [\(self.id)]"))
+            self.reportError(SSKWebSocketNativeError.remoteClosed(closeCode.rawValue, reason))
         })
         webSocketTask.set(task)
         task.resume()
@@ -273,6 +277,17 @@ public class SSKWebSocketNative: SSKWebSocket {
                let delegate = self.delegate {
                 delegate.websocketDidDisconnectOrFail(socket: self, error: error)
             }
+        }
+    }
+}
+
+public enum SSKWebSocketNativeError: Error {
+    case remoteClosed(Int, Data?)
+
+    var description: String {
+        switch self {
+        case .remoteClosed(let code, _):
+            return "WebSocket remotely closed with code \(code)"
         }
     }
 }

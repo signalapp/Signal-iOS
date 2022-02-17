@@ -23,10 +23,14 @@ public class WebSocketFactoryHybrid: NSObject, WebSocketFactory {
     }
 
     public func statusCode(forError error: Error) -> Int {
-        if let starscreamError = error as? StarscreamError {
-            return starscreamError.code
+        switch error {
+        case let error as StarscreamError:
+            return error.code
+        case SSKWebSocketNativeError.remoteClosed(let statusCode, _):
+            return statusCode
+        default:
+            return error.httpStatusCode ?? 0
         }
-        return error.httpStatusCode ?? 0
     }
 }
 

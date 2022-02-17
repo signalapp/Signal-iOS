@@ -84,7 +84,7 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
             case .unknown(let error):
                 throw ContactDiscoveryError(
                     kind: .generic,
-                    debugDescription: "Unknown error: \(error?.userErrorDescription ?? "nil")",
+                    debugDescription: "Unknown error: \((error as NSError?).debugDescription ?? "nil")",
                     retryable: false,
                     retryAfterDate: self.parseRetryAfterDate())
             }
@@ -154,7 +154,7 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
         }
     }
 
-    private func parseTriple(_ bytes: Data) throws -> Triple? {
+    private func parseTriple(_ bytes: Data.SubSequence) throws -> Triple? {
         guard bytes.count == 40 else {
             owsFailDebug("Invalid triple bytes")
             return nil
@@ -162,8 +162,8 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
 
         switch format {
         case .v1:
-            let e164Buffer = bytes[0..<8]
-            let aciBuffer = bytes[24..<40]
+            let e164Buffer = bytes.prefix(8)
+            let aciBuffer = bytes.dropFirst(24).prefix(16)
 
             // Nil values indicate this wasn't found
             guard e164Buffer.contains(where: { $0 != 0 }) else { return nil }
