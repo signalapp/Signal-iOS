@@ -20,6 +20,7 @@ extension MessageReceiver {
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
+        
         var isMainAppAndActive = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
             isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
@@ -361,9 +362,10 @@ extension MessageReceiver {
         // version of the app and their message request approval state was set via a migration rather than
         // by using the approval process
         if !isGroup, let senderSessionId: String = message.sender {
-            updateContactApprovalStatusOfMeIfNeeded(
-                contactSessionId: senderSessionId,
-                didApproveMe: true,
+            updateContactApprovalStatusIfNeeded(
+                senderSessionId: senderSessionId,
+                threadId: message.threadID,
+                forceConfigSync: false,
                 using: transaction
             )
         }
@@ -748,21 +750,39 @@ extension MessageReceiver {
     
     // MARK: - Message Requests
     
-    private static func updateContactApprovalStatusOfMeIfNeeded(contactSessionId: String, didApproveMe: Bool, using transaction: Any) {
-        let userPublicKey = getUserHexEncodedPublicKey()
+    private static func updateContactApprovalStatusIfNeeded(
+        senderSessionId: String,
+        threadId: String?,
+        forceConfigSync: Bool,
+        using transaction: Any
+    ) {
+        let userPublicKey: String = getUserHexEncodedPublicKey()
         
-        // Only make changes if the contact isn't the current user, we can retrieve the contact and
-        // the 'didApproveMe' flag is currently false
-        guard contactSessionId != userPublicKey else { return }
-        guard let contact: Contact = Storage.shared.getContact(with: contactSessionId) else { return }
-        guard !contact.didApproveMe else { return }
+        // If the sender of the message was the current user
+        if senderSessionId == userPublicKey {
+            // Retrieve the contact for the thread the message was sent to (excluding 'NoteToSelf' threads) and if
+            // the contact isn't flagged as approved then do so
+            guard let threadId: String = threadId else { return }
+            guard let thread: TSContactThread = TSContactThread.fetch(uniqueId: threadId), !thread.isNoteToSelf() else { return }
+            guard let contact: Contact = Storage.shared.getContact(with: thread.contactSessionID()) else { return }
+            guard !contact.isApproved else { return }
+            
+            contact.isApproved = true
+            Storage.shared.setContact(contact, using: transaction)
+        }
+        else {
+            // The message was sent to the current user so flag their 'didApproveMe' as true (can't send a message to
+            // someone without approving them)
+            guard let contact: Contact = Storage.shared.getContact(with: senderSessionId) else { return }
+            guard !contact.didApproveMe else { return }
+            
+            contact.didApproveMe = true
+            Storage.shared.setContact(contact, using: transaction)
+        }
         
-        contact.didApproveMe = didApproveMe
-        Storage.shared.setContact(contact, using: transaction)
-        
-        // Need to force a config sync to ensure all devices know the contact approve
-        // communication with the user (Note: This logic should match the behaviour
-        // in AppDelegate.forceSyncConfigurationNowIfNeeded())
+        // Force a config sync to ensure all devices know the contact approval state if desired (Note: This logic
+        // should match the behaviour in AppDelegate.forceSyncConfigurationNowIfNeeded())
+        guard forceConfigSync else { return }
         guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
             return
         }
@@ -788,9 +808,10 @@ extension MessageReceiver {
             infoMessage.save(with: transaction)
         }
         
-        updateContactApprovalStatusOfMeIfNeeded(
-            contactSessionId: senderId,
-            didApproveMe: message.isApproved,
+        updateContactApprovalStatusIfNeeded(
+            senderSessionId: senderId,
+            threadId: nil,
+            forceConfigSync: true,
             using: transaction
         )
     }
