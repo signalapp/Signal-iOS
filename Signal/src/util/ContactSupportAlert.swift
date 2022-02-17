@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalServiceKit
 
 @objc
 public class ContactSupportAlert: NSObject {
@@ -112,9 +113,13 @@ extension Pastelog {
     class func uploadLog() -> Promise<URL> {
         return Promise { future in
             Pastelog.uploadLogs(success: future.resolve,
-                                failure: { localizedErrorDescription in
-                                    let error = ContactSupportError.pasteLogError(localizedDescription: localizedErrorDescription)
-                                    future.reject(error)
+                                failure: { localizedErrorDescription, logArchiveOrDirectoryPath in
+                // FIXME: Should we do something with the local log file?
+                if let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath {
+                    _ = OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+                }
+                let error = ContactSupportError.pasteLogError(localizedDescription: localizedErrorDescription)
+                future.reject(error)
             })
         }
     }
