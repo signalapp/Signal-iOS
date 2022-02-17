@@ -55,7 +55,9 @@ public final class Poller : NSObject {
             guard let strongSelf = self, strongSelf.isPolling else { return }
             Timer.scheduledTimer(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
                 guard let strongSelf = self else { return }
-                strongSelf.setUpPolling()
+                DispatchQueue.global().async {
+                    strongSelf.setUpPolling()
+                }
             }
         }
     }
