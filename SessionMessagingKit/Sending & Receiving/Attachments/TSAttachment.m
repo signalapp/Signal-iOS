@@ -3,6 +3,14 @@
 #import "TSAttachmentPointer.h"
 #import <SignalCoreKit/NSString+OWS.h>
 
+#if TARGET_OS_IPHONE
+#import <MobileCoreServices/MobileCoreServices.h>
+
+#else
+#import <CoreServices/CoreServices.h>
+
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 NSUInteger const TSAttachmentSchemaVersion = 4;
@@ -227,6 +235,14 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (BOOL)isVisualMedia
 {
     return [MIMETypeUtil isVisualMedia:self.contentType];
+}
+
+- (BOOL)isText {
+    return [MIMETypeUtil isText:self.contentType];
+}
+
+- (BOOL)isMicrosoftDoc {
+    return [MIMETypeUtil isMicrosoftDoc:self.contentType];
 }
 
 - (BOOL)isOversizeText
