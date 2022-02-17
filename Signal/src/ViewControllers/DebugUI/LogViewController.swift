@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,6 +22,7 @@ public class LogPickerViewController: OWSTableViewController2 {
     public func updateTableContents() {
         let contents = OWSTableContents()
         contents.addSection(buildPreferenceSection())
+        contents.addSection(buildActionsSection())
         contents.addSection(buildLogsSection())
         self.contents = contents
     }
@@ -32,6 +33,14 @@ public class LogPickerViewController: OWSTableViewController2 {
                                              target: self,
                                              selector: #selector(didToggleAudiblePreference(_:)))
         return OWSTableSection(title: "Preferences", items: [enableItem])
+    }
+
+    private func buildActionsSection() -> OWSTableSection {
+        let exportItem = OWSTableItem(title: "Export Logs") {
+            Logger.flush()
+            Pastelog.exportLogs()
+        }
+        return OWSTableSection(title: "Actions", items: [exportItem])
     }
 
     private func buildLogsSection() -> OWSTableSection {

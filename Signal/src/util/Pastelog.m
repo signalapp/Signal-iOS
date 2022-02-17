@@ -188,37 +188,43 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
     [[self shared] uploadLogsWithSuccess:successParam failure:failureParam];
 }
 
-- (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam {
-    OWSAssertDebug(successParam);
-    OWSAssertDebug(failureParam);
++ (void)exportLogs
+{
+    [[self shared] exportLogs];
+}
 
-    // Ensure that we call the completions on the main thread.
-    UploadDebugLogsSuccess success = ^(NSURL *url) {
-        DispatchMainThreadSafe(^{
-            successParam(url);
-        });
-    };
-    UploadDebugLogsFailure failure = ^(NSString *localizedErrorMessage, NSString *_Nullable logArchiveOrDirectoryPath) {
-        DispatchMainThreadSafe(^{ failureParam(localizedErrorMessage, logArchiveOrDirectoryPath); });
-    };
+- (void)exportLogs
+{
+    OWSAssertIsOnMainThread();
 
-    // Phase 1. Make a local copy of all of the log files.
+    NSString *errorString;
+    NSString *logsDirPath = [self collectLogsWithErrorString:&errorString];
+    if (!logsDirPath) {
+        [Pastelog showFailureAlertWithMessage:errorString ?: @"(unknown error)" logArchiveOrDirectoryPath:nil];
+        return;
+    }
+
+    [AttachmentSharing showShareUIForURL:[NSURL fileURLWithPath:logsDirPath]
+                                  sender:nil
+                              completion:^{ (void)[OWSFileSystem deleteFile:logsDirPath]; }];
+}
+
+- (nullable NSString *)collectLogsWithErrorString:(NSString *_Nullable *_Nonnull)errorString
+{
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     [dateFormatter setLocale:[NSLocale currentLocale]];
     [dateFormatter setDateFormat:@"yyyy.MM.dd hh.mm.ss"];
     NSString *dateString = [dateFormatter stringFromDate:[NSDate new]];
     NSString *logsName = [[dateString stringByAppendingString:@" "] stringByAppendingString:NSUUID.UUID.UUIDString];
-    NSString *tempDirectory = OWSTemporaryDirectory();
-    NSString *zipFilePath =
-        [tempDirectory stringByAppendingPathComponent:[logsName stringByAppendingPathExtension:@"zip"]];
-    NSString *zipDirPath = [tempDirectory stringByAppendingPathComponent:logsName];
+
+    NSString *zipDirPath = [OWSTemporaryDirectory() stringByAppendingPathComponent:logsName];
     [OWSFileSystem ensureDirectoryExists:zipDirPath];
 
     NSArray<NSString *> *logFilePaths = DebugLogger.shared.allLogFilePaths;
     if (logFilePaths.count < 1) {
-        failure(
-            NSLocalizedString(@"DEBUG_LOG_ALERT_NO_LOGS", @"Error indicating that no debug logs could be found."), nil);
-        return;
+        *errorString
+            = NSLocalizedString(@"DEBUG_LOG_ALERT_NO_LOGS", @"Error indicating that no debug logs could be found.");
+        return nil;
     }
 
     for (NSString *logFilePath in logFilePaths) {
@@ -233,8 +239,29 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
         }
         [OWSFileSystem protectFileOrFolderAtPath:copyFilePath];
     }
+    return zipDirPath;
+}
+
+- (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam
+{
+    OWSAssertDebug(successParam);
+    OWSAssertDebug(failureParam);
+
+    // Ensure that we call the completions on the main thread.
+    UploadDebugLogsSuccess success = ^(NSURL *url) { DispatchMainThreadSafe(^{ successParam(url); }); };
+    UploadDebugLogsFailure failure = ^(NSString *localizedErrorMessage, NSString *_Nullable logArchiveOrDirectoryPath) {
+        DispatchMainThreadSafe(^{ failureParam(localizedErrorMessage, logArchiveOrDirectoryPath); });
+    };
+
+    // Phase 1. Make a local copy of all of the log files.
+    NSString *errorString;
+    NSString *zipDirPath = [self collectLogsWithErrorString:&errorString];
+    if (!zipDirPath) {
+        failure(errorString, nil);
+    }
 
     // Phase 2. Zip up the log files.
+    NSString *zipFilePath = [zipDirPath stringByAppendingPathExtension:@"zip"];
     BOOL zipSuccess = [SSZipArchive createZipFileAtPath:zipFilePath
                                 withContentsOfDirectory:zipDirPath
                                     keepParentDirectory:YES

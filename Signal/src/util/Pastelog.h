@@ -19,6 +19,8 @@ typedef void (^UploadDebugLogsFailure)(NSString *localizedErrorMessage, NSString
 
 + (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam;
 
++ (void)exportLogs;
+
 @end
 
 NS_ASSUME_NONNULL_END
