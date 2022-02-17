@@ -229,7 +229,7 @@
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "App Store Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       enableUBSanitizer = "YES"

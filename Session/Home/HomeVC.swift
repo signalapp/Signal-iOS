@@ -17,6 +17,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         return result
     }()
     
+    private var isReloading = false
+    
     // MARK: UI Components
     private lazy var seedReminderView: SeedReminderView = {
         let result = SeedReminderView(hasContinueButton: true)
@@ -131,6 +133,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleSeedViewedNotification(_:)), name: .seedViewed, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleBlockedContactsUpdatedNotification(_:)), name: .blockedContactsUpdated, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
         // Threads (part 2)
         threads = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
         threads.setIsReversed(true, forGroup: TSInboxGroup)
@@ -163,6 +166,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         reload()
     }
     
+    @objc private func applicationDidBecomeActive(_ notification: Notification) {
+        reload()
+    }
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -181,6 +188,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     // MARK: Updating
     private func reload() {
         AssertIsOnMainThread()
+        guard !isReloading else { return }
+        isReloading = true
         dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
         dbConnection.read { transaction in
             self.threads.update(with: transaction)
@@ -188,6 +197,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         threadViewModelCache.removeAll()
         tableView.reloadData()
         emptyStateView.isHidden = (threadCount != 0)
+        isReloading = false
     }
     
     @objc private func handleYapDatabaseModifiedNotification(_ yapDatabase: YapDatabase) {
