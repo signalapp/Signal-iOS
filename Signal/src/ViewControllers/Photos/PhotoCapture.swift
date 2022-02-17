@@ -24,7 +24,7 @@ protocol PhotoCaptureDelegate: AnyObject {
     func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation: AVCaptureVideoOrientation)
     func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool
     func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
-    var zoomScaleReferenceHeight: CGFloat? { get }
+    var zoomScaleReferenceDistance: CGFloat? { get }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval)
     func endCaptureButtonAnimation(_ duration: TimeInterval)
@@ -690,12 +690,12 @@ extension PhotoCapture: CameraCaptureControlDelegate {
         completeMovieCapture()
     }
 
-    var zoomScaleReferenceHeight: CGFloat? {
-        return delegate?.zoomScaleReferenceHeight
+    var zoomScaleReferenceDistance: CGFloat? {
+        return delegate?.zoomScaleReferenceDistance
     }
 
-    func cameraCaptureControl(_ control: CameraCaptureControl, didUpdate zoomAlpha: CGFloat) {
-        updateZoom(alpha: zoomAlpha)
+    func cameraCaptureControl(_ control: CameraCaptureControl, didUpdateZoomLevel zoomLevel: CGFloat) {
+        updateZoom(alpha: zoomLevel)
     }
 }
 

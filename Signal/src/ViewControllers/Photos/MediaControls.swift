@@ -15,12 +15,24 @@ protocol CameraCaptureControlDelegate: AnyObject {
     func cameraCaptureControlDidRequestCancelVideoRecording(_ control: CameraCaptureControl)
 
     // MARK: Zoom
-    var zoomScaleReferenceHeight: CGFloat? { get }
-    func cameraCaptureControl(_ control: CameraCaptureControl, didUpdate zoomAlpha: CGFloat)
+    var zoomScaleReferenceDistance: CGFloat? { get }
+    func cameraCaptureControl(_ control: CameraCaptureControl, didUpdateZoomLevel zoomLevel: CGFloat)
 }
 
 class CameraCaptureControl: UIView {
 
+    var axis: NSLayoutConstraint.Axis = .horizontal {
+        didSet {
+            if oldValue != axis {
+                reactivateConstraintsForCurrentAxis()
+                invalidateIntrinsicContentSize()
+            }
+        }
+    }
+    private var horizontalAxisConstraints = [NSLayoutConstraint]()
+    private var verticalAxisConstraints = [NSLayoutConstraint]()
+
+    let shutterButtonLayoutGuide = UILayoutGuide() // allows view controller to align to shutter button.
     private let shutterButtonOuterCircle = CircleBlurView(effect: UIBlurEffect(style: .light))
     private let shutterButtonInnerCircle = CircleView()
 
@@ -30,7 +42,8 @@ class CameraCaptureControl: UIView {
 
     private var outerCircleSizeConstraint: NSLayoutConstraint!
     private var innerCircleSizeConstraint: NSLayoutConstraint!
-    private var slidingCirclePositionContstraint: NSLayoutConstraint!
+    private var slidingCircleHPositionConstraint: NSLayoutConstraint!
+    private var slidingCircleVPositionConstraint: NSLayoutConstraint!
 
     private lazy var slidingCircleView: CircleView = {
         let view = CircleView(diameter: CameraCaptureControl.recordingLockControlSize)
@@ -53,6 +66,12 @@ class CameraCaptureControl: UIView {
 
     weak var delegate: CameraCaptureControlDelegate?
 
+    convenience init(axis: NSLayoutConstraint.Axis) {
+        self.init(frame: CGRect(origin: .zero, size: CameraCaptureControl.intrinsicContentSize(forAxis: axis)))
+        self.axis = axis
+        reactivateConstraintsForCurrentAxis()
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -64,14 +83,28 @@ class CameraCaptureControl: UIView {
     }
 
     private func commonInit() {
-        autoSetDimension(.height, toSize: CameraCaptureControl.shutterButtonDefaultSize)
 
         // Round Shutter Button
+        addLayoutGuide(shutterButtonLayoutGuide)
+        shutterButtonLayoutGuide.widthAnchor.constraint(equalToConstant: CameraCaptureControl.shutterButtonDefaultSize).isActive = true
+        shutterButtonLayoutGuide.heightAnchor.constraint(equalToConstant: CameraCaptureControl.shutterButtonDefaultSize).isActive = true
+        horizontalAxisConstraints.append(contentsOf: [
+            shutterButtonLayoutGuide.centerXAnchor.constraint(equalTo: leadingAnchor, constant: 0.5*CameraCaptureControl.shutterButtonDefaultSize),
+            shutterButtonLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
+            shutterButtonLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor)
+
+        ])
+        verticalAxisConstraints.append(contentsOf: [
+            shutterButtonLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor),
+            shutterButtonLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor),
+            shutterButtonLayoutGuide.centerYAnchor.constraint(equalTo: topAnchor, constant: 0.5*CameraCaptureControl.shutterButtonDefaultSize)
+        ])
+
         addSubview(shutterButtonOuterCircle)
+        shutterButtonOuterCircle.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor).isActive = true
+        shutterButtonOuterCircle.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor).isActive = true
         outerCircleSizeConstraint = shutterButtonOuterCircle.autoSetDimension(.width, toSize: CameraCaptureControl.shutterButtonDefaultSize)
         shutterButtonOuterCircle.autoPin(toAspectRatio: 1)
-        shutterButtonOuterCircle.autoVCenterInSuperview()
-        shutterButtonOuterCircle.autoHCenterInSuperview()
 
         addSubview(shutterButtonInnerCircle)
         innerCircleSizeConstraint = shutterButtonInnerCircle.autoSetDimension(.width, toSize: CameraCaptureControl.shutterButtonDefaultSize)
@@ -88,6 +121,8 @@ class CameraCaptureControl: UIView {
         longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
         longPressGesture.minimumPressDuration = 0
         shutterButtonOuterCircle.addGestureRecognizer(longPressGesture)
+
+        reactivateConstraintsForCurrentAxis()
     }
 
     // MARK: - UI State
@@ -140,7 +175,7 @@ class CameraCaptureControl: UIView {
         switch state {
         case .initial:
             // element visibility
-            if slidingCirclePositionContstraint != nil {
+            if slidingCircleHPositionConstraint != nil {
                 stopButton.alpha = 0
                 slidingCircleView.alpha = 0
                 lockIconView.alpha = 0
@@ -184,22 +219,46 @@ class CameraCaptureControl: UIView {
     }
 
     private func prepareRecordingControlsIfNecessary() {
-        guard slidingCirclePositionContstraint == nil else { return }
+        guard slidingCircleHPositionConstraint == nil else { return }
 
+        // 1. Stop button.
         addSubview(stopButton)
         stopButton.autoPin(toAspectRatio: 1)
         stopButton.autoSetDimension(.width, toSize: CameraCaptureControl.recordingLockControlSize)
-        stopButton.centerXAnchor.constraint(equalTo: shutterButtonOuterCircle.centerXAnchor).isActive = true
-        stopButton.centerYAnchor.constraint(equalTo: shutterButtonOuterCircle.centerYAnchor).isActive = true
+        stopButton.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor).isActive = true
+        stopButton.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor).isActive = true
 
+        // 2. Slider.
         insertSubview(slidingCircleView, belowSubview: shutterButtonInnerCircle)
-        slidingCircleView.autoVCenterInSuperview()
-        slidingCirclePositionContstraint = slidingCircleView.centerXAnchor.constraint(equalTo: shutterButtonOuterCircle.centerXAnchor, constant: 0)
-        addConstraint(slidingCirclePositionContstraint)
+        slidingCircleView.translatesAutoresizingMaskIntoConstraints = false
+        slidingCircleHPositionConstraint = slidingCircleView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor)
+        var horizontalConstraints: [NSLayoutConstraint] = [ slidingCircleHPositionConstraint ]
+        horizontalConstraints.append(slidingCircleView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor))
 
+        slidingCircleVPositionConstraint = slidingCircleView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor)
+        var verticalConstraints: [NSLayoutConstraint] = [ slidingCircleVPositionConstraint ]
+        verticalConstraints.append(slidingCircleView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor))
+
+        // 3. Lock Icon
         addSubview(lockIconView)
-        lockIconView.autoVCenterInSuperview()
-        lockIconView.autoPinTrailing(toEdgeOf: self)
+        lockIconView.translatesAutoresizingMaskIntoConstraints = false
+        // Centered vertically, pinned to trailing edge.
+        horizontalConstraints.append(contentsOf: [ lockIconView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor),
+                                                   lockIconView.trailingAnchor.constraint(equalTo: trailingAnchor) ])
+        // Centered horizontally, pinned to bottom edge.
+        verticalConstraints.append(contentsOf: [ lockIconView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor),
+                                                 lockIconView.bottomAnchor.constraint(equalTo: bottomAnchor) ])
+
+        // 4. Activate current constraints.
+        horizontalAxisConstraints.append(contentsOf: horizontalConstraints)
+        if axis == .horizontal {
+            addConstraints(horizontalConstraints)
+        }
+
+        verticalAxisConstraints.append(contentsOf: verticalConstraints)
+        if axis == .vertical {
+            addConstraints(verticalConstraints)
+        }
 
         setNeedsLayout()
         UIView.performWithoutAnimation {
@@ -207,11 +266,48 @@ class CameraCaptureControl: UIView {
         }
     }
 
+    private func reactivateConstraintsForCurrentAxis() {
+        switch axis {
+        case .horizontal:
+            removeConstraints(verticalAxisConstraints)
+            addConstraints(horizontalAxisConstraints)
+
+        case .vertical:
+            removeConstraints(horizontalAxisConstraints)
+            addConstraints(verticalAxisConstraints)
+
+        @unknown default:
+            owsFailDebug("Unsupported `axis` value: \(axis.rawValue)")
+        }
+    }
+
+    override var intrinsicContentSize: CGSize {
+        return Self.intrinsicContentSize(forAxis: axis)
+    }
+
+    private static func intrinsicContentSize(forAxis axis: NSLayoutConstraint.Axis) -> CGSize {
+        switch axis {
+        case .horizontal:
+            return CGSize(width: CameraCaptureControl.shutterButtonDefaultSize + 64 + CameraCaptureControl.recordingLockControlSize,
+                          height: CameraCaptureControl.shutterButtonDefaultSize)
+
+        case .vertical:
+            return CGSize(width: CameraCaptureControl.shutterButtonDefaultSize,
+                          height: CameraCaptureControl.shutterButtonDefaultSize + 64 + CameraCaptureControl.recordingLockControlSize)
+
+        @unknown default:
+            owsFailDebug("Unsupported `axis` value: \(axis.rawValue)")
+            return CGSize(square: UIView.noIntrinsicMetric)
+        }
+    }
+
     // MARK: - Gestures
 
     private var longPressGesture: UILongPressGestureRecognizer!
     private static let longPressDurationThreshold = 0.5
+    private static let minDistanceBeforeActivatingLockSlider: CGFloat = 30
     private var initialTouchLocation: CGPoint?
+    private var initialZoomPosition: CGFloat?
     private var touchTimer: Timer?
 
     @objc
@@ -229,6 +325,7 @@ class CameraCaptureControl: UIView {
             guard state == .initial else { break }
 
             initialTouchLocation = gesture.location(in: gesture.view)
+            initialZoomPosition = nil
 
             touchTimer?.invalidate()
             touchTimer = WeakTimer.scheduledTimer(
@@ -247,12 +344,12 @@ class CameraCaptureControl: UIView {
         case .changed:
             guard state == .recording else { break }
 
-            guard let referenceHeight = delegate?.zoomScaleReferenceHeight else {
+            guard let referenceDistance = delegate?.zoomScaleReferenceDistance else {
                 owsFailDebug("referenceHeight was unexpectedly nil")
                 return
             }
 
-            guard referenceHeight > 0 else {
+            guard referenceDistance > 0 else {
                 owsFailDebug("referenceHeight was unexpectedly <= 0")
                 return
             }
@@ -264,17 +361,53 @@ class CameraCaptureControl: UIView {
 
             let currentLocation = gesture.location(in: gestureView)
 
-            // Zoom
-            let minDistanceBeforeActivatingZoom: CGFloat = 30
-            let yDistance = initialTouchLocation.y - currentLocation.y - minDistanceBeforeActivatingZoom
-            let distanceForFullZoom = referenceHeight / 4
-            let yRatio = yDistance / distanceForFullZoom
-            let yAlpha = yRatio.clamp(0, 1)
-            delegate?.cameraCaptureControl(self, didUpdate: yAlpha)
+            // Zoom - only use if slide to lock hasn't been activated.
+            var zoomLevel: CGFloat = 0
+            if sliderTrackingProgress == 0 {
+                let minDistanceBeforeActivatingZoom: CGFloat = 30
+                let currentDistance: CGFloat = {
+                    switch axis {
+                    case .horizontal:
+                        if initialZoomPosition == nil {
+                            initialZoomPosition = currentLocation.y
+                        }
+                        return initialZoomPosition! - currentLocation.y - minDistanceBeforeActivatingZoom
 
-            // Video Recording Lock
-            let xOffset = currentLocation.x - initialTouchLocation.x
-            updateTracking(xOffset: xOffset)
+                    case .vertical:
+                        if initialZoomPosition == nil {
+                            initialZoomPosition = currentLocation.x
+                        }
+                        return initialZoomPosition! - currentLocation.x - minDistanceBeforeActivatingZoom
+
+                    @unknown default:
+                        owsFailDebug("Unsupported `axis` value: \(axis.rawValue)")
+                        return 0
+                    }
+                }()
+
+                let distanceForFullZoom = referenceDistance / 4
+                let ratio = currentDistance / distanceForFullZoom
+                zoomLevel = ratio.clamp(0, 1)
+                delegate?.cameraCaptureControl(self, didUpdateZoomLevel: zoomLevel)
+            } else {
+                initialZoomPosition = nil
+            }
+
+            // Video Recording Lock - only works if zoom level == 0
+            if zoomLevel == 0 {
+                switch axis {
+                case .horizontal:
+                    let xOffset = currentLocation.x - initialTouchLocation.x
+                    updateHorizontalTracking(xOffset: xOffset)
+
+                case .vertical:
+                    let yOffset = currentLocation.y - initialTouchLocation.y
+                    updateVerticalTracking(yOffset: yOffset)
+
+                @unknown default:
+                    owsFailDebug("Unsupported `axis` value: \(axis.rawValue)")
+                }
+            }
 
         case .ended:
             touchTimer?.invalidate()
@@ -305,15 +438,24 @@ class CameraCaptureControl: UIView {
         }
     }
 
-    private func updateTracking(xOffset: CGFloat) {
-        let minDistanceBeforeActivatingLockSlider: CGFloat = 30
-        let effectiveDistance = xOffset - minDistanceBeforeActivatingLockSlider
+    private func updateHorizontalTracking(xOffset: CGFloat) {
+        let effectiveDistance = xOffset - Self.minDistanceBeforeActivatingLockSlider
         let distanceToLock = abs(lockIconView.center.x - stopButton.center.x)
         let trackingPosition = effectiveDistance.clamp(0, distanceToLock)
-        slidingCirclePositionContstraint.constant = trackingPosition
+        slidingCircleHPositionConstraint.constant = trackingPosition
         sliderTrackingProgress = (effectiveDistance / distanceToLock).clamp(0, 1)
 
         Logger.verbose("xOffset: \(xOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), trackingPosition: \(trackingPosition), progress: \(sliderTrackingProgress)")
+    }
+
+    private func updateVerticalTracking(yOffset: CGFloat) {
+        let effectiveDistance = yOffset - Self.minDistanceBeforeActivatingLockSlider
+        let distanceToLock = abs(lockIconView.center.y - stopButton.center.y)
+        let trackingPosition = effectiveDistance.clamp(0, distanceToLock)
+        slidingCircleVPositionConstraint.constant = trackingPosition
+        sliderTrackingProgress = (effectiveDistance / distanceToLock).clamp(0, 1)
+
+        Logger.verbose("yOffset: \(yOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), trackingPosition: \(trackingPosition), progress: \(sliderTrackingProgress)")
     }
 
     // MARK: - Button Actions
@@ -468,9 +610,9 @@ private extension UserInterfaceStyleOverride {
 }
 
 
-class PhotoControl: UIView, UserInterfaceStyleOverride {
+class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
 
-    var userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified {
+    fileprivate var userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified {
         didSet {
             if oldValue != userInterfaceStyleOverride {
                 updateStyle()
@@ -479,37 +621,47 @@ class PhotoControl: UIView, UserInterfaceStyleOverride {
     }
 
     private var backgroundView: UIVisualEffectView!
-    private let button: OWSButton
 
     private static let visibleButtonSize: CGFloat = 36  // both height and width
     private static let defaultInset: CGFloat = 4
 
-    var contentInsets: UIEdgeInsets = UIEdgeInsets(margin: PhotoControl.defaultInset) {
+    var contentInsets: UIEdgeInsets = UIEdgeInsets(margin: CameraOverlayButton.defaultInset) {
         didSet {
             layoutMargins = contentInsets
         }
     }
 
-    init(imageName: String, userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified, block: @escaping () -> Void) {
-        button = OWSButton(imageName: imageName, tintColor: nil, block: block)
-
-        super.init(frame: CGRect(origin: .zero, size: CGSize(square: Self.visibleButtonSize + 2*Self.defaultInset)))
-
-        layoutMargins = contentInsets
+    convenience init(image: UIImage?, userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified) {
+        self.init(frame: CGRect(origin: .zero, size: .square(Self.visibleButtonSize + 2*Self.defaultInset)))
         self.userInterfaceStyleOverride = userInterfaceStyleOverride
+        setImage(image, for: .normal)
+        updateStyle()
+    }
 
-        backgroundView = CircleBlurView(effect: UIBlurEffect(style: PhotoControl.blurEffectStyle(for: effectiveUserInterfaceStyle)))
+    private override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        commonInit()
+    }
+
+    private func commonInit() {
+        layoutMargins = contentInsets
+
+        backgroundView = CircleBlurView(effect: UIBlurEffect(style: CameraOverlayButton.blurEffectStyle(for: effectiveUserInterfaceStyle)))
+        backgroundView.isUserInteractionEnabled = false
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewMargins()
-
-        addSubview(button)
-        button.autoPinEdgesToSuperviewMargins()
 
         updateStyle()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        sendSubviewToBack(backgroundView)
     }
 
     override var intrinsicContentSize: CGSize {
@@ -525,12 +677,8 @@ class PhotoControl: UIView, UserInterfaceStyleOverride {
     }
 
     private func updateStyle() {
-        backgroundView.effect = UIBlurEffect(style: PhotoControl.blurEffectStyle(for: effectiveUserInterfaceStyle))
-        button.tintColor = PhotoControl.tintColor(for: effectiveUserInterfaceStyle)
-    }
-
-    func setImage(imageName: String) {
-        button.setImage(imageName: imageName)
+        backgroundView.effect = UIBlurEffect(style: CameraOverlayButton.blurEffectStyle(for: effectiveUserInterfaceStyle))
+        tintColor = CameraOverlayButton.tintColor(for: effectiveUserInterfaceStyle)
     }
 }
 

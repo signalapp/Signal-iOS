@@ -37,7 +37,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private var titleView: TitleView!
 
     private var bottomBar: UIView!
-    private var cameraButton: PhotoControl!
+    private var cameraButton: CameraOverlayButton!
     private var doneButton: MediaDoneButton!
 
     init() {
@@ -98,10 +98,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         bottomBar.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 0 : 8)
         bottomBar.autoPinHorizontalEdges(toEdgesOf: view)
 
-        cameraButton = PhotoControl(imageName: "media-composer-camera-outline-28", userInterfaceStyleOverride: .light) { [weak self] in
-            guard let self = self else { return }
-            self.didTapCameraButton()
-        }
+        cameraButton = CameraOverlayButton(image: UIImage(named: "media-composer-camera-outline-28"), userInterfaceStyleOverride: .light)
+        cameraButton.addTarget(self, action: #selector(didTapCameraButton), for: .touchUpInside)
         bottomBar.addSubview(cameraButton)
         cameraButton.contentInsets = .zero
         cameraButton.autoSetDimensions(to: .square(40))
@@ -339,6 +337,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         self.delegate?.imagePickerDidCancel(self)
     }
 
+    @objc
     private func didTapCameraButton() {
         delegate?.imagePickerDidRequestPresentCamera(self)
     }
