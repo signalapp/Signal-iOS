@@ -194,7 +194,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             case is TSContactThread:
                 notificationTitle = senderName
             case is TSGroupThread:
-                var groupName = thread.name()
+                var groupName = thread.name(with: transaction)
                 if groupName.count < 1 {
                     groupName = MessageStrings.newGroupDefaultTitle
                 }
