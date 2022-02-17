@@ -238,6 +238,7 @@ public class MessageFetcherJob: NSObject {
         if shouldUseWebSocket {
             Logger.info("delegating message fetching to SocketManager since we're using normal transport.")
             socketManager.didReceivePush()
+            // Should we wait to resolve the future until we know the WebSocket is open? Wait until it empties?
             return future.resolve()
         } else if CurrentAppContext().shouldProcessIncomingMessages {
             // Main app should use REST if censorship circumvention is active.
