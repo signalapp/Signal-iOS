@@ -95,6 +95,11 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        view.setGradient(Gradients.defaultBackground)
+        fadeView.setGradient(Gradients.homeVCFade)
+    }
+    
     // MARK: Layout
     
     private func setupLayout() {

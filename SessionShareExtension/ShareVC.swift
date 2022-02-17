@@ -162,15 +162,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     }
 
     // MARK: - App Mode
-    
-    public func getCurrentAppMode() -> AppMode {
-        guard let window = self.view.window else { return .light }
-        
-        let userInterfaceStyle = window.traitCollection.userInterfaceStyle
-        let isLightMode = (userInterfaceStyle == .light || userInterfaceStyle == .unspecified)
-        
-        return (isLightMode ? .light : .dark)
-    }
 
     public func setCurrentAppMode(to appMode: AppMode) {
         return // Not applicable to share extensions

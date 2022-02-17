@@ -4,6 +4,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSMimeTypeApplicationOctetStream;
 extern NSString *const OWSMimeTypeApplicationZip;
+extern NSString *const OWSMimeTypeApplicationPdf;
 extern NSString *const OWSMimeTypeImagePng;
 extern NSString *const OWSMimeTypeImageJpeg;
 extern NSString *const OWSMimeTypeImageGif;
@@ -40,6 +41,8 @@ extern NSString *const kSyncMessageFileExtension;
 + (BOOL)isImage:(NSString *)contentType;
 + (BOOL)isVideo:(NSString *)contentType;
 + (BOOL)isAudio:(NSString *)contentType;
++ (BOOL)isText:(NSString *)contentType;
++ (BOOL)isMicrosoftDoc:(NSString *)contentType;
 + (BOOL)isVisualMedia:(NSString *)contentType;
 
 // filename is optional and should not be trusted.
