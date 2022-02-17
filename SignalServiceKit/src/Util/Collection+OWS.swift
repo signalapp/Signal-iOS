@@ -10,11 +10,10 @@ public extension Collection {
     }
 }
 
-public extension Collection where Index == Int  {
-
+public extension RandomAccessCollection {
     func chunked(by chunkSize: Int) -> [SubSequence] {
-        return stride(from: 0, to: self.count, by: chunkSize).map {
-            self[$0..<Swift.min($0 + chunkSize, self.count)]
+        stride(from: 0, to: count, by: chunkSize).map {
+            dropFirst($0).prefix(chunkSize)
         }
     }
 

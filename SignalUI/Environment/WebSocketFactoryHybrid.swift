@@ -136,12 +136,7 @@ extension SSKWebSocketStarScream: WebSocketDelegate {
 
     func websocketDidReceiveData(socket: WebSocketClient, data: Data) {
         assertOnQueue(callbackQueue)
-        do {
-            let message = try WebSocketProtoWebSocketMessage(serializedData: data)
-            delegate?.websocket(self, didReceiveResponse: .message(message))
-        } catch {
-            delegate?.websocket(self, didReceiveResponse: .data(data))
-        }
+        delegate?.websocket(self, didReceiveData: data)
     }
 }
 

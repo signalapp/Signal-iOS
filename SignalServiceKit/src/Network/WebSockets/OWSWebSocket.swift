@@ -1367,11 +1367,13 @@ extension OWSWebSocket: SSKWebSocketDelegate {
         outageDetection.reportConnectionFailure()
     }
 
-    public func websocket(_ eventSocket: SSKWebSocket, didReceiveResponse response: SSKWebSocketResponse) {
+    public func websocket(_ eventSocket: SSKWebSocket, didReceiveData data: Data) {
         assertOnQueue(Self.serialQueue)
-
-        guard let message = response.unwrapMessage else {
-            owsFailDebug("Unexpected message format")
+        let message: WebSocketProtoWebSocketMessage
+        do {
+            message = try WebSocketProtoWebSocketMessage(serializedData: data)
+        } catch {
+            owsFailDebug("Failed to deserialize message: \(error)")
             return
         }
 

@@ -98,7 +98,7 @@ public class ContactDiscoveryTask: NSObject {
 
     private func createContactDiscoveryOperation() -> ContactDiscovering {
         if TSConstants.isUsingProductionService {
-            return ModernContactDiscoveryOperation(e164sToLookup: e164FetchSet)
+            return SGXContactDiscoveryOperation(e164sToLookup: e164FetchSet)
         } else {
             return HSMContactDiscoveryOperation(e164sToLookup: e164FetchSet)
         }

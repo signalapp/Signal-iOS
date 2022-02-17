@@ -68,51 +68,12 @@ public extension SSKWebSocket {
 // MARK: -
 
 @objc
-public class SSKWebSocketResponse: NSObject {
-    private enum Underlying {
-        case message(WebSocketProtoWebSocketMessage)
-        case data(Data)
-    }
-
-    private let underlying: Underlying
-    private init(underlying: Underlying) {
-        self.underlying = underlying
-    }
-
-    public static func message(_ message: WebSocketProtoWebSocketMessage) -> SSKWebSocketResponse {
-        SSKWebSocketResponse(underlying: .message(message))
-    }
-
-    public static func data(_ data: Data) -> SSKWebSocketResponse {
-        SSKWebSocketResponse(underlying: .data(data))
-    }
-
-    public var unwrapMessage: WebSocketProtoWebSocketMessage? {
-        switch underlying {
-        case .message(let message):
-            return message
-        case .data:
-            return nil
-        }
-    }
-
-    public var unwrapData: Data? {
-        switch underlying {
-        case .message:
-            return nil
-        case .data(let data):
-            return data
-        }
-    }
-}
-
-@objc
 public protocol SSKWebSocketDelegate: AnyObject {
     func websocketDidConnect(socket: SSKWebSocket)
 
     func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error?)
 
-    func websocket(_ socket: SSKWebSocket, didReceiveResponse response: SSKWebSocketResponse)
+    func websocket(_ socket: SSKWebSocket, didReceiveData data: Data)
 }
 
 // MARK: -
@@ -249,14 +210,8 @@ public class SSKWebSocketNative: SSKWebSocket {
                     switch message {
                     case .data(let data):
                         guard let self = self else { return }
-                        let response: SSKWebSocketResponse
-                        do {
-                            response = try .message(WebSocketProtoWebSocketMessage(serializedData: data))
-                        } catch {
-                            response = .data(data)
-                        }
                         self.callbackQueue.async {
-                            self.delegate?.websocket(self, didReceiveResponse: response)
+                            self.delegate?.websocket(self, didReceiveData: data)
                         }
 
                     case .string:

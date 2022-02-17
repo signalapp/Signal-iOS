@@ -178,13 +178,9 @@ public class CDSHWebSocket: Dependencies, SSKWebSocketDelegate {
 
     public func websocket(
         _ socket: SSKWebSocket,
-        didReceiveResponse response: SSKWebSocketResponse
+        didReceiveData data: Data
     ) {
         assertOnQueue(queue)
-        guard let data = response.unwrapData else {
-            owsFailDebug("Expected raw data from websocket")
-            return
-        }
         Logger.info("\(socket) did receive: \(data.count) bytes")
 
         switch state {

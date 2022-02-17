@@ -11,7 +11,7 @@ struct CDSRegisteredContact: Hashable {
 
 /// Fetches contact info from the ContactDiscoveryService
 /// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
-class ModernContactDiscoveryOperation: ContactDiscovering {
+class SGXContactDiscoveryOperation: ContactDiscovering {
     static let batchSize = 2048
 
     private let e164sToLookup: Set<String>
@@ -159,8 +159,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
     class func uuidArray(from data: Data) -> [UUID] {
         return data.withUnsafeBytes {
             [uuid_t]($0.bindMemory(to: uuid_t.self))
-        }.map {
-            UUID(uuid: $0)
+                .map { UUID(uuid: $0) }
         }
     }
 

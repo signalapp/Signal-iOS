@@ -112,7 +112,7 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
     private func sendRequestBody() throws {
         let batches = Array(self.e164sToLookup).chunked(by: Self.batchSize)
 
-        try batches.enumerated().lazy.forEach { idx, batch in
+        try batches.enumerated().forEach { idx, batch in
             var builder = ContactDiscoveryMessageClientRequest.builder()
             let encodedE164s = try encodeE164s(batch)
             builder.setNewE164List(encodedE164s)

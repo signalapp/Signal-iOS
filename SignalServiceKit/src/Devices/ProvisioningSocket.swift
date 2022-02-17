@@ -70,9 +70,12 @@ extension ProvisioningSocket: SSKWebSocketDelegate {
         }
     }
 
-    public func websocket(_ socket: SSKWebSocket, didReceiveResponse response: SSKWebSocketResponse) {
-        guard let message = response.unwrapMessage else {
-            owsFailDebug("Unexpected message format")
+    public func websocket(_ socket: SSKWebSocket, didReceiveData data: Data) {
+        let message: WebSocketProtoWebSocketMessage
+        do {
+            message = try WebSocketProtoWebSocketMessage(serializedData: data)
+        } catch {
+            owsFailDebug("Failed to deserialize message: \(error)")
             return
         }
 

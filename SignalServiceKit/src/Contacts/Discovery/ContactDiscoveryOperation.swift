@@ -130,7 +130,7 @@ extension ContactDiscovering {
             throw ContactDiscoveryError.assertionError(description: "unexpectedly short identifier")
         }
 
-        return CFSwapInt64HostToBig(numericIdentifier)
+        return numericIdentifier.bigEndian
     }
 
     func encodeE164s<T>(_ phoneNumbers: T) throws -> Data where T: Collection, T.Element == String {
