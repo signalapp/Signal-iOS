@@ -8,6 +8,7 @@ import SessionUIKit
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let isUnsendRequestsEnabled = true // Set to true once unsend requests are done on all platforms
     let thread: TSThread
+    let threadStartedAsMessageRequest: Bool
     let focusedMessageID: String? // This is used for global search
     var focusedMessageIndexPath: IndexPath?
     var unreadViewItems: [ConversationViewItem] = []
@@ -271,6 +272,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     // MARK: Lifecycle
     init(thread: TSThread, focusedMessageID: String? = nil) {
         self.thread = thread
+        self.threadStartedAsMessageRequest = thread.isMessageRequest()
         self.focusedMessageID = focusedMessageID
         super.init(nibName: nil, bundle: nil)
         var unreadCount: UInt = 0
@@ -378,7 +380,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             self.snInputView.setEnabledMessageTypes(
                 (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
                     .all :
-                    (contact != nil ? .none : .textOnly)
+                    (contact != nil && thread.shouldBeVisible ? .none : .textOnly)
                 ),
                 message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized()
             )
@@ -459,11 +461,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     // MARK: Updating
+    
     func updateNavBarButtons() {
-        navigationItem.hidesBackButton = isShowingSearchUI
         if isShowingSearchUI {
+            navigationItem.leftBarButtonItem = nil
             navigationItem.rightBarButtonItems = []
         } else {
+            navigationItem.leftBarButtonItem = UIViewController.createOWSBackButton(withTarget: self, selector: #selector(handleBackPressed))
+            
             let rightBarButtonItem: UIBarButtonItem
             if thread is TSContactThread {
                 let size = Values.verySmallProfilePictureSize
@@ -635,7 +640,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             self.snInputView.setEnabledMessageTypes(
                 (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
                     .all :
-                    (contact != nil ? .none : .textOnly)
+                    (contact != nil && thread.shouldBeVisible ? .none : .textOnly)
                 ),
                 message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized()
             )
@@ -705,6 +710,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func markAllAsRead() {
+        guard !thread.isMessageRequest() else { return }
         guard let lastSortID = viewItems.last?.interaction.sortId else { return }
         OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: lastSortID, thread: thread)
         SSKEnvironment.shared.disappearingMessagesJob.cleanupMessagesWhichFailedToStartExpiringFromNow()

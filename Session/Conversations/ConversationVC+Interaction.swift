@@ -36,6 +36,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         UIView.animate(withDuration: 0.25, animations: {
             self.blockedBanner.alpha = 0
         }, completion: { _ in
+            if let contact: Contact = Storage.shared.getContact(with: publicKey) {
+                Storage.shared.write { transaction in
+                    contact.isBlocked = false
+                    Storage.shared.setContact(contact, using: transaction)
+                }
+            }
+            
             OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
         })
     }
@@ -1062,6 +1069,23 @@ extension ConversationVC: UIDocumentInteractionControllerDelegate {
 // MARK: - Message Request Actions
 
 extension ConversationVC {
+    @objc func handleBackPressed() {
+        // If this thread started as a message request but isn't one anymore then we want to skip the
+        // `MessageRequestsViewController` when going back
+        guard
+            threadStartedAsMessageRequest,
+            !thread.isMessageRequest(),
+            let viewControllers: [UIViewController] = navigationController?.viewControllers,
+            let messageRequestsIndex = viewControllers.firstIndex(where: { $0 is MessageRequestsViewController }),
+            messageRequestsIndex > 0
+        else {
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        navigationController?.popToViewController(viewControllers[messageRequestsIndex - 1], animated: true)
+    }
+    
     fileprivate func approveMessageRequestIfNeeded(for thread: TSThread?, with transaction: YapDatabaseReadWriteTransaction, isNewThread: Bool, timestamp: UInt64) {
         guard let contactThread: TSContactThread = thread as? TSContactThread else { return }
         
@@ -1115,41 +1139,60 @@ extension ConversationVC {
     
     @objc func deleteMessageRequest() {
         guard let uniqueId: String = thread.uniqueId else { return }
-
-        Storage.write(
-            with: { [weak self] transaction in
-                Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                
-                // Update the contact
-                if let contactThread: TSContactThread = self?.thread as? TSContactThread {
-                    let sessionId: String = contactThread.contactSessionID()
+        
+        let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON", comment: ""), message: nil, preferredStyle: .actionSheet)
+        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
+            // Delete the request
+            Storage.write(
+                with: { [weak self] transaction in
+                    Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
                     
-                    if let contact: Contact = Storage.shared.getContact(with: sessionId) {
-                        contact.isApproved = false
-                        contact.isBlocked = true
-                        Storage.shared.setContact(contact, using: transaction)
-                    }
-                }
-                
-                // Delete all thread content
-                self?.thread.removeAllThreadInteractions(with: transaction)
-                self?.thread.remove(with: transaction)
-            },
-            completion: { [weak self] in
-                // Block the contact
-                if let sessionId: String = (self?.thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                    OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                }
-                
-                // Force a config sync and pop to the previous screen (both must run on the main thread)
-                DispatchQueue.main.async {
-                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+                    // Update the contact
+                    if let contactThread: TSContactThread = self?.thread as? TSContactThread {
+                        let sessionId: String = contactThread.contactSessionID()
+                        
+                        if let contact: Contact = Storage.shared.getContact(with: sessionId) {
+                            contact.isApproved = false
+                            contact.isBlocked = true
+                            
+                            // Note: We set this to true so the current user will be able to send a
+                            // message to the person who originally sent them the message request in
+                            // the future if they unblock them
+                            contact.didApproveMe = true
+                            
+                            Storage.shared.setContact(contact, using: transaction)
+                        }
                     }
                     
-                    self?.navigationController?.popViewController(animated: true)
+                    // Delete all thread content
+                    self?.thread.removeAllThreadInteractions(with: transaction)
+                    self?.thread.remove(with: transaction)
+                },
+                completion: { [weak self] in
+                    // Block the contact
+                    if let sessionId: String = (self?.thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
+                        
+                        // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
+                        // so showing the banner just looks buggy)
+                        if let strongSelf = self {
+                            NotificationCenter.default.removeObserver(strongSelf, name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
+                        }
+                        
+                        OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
+                    }
+                    
+                    // Force a config sync and pop to the previous screen (both must run on the main thread)
+                    DispatchQueue.main.async {
+                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                            appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+                        }
+                        
+                        self?.navigationController?.popViewController(animated: true)
+                    }
                 }
-            }
-        )
+            )
+        })
+        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
+        self.present(alertVC, animated: true, completion: nil)
     }
 }

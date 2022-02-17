@@ -221,17 +221,26 @@ extension MessageReceiver {
                 let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
                 thread.shouldBeVisible = true
                 thread.save(with: transaction)
-                
-                // Make sure to sync the contact blocked state
-                if contact.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(contact.sessionID) {
-                    if contact.isBlocked {
-                        OWSBlockingManager.shared().addBlockedPhoneNumber(contact.sessionID)
-                    }
-                    else {
-                        OWSBlockingManager.shared().removeBlockedPhoneNumber(contact.sessionID)
+            }
+            
+            // Contacts blocked state
+            // FIXME: 'OWSBlockingManager' manages it's own dbConnection and transactions so we have to dispatch this to prevent deadlocks
+            DispatchQueue.global(qos: .background).async {
+                for contactInfo in message.contacts {
+                    let sessionID = contactInfo.publicKey!
+                    let contact = Contact(sessionID: sessionID)
+                    
+                    if contact.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(contact.sessionID) {
+                        if contact.isBlocked {
+                            OWSBlockingManager.shared().addBlockedPhoneNumber(contact.sessionID)
+                        }
+                        else {
+                            OWSBlockingManager.shared().removeBlockedPhoneNumber(contact.sessionID)
+                        }
                     }
                 }
             }
+            
             // Closed groups
             let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
             for closedGroup in message.closedGroups {

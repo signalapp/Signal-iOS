@@ -86,7 +86,7 @@ public class TypingIndicatorsImpl : NSObject, TypingIndicators {
 
     @objc
     public func didStartTypingOutgoingInput(inThread thread: TSThread) {
-        guard let outgoingIndicators = ensureOutgoingIndicators(forThread: thread) else {
+        guard let outgoingIndicators = ensureOutgoingIndicators(forThread: thread), !thread.isMessageRequest() else {
             return
         }
         outgoingIndicators.didStartTypingOutgoingInput()
@@ -94,7 +94,7 @@ public class TypingIndicatorsImpl : NSObject, TypingIndicators {
 
     @objc
     public func didStopTypingOutgoingInput(inThread thread: TSThread) {
-        guard let outgoingIndicators = ensureOutgoingIndicators(forThread: thread) else {
+        guard let outgoingIndicators = ensureOutgoingIndicators(forThread: thread), !thread.isMessageRequest() else {
             return
         }
         outgoingIndicators.didStopTypingOutgoingInput()

@@ -205,6 +205,9 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     private func autoGenerateLinkPreviewIfPossible() {
+        // Don't allow link previews on 'none' or 'textOnly' input
+        guard enabledMessageTypes == .all else { return }
+            
         // Suggest that the user enable link previews if they haven't already and we haven't
         // told them about link previews yet
         let text = inputTextView.text!
