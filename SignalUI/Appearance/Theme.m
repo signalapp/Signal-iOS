@@ -182,10 +182,6 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 {
     OWSAssertIsOnMainThread();
 
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [Theme.keyValueStore setUInt:mode key:ThemeKeyCurrentMode transaction:transaction];
-    });
-
     NSNumber *previousMode = self.isDarkThemeEnabledNumber;
 
     switch (mode) {
@@ -201,6 +197,10 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     }
 
     self.cachedCurrentThemeNumber = @(mode);
+    // It's safe to do an async write because all accesses check self.cachedCurrentThemeNumber first.
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [Theme.keyValueStore setUInt:mode key:ThemeKeyCurrentMode transaction:transaction];
+    });
 
     if (![previousMode isEqual:self.isDarkThemeEnabledNumber]) {
         [self themeDidChange];
