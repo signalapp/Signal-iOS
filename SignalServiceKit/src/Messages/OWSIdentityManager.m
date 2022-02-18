@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIdentityManager.h"
@@ -344,6 +344,22 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ accountId ]];
 
     [self fireIdentityStateChangeNotificationAfterTransaction:transaction];
+}
+
+- (BOOL)groupContainsUnverifiedMember:(NSString *)threadUniqueID
+{
+    __block BOOL result = NO;
+    [self readWithUnfairLock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+        result = [self groupContainsUnverifiedMember:threadUniqueID transaction:transaction];
+    }];
+    return result;
+}
+
+- (NSArray<SignalServiceAddress *> *)noLongerVerifiedAddressesInGroup:(NSString *)groupThreadID
+                                                                limit:(NSInteger)limit
+                                                          transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWSRecipientIdentity noLongerVerifiedAddressesInGroup:groupThreadID limit:limit transaction:transaction];
 }
 
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address

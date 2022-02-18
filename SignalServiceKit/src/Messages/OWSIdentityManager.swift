@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalClient
@@ -61,5 +61,11 @@ extension OWSIdentityManager: IdentityKeyStore {
             return nil
         }
         return try SignalClient.IdentityKey(publicKey: ECPublicKey(keyData: data).key)
+    }
+
+    @objc
+    public func groupContainsUnverifiedMember(_ groupUniqueID: String,
+                                              transaction: SDSAnyReadTransaction) -> Bool {
+        return OWSRecipientIdentity.groupContainsUnverifiedMember(groupUniqueID, transaction: transaction)
     }
 }
