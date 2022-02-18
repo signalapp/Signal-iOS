@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 public protocol ForwardMessageDelegate: AnyObject {
@@ -821,7 +821,7 @@ private struct ForwardMessageRecipientThread {
     static func build(conversationItem: ConversationItem,
                       transaction: SDSAnyWriteTransaction) throws -> ForwardMessageRecipientThread {
 
-        guard let thread = conversationItem.thread(transaction: transaction) else {
+        guard let thread = conversationItem.getOrCreateThread(transaction: transaction) else {
             owsFailDebug("Missing thread for conversation")
             throw ForwardError.missingThread
         }

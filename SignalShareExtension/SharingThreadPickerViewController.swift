@@ -376,7 +376,7 @@ extension SharingThreadPickerViewController {
 
             self.databaseStorage.write { transaction in
                 for conversation in conversationItems {
-                    guard let thread = conversation.thread(transaction: transaction) else {
+                    guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
                         owsFailDebug("Missing thread for conversation")
                         continue
                     }
