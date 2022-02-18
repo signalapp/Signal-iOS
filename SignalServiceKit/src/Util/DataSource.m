@@ -134,41 +134,44 @@ NS_ASSUME_NONNULL_BEGIN
     return self.data.length;
 }
 
-- (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error
+- (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)outError
 {
     OWSAssertDebug(self.data);
     OWSAssertDebug(!self.isConsumed);
+    __block NSError *localError = nil;
 
-    __block BOOL success;
-    NSString *benchTitle = [NSString stringWithFormat:@"DataSourceValue writeData of size: %llu", (unsigned long long)self.data.length];
-    [BenchManager benchWithTitle:benchTitle block:^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
-        success = [self.data writeToURL:dstUrl options:NSDataWritingAtomic error:error];
-#pragma clang diagnostic pop
-    }];
-    if (!success) {
-        OWSAssertDebug(error == nil || *error != nil);
-        OWSLogDebug(@"Could not write data to disk: %@", dstUrl);
-        OWSFailDebug(@"Could not write data to disk.");
+    unsigned long long fileSize = self.dataLength;
+    NSString *benchTitle = [NSString stringWithFormat:@"DataSourceValue writeData of size: %llu", fileSize];
+    [BenchManager benchWithTitle:benchTitle
+                           block:^{
+                               BOOL success = [self.data writeToURL:dstUrl
+                                                            options:NSDataWritingAtomic
+                                                              error:&localError];
+                               if (!success && !localError) {
+                                   localError = OWSErrorMakeAssertionError(@"Could not write data source.");
+                               }
+                           }];
+    if (localError != nil) {
+        OWSLogDebug(@"Could not write data to disk: %@, %@", dstUrl, localError);
+        OWSFailDebug(@"Could not write data to disk: %@", localError);
+        if (outError != nil) {
+            *outError = localError;
+        }
         return NO;
     } else {
         return YES;
     }
 }
 
-- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error
+- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)outError
 {
     OWSAssertDebug(!self.isConsumed);
-
-    __block BOOL success;
+    __block NSError *localError = nil;
 
     unsigned long long fileSize = self.dataLength;
     NSString *benchTitle = [NSString stringWithFormat:@"DataSourceValue moveItem with fileSize: %llu", fileSize];
     [BenchManager benchWithTitle:benchTitle
                            block:^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
                                @synchronized(self) {
                                    OWSAssertDebug(!NSThread.isMainThread);
                                    // This method is meant to be fast. If _cachedFileUrl is nil,
@@ -178,27 +181,24 @@ NS_ASSUME_NONNULL_BEGIN
 
                                    NSURL *_Nullable srcUrl = self.dataUrl;
                                    if (srcUrl == nil) {
-                                       *error = OWSErrorMakeAssertionError(@"Missing data URL.");
-                                       success = NO;
+                                       localError = OWSErrorMakeAssertionError(@"Missing data URL.");
                                        return;
                                    }
                                    self.isConsumed = YES;
-                                   success = [NSFileManager.defaultManager moveItemAtURL:srcUrl
-                                                                                   toURL:dstUrl
-                                                                                   error:error];
-
+                                   BOOL success = [OWSFileSystem moveFileFrom:srcUrl to:dstUrl error:&localError];
+                                   if (!success && !localError) {
+                                       localError = OWSErrorMakeAssertionError(@"Could not move data source.");
+                                   }
                                    self->_cachedFileUrl = nil;
                                }
-#pragma clang diagnostic pop
                            }];
 
-    if (!success || *error != nil) {
-        if (error == nil) {
-            OWSFailDebug(@"Missing error.");
-            *error = OWSErrorMakeAssertionError(@"Could not move data source.");
+    if (localError != nil) {
+        OWSLogDebug(@"Could not write data value to: %@, %@", dstUrl, localError);
+        OWSFailDebug(@"Could not write data with error: %@", localError);
+        if (outError != nil) {
+            *outError = localError;
         }
-        OWSLogDebug(@"Could not write data value to: %@, %@", dstUrl, *error);
-        OWSFailDebug(@"Could not write data with error: %@", *error);
         return NO;
     } else {
         return YES;
@@ -452,61 +452,67 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error
+- (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)outError
 {
     OWSAssertDebug(!self.isConsumed);
     OWSAssertDebug(self.fileUrl);
-
-    __block BOOL success;
+    __block NSError *localError = nil;
 
     unsigned long long fileSize = self.dataLength;
     NSString *benchTitle = [NSString stringWithFormat:@"DataSourcePath copyItem with fileSize: %llu", fileSize];
-    [BenchManager benchWithTitle:benchTitle block:^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
-        success = [NSFileManager.defaultManager copyItemAtURL:self.fileUrl toURL:dstUrl error:error];
-#pragma clang diagnostic pop
-    }];
+    [BenchManager benchWithTitle:benchTitle
+                           block:^{
+                               BOOL success = [NSFileManager.defaultManager copyItemAtURL:self.fileUrl
+                                                                                    toURL:dstUrl
+                                                                                    error:&localError];
+                               if (!success && !localError) {
+                                   localError = OWSErrorMakeAssertionError(@"Could not write data source.");
+                               }
+                           }];
 
-    if (!success || *error != nil) {
-        OWSLogDebug(@"Could not write data from: %@, to: %@, %@", self.fileUrl, dstUrl, *error);
-        OWSFailDebug(@"Could not write data with error: %@", *error);
+    if (localError != nil) {
+        OWSLogDebug(@"Could not write data from: %@, to: %@, %@", self.fileUrl, dstUrl, localError);
+        OWSFailDebug(@"Could not write data with error: %@", localError);
+        if (outError != nil) {
+            *outError = localError;
+        }
         return NO;
     } else {
         return YES;
     }
 }
 
-- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error
+- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)outError
 {
     OWSAssertDebug(!self.isConsumed);
     OWSAssertDebug(self.fileUrl);
-
-    __block BOOL success;
+    __block NSError *localError = nil;
 
     unsigned long long fileSize = self.dataLength;
     NSString *benchTitle = [NSString stringWithFormat:@"DataSourcePath moveItem with fileSize: %llu", fileSize];
     [BenchManager benchWithTitle:benchTitle
                            block:^{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
                                self.isConsumed = YES;
+                               BOOL success = NO;
                                if ([[NSFileManager defaultManager] isWritableFileAtPath:self.fileUrl.path]) {
-                                   success = [NSFileManager.defaultManager moveItemAtURL:self.fileUrl
-                                                                                   toURL:dstUrl
-                                                                                   error:error];
+                                   success = [OWSFileSystem moveFileFrom:self.fileUrl to:dstUrl error:&localError];
                                } else {
                                    OWSLogError(@"File was not writeable. Copying instead of moving.");
                                    success = [NSFileManager.defaultManager copyItemAtURL:self.fileUrl
                                                                                    toURL:dstUrl
-                                                                                   error:error];
+                                                                                   error:&localError];
                                }
-#pragma clang diagnostic pop
+                               if (!success && !localError) {
+                                   localError = OWSErrorMakeAssertionError(@"Could not move data source.");
+                               }
                            }];
 
-    if (!success || *error != nil) {
-        OWSLogDebug(@"Could not write data from: %@, to: %@, %@", self.fileUrl, dstUrl, *error);
-        OWSFailDebug(@"Could not write data with error: %@", *error);
+    if (localError != nil) {
+        OWSLogDebug(@"Could not write data from: %@, to: %@, %@", self.fileUrl, dstUrl, localError);
+        OWSFailDebug(@"Could not write data with error: %@", localError);
+        if (outError != nil) {
+            *outError = localError;
+        }
         return NO;
     } else {
         return YES;
