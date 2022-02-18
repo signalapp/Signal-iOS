@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -493,8 +493,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func didSelect(conversation: ConversationItem) {
         AssertIsOnMainThread()
 
-        let isBlocked: Bool = databaseStorage.write { transaction in
-            guard let thread = conversation.thread(transaction: transaction) else {
+        let isBlocked: Bool = databaseStorage.read { transaction in
+            guard let thread = conversation.getExistingThread(transaction: transaction) else {
                 return false
             }
             return !thread.canSendChatMessagesToThread(ignoreAnnouncementOnly: false)

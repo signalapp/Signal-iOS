@@ -468,14 +468,8 @@ extension ConversationViewController: LongTextViewDelegate {
         }
         if displayableBodyText.canRenderTruncatedTextInline {
             self.setTextExpanded(interactionId: itemViewModel.interaction.uniqueId)
-
-            // TODO: Verify scroll state continuity.
-            // Alternately we could use load coordinator and specify a scroll action.
-            databaseStorage.write { transaction in
-                self.databaseStorage.touch(interaction: itemViewModel.interaction,
-                                           shouldReindex: false,
-                                           transaction: transaction)
-            }
+            self.loadCoordinator.enqueueReload(updatedInteractionIds: [itemViewModel.interaction.uniqueId],
+                                               deletedInteractionIds: [])
         } else {
             let viewController = LongTextViewController(itemViewModel: itemViewModel)
             viewController.delegate = self

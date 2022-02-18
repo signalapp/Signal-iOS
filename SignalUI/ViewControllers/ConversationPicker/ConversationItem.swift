@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,8 @@ public protocol ConversationItem {
     var isBlocked: Bool { get }
     var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { get }
 
-    func thread(transaction: SDSAnyWriteTransaction) -> TSThread?
+    func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread?
+    func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread?
 }
 
 // MARK: -
@@ -64,8 +65,12 @@ extension RecentConversationItem: ConversationItem {
         return unwrapped.disappearingMessagesConfig
     }
 
-    func thread(transaction: SDSAnyWriteTransaction) -> TSThread? {
-        return unwrapped.thread(transaction: transaction)
+    func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
+        return unwrapped.getExistingThread(transaction: transaction)
+    }
+
+    func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
+        return unwrapped.getOrCreateThread(transaction: transaction)
     }
 }
 
@@ -111,7 +116,11 @@ extension ContactConversationItem: ConversationItem {
         }
     }
 
-    func thread(transaction: SDSAnyWriteTransaction) -> TSThread? {
+    func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
+        return TSContactThread.getWithContactAddress(address, transaction: transaction)
+    }
+
+    func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
         return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
     }
 }
@@ -122,10 +131,6 @@ struct GroupConversationItem: Dependencies {
     let groupThreadId: String
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
-
-    func thread(transaction: SDSAnyWriteTransaction) -> TSThread? {
-        return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
-    }
 
     // We don't want to keep this in memory, because the group model
     // can be very large.
@@ -159,5 +164,13 @@ extension GroupConversationItem: ConversationItem {
                                            diameterPoints: AvatarBuilder.standardAvatarSizePoints,
                                            transaction: transaction)
         }
+    }
+
+    func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
+        return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
+    }
+
+    func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
+        return getExistingThread(transaction: transaction)
     }
 }
