@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -52,11 +52,19 @@ public class CallMessageRelay: NSObject {
             owsAssertDebug(pendingPayloads.count == 1, "Unexpectedly processing multiple messages from the NSE at once")
 
             for payload in pendingPayloads {
+                // Pretend we are just receiving the message now.
+                // This ensures that if we process a very old ring message, it will correctly be considered "expired".
+                // "This should never happen" in normal operation, but in practice we have seen it happen,
+                // e.g. when there's a crash processing the queued ring message.
+                let delaySecondsSinceDelivery = -(payload.enqueueTimestamp?.timeIntervalSinceNow ?? 0)
+                let adjustedDeliveryTimestamp =
+                    payload.serverDeliveryTimestamp + UInt64(1000 * max(0, delaySecondsSinceDelivery))
+
                 messageManager.processEnvelope(
                     payload.envelope,
                     plaintextData: payload.plaintextData,
                     wasReceivedByUD: payload.wasReceivedByUD,
-                    serverDeliveryTimestamp: payload.serverDeliveryTimestamp,
+                    serverDeliveryTimestamp: adjustedDeliveryTimestamp,
                     shouldDiscardVisibleMessages: false,
                     transaction: transaction
                 )
@@ -75,7 +83,8 @@ public class CallMessageRelay: NSObject {
             envelope: envelope,
             plaintextData: plaintextData,
             wasReceivedByUD: wasReceivedByUD,
-            serverDeliveryTimestamp: serverDeliveryTimestamp
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
+            enqueueTimestamp: Date()
         )
 
         try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction)
@@ -87,5 +96,6 @@ public class CallMessageRelay: NSObject {
         let plaintextData: Data
         let wasReceivedByUD: Bool
         let serverDeliveryTimestamp: UInt64
+        let enqueueTimestamp: Date?
     }
 }
