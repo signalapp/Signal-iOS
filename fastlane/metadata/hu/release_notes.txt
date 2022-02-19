@@ -1,7 +1,2 @@
-• Új a telefonszámod? Mostantól megváltoztathatod a Signalhoz regisztrált számodat anélkül, hogy elvesztenéd a beszélgetéseidet, csoportjaidat és Signal profilodat. Válaszd a Beállítások > Fiók > Telefonszám cseréje menüpontot.
-• Az új tömeges kijelölés funkcióval egyszerre több beszélgetést jelölhetsz ki, majd olvasottnak jelölheted, archiválhatod, vagy törölheted őket egyszerre. Koppints a profil fotódra a bal felső sarokban.
-• Az archivált beszélgetésekhez gyorsabb lett a hozzáférés. Csak koppints a profil fotódra a bal felső sarokban, hogy könnyebben elérd őket.
-• A reakciók oly bőségesek, az idő viszont szorít. Kedvenc reakció emojid nevére mostantól könnyen rákereshetsz.
-• Az alap reakció emoji készleted mostantól személyre szabhatod, hogy kedvenceid rögtön ott lapuljanak az ingujjadban, bevetésre készen.
-• Bosszantó értesítések? Csak suhints balra egy beszélgetésen, hogy gyorsan némíthatsd, vagy viszont.
-• Javítottunk egy hibát, ami hosszú begépelt szöveg esetén annak egy részét láthatatlanná tette.
+• Profile photos for 1-1 and group chats will now reliably appear in notifications
+• Various performance improvements for very large groups

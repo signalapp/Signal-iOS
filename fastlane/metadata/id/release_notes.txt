@@ -1,7 +1,2 @@
-• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
-• Fiture baru multi-pilihan membuat Anda dapat memilih beberapa percakapan sekaligus dari daftar percakapan dan menandainya dengan dibaca, diarsip, atau dihapus. Ketuk foto profil Anda di kiri atas untuk mencobanya.
-• Arsip percakapan sekarang lebih cepat untuk diakses. Ketuk foto profil Anda di kiri atas untuk melakukannya dengan mudah.
-• Sekarang ada banyak tanggapan yang dapat Anda pilih, lebih cepat. Anda dapat mencari tanggapan favorit Anda dengan mudah.
-• Atur tanggapan bawaan Anda sehingga Anda dapat menggunakan emoji favorit Anda dengan lebih cepat.
-• Lelah karena notifikasi? Geser kiri di percakapan dari daftar percakapan untuk dengan cepat mengatur mode senyap.
-• Memperbaiki bug yang menyebabkan bagian dari pesan teks panjang menjadi tidak terlihat di kotak input.
+• Profile photos for 1-1 and group chats will now reliably appear in notifications
+• Various performance improvements for very large groups

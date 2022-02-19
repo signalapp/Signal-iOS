@@ -1,7 +1,2 @@
-• Har du fået et nyt telefonnummer? Du kan nu ændre det nummer, du har registreret i Signal, uden at miste din samtalehistorik, dine grupper og din Signal-profil. Gå til Indstillinger > Konto > Skift telefonnummer for at se nærmere.
-• Med en ny funktion til at vælge flere samtaler på én gang fra samtalelisten kan du vælge flere samtaler på én gang og markere dem som læste, arkivere eller slette dem. Tryk på dit profilbillede øverst til venstre for at prøve det.
-• Der er nu hurtigere adgang til arkiverede samtaler. Du skal blot trykke på dit profilbillede øverst til venstre for at få adgang til dem.
-• Der er så mange reaktioner at vælge imellem og så lidt tid. Nu kan du nemt søge efter din yndlingsreaktion.
-• Tilpas dine standardreaktioner, så du kan bære dine yndlingsfølelser ude på tøjet.
-• Løbet træt i notifikationer? Du skal bare stryge til venstre på en samtale fra samtalelisten for hurtigt at ignorere den eller slå notifikationer til igen.
-• Har rettet en fejl, der betød, at dele af lange tekstbeskeder blev usynlige i indtastningsfeltet.
+• Profile photos for 1-1 and group chats will now reliably appear in notifications
+• Various performance improvements for very large groups
