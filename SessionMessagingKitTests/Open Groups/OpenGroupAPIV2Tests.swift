@@ -67,15 +67,28 @@ class OpenGroupAPITests: XCTestCase {
     }
     
     var testStorage: TestStorage!
+    var testSodium: TestSodium!
+    var testAeadXChaCha20Poly1305Ietf: TestAeadXChaCha20Poly1305Ietf!
+    var testGenericHash: TestGenericHash!
+    var testSign: TestSign!
     var dependencies: OpenGroupAPI.Dependencies!
 
     // MARK: - Configuration
     
     override func setUpWithError() throws {
         testStorage = TestStorage()
+        testSodium = TestSodium()
+        testAeadXChaCha20Poly1305Ietf = TestAeadXChaCha20Poly1305Ietf()
+        testGenericHash = TestGenericHash()
+        testSign = TestSign()
         dependencies = OpenGroupAPI.Dependencies(
             api: TestApi.self,
             storage: testStorage,
+            sodium: testSodium,
+            aeadXChaCha20Poly1305Ietf: testAeadXChaCha20Poly1305Ietf,
+            sign: testSign,
+            genericHash: testGenericHash,
+            ed25519: TestEd25519.self,
             nonceGenerator: TestNonceGenerator(),
             date: Date(timeIntervalSince1970: 1234567890)
         )
@@ -100,6 +113,18 @@ class OpenGroupAPITests: XCTestCase {
             publicKeyData: Data.data(fromHex: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d")!,
             privateKeyData: Data.data(fromHex: "881132ee03dbd2da065aa4c94f96081f62142dc8011d1b7a00de83e4aab38ce4")!
         )
+        testStorage.mockData[.userEdKeyPair] = Box.KeyPair(
+            publicKey: Data.data(fromHex: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d")!.bytes,
+            secretKey: Data.data(fromHex: "881132ee03dbd2da065aa4c94f96081f62142dc8011d1b7a00de83e4aab38ce4881132ee03dbd2da065aa4c94f96081f62142dc8011d1b7a00de83e4aab38ce4")!.bytes
+        )
+        
+        testGenericHash.mockData[.hashOutputLength] = []
+        testSodium.mockData[.blindedKeyPair] = Box.KeyPair(
+            publicKey: Data.data(fromHex: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d")!.bytes,
+            secretKey: Data.data(fromHex: "881132ee03dbd2da065aa4c94f96081f62142dc8011d1b7a00de83e4aab38ce4881132ee03dbd2da065aa4c94f96081f62142dc8011d1b7a00de83e4aab38ce4")!.bytes
+        )
+        testSodium.mockData[.sogsSignature] = "TestSogsSignature".bytes
+        testSign.mockData[.signature] = "TestSignature".bytes
     }
 
     override func tearDownWithError() throws {
@@ -415,12 +440,16 @@ class OpenGroupAPITests: XCTestCase {
     
     // MARK: - Authentication
     
-    func testItSignsTheRequestCorrectly() throws {
+    func testItSignsTheUnblindedRequestCorrectly() throws {
         class LocalTestApi: TestApi {
             override class var mockResponse: Data? {
                 return try! JSONEncoder().encode([OpenGroupAPI.Room]())
             }
         }
+        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+            name: "testServer",
+            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
+        )
         dependencies = dependencies.with(api: LocalTestApi.self)
         
         var response: (OnionRequestResponseInfoType, [OpenGroupAPI.Room])? = nil
@@ -445,14 +474,74 @@ class OpenGroupAPITests: XCTestCase {
         expect(requestData?.server).to(equal("testServer"))
         expect(requestData?.publicKey).to(equal("7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
         expect(requestData?.headers).to(haveCount(4))
-        expect(requestData?.headers[Header.sogsPubKey.rawValue]).to(equal("057aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
+        expect(requestData?.headers[Header.sogsPubKey.rawValue]).to(equal("007aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
         expect(requestData?.headers[Header.sogsTimestamp.rawValue]).to(equal("1234567890"))
         expect(requestData?.headers[Header.sogsNonce.rawValue]).to(equal("pK6YRtQApl4NhECGizF0Cg=="))
-        expect(requestData?.headers[Header.sogsSignature.rawValue]).to(equal("fxqLy5ZDWCsLQpwLw0Dax+4xe7cG2vPRk1NlHORIm0DPd3o9UA24KLZY"))
+        expect(requestData?.headers[Header.sogsSignature.rawValue]).to(equal("TestSignature".bytes.toBase64()))
+    }
+    
+    func testItSignsTheBlindedRequestCorrectly() throws {
+        class LocalTestApi: TestApi {
+            override class var mockResponse: Data? {
+                return try! JSONEncoder().encode([OpenGroupAPI.Room]())
+            }
+        }
+        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+            name: "testServer",
+            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blinding], missing: [])
+        )
+        dependencies = dependencies.with(api: LocalTestApi.self)
+        
+        var response: (OnionRequestResponseInfoType, [OpenGroupAPI.Room])? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(response)
+            .toEventuallyNot(
+                beNil(),
+                timeout: .milliseconds(100)
+            )
+        expect(error?.localizedDescription).to(beNil())
+        
+        // Validate signature headers
+        let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+        expect(requestData?.urlString).to(equal("testServer/rooms"))
+        expect(requestData?.httpMethod).to(equal("GET"))
+        expect(requestData?.server).to(equal("testServer"))
+        expect(requestData?.publicKey).to(equal("7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
+        expect(requestData?.headers).to(haveCount(4))
+        expect(requestData?.headers[Header.sogsPubKey.rawValue]).to(equal("157aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
+        expect(requestData?.headers[Header.sogsTimestamp.rawValue]).to(equal("1234567890"))
+        expect(requestData?.headers[Header.sogsNonce.rawValue]).to(equal("pK6YRtQApl4NhECGizF0Cg=="))
+        expect(requestData?.headers[Header.sogsSignature.rawValue]).to(equal("TestSogsSignature".bytes.toBase64()))
+    }
+    
+    func testItFailsToSignIfThereIsNoUserEdKeyPair() throws {
+        testStorage.mockData[.userEdKeyPair] = nil
+        
+        var response: Any? = nil
+        var error: Error? = nil
+        
+        OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+            .get { result in response = result }
+            .catch { requestError in error = requestError }
+            .retainUntilComplete()
+        
+        expect(error?.localizedDescription)
+            .toEventually(
+                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                timeout: .milliseconds(100)
+            )
+        
+        expect(response).to(beNil())
     }
     
     func testItFailsToSignIfTheServerPublicKeyIsInvalid() throws {
-        testStorage.mockData[.openGroupPublicKeys] = ["testServer": ""]
+        testStorage.mockData[.openGroupPublicKeys] = [:]
         
         var response: Any? = nil
         var error: Error? = nil
@@ -464,44 +553,32 @@ class OpenGroupAPITests: XCTestCase {
         
         expect(error?.localizedDescription)
             .toEventually(
-                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                equal(OpenGroupAPI.Error.noPublicKey.localizedDescription),
                 timeout: .milliseconds(100)
             )
         
         expect(response).to(beNil())
     }
     
-    func testItFailsToSignIfThereIsNoUserKeyPair() throws {
-        testStorage.mockData[.userKeyPair] = nil
-        
-        var response: Any? = nil
-        var error: Error? = nil
-        
-        OpenGroupAPI.rooms(for: "testServer", using: dependencies)
-            .get { result in response = result }
-            .catch { requestError in error = requestError }
-            .retainUntilComplete()
-        
-        expect(error?.localizedDescription)
-            .toEventually(
-                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
-                timeout: .milliseconds(100)
-            )
-        
-        expect(response).to(beNil())
-    }
-    
-    func testItFailsToSignIfTheSharedSecretDoesNotGetGenerated() throws {
+    func testItFailsToSignIfBlindedAndTheBlindedKeyDoesNotGetGenerated() throws {
         class InvalidSodium: SodiumType {
             func getGenericHash() -> GenericHashType { return Sodium().genericHash }
-            func sharedSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Sodium.SharedSecret? { return nil }
-            func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Sodium.SharedSecret? { return nil }
             func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return Sodium().aead.xchacha20poly1305ietf }
+            func getSign() -> SignType { return Sodium().sign }
+            
             func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
                 return nil
             }
+            func sogsSignature(message: Bytes, secretKey: Bytes, blindedSecretKey ka: Bytes, blindedPublicKey kA: Bytes) -> Bytes? {
+                return nil
+            }
+            
+            func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes? { return nil }
         }
-        
+        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+            name: "testServer",
+            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blinding], missing: [])
+        )
         dependencies = dependencies.with(sodium: InvalidSodium())
         
         var response: Any? = nil
@@ -521,15 +598,29 @@ class OpenGroupAPITests: XCTestCase {
         expect(response).to(beNil())
     }
     
-    func testItFailsToSignIfTheIntermediateHashDoesNotGetGenerated() throws {
-        class InvalidGenericHash: GenericHashType {
-            func hash(message: Bytes, key: Bytes?) -> Bytes? { return nil }
-            func hashSaltPersonal(message: Bytes, outputLength: Int, key: Bytes?, salt: Bytes, personal: Bytes) -> Bytes? {
+    func testItFailsToSignIfBlindedAndTheSogsSignatureDoesNotGetGenerated() throws {
+        class InvalidSodium: SodiumType {
+            func getGenericHash() -> GenericHashType { return Sodium().genericHash }
+            func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return Sodium().aead.xchacha20poly1305ietf }
+            func getSign() -> SignType { return Sodium().sign }
+            
+            func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
+                return Box.KeyPair(
+                    publicKey: Data.data(fromHex: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d")!.bytes,
+                    secretKey: Data.data(fromHex: "881132ee03dbd2da065aa4c94f96081f62142dc8011d1b7a00de83e4aab38ce4881132ee03dbd2da065aa4c94f96081f62142dc8011d1b7a00de83e4aab38ce4")!.bytes
+                )
+            }
+            func sogsSignature(message: Bytes, secretKey: Bytes, blindedSecretKey ka: Bytes, blindedPublicKey kA: Bytes) -> Bytes? {
                 return nil
             }
+            
+            func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes? { return nil }
         }
-        
-        dependencies = dependencies.with(genericHash: InvalidGenericHash())
+        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+            name: "testServer",
+            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blinding], missing: [])
+        )
+        dependencies = dependencies.with(sodium: InvalidSodium())
         
         var response: Any? = nil
         var error: Error? = nil
@@ -548,22 +639,16 @@ class OpenGroupAPITests: XCTestCase {
         expect(response).to(beNil())
     }
     
-    func testItFailsToSignIfTheSecretHashDoesNotGetGenerated() throws {
-        class InvalidSecondGenericHash: GenericHashType {
-            static var didSucceedOnce: Bool = false
-            
-            func hash(message: Bytes, key: Bytes?) -> Bytes? { return nil }
-            func hashSaltPersonal(message: Bytes, outputLength: Int, key: Bytes?, salt: Bytes, personal: Bytes) -> Bytes? {
-                if !InvalidSecondGenericHash.didSucceedOnce {
-                    InvalidSecondGenericHash.didSucceedOnce = true
-                    return Data().bytes
-                }
-                
-                return nil
-            }
+    func testItFailsToSignIfUnblindedAndTheSignatureDoesNotGetGenerated() throws {
+        class InvalidSign: SignType {
+            func signature(message: Bytes, secretKey: Bytes) -> Bytes? { return nil }
+            func verify(message: Bytes, publicKey: Bytes, signature: Bytes) -> Bool { return false }
         }
-        
-        dependencies = dependencies.with(genericHash: InvalidSecondGenericHash())
+        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+            name: "testServer",
+            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
+        )
+        dependencies = dependencies.with(sign: InvalidSign())
         
         var response: Any? = nil
         var error: Error? = nil

@@ -2,18 +2,30 @@
 
 import Foundation
 import Sodium
+import Curve25519Kit
 
 public protocol SodiumType {
     func getGenericHash() -> GenericHashType
     func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType
+    func getSign() -> SignType
     
     func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair?
-    func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Sodium.SharedSecret?
-    func sharedSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Sodium.SharedSecret?
+    func sogsSignature(message: Bytes, secretKey: Bytes, blindedSecretKey ka: Bytes, blindedPublicKey kA: Bytes) -> Bytes?
+    
+    func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes?
 }
 
 public protocol AeadXChaCha20Poly1305IetfType {
     func encrypt(message: Bytes, secretKey: Aead.XChaCha20Poly1305Ietf.Key, additionalData: Bytes?) -> (authenticatedCipherText: Bytes, nonce: Aead.XChaCha20Poly1305Ietf.Nonce)?
+}
+
+public protocol Ed25519Type {
+    static func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool
+}
+
+public protocol SignType {
+    func signature(message: Bytes, secretKey: Bytes) -> Bytes?
+    func verify(message: Bytes, publicKey: Bytes, signature: Bytes) -> Bool
 }
 
 public protocol GenericHashType {
@@ -42,6 +54,7 @@ extension GenericHashType {
 
 extension Sodium: SodiumType {
     public func getGenericHash() -> GenericHashType { return genericHash }
+    public func getSign() -> SignType { return sign }
     public func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return aead.xchacha20poly1305ietf }
     
     public func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair) -> Box.KeyPair? {
@@ -50,4 +63,6 @@ extension Sodium: SodiumType {
 }
 
 extension Aead.XChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {}
+extension Sign: SignType {}
 extension GenericHash: GenericHashType {}
+extension Ed25519: Ed25519Type {}

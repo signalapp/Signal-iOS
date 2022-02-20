@@ -41,14 +41,13 @@ extension Sign {
 }
 
 extension Sodium {
-    public typealias SharedSecret = Data
-    
     private static let scalarLength: Int = Int(crypto_core_ed25519_scalarbytes())   // 32
     private static let noClampLength: Int = Int(crypto_scalarmult_ed25519_bytes())  // 32
     private static let scalarMultLength: Int = Int(crypto_scalarmult_bytes())       // 32
     private static let publicKeyLength: Int = Int(crypto_scalarmult_bytes())        // 32
     private static let secretKeyLength: Int = Int(crypto_sign_secretkeybytes())     // 64
     
+    /// Constructs a "blinded" key pair (`ka, kA`) based on an open group server `publicKey` and an ed25519 `keyPair`
     public func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
         guard edKeyPair.publicKey.count == Sodium.publicKeyLength && edKeyPair.secretKey.count == Sodium.secretKeyLength else {
             return nil
@@ -171,7 +170,8 @@ extension Sodium {
         return (Data(bytes: sig_RPtr, count: Sodium.noClampLength).bytes + Data(bytes: sig_sPtr, count: Sodium.scalarLength).bytes)
     }
     
-    public func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> SharedSecret? {
+    // TODO: Determine if we still need this? (To generate the `kB` value for the `/inbox` API????)
+    public func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes? {
         let sharedSecretPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.noClampLength)
         let result = secondKeyBytes.withUnsafeBytes { (secondKeyPtr: UnsafeRawBufferPointer) -> Int32 in
             return firstKeyBytes.withUnsafeBytes { (firstKeyPtr: UnsafeRawBufferPointer) -> Int32 in
@@ -188,33 +188,7 @@ extension Sodium {
         
         guard result == 0 else { return nil }
         
-        return Data(bytes: sharedSecretPtr, count: Sodium.scalarMultLength)
-    }
-    
-    public func sharedSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> SharedSecret? {
-        guard firstKeyBytes.count == Sodium.publicKeyLength && secondKeyBytes.count == Sodium.publicKeyLength else {
-            return nil
-        }
-        
-        let sharedSecretPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.scalarMultLength)
-        let result = secondKeyBytes.withUnsafeBytes { (secondKeyPtr: UnsafeRawBufferPointer) -> Int32 in
-            return firstKeyBytes.withUnsafeBytes { (firstKeyPtr: UnsafeRawBufferPointer) -> Int32 in
-                guard let firstKeyBaseAddress: UnsafePointer<UInt8> = firstKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                    return -1
-                }
-                guard let secondKeyBaseAddress: UnsafePointer<UInt8> = secondKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                    return -1
-                }
-                
-                //crypto_sign_ed25519_publickeybytes
-                //crypto_scalarmult_curve25519(<#T##q: UnsafeMutablePointer<UInt8>##UnsafeMutablePointer<UInt8>#>, <#T##n: UnsafePointer<UInt8>##UnsafePointer<UInt8>#>, <#T##p: UnsafePointer<UInt8>##UnsafePointer<UInt8>#>)
-                return crypto_scalarmult(sharedSecretPtr, firstKeyBaseAddress, secondKeyBaseAddress)
-            }
-        }
-        
-        guard result == 0 else { return nil }
-        
-        return Data(bytes: sharedSecretPtr, count: Sodium.scalarMultLength)
+        return Data(bytes: sharedSecretPtr, count: Sodium.scalarMultLength).bytes
     }
 }
 

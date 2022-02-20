@@ -1,6 +1,7 @@
 import PromiseKit
 import SessionSnodeKit
 import SessionUtilitiesKit
+import Sodium
 
 @objc(SNMessageSender)
 public final class MessageSender : NSObject {
@@ -277,22 +278,34 @@ public final class MessageSender : NSObject {
 
     // MARK: - Open Groups
     
-    internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+    internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any, dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         
         // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
-            message.sentTimestamp = NSDate.millisecondTimestamp()
+            message.sentTimestamp = UInt64(dependencies.date.timeIntervalSince1970 * 1000)   // Should be in ms
         }
         
-        guard let threadId: String = message.threadID, let openGroup = Storage.shared.getOpenGroup(for: threadId) else {
+        guard let threadId: String = message.threadID, let openGroup = dependencies.storage.getOpenGroup(for: threadId) else {
             preconditionFailure()
         }
-        // TODO: Check if blinding is enabled on this server?
-        if let userDerivedKey: ECKeyPair = try? OWSIdentityManager.shared().identityKeyPair()?.convert(to: .blinded, with: openGroup.publicKey) {
-            message.sender = userDerivedKey.hexEncodedPublicKey
+        guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { preconditionFailure() }
+        
+        let server: OpenGroupAPI.Server? = dependencies.storage.getOpenGroupServer(name: openGroup.server)
+        
+        if server?.capabilities.capabilities.contains(.blinding) == true {
+            guard let serverPublicKey = dependencies.storage.getOpenGroupPublicKey(for: openGroup.server) else {
+                preconditionFailure()
+            }
+            guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
+                preconditionFailure()
+            }
+            
+            message.sender = IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey)
+        }
+        else {
+            message.sender = IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey)
         }
         
         switch destination {
@@ -332,12 +345,12 @@ public final class MessageSender : NSObject {
         }
         
         // Attach the user's profile
-        guard let name = storage.getUser()?.name else {
+        guard let name = dependencies.storage.getUser()?.name else {
             handleFailure(with: Error.noUsername, using: transaction)
             return promise
         }
         
-        if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
+        if let profileKey = dependencies.storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = dependencies.storage.getUser()?.profilePictureURL {
             message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
         }
         else {
@@ -379,15 +392,15 @@ public final class MessageSender : NSObject {
             .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
                 message.openGroupServerMessageID = given(data.seqNo) { UInt64($0) }
 
-                Storage.shared.write { transaction in
+                dependencies.storage.write { transaction in
                     MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: UInt64(floor(data.posted)), using: transaction)
                     seal.fulfill(())
                 }
             }
             .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-                storage.write(with: { transaction in
+                dependencies.storage.write { transaction in
                     handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
-                }, completion: { })
+                }
             }
         
         return promise

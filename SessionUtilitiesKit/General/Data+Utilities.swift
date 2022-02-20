@@ -33,16 +33,3 @@ public extension Data {
         return result as NSData
     }
 }
-
-// MARK: - Decoding
-
-public extension Data {
-    func decoded<T: Decodable>(as type: T.Type, customError: Error? = nil) throws -> T {
-        do {
-            return try JSONDecoder().decode(type, from: self)
-        }
-        catch let error {
-            throw (customError ?? error)
-        }
-    }
-}

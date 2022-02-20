@@ -5,21 +5,21 @@ import PromiseKit
 import SessionSnodeKit
 
 extension Promise where T == Data {
-    func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, error: Error? = nil) -> Promise<R> {
+    func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, error: Error? = nil, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<R> {
         self.map(on: queue) { data -> R in
-            try data.decoded(as: type, customError: error)
+            try data.decoded(as: type, customError: error, using: dependencies)
         }
     }
 }
 
 extension Promise where T == (OnionRequestResponseInfoType, Data?) {
-    func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, error: Error? = nil) -> Promise<(OnionRequestResponseInfoType, R)> {
+    func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, error: Error? = nil, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<(OnionRequestResponseInfoType, R)> {
         self.map(on: queue) { responseInfo, maybeData -> (OnionRequestResponseInfoType, R) in
             guard let data: Data = maybeData else {
                 throw OpenGroupAPI.Error.parsingFailed
             }
             
-            return (responseInfo, try data.decoded(as: type, customError: error))
+            return (responseInfo, try data.decoded(as: type, customError: error, using: dependencies))
         }
     }
 }

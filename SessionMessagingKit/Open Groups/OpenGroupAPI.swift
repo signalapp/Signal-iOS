@@ -125,7 +125,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: responseTypes, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: responseTypes, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
             .map { result in
                 result.enumerated()
                     .reduce(into: [:]) { prev, next in
@@ -156,7 +156,7 @@ public final class OpenGroupAPI: NSObject {
         
         // TODO: Handle a `412` response (ie. a required capability isn't supported)
         return send(request, using: dependencies)
-            .decoded(as: responseTypes, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: responseTypes, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
             .map { result in
                 result.enumerated()
                     .reduce(into: [:]) { prev, next in
@@ -176,7 +176,7 @@ public final class OpenGroupAPI: NSObject {
         
         // TODO: Handle a `412` response (ie. a required capability isn't supported)
         return send(request, using: dependencies)
-            .decoded(as: Capabilities.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: Capabilities.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     // MARK: - Room
@@ -188,7 +188,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: [Room].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: [Room].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     public static func room(for roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Room)> {
@@ -198,7 +198,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: Room.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: Room.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     public static func roomPollInfo(lastUpdated: Int64, for roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, RoomPollInfo)> {
@@ -208,7 +208,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: RoomPollInfo.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: RoomPollInfo.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     // MARK: - Messages
@@ -221,13 +221,13 @@ public final class OpenGroupAPI: NSObject {
         whisperMods: Bool,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Message)> {
-        guard let signedMessage: (data: Data, signature: Data) = sign(message: plaintext, to: roomToken, on: server, using: dependencies) else {
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
         let requestBody: SendMessageRequest = SendMessageRequest(
-            data: signedMessage.data,
-            signature: signedMessage.signature,
+            data: plaintext,
+            signature: Data(signResult.signature),
             whisperTo: whisperTo,
             whisperMods: whisperMods,
             fileIds: nil // TODO: Add support for 'fileIds'.
@@ -245,7 +245,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: Message.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: Message.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     public static func message(_ id: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Message)> {
@@ -255,7 +255,7 @@ public final class OpenGroupAPI: NSObject {
         )
 
         return send(request, using: dependencies)
-            .decoded(as: Message.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: Message.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     public static func messageUpdate(
@@ -265,13 +265,13 @@ public final class OpenGroupAPI: NSObject {
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        guard let signedMessage: (data: Data, signature: Data) = sign(message: plaintext, to: roomToken, on: server, using: dependencies) else {
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
         let requestBody: UpdateMessageRequest = UpdateMessageRequest(
-            data: signedMessage.data,
-            signature: signedMessage.signature
+            data: plaintext,
+            signature: Data(signResult.signature)
         )
         
         guard let body: Data = try? JSONEncoder().encode(requestBody) else {
@@ -302,7 +302,7 @@ public final class OpenGroupAPI: NSObject {
         )
 
         return send(request, using: dependencies)
-            .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     /// This is the direct request to retrieve recent messages from an Open Group so should be retrieved automatically from the `poll()`
@@ -319,7 +319,7 @@ public final class OpenGroupAPI: NSObject {
         )
 
         return send(request, using: dependencies)
-            .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     /// This is the direct request to retrieve recent messages from an Open Group so should be retrieved automatically from the `poll()`
@@ -335,7 +335,7 @@ public final class OpenGroupAPI: NSObject {
         )
 
         return send(request, using: dependencies)
-            .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     // MARK: - Pinning
@@ -385,7 +385,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: FileUploadResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: FileUploadResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     /// Warning: This approach is less efficient as it expects the data to be base64Encoded (with is 33% larger than binary), please use the binary approach
@@ -400,7 +400,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: FileUploadResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: FileUploadResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     public static func downloadFile(_ fileId: Int64, from roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data)> {
@@ -424,7 +424,7 @@ public final class OpenGroupAPI: NSObject {
         )
         // TODO: This endpoint is getting rewritten to return just data (properties would come through as headers).
         return send(request, using: dependencies)
-            .decoded(as: FileDownloadResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: FileDownloadResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     // MARK: - Inbox (Message Requests)
@@ -436,7 +436,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     public static func messageRequestsSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
@@ -446,7 +446,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     public static func sendMessageRequest(_ plaintext: Data, to blindedSessionId: String, on server: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
@@ -471,7 +471,7 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     // MARK: - Users
@@ -581,79 +581,45 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: UserDeleteMessagesResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed)
+            .decoded(as: UserDeleteMessagesResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     // MARK: - Authentication
     
     /// Sign a message to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
-    public static func sign(message: Data, to roomToken: String, on serverName: String, using dependencies: Dependencies = Dependencies()) -> (data: Data, signature: Data)? {
+    public static func sign(_ messageBytes: Bytes, for serverName: String, using dependencies: Dependencies = Dependencies()) -> (publicKey: String, signature: Bytes)? {
+        guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
+        guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: serverName) else {
+            return nil
+        }
+        
         let server: Server? = dependencies.storage.getOpenGroupServer(name: serverName)
-        let targetKeyPair: ECKeyPair
 
-        // Determine if we want to sign using standard or blinded keys based on the server capabilities (assume
-        // unblinded if we have none)
-        // TODO: Remove this (blinding will be required)
+        // Check if the server supports blinded keys, if so then sign using the blinded key
         if server?.capabilities.capabilities.contains(.blinding) == true {
-            // TODO: Validate this 'openGroupId' is correct for the 'getOpenGroup' call
-            let openGroupId: String = "\(serverName).\(roomToken)"
-            
-            // TODO: Validate this is the correct logic (Most likely not)
-            guard let openGroup: OpenGroup = Storage.shared.getOpenGroup(for: openGroupId) else { return nil }
-            guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
-            guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroup.publicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
+            guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
                 return nil
             }
-
-            targetKeyPair = blindedKeyPair
-        }
-        else {
-            guard let userKeyPair: ECKeyPair = dependencies.storage.getUserKeyPair() else { return nil }
-
-            targetKeyPair = userKeyPair
+            
+            guard let signatureResult: Bytes = dependencies.sodium.sogsSignature(message: messageBytes, secretKey: userEdKeyPair.secretKey, blindedSecretKey: blindedKeyPair.secretKey, blindedPublicKey: blindedKeyPair.publicKey) else {
+                return nil
+            }
+            
+            return (
+                publicKey: IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey),
+                signature: signatureResult
+            )
         }
         
-        guard let signature = try? Ed25519.sign(message, with: targetKeyPair) else {
-            SNLog("Failed to sign open group message.")
+        // Otherwise fall back to sign using the unblinded key
+        guard let signatureResult: Bytes = dependencies.sign.signature(message: messageBytes, secretKey: userEdKeyPair.secretKey) else {
             return nil
         }
         
-        return (message, signature)
-    }
-    
-    /// Sign a blinded message request to be sent to a users inbox via SOGS v4
-    private static func sign(message: Data, to blindedSessionId: String, on serverName: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> Data? {
-        guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
-        guard let blindedKeyPair: BlindedECKeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
-            return nil
-        }
-        guard let blindedRecipientPublicKey: Data = String(blindedSessionId.suffix(from: blindedSessionId.index(blindedSessionId.startIndex, offsetBy: IdPrefix.blinded.rawValue.count))).dataFromHex() else {
-            return nil
-        }
-        
-        /// Generate the sharedSecret by "a kB || kA || kB" where
-        /// a, A are the users private and public keys respectively,
-        /// kA is the users blinded public key
-        /// kB is the recipients blinded public key
-        let maybeSharedSecret: Data? = dependencies.sodium
-            .sharedEdSecret(userEdKeyPair.secretKey, blindedRecipientPublicKey.bytes)?
-            .appending(blindedKeyPair.publicKey.bytes)
-            .appending(blindedRecipientPublicKey.bytes)
-        
-        guard let sharedSecret: Data = maybeSharedSecret else { return nil }
-        guard let intermediateHash: Bytes = dependencies.genericHash.hash(message: sharedSecret.bytes) else { return nil }
-        
-        /// Generate the inner message by "message || A" where
-        /// A is the sender's ed25519 master pubkey (**not** kA blinded pubkey)
-        let innerMessage: Bytes = (message.bytes + userEdKeyPair.publicKey)
-        guard let (ciphertext, nonce) = dependencies.aeadXChaCha20Poly1305Ietf.encrypt(message: innerMessage, secretKey: intermediateHash) else {
-            return nil
-        }
-        
-        /// Generate the final data by "b'\x00' + ciphertext + nonce"
-        let finalData: Bytes = [0] + ciphertext + nonce
-        
-        return Data(finalData)
+        return (
+            publicKey: IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey),
+            signature: signatureResult
+        )
     }
     
     /// Sign a request to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
@@ -666,13 +632,9 @@ public final class OpenGroupAPI: NSObject {
         let method: String = (request.httpMethod ?? "GET")
         let timestamp: Int = Int(floor(dependencies.date.timeIntervalSince1970))
         let nonce: Data = Data(dependencies.nonceGenerator.nonce())
-        let server: Server? = dependencies.storage.getOpenGroupServer(name: serverName)
-        let userPublicKeyHex: String
-        let signatureBytes: Bytes
         
         guard let serverPublicKeyData: Data = serverPublicKey.dataFromHex() else { return nil }
         guard let timestampBytes: Bytes = "\(timestamp)".data(using: .ascii)?.bytes else { return nil }
-        guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
         
         /// Get a hash of any body content
         let bodyHash: Bytes? = {
@@ -693,51 +655,24 @@ public final class OpenGroupAPI: NSObject {
         ///     `Method`
         ///     `Path`
         ///     `Body` is a Blake2b hash of the data (if there is a body)
-        let signatureMessageBytes: Bytes = serverPublicKeyData.bytes
+        let messageBytes: Bytes = serverPublicKeyData.bytes
             .appending(nonce.bytes)
             .appending(timestampBytes)
             .appending(method.bytes)
             .appending(path.bytes)
             .appending(bodyHash ?? [])
         
-        // Determine if we want to sign using standard or blinded keys based on the server capabilities (assume
-        // unblinded if we have none)
-        // TODO: Remove this (blinding will be required)
-        if server?.capabilities.capabilities.contains(.blinding) == true {
-            // TODO: More testing of this blinded id signing (though it seems to be working!!!)
-            guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
-                return nil
-            }
-            
-            userPublicKeyHex = IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey)
-            
-            guard let signatureResult: Bytes = Sodium().sogsSignature(message: signatureMessageBytes, secretKey: userEdKeyPair.secretKey, blindedSecretKey: blindedKeyPair.secretKey, blindedPublicKey: blindedKeyPair.publicKey) else {
-                return nil
-            }
-            
-            signatureBytes = signatureResult
-        }
-        else {
-            userPublicKeyHex = IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey)
-            
-            // TODO: shift this to dependencies
-            guard let signatureResult: Bytes = Sodium().sign.signature(message: signatureMessageBytes, secretKey: userEdKeyPair.secretKey) else {
-                return nil
-            }
-            
-            signatureBytes = signatureResult
+        /// Sign the above message
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(messageBytes, for: serverName, using: dependencies) else {
+            return nil
         }
         
-        print("RAWR X-SOGS-Pubkey: \(userPublicKeyHex)")
-        print("RAWR X-SOGS-Timestamp: \(timestamp)")
-        print("RAWR X-SOGS-Nonce: \(nonce.base64EncodedString())")
-        print("RAWR X-SOGS-Signature: \(signatureBytes.toBase64())")
         updatedRequest.allHTTPHeaderFields = (request.allHTTPHeaderFields ?? [:])
             .updated(with: [
-                Header.sogsPubKey.rawValue: userPublicKeyHex,
+                Header.sogsPubKey.rawValue: signResult.publicKey,
                 Header.sogsTimestamp.rawValue: "\(timestamp)",
                 Header.sogsNonce.rawValue: nonce.base64EncodedString(),
-                Header.sogsSignature.rawValue: signatureBytes.toBase64()
+                Header.sogsSignature.rawValue: signResult.signature.toBase64()
             ])
         
         return updatedRequest
@@ -756,7 +691,7 @@ public final class OpenGroupAPI: NSObject {
         urlRequest.httpBody = request.body
         
         if request.useOnionRouting {
-            guard let publicKey = SNMessagingKitConfiguration.shared.storage.getOpenGroupPublicKey(for: request.server) else {
+            guard let publicKey = dependencies.storage.getOpenGroupPublicKey(for: request.server) else {
                 return Promise(error: Error.noPublicKey)
             }
             

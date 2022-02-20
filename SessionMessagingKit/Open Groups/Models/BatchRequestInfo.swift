@@ -62,13 +62,13 @@ extension OpenGroupAPI {
 // MARK: - Convenience
 
 public extension Decodable {
-    static func decoded(from data: Data) throws -> Self {
-        return try JSONDecoder().decode(Self.self, from: data)
+    static func decoded(from data: Data, customError: Error, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) throws -> Self {
+        return try data.decoded(as: Self.self, customError: customError, using: dependencies)
     }
 }
 
 extension Promise where T == (OnionRequestResponseInfoType, Data?) {
-    func decoded(as types: OpenGroupAPI.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error) -> Promise<OpenGroupAPI.BatchResponse> {
+    func decoded(as types: OpenGroupAPI.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<OpenGroupAPI.BatchResponse> {
         self.map(on: queue) { responseInfo, maybeData -> OpenGroupAPI.BatchResponse in
             // Need to split the data into an array of data so each item can be Decoded correctly
             guard let data: Data = maybeData else { throw OpenGroupAPI.Error.parsingFailed }
@@ -82,7 +82,7 @@ extension Promise where T == (OnionRequestResponseInfoType, Data?) {
             
             do {
                 return try zip(dataArray, types)
-                    .map { data, type in try type.decoded(from: data) }
+                    .map { data, type in try type.decoded(from: data, customError: error, using: dependencies) }
                     .map { data in (responseInfo, data) }
             }
             catch _ {

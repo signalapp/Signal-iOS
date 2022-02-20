@@ -13,6 +13,7 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
         case allOpenGroups
         case openGroupPublicKeys
         case userKeyPair
+        case userEdKeyPair
         case openGroup
         case openGroupServer
         case openGroupImage
@@ -43,7 +44,7 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
 
     func getUserPublicKey() -> String? { return nil }
     func getUserKeyPair() -> ECKeyPair? { return (mockData[.userKeyPair] as? ECKeyPair) }
-    func getUserED25519KeyPair() -> Box.KeyPair? { return nil }
+    func getUserED25519KeyPair() -> Box.KeyPair? { return (mockData[.userEdKeyPair] as? Box.KeyPair) }
     func getUser() -> Contact? { return nil }
     func getAllContacts() -> Set<Contact> { return Set() }
 

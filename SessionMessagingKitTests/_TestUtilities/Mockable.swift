@@ -7,3 +7,9 @@ protocol Mockable {
     
     var mockData: [Key: Any] { get }
 }
+
+protocol StaticMockable {
+    associatedtype Key: Hashable
+    
+    static var mockData: [Key: Any] { get }
+}
