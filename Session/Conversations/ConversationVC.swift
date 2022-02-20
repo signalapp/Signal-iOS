@@ -379,10 +379,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             // so only allow text-based messages
             self.snInputView.setEnabledMessageTypes(
                 (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
-                    .all :
-                    (contact != nil && thread.shouldBeVisible ? .none : .textOnly)
+                    .all : .textOnly
                 ),
-                message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized()
+                message: nil
             )
         }
         
@@ -639,10 +638,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             // so only allow text-based messages
             self.snInputView.setEnabledMessageTypes(
                 (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
-                    .all :
-                    (contact != nil && thread.shouldBeVisible ? .none : .textOnly)
+                    .all : .textOnly
                 ),
-                message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized()
+                message: nil
             )
         }
     }

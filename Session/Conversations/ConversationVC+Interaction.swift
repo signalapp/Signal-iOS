@@ -333,10 +333,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             // so only allow text-based messages
             self.snInputView.setEnabledMessageTypes(
                 (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
-                    .all :
-                    (contact != nil ? .none : .textOnly)
+                    .all : .textOnly
                 ),
-                message: "MESSAGE_REQUESTS_DISABLED_INPUT".localized()
+                message: nil
             )
         }
         
