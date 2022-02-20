@@ -1,2 +1,2 @@
-• Profile photos for 1-1 and group chats will now reliably appear in notifications
-• Various performance improvements for very large groups
+• Profilbilder för 1-1 och gruppchattar kommer nu att visas på ett tillförlitligt sätt i notiser
+• Olika prestandaförbättringar för mycket stora grupper

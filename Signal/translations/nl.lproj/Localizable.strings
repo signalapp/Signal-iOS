@@ -5297,7 +5297,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automatisch downloaden";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Bovenstaande instellingen terug naar standaardinstelling";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Bovenstaande instellingen naar standaardinstelling terugzetten";
 
 /* Item title for the sent media quality setting */
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Media verzendkwaliteit";

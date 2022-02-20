@@ -4490,7 +4490,7 @@
 "PRIVACY_VERIFY_BUTTON" = "標記為已驗證";
 
 /* No comment provided by engineer. */
-"PROCEED_BUTTON" = "好，請繼續。";
+"PROCEED_BUTTON" = "繼續";
 
 /* Placeholder text for the bio field of the profile bio view. */
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "不妨寫句話自我介紹一下…";
@@ -4502,13 +4502,13 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "無盛世 無亂世 坐在咖啡店";
 
 /* The 'Encrypted' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "清風不識字";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "不說果 不說因";
 
 /* The 'free to chat' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "即使要蒙著我嘴 我亦可高呼";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "☝️息尚存";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "其實我只想 棲身☝️抹暖光";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "人間有味是清歡";
@@ -5108,10 +5108,10 @@
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "放棄媒體";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "返回至相機";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "返回相機";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "返回至媒體庫";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "返回媒體庫";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "用唔安全嘅SMS去邀請人？";

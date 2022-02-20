@@ -1961,7 +1961,7 @@
 "GROUP_ACCESS_LEVEL_MEMBER" = "Cualquiera";
 
 /* Description of the 'unknown' access level. */
-"GROUP_ACCESS_LEVEL_UNKNOWN" = "Desconocido";
+"GROUP_ACCESS_LEVEL_UNKNOWN" = "Desconocid@";
 
 /* Description of the 'unsatisfiable' access level. */
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Desactivada";
@@ -6416,7 +6416,7 @@
 "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "El tiempo de desaparición de mensajes se ha fijado en %@.";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Desconocido";
+"UNKNOWN_VALUE" = "Desconocid@";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Desenlazar";

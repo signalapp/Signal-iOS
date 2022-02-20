@@ -371,22 +371,22 @@
 "BADGE_CONFIGURATION_TITLE" = "Ženkliukai";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Tapkite remėju";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Tapkite rėmėju";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Suteikite Signal paskatinimą";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Jūsų paskatinimo ženkliukas nebegalioja ir daugiau nebėra matomas jūsų profilyje.\n\nGalite ir toliau naudoti Signal, bet norėdami palaikyti jums kuriamą technologiją, apsvarstykite galimybę tapti remėju ir remti kas mėnesį.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Jūsų paskatinimo ženkliukas nebegalioja ir daugiau nebėra matomas jūsų profilyje.\n\nGalite ir toliau naudoti Signal, bet norėdami palaikyti jums kuriamą technologiją, apsvarstykite galimybę tapti rėmėju ir remti kas mėnesį.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Jūsų paskatinimo ženkliukas nebegalioja ir daugiau nebėra matomas jūsų profilyje.\n\nPaaukodami, galite dar 30-čiai dienų iš naujo aktyvuoti paskatinimo ženkliuką.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Jūsų remėjo prenumerata buvo automatiškai nutraukta, nes pernelyg ilgą laiką buvote neaktyvūs. Jūsų %@ ženkliukas yra daugiau nebematomas jūsų profilyje.\n\nGalite ir toliau naudotis Signal programėle, bet norėdami ją paremti ir iš naujo aktyvuoti ženkliuką, atnaujinkite prenumeratą dabar.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Jūsų rėmėjo prenumerata buvo automatiškai nutraukta, nes pernelyg ilgą laiką buvote neaktyvūs. Jūsų %@ ženkliukas yra daugiau nebematomas jūsų profilyje.\n\nGalite ir toliau naudotis Signal programėle, bet norėdami ją paremti ir iš naujo aktyvuoti ženkliuką, atnaujinkite prenumeratą dabar.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Tapti remėju";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Tapti rėmėju";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Pridėti paskatinimą";
@@ -938,10 +938,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Kažkas neveikia";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Remėjai ir Signal paskatinimas";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Rėmėjai ir Signal paskatinimas";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Remėjai ir paskatinimas";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Rėmėjai ir paskatinimas";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal nepavyko užbaigti jūsų palaikymo užklausos.";
@@ -5939,7 +5939,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Signal paskatinimas";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Tapkite Signal remėju";
+"SETTINGS_SUBSCRIPTION" = "Tapkite Signal rėmėju";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registracijos užraktas";
@@ -6110,7 +6110,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Ne, ačiū";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Tapkite remėju";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Tapkite rėmėju";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Jūsų saugumo numeris su %@ sutampa. Dabar galite pažymėti šį adresatą kaip patvirtintą.";

@@ -5246,16 +5246,16 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Örneğin: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Yeni Numaranız";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Eski Numaranız";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Telefon Numarası";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ doğrulanıyor";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
