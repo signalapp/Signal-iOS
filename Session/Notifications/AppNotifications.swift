@@ -4,6 +4,8 @@
 
 import Foundation
 import PromiseKit
+import SessionMessagingKit
+import SignalUtilitiesKit
 
 /// There are two primary components in our system notification integration:
 ///
@@ -88,7 +90,7 @@ let kNotificationDelayForBackgroumdPoll: TimeInterval = 5
 let kAudioNotificationsThrottleCount = 2
 let kAudioNotificationsThrottleInterval: TimeInterval = 5
 
-protocol NotificationPresenterAdaptee: class {
+protocol NotificationPresenterAdaptee: AnyObject {
 
     func registerNotificationSettings() -> Promise<Void>
 
@@ -157,10 +159,31 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
-
         guard !thread.isMuted else { return }
-        guard thread.isGroupThread() || !thread.isMessageRequest() else { return }
         guard let threadId = thread.uniqueId else { return }
+        
+        // If the thread is a message request and the user hasn't hidden message requests then we need
+        // to check if this is the only message request thread (group threads can't be message requests
+        // so just ignore those and if the user has hidden message requests then we want to show the
+        // notification regardless of how many message requests there are)
+        if !thread.isGroupThread() && thread.isMessageRequest() && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+            let dbConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+            dbConnection.objectCacheLimit = 2
+            dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
+            let threads: YapDatabaseViewMappings = YapDatabaseViewMappings(groups: [ TSMessageRequestGroup ], view: TSThreadDatabaseViewExtensionName)
+            dbConnection.read { transaction in
+                threads.update(with: transaction) // Perform the initial update
+            }
+            
+            let numMessageRequests = threads.numberOfItems(inGroup: TSMessageRequestGroup)
+            dbConnection.endLongLivedReadTransaction()
+            
+            // Allow this to show a notification if there are no message requests (ie. this is the first one)
+            guard numMessageRequests == 0 else { return }
+        }
+        else if thread.isMessageRequest() && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+            CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
+        }
         
         let identifier: String = incomingMessage.notificationIdentifier ?? UUID().uuidString
         
@@ -186,36 +209,44 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let senderName = Storage.shared.getContact(with: incomingMessage.authorId, using: transaction)?.displayName(for: context) ?? incomingMessage.authorId
 
         let notificationTitle: String?
-        let previewType = preferences.notificationPreviewType(with: transaction)
-        switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = "Session"
-        case .nameNoPreview, .namePreview:
-            switch thread {
-            case is TSContactThread:
-                notificationTitle = senderName
-            case is TSGroupThread:
-                var groupName = thread.name()
-                if groupName.count < 1 {
-                    groupName = MessageStrings.newGroupDefaultTitle
-                }
-                notificationTitle = isBackgroudPoll ? groupName : String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
-            default:
-                owsFailDebug("unexpected thread: \(thread)")
-                return
-            }
-        default:
-            notificationTitle = "Session"
-        }
-
         var notificationBody: String?
+        let previewType = preferences.notificationPreviewType(with: transaction)
+        
         switch previewType {
-        case .noNameNoPreview, .nameNoPreview:
-            notificationBody = NotificationStrings.incomingMessageBody
-        case .namePreview:
-            notificationBody = messageText
-        default:
-            notificationBody = NotificationStrings.incomingMessageBody
+            case .noNameNoPreview:
+                notificationTitle = "Session"
+                
+            case .nameNoPreview, .namePreview:
+                switch thread {
+                    case is TSContactThread:
+                        notificationTitle = (thread.isMessageRequest() ? "Session" : senderName)
+                        
+                    case is TSGroupThread:
+                        var groupName = thread.name()
+                        if groupName.count < 1 {
+                            groupName = MessageStrings.newGroupDefaultTitle
+                        }
+                        notificationTitle = isBackgroudPoll ? groupName : String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
+                        
+                    default:
+                        owsFailDebug("unexpected thread: \(thread)")
+                        return
+                }
+                
+            default:
+                notificationTitle = "Session"
+        }
+        
+        switch previewType {
+            case .noNameNoPreview, .nameNoPreview: notificationBody = NotificationStrings.incomingMessageBody
+            case .namePreview: notificationBody = messageText
+            default: notificationBody = NotificationStrings.incomingMessageBody
+        }
+        
+        // If it's a message request then overwrite the body to be something generic (only show a notification
+        // when receiving a new message request if there aren't any others or the user had hidden them)
+        if thread.isMessageRequest() {
+            notificationBody = NSLocalizedString("MESSAGE_REQUESTS_NOTIFICATION", comment: "")
         }
 
         assert((notificationBody ?? notificationTitle) != nil)
@@ -231,12 +262,15 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         DispatchQueue.main.async {
             notificationBody = MentionUtilities.highlightMentions(in: notificationBody!, threadID: thread.uniqueId!)
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: category,
-                                title: notificationTitle,
-                                body: notificationBody ?? "",
-                                userInfo: userInfo,
-                                sound: sound,
-                                replacingIdentifier: identifier)
+            
+            self.adaptee.notify(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody ?? "",
+                userInfo: userInfo,
+                sound: sound,
+                replacingIdentifier: identifier
+            )
         }
     }
 

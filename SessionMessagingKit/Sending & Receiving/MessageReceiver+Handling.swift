@@ -214,9 +214,14 @@ extension MessageReceiver {
                 if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
-                contact.isApproved = contactInfo.isApproved
-                contact.isBlocked = contactInfo.isBlocked
-                contact.didApproveMe = contactInfo.didApproveMe
+                
+                // Note: We only update these values if the proto actually has values for them (this is to
+                // prevent an edge case where an old client could override the values with default values
+                // since they aren't included)
+                if contactInfo.hasIsApproved { contact.isApproved = contactInfo.isApproved }
+                if contactInfo.hasIsBlocked { contact.isBlocked = contactInfo.isBlocked }
+                if contactInfo.hasDidApproveMe { contact.didApproveMe = contactInfo.didApproveMe }
+                
                 Storage.shared.setContact(contact, using: transaction)
                 let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
                 thread.shouldBeVisible = true
@@ -800,12 +805,18 @@ extension MessageReceiver {
         // Force a config sync to ensure all devices know the contact approval state if desired (Note: This logic
         // should match the behaviour in AppDelegate.forceSyncConfigurationNowIfNeeded())
         guard forceConfigSync else { return }
-        guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
-            return
-        }
         
-        let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
-        MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
+        // Note: We MUST run this async as we need to ensure the database `transaction` has finished before we generate
+        // a new configuration message (otherwise the `contact` will be loaded direct from the database and the
+        // `didApproveMe` value won't have been updated)
+        DispatchQueue.global(qos: .background).async {
+            guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
+                return
+            }
+            
+            let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
+            MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
+        }
     }
     
     public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {

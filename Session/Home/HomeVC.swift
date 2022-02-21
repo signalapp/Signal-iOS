@@ -181,7 +181,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
             case 0:
-                if messageRequestCount > 0 && !UserDefaults.standard[.hasHiddenMessageRequests] {
+                if messageRequestCount > 0 && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
                     return 1
                 }
                 
@@ -258,8 +258,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                         .compactMap { $0 as? YapDatabaseViewRowChange }
                         .filter { $0.finalGroup == TSMessageRequestGroup && $0.type == .insert }
                     
-                    if !messageRequestInserts.isEmpty && UserDefaults.standard[.hasHiddenMessageRequests] {
-                        UserDefaults.standard[.hasHiddenMessageRequests] = false
+                    if !messageRequestInserts.isEmpty && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+                        CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
                     }
                 }
                 
@@ -284,8 +284,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         tableView.beginUpdates()
         
         // If we need to unhide the message request row and then re-insert it
-        if !messageRequestInserts.isEmpty && UserDefaults.standard[.hasHiddenMessageRequests] {
-            UserDefaults.standard[.hasHiddenMessageRequests] = false
+        if !messageRequestInserts.isEmpty && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+            CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
             tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         }
         
@@ -436,7 +436,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         switch indexPath.section {
             case 0:
                 let hide = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_HIDE_TITLE", comment: "")) { [weak self] _, _ in
-                    UserDefaults.standard[.hasHiddenMessageRequests] = true
+                    CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = true
 
                     // Animate the row removal
                     self?.tableView.beginUpdates()

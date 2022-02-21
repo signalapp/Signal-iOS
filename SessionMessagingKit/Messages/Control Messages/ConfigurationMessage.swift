@@ -194,19 +194,36 @@ extension ConfigurationMessage {
         public var profilePictureURL: String?
         public var profileKey: Data?
         
+        public var hasIsApproved: Bool
         public var isApproved: Bool
+        public var hasIsBlocked: Bool
         public var isBlocked: Bool
+        public var hasDidApproveMe: Bool
         public var didApproveMe: Bool
 
         public var isValid: Bool { publicKey != nil && displayName != nil }
 
-        public init(publicKey: String, displayName: String, profilePictureURL: String?, profileKey: Data?, isApproved: Bool, isBlocked: Bool, didApproveMe: Bool) {
+        public init(
+            publicKey: String,
+            displayName: String,
+            profilePictureURL: String?,
+            profileKey: Data?,
+            hasIsApproved: Bool,
+            isApproved: Bool,
+            hasIsBlocked: Bool,
+            isBlocked: Bool,
+            hasDidApproveMe: Bool,
+            didApproveMe: Bool
+        ) {
             self.publicKey = publicKey
             self.displayName = displayName
             self.profilePictureURL = profilePictureURL
             self.profileKey = profileKey
+            self.hasIsApproved = hasIsApproved
             self.isApproved = isApproved
+            self.hasIsBlocked = hasIsBlocked
             self.isBlocked = isBlocked
+            self.hasDidApproveMe = hasDidApproveMe
             self.didApproveMe = didApproveMe
         }
 
@@ -217,8 +234,11 @@ extension ConfigurationMessage {
             self.displayName = displayName
             self.profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String?
             self.profileKey = coder.decodeObject(forKey: "profileKey") as! Data?
+            self.hasIsApproved = (coder.decodeObject(forKey: "hasIsApproved") as? Bool ?? false)
             self.isApproved = (coder.decodeObject(forKey: "isApproved") as? Bool ?? false)
+            self.hasIsBlocked = (coder.decodeObject(forKey: "hasIsBlocked") as? Bool ?? false)
             self.isBlocked = (coder.decodeObject(forKey: "isBlocked") as? Bool ?? false)
+            self.hasDidApproveMe = (coder.decodeObject(forKey: "hasDidApproveMe") as? Bool ?? false)
             self.didApproveMe = (coder.decodeObject(forKey: "didApproveMe") as? Bool ?? false)
         }
 
@@ -227,8 +247,11 @@ extension ConfigurationMessage {
             coder.encode(displayName, forKey: "displayName")
             coder.encode(profilePictureURL, forKey: "profilePictureURL")
             coder.encode(profileKey, forKey: "profileKey")
+            coder.encode(hasIsApproved, forKey: "hasIsApproved")
             coder.encode(isApproved, forKey: "isApproved")
+            coder.encode(hasIsBlocked, forKey: "hasIsBlocked")
             coder.encode(isBlocked, forKey: "isBlocked")
+            coder.encode(hasDidApproveMe, forKey: "hasDidApproveMe")
             coder.encode(didApproveMe, forKey: "didApproveMe")
         }
 
@@ -238,8 +261,11 @@ extension ConfigurationMessage {
                 displayName: proto.name,
                 profilePictureURL: proto.profilePicture,
                 profileKey: proto.profileKey,
+                hasIsApproved: proto.hasIsApproved,
                 isApproved: proto.isApproved,
+                hasIsBlocked: proto.hasIsBlocked,
                 isBlocked: proto.isBlocked,
+                hasDidApproveMe: proto.hasDidApproveMe,
                 didApproveMe: proto.didApproveMe
             )
             
@@ -254,9 +280,9 @@ extension ConfigurationMessage {
             if let profilePictureURL = profilePictureURL { result.setProfilePicture(profilePictureURL) }
             if let profileKey = profileKey { result.setProfileKey(profileKey) }
             
-            result.setIsApproved(isApproved)
-            result.setIsBlocked(isBlocked)
-            result.setDidApproveMe(didApproveMe)
+            if hasIsApproved { result.setIsApproved(isApproved) }
+            if hasIsBlocked { result.setIsBlocked(isBlocked) }
+            if hasDidApproveMe { result.setDidApproveMe(didApproveMe) }
             
             do {
                 return try result.build()

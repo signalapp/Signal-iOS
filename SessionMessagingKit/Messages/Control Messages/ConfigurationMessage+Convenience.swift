@@ -65,6 +65,8 @@ extension ConfigurationMessage {
                     return
                 }
                 
+                // Can just default the 'hasX' values to true as they will be set to this
+                // when converting to proto anyway
                 let profilePictureURL = contact.profilePictureURL
                 let profileKey = contact.profileEncryptionKey?.keyData
                 let contact = ConfigurationMessage.Contact(
@@ -72,8 +74,11 @@ extension ConfigurationMessage {
                     displayName: (contact.name ?? publicKey),
                     profilePictureURL: profilePictureURL,
                     profileKey: profileKey,
+                    hasIsApproved: true,
                     isApproved: contact.isApproved,
+                    hasIsBlocked: true,
                     isBlocked: contact.isBlocked,
+                    hasDidApproveMe: true,
                     didApproveMe: contact.didApproveMe
                 )
                 
