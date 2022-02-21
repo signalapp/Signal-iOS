@@ -9,7 +9,7 @@ abstract_target 'GlobalDependencies' do
   pod 'PromiseKit'
   pod 'CryptoSwift'
   # FIXME: If https://github.com/jedisct1/swift-sodium/pull/249 gets resolved then revert this back to the standard pod
-  pod 'Sodium', :git => 'https://github.com/mpretty-cyro/swift-sodium.git', branch: 'full-clibsodium-build'
+  pod 'Sodium', :git => 'https://github.com/oxen-io/session-ios-swift-sodium.git', branch: 'session-build'
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/oxen-io/session-ios-yap-database.git', branch: 'signal-release'
   
   target 'Session' do

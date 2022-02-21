@@ -132,7 +132,7 @@ DEPENDENCIES:
   - Reachability
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/oxen-io/session-ios-core-kit`, branch `session-version`)
-  - Sodium (from `https://github.com/mpretty-cyro/swift-sodium.git`, branch `full-clibsodium-build`)
+  - Sodium (from `https://github.com/oxen-io/session-ios-swift-sodium.git`, branch `session-build`)
   - SwiftProtobuf (~> 1.5.0)
   - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
@@ -164,8 +164,8 @@ EXTERNAL SOURCES:
     :branch: session-version
     :git: https://github.com/oxen-io/session-ios-core-kit
   Sodium:
-    :branch: full-clibsodium-build
-    :git: https://github.com/mpretty-cyro/swift-sodium.git
+    :branch: session-build
+    :git: https://github.com/oxen-io/session-ios-swift-sodium.git
   YapDatabase:
     :branch: signal-release
     :git: https://github.com/oxen-io/session-ios-yap-database.git
@@ -183,8 +183,8 @@ CHECKOUT OPTIONS:
     :commit: 4590c2737a2b5dc0ef4ace9f9019b581caccc1de
     :git: https://github.com/oxen-io/session-ios-core-kit
   Sodium:
-    :commit: eeb18f6fa8c28dc254e64cb340ee2c8f37f2ebe8
-    :git: https://github.com/mpretty-cyro/swift-sodium.git
+    :commit: 6d4317cd4c67e7a617d474d7c5bf20d319aa4536
+    :git: https://github.com/oxen-io/session-ios-swift-sodium.git
   YapDatabase:
     :commit: d84069e25e12a16ab4422e5258127a04b70489ad
     :git: https://github.com/oxen-io/session-ios-yap-database.git
@@ -213,6 +213,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 011a84301a09b80dfc7343c105fc810eacb31074
+PODFILE CHECKSUM: 42874150fd08761ee6907c5bacf22b95ae849d8c
 
 COCOAPODS: 1.11.2
