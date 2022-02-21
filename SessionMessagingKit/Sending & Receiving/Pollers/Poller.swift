@@ -89,7 +89,7 @@ public final class Poller : NSObject {
     private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard isPolling else { return Promise { $0.fulfill(()) } }
         let userPublicKey = getUserHexEncodedPublicKey()
-        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: DispatchQueue.main) { [weak self] rawResponse -> Promise<Void> in
+        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: Threading.pollerQueue) { [weak self] rawResponse -> Promise<Void> in
             guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
             let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
             if !messages.isEmpty {
@@ -111,7 +111,7 @@ public final class Poller : NSObject {
             if strongSelf.pollCount == Poller.maxPollCount {
                 throw Error.pollLimitReached
             } else {
-                return withDelay(Poller.pollInterval, completionQueue: DispatchQueue.main) {
+                return withDelay(Poller.pollInterval, completionQueue: Threading.pollerQueue) {
                     guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
                     return strongSelf.poll(snode, seal: longTermSeal)
                 }
