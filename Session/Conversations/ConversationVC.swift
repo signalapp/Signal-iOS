@@ -291,6 +291,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let viewItem = viewItems[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: MessageCell.getCellType(for: viewItem).identifier) as! MessageCell
         cell.delegate = self
+        cell.thread = thread
         cell.viewItem = viewItem
         return cell
     }

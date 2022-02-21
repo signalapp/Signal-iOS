@@ -257,7 +257,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         messageStatusImageView.image = image
         messageStatusImageView.backgroundColor = backgroundColor
         if let message = message as? TSOutgoingMessage {
-            messageStatusImageView.isHidden = (message.messageState == .sent && message.thread.lastInteraction != message)
+            messageStatusImageView.isHidden = (message.messageState == .sent && thread?.lastInteraction != message)
         } else {
             messageStatusImageView.isHidden = true
         }
@@ -349,7 +349,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             }
         case .mediaMessage:
             if viewItem.interaction is TSIncomingMessage,
-                let thread = viewItem.interaction.thread as? TSContactThread,
+                let thread = thread as? TSContactThread,
                 Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
@@ -382,7 +382,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             }
         case .audio:
             if viewItem.interaction is TSIncomingMessage,
-                let thread = viewItem.interaction.thread as? TSContactThread,
+                let thread = thread as? TSContactThread,
                 Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
@@ -393,7 +393,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             }
         case .genericAttachment:
             if viewItem.interaction is TSIncomingMessage,
-                let thread = viewItem.interaction.thread as? TSContactThread,
+                let thread = thread as? TSContactThread,
                 Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
@@ -673,7 +673,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
 
     private static func shouldShowProfilePicture(for viewItem: ConversationViewItem) -> Bool {
         guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
-        let isGroupThread = message.thread.isGroupThread()
+        let isGroupThread = viewItem.isGroupThread
         let senderSessionID = (message as? TSIncomingMessage)?.authorId
         return isGroupThread && viewItem.shouldShowSenderProfilePicture && senderSessionID != nil
     }
