@@ -251,13 +251,14 @@ BOOL IsNoteToSelfEnabled(void)
 
 - (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    __block NSUInteger count = 0;
-
     YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
-    count = [unreadMessages numberOfItemsInGroup:self.uniqueId];
-    return count;
+    return [unreadMessages numberOfItemsInGroup:self.uniqueId];
+    
     
     // FIXME: Why did we have to do as the following?
+//    __block NSUInteger count = 0;
+//
+//    YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
 //    [unreadMessages enumerateKeysAndObjectsInGroup:self.uniqueId
 //                                        usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
 //        if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
@@ -270,6 +271,8 @@ BOOL IsNoteToSelfEnabled(void)
 //        }
 //        count += 1;
 //    }];
+    
+//    return count;
 }
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
