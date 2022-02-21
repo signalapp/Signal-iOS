@@ -23,11 +23,11 @@ public final class OpenGroupPollerV2 : NSObject {
             guard let strongSelf = self else { return }
             strongSelf.hasStarted = true
             strongSelf.timer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollInterval, repeats: true) { _ in
-                DispatchQueue.global().async {
+                Threading.openGroupPollerQueue.async {
                     self?.poll().retainUntilComplete()
                 }
             }
-            DispatchQueue.global().async {
+            Threading.openGroupPollerQueue.async {
                 strongSelf.poll().retainUntilComplete()
             }
         }

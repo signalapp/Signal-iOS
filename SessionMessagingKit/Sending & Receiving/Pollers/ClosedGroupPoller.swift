@@ -89,14 +89,16 @@ public final class ClosedGroupPoller : NSObject {
         SNLog("Next poll interval for closed group with public key: \(groupPublicKey) is \(nextPollInterval) s.")
         timers[groupPublicKey] = Timer.scheduledTimer(withTimeInterval: nextPollInterval, repeats: false) { [weak self] timer in
             timer.invalidate()
-            self?.poll(groupPublicKey).done2 { _ in
-                DispatchQueue.main.async { // Timers don't do well on background queues
-                    self?.pollRecursively(groupPublicKey)
-                }
-            }.catch2 { error in
-                // The error is logged in poll(_:)
-                DispatchQueue.main.async { // Timers don't do well on background queues
-                    self?.pollRecursively(groupPublicKey)
+            Threading.closedGroupPollerQueue.async {
+                self?.poll(groupPublicKey).done2 { _ in
+                    DispatchQueue.main.async { // Timers don't do well on background queues
+                        self?.pollRecursively(groupPublicKey)
+                    }
+                }.catch2 { error in
+                    // The error is logged in poll(_:)
+                    DispatchQueue.main.async { // Timers don't do well on background queues
+                        self?.pollRecursively(groupPublicKey)
+                    }
                 }
             }
         }
