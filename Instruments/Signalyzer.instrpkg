@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<package>
+    <id>org.whispersystems.signal.Signalyzer</id>
+    <version>1.91</version>
+    <title>Signalyzer the Signal InstrumentsMonitor</title>
+    <owner>
+        <name>Martin Böttcher, martin@signal.org</name>
+    </owner>
+
+    <os-signpost-interval-schema>
+        <id>traffic</id>
+        <title>Web based traffic</title>
+        <subsystem>"org.whispersystems.signal"</subsystem>
+        <category>"traffic"</category>
+        <name>"entry"</name>
+        <identifier>?pid</identifier>
+
+        <start-pattern>
+            <message>?prefix "-Thread:" ?thread "|" ?url "|" ?event</message>
+        </start-pattern>
+        <end-pattern>
+            <message>?status "|" ?httpstatus "|" ?bytes</message>
+        </end-pattern>
+
+        <start-column>
+            <mnemonic>start</mnemonic>
+            <title>Started</title>
+            <type>start-time</type>
+        </start-column>
+        <duration-column>
+            <mnemonic>duration</mnemonic>
+            <title>Duration</title>
+            <type>duration</type>
+        </duration-column>
+        <column>
+            <mnemonic>thread</mnemonic>
+            <title>Thread</title>
+            <type>string</type>
+            <expression>?thread</expression>
+        </column>
+        <column>
+            <mnemonic>name</mnemonic>
+            <title>Name</title>
+            <type>string</type>
+            <expression>?pid</expression>
+        </column>
+        <column>
+            <mnemonic>size</mnemonic>
+            <title>Size</title>
+            <type>size-in-bytes</type>
+            <expression>(string-to-field ?bytes)</expression>
+        </column>
+        <column>
+            <mnemonic>event</mnemonic>
+            <title>Event</title>
+            <type>string</type>
+            <expression>?event</expression>
+        </column>
+        <column>
+            <mnemonic>pid</mnemonic>
+            <title>ID</title>
+            <type>int64-value</type>
+            <expression>?pid</expression>
+        </column>
+        <column>
+            <mnemonic>url</mnemonic>
+            <title>URL</title>
+            <type>string</type>
+            <expression>?url</expression>
+        </column>
+        <column>
+            <mnemonic>status</mnemonic>
+            <title>Status</title>
+            <type>event-concept</type>
+            <expression>(switch ?status (case "1" then "Success") (default "Failure"))</expression>
+        </column>
+        <column>
+            <mnemonic>httpstatus</mnemonic>
+            <title>Code</title>
+            <type>uint32</type>
+            <expression>(string-to-field ?httpstatus)</expression>
+        </column>
+        <column>
+            <mnemonic>color</mnemonic>
+            <title>Success</title>
+            <type>event-concept</type>
+            <expression>(switch ?status (case "1" then "Info") (default "Error"))</expression>
+        </column>
+    </os-signpost-interval-schema>
+
+    <os-signpost-interval-schema>
+        <id>runtime</id>
+        <title>Runtime Measurement</title>
+        <subsystem>"org.whispersystems.signal"</subsystem>
+        <category>"runtime"</category>
+        <name>"entry"</name>
+        <identifier>?pid</identifier>
+
+        <start-pattern>
+            <time>?starttime</time>
+            <message>?prefix "-Thread:" ?thread "|"?name "|" ?group</message>
+        </start-pattern>
+        <end-pattern>
+            <time>?endtime</time>
+        </end-pattern>
+
+        <start-column>
+            <mnemonic>start</mnemonic>
+            <title>Started</title>
+            <type>start-time</type>
+        </start-column>
+        <duration-column>
+            <mnemonic>duration</mnemonic>
+            <title>Duration</title>
+            <type>duration</type>
+        </duration-column>
+        <column>
+            <mnemonic>thread</mnemonic>
+            <title>Thread</title>
+            <type>string</type>
+            <expression>?thread</expression>
+        </column>
+        <column>
+            <mnemonic>group</mnemonic>
+            <title>Group</title>
+            <type>string</type>
+            <expression>?group</expression>
+        </column>
+        <column>
+            <mnemonic>name</mnemonic>
+            <title>Name</title>
+            <type>string</type>
+            <expression>?name</expression>
+        </column>
+        <column>
+            <mnemonic>pid</mnemonic>
+            <title>ID</title>
+            <type>int64-value</type>
+            <expression>?pid</expression>
+        </column>
+        <column>
+            <mnemonic>millisecs</mnemonic>
+            <title>msecs</title>
+            <type>fixed-decimal</type>
+            <expression>(/ (- ?endtime ?starttime) 1000000)</expression>
+        </column>
+        <column>
+            <mnemonic>color</mnemonic>
+            <title>Impact</title>
+            <type>event-concept</type>
+            <expression>(if (= ?endtime ?starttime) then "Very Low" else (if (&gt; (- ?endtime ?starttime) 100000000) then (if (&gt; (- ?endtime ?starttime) 500000000) then "High" else "Moderate") else "Low"))</expression>
+        </column>
+    </os-signpost-interval-schema>
+
+    <os-signpost-interval-schema>
+        <id>db-main</id>
+        <title>Database Performance</title>
+        <subsystem>"org.whispersystems.signal"</subsystem>
+        <category>"db"</category>
+        <name>"entry"</name>
+        <identifier>?pid</identifier>
+
+        <start-pattern>
+            <time>?starttime</time>
+            <message>"Main" "-Thread:" ?thread "|" ?name "|" ?access</message>
+        </start-pattern>
+        <end-pattern>
+            <time>?endtime</time>
+        </end-pattern>
+
+        <start-column>
+            <mnemonic>start</mnemonic>
+            <title>Started</title>
+            <type>start-time</type>
+        </start-column>
+        <duration-column>
+            <mnemonic>duration</mnemonic>
+            <title>Duration</title>
+            <type>duration</type>
+        </duration-column>
+        <column>
+            <mnemonic>access</mnemonic>
+            <title>R/W</title>
+            <type>string</type>
+            <expression>?access</expression>
+        </column>
+        <column>
+            <mnemonic>name</mnemonic>
+            <title>Name</title>
+            <type>string</type>
+            <expression>?name</expression>
+        </column>
+        <column>
+            <mnemonic>pid</mnemonic>
+            <title>ID</title>
+            <type>int64-value</type>
+            <expression>?pid</expression>
+        </column>
+        <column>
+            <mnemonic>color</mnemonic>
+            <title>Color</title>
+            <type>event-concept</type>
+            <expression>(if (= 0 (str-compare "read" ?access)) then "Green" else "Red")</expression>
+        </column>
+    </os-signpost-interval-schema>
+
+    <os-signpost-interval-schema>
+        <id>db-back</id>
+        <title>Database Performance</title>
+        <subsystem>"org.whispersystems.signal"</subsystem>
+        <category>"db"</category>
+        <name>"entry"</name>
+        <identifier>?pid</identifier>
+
+        <start-pattern>
+            <time>?starttime</time>
+            <message>"Background" "-Thread:" ?thread "|" ?name "|" ?access</message>
+        </start-pattern>
+        <end-pattern>
+            <time>?endtime</time>
+        </end-pattern>
+
+        <start-column>
+            <mnemonic>start</mnemonic>
+            <title>Started</title>
+            <type>start-time</type>
+        </start-column>
+        <duration-column>
+            <mnemonic>duration</mnemonic>
+            <title>Duration</title>
+            <type>duration</type>
+        </duration-column>
+        <column>
+            <mnemonic>thread</mnemonic>
+            <title>Thread</title>
+            <type>string</type>
+            <expression>?thread</expression>
+        </column>
+        <column>
+            <mnemonic>access</mnemonic>
+            <title>R/W</title>
+            <type>string</type>
+            <expression>?access</expression>
+        </column>
+        <column>
+            <mnemonic>name</mnemonic>
+            <title>Name</title>
+            <type>string</type>
+            <expression>?name</expression>
+        </column>
+        <column>
+            <mnemonic>pid</mnemonic>
+            <title>ID</title>
+            <type>int64-value</type>
+            <expression>?pid</expression>
+        </column>
+        <column>
+            <mnemonic>color</mnemonic>
+            <title>Color</title>
+            <type>event-concept</type>
+            <expression>(if (= 0 (str-compare "read" ?access)) then "Green" else "Red")</expression>
+        </column>
+    </os-signpost-interval-schema>
+
+    <os-signpost-interval-schema>
+        <id>appstart</id>
+        <title>AppStart details</title>
+        <subsystem>"org.whispersystems.signal"</subsystem>
+        <category>"appstart"</category>
+        <name>"entry"</name>
+        <identifier>?pid</identifier>
+
+        <start-pattern>
+            <message>?prefix "-Thread:" ?thread "|" ?name "|" ?group</message>
+        </start-pattern>
+
+        <start-column>
+            <mnemonic>start</mnemonic>
+            <title>Started</title>
+            <type>start-time</type>
+        </start-column>
+        <duration-column>
+            <mnemonic>duration</mnemonic>
+            <title>Duration</title>
+            <type>duration</type>
+        </duration-column>
+        <column>
+            <mnemonic>group</mnemonic>
+            <title>Group</title>
+            <type>string</type>
+            <expression>?group</expression>
+        </column>
+        <column>
+            <mnemonic>name</mnemonic>
+            <title>Name</title>
+            <type>string</type>
+            <expression>?name</expression>
+        </column>
+        <column>
+            <mnemonic>pid</mnemonic>
+            <title>ID</title>
+            <type>int64-value</type>
+            <expression>?pid</expression>
+        </column>
+        <column>
+            <mnemonic>thread</mnemonic>
+            <title>Thread</title>
+            <type>string</type>
+            <expression>?thread</expression>
+        </column>
+    </os-signpost-interval-schema>
+
+    <instrument>
+        <id>org.whispersystems.signal</id>
+        <title>Signalyzer</title>
+        <category>Behavior</category>
+        <purpose>Tracks the user interaction, the network traffic and the database operations while the Signal app is running.</purpose>
+        <icon>Generic</icon>
+
+        <create-table>
+            <id>appstart-table</id>
+            <schema-ref>appstart</schema-ref>
+        </create-table>
+        <create-table>
+            <id>runtime-table</id>
+            <schema-ref>runtime</schema-ref>
+        </create-table>
+        <create-table>
+            <id>db-table-main</id>
+            <schema-ref>db-main</schema-ref>
+        </create-table>
+        <create-table>
+            <id>db-table-back</id>
+            <schema-ref>db-back</schema-ref>
+        </create-table>
+        <create-table>
+            <id>traffic-table</id>
+            <schema-ref>traffic</schema-ref>
+        </create-table>
+
+        <graph>
+            <title>Events</title>
+            <lane>
+                <title>App Start</title>
+                <table-ref>appstart-table</table-ref>
+                <plot>
+                    <value-from>duration</value-from>
+                    <label-from>name</label-from>
+                </plot>
+            </lane>
+            <lane>
+                <title>Database: Main Thread</title>
+                <table-ref>db-table-main</table-ref>
+                <plot>
+                    <value-from>name</value-from>
+                    <color-from>color</color-from>
+                    <label-from>duration</label-from>
+                </plot>
+            </lane>
+            <lane>
+                <title>Database: Background</title>
+                <table-ref>db-table-back</table-ref>
+                <plot>
+                    <value-from>name</value-from>
+                    <color-from>color</color-from>
+                    <label-from>duration</label-from>
+                </plot>
+            </lane>
+            <lane>
+                <title>Traffic</title>
+                <table-ref>traffic-table</table-ref>
+                <plot>
+                    <value-from>name</value-from>
+                    <color-from>color</color-from>
+                    <label-from>url</label-from>
+                    <disable-implicit-qualifier>false</disable-implicit-qualifier>
+                </plot>
+            </lane>
+            <lane>
+                <title>Runtime Measurements</title>
+                <table-ref>runtime-table</table-ref>
+                <plot>
+                    <value-from>duration</value-from>
+                    <color-from>color</color-from>
+                    <label-from>name</label-from>
+                </plot>
+            </lane>
+        </graph>
+
+        <list>
+            <title>List: App Start</title>
+            <table-ref>appstart-table</table-ref>
+            <column>pid</column>
+            <column>start</column>
+            <column>group</column>
+            <column>name</column>
+            <column>duration</column>
+            <column>thread</column>
+        </list>
+        <list>
+            <title>List: Database Main Thread</title>
+            <table-ref>db-table-main</table-ref>
+            <column>pid</column>
+            <column>start</column>
+            <column>access</column>
+            <column>name</column>
+            <column>duration</column>
+        </list>
+        <list>
+            <title>List: Database Background</title>
+            <table-ref>db-table-back</table-ref>
+            <column>pid</column>
+            <column>start</column>
+            <column>access</column>
+            <column>name</column>
+            <column>duration</column>
+            <column>thread</column>
+        </list>
+        <list>
+            <title>List: Traffic</title>
+            <table-ref>traffic-table</table-ref>
+            <column>pid</column>
+            <column>start</column>
+            <column>event</column>
+            <column>url</column>
+            <column>status</column>
+            <column>httpstatus</column>
+            <column>size</column>
+            <column>duration</column>
+            <column>thread</column>
+        </list>
+        <list>
+            <title>List: Runtime Measurements</title>
+            <table-ref>runtime-table</table-ref>
+            <column>pid</column>
+            <column>start</column>
+            <column>group</column>
+            <column>name</column>
+            <column>duration</column>
+            <column>color</column>
+            <column>thread</column>
+        </list>
+
+        <aggregation>
+            <title>Summary: App Start</title>
+            <table-ref>appstart-table</table-ref>
+            <hierarchy>
+                <level>
+                    <column>group</column>
+                </level>
+                <level>
+                    <column>name</column>
+                </level>
+                <level>
+                    <column>pid</column>
+                </level>
+            </hierarchy>
+            <column><count/></column>
+            <column><title>Total</title><sum>duration</sum></column>
+            <column><title>Min</title><min>duration</min></column>
+            <column><title>Max</title><max>duration</max></column>
+            <column><title>Avg</title><average>duration</average></column>
+        </aggregation>
+        <aggregation>
+            <title>Summary: Database Main Thread</title>
+            <table-ref>db-table-main</table-ref>
+            <hierarchy>
+                <level>
+                    <column>access</column>
+                </level>
+                <level>
+                    <column>name</column>
+                </level>
+                <level>
+                    <column>pid</column>
+                </level>
+            </hierarchy>
+            <column><count/></column>
+            <column><title>Total</title><sum>duration</sum></column>
+            <column><title>Min</title><min>duration</min></column>
+            <column><title>Max</title><max>duration</max></column>
+            <column><title>Avg</title><average>duration</average></column>
+        </aggregation>
+        <aggregation>
+            <title>Summary: Database Background</title>
+            <table-ref>db-table-back</table-ref>
+            <hierarchy>
+                <level>
+                    <column>access</column>
+                </level>
+                <level>
+                    <column>thread</column>
+                </level>
+                <level>
+                    <column>name</column>
+                </level>
+                <level>
+                    <column>pid</column>
+                </level>
+            </hierarchy>
+            <column><count/></column>
+            <column><title>Total</title><sum>duration</sum></column>
+            <column><title>Min</title><min>duration</min></column>
+            <column><title>Max</title><max>duration</max></column>
+            <column><title>Avg</title><average>duration</average></column>
+        </aggregation>
+        <aggregation>
+            <title>Summary: Traffic Performance</title>
+            <table-ref>traffic-table</table-ref>
+            <hierarchy>
+                <level>
+                    <column>event</column>
+                </level>
+                <level>
+                    <column>pid</column>
+                </level>
+            </hierarchy>
+            <column><count/></column>
+            <column><title>Total</title><sum>duration</sum></column>
+            <column><title>Min</title><min>duration</min></column>
+            <column><title>Max</title><max>duration</max></column>
+            <column><title>Avg</title><average>duration</average></column>
+        </aggregation>
+        <aggregation>
+            <title>Summary: Runtime Measurements</title>
+            <table-ref>runtime-table</table-ref>
+            <hierarchy>
+                <level>
+                    <column>group</column>
+                </level>
+                <level>
+                    <column>name</column>
+                </level>
+                <level>
+                    <column>pid</column>
+                </level>
+            </hierarchy>
+            <column><count/></column>
+            <column><title>Total</title><sum>duration</sum></column>
+            <column><title>Min</title><min>duration</min></column>
+            <column><title>Max</title><max>duration</max></column>
+            <column><title>Avg</title><average>duration</average></column>
+        </aggregation>
+
+    </instrument>
+</package>
