@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -87,7 +87,7 @@ public extension ThreadUtil {
         }
 
         if message.hasRenderableContent() {
-            thread.donateSendMessageIntent(transaction: readTransaction)
+            thread.donateSendMessageIntent(for: message, transaction: readTransaction)
         }
         return message
     }

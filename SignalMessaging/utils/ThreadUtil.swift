@@ -47,7 +47,7 @@ public extension ThreadUtil {
         Self.enqueueSendAsyncWrite { transaction in
             message.anyInsert(transaction: transaction)
             self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
-            if message.hasRenderableContent() { thread.donateSendMessageIntent(transaction: transaction) }
+            if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
         }
 
         return message
@@ -65,7 +65,7 @@ public extension ThreadUtil {
         message.anyInsert(transaction: transaction)
         self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
-        if message.hasRenderableContent() { thread.donateSendMessageIntent(transaction: transaction) }
+        if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
 
         return message
     }
@@ -87,7 +87,7 @@ public extension ThreadUtil {
         if message.hasRenderableContent() {
             message
                 .thread(transaction: transaction)
-                .donateSendMessageIntent(transaction: transaction)
+                .donateSendMessageIntent(for: message, transaction: transaction)
         }
         return promise
     }
@@ -100,25 +100,18 @@ import SignalServiceKit
 
 extension TSThread {
 
-    @objc
-    public func donateSendMessageIntentWithSneakyTransaction() {
-        databaseStorage.read { self.donateSendMessageIntent(transaction: $0) }
-    }
-
     /// This function should be called every time the user
     /// initiates message sending via the UI. It should *not*
     /// be called for messages we send automatically, like
     /// receipts.
-    @objc
-    public func donateSendMessageIntent(transaction: SDSAnyReadTransaction) {
+    @objc(donateSendMessageIntentForOutgoingMessage:transaction:)
+    public func donateSendMessageIntent(for outgoingMessage: TSOutgoingMessage, transaction: SDSAnyReadTransaction) {
         // We never need to do this pre-iOS 13, because sharing
         // suggestions aren't support in previous iOS versions.
         guard #available(iOS 13, *) else { return }
 
         guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return }
-        guard let localAddress = tsAccountManager.localAddress else { return }
-
-        guard let sendMessageIntent = generateSendMessageIntent(transaction: transaction, sender: localAddress) else { return }
+        guard let sendMessageIntent = generateSendMessageIntent(context: .outgoingMessage(outgoingMessage), transaction: transaction) else { return }
 
         let interaction = INInteraction(intent: sendMessageIntent, response: nil)
         interaction.groupIdentifier = uniqueId
@@ -129,17 +122,23 @@ extension TSThread {
         })
     }
 
-    public func generateSendMessageIntent(transaction: SDSAnyReadTransaction, sender: SignalServiceAddress) -> INSendMessageIntent? {
+    public enum IntentContext {
+        case senderAddress(SignalServiceAddress)
+        case incomingMessage(TSIncomingMessage)
+        case outgoingMessage(TSOutgoingMessage)
+    }
+
+    public func generateSendMessageIntent(context: IntentContext, transaction: SDSAnyReadTransaction) -> INSendMessageIntent? {
         // We never need to do this pre-iOS 13, because sharing
         // suggestions aren't support in previous iOS versions.
         guard #available(iOS 13, *) else { return nil }
 
         guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
-        let sendMessageIntent: INSendMessageIntent
+        let sendMessageIntent: INSendMessageIntent?
 
         if #available(iOS 15, *) {
-            sendMessageIntent = generateRichCommunicationNotificationSendMessageIntent(transaction: transaction, sender: sender)
+            sendMessageIntent = generateRichCommunicationNotificationSendMessageIntent(context: context, transaction: transaction)
         } else {
             sendMessageIntent = generateChatSuggestionSendMessageIntent(transaction: transaction)
         }
@@ -148,29 +147,56 @@ extension TSThread {
     }
 
     @available(iOS 15, *)
-    private func generateRichCommunicationNotificationSendMessageIntent(transaction: SDSAnyReadTransaction, sender: SignalServiceAddress) -> INSendMessageIntent {
+    private func generateRichCommunicationNotificationSendMessageIntent(
+        context: IntentContext,
+        transaction: SDSAnyReadTransaction
+    ) -> INSendMessageIntent? {
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing local address")
+            return nil
+        }
+
+        let senderAddress: SignalServiceAddress
+        let message: TSMessage?
+        switch context {
+        case .outgoingMessage(let outgoingMessage):
+            senderAddress = localAddress
+            message = outgoingMessage
+        case .incomingMessage(let incomingMessage):
+            senderAddress = incomingMessage.authorAddress
+            message = incomingMessage
+        case .senderAddress(let address):
+            senderAddress = address
+            message = nil
+        }
+
         let threadName = contactsManager.displayName(for: self, transaction: transaction)
-        let isGroupThread = self.isGroupThread
+        let inSender = inPersonForRecipient(senderAddress, transaction: transaction)
 
-        let inSender = inPersonForRecipient(sender, transaction: transaction)
-
-        // In order for this to properly render as a group notification,
-        // you must have at least one recipient *other* than yourself.
-        // We can force this by always including the sender as a recipient
-        // of their own message (which is not untrue!)
-        let recipients = isGroupThread ? [inSender] : []
-
-        // NOTE A known issue in iOS 15 beta 5 currently prevents the sender’s image from displaying on a communication notification. This known issue is resolved in future software updates.
-        let sendMessageIntent = INSendMessageIntent(recipients: recipients,
-                                                    outgoingMessageType: .outgoingMessageText,
-                                                    content: nil,
-                                                    speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
-                                                    conversationIdentifier: uniqueId,
-                                                    serviceName: nil,
-                                                    sender: inSender,
-                                                    attachments: nil)
+        let sendMessageIntent = INSendMessageIntent(
+            recipients: nil,
+            outgoingMessageType: .outgoingMessageText,
+            content: nil,
+            speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
+            conversationIdentifier: uniqueId,
+            serviceName: nil,
+            sender: inSender,
+            attachments: nil
+        )
 
         if isGroupThread {
+
+            let donationMetadata = INSendMessageIntentDonationMetadata()
+            donationMetadata.recipientCount = recipientAddresses.count
+
+            if let message = message {
+                let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction.unwrapGrdbRead)
+                donationMetadata.mentionsCurrentUser = mentionedAddresses.contains(localAddress)
+                donationMetadata.isReplyToCurrentUser = message.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
+            }
+
+            sendMessageIntent.donationMetadata = donationMetadata
+
             if let image = intentThreadAvatarImage(transaction: transaction) {
                 sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
             }

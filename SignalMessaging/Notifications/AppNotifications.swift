@@ -534,7 +534,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         var interaction: INInteraction?
         if previewType != .noNameNoPreview,
-            let intent = thread.generateSendMessageIntent(transaction: transaction, sender: incomingMessage.authorAddress) {
+           let intent = thread.generateSendMessageIntent(context: .incomingMessage(incomingMessage), transaction: transaction) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -687,7 +687,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         var interaction: INInteraction?
         if previewType != .noNameNoPreview,
-            let intent = thread.generateSendMessageIntent(transaction: transaction, sender: reaction.reactor) {
+           let intent = thread.generateSendMessageIntent(context: .senderAddress(reaction.reactor), transaction: transaction) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -867,12 +867,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 switch infoMessage.messageType {
                 case .typeGroupUpdate:
                     if let groupUpdateAuthor = infoMessage.infoMessageUserInfo?[.groupUpdateSourceAddress] as? SignalServiceAddress,
-                       let intent = thread.generateSendMessageIntent(transaction: transaction, sender: groupUpdateAuthor) {
+                       let intent = thread.generateSendMessageIntent(context: .senderAddress(groupUpdateAuthor), transaction: transaction) {
                         wrapIntent(intent)
                     }
                 case .userJoinedSignal:
                     if let thread = thread as? TSContactThread,
-                        let intent = thread.generateSendMessageIntent(transaction: transaction, sender: thread.contactAddress) {
+                       let intent = thread.generateSendMessageIntent(context: .senderAddress(thread.contactAddress), transaction: transaction) {
                         wrapIntent(intent)
                     }
                 default:
@@ -881,7 +881,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             } else if #available(iOS 15, *),
                       let callMessage = previewableInteraction as? OWSGroupCallMessage,
                       let callCreator = callMessage.creatorAddress,
-                      let intent = thread.generateSendMessageIntent(transaction: transaction, sender: callCreator) {
+                      let intent = thread.generateSendMessageIntent(context: .senderAddress(callCreator), transaction: transaction) {
                 wrapIntent(intent)
             }
         }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadUtil.h"
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
 
-        [thread donateSendMessageIntentWithTransaction:transaction];
+        [thread donateSendMessageIntentForOutgoingMessage:message transaction:transaction];
     }];
 }
 
