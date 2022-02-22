@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -97,7 +97,11 @@ public class ContactDiscoveryTask: NSObject {
     // MARK: - Private
 
     private func createContactDiscoveryOperation() -> ContactDiscovering {
-        ModernContactDiscoveryOperation(e164sToLookup: e164FetchSet)
+        if TSConstants.isUsingProductionService {
+            return SGXContactDiscoveryOperation(e164sToLookup: e164FetchSet)
+        } else {
+            return HSMContactDiscoveryOperation(e164sToLookup: e164FetchSet)
+        }
     }
 
     private func storeResults(

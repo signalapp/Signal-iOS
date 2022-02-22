@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,7 +11,7 @@ struct CDSRegisteredContact: Hashable {
 
 /// Fetches contact info from the ContactDiscoveryService
 /// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
-class ModernContactDiscoveryOperation: ContactDiscovering {
+class SGXContactDiscoveryOperation: ContactDiscovering {
     static let batchSize = 2048
 
     private let e164sToLookup: Set<String>
@@ -25,7 +25,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             // First, build a bunch of batch Promises
             let batchOperationPromises = Array(e164sToLookup)
                 .chunked(by: Self.batchSize)
-                .map { makeContactDiscoveryRequest(e164sToLookup: $0) }
+                .map { makeContactDiscoveryRequest(e164sToLookup: Array($0)) }
 
             // Then, wait for them all to be fulfilled before joining the subsets together
             return Promise.when(fulfilled: batchOperationPromises)
@@ -118,7 +118,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
 
     func buildIntersectionQuery(e164sToLookup: [String], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
         let noncePlainTextData = Randomness.generateRandomBytes(32)
-        let addressPlainTextData = try type(of: self).encodePhoneNumbers(e164sToLookup)
+        let addressPlainTextData = try encodeE164s(e164sToLookup)
         let queryData = Data.join([noncePlainTextData, addressPlainTextData])
 
         let key = OWSAES256Key.generateRandom()
@@ -156,35 +156,10 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                                                          envelopes: queryEnvelopes)
     }
 
-    class func encodePhoneNumbers(_ phoneNumbers: [String]) throws -> Data {
-        var output = Data()
-
-        for phoneNumber in phoneNumbers {
-            guard phoneNumber.prefix(1) == "+" else {
-                throw ContactDiscoveryError.assertionError(description: "unexpected id format")
-            }
-
-            let numericPortionIndex = phoneNumber.index(after: phoneNumber.startIndex)
-            let numericPortion = phoneNumber.suffix(from: numericPortionIndex)
-
-            guard let numericIdentifier = UInt64(numericPortion), numericIdentifier > 99 else {
-                throw ContactDiscoveryError.assertionError(description: "unexpectedly short identifier")
-            }
-
-            var bigEndian: UInt64 = CFSwapInt64HostToBig(numericIdentifier)
-            withUnsafePointer(to: &bigEndian) { pointer in
-                output.append(UnsafeBufferPointer(start: pointer, count: 1))
-            }
-        }
-
-        return output
-    }
-
     class func uuidArray(from data: Data) -> [UUID] {
         return data.withUnsafeBytes {
             [uuid_t]($0.bindMemory(to: uuid_t.self))
-        }.map {
-            UUID(uuid: $0)
+                .map { UUID(uuid: $0) }
         }
     }
 

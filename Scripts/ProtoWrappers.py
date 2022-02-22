@@ -53,7 +53,7 @@ def supress_adjacent_capital_letters(name):
         if lastWasUpper:
             char = char.lower()
         chars.append(char)
-        lastWasUpper = (char.upper() == char)
+        lastWasUpper = char.isupper()
     result = ''.join(chars)
     if result.endswith('Id'):
         result = result[:-2] + 'ID'
@@ -71,6 +71,10 @@ def swift_type_for_proto_primitive_type(proto_type):
         return 'UInt32'
     elif proto_type == 'fixed64':
         return 'UInt64'
+    elif proto_type == 'int64':
+        return 'Int64'
+    elif proto_type == 'int32':
+        return 'Int32'
     elif proto_type == 'bool':
         return 'Bool'
     elif proto_type == 'bytes':

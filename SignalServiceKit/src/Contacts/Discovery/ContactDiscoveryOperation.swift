@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -115,5 +115,38 @@ public class ContactDiscoveryError: NSError, UserErrorDescriptionProvider {
 extension ContactDiscoveryError: IsRetryableProvider {
     public var isRetryableProvider: Bool {
         retrySuggested
+    }
+}
+
+extension ContactDiscovering {
+
+    func encodeE164(_ e164: String) throws -> UInt64 {
+        guard e164.first == "+" else {
+            throw ContactDiscoveryError.assertionError(description: "unexpected e164 format")
+        }
+
+        let numericPortion = e164.dropFirst()
+        guard let numericIdentifier = UInt64(numericPortion), numericIdentifier > 99 else {
+            throw ContactDiscoveryError.assertionError(description: "unexpectedly short identifier")
+        }
+
+        return numericIdentifier.bigEndian
+    }
+
+    func encodeE164s<T>(_ phoneNumbers: T) throws -> Data where T: Collection, T.Element == String {
+        guard phoneNumbers.allSatisfy({ $0.first == "+" }) else {
+            throw ContactDiscoveryError.assertionError(description: "unexpected e164 format")
+        }
+
+        var buffer = Data()
+        buffer.reserveCapacity(8 * phoneNumbers.count)
+
+        return try phoneNumbers.reduce(into: buffer) { partialResult, e164 in
+            let encodedE164 = try encodeE164(e164)
+            withUnsafePointer(to: encodedE164) { pointer in
+                let bufferPointer = UnsafeBufferPointer(start: pointer, count: 1)
+                partialResult.append(bufferPointer)
+            }
+        }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -36,7 +36,7 @@ class ContactDiscoveryOperationTest: SignalBaseTest {
 
     func test_encodeNumber() {
         let phoneNumbers = [ "+1011" ]
-        let actual = try! CDSBatchOperation.encodePhoneNumbers(phoneNumbers)
+        let actual = try! CDSBatchOperation.encodeE164s(phoneNumbers)
         let expected: Data = Data([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xf3])
 
         XCTAssertEqual(expected, actual)
@@ -44,7 +44,7 @@ class ContactDiscoveryOperationTest: SignalBaseTest {
 
     func test_encodeMultipleNumber() {
         let phoneNumbers = [ "+1011", "+15551231234"]
-        let actual = try! CDSBatchOperation.encodePhoneNumbers(phoneNumbers)
+        let actual = try! CDSBatchOperation.encodeE164s(phoneNumbers)
         let expected: Data = Data([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xf3,
                                    0x00, 0x00, 0x00, 0x03, 0x9e, 0xec, 0xf5, 0x02])
 

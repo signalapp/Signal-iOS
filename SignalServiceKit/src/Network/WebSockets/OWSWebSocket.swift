@@ -1367,8 +1367,15 @@ extension OWSWebSocket: SSKWebSocketDelegate {
         outageDetection.reportConnectionFailure()
     }
 
-    public func websocket(_ eventSocket: SSKWebSocket, didReceiveMessage message: WebSocketProtoWebSocketMessage) {
+    public func websocket(_ eventSocket: SSKWebSocket, didReceiveData data: Data) {
         assertOnQueue(Self.serialQueue)
+        let message: WebSocketProtoWebSocketMessage
+        do {
+            message = try WebSocketProtoWebSocketMessage(serializedData: data)
+        } catch {
+            owsFailDebug("Failed to deserialize message: \(error)")
+            return
+        }
 
         guard let currentWebSocket = self.currentWebSocket,
               currentWebSocket.id == eventSocket.id else {
@@ -1380,7 +1387,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
         tsAccountManager.setIsDeregistered(false)
 
         if !message.hasType {
-            owsFailDebug("webSocket:didReceiveMessage: missing type.")
+            owsFailDebug("webSocket:didReceiveResponse: missing type.")
         } else if message.unwrappedType == .request {
             if let request = message.request {
                 processWebSocketRequestMessage(request, currentWebSocket: currentWebSocket)
@@ -1394,7 +1401,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
                 owsFailDebug("Missing response.")
             }
         } else {
-            owsFailDebug("webSocket:didReceiveMessage: unknown.")
+            owsFailDebug("webSocket:didReceiveResponse: unknown.")
         }
     }
 }

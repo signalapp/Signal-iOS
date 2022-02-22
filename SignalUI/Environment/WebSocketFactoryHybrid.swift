@@ -23,10 +23,14 @@ public class WebSocketFactoryHybrid: NSObject, WebSocketFactory {
     }
 
     public func statusCode(forError error: Error) -> Int {
-        if let starscreamError = error as? StarscreamError {
-            return starscreamError.code
+        switch error {
+        case let error as StarscreamError:
+            return error.code
+        case SSKWebSocketNativeError.remoteClosed(let statusCode, _):
+            return statusCode
+        default:
+            return error.httpStatusCode ?? 0
         }
-        return error.httpStatusCode ?? 0
     }
 }
 
@@ -136,12 +140,7 @@ extension SSKWebSocketStarScream: WebSocketDelegate {
 
     func websocketDidReceiveData(socket: WebSocketClient, data: Data) {
         assertOnQueue(callbackQueue)
-        do {
-            let message = try WebSocketProtoWebSocketMessage(serializedData: data)
-            delegate?.websocket(self, didReceiveMessage: message)
-        } catch {
-            owsFailDebug("error: \(error)")
-        }
+        delegate?.websocket(self, didReceiveData: data)
     }
 }
 

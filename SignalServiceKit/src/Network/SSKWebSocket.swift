@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -73,7 +73,7 @@ public protocol SSKWebSocketDelegate: AnyObject {
 
     func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error?)
 
-    func websocket(_ socket: SSKWebSocket, didReceiveMessage message: WebSocketProtoWebSocketMessage)
+    func websocket(_ socket: SSKWebSocket, didReceiveData data: Data)
 }
 
 // MARK: -
@@ -131,7 +131,12 @@ public class WebSocketFactoryNative: NSObject, WebSocketFactory {
     }
 
     public func statusCode(forError error: Error) -> Int {
-        error.httpStatusCode ?? 0
+        switch error {
+        case SSKWebSocketNativeError.remoteClosed(let statusCode, _):
+            return statusCode
+        default:
+            return error.httpStatusCode ?? 0
+        }
     }
 }
 
@@ -191,12 +196,11 @@ public class SSKWebSocketNative: SSKWebSocket {
             self.callbackQueue.async {
                 self.delegate?.websocketDidConnect(socket: self)
             }
-        }, didCloseBlock: { [weak self] closeCode, _ in
+        }, didCloseBlock: { [weak self] closeCode, reason in
             guard let self = self else { return }
             self.isConnected.set(false)
             self.webSocketTask.set(nil)
-
-            self.reportError(OWSGenericError("WebSocket did close with code \(closeCode), [\(self.id)]"))
+            self.reportError(SSKWebSocketNativeError.remoteClosed(closeCode.rawValue, reason))
         })
         webSocketTask.set(task)
         task.resume()
@@ -209,15 +213,11 @@ public class SSKWebSocketNative: SSKWebSocket {
                 case .success(let message):
                     switch message {
                     case .data(let data):
-                        do {
-                            let message = try WebSocketProtoWebSocketMessage(serializedData: data)
-                            guard let self = self else { return }
-                            self.callbackQueue.async {
-                                self.delegate?.websocket(self, didReceiveMessage: message)
-                            }
-                        } catch {
-                            owsFailDebug("error: \(error)")
+                        guard let self = self else { return }
+                        self.callbackQueue.async {
+                            self.delegate?.websocket(self, didReceiveData: data)
                         }
+
                     case .string:
                         owsFailDebug("We only expect binary frames.")
                     @unknown default:
@@ -277,6 +277,17 @@ public class SSKWebSocketNative: SSKWebSocket {
                let delegate = self.delegate {
                 delegate.websocketDidDisconnectOrFail(socket: self, error: error)
             }
+        }
+    }
+}
+
+public enum SSKWebSocketNativeError: Error {
+    case remoteClosed(Int, Data?)
+
+    var description: String {
+        switch self {
+        case .remoteClosed(let code, _):
+            return "WebSocket remotely closed with code \(code)"
         }
     }
 }

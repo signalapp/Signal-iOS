@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 public extension Collection {
@@ -10,14 +10,14 @@ public extension Collection {
     }
 }
 
-public extension Array {
-    func chunked(by chunkSize: Int) -> [[Element]] {
-        return stride(from: 0, to: self.count, by: chunkSize).map {
-            Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
+public extension RandomAccessCollection {
+    func chunked(by chunkSize: Int) -> [SubSequence] {
+        stride(from: 0, to: count, by: chunkSize).map {
+            dropFirst($0).prefix(chunkSize)
         }
     }
 
-    var nilIfEmpty: [Element]? {
+    var nilIfEmpty: Self? {
         isEmpty ? nil : self
     }
 }
