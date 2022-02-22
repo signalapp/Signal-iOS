@@ -430,13 +430,16 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return true
         }
 
+        guard thread.isGroupThread else { return false }
+
         guard let localAddress = TSAccountManager.localAddress else {
             owsFailDebug("Missing local address")
             return false
         }
 
         let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
-        guard mentionedAddresses.contains(localAddress) else {
+        let localUserIsQuoted = incomingMessage.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
+        guard mentionedAddresses.contains(localAddress) || localUserIsQuoted else {
             if DebugFlags.internalLogging {
                 Logger.info("Not notifying; no mention.")
             }
