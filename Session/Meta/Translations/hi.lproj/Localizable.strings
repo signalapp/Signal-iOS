@@ -94,6 +94,8 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "ब्लॉक";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ को ब्लॉक करें?";
+/* A format for the 'unblock user' action sheet title. Embeds {{the unblocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Unblock %@?";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "अनब्लॉक करें";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
