@@ -1,4 +1,5 @@
 import UIKit
+import SessionUIKit
 
 final class NewConversationButtonSet : UIView {
     private var isUserDragging = false
@@ -8,7 +9,7 @@ final class NewConversationButtonSet : UIView {
     var delegate: NewConversationButtonSetDelegate?
     
     // MARK: Settings
-    private let spacing = Values.largeSpacing
+    private let spacing = Values.veryLargeSpacing
     private let iconSize = CGFloat(24)
     private let maxDragDistance = CGFloat(56)
     private let dragMargin = CGFloat(16)
@@ -20,6 +21,39 @@ final class NewConversationButtonSet : UIView {
     private lazy var newDMButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Message").scaled(to: CGSize(width: iconSize, height: iconSize)))
     private lazy var createClosedGroupButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Group").scaled(to: CGSize(width: iconSize, height: iconSize)))
     private lazy var joinOpenGroupButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Globe").scaled(to: CGSize(width: iconSize, height: iconSize)))
+    
+    private lazy var newDMLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize)
+        result.text = NSLocalizedString("NEW_CONVERSATION_MENU_DIRECT_MESSAGE", comment: "").uppercased()
+        result.textColor = Colors.grey
+        result.textAlignment = .center
+        
+        return result
+    }()
+    
+    private lazy var createClosedGroupLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize)
+        result.text = NSLocalizedString("NEW_CONVERSATION_MENU_CLOSED_GROUP", comment: "").uppercased()
+        result.textColor = Colors.grey
+        result.textAlignment = .center
+        
+        return result
+    }()
+    
+    private lazy var joinOpenGroupLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize)
+        result.text = NSLocalizedString("NEW_CONVERSATION_MENU_OPEN_GROUP", comment: "").uppercased()
+        result.textColor = Colors.grey
+        result.textAlignment = .center
+        
+        return result
+    }()
     
     // MARK: Initialization
     override init(frame: CGRect) {
@@ -42,15 +76,24 @@ final class NewConversationButtonSet : UIView {
         joinOpenGroupButton.accessibilityLabel = "Join open group button"
         joinOpenGroupButton.isAccessibilityElement = true
         let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
+        addSubview(joinOpenGroupLabel)
         addSubview(joinOpenGroupButton)
         horizontalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.left, to: .left, of: self, withInset: inset)
         verticalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
+        joinOpenGroupLabel.center(.horizontal, in: joinOpenGroupButton)
+        joinOpenGroupLabel.pin(.top, to: .bottom, of: joinOpenGroupButton, withInset: 8)
+        addSubview(newDMLabel)
         addSubview(newDMButton)
         newDMButton.center(.horizontal, in: self)
         verticalButtonConstraints[newDMButton] = newDMButton.pin(.top, to: .top, of: self, withInset: inset)
+        newDMLabel.center(.horizontal, in: newDMButton)
+        newDMLabel.pin(.top, to: .bottom, of: newDMButton, withInset: 8)
+        addSubview(createClosedGroupLabel)
         addSubview(createClosedGroupButton)
         horizontalButtonConstraints[createClosedGroupButton] = createClosedGroupButton.pin(.right, to: .right, of: self, withInset: -inset)
         verticalButtonConstraints[createClosedGroupButton] = createClosedGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
+        createClosedGroupLabel.center(.horizontal, in: createClosedGroupButton)
+        createClosedGroupLabel.pin(.top, to: .bottom, of: createClosedGroupButton, withInset: 8)
         addSubview(mainButton)
         mainButton.center(.horizontal, in: self)
         mainButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
@@ -74,14 +117,17 @@ final class NewConversationButtonSet : UIView {
     @objc private func handleCreateNewClosedGroupButtonTapped() { delegate?.createClosedGroup() }
     
     private func expand(isUserDragging: Bool) {
-        let buttons = [ joinOpenGroupButton, newDMButton, createClosedGroupButton ]
+        let views = [ joinOpenGroupButton, joinOpenGroupLabel, newDMButton, newDMLabel, createClosedGroupButton, createClosedGroupLabel ]
         UIView.animate(withDuration: 0.25, animations: {
-            buttons.forEach { $0.alpha = 1 }
+            views.forEach { $0.alpha = 1 }
             let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
             let size = NewConversationButtonSet.collapsedButtonSize
             self.joinOpenGroupButton.frame = CGRect(origin: CGPoint(x: inset, y: self.height() - size - inset), size: CGSize(width: size, height: size))
+            self.joinOpenGroupLabel.center = CGPoint(x: self.joinOpenGroupButton.center.x, y: self.joinOpenGroupButton.frame.maxY + 8 + (self.joinOpenGroupLabel.bounds.height / 2))
             self.newDMButton.frame = CGRect(center: CGPoint(x: self.bounds.center.x, y: inset + size / 2), size: CGSize(width: size, height: size))
+            self.newDMLabel.center = CGPoint(x: self.newDMButton.center.x, y: self.newDMButton.frame.maxY + 8 + (self.newDMLabel.bounds.height / 2))
             self.createClosedGroupButton.frame = CGRect(origin: CGPoint(x: self.width() - size - inset, y: self.height() - size - inset), size: CGSize(width: size, height: size))
+            self.createClosedGroupLabel.center = CGPoint(x: self.createClosedGroupButton.center.x, y: self.createClosedGroupButton.frame.maxY + 8 + (self.createClosedGroupLabel.bounds.height / 2))
         }, completion: { _ in
             self.isUserDragging = isUserDragging
         })
@@ -90,7 +136,12 @@ final class NewConversationButtonSet : UIView {
     private func collapse(withAnimation isAnimated: Bool) {
         isUserDragging = false
         let buttons = [ joinOpenGroupButton, newDMButton, createClosedGroupButton ]
+        let labels = [ joinOpenGroupLabel, newDMLabel, createClosedGroupLabel ]
         UIView.animate(withDuration: isAnimated ? 0.25 : 0) {
+            labels.forEach { label in
+                label.alpha = 0
+                label.center = self.mainButton.center
+            }
             buttons.forEach { button in
                 button.alpha = 0
                 let size = NewConversationButtonSet.collapsedButtonSize
