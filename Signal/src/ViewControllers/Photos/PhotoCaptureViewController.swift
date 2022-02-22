@@ -599,7 +599,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         }
     }
 
-
     func updateDoneButtonAppearance () {
         if isInBatchMode, let badgeNumber = dataSource?.numberOfMediaItems {
             doneButton.badgeNumber = badgeNumber
@@ -649,11 +648,11 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
     
     private func switchCamera() {
-        let switchCameraButton = bottomBar.switchCameraButton!
-        ///TODO: side bar
-        UIView.animate(withDuration: 0.2) {
-            let epsilonToForceCounterClockwiseRotation: CGFloat = 0.00001
-            switchCameraButton.transform = switchCameraButton.transform.rotate(.pi + epsilonToForceCounterClockwiseRotation)
+        if let switchCameraButton = isIPadUIInRegularMode ? sideBar?.switchCameraButton : bottomBar.switchCameraButton {
+            UIView.animate(withDuration: 0.2) {
+                let epsilonToForceCounterClockwiseRotation: CGFloat = 0.00001
+                switchCameraButton.transform = switchCameraButton.transform.rotate(.pi + epsilonToForceCounterClockwiseRotation)
+            }
         }
         photoCapture.switchCamera().catch { error in
             self.showFailureUI(error: error)
@@ -785,9 +784,9 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             transformFromOrientation = .identity
         case .portraitUpsideDown:
             transformFromOrientation = CGAffineTransform(rotationAngle: .pi)
-        case .landscapeLeft:
-            transformFromOrientation = CGAffineTransform(rotationAngle: .halfPi)
         case .landscapeRight:
+            transformFromOrientation = CGAffineTransform(rotationAngle: .halfPi)
+        case .landscapeLeft:
             transformFromOrientation = CGAffineTransform(rotationAngle: -1 * .halfPi)
         @unknown default:
             owsFailDebug("unexpected captureOrientation: \(captureOrientation.rawValue)")
@@ -797,9 +796,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         // Don't "unrotate" the switch camera icon if the front facing camera had been selected.
         let tranformFromCameraType: CGAffineTransform = photoCapture.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
         
+        let buttonsToUpdate: [UIView] = [ topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton ]
         let updateOrientation = {
-            self.topBar.flashModeButton?.transform = transformFromOrientation
-            self.bottomBar.switchCameraButton?.transform = transformFromOrientation.concatenating(tranformFromCameraType)
+            buttonsToUpdate.forEach { $0.transform = transformFromOrientation }
+            self.bottomBar.switchCameraButton.transform = transformFromOrientation.concatenating(tranformFromCameraType)
         }
         
         if isAnimated {
