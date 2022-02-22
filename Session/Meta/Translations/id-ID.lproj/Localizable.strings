@@ -597,3 +597,6 @@
 "system_mode_theme" = "System";
 "dark_mode_theme" = "Dark";
 "light_mode_theme" = "Light";
+"NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
+"NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
+"NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
