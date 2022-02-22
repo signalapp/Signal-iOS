@@ -45,21 +45,22 @@ public final class Poller : NSObject {
     // MARK: Private API
     private func setUpPolling() {
         guard isPolling else { return }
-        let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey()).then2 { [weak self] _ -> Promise<Void> in
-            guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
-            strongSelf.usedSnodes.removeAll()
-            let (promise, seal) = Promise<Void>.pending()
-            strongSelf.pollNextSnode(seal: seal)
-            return promise
-        }.ensure(on: DispatchQueue.main) { [weak self] in // Timers don't do well on background queues
-            guard let strongSelf = self, strongSelf.isPolling else { return }
-            Timer.scheduledTimer(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
-                guard let strongSelf = self else { return }
-                Threading.pollerQueue.async {
+        Threading.pollerQueue.async {
+            let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey()).then(on: Threading.pollerQueue) { [weak self] _ -> Promise<Void> in
+                guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
+                strongSelf.usedSnodes.removeAll()
+                let (promise, seal) = Promise<Void>.pending()
+                strongSelf.pollNextSnode(seal: seal)
+                return promise
+            }.ensure(on: Threading.pollerQueue) { [weak self] in // Timers don't do well on background queues
+                guard let strongSelf = self, strongSelf.isPolling else { return }
+                Timer.scheduledTimerOnMainThread(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
+                    guard let strongSelf = self else { return }
                     strongSelf.setUpPolling()
                 }
             }
         }
+        
     }
 
     private func pollNextSnode(seal: Resolver<Void>) {
@@ -70,9 +71,9 @@ public final class Poller : NSObject {
             // randomElement() uses the system's default random generator, which is cryptographically secure
             let nextSnode = unusedSnodes.randomElement()!
             usedSnodes.insert(nextSnode)
-            poll(nextSnode, seal: seal).done2 {
+            poll(nextSnode, seal: seal).done(on: Threading.pollerQueue) {
                 seal.fulfill(())
-            }.catch2 { [weak self] error in
+            }.catch(on: Threading.pollerQueue) { [weak self] error in
                 if let error = error as? Error, error == .pollLimitReached {
                     self?.pollCount = 0
                 } else {

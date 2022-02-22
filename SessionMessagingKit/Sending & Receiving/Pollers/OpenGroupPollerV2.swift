@@ -19,18 +19,11 @@ public final class OpenGroupPollerV2 : NSObject {
 
     @objc public func startIfNeeded() {
         guard !hasStarted else { return }
-        DispatchQueue.main.async { [weak self] in // Timers don't do well on background queues
-            guard let strongSelf = self else { return }
-            strongSelf.hasStarted = true
-            strongSelf.timer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollInterval, repeats: true) { _ in
-                Threading.openGroupPollerQueue.async {
-                    self?.poll().retainUntilComplete()
-                }
-            }
-            Threading.openGroupPollerQueue.async {
-                strongSelf.poll().retainUntilComplete()
-            }
+        hasStarted = true
+        timer = Timer.scheduledTimerOnMainThread(withTimeInterval: pollInterval, repeats: true) { _ in
+            self.poll().retainUntilComplete()
         }
+        poll().retainUntilComplete()
     }
 
     @objc public func stop() {
@@ -50,15 +43,17 @@ public final class OpenGroupPollerV2 : NSObject {
         self.isPolling = true
         let (promise, seal) = Promise<Void>.pending()
         promise.retainUntilComplete()
-        OpenGroupAPIV2.compactPoll(server).done(on: OpenGroupAPIV2.workQueue) { [weak self] bodies in
-            guard let self = self else { return }
-            self.isPolling = false
-            bodies.forEach { self.handleCompactPollBody($0, isBackgroundPoll: isBackgroundPoll) }
-            seal.fulfill(())
-        }.catch(on: OpenGroupAPIV2.workQueue) { error in
-            SNLog("Open group polling failed due to error: \(error).")
-            self.isPolling = false
-            seal.fulfill(()) // The promise is just used to keep track of when we're done
+        Threading.openGroupPollerQueue.async {
+            OpenGroupAPIV2.compactPoll(self.server).done(on: OpenGroupAPIV2.workQueue) { [weak self] bodies in
+                guard let self = self else { return }
+                self.isPolling = false
+                bodies.forEach { self.handleCompactPollBody($0, isBackgroundPoll: isBackgroundPoll) }
+                seal.fulfill(())
+            }.catch(on: OpenGroupAPIV2.workQueue) { error in
+                SNLog("Open group polling failed due to error: \(error).")
+                self.isPolling = false
+                seal.fulfill(()) // The promise is just used to keep track of when we're done
+            }
         }
         return promise
     }

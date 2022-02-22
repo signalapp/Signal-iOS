@@ -61,13 +61,11 @@ public final class ClosedGroupPoller : NSObject {
 
     // MARK: Private API
     private func setUpPolling(for groupPublicKey: String) {
-        poll(groupPublicKey).done2 { [weak self] _ in
-            DispatchQueue.main.async { // Timers don't do well on background queues
+        Threading.closedGroupPollerQueue.async {
+            self.poll(groupPublicKey).done(on: Threading.closedGroupPollerQueue) { [weak self] _ in
                 self?.pollRecursively(groupPublicKey)
-            }
-        }.catch2 { [weak self] error in
-            // The error is logged in poll(_:)
-            DispatchQueue.main.async { // Timers don't do well on background queues
+            }.catch(on: Threading.closedGroupPollerQueue) { [weak self] error in
+                // The error is logged in poll(_:)
                 self?.pollRecursively(groupPublicKey)
             }
         }
@@ -87,18 +85,14 @@ public final class ClosedGroupPoller : NSObject {
         let a = (ClosedGroupPoller.maxPollInterval - minPollInterval) / limit
         let nextPollInterval = a * min(timeSinceLastMessage, limit) + minPollInterval
         SNLog("Next poll interval for closed group with public key: \(groupPublicKey) is \(nextPollInterval) s.")
-        timers[groupPublicKey] = Timer.scheduledTimer(withTimeInterval: nextPollInterval, repeats: false) { [weak self] timer in
+        timers[groupPublicKey] = Timer.scheduledTimerOnMainThread(withTimeInterval: nextPollInterval, repeats: false) { [weak self] timer in
             timer.invalidate()
             Threading.closedGroupPollerQueue.async {
-                self?.poll(groupPublicKey).done2 { _ in
-                    DispatchQueue.main.async { // Timers don't do well on background queues
-                        self?.pollRecursively(groupPublicKey)
-                    }
-                }.catch2 { error in
+                self?.poll(groupPublicKey).done(on: Threading.closedGroupPollerQueue) { _ in
+                    self?.pollRecursively(groupPublicKey)
+                }.catch(on: Threading.closedGroupPollerQueue) { error in
                     // The error is logged in poll(_:)
-                    DispatchQueue.main.async { // Timers don't do well on background queues
-                        self?.pollRecursively(groupPublicKey)
-                    }
+                    self?.pollRecursively(groupPublicKey)
                 }
             }
         }
