@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 /// A collection of addresses (and adjacent info) that collide (i.e. the user many confuse one element's `currentName` for another)
@@ -117,9 +117,11 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
 
         // Build a dictionary mapping displayName -> (All addresses with that name)
         let groupMembers = groupThread.groupModel.groupMembers
-        let collisionMap: [String: [SignalServiceAddress]] = groupMembers.reduce(into: [:]) { (dictBuilder, address) in
-            let displayName = address.displayName(transaction: transaction)
-            dictBuilder[displayName, default: []].append(address)
+        let displayNames = SignalServiceAddressCache.contactsManager.displayNames(forAddresses: groupMembers,
+                                                                                  transaction: transaction)
+        var collisionMap = [String: [SignalServiceAddress]]()
+        for (address, name) in zip(groupMembers, displayNames) {
+            collisionMap[name, default: []].append(address)
         }
         let allAddressCollisions = Array(collisionMap.values.filter { $0.count >= 2 })
 

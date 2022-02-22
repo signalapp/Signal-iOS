@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSString+SSK.h"
@@ -61,6 +61,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self substringFromIndex:range.location + range.length];
 }
 
+- (NSString *_Nullable)stringOrNil
+{
+    return self;
+}
+
 @end
 
 #pragma mark -
@@ -79,6 +84,17 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     [self setAttributes:attributes range:range];
+}
+
+@end
+
+#pragma mark -
+
+@implementation NSNull(NSStringSSK)
+
+- (NSString *_Nullable)stringOrNil
+{
+    return nil;
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Contacts
@@ -8,6 +8,10 @@ import Contacts
 public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     public func displayName(for address: SignalServiceAddress) -> String {
         return "Fake name"
+    }
+
+    public func displayNames(forAddresses addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
+        return Array(repeating: "Fake name", count: addresses.count)
     }
 
     public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {

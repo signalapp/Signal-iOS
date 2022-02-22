@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -274,6 +274,40 @@ public extension OWSProfileManager {
 
     private static let storageServiceStore = SDSKeyValueStore(collection: "OWSProfileManager.storageServiceStore")
     private static let hasUpdatedStorageServiceKey = "hasUpdatedStorageServiceKey"
+}
+
+// MARK: - Bulk Fetching
+
+extension OWSProfileManager {
+    func fullNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String?] {
+        return getUserProfiles(for: addresses, transaction: transaction).map {
+            $0?.fullName
+        }
+    }
+
+    // This is the batch version of -[OWSProfileManager getUserProfileForAddress:transaction:]
+    func getUserProfiles(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        let resolvedAddresses = addresses.map { OWSUserProfile.resolve($0) }
+
+        let profiles = Refinery<SignalServiceAddress, OWSUserProfile>(resolvedAddresses).refine(condition: { address in
+            OWSUserProfile.isLocalProfileAddress(address)
+        }, then: { localAddresses in
+            lazy var profile = { self.getLocalUserProfile(with: transaction) }()
+            return localAddresses.lazy.map { _ in profile }
+        }, otherwise: { remoteAddresses in
+            // TODO: Replace this with a single call that fetches a batch of profiles in one query.
+            return remoteAddresses.lazy.map { address -> OWSUserProfile? in
+                self.modelReadCaches.userProfileReadCache.getUserProfile(address: address, transaction: transaction)
+            }
+        }).values
+
+        return profiles
+    }
+
+    @objc(objc_fullNamesForAddresses:transaction:)
+    func fullNamesObjC(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SSKMaybeString] {
+        return fullNames(for: addresses, transaction: transaction).toMaybeStrings()
+    }
 }
 
 // MARK: -

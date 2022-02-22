@@ -349,6 +349,12 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         signalAccount.recipientAddress.stringForDisplay
     }
 
+    func displayNames(forAddresses addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
+        return addresses.map {
+            $0.stringForDisplay
+        }
+    }
+
     func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
         "Fake Name"
     }

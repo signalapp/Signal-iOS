@@ -749,6 +749,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self cachedContactNameForAddress:address transaction:transaction];
 }
 
+- (NSArray<NSString *> *)displayNamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                      transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self objc_displayNamesForAddresses:addresses transaction:transaction];
+}
+
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
