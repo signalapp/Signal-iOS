@@ -36,7 +36,7 @@ class CameraCaptureControl: UIView {
     private let shutterButtonOuterCircle = CircleBlurView(effect: UIBlurEffect(style: .light))
     private let shutterButtonInnerCircle = CircleView()
 
-    private static let recordingLockControlSize: CGFloat = 36   // Stop button, swipe tracking circle, lock icon
+    fileprivate static let recordingLockControlSize: CGFloat = 36   // Stop button, swipe tracking circle, lock icon
     private static let shutterButtonDefaultSize: CGFloat = 72
     private static let shutterButtonRecordingSize: CGFloat = 122
 
@@ -135,11 +135,11 @@ class CameraCaptureControl: UIView {
 
     private var _internalState: State = .initial
     var state: State {
-        set {
-            setState(newValue)
-        }
         get {
             _internalState
+        }
+        set {
+            setState(newValue)
         }
     }
 
@@ -198,7 +198,8 @@ class CameraCaptureControl: UIView {
             // element sizes
             outerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonRecordingSize
             // Inner (white) circle gets smaller as user drags the slider and reveals stop button when the slider is halfway to the lock icon.
-            innerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonDefaultSize - 2 * sliderTrackingProgress * (CameraCaptureControl.shutterButtonDefaultSize - CameraCaptureControl.recordingLockControlSize)
+            let circleSizeOffset = 2 * sliderTrackingProgress * (CameraCaptureControl.shutterButtonDefaultSize - CameraCaptureControl.recordingLockControlSize)
+            innerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonDefaultSize - circleSizeOffset
 
         case .recordingLocked:
             prepareRecordingControlsIfNecessary()
@@ -337,7 +338,7 @@ class CameraCaptureControl: UIView {
                 guard let self = self else { return }
 
                 self.setState(.recording, animationDuration: 0.4)
-                
+
                 self.delegate?.cameraCaptureControlDidRequestStartVideoRecording(self)
             }
 
@@ -463,105 +464,103 @@ class CameraCaptureControl: UIView {
     private func didTapStopButton() {
         delegate?.cameraCaptureControlDidRequestFinishVideoRecording(self)
     }
+}
 
-    // MARK: - LockView
+private class LockView: UIView {
 
-    private class LockView: UIView {
+    private var imageViewLock = UIImageView(image: UIImage(named: "media-composer-lock-outline-24"))
+    private var blurBackgroundView = CircleBlurView(effect: UIBlurEffect(style: .dark))
+    private var whiteBackgroundView = CircleView()
+    private var whiteCircleView = CircleView()
 
-        private var imageViewLock = UIImageView(image: UIImage(named: "media-composer-lock-outline-24"))
-        private var blurBackgroundView = CircleBlurView(effect: UIBlurEffect(style: .dark))
-        private var whiteBackgroundView = CircleView()
-        private var whiteCircleView = CircleView()
-
-        enum State {
-            case unlocked
-            case locking
-            case locked
+    enum State {
+        case unlocked
+        case locking
+        case locked
+    }
+    private var _internalState: State = .unlocked
+    var state: State {
+        get {
+            _internalState
         }
-        private var _internalState: State = .unlocked
-        var state: State {
-            set {
-                guard _internalState != newValue else { return }
-                setState(newValue)
+        set {
+            guard _internalState != newValue else { return }
+            setState(newValue)
+        }
+    }
+
+    func setState(_ state: State, animated: Bool = false) {
+        _internalState = state
+        if animated {
+            UIView.animate(withDuration: 0.25,
+                           delay: 0,
+                           options: [ .beginFromCurrentState ]) {
+                self.updateAppearance()
             }
-            get {
-                _internalState
-            }
-        }
-
-        func setState(_ state: State, animated: Bool = false) {
-            _internalState = state
-            if animated {
-                UIView.animate(withDuration: 0.25,
-                               delay: 0,
-                               options: [ .beginFromCurrentState ]) {
-                    self.updateAppearance()
-                }
-            } else {
-                updateAppearance()
-            }
-        }
-
-        private func updateAppearance() {
-            switch state {
-            case .unlocked:
-                blurBackgroundView.alpha = 1
-                whiteCircleView.alpha = 0
-                whiteBackgroundView.alpha = 0
-                imageViewLock.alpha = 1
-                imageViewLock.tintColor = .ows_white
-
-            case .locking:
-                blurBackgroundView.alpha = 1
-                whiteCircleView.alpha = 1
-                whiteBackgroundView.alpha = 0
-                imageViewLock.alpha = 0
-
-            case .locked:
-                blurBackgroundView.alpha = 0
-                whiteCircleView.alpha = 0
-                whiteBackgroundView.alpha = 1
-                imageViewLock.alpha = 1
-                imageViewLock.tintColor = .ows_black
-            }
-        }
-
-        override init(frame: CGRect) {
-            super.init(frame: frame)
-            commonInit()
-        }
-
-        required init?(coder: NSCoder) {
-            super.init(coder: coder)
-            commonInit()
-        }
-
-        private func commonInit() {
-            isUserInteractionEnabled = false
-
-            addSubview(blurBackgroundView)
-            blurBackgroundView.autoPinEdgesToSuperviewEdges()
-
-            addSubview(whiteCircleView)
-            whiteCircleView.backgroundColor = .clear
-            whiteCircleView.layer.borderColor = UIColor.ows_white.cgColor
-            whiteCircleView.layer.borderWidth = 3
-            whiteCircleView.autoPinEdgesToSuperviewEdges()
-
-            addSubview(whiteBackgroundView)
-            whiteBackgroundView.backgroundColor = .ows_white
-            whiteBackgroundView.autoPinEdgesToSuperviewEdges()
-
-            addSubview(imageViewLock)
-            imageViewLock.tintColor = .ows_white
-            imageViewLock.autoCenterInSuperview()
-
+        } else {
             updateAppearance()
         }
+    }
 
-        override var intrinsicContentSize: CGSize {
-            CGSize(width: CameraCaptureControl.recordingLockControlSize, height: CameraCaptureControl.recordingLockControlSize)
+    private func updateAppearance() {
+        switch state {
+        case .unlocked:
+            blurBackgroundView.alpha = 1
+            whiteCircleView.alpha = 0
+            whiteBackgroundView.alpha = 0
+            imageViewLock.alpha = 1
+            imageViewLock.tintColor = .ows_white
+
+        case .locking:
+            blurBackgroundView.alpha = 1
+            whiteCircleView.alpha = 1
+            whiteBackgroundView.alpha = 0
+            imageViewLock.alpha = 0
+
+        case .locked:
+            blurBackgroundView.alpha = 0
+            whiteCircleView.alpha = 0
+            whiteBackgroundView.alpha = 1
+            imageViewLock.alpha = 1
+            imageViewLock.tintColor = .ows_black
         }
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        commonInit()
+    }
+
+    private func commonInit() {
+        isUserInteractionEnabled = false
+
+        addSubview(blurBackgroundView)
+        blurBackgroundView.autoPinEdgesToSuperviewEdges()
+
+        addSubview(whiteCircleView)
+        whiteCircleView.backgroundColor = .clear
+        whiteCircleView.layer.borderColor = UIColor.ows_white.cgColor
+        whiteCircleView.layer.borderWidth = 3
+        whiteCircleView.autoPinEdgesToSuperviewEdges()
+
+        addSubview(whiteBackgroundView)
+        whiteBackgroundView.backgroundColor = .ows_white
+        whiteBackgroundView.autoPinEdgesToSuperviewEdges()
+
+        addSubview(imageViewLock)
+        imageViewLock.tintColor = .ows_white
+        imageViewLock.autoCenterInSuperview()
+
+        updateAppearance()
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: CameraCaptureControl.recordingLockControlSize, height: CameraCaptureControl.recordingLockControlSize)
     }
 }
 
@@ -608,7 +607,6 @@ private extension UserInterfaceStyleOverride {
         }
     }
 }
-
 
 class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
 
@@ -681,7 +679,6 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         tintColor = CameraOverlayButton.tintColor(for: effectiveUserInterfaceStyle)
     }
 }
-
 
 class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
 

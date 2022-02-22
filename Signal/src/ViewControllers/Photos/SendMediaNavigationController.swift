@@ -152,17 +152,17 @@ class SendMediaNavigationController: OWSNavigationController {
     // MARK: Child VC's
 
     fileprivate lazy var captureViewController: PhotoCaptureViewController = {
-        let vc = PhotoCaptureViewController()
-        vc.delegate = self
-        vc.dataSource = self
-        return vc
+        let viewController = PhotoCaptureViewController()
+        viewController.delegate = self
+        viewController.dataSource = self
+        return viewController
     }()
 
     private lazy var mediaLibraryViewController: ImagePickerGridController = {
-        let vc = ImagePickerGridController()
-        vc.delegate = self
-        vc.dataSource = self
-        return vc
+        let viewController = ImagePickerGridController()
+        viewController.delegate = self
+        viewController.dataSource = self
+        return viewController
     }()
 
     private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem],
@@ -192,7 +192,8 @@ class SendMediaNavigationController: OWSNavigationController {
         } else {
             let alert = ActionSheetController(title: nil, message: nil)
 
-            let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM", comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
+            let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM",
+                                                       comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
             let confirmAbandonAction = ActionSheetAction(title: confirmAbandonText,
                                                          style: .destructive,
                                                          handler: { [weak self] _ in
@@ -589,7 +590,7 @@ private struct CameraCaptureAttachment: Hashable, Equatable {
         hasher.combine(signalAttachment)
     }
 
-    static func ==(lhs: CameraCaptureAttachment, rhs: CameraCaptureAttachment) -> Bool {
+    static func == (lhs: CameraCaptureAttachment, rhs: CameraCaptureAttachment) -> Bool {
         return lhs.signalAttachment == rhs.signalAttachment
     }
 }
@@ -602,7 +603,7 @@ private struct MediaLibraryAttachment: Hashable, Equatable {
         hasher.combine(asset)
     }
 
-    static func ==(lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {
+    static func == (lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {
         return lhs.asset == rhs.asset
     }
 }
