@@ -137,6 +137,11 @@ BOOL IsNoteToSelfEnabled(void)
     return NO;
 }
 
+// Override in ContactThread
+- (BOOL)isMessageRequestUsingTransaction:(YapDatabaseReadTransaction *)transaction {
+    return NO;
+}
+
 #pragma mark To be subclassed.
 
 - (BOOL)isGroupThread {

@@ -284,7 +284,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         tableView.beginUpdates()
         
         // If we need to unhide the message request row and then re-insert it
-        if !messageRequestInserts.isEmpty && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+        if !messageRequestInserts.isEmpty && (CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] || tableView.numberOfRows(inSection: 0) == 0) {
             CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
             tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
         }

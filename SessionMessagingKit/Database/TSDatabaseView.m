@@ -242,7 +242,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         }
         TSThread *thread = (TSThread *)object;
 
-        if (thread.isMessageRequest) {
+        if ([thread isMessageRequestUsingTransaction:transaction]) {
             // Don't show blocked threads at all
             if ([[OWSBlockingManager sharedManager] isThreadBlocked: thread]) {
                 return nil;

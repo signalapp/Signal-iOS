@@ -778,6 +778,8 @@ extension MessageReceiver {
         forceConfigSync: Bool,
         using transaction: Any
     ) {
+        guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else { return }
+        
         let userPublicKey: String = getUserHexEncodedPublicKey()
         
         // If the sender of the message was the current user
@@ -785,8 +787,8 @@ extension MessageReceiver {
             // Retrieve the contact for the thread the message was sent to (excluding 'NoteToSelf' threads) and if
             // the contact isn't flagged as approved then do so
             guard let threadId: String = threadId else { return }
-            guard let thread: TSContactThread = TSContactThread.fetch(uniqueId: threadId), !thread.isNoteToSelf() else { return }
-            guard let contact: Contact = Storage.shared.getContact(with: thread.contactSessionID()) else { return }
+            guard let thread: TSContactThread = TSContactThread.fetch(uniqueId: threadId, transaction: transaction), !thread.isNoteToSelf() else { return }
+            guard let contact: Contact = Storage.shared.getContact(with: thread.contactSessionID(), using: transaction) else { return }
             guard !contact.isApproved else { return }
             
             contact.isApproved = true
@@ -795,7 +797,7 @@ extension MessageReceiver {
         else {
             // The message was sent to the current user so flag their 'didApproveMe' as true (can't send a message to
             // someone without approving them)
-            guard let contact: Contact = Storage.shared.getContact(with: senderSessionId) else { return }
+            guard let contact: Contact = Storage.shared.getContact(with: senderSessionId, using: transaction) else { return }
             guard !contact.didApproveMe else { return }
             
             contact.didApproveMe = true
