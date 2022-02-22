@@ -1115,7 +1115,26 @@ extension ConversationVC {
             // Hide the 'messageRequestView' since the request has been approved and force a config
             // sync to propagate the contact approval state (both must run on the main thread)
             DispatchQueue.main.async { [weak self] in
-                self?.messageRequestView.isHidden = true
+                let messageRequestViewWasVisible: Bool = (self?.messageRequestView.isHidden == false)
+                
+                UIView.animate(withDuration: 0.3) {
+                    self?.messageRequestView.isHidden = true
+                    self?.scrollButtonMessageRequestsBottomConstraint?.isActive = false
+                    self?.scrollButtonBottomConstraint?.isActive = true
+                    
+                    // Update the table content inset and offset to account for the dissapearance of
+                    // the messageRequestsView
+                    if messageRequestViewWasVisible {
+                        let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
+                        let oldContentInset: UIEdgeInsets = (self?.messagesTableView.contentInset ?? UIEdgeInsets.zero)
+                        self?.messagesTableView.contentInset = UIEdgeInsets(
+                            top: 0,
+                            leading: 0,
+                            bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
+                            trailing: 0
+                        )
+                    }
+                }
             
                 // Send a sync message with the details of the contact
                 if let appDelegate = UIApplication.shared.delegate as? AppDelegate {

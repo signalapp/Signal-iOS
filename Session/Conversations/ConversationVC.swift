@@ -1,4 +1,5 @@
 import SessionUIKit
+import SessionMessagingKit
 
 // TODO:
 // • Slight paging glitch when scrolling up and loading more content
@@ -12,8 +13,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     let focusedMessageID: String? // This is used for global search
     var focusedMessageIndexPath: IndexPath?
     var unreadViewItems: [ConversationViewItem] = []
-    var scrollButtonConstraint: NSLayoutConstraint?
-    var footerControlsStackViewBottomConstraint: NSLayoutConstraint?
+    var scrollButtonBottomConstraint: NSLayoutConstraint?
+    var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
+    var messageRequestsViewBotomConstraint: NSLayoutConstraint?
     // Search
     var isShowingSearchUI = false
     var lastSearchedText: String?
@@ -303,21 +305,22 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         addOrRemoveBlockedBanner()
         
         // Message requests view & scroll to bottom
-        view.addSubview(footerControlsStackView)
-        
-        footerControlsStackView.addArrangedSubview(scrollButton)
-        footerControlsStackView.addArrangedSubview(messageRequestView)
+        view.addSubview(scrollButton)
+        view.addSubview(messageRequestView)
         
         messageRequestView.addSubview(messageRequestDescriptionLabel)
         messageRequestView.addSubview(messageRequestAcceptButton)
         messageRequestView.addSubview(messageRequestDeleteButton)
         
-        scrollButton.pin(.right, to: .right, of: footerControlsStackView, withInset: -20)
-        messageRequestView.pin(.left, to: .left, of: footerControlsStackView)
-        messageRequestView.pin(.right, to: .right, of: footerControlsStackView)
-        footerControlsStackView.pin(.left, to: .left, of: view)
-        footerControlsStackView.pin(.right, to: .right, of: view)
-        self.footerControlsStackViewBottomConstraint = footerControlsStackView.pin(.bottom, to: .bottom, of: view, withInset: -16)
+        scrollButton.pin(.right, to: .right, of: view, withInset: -20)
+        messageRequestView.pin(.left, to: .left, of: view)
+        messageRequestView.pin(.right, to: .right, of: view)
+        self.messageRequestsViewBotomConstraint = messageRequestView.pin(.bottom, to: .bottom, of: view, withInset: -16)
+        self.scrollButtonBottomConstraint = scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -16)
+        self.scrollButtonBottomConstraint?.isActive = false // Note: Need to disable this to avoid a conflict with the other bottom constraint
+        self.scrollButtonMessageRequestsBottomConstraint = scrollButton.pin(.bottom, to: .top, of: messageRequestView, withInset: -16)
+        self.scrollButtonMessageRequestsBottomConstraint?.isActive = thread.isMessageRequest()
+        self.scrollButtonBottomConstraint?.isActive = !thread.isMessageRequest()
         
         messageRequestDescriptionLabel.pin(.top, to: .top, of: messageRequestView, withInset: 10)
         messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
@@ -529,7 +532,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         )
         let newContentOffsetY: CGFloat = (messagesTableView.contentOffset.y + (newContentInset.bottom - oldContentInset.bottom))
         let changes = { [weak self] in
-            self?.footerControlsStackViewBottomConstraint?.constant = -(keyboardTop + 16)
+            self?.scrollButtonBottomConstraint?.constant = -(keyboardTop + 16)
+            self?.messageRequestsViewBotomConstraint?.constant = -(keyboardTop + 16)
             self?.messagesTableView.contentInset = newContentInset
             self?.messagesTableView.contentOffset.y = newContentOffsetY
             
@@ -574,7 +578,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             delay: 0,
             options: options,
             animations: { [weak self] in
-                self?.footerControlsStackViewBottomConstraint?.constant = -(keyboardTop + 16)
+                self?.scrollButtonBottomConstraint?.constant = -(keyboardTop + 16)
+                self?.messageRequestsViewBotomConstraint?.constant = -(keyboardTop + 16)
                 
                 let scrollButtonOpacity: CGFloat = (self?.getScrollButtonOpacity() ?? 0)
                 self?.scrollButton.alpha = scrollButtonOpacity
