@@ -79,7 +79,7 @@ enum MockDataGenerator {
         /// The mock data generation is quite slow, there are 3 parts which take a decent amount of time (deleting the account afterwards will also take a long time):
         ///     Generating the threads & content - ~3s per 100
         ///     Writing to the database - ~10s per 1000
-        ///     Updating the UI - ~10s per 1000 (crashing)
+        ///     Updating the UI - ~10s per 1000
         let dmThreadCount: Int = 100
         let closedGroupThreadCount: Int = 0
         let openGroupThreadCount: Int = 0
@@ -88,7 +88,7 @@ enum MockDataGenerator {
         let cgRandomSeed: Int = 2222
         let ogRandomSeed: Int = 3333
         
-        // TODO: Make sure this data doesn't go off device somehow?
+        // FIXME: Make sure this data doesn't go off device somehow?
         Storage.shared.write { anyTransaction in
             guard let transaction: YapDatabaseReadWriteTransaction = anyTransaction as? YapDatabaseReadWriteTransaction else { return }
             
