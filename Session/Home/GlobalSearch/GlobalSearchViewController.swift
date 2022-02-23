@@ -192,12 +192,12 @@ extension GlobalSearchViewController {
             SNLog("shouldn't be able to tap 'no results' section")
         case .contacts:
             let sectionResults = searchResultSet.conversations
-            guard let searchResult = sectionResults[safe: indexPath.row], let threadId = searchResult.thread.threadRecord.uniqueId, let thread = TSThread.fetch(uniqueId: threadId) else { return }
-            show(thread, highlightedMessageID: nil, animated: true)
+            guard let searchResult = sectionResults[safe: indexPath.row] else { return }
+            show(searchResult.thread.threadRecord, highlightedMessageID: nil, animated: true)
         case .messages:
             let sectionResults = searchResultSet.messages
-            guard let searchResult = sectionResults[safe: indexPath.row], let threadId = searchResult.thread.threadRecord.uniqueId, let thread = TSThread.fetch(uniqueId: threadId) else { return }
-            show(thread, highlightedMessageID: searchResult.messageId, animated: true)
+            guard let searchResult = sectionResults[safe: indexPath.row] else { return }
+            show(searchResult.thread.threadRecord, highlightedMessageID: searchResult.message?.uniqueId, animated: true)
         case .recent:
             guard let threadId = recentSearchResults[safe: indexPath.row], let thread = TSThread.fetch(uniqueId: threadId) else { return }
             show(thread, highlightedMessageID: nil, animated: true, isFromRecent: true)
@@ -336,7 +336,7 @@ extension GlobalSearchViewController {
             cell.isShowingGlobalSearchResult = true
             let searchResult = sectionResults[safe: indexPath.row]
             cell.threadViewModel = searchResult?.thread
-            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
+            cell.configure(snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
             return cell
         case .messages:
             let sectionResults = searchResultSet.messages
@@ -344,9 +344,7 @@ extension GlobalSearchViewController {
             cell.isShowingGlobalSearchResult = true
             let searchResult = sectionResults[safe: indexPath.row]
             cell.threadViewModel = searchResult?.thread
-            var message: TSMessage? = nil
-            if let messageId = searchResult?.messageId { message = TSMessage.fetch(uniqueId: messageId) }
-            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText, message: message)
+            cell.configure(snippet: searchResult?.snippet, searchText: searchResultSet.searchText, message: searchResult?.message)
             return cell
         case .recent:
             let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell

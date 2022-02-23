@@ -219,10 +219,11 @@ final class ConversationCell : UITableViewCell {
         timestampLabel.isHidden = true
     }
     
-    public func configure(messageDate: Date?, snippet: String?, searchText: String, message: TSMessage? = nil) {
+    public func configure(snippet: String?, searchText: String, message: TSMessage? = nil) {
         let normalizedSearchText = searchText.lowercased()
-        if let messageDate = messageDate, let snippet = snippet {
+        if let messageTimestamp = message?.timestamp, let snippet = snippet {
             // Message
+            let messageDate = NSDate.ows_date(withMillisecondsSince1970: messageTimestamp)
             displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
             timestampLabel.isHidden = false
             timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
