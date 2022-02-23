@@ -208,7 +208,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
                 topBar.mode = .videoRecording
                 topBar.recordingTimerView.startCounting()
 
-                cameraCaptureControl.setState(.recording, animationDuration: 0.4)
+                bottomBar.captureControl.setState(.recording, animationDuration: 0.4)
                 if let sideBar = sideBar {
                     sideBar.cameraCaptureControl.setState(.recording, animationDuration: 0.4)
                 }
@@ -216,18 +216,18 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
                 topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
                 topBar.recordingTimerView.stopCounting()
 
-                cameraCaptureControl.setState(.initial, animationDuration: 0.2)
+                bottomBar.captureControl.setState(.initial, animationDuration: 0.2)
                 if let sideBar = sideBar {
                     sideBar.cameraCaptureControl.setState(.initial, animationDuration: 0.2)
                 }
             }
 
+            bottomBar.isRecordingVideo = isRecordingVideo
             if let sideBar = sideBar {
                 sideBar.isRecordingVideo = isRecordingVideo
             }
 
             doneButton.isHidden = isRecordingVideo || doneButton.badgeNumber == 0
-            bottomBar.isHidden = isRecordingVideo
         }
     }
 
@@ -245,12 +245,9 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     private var topBarOffsetFromTop: NSLayoutConstraint!
 
     private let bottomBar = BottomBar(frame: .zero)
-    private var bottomBarOffsetFromBottom: NSLayoutConstraint!
+    private var bottomBarVerticalPositionConstraint: NSLayoutConstraint!
 
     private var sideBar: SideBar? // Optional because most devices are iPhones and will never need this.
-
-    private let cameraCaptureControl = CameraCaptureControl(axis: .horizontal)
-    private var captureButtonVPositionConstraint: NSLayoutConstraint!
 
     private lazy var tapToFocusView: AnimationView = {
         let view = AnimationView(name: "tap_to_focus")
@@ -289,23 +286,30 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         topBarOffsetFromTop = topBar.autoPinEdge(toSuperviewEdge: .top)
 
         view.addSubview(bottomBar)
+        bottomBar.isCompactHeightLayout = !UIDevice.current.hasIPhoneXNotch
         bottomBar.switchCameraButton.addTarget(self, action: #selector(didTapSwitchCamera), for: .touchUpInside)
         bottomBar.photoLibraryButton.addTarget(self, action: #selector(didTapPhotoLibrary), for: .touchUpInside)
         bottomBar.autoPinWidthToSuperview()
-        bottomBarOffsetFromBottom = view.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor)
-        view.addConstraint(bottomBarOffsetFromBottom)
+        if bottomBar.isCompactHeightLayout {
+            // On devices with home button bar is simply pinned to the bottom of the screen
+            // with a margin that defines space under the shutter button.
+            view.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor, constant: 32).isActive = true
+        } else {
+            // On `notch` devices:
+            //  i. Shutter button is placed 16 pts above the bottom edge of the preview view.
+            previewView.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.bottomAnchor, constant: 16).isActive = true
 
-        view.addSubview(cameraCaptureControl)
-        captureButtonVPositionConstraint = view.bottomAnchor.constraint(equalTo: cameraCaptureControl.bottomAnchor)
-        view.addConstraint(captureButtonVPositionConstraint)
-        cameraCaptureControl.shutterButtonLayoutGuide.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        cameraCaptureControl.autoPinTrailingToSuperviewMargin()
+            //  ii. Other buttons are centered vertically in the black box between
+            //      bottom of the preview view and top of bottom safe area.
+            bottomBarVerticalPositionConstraint = bottomBar.controlButtonsLayoutGuide.centerYAnchor.constraint(equalTo: previewView.bottomAnchor)
+            view.addConstraint(bottomBarVerticalPositionConstraint)
+        }
 
         view.addSubview(doneButton)
         doneButton.isHidden = true
         doneButton.translatesAutoresizingMaskIntoConstraints = false
         doneButtonIPhoneConstraints = [ doneButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-                                        doneButton.centerYAnchor.constraint(equalTo: cameraCaptureControl.centerYAnchor) ]
+                                        doneButton.centerYAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerYAnchor) ]
         view.addConstraints(doneButtonIPhoneConstraints)
         doneButton.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
 
@@ -336,6 +340,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         guard sideBar == nil else { return }
 
         let sideBar = SideBar(frame: .zero)
+        sideBar.cameraCaptureControl.delegate = photoCapture
         sideBar.batchModeButton.addTarget(self, action: #selector(didTapBatchMode), for: .touchUpInside)
         sideBar.flashModeButton.addTarget(self, action: #selector(didTapFlashMode), for: .touchUpInside)
         sideBar.switchCameraButton.addTarget(self, action: #selector(didTapSwitchCamera), for: .touchUpInside)
@@ -373,22 +378,11 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         previewView.frame = previewFrame
         previewView.previewLayer.cornerRadius = cornerRadius
 
-        // Bottom bar is pinned to the bottom of the screen, residing either directly above safe area / bottom margin
-        // or (for taller screens) floating in the center of the black area between the bottom of the capture view and safe area.
-        let bottomBarHeight = bottomBar.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize,
-                                                                withHorizontalFittingPriority: .fittingSizeLevel,
-                                                                verticalFittingPriority: .fittingSizeLevel).height
-        let blackBarHeight = view.bounds.maxY - previewFrame.maxY - view.safeAreaInsets.bottom
-        var bottomBarOffset = UIDevice.current.hasIPhoneXNotch ? view.safeAreaInsets.bottom : 16
-        if blackBarHeight > bottomBarHeight {
-            bottomBarOffset += 0.5*(blackBarHeight - bottomBarHeight)
+        // See comment in `initializeUI`.
+        if !bottomBar.isCompactHeightLayout {
+            let blackBarHeight = view.bounds.maxY - previewFrame.maxY - view.safeAreaInsets.bottom
+            bottomBarVerticalPositionConstraint.constant = 0.5 * blackBarHeight
         }
-        bottomBarOffsetFromBottom.constant = bottomBarOffset
-
-        // Bottom edge of the capture button is either 16pts above bottom edge of the camera capture view
-        // or directly adjacent to the top of the bottom bar, whatever is higher.
-        let captureButtonOffsetFromBottom = max(view.bounds.maxY - (previewFrame.maxY - 16), bottomBarOffset + bottomBarHeight)
-        captureButtonVPositionConstraint.constant = captureButtonOffsetFromBottom
     }
 
     private func updateIPadInterfaceLayout() {
@@ -407,7 +401,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         if !isRecordingVideo {
             topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
         }
-        cameraCaptureControl.isHidden = isIPadUIInRegularMode
         bottomBar.isHidden = isIPadUIInRegularMode
         sideBar?.isHidden = !isIPadUIInRegularMode
     }
@@ -518,9 +511,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     @objc
     func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
         switch pinchGesture.state {
-        case .began:
-            fallthrough
-        case .changed:
+        case .began, .changed:
             photoCapture.updateZoom(scaleFromPreviousZoomFactor: pinchGesture.scale)
         case .ended:
             photoCapture.completeZoom(scaleFromPreviousZoomFactor: pinchGesture.scale)
@@ -648,7 +639,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     private func setupPhotoCapture() {
         photoCapture.delegate = self
-        cameraCaptureControl.delegate = photoCapture
+        bottomBar.captureControl.delegate = photoCapture
         if let sideBar = sideBar {
             sideBar.cameraCaptureControl.delegate = photoCapture
         }
@@ -803,8 +794,30 @@ private class TopBar: UIView {
 }
 
 private class BottomBar: UIView {
+    private var compactHeightLayoutConstraints = [NSLayoutConstraint]()
+    private var regularHeightLayoutConstraints = [NSLayoutConstraint]()
+    var isCompactHeightLayout = false {
+        didSet {
+            guard oldValue != isCompactHeightLayout else { return }
+            updateCompactHeightLayoutConstraints()
+        }
+    }
+
+    var isRecordingVideo = false {
+        didSet {
+            photoLibraryButton.isHidden = isRecordingVideo
+            switchCameraButton.isHidden = isRecordingVideo
+        }
+    }
+
     private(set) var photoLibraryButton: MediaPickerThumbnailButton!
     private(set) var switchCameraButton: CameraOverlayButton!
+    let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
+
+    private(set) var captureControl: CameraCaptureControl!
+    var shutterButtonLayoutGuide: UILayoutGuide {
+        captureControl.shutterButtonLayoutGuide
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -819,16 +832,50 @@ private class BottomBar: UIView {
     private func commonInit() {
         layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 14)
 
+        addLayoutGuide(controlButtonsLayoutGuide)
+        addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                         controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor) ])
+
         photoLibraryButton = MediaPickerThumbnailButton(frame: CGRect(origin: .zero, size: .square(bounds.height)))
+        photoLibraryButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(photoLibraryButton)
-        photoLibraryButton.autoVCenterInSuperview()
-        photoLibraryButton.autoPinLeadingToSuperviewMargin()
+        addConstraints([ photoLibraryButton.leadingAnchor.constraint(equalTo: controlButtonsLayoutGuide.leadingAnchor),
+                         photoLibraryButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
+                         photoLibraryButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor) ])
 
         switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
+        switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(switchCameraButton)
-        switchCameraButton.autoPinHeightToSuperviewMargins()
-        switchCameraButton.autoPinTrailingToSuperviewMargin()
+        addConstraints([ switchCameraButton.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
+                         switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
+                         switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
+
+        captureControl = CameraCaptureControl(axis: .horizontal)
+        captureControl.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(captureControl)
+        captureControl.autoPinTopToSuperviewMargin()
+        captureControl.autoPinTrailingToSuperviewMargin()
+        addConstraint(captureControl.shutterButtonLayoutGuide.centerXAnchor.constraint(equalTo: centerXAnchor))
+
+        compactHeightLayoutConstraints.append(contentsOf: [ controlButtonsLayoutGuide.centerYAnchor.constraint(equalTo: captureControl.shutterButtonLayoutGuide.centerYAnchor),
+                                                            captureControl.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor) ])
+
+        regularHeightLayoutConstraints.append(contentsOf: [ controlButtonsLayoutGuide.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+                                                            captureControl.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor) ])
+
+        updateCompactHeightLayoutConstraints()
     }
+
+    private func updateCompactHeightLayoutConstraints() {
+        if isCompactHeightLayout {
+            removeConstraints(regularHeightLayoutConstraints)
+            addConstraints(compactHeightLayoutConstraints)
+        } else {
+            removeConstraints(compactHeightLayoutConstraints)
+            addConstraints(regularHeightLayoutConstraints)
+        }
+    }
+
 }
 
 private class SideBar: UIView {
@@ -959,14 +1006,14 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
-        cameraCaptureControl.setState(.recording, animationDuration: duration)
+        bottomBar.captureControl.setState(.recording, animationDuration: duration)
         if let sideBar = sideBar {
             sideBar.cameraCaptureControl.setState(.recording, animationDuration: duration)
         }
     }
 
     func endCaptureButtonAnimation(_ duration: TimeInterval) {
-        cameraCaptureControl.setState(.initial, animationDuration: duration)
+        bottomBar.captureControl.setState(.initial, animationDuration: duration)
         if let sideBar = sideBar {
             sideBar.cameraCaptureControl.setState(.initial, animationDuration: duration)
         }
