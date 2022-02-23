@@ -584,6 +584,7 @@
 "context_menu_save" = "Save";
 "context_menu_ban_user" = "Ban User";
 "context_menu_ban_and_delete_all" = "Ban and Delete All";
+"context_menu_ban_user_error_alert_message" = "Unable to ban user";
 "accessibility_expanding_attachments_button" = "Add attachments";
 "accessibility_gif_button" = "Gif";
 "accessibility_document_button" = "Document";
@@ -603,3 +604,4 @@
 "MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
 "TXT_HIDE_TITLE" = "Hide";
 "TXT_DELETE_ACCEPT" = "Accept";
+"ALERT_ERROR_TITLE" = "Fout";

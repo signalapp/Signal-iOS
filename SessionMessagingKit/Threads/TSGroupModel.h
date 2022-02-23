@@ -18,6 +18,7 @@ extern const int32_t kGroupIdLength;
 
 @property (nonatomic) NSArray<NSString *> *groupMemberIds;
 @property (nonatomic) NSArray<NSString *> *groupAdminIds;
+@property (nonatomic) NSArray<NSString *> *groupModeratorIds;
 @property (nullable, readonly, nonatomic) NSString *groupName;
 @property (readonly, nonatomic) NSData *groupId;
 @property (nonatomic) GroupType groupType;
@@ -30,7 +31,8 @@ extern const int32_t kGroupIdLength;
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId
                     groupType:(GroupType)groupType
-                     adminIds:(NSArray<NSString *> *)adminIds;
+                     adminIds:(NSArray<NSString *> *)adminIds
+                 moderatorIds:(NSArray<NSString *> *)groupModeratorIds;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;

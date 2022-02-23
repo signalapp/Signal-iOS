@@ -1006,7 +1006,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             // If it's an incoming message the user must have moderator status
             if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
                 NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
-                if (![SNOpenGroupManager isUserModerator:userPublicKey forRoom:openGroup.room onServer:openGroup.server]) { return; }
+                if (![SNOpenGroupManager isUserModeratorOrAdmin:userPublicKey forRoom:openGroup.room onServer:openGroup.server]) { return; }
             }
             
             // Delete the message
@@ -1060,7 +1060,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
             NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
             if (openGroup != nil) {
-                if (![SNOpenGroupManager isUserModerator:userPublicKey forRoom:openGroup.room onServer:openGroup.server]) { return; }
+                if (![SNOpenGroupManager isUserModeratorOrAdmin:userPublicKey forRoom:openGroup.room onServer:openGroup.server]) { return; }
             }
         }
         
@@ -1133,7 +1133,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (interationType == OWSInteractionType_IncomingMessage) {
         // Only allow deletion on incoming messages if the user has moderation permission
         if (openGroup != nil) {
-            return [SNOpenGroupManager isUserModerator:[SNGeneralUtilities getUserPublicKey] forRoom:openGroup.room onServer:openGroup.server];
+            return [SNOpenGroupManager isUserModeratorOrAdmin:[SNGeneralUtilities getUserPublicKey] forRoom:openGroup.room onServer:openGroup.server];
         }
     } else {
         return YES;
@@ -1155,7 +1155,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Check that we're a moderator
     if (openGroup != nil) {
-        return [SNOpenGroupManager isUserModerator:[SNGeneralUtilities getUserPublicKey] forRoom:openGroup.room onServer:openGroup.server];
+        return [SNOpenGroupManager isUserModeratorOrAdmin:[SNGeneralUtilities getUserPublicKey] forRoom:openGroup.room onServer:openGroup.server];
     }
 }
 

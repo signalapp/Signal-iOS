@@ -25,9 +25,13 @@ extension OpenGroupAPI {
             DispatchQueue.main.async { [weak self] in // Timers don't do well on background queues
                 self?.hasStarted = true
                 self?.timer = Timer.scheduledTimer(withTimeInterval: Poller.pollInterval, repeats: true) { _ in
+                    DispatchQueue.global().async {
+                        self?.poll().retainUntilComplete()
+                    }
+                }
+                DispatchQueue.global().async {
                     self?.poll().retainUntilComplete()
                 }
-                self?.poll().retainUntilComplete()
             }
         }
 

@@ -488,7 +488,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
             name: "testServer",
-            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blinding], missing: [])
+            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
         )
         dependencies = dependencies.with(api: LocalTestApi.self)
         
@@ -577,7 +577,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
             name: "testServer",
-            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blinding], missing: [])
+            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
         )
         dependencies = dependencies.with(sodium: InvalidSodium())
         
@@ -618,7 +618,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
             name: "testServer",
-            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blinding], missing: [])
+            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
         )
         dependencies = dependencies.with(sodium: InvalidSodium())
         

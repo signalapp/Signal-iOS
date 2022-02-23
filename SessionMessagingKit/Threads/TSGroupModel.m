@@ -32,6 +32,7 @@ const int32_t kGroupIdLength = 16;
                       groupId:(NSData *)groupId
                     groupType:(GroupType)groupType
                      adminIds:(NSArray<NSString *> *)adminIds
+                     moderatorIds:(NSArray<NSString *> *)moderatorIds
 {
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
@@ -39,6 +40,7 @@ const int32_t kGroupIdLength = 16;
     _groupType              = groupType;
     _groupId                = groupId;
     _groupAdminIds          = [adminIds copy];
+    _groupModeratorIds      = [moderatorIds copy];
 
     return self;
 }
@@ -58,6 +60,10 @@ const int32_t kGroupIdLength = 16;
     
     if (_groupAdminIds == nil) {
         _groupAdminIds = [NSArray new];
+    }
+    
+    if (_groupModeratorIds == nil) {
+        _groupModeratorIds = [NSArray new];
     }
 
     return self;

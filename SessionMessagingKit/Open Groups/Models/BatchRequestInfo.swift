@@ -8,27 +8,62 @@ import SessionSnodeKit
 extension OpenGroupAPI {
     // MARK: - BatchSubRequest
     
-    struct BatchSubRequest: Codable {
+    struct BatchSubRequest: Encodable {
+        enum CodingKeys: String, CodingKey {
+            case method
+            case path
+            case headers
+            case json
+            case b64
+            case bytes
+        }
+        
         let method: HTTP.Verb
         let path: String
         let headers: [String: String]?
-        let json: String?
-        let b64: String?
         
-        init(request: Request) {
+        /// The `jsonBodyEncoder` is used to avoid having to make `BatchSubRequest` a generic type (haven't found a good way
+        /// to keep `BatchSubRequest` encodable using protocols unfortunately so need this work around)
+        private let jsonBodyEncoder: ((inout KeyedEncodingContainer<CodingKeys>, CodingKeys) throws -> ())?
+        private let b64: String?
+        private let bytes: [UInt8]?
+        
+        init<T: Encodable>(request: Request<T>) {
             self.method = request.method
             self.path = request.urlPathAndParamsString
             self.headers = (request.headers.isEmpty ? nil : request.headers.toHTTPHeaders())
             
-            // TODO: Differentiate between JSON and b64 body.
-            if let body: Data = request.body, let bodyString: String = String(data: body, encoding: .utf8) {
-                self.json = bodyString
+            // Note: Need to differentiate between JSON, b64 string and bytes body values to ensure they are
+            // encoded correctly so the server knows how to handle them
+            switch request.body {
+                case let bodyString as String:
+                    self.jsonBodyEncoder = nil
+                    self.b64 = bodyString
+                    self.bytes = nil
+                    
+                case let bodyBytes as [UInt8]:
+                    self.jsonBodyEncoder = nil
+                    self.b64 = nil
+                    self.bytes = bodyBytes
+                    
+                default:
+                    self.jsonBodyEncoder = { [body = request.body] container, key in
+                        try container.encodeIfPresent(body, forKey: key)
+                    }
+                    self.b64 = nil
+                    self.bytes = nil
             }
-            else {
-                self.json = nil
-            }
-            
-            self.b64 = nil
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+
+            try container.encode(method, forKey: .method)
+            try container.encode(path, forKey: .path)
+            try container.encodeIfPresent(headers, forKey: .headers)
+            try jsonBodyEncoder?(&container, .json)
+            try container.encodeIfPresent(b64, forKey: .b64)
+            try container.encodeIfPresent(bytes, forKey: .bytes)
         }
     }
     
@@ -40,15 +75,21 @@ extension OpenGroupAPI {
         let body: T
     }
     
-    // MARK: - BatchRequestInfo<T>
+    // MARK: - BatchRequestInfo<T, R>
     
-    struct BatchRequestInfo {
-        let request: Request
+    struct BatchRequestInfo<T: Encodable, R: Codable>: BatchRequestInfoType {
+        let request: Request<T>
         let responseType: Codable.Type
         
-        init<T: Codable>(request: Request, responseType: T.Type) {
+        var endpoint: Endpoint { request.endpoint }
+        
+        init(request: Request<T>, responseType: R.Type) {
             self.request = request
-            self.responseType = BatchSubResponse<T>.self
+            self.responseType = BatchSubResponse<R>.self
+        }
+        
+        func toSubRequest() -> BatchSubRequest {
+            return BatchSubRequest(request: request)
         }
     }
     
@@ -57,6 +98,17 @@ extension OpenGroupAPI {
     typealias BatchRequest = [BatchSubRequest]
     typealias BatchResponseTypes = [Codable.Type]
     typealias BatchResponse = [(OnionRequestResponseInfoType, Codable)]
+}
+
+// MARK: - BatchRequestInfoType
+
+/// This protocol is designed to erase the types from `BatchRequestInfo<T, R>` so multiple types can be used
+/// in arrays when doing `/batch` and `/sequence` requests
+protocol BatchRequestInfoType {
+    var responseType: Codable.Type { get }
+    var endpoint: OpenGroupAPI.Endpoint { get }
+    
+    func toSubRequest() -> OpenGroupAPI.BatchSubRequest
 }
 
 // MARK: - Convenience

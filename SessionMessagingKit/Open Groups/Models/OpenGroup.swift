@@ -48,7 +48,7 @@ public final class OpenGroup: NSObject, NSCoding { // NSObject/NSCoding conforma
         name = coder.decodeObject(forKey: "name") as! String
         groupDescription = coder.decodeObject(forKey: "groupDescription") as? String
         imageID = coder.decodeObject(forKey: "imageID") as! String?
-        infoUpdates = ((coder.decodeObject(forKey: "infoUpdates") as? Int64) ?? 0)
+        infoUpdates = coder.decodeInt64(forKey: "infoUpdates")
         
         super.init()
     }

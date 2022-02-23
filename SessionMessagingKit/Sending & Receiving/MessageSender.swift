@@ -294,7 +294,7 @@ public final class MessageSender : NSObject {
         
         let server: OpenGroupAPI.Server? = dependencies.storage.getOpenGroupServer(name: openGroup.server)
         
-        if server?.capabilities.capabilities.contains(.blinding) == true {
+        if server?.capabilities.capabilities.contains(.blind) == true {
             guard let serverPublicKey = dependencies.storage.getOpenGroupPublicKey(for: openGroup.server) else {
                 preconditionFailure()
             }
@@ -390,7 +390,7 @@ public final class MessageSender : NSObject {
                 whisperMods: whisperMods
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
-                message.openGroupServerMessageID = given(data.seqNo) { UInt64($0) }
+                message.openGroupServerMessageID = given(data.id) { UInt64($0) }
 
                 dependencies.storage.write { transaction in
                     MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: UInt64(floor(data.posted)), using: transaction)

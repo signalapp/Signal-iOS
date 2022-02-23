@@ -473,7 +473,7 @@ extension MessageReceiver {
         
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
-        let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
+        let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins, moderatorIds: [])
         let thread: TSGroupThread
         
         if let t = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) {
@@ -568,7 +568,7 @@ extension MessageReceiver {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         performIfValid(for: message, using: transaction) { groupID, thread, group in
             // Update the group
-            let newGroupModel = TSGroupModel(title: name, memberIds: group.groupMemberIds, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            let newGroupModel = TSGroupModel(title: name, memberIds: group.groupMemberIds, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds, moderatorIds: group.groupModeratorIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
             guard name != group.groupName else { return }
@@ -586,7 +586,7 @@ extension MessageReceiver {
             // Update the group
             let addedMembers = membersAsData.map { $0.toHexString() }
             let members = Set(group.groupMemberIds).union(addedMembers)
-            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds, moderatorIds: group.groupModeratorIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Send the latest encryption key pair to the added members if the current user is the admin of the group
             //
@@ -656,7 +656,7 @@ extension MessageReceiver {
             let zombies = storage.getZombieMembers(for: groupPublicKey).subtracting(removedMembers)
             storage.setZombieMembers(for: groupPublicKey, to: zombies, using: transaction)
             // Update the group
-            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds, moderatorIds: group.groupModeratorIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
@@ -689,7 +689,7 @@ extension MessageReceiver {
                 storage.setZombieMembers(for: groupPublicKey, to: zombies, using: transaction)
             }
             // Update the group
-            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+            let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds, moderatorIds: group.groupModeratorIds)
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }

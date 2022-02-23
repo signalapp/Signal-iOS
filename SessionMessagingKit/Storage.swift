@@ -61,22 +61,16 @@ public protocol SessionMessagingKitStorageProtocol {
     func getOpenGroupServer(name: String) -> OpenGroupAPI.Server?
     func storeOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any)
     
-    // MARK: - Open Group Public Keys
+    // MARK: - -- Open Group Public Keys
 
     func getOpenGroupPublicKey(for server: String) -> String?
     func setOpenGroupPublicKey(for server: String, to newValue: String, using transaction: Any)
 
-    // MARK: - Last Message Server ID
+    // MARK: - -- Open Group Sequence Number
 
-    func getLastMessageServerID(for room: String, on server: String) -> Int64?
-    func setLastMessageServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any)
-    func removeLastMessageServerID(for room: String, on server: String, using transaction: Any)
-
-    // MARK: - Last Deletion Server ID
-
-    func getLastDeletionServerID(for room: String, on server: String) -> Int64?
-    func setLastDeletionServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any)
-    func removeLastDeletionServerID(for room: String, on server: String, using transaction: Any)
+    func getOpenGroupSequenceNumber(for room: String, on server: String) -> Int64?
+    func setOpenGroupSequenceNumber(for room: String, on server: String, to newValue: Int64, using transaction: Any)
+    func removeOpenGroupSequenceNumber(for room: String, on server: String, using transaction: Any)
 
     // MARK: - Message Handling
 

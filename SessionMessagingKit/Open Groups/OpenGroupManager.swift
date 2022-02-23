@@ -1,4 +1,6 @@
 import PromiseKit
+import Sodium
+import SessionUtilitiesKit
 
 @objc(SNOpenGroupManager)
 public final class OpenGroupManager: NSObject {
@@ -12,6 +14,7 @@ public final class OpenGroupManager: NSObject {
     public static var defaultRoomsPromise: Promise<[OpenGroupAPI.Room]>?
     private static var groupImagePromises: [String: Promise<Data>] = [:]
     private static var moderators: [String: [String: Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
+    private static var admins: [String: [String: Set<String>]] = [:] // Server URL to room ID to set of admin IDs
 
     // MARK: - Polling
     
@@ -41,8 +44,7 @@ public final class OpenGroupManager: NSObject {
         let storage = Storage.shared
         
         // Clear any existing data if needed
-        storage.removeLastMessageServerID(for: roomToken, on: server, using: transaction)
-        storage.removeLastDeletionServerID(for: roomToken, on: server, using: transaction)
+        storage.removeOpenGroupSequenceNumber(for: roomToken, on: server, using: transaction)
         storage.removeAuthToken(for: roomToken, on: server, using: transaction)
         
         // Store the public key
@@ -91,9 +93,9 @@ public final class OpenGroupManager: NSObject {
         }
         storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
         Storage.shared.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
-        Storage.shared.removeLastMessageServerID(for: openGroup.room, on: openGroup.server, using: transaction)
-        Storage.shared.removeLastDeletionServerID(for: openGroup.room, on: openGroup.server, using: transaction)
         let _ = OpenGroupAPI.legacyDeleteAuthToken(for: openGroup.room, on: openGroup.server)
+        Storage.shared.removeOpenGroupSequenceNumber(for: openGroup.room, on: openGroup.server, using: transaction)
+        
         thread.removeAllThreadInteractions(with: transaction)
         thread.remove(with: transaction)
         Storage.shared.removeOpenGroup(for: thread.uniqueId!, using: transaction)
@@ -133,31 +135,29 @@ public final class OpenGroupManager: NSObject {
         let sortedMessages: [OpenGroupAPI.Message] = messages
             .sorted { lhs, rhs in lhs.seqNo < rhs.seqNo }
         let seqNo: Int64 = (sortedMessages.last?.seqNo ?? 0)
-        let lastMessageSeqNo: Int64 = (dependencies.storage.getLastMessageServerID(for: roomToken, on: server) ?? 0)
         
         dependencies.storage.write { transaction in
             var messageServerIDsToRemove: [UInt64] = []
             
-            // Update the 'lastMessageServerId' value if we've gotten a newer message
-            if seqNo > lastMessageSeqNo {
-                dependencies.storage.setLastMessageServerID(for: roomToken, on: server, to: seqNo, using: transaction)
-            }
+            // Update the 'openGroupSequenceNumber' value (Note: SOGS V4 uses the 'seqNo' instead of the 'serverId')
+            dependencies.storage.setOpenGroupSequenceNumber(for: roomToken, on: server, to: seqNo, using: transaction)
             
             // Process the messages
             sortedMessages.forEach { message in
                 guard let base64EncodedString: String = message.base64EncodedData, let data = Data(base64Encoded: base64EncodedString), let sender: String = message.sender else {
                     // A message with no data has been deleted so add it to the list to remove
-                    messageServerIDsToRemove.append(UInt64(message.seqNo))
+                    messageServerIDsToRemove.append(UInt64(message.id))
                     return
                 }
                 
-                let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted)))
+                // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
+                let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
                 envelope.setContent(data)
                 envelope.setSource(sender)
                 
                 do {
                     let data = try envelope.buildSerializedData()
-                    let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: UInt64(message.seqNo), isRetry: false, using: transaction)
+                    let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: UInt64(message.id), isRetry: false, using: transaction)
                     try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
                 }
                 catch {
@@ -175,7 +175,9 @@ public final class OpenGroupManager: NSObject {
             var messagesToRemove: [TSMessage] = []
             
             thread.enumerateInteractions(with: transaction) { interaction, stop in
-                guard let message: TSMessage = interaction as? TSMessage, messageServerIDsToRemove.contains(message.openGroupServerMessageID) else { return }
+                guard let message: TSMessage = interaction as? TSMessage, messageServerIDsToRemove.contains(message.openGroupServerMessageID) else {
+                    return
+                }
                 messagesToRemove.append(message)
             }
             
@@ -213,13 +215,15 @@ public final class OpenGroupManager: NSObject {
         let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
         let userPublicKey: String = getUserHexEncodedPublicKey()
         let initialModel: TSGroupModel = TSGroupModel(
-            title: pollInfo.name,
+            title: (pollInfo.details?.name ?? ""),
             memberIds: [ userPublicKey ],
             image: nil,
             groupId: groupId,
             groupType: .openGroup,
-            adminIds: (pollInfo.admins ?? [])
+            adminIds: (pollInfo.details?.admins ?? []),
+            moderatorIds: (pollInfo.details?.moderators ?? [])
         )
+        var maybeUpdatedModel: TSGroupModel? = nil
         
         // Store/Update everything
         dependencies.storage.write(
@@ -234,21 +238,23 @@ public final class OpenGroupManager: NSObject {
                 guard let publicKey: String = (maybePublicKey ?? existingOpenGroup?.publicKey) else { return }
                 
                 let updatedModel: TSGroupModel = TSGroupModel(
-                    title: (pollInfo.name ?? thread.groupModel.groupName),
+                    title: (pollInfo.details?.name ?? thread.groupModel.groupName),
                     memberIds: Array(Set(thread.groupModel.groupMemberIds).inserting(userPublicKey)),
                     image: thread.groupModel.groupImage,
                     groupId: groupId,
                     groupType: .openGroup,
-                    adminIds: (pollInfo.admins ?? thread.groupModel.groupAdminIds)
+                    adminIds: (pollInfo.details?.admins ?? thread.groupModel.groupAdminIds),
+                    moderatorIds: (pollInfo.details?.moderators ?? thread.groupModel.groupModeratorIds)
                 )
+                maybeUpdatedModel = updatedModel
                 let updatedOpenGroup: OpenGroup = OpenGroup(
                     server: server,
                     room: (pollInfo.token ?? roomToken),
                     publicKey: publicKey,
-                    name: (pollInfo.name ?? thread.name()),
-                    groupDescription: (pollInfo.description ?? existingOpenGroup?.description),
-                    imageID: (pollInfo.imageId.map { "\($0)" } ?? existingOpenGroup?.imageID),
-                    infoUpdates: ((pollInfo.infoUpdates ?? existingOpenGroup?.infoUpdates) ?? 0)
+                    name: (pollInfo.details?.name ?? thread.name()),
+                    groupDescription: (pollInfo.details?.description ?? existingOpenGroup?.description),
+                    imageID: (pollInfo.details?.imageId.map { "\($0)" } ?? existingOpenGroup?.imageID),
+                    infoUpdates: ((pollInfo.details?.infoUpdates ?? existingOpenGroup?.infoUpdates) ?? 0)
                 )
                 let existingUserCount: UInt64? = dependencies.storage.getUserCount(forOpenGroupWithID: updatedOpenGroup.id)
                 
@@ -275,13 +281,19 @@ public final class OpenGroupManager: NSObject {
                 }
                 
                 // - Moderators
-                if let moderators: [String] = pollInfo.moderators {
+                if let moderators: [String] = (pollInfo.details?.moderators ?? maybeUpdatedModel?.groupModeratorIds) {
                     OpenGroupManager.moderators[server] = (OpenGroupManager.moderators[server] ?? [:])
                         .setting(roomToken, Set(moderators))
                 }
+                
+                // - Admins
+                if let admins: [String] = (pollInfo.details?.admins ?? maybeUpdatedModel?.groupAdminIds) {
+                    OpenGroupManager.admins[server] = (OpenGroupManager.admins[server] ?? [:])
+                        .setting(roomToken, Set(admins))
+                }
 
                 // - Room image (if there is one)
-                if let imageId: Int64 = pollInfo.imageId {
+                if let imageId: Int64 = pollInfo.details?.imageId {
                     OpenGroupManager.roomImage(imageId, for: roomToken, on: server)
                         .done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                             dependencies.storage.write { transaction in
@@ -303,9 +315,42 @@ public final class OpenGroupManager: NSObject {
     
     // MARK: - Convenience
     
-    @objc(isUserModerator:forRoom:onServer:)
-    public static func isUserModerator(_ publicKey: String, for room: String, on server: String) -> Bool {
-        return (OpenGroupManager.moderators[server]?[room]?.contains(publicKey) ?? false)
+    /// This method specifies if the given publicKey is a moderator or an admin within a specified Open Group
+    @objc(isUserModeratorOrAdmin:forRoom:onServer:)
+    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String) -> Bool {
+        return isUserModeratorOrAdmin(publicKey, for: room, on: server, using: OpenGroupAPI.Dependencies())
+    }
+    
+    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Bool {
+        var targetKeys: [String] = [publicKey]
+        
+        // If we are checking for the current users public key then check for the blinded one as well
+        if publicKey == getUserHexEncodedPublicKey() {
+            guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return false }
+            guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: server) else {
+                return false
+            }
+            
+            // Add the unblinded key as an option
+            targetKeys.append(IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey))
+            
+            let server: OpenGroupAPI.Server? = dependencies.storage.getOpenGroupServer(name: server)
+            
+            // Check if the server supports blinded keys, if so then sign using the blinded key
+            if server?.capabilities.capabilities.contains(.blind) == true {
+                guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
+                    return false
+                }
+    
+                // Add the blinded key as an option
+                targetKeys.append(IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey))
+            }
+        }
+        
+        return (
+            (OpenGroupManager.moderators[server]?[room]?.contains(where: { key in targetKeys.contains(key) }) ?? false) ||
+            (OpenGroupManager.admins[server]?[room]?.contains(where: { key in targetKeys.contains(key) }) ?? false)
+        )
     }
     
     public static func getDefaultRoomsIfNeeded(using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) {
@@ -406,5 +451,12 @@ public final class OpenGroupManager: NSObject {
         var server = (useTLS ? "https://" : "http://") + host
         if let port = url.port { server += ":\(port)" }
         return (room: room, server: server, publicKey: publicKey)
+    }
+}
+
+extension OpenGroupManager {
+    @objc(getDefaultRoomsIfNeeded)
+    public static func objc_getDefaultRoomsIfNeeded() {
+        return getDefaultRoomsIfNeeded()
     }
 }

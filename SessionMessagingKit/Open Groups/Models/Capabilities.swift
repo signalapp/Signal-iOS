@@ -6,11 +6,11 @@ extension OpenGroupAPI {
     public struct Capabilities: Codable {
         public enum Capability: Equatable, CaseIterable, Codable {
             public static var allCases: [Capability] {
-                [.sogs, .blinding]
+                [.sogs, .blind]
             }
             
             case sogs
-            case blinding   // TODO: Get official name
+            case blind
             
             /// Fallback case if the capability isn't supported by this version of the app
             case unsupported(String)

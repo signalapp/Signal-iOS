@@ -697,12 +697,20 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let explanation = "This will ban the selected user from this room. It won't ban them from other rooms."
         let alert = UIAlertController(title: "Session", message: explanation, preferredStyle: .alert)
         let threadID = thread.uniqueId!
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
             let publicKey = message.authorId
             guard let openGroup = Storage.shared.getOpenGroup(for: threadID) else { return }
-            OpenGroupAPI.legacyBan(publicKey, from: openGroup.room, on: openGroup.server).retainUntilComplete()
+            let promise = OpenGroupAPI.userBan(publicKey, from: [openGroup.room], on: openGroup.server)
+            promise.catch(on: DispatchQueue.main) { _ in
+                OWSAlerts.showErrorAlert(message: NSLocalizedString("context_menu_ban_user_error_alert_message", comment: ""))
+            }
+            promise.retainUntilComplete()
+            
+            self?.becomeFirstResponder()
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak self] _ in
+            self?.becomeFirstResponder()
+        }))
         present(alert, animated: true, completion: nil)
     }
     
@@ -711,12 +719,19 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let explanation = "This will ban the selected user from this room and delete all messages sent by them. It won't ban them from other rooms or delete the messages they sent there."
         let alert = UIAlertController(title: "Session", message: explanation, preferredStyle: .alert)
         let threadID = thread.uniqueId!
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
             let publicKey = message.authorId
             guard let openGroup = Storage.shared.getOpenGroup(for: threadID) else { return }
-            OpenGroupAPI.legacyBanAndDeleteAllMessages(publicKey, from: openGroup.room, on: openGroup.server).retainUntilComplete()
+            let promise = OpenGroupAPI.userBanAndDeleteAllMessage(publicKey, for: [openGroup.room], on: openGroup.server)
+            promise.catch(on: DispatchQueue.main) { _ in
+                OWSAlerts.showErrorAlert(message: NSLocalizedString("context_menu_ban_user_error_alert_message", comment: ""))
+            }
+            promise.retainUntilComplete() // TODO: Test This
+            self?.becomeFirstResponder()
         }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak self] _ in
+            self?.becomeFirstResponder()
+        }))
         present(alert, animated: true, completion: nil)
     }
 

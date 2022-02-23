@@ -18,7 +18,7 @@ extension MessageSender {
         let admins = [ userPublicKey ]
         let adminsAsData = admins.map { Data(hex: $0) }
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
-        let group = TSGroupModel(title: name, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
+        let group = TSGroupModel(title: name, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins, moderatorIds: [])
         let thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
         thread.save(with: transaction)
         // Send a closed group update message to all members individually
@@ -135,7 +135,7 @@ extension MessageSender {
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .nameChange(name: name))
         MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
         // Update the group
-        let newGroupModel = TSGroupModel(title: name, memberIds: group.groupMemberIds, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+        let newGroupModel = TSGroupModel(title: name, memberIds: group.groupMemberIds, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds, moderatorIds: group.groupModeratorIds)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
@@ -181,7 +181,7 @@ extension MessageSender {
             MessageSender.send(closedGroupControlMessage, in: thread, using: transaction)
         }
         // Update the group
-        let newGroupModel = TSGroupModel(title: group.groupName, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+        let newGroupModel = TSGroupModel(title: group.groupName, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds, moderatorIds: group.groupModeratorIds)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)
@@ -231,7 +231,7 @@ extension MessageSender {
             generateAndSendNewEncryptionKeyPair(for: groupPublicKey, to: members, using: transaction)
         }.map { _ in }
         // Update the group
-        let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds)
+        let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: group.groupAdminIds, moderatorIds: group.groupModeratorIds)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user if needed (not if only zombie members were removed)
         if !membersToRemove.subtracting(oldZombies).isEmpty {
@@ -266,8 +266,10 @@ extension MessageSender {
         let group = thread.groupModel
         let userPublicKey = getUserHexEncodedPublicKey()
         let isCurrentUserAdmin = group.groupAdminIds.contains(userPublicKey)
+        let isCurrentUserModerator = group.groupModeratorIds.contains(userPublicKey)
         let members: Set<String> = isCurrentUserAdmin ? [] : Set(group.groupMemberIds).subtracting([ userPublicKey ]) // If the admin leaves the group is disbanded
         let admins: Set<String> = isCurrentUserAdmin ? [] : Set(group.groupAdminIds)
+        let moderators: Set<String> = isCurrentUserModerator ? [] : Set(group.groupModeratorIds)
         // Send the update to the group
         let closedGroupControlMessage = ClosedGroupControlMessage(kind: .memberLeft)
         let promise = MessageSender.sendNonDurably(closedGroupControlMessage, in: thread, using: transaction).done {
@@ -280,7 +282,7 @@ extension MessageSender {
             }
         }.map { _ in }
         // Update the group
-        let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: [String](admins))
+        let newGroupModel = TSGroupModel(title: group.groupName, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: [String](admins), moderatorIds: [String](moderators))
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let updateInfo = group.getInfoStringAboutUpdate(to: newGroupModel)

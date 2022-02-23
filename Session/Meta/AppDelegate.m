@@ -383,7 +383,7 @@ static NSTimeInterval launchStartedAt;
             }
             
             if (CurrentAppContext().isMainApp) {
-                [SNOpenGroupAPI legacyGetDefaultRoomsIfNeeded];
+                [SNOpenGroupManager getDefaultRoomsIfNeeded];
             }
             
             [[SNSnodeAPI getSnodePool] retainUntilComplete];

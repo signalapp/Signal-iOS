@@ -42,7 +42,8 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                                                              image:nil
                                                            groupId:groupId
                                                          groupType:groupType
-                                                          adminIds:@[ localNumber ]];
+                                                          adminIds:@[ localNumber ]
+                                                      moderatorIds:@[]];
 
     self = [self initWithGroupModel:groupModel];
 

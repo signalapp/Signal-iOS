@@ -1,4 +1,5 @@
 import PromiseKit
+import Sodium
 
 extension Storage {
 
@@ -27,7 +28,43 @@ extension Storage {
         guard let threadID = getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: groupPublicKey, openGroupID: openGroupID, using: transaction),
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
         let tsMessage: TSMessage
-        if message.sender == getUserPublicKey() {
+        let isOutgoingMessage: Bool
+        
+        // Need to check if the blinded id matches for open groups
+        if let sender: String = message.sender, let openGroupID: String = openGroupID {
+            guard let userEdKeyPair: Box.KeyPair = Storage.shared.getUserED25519KeyPair() else { return nil }
+            
+            switch IdPrefix(with: sender) {
+                case .blinded:
+                    let sodium: Sodium = Sodium()
+                    let serverNameParts: [String.SubSequence] = openGroupID.split(separator: ".")
+                    let serverName: String = serverNameParts[0..<(serverNameParts.count - 1)].joined(separator: ".")
+                    
+                    // Note: This is horrible but it doesn't look like there is going to be a nicer way to do it...
+                    guard let serverPublicKey: String = Storage.shared.getOpenGroupPublicKey(for: serverName) else {
+                        return nil
+                    }
+                    guard let blindedKeyPair: Box.KeyPair = sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: sodium.genericHash) else {
+                        return nil
+                    }
+                    
+                    isOutgoingMessage = (sender == IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey))
+                    
+                case .standard, .unblinded:
+                    isOutgoingMessage = (
+                        message.sender == getUserPublicKey() ||
+                        sender == IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey)
+                    )
+                    
+                case .none:
+                    isOutgoingMessage = false
+            }
+        }
+        else {
+            isOutgoingMessage = (message.sender == getUserPublicKey())
+        }
+        
+        if isOutgoingMessage {
             if let _ = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) { return nil }
             let tsOutgoingMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
             var recipients: [String] = []
@@ -41,14 +78,17 @@ extension Storage {
                 tsOutgoingMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
             }
             tsMessage = tsOutgoingMessage
-        } else {
+        }
+        else {
             tsMessage = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         }
+        
         tsMessage.save(with: transaction)
         tsMessage.attachments(with: transaction).forEach { attachment in
             attachment.albumMessageId = tsMessage.uniqueId!
             attachment.save(with: transaction)
         }
+        
         return tsMessage.uniqueId!
     }
 

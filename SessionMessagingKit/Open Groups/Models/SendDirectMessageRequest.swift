@@ -5,7 +5,6 @@ import Foundation
 extension OpenGroupAPI {
     public struct SendDirectMessageRequest: Codable {
         let data: Data
-        let signature: Data
         
         // MARK: - Encodable
         
@@ -13,7 +12,6 @@ extension OpenGroupAPI {
             var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
             
             try container.encode(data.base64EncodedString(), forKey: .data)
-            try container.encode(signature.base64EncodedString(), forKey: .signature)
         }
     }
 }
