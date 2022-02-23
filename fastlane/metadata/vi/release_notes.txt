@@ -1,7 +1,7 @@
 • Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
-• Tính năng đa lựa chọn mới cho phép bạn chọn nhiều cuộc trò chuyện cùng một lúc từ danh sách trò chuyện và đánh dấu chúng đã đọc, lưu trữ hoặc xóa chúng. Nhấn vào ảnh hồ sơ của bạn ở trên cùng bên trái để dùng thử.
-• Các cuộc trò chuyện đã được lưu hiện có thể truy cập nhanh hơn. Chỉ cần nhấn vào ảnh hồ sơ của bạn ở trên cùng bên trái để dễ dàng truy cập chúng.
-• Quá nhiều phản hồi để lựa chọn, thật nhanh và tiện lợi. Giờ đây bạn có thể tìm kiếm phản hồi yêu thích của mình một cách dễ dàng.
-• Tùy chỉnh phản hồi mặc định của bạn để những biểu cảm yêu thích của bạn sẽ được sắp xếp ở vị trí thuận tiện hơn.
-• Thông báo mệt mỏi? Chỉ cần vuốt sang trái trên một cuộc trò chuyện từ danh sách trò chuyện để nhanh chóng tắt tiếng hoặc bật tiếng cuộc trò chuyện đó.
-• Đã sửa lỗi khiến các phần của tin nhắn văn bản dài bị ẩn trong hộp nhập liệu.
+• A new multi-select feature lets you select multiple chats at once from the chat list and mark them read, archive, or delete them. Tap your profile photo in the top left to try it out.
+• Archived chats are now quicker to access. Just tap your profile photo in the top left to easily get to them.
+• So many reactions to pick from, so little time. Now you can search for your favorite reaction easily.
+• Customize your default reactions so you can wear your favorite emotions closer to your sleeve.
+• Notification fatigue? Just swipe left on a chat from the chat list to quickly mute or unmute it.
+• Fixed a bug that would cause parts of long text messages to become invisible in the input box.

@@ -1330,9 +1330,6 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "कल";
 
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "लॉग्स कॉपी नहीं हो सकते।";
-
 /* Error indicating that the debug logs could not be packaged. */
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "लॉग्स पैकेज नहीं हो रहे हैं।";
 
@@ -1353,6 +1350,9 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "समर्थन को ईमेलई करें";
+
+/* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "अपनें आप को भेजें";
@@ -4344,9 +4344,6 @@
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "जब तक आपका डिवाइस पंजीकृत है, आप अपना पिन कभी भी बदल सकते हैं।";
-
-/* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "अपना पिन बदलें";
 
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "बंद करें";

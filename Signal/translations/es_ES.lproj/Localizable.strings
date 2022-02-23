@@ -1330,9 +1330,6 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Ayer";
 
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "No se ha podido copiar el archivo con el registro de depuración.";
-
 /* Error indicating that the debug logs could not be packaged. */
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "No se ha podido preparar el archivo con el registro de depuración.";
 
@@ -1353,6 +1350,9 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Enviar correo al soporte técnico";
+
+/* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Enviármelo a mi mismo";
@@ -1961,7 +1961,7 @@
 "GROUP_ACCESS_LEVEL_MEMBER" = "Cualquiera";
 
 /* Description of the 'unknown' access level. */
-"GROUP_ACCESS_LEVEL_UNKNOWN" = "Desconocido";
+"GROUP_ACCESS_LEVEL_UNKNOWN" = "Desconocid@";
 
 /* Description of the 'unsatisfiable' access level. */
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Desactivada";
@@ -4345,9 +4345,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Puedes modificar tu PIN siempre que este dispositivo esté registrado.";
 
-/* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Modifica tu PIN";
-
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Desactivar";
 
@@ -5312,7 +5309,7 @@
 "SETTINGS_DATA_TITLE" = "Uso de datos";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Tiempo de desaparición de mensajes en chats nuevos";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Desaparición en chats nuevos";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Eliminar cuenta";
@@ -5339,7 +5336,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Eliminar todo";
 
 /* Label for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES" = "Mensajes que desaparecen";
+"SETTINGS_DISAPPEARING_MESSAGES" = "Desaparición de mensajes";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Fija la desaparición de mensajes para nuevos chats iniciados por ti.";
@@ -6416,7 +6413,7 @@
 "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "El tiempo de desaparición de mensajes se ha fijado en %@.";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Desconocido";
+"UNKNOWN_VALUE" = "Desconocid@";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Desenlazar";

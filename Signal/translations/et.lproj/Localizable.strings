@@ -1330,9 +1330,6 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Eile";
 
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Logide kopeerimine ei õnnestunud.";
-
 /* Error indicating that the debug logs could not be packaged. */
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Logide pakendamine ei õnnestunud.";
 
@@ -1353,6 +1350,9 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-kiri kasutajatoele";
+
+/* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Saada endale";
@@ -4344,9 +4344,6 @@
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "PIN-koodi saab muuta senikaua kuni see seade on registreeritud.";
-
-/* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Muuda PIN-koodi";
 
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Lülita välja";

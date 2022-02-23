@@ -1330,9 +1330,6 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "నిన్న";
 
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "లాగ్‌లను అనుకరించ లేకపోయింది.";
-
 /* Error indicating that the debug logs could not be packaged. */
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "లాగ్‌లను ప్యాకేజీ చేయలేకపోయింది.";
 
@@ -1353,6 +1350,9 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "ఇమెయిల్ మద్దతు";
+
+/* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "స్వతః కు పంపు ";
@@ -1415,7 +1415,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "అన్ని సందేశాలను తొలగించండి";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "% ld సందేశాలను తొలగించాలా?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld సందేశాలను తొలగించాలా?";
 
 /* action sheet body */
 "DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "సందేశాన్ని తొలగించాలా?";
@@ -4344,9 +4344,6 @@
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "ఈ పరికరం నమోదు చేయబడినంత వరకు మీరు మీ పిన్‌ను మార్చవచ్చు.";
-
-/* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "మీ పిన్ మార్చండి";
 
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "ఆపివేయండి";

@@ -1,7 +1,7 @@
-• Har du fået et nyt telefonnummer? Du kan nu ændre det nummer, du har registreret i Signal, uden at miste din samtalehistorik, dine grupper og din Signal-profil. Gå til Indstillinger > Konto > Skift telefonnummer for at se nærmere.
-• Med en ny funktion til at vælge flere samtaler på én gang fra samtalelisten kan du vælge flere samtaler på én gang og markere dem som læste, arkivere eller slette dem. Tryk på dit profilbillede øverst til venstre for at prøve det.
-• Der er nu hurtigere adgang til arkiverede samtaler. Du skal blot trykke på dit profilbillede øverst til venstre for at få adgang til dem.
-• Der er så mange reaktioner at vælge imellem og så lidt tid. Nu kan du nemt søge efter din yndlingsreaktion.
-• Tilpas dine standardreaktioner, så du kan bære dine yndlingsfølelser ude på tøjet.
-• Løbet træt i notifikationer? Du skal bare stryge til venstre på en samtale fra samtalelisten for hurtigt at ignorere den eller slå notifikationer til igen.
-• Har rettet en fejl, der betød, at dele af lange tekstbeskeder blev usynlige i indtastningsfeltet.
+• Got a new phone number? You can now change the number you registered to Signal without losing your chat history, groups, and Signal profile. Go to Settings > Account > Change Number to try it out.
+• A new multi-select feature lets you select multiple chats at once from the chat list and mark them read, archive, or delete them. Tap your profile photo in the top left to try it out.
+• Archived chats are now quicker to access. Just tap your profile photo in the top left to easily get to them.
+• So many reactions to pick from, so little time. Now you can search for your favorite reaction easily.
+• Customize your default reactions so you can wear your favorite emotions closer to your sleeve.
+• Notification fatigue? Just swipe left on a chat from the chat list to quickly mute or unmute it.
+• Fixed a bug that would cause parts of long text messages to become invisible in the input box.

@@ -1330,9 +1330,6 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Ontem";
 
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Não foi possível copiar os relatórios de erros.";
-
 /* Error indicating that the debug logs could not be packaged. */
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Não foi possível compactar os relatórios de erros.";
 
@@ -1353,6 +1350,9 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Suporte via e-mail";
+
+/* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Enviar para mim";
@@ -4345,9 +4345,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Poderá alterar o seu PIN enquanto o seu dispositivo se encontrar registado.";
 
-/* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Alterar o seu PIN";
-
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Desativar";
 
@@ -5939,7 +5936,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Apoiar o Signal";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Torne-se num Apoiante do Signal";
+"SETTINGS_SUBSCRIPTION" = "Torne-se um Apoiador do Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueio de registo";

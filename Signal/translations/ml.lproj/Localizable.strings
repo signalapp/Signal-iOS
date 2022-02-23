@@ -374,7 +374,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "പരിപാലകര്‍ ആകുക";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Signal ന് ഒരു ബൂസ്റ്റ് നല്‍കുക";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
@@ -518,7 +518,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "സംഭാവന ചെയ്യാൻ ഒരു തുക തിരഞ്ഞെടുക്കുക";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Signal ന് ഒരു ബൂസ്റ്റ് നല്‍കുക";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "ചേർക്കുക";
@@ -1330,9 +1330,6 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "ഇന്നലെ";
 
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "ലോഗുകൾ കോപ്പി ചെയ്യാനായില്ല.";
-
 /* Error indicating that the debug logs could not be packaged. */
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "ലോഗുകൾ പാക്കേജ് ചെയ്യാനായില്ല.";
 
@@ -1353,6 +1350,9 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "ഇമെയിൽ സപ്പോർട്ട്";
+
+/* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "സ്വന്തമായി അയയ്ക്കുക";
@@ -4345,9 +4345,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "ഈ ഡിവൈസ് രജിസ്റ്റർ ചെയ്തിരിക്കുന്ന കാലത്തോളം നിങ്ങൾക്ക് നിങ്ങളുടെ PIN മാറ്റാവുന്നതാണ്.";
 
-/* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "നിങ്ങളുടെ പിൻ മാറ്റുക";
-
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "ഓഫ് ആക്കുക";
 
@@ -6236,7 +6233,7 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "പേയ്‌മെന്റ് പ്രോസസ്സ് ചെയ്യുന്നു...";
 
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";

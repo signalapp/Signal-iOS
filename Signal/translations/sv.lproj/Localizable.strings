@@ -1330,9 +1330,6 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Igår";
 
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Det gick inte att kopiera loggarna.";
-
 /* Error indicating that the debug logs could not be packaged. */
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Det gick inte att paketera loggar.";
 
@@ -1353,6 +1350,9 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Skicka e-post till support";
+
+/* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Skicka till mig själv";
@@ -2948,7 +2948,7 @@
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Välj chattar";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Alla läst";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Rita var som helst för att oskärpa";
@@ -4277,13 +4277,13 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Namnlösa album";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Fäst";
+"PIN_ACTION" = "Nåla";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Det gick inte att skapa din nya PIN-kod. Din befintliga PIN-kod har inaktiverats. Kontrollera din anslutning och försök igen.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Ändring av PIN-kod misslyckades";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-koden måste vara minst fyra tecken";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koder matchar inte. Försök igen.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Kontrollera din anslutning och försök igen.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Ingen nätverksanslutning";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN-koden måste vara minst 4 siffror";
@@ -4345,9 +4345,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Du kan ändra din PIN-kod så länge denna enhet är registrerad.";
 
-/* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Ändra din PIN-kod";
-
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Slå av";
 
@@ -4358,10 +4355,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Slå av registreringslås?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN-koden kunde skapas, men registreringslåset kunde inte aktiveras. Kontrollera din anslutning och försök igen.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Aktivera registreringslås misslyckades";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Inaktivera PIN-koden";
@@ -4382,7 +4379,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Det gick inte att skapa PIN-kod";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Det gick inte att skapa din PIN-kod. Kontrollera din anslutning och försök igen.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "För att hjälpa dig att memorera din PIN-kod ber vi dig att skriva in den regelbundet. Vi frågar mindre med tiden.";
@@ -4421,16 +4418,16 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden måste vara minst 4 siffror.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Du kan bara fästa upp till fyra chattar.";
+"PINNED_CONVERSATION_LIMIT" = "Du kan bara nåla upp till fyra chattar.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Fastnålade";
+"PINNED_SECTION_TITLE" = "Nålade";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Skapa PIN-kod";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Slutför skapande av din Signal-PIN-kod.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Vi påminner dig senare. Att skapa en PIN-kod blir obligatoriskt om %ld dagar.";
@@ -5696,7 +5693,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Klistra in återställningsfras";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Din återställningsfras är en fras på 24 ord som är unik för dig. Använd den för att återställa ditt betalningskonto.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Ange återställningsfras";
