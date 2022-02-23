@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -549,27 +549,23 @@ extension ConversationViewController {
 
         // Most of these banners should hide themselves when the user scrolls
         if !userHasScrolled {
-            let message: String?
-            let noLongerVerifiedAddressSample = self.arbitraryNoLongerVerifiedAddresses(limit: 2)
-            switch noLongerVerifiedAddressSample.count {
-            case 0:
-                message = nil
+            let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses
+            if !noLongerVerifiedAddresses.isEmpty {
+                let message: String
+                if noLongerVerifiedAddresses.count > 1 {
+                    message = NSLocalizedString("MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
+                                                comment: "Indicates that more than one member of this group conversation is no longer verified.")
+                } else {
+                    let address = noLongerVerifiedAddresses.first!
+                    let displayName = contactsManager.displayName(for: address)
+                    let format = (isGroupConversation
+                                    ? NSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
+                                                        comment: "Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}.")
+                                    : NSLocalizedString("MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
+                                                        comment: "Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}."))
+                    message = String(format: format, displayName)
+                }
 
-            case 1:
-                let address = noLongerVerifiedAddressSample.first!
-                let displayName = contactsManager.displayName(for: address)
-                let format = (isGroupConversation
-                                ? NSLocalizedString("MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
-                                                    comment: "Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}.")
-                                : NSLocalizedString("MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
-                                                    comment: "Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}."))
-                message = String(format: format, displayName)
-
-            default:
-                message = NSLocalizedString("MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
-                                            comment: "Indicates that more than one member of this group conversation is no longer verified.")
-            }
-            if let message = message {
                 let banner = ConversationViewController.createBanner(title: message,
                                                                      bannerColor: .ows_accentRed) { [weak self] in
                     self?.noLongerVerifiedBannerViewWasTapped()
@@ -692,21 +688,19 @@ extension ConversationViewController {
     private func noLongerVerifiedBannerViewWasTapped() {
         AssertIsOnMainThread()
 
-        let title: String
-        switch arbitraryNoLongerVerifiedAddresses(limit: 2).count {
-        case 0:
+        let noLongerVerifiedAddresses = self.noLongerVerifiedAddresses
+        if noLongerVerifiedAddresses.isEmpty {
             return
-        case 1:
-            title = NSLocalizedString("VERIFY_PRIVACY",
-                                      comment: "Label for button or row which allows users to verify the safety number of another user.")
-        default:
-            title = NSLocalizedString("VERIFY_PRIVACY_MULTIPLE",
-                                      comment: "Label for button or row which allows users to verify the safety numbers of multiple users.")
         }
+        let hasMultiple = noLongerVerifiedAddresses.count > 1
 
         let actionSheet = ActionSheetController()
 
-        actionSheet.addAction(ActionSheetAction(title: title,
+        actionSheet.addAction(ActionSheetAction(title: (hasMultiple
+                                                            ? NSLocalizedString("VERIFY_PRIVACY_MULTIPLE",
+                                                                                comment: "Label for button or row which allows users to verify the safety numbers of multiple users.")
+                                                            : NSLocalizedString("VERIFY_PRIVACY",
+                                                                                comment: "Label for button or row which allows users to verify the safety number of another user.")),
                                                 style: .default) { [weak self] _ in
             self?.showNoLongerVerifiedUI()
         })

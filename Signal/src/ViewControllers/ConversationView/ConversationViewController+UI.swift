@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -176,18 +176,6 @@ extension ConversationViewController {
         }
     }
 
-    private func threadContainsUnverifiedMember(_ thread: TSThread) -> Bool {
-        guard !thread.recipientAddresses.isEmpty else {
-            return false
-        }
-        if let groupThread = thread as? TSGroupThread {
-            return Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId)
-        }
-        return thread.recipientAddresses.contains { address in
-            Self.identityManager.verificationState(for: address) != .verified
-        }
-    }
-
     public func updateNavigationBarSubtitleLabel() {
         AssertIsOnMainThread()
 
@@ -210,7 +198,13 @@ extension ConversationViewController {
 
         let isMuted = threadViewModel.isMuted
         let hasTimer = disappearingMessagesConfiguration.isEnabled
-        let isVerified = threadContainsUnverifiedMember(thread)
+        var isVerified = thread.recipientAddresses.count > 0
+        for address in thread.recipientAddresses {
+            if Self.identityManager.verificationState(for: address) != .verified {
+                isVerified = false
+                break
+            }
+        }
 
         if isMuted {
             subtitleText.appendTemplatedImage(named: "bell-disabled-outline-24", font: subtitleFont)
