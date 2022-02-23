@@ -182,6 +182,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             guard numMessageRequests == 0 else { return }
         }
         else if thread.isMessageRequest() && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+            // If there are other interactions on this thread already then don't show the notification
+            if thread.numberOfInteractions() > 1 { return }
+            
             CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
         }
         

@@ -223,24 +223,40 @@ extension MessageReceiver {
                 if contactInfo.hasDidApproveMe { contact.didApproveMe = contactInfo.didApproveMe }
                 
                 Storage.shared.setContact(contact, using: transaction)
-                let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
-                thread.shouldBeVisible = true
-                thread.save(with: transaction)
+                
+                // If the contact is blocked
+                if contactInfo.hasIsBlocked && contactInfo.isBlocked {
+                    // If this message changed them to the blocked state and there is an existing thread
+                    // associated with them that is a message request thread then delete it (assume
+                    // that the current user had deleted that message request)
+                    if
+                        contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID),
+                        let thread: TSContactThread = TSContactThread.getWithContactSessionID(sessionID, transaction: transaction),
+                        thread.isMessageRequest(using: transaction)
+                    {
+                        thread.removeAllThreadInteractions(with: transaction)
+                        thread.remove(with: transaction)
+                    }
+                }
+                else {
+                    // Otherwise create and save the thread
+                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
+                    thread.shouldBeVisible = true
+                    thread.save(with: transaction)
+                }
             }
             
-            // Contacts blocked state
             // FIXME: 'OWSBlockingManager' manages it's own dbConnection and transactions so we have to dispatch this to prevent deadlocks
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.global().async {
                 for contactInfo in message.contacts {
                     let sessionID = contactInfo.publicKey!
-                    let contact = Contact(sessionID: sessionID)
                     
-                    if contact.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(contact.sessionID) {
-                        if contact.isBlocked {
-                            OWSBlockingManager.shared().addBlockedPhoneNumber(contact.sessionID)
+                    if contactInfo.hasIsBlocked && contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID) {
+                        if contactInfo.isBlocked {
+                            OWSBlockingManager.shared().addBlockedPhoneNumber(sessionID)
                         }
                         else {
-                            OWSBlockingManager.shared().removeBlockedPhoneNumber(contact.sessionID)
+                            OWSBlockingManager.shared().removeBlockedPhoneNumber(sessionID)
                         }
                     }
                 }

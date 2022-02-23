@@ -273,24 +273,28 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         
         // Separate out the changes for new message requests and the inbox (so we can avoid updating for
         // new messages within an existing message request)
-        let messageRequestInserts = rowChanges
+        let messageRequestChanges = rowChanges
             .compactMap { $0 as? YapDatabaseViewRowChange }
-            .filter { $0.finalGroup == TSMessageRequestGroup && $0.type == .insert }
+            .filter { $0.originalGroup == TSMessageRequestGroup || $0.finalGroup == TSMessageRequestGroup }
         let inboxRowChanges = rowChanges
-            .filter { ($0 as? YapDatabaseViewRowChange)?.finalGroup != TSMessageRequestGroup }
+            .compactMap { $0 as? YapDatabaseViewRowChange }
+            .filter { $0.originalGroup == TSInboxGroup || $0.finalGroup == TSInboxGroup }
         
-        guard sectionChanges.count > 0 || inboxRowChanges.count > 0 || messageRequestInserts.count > 0 else { return }
+        guard sectionChanges.count > 0 || inboxRowChanges.count > 0 || messageRequestChanges.count > 0 else { return }
         
         tableView.beginUpdates()
         
         // If we need to unhide the message request row and then re-insert it
-        if !messageRequestInserts.isEmpty && (CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] || tableView.numberOfRows(inSection: 0) == 0) {
-            CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
-            tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        if !messageRequestChanges.isEmpty {
+            if tableView.numberOfRows(inSection: 0) == 1 && Int(messageRequestCount) <= 0 {
+                tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            }
+            else if tableView.numberOfRows(inSection: 0) == 0 && Int(messageRequestCount) > 0 && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+                tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            }
         }
         
         inboxRowChanges.forEach { rowChange in
-            let rowChange = rowChange as! YapDatabaseViewRowChange
             let key = rowChange.collectionKey.key
             threadViewModelCache[key] = nil
             
@@ -310,12 +314,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                     // an insert as the change won't be defined correctly)
                     if rowChange.originalGroup == TSMessageRequestGroup && rowChange.finalGroup == TSInboxGroup {
                         tableView.insertRows(at: [ rowChange.newIndexPath! ], with: .automatic)
-                        
-                        // If that was the last message request then we need to also remove the message request
-                        // row to prevent a crash
-                        if messageRequestCount == 0 {
-                            tableView.deleteRows(at: [ IndexPath(row: 0, section: 0) ], with: .automatic)
-                        }
+                    }
+                    else if rowChange.originalGroup == TSInboxGroup && rowChange.finalGroup == TSMessageRequestGroup {
+                        tableView.deleteRows(at: [ rowChange.indexPath! ], with: .automatic)
                     }
                     
                 default: break
@@ -336,7 +337,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                 case .move:
                     // Since we are custom handling this specific movement in the above 'updates' call we need
                     // to avoid trying to handle it here
-                    if rowChange.originalGroup == TSMessageRequestGroup && rowChange.finalGroup == TSInboxGroup {
+                    if rowChange.originalGroup == TSMessageRequestGroup || rowChange.finalGroup == TSMessageRequestGroup {
                         return
                     }
                     

@@ -22,9 +22,11 @@ extension AppDelegate {
         }
     }
 
-    func forceSyncConfigurationNowIfNeeded() -> Promise<Void> {
-        guard Storage.shared.getUser()?.name != nil,
-            let configurationMessage = ConfigurationMessage.getCurrent() else { return Promise.value(()) }
+    func forceSyncConfigurationNowIfNeeded(with transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Void> {
+        guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
+            return Promise.value(())
+        }
+        
         let destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
         let (promise, seal) = Promise<Void>.pending()
         Storage.writeSync { transaction in
