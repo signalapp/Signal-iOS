@@ -71,16 +71,18 @@ public final class Poller : NSObject {
             // randomElement() uses the system's default random generator, which is cryptographically secure
             let nextSnode = unusedSnodes.randomElement()!
             usedSnodes.insert(nextSnode)
-            poll(nextSnode, seal: seal).done(on: Threading.pollerQueue) {
+            poll(nextSnode, seal: seal).done2 {
                 seal.fulfill(())
-            }.catch(on: Threading.pollerQueue) { [weak self] error in
+            }.catch2 { [weak self] error in
                 if let error = error as? Error, error == .pollLimitReached {
                     self?.pollCount = 0
                 } else {
                     SNLog("Polling \(nextSnode) failed; dropping it and switching to next snode.")
                     SnodeAPI.dropSnodeFromSwarmIfNeeded(nextSnode, publicKey: userPublicKey)
                 }
-                self?.pollNextSnode(seal: seal)
+                Threading.pollerQueue.async {
+                    self?.pollNextSnode(seal: seal)
+                }
             }
         } else {
             seal.fulfill(())
