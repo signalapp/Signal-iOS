@@ -30,8 +30,6 @@ public class FullTextSearchFinder: NSObject {
     private static var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
-    
-    public var newQueryTimestamp: UInt64 = 0
 
     // MARK: - Querying
 
@@ -91,13 +89,6 @@ public class FullTextSearchFinder: NSObject {
         guard let ext: YapDatabaseFullTextSearchTransaction = ext(transaction: transaction) else {
             return
         }
-        
-        // HACK: Full text search is too expensive even though we drop the max search results
-        // to a reasonable number. And the async read can sometimes block a thread and make
-        // other read threads wait for it to finish. The timestamp is a workaround to ensure
-        // only one thread can be running the full text search at one time.
-        let currentQueryTimestamp = NSDate.millisecondTimestamp()
-        newQueryTimestamp = currentQueryTimestamp
 
         let query = FullTextSearchFinder.query(searchText: searchText)
 
@@ -108,7 +99,7 @@ public class FullTextSearchFinder: NSObject {
         snippetOptions.endMatchText = ""
         snippetOptions.numberOfTokens = 5
         ext.enumerateKeysAndObjects(matching: query, with: snippetOptions) { (snippet: String, _: String, _: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>) in
-            guard searchResultCount < maxSearchResults && currentQueryTimestamp >= self.newQueryTimestamp else {
+            guard searchResultCount < maxSearchResults else {
                 stop.pointee = true
                 return
             }
