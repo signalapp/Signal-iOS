@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalMessaging
 
 class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     private var callingCode = "+1"
@@ -299,10 +300,14 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
             progressView.startAnimating { overlayView.alpha = 1 }
 
-            TSAccountManager.unregisterTextSecure {
+            firstly {
+                self.deleteSubscriptionIfNecessary()
+            }.then {
+                self.unregisterAccount()
+            }.done {
                 // We don't need to stop animating here because "resetAppData" exits the app.
                 SignalApp.resetAppDataWithUI()
-            } failure: { error in
+            }.catch { error in
                 owsFailDebug("Failed to unregister \(error)")
 
                 progressView.stopAnimating(success: false) {
@@ -320,6 +325,29 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 }
             }
         }
+    }
+
+    private func deleteSubscriptionIfNecessary() -> Promise<Void> {
+        let activeSubscriptionId = databaseStorage.read {
+            SubscriptionManager.getSubscriberID(transaction: $0)
+        }
+        if let activeSubscriptionId = activeSubscriptionId {
+            Logger.info("Found subscriber ID. Canceling subscription...")
+            return SubscriptionManager.cancelSubscription(for: activeSubscriptionId)
+        } else {
+            return Promise.value(())
+        }
+    }
+
+    private func unregisterAccount() -> Promise<Void> {
+        Logger.info("Unregistering...")
+        let (promise, future) = Promise<Void>.pending()
+        TSAccountManager.unregisterTextSecure {
+            future.resolve()
+        } failure: { error in
+            future.reject(error)
+        }
+        return promise
     }
 
     var hasEnteredLocalNumber: Bool {
