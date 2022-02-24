@@ -357,7 +357,12 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             return
         }
 
-        fadeTo(viewControllers: [ captureViewController ], duration: 0.2)
+        self.ows_askForCameraPermissions { isGranted in
+            guard isGranted else { return }
+
+            BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
+            self.fadeTo(viewControllers: [self.captureViewController], duration: 0.08)
+        }
     }
 
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController) {
