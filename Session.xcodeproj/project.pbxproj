@@ -530,8 +530,6 @@
 		C38EF00C255B61CC007E1867 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		C38EF216255B6D3B007E1867 /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF212255B6D3A007E1867 /* Theme.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF218255B6D3B007E1867 /* Theme.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF214255B6D3A007E1867 /* Theme.m */; };
-		C38EF228255B6D5D007E1867 /* AttachmentSharing.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF223255B6D5D007E1867 /* AttachmentSharing.m */; };
-		C38EF22A255B6D5D007E1867 /* AttachmentSharing.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF225255B6D5D007E1867 /* AttachmentSharing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF22B255B6D5D007E1867 /* ShareViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF226255B6D5D007E1867 /* ShareViewDelegate.swift */; };
 		C38EF22C255B6D5D007E1867 /* OWSVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF227255B6D5D007E1867 /* OWSVideoPlayer.swift */; };
 		C38EF243255B6D67007E1867 /* UIViewController+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF236255B6D65007E1867 /* UIViewController+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1541,9 +1539,7 @@
 		C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SNProtoEnvelope+Conversion.swift"; sourceTree = "<group>"; };
 		C38EF212255B6D3A007E1867 /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Theme.h; path = SignalUtilitiesKit/Utilities/Theme.h; sourceTree = SOURCE_ROOT; };
 		C38EF214255B6D3A007E1867 /* Theme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Theme.m; path = SignalUtilitiesKit/Utilities/Theme.m; sourceTree = SOURCE_ROOT; };
-		C38EF223255B6D5D007E1867 /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AttachmentSharing.m; path = "SignalUtilitiesKit/Media Viewing & Editing/AttachmentSharing.m"; sourceTree = SOURCE_ROOT; };
 		C38EF224255B6D5D007E1867 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SignalAttachment.swift; path = "SessionMessagingKit/Sending & Receiving/Attachments/SignalAttachment.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF225255B6D5D007E1867 /* AttachmentSharing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AttachmentSharing.h; path = "SignalUtilitiesKit/Media Viewing & Editing/AttachmentSharing.h"; sourceTree = SOURCE_ROOT; };
 		C38EF226255B6D5D007E1867 /* ShareViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ShareViewDelegate.swift; path = SignalUtilitiesKit/Utilities/ShareViewDelegate.swift; sourceTree = SOURCE_ROOT; };
 		C38EF227255B6D5D007E1867 /* OWSVideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSVideoPlayer.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/OWSVideoPlayer.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF236255B6D65007E1867 /* UIViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIViewController+OWS.h"; path = "SignalUtilitiesKit/Utilities/UIViewController+OWS.h"; sourceTree = SOURCE_ROOT; };
@@ -2966,8 +2962,6 @@
 			children = (
 				C379DCEA2567334F0002D4EB /* Attachment Approval */,
 				C379DCE9256733390002D4EB /* Image Editing */,
-				C38EF225255B6D5D007E1867 /* AttachmentSharing.h */,
-				C38EF223255B6D5D007E1867 /* AttachmentSharing.m */,
 				C38EF358255B6DCC007E1867 /* MediaMessageView.swift */,
 				C38EF357255B6DCC007E1867 /* MessageApprovalViewController.swift */,
 				C38EF227255B6D5D007E1867 /* OWSVideoPlayer.swift */,
@@ -3633,7 +3627,6 @@
 				C38EF24C255B6D67007E1867 /* NSAttributedString+OWS.h in Headers */,
 				C38EF32B255B6DBF007E1867 /* OWSFormat.h in Headers */,
 				C33FDC2C255A581F00E217F9 /* OWSFailedAttachmentDownloadsJob.h in Headers */,
-				C38EF22A255B6D5D007E1867 /* AttachmentSharing.h in Headers */,
 				C33FDDB8255A582000E217F9 /* NSSet+Functional.h in Headers */,
 				C33FDDCC255A582000E217F9 /* TSConstants.h in Headers */,
 				C33FDDBD255A582000E217F9 /* ByteParser.h in Headers */,
@@ -4528,7 +4521,6 @@
 				C38EF3BF255B6DE7007E1867 /* ImageEditorView.swift in Sources */,
 				C38EF365255B6DCC007E1867 /* OWSTableViewController.m in Sources */,
 				C38EF36B255B6DCC007E1867 /* ScreenLockViewController.m in Sources */,
-				C38EF228255B6D5D007E1867 /* AttachmentSharing.m in Sources */,
 				C38EF40C255B6DF7007E1867 /* GradientView.swift in Sources */,
 				C38EF35C255B6DCC007E1867 /* SelectThreadViewController.m in Sources */,
 				C38EF30E255B6DBF007E1867 /* FullTextSearcher.swift in Sources */,

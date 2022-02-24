@@ -7,7 +7,6 @@
 #import "Session-Swift.h"
 
 #import <PromiseKit/AnyPromise.h>
-#import <SignalUtilitiesKit/AttachmentSharing.h>
 #import <SessionMessagingKit/Environment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
