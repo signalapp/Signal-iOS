@@ -348,7 +348,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             })
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .default) { _ in })
             guard let self = self else { return }
-            self.present(alert, animated: true, completion: nil)
+            self.presentAlert(alert)
         }
         delete.backgroundColor = Colors.destructive
         

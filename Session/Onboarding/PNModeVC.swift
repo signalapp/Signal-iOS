@@ -91,7 +91,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
             let title = NSLocalizedString("vc_pn_mode_no_option_picked_modal_title", comment: "")
             let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-            return present(alert, animated: true, completion: nil)
+            return presentAlert(alert)
         }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
         TSAccountManager.sharedInstance().didRegister()

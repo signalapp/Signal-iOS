@@ -225,7 +225,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: { _ in
             self.extensionContext!.cancelRequest(withError: error)
         }))
-        present(alert, animated: true, completion: nil)
+        presentAlert(alert)
     }
     
     // MARK: Attachment Prep

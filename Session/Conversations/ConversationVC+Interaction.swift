@@ -157,7 +157,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         } catch {
             let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            return present(alert, animated: true, completion: nil)
+            return presentAlert(alert)
         }
         let type = urlResourceValues.typeIdentifier ?? (kUTTypeData as String)
         guard urlResourceValues.isDirectory != true else {
@@ -556,7 +556,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 }))
             }
         }
-        present(sheet, animated: true, completion: nil)
+        presentAlert(sheet)
     }
 
     func handleViewItemDoubleTapped(_ viewItem: ConversationViewItem) {
@@ -691,7 +691,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             OpenGroupAPIV2.ban(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+        presentAlert(alert)
     }
     
     func banAndDeleteAllMessages(_ viewItem: ConversationViewItem) {
@@ -705,7 +705,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             OpenGroupAPIV2.banAndDeleteAllMessages(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+        presentAlert(alert)
     }
 
     func handleQuoteViewCancelButtonTapped() {

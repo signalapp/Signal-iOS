@@ -392,7 +392,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                         let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
                         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                        self?.present(alert, animated: true, completion: nil)
+                        self?.presentAlert(alert)
                     }
                 }
             }, requiresSync: true)
