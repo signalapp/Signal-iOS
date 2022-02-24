@@ -562,7 +562,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let searchBar = searchController.uiSearchController.searchBar
         searchBar.searchBarStyle = .minimal
         searchBar.barStyle = .black
-        searchBar.tintColor = Colors.accent
+        searchBar.tintColor = Colors.text
         let searchIcon = UIImage(named: "searchbar_search")!.asTintedImage(color: Colors.searchBarPlaceholder)
         searchBar.setImage(searchIcon, for: .search, state: UIControl.State.normal)
         let clearIcon = UIImage(named: "searchbar_clear")!.asTintedImage(color: Colors.searchBarPlaceholder)
@@ -580,7 +580,32 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         searchBar.setPositionAdjustment(UIOffset(horizontal: 4, vertical: 0), for: .search)
         searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 2, vertical: 0)
         searchBar.setPositionAdjustment(UIOffset(horizontal: -4, vertical: 0), for: .clear)
-        navigationItem.titleView = searchBar
+        
+        let searchBarContainer = UIView()
+        searchBarContainer.layoutMargins = UIEdgeInsets.zero
+        searchBar.sizeToFit()
+        searchBar.layoutMargins = UIEdgeInsets.zero
+        searchBarContainer.set(.height, to: 44)
+        searchBarContainer.set(.width, to: UIScreen.main.bounds.width - 32)
+        searchBarContainer.addSubview(searchBar)
+        navigationItem.titleView = searchBarContainer
+        
+        // On iPad, the cancel button won't show
+        // See more https://developer.apple.com/documentation/uikit/uisearchbar/1624283-showscancelbutton?language=objc
+        if UIDevice.current.isIPad {
+            let ipadCancelButton = UIButton()
+            ipadCancelButton.setTitle("Cancel", for: .normal)
+            ipadCancelButton.addTarget(self, action: #selector(hideSearchUI(_ :)), for: .touchUpInside)
+            ipadCancelButton.setTitleColor(Colors.text, for: .normal)
+            searchBarContainer.addSubview(ipadCancelButton)
+            ipadCancelButton.pin(.trailing, to: .trailing, of: searchBarContainer)
+            ipadCancelButton.autoVCenterInSuperview()
+            searchBar.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .trailing)
+            searchBar.pin(.trailing, to: .leading, of: ipadCancelButton, withInset: -Values.smallSpacing)
+        } else {
+            searchBar.autoPinEdgesToSuperviewMargins()
+        }
+
         // Nav bar buttons
         updateNavBarButtons()
         // Hack so that the ResultsBar stays on the screen when dismissing the search field
@@ -614,7 +639,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         navBar.stubbedNextResponder = self
     }
     
-    func hideSearchUI() {
+    @objc func hideSearchUI(_ sender: Any? = nil) {
         isShowingSearchUI = false
         navigationItem.titleView = titleView
         updateNavBarButtons()
