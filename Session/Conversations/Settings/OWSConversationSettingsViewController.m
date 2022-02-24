@@ -363,7 +363,7 @@ CGFloat kIconViewLength = 24;
             if (!self.thread.isGroupThread) {
                 TSContactThread *thread = (TSContactThread *)self.thread;
                 SNContact *contact = [LKStorage.shared getContactWithSessionID:thread.contactSessionID];
-                [switchView setEnabled:contact.didApproveMe];
+                [switchView setEnabled:(contact.isApproved && contact.didApproveMe)];
             }
 
             UIStackView *topRow =
@@ -437,6 +437,13 @@ CGFloat kIconViewLength = 24;
                 [slider autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
                 [slider autoPinTrailingToSuperviewMargin];
                 [slider autoPinBottomToSuperviewMargin];
+                
+                // Disable Disappearing Messages slider if the conversation hasn't been approved (just in case)
+                if (!self.thread.isGroupThread) {
+                    TSContactThread *thread = (TSContactThread *)self.thread;
+                    SNContact *contact = [LKStorage.shared getContactWithSessionID:thread.contactSessionID];
+                    [slider setEnabled:(contact.isApproved && contact.didApproveMe)];
+                }
 
                 cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
