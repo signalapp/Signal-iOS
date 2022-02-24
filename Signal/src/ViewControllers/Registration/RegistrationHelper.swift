@@ -127,7 +127,7 @@ public class RegistrationHelper: Dependencies {
                 title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                 message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
 
-        case let error where error.httpStatusCode == 413:
+        case let error where error.httpStatusCode == 413 || error.httpStatusCode == 429:
             completion?(false, error)
             OWSActionSheets.showActionSheet(
                 title: nil,

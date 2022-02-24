@@ -319,7 +319,7 @@ extension TSAccountManager {
             return OWSError(error: .registrationTransferAvailable,
                             description: message,
                             isRetryable: false)
-        case 413:
+        case 413, 429:
             // In the case of the "rate limiting" error, we want to show the
             // "recovery suggestion", not the error's "description."
             let recoverySuggestion = NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")

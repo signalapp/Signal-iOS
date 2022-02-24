@@ -138,7 +138,7 @@ public class RequestMaker: NSObject {
             }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
                 let statusCode = error.httpStatusCode ?? 0
 
-                if statusCode == 413 {
+                if statusCode == 413 || statusCode == 429 {
                     // We've hit rate limit; don't retry.
                     throw error
                 }
@@ -192,7 +192,7 @@ public class RequestMaker: NSObject {
                                           wasSentByUD: isUDRequest,
                                           wasSentByWebsocket: false)
             }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
-                if error.httpStatusCode == 413 {
+                if error.httpStatusCode == 413 || error.httpStatusCode == 429 {
                     // We've hit rate limit; don't retry.
                     throw error
                 }

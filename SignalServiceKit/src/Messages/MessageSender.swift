@@ -239,7 +239,7 @@ public extension MessageSender {
                 if httpStatusCode == 404 {
                     self.hadMissingDeviceError(recipientAddress: recipientAddress, deviceId: deviceId)
                     return failure(MessageSenderError.missingDevice)
-                } else if httpStatusCode == 413 {
+                } else if httpStatusCode == 413 || httpStatusCode == 429 {
                     return failure(MessageSenderError.prekeyRateLimit)
                 } else if httpStatusCode == 428 {
                     // SPAM TODO: Only retry messages with -hasRenderableContent
