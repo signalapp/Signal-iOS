@@ -151,7 +151,7 @@ public class SocketManager: NSObject {
 
     @objc
     public var isAnySocketOpen: Bool {
-        !OWSWebSocketType.allCases.compactMap { socketState(forType: $0) == .open }.isEmpty
+        OWSWebSocketType.allCases.contains { socketState(forType: $0) == .open }
     }
 
     public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {
