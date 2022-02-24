@@ -5,7 +5,6 @@
 // • Remaining search glitchiness
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
-    let isUnsendRequestsEnabled = true // Set to true once unsend requests are done on all platforms
     let thread: TSThread
     let focusedMessageID: String? // This is used for global search
     var focusedMessageIndexPath: IndexPath?

@@ -517,37 +517,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)clearUnreadMessagesIndicator
-{
-    OWSAssertIsOnMainThread();
-
-    // TODO: Remove by making unread indicator a view model concern.
-    id<ConversationViewItem> _Nullable oldIndicatorItem = [self.viewState unreadIndicatorViewItem];
-    if (oldIndicatorItem) {
-        // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
-        // to be cleared.
-        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [oldIndicatorItem.interaction touchWithTransaction:transaction];
-        }];
-    }
-
-    if (self.hasClearedUnreadMessagesIndicator) {
-        // ensureDynamicInteractionsForThread is somewhat expensive
-        // so we don't want to call it unnecessarily.
-        return;
-    }
-
-    // Once we've cleared the unread messages indicator,
-    // make sure we don't show it again.
-    self.hasClearedUnreadMessagesIndicator = YES;
-
-    if (self.dynamicInteractions.unreadIndicator) {
-        // If we've just cleared the "unread messages" indicator,
-        // update the dynamic interactions.
-        [self ensureDynamicInteractionsAndUpdateIfNecessary:YES];
-    }
-}
-
 #pragma mark - Storage access
 
 - (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification

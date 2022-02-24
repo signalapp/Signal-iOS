@@ -122,8 +122,6 @@ static const int kYapDatabaseRangeMaxLength = 250000;
 
 - (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary;
 
-- (void)clearUnreadMessagesIndicator;
-
 - (void)loadAnotherPageOfMessages;
 
 - (void)viewDidResetContentAndLayout;

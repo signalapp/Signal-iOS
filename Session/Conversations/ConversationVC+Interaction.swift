@@ -591,11 +591,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func delete(_ viewItem: ConversationViewItem) {
-        if (!self.isUnsendRequestsEnabled) {
-            viewItem.deleteAction()
-            return
-        }
-        
         guard let message = viewItem.interaction as? TSMessage else { return self.deleteLocally(viewItem) }
         
         // Handle open group messages the old way
