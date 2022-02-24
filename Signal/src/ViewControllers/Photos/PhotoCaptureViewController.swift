@@ -47,7 +47,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
     weak var dataSource: PhotoCaptureViewControllerDataSource?
-    private var interactiveDismiss: PhotoCaptureInteractiveDismiss!
+    private var interactiveDismiss: PhotoCaptureInteractiveDismiss?
 
     public lazy var photoCapture = PhotoCapture()
 
@@ -88,9 +88,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
 
         if let navController = self.navigationController {
-            interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: navController)
+            let interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: navController)
             interactiveDismiss.interactiveDismissDelegate = self
             interactiveDismiss.addGestureRecognizer(to: view)
+            self.interactiveDismiss = interactiveDismiss
         }
 
         tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
@@ -360,7 +361,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        guard !interactiveDismiss.interactionInProgress else { return }
+        guard !(interactiveDismiss?.interactionInProgress ?? false) else { return }
 
         // Clamp capture view to 16:9 on iPhones.
         var previewFrame = view.bounds
