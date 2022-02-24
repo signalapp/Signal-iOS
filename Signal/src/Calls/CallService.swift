@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalRingRTC
-import SignalServiceKit
+import SignalMessaging
 
 // All Observer methods will be invoked from the main thread.
 @objc(OWSCallServiceObserver)
@@ -18,8 +18,8 @@ protocol CallServiceObserver: AnyObject {
 @objc
 public final class CallService: NSObject {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
-
-    public let callManager = CallManagerType()
+    public let callManager: CallManagerType
+    public var callManagerLite: CallManagerLite { callManager.lite }
 
     @objc
     public let individualCallService = IndividualCallService()
@@ -125,10 +125,15 @@ public final class CallService: NSObject {
     }
 
     public override init() {
-        super.init()
+        let liteManager = CallManagerLite()
+        callManager = CallManager(callManagerLite: liteManager)
 
+        super.init()
         SwiftSingletons.register(self)
+
+        liteManager.delegate = self
         callManager.delegate = self
+
         addObserverAndSyncState(observer: groupCallMessageHandler)
         addObserverAndSyncState(observer: groupCallRemoteVideoManager)
 
@@ -798,7 +803,7 @@ extension CallService {
                 self.fetchGroupMembershipProof(for: thread)
             }.then(on: .main) { (proof: Data) -> Guarantee<PeekInfo> in
                 let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
-                return self.callManager.peekGroupCall(sfuUrl: sfuURL, membershipProof: proof, groupMembers: memberInfo)
+                return self.callManagerLite.peekGroupCall(sfuUrl: sfuURL, membershipProof: proof, groupMembers: memberInfo)
             }.done(on: .main) { info in
                 // If we're expecting an eraId, the timestamp is only valid for PeekInfo with the same eraId.
                 // We may have a more appropriate timestamp waiting in the message processing queue.
@@ -920,7 +925,7 @@ extension CallService: DatabaseChangeDelegate {
     }
 }
 
-extension CallService: CallManagerDelegate {
+extension CallService: CallManagerDelegate, CallManagerLiteDelegate {
     public typealias CallManagerDelegateCallType = SignalCall
 
     /**
@@ -1002,8 +1007,8 @@ extension CallService: CallManagerDelegate {
      * Invoked on the main thread, asychronously.
      * The result of the call should be indicated by calling the receivedHttpResponse() function.
      */
-    public func callManager(
-        _ callManager: CallManager<SignalCall, CallService>,
+    public func callManagerLite(
+        _ callManagerLite: CallManagerLite,
         shouldSendHttpRequest requestId: UInt32,
         url: String,
         method: CallManagerHttpMethod,
@@ -1042,7 +1047,7 @@ extension CallService: CallManagerDelegate {
         firstly(on: .sharedUtility) {
             session.dataTaskPromise(url, method: httpMethod, headers: headers, body: body)
         }.done(on: .main) { response in
-            self.callManager.receivedHttpResponse(
+            callManagerLite.receivedHttpResponse(
                 requestId: requestId,
                 statusCode: UInt16(response.responseStatusCode),
                 body: response.responseBodyData
@@ -1053,7 +1058,7 @@ extension CallService: CallManagerDelegate {
             } else {
                 owsFailDebug("Call manager http request failed \(error)")
             }
-            self.callManager.httpRequestFailed(requestId: requestId)
+            callManagerLite.httpRequestFailed(requestId: requestId)
         }
     }
 
