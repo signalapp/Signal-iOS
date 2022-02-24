@@ -43,7 +43,7 @@ public final class OpenGroupPollerV2 : NSObject {
         self.isPolling = true
         let (promise, seal) = Promise<Void>.pending()
         promise.retainUntilComplete()
-        Threading.openGroupPollerQueue.async {
+        Threading.pollerQueue.async {
             OpenGroupAPIV2.compactPoll(self.server).done(on: OpenGroupAPIV2.workQueue) { [weak self] bodies in
                 guard let self = self else { return }
                 self.isPolling = false

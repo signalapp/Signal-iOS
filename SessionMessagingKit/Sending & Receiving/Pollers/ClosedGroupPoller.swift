@@ -61,10 +61,10 @@ public final class ClosedGroupPoller : NSObject {
 
     // MARK: Private API
     private func setUpPolling(for groupPublicKey: String) {
-        Threading.closedGroupPollerQueue.async {
-            self.poll(groupPublicKey).done(on: Threading.closedGroupPollerQueue) { [weak self] _ in
+        Threading.pollerQueue.async {
+            self.poll(groupPublicKey).done(on: Threading.pollerQueue) { [weak self] _ in
                 self?.pollRecursively(groupPublicKey)
-            }.catch(on: Threading.closedGroupPollerQueue) { [weak self] error in
+            }.catch(on: Threading.pollerQueue) { [weak self] error in
                 // The error is logged in poll(_:)
                 self?.pollRecursively(groupPublicKey)
             }
@@ -87,10 +87,10 @@ public final class ClosedGroupPoller : NSObject {
         SNLog("Next poll interval for closed group with public key: \(groupPublicKey) is \(nextPollInterval) s.")
         timers[groupPublicKey] = Timer.scheduledTimerOnMainThread(withTimeInterval: nextPollInterval, repeats: false) { [weak self] timer in
             timer.invalidate()
-            Threading.closedGroupPollerQueue.async {
-                self?.poll(groupPublicKey).done(on: Threading.closedGroupPollerQueue) { _ in
+            Threading.pollerQueue.async {
+                self?.poll(groupPublicKey).done(on: Threading.pollerQueue) { _ in
                     self?.pollRecursively(groupPublicKey)
-                }.catch(on: Threading.closedGroupPollerQueue) { error in
+                }.catch(on: Threading.pollerQueue) { error in
                     // The error is logged in poll(_:)
                     self?.pollRecursively(groupPublicKey)
                 }
