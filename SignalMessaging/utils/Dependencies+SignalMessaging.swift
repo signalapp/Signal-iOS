@@ -119,6 +119,14 @@ public extension NSObject {
     static var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
     }
+
+    var lightweightCallManager: LightweightCallManager? {
+        Environment.shared.lightweightCallManagerRef
+    }
+
+    static var lightweightCallManager: LightweightCallManager? {
+        Environment.shared.lightweightCallManagerRef
+    }
 }
 
 // MARK: - Obj-C Dependencies

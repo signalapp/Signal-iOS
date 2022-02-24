@@ -70,6 +70,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             SUIEnvironment.shared.setup()
             SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
             SSKEnvironment.shared.notificationsManagerRef = NoopNotificationsManager()
+            Environment.shared.lightweightCallManagerRef = LightweightCallManager()
         },
         migrationCompletion: { [weak self] error in
             AssertIsOnMainThread()

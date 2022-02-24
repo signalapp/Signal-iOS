@@ -149,6 +149,7 @@ class NSEEnvironment: Dependencies {
             appSpecificSingletonBlock: {
                 SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
                 SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
+                Environment.shared.lightweightCallManagerRef = LightweightCallManager()
             },
             migrationCompletion: { [weak self] error in
                 if let error = error {

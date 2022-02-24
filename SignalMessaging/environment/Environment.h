@@ -7,6 +7,7 @@
 @class AvatarBuilder;
 @class BroadcastMediaMessageJobQueue;
 @class LaunchJobs;
+@class LightweightCallManager;
 @class OWSIncomingContactSyncJobQueue;
 @class OWSIncomingGroupSyncJobQueue;
 @class OWSOrphanDataCleaner;
@@ -47,6 +48,9 @@
 @property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic, readonly) OWSOrphanDataCleaner *orphanDataCleanerRef;
 @property (nonatomic, readonly) AvatarBuilder *avatarBuilderRef;
+
+// This property is configured after Environment is created.
+@property (atomic, nullable) LightweightCallManager *lightweightCallManagerRef;
 
 @property (class, nonatomic) Environment *shared;
 

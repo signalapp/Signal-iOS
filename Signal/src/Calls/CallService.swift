@@ -19,7 +19,7 @@ protocol CallServiceObserver: AnyObject {
 public final class CallService: NSObject {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
     public let callManager: CallManagerType
-    public var callManagerLite: CallManagerLite { callManager.lite }
+    public let callManagerLite: LightweightCallManager
 
     @objc
     public let individualCallService = IndividualCallService()
@@ -125,13 +125,12 @@ public final class CallService: NSObject {
     }
 
     public override init() {
-        let liteManager = CallManagerLite()
-        callManager = CallManager(callManagerLite: liteManager)
+        let callManagerLite = LightweightCallManager()
+        self.callManagerLite = callManagerLite
+        self.callManager = CallManagerType(callManagerLite: callManagerLite.managerLite)
 
         super.init()
         SwiftSingletons.register(self)
-
-        liteManager.delegate = self
         callManager.delegate = self
 
         addObserverAndSyncState(observer: groupCallMessageHandler)
@@ -610,59 +609,18 @@ public final class CallService: NSObject {
     private func updateGroupMembersForCurrentCallIfNecessary() {
         DispatchQueue.main.async {
             guard let call = self.currentCall, call.isGroupCall,
-                  let groupThread = call.thread as? TSGroupThread,
-                  let memberInfo = self.groupMemberInfo(for: groupThread) else { return }
-            call.groupCall.updateGroupMembers(members: memberInfo)
-        }
-    }
+                  let groupThread = call.thread as? TSGroupThread else { return }
 
-    private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
-        databaseStorage.read { transaction in
-            self.groupMemberInfo(for: thread, transaction: transaction)
-        }
-    }
-
-    private func groupMemberInfo(for thread: TSGroupThread,
-                                 transaction: SDSAnyReadTransaction) -> [GroupMemberInfo]? {
-        AssertIsOnMainThread()
-
-        // Make sure we're working with the latest group state.
-        thread.anyReload(transaction: transaction)
-
-        guard let groupModel = thread.groupModel as? TSGroupModelV2,
-              let groupV2Params = try? groupModel.groupV2Params() else {
-            owsFailDebug("Unexpected group thread.")
-            return nil
-        }
-
-        return thread.groupMembership.fullMembers.compactMap {
-            guard let uuid = $0.uuid else {
-                owsFailDebug("Skipping group member, missing uuid")
-                return nil
+            let membershipInfo: [GroupMemberInfo]
+            do {
+                membershipInfo = try self.databaseStorage.read {
+                    try self.callManagerLite.groupMemberInfo(for: groupThread, transaction: $0)
+                }
+            } catch {
+                owsFailDebug("Failed to fetch membership info: \(error)")
+                return
             }
-
-            guard let uuidCipherText = try? groupV2Params.userId(forUuid: uuid) else {
-                owsFailDebug("Skipping group member, missing uuidCipherText")
-                return nil
-            }
-
-            return GroupMemberInfo(userId: uuid, userIdCipherText: uuidCipherText)
-        }
-    }
-
-    private func fetchGroupMembershipProof(for thread: TSGroupThread) -> Promise<Data> {
-        guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
-            owsFailDebug("unexpectedly missing group model")
-            return Promise(error: OWSAssertionError("Invalid group"))
-        }
-
-        return firstly {
-            try groupsV2Impl.fetchGroupExternalCredentials(groupModel: groupModel)
-        }.map(on: .main) { (credential) -> Data in
-            guard let tokenData = credential.token?.data(using: .utf8) else {
-                throw OWSAssertionError("Invalid credential")
-            }
-            return tokenData
+            call.groupCall.updateGroupMembers(members: membershipInfo)
         }
     }
 
@@ -735,7 +693,7 @@ extension CallService: CallObserver {
         }
 
         firstly {
-            self.fetchGroupMembershipProof(for: groupThread)
+            callManagerLite.fetchGroupMembershipProof(for: groupThread)
         }.done(on: .main) { proof in
             call.groupCall.updateMembershipProof(proof: proof)
         }.catch(on: .main) { error in
@@ -761,14 +719,6 @@ extension CallService: CallObserver {
 
 extension CallService {
 
-    @objc @available(swift, obsoleted: 1.0)
-    func peekCallAndUpdateThread(_ thread: TSGroupThread) {
-        AssertIsOnMainThread()
-        databaseStorage.read { transaction in
-            self.peekCallAndUpdateThread(thread, transaction: transaction)
-        }
-    }
-
     @objc
     func peekCallAndUpdateThread(_ thread: TSGroupThread,
                                  expectedEraId: String? = nil,
@@ -784,10 +734,7 @@ extension CallService {
             Logger.info("Ignoring peek request for the current call")
             return
         }
-        guard let memberInfo = self.groupMemberInfo(for: thread, transaction: transaction) else {
-            owsFailDebug("Failed to fetch group member info to peek \(thread.uniqueId)")
-            return
-        }
+
         firstly(on: .global()) {
             if let expectedEraId = expectedEraId {
                 // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
@@ -800,10 +747,7 @@ extension CallService {
             }
 
             firstly {
-                self.fetchGroupMembershipProof(for: thread)
-            }.then(on: .main) { (proof: Data) -> Guarantee<PeekInfo> in
-                let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
-                return self.callManagerLite.peekGroupCall(sfuUrl: sfuURL, membershipProof: proof, groupMembers: memberInfo)
+                self.callManagerLite.fetchPeekInfo(for: thread)
             }.done(on: .main) { info in
                 // If we're expecting an eraId, the timestamp is only valid for PeekInfo with the same eraId.
                 // We may have a more appropriate timestamp waiting in the message processing queue.

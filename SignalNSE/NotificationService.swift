@@ -5,6 +5,7 @@
 import UserNotifications
 import SignalMessaging
 import SignalServiceKit
+import SignalRingRTC
 
 // The lifecycle of the NSE looks something like the following:
 //  1)  App receives notification

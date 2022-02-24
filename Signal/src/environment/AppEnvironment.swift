@@ -80,5 +80,6 @@ public class AppEnvironment: NSObject {
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManagerRef = notificationPresenterRef
         SSKEnvironment.shared.callMessageHandlerRef = callMessageHandlerRef
+        Environment.shared.lightweightCallManagerRef = callService.callManagerLite
     }
 }
