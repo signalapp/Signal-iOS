@@ -1,7 +1,2 @@
-• Ai un nou număr de telefon? Acum poți schimba numărul pe care l-ai înregistrat la Signal fără a-ți pierde istoricul conversațiilor, grupurile, sau profilul Signal. Mergi la Setări > Cont > Schimbare număr de telefon pentru a încerca.
-• O nouă funcție de selectare multiplă iți permite să selectezi mai multe conversații deodată și să le marchezi drept citite, să le arhivezi, sau să le ștergi. Atinge poza de profil din stânga sus pentru a încerca.
-• Conversațiile arhivate sunt acum mai ușor de accesat. Trebuie doar să atingi poza de profil din stânga sus pentru a ajunge la ele cu ușurință.
-• Atât de multe reacții din care să alegi, și totuși atât de puțin timp. Acum poți căuta rapid reacția ta preferată.
-• Personalizează-ți reacțiile implicite pentru a avea emoțiile preferate întotdeauna la îndemână.
-• Ești obosit de la prea multe notificări? Trage cu degetul spre stânga pe o conversație din lista pentru a dezactiva sau activa rapid notificările acesteia.
-• Am remediat o eroare care făcea ca anumite părți ale unui mesaj lung să devină invizibile în caseta de introducere.
+• Profile photos for 1-1 and group chats will now reliably appear in notifications
+• Various performance improvements for very large groups

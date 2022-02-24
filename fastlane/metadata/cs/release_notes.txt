@@ -1,7 +1,2 @@
-• Máte nové telefonní číslo? Nyní můžete změnit číslo, které jste zaregistrovali do služby Signal, aniž byste přišli o historii chatu, skupiny a profil Signal. Přejděte do Nastavení > Účet > Změnit číslo a vyzkoušejte to.
-• Nová funkce více výběrů umožňuje vybrat ze seznamu chatů více chatů najednou a označit je jako přečtené, archivovat nebo odstranit. Vyzkoušejte ji klepnutím na profilovou fotografii v levém horním rohu.
-• K archivovaným chatům je nyní rychlejší přístup. Stačí klepnout na profilovou fotografii v levém horním rohu a snadno se k nim dostanete.
-• Tolik reakcí na výběr a tak málo času. Nyní můžete snadno vyhledat svou oblíbenou reakci.
-• Přizpůsobte si výchozí reakce, abyste měli své oblíbené emoce vždy po ruce.
-• Únava z oznámení? Chcete-li rychle ztlumit nebo zrušit zvuk, stačí na chatu v seznamu chatů přejet prstem doleva.
-• Opravena chyba, která způsobovala, že části dlouhých textových zpráv byly ve vstupním poli neviditelné.
+• Profilové fotografie pro chaty 1-1 a skupinové chaty se nyní spolehlivě zobrazují v oznámeních.
+• Různá výkonnostní vylepšení pro velmi velké skupiny.

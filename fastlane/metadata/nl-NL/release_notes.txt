@@ -1,7 +1,2 @@
-• Vanaf deze versie kun je in het geval dat je een nieuw telefoonnummer hebt je telefoonnummer wijzigen en al je gespreksgeschiedenis, groepen, en je profiel behouden. Je kunt dit doen vanuit Signals instellingen > Jouw registratie > Telefoonnummer wijzigen.
-• Je kunt vanaf nu meerdere gesprekken uit de gesprekkenlijst selecteren en ze tegelijk markeren als gelezen, archiveren of wissen. Tik op je profielfoto linksboven om deze optie te vinden.
-• Het is vanaf nu makkelijker om gearchiveerde gesprekken weer te geven. Ook deze vind je door op je profielfoto te tikken.
-• Je kunt nu ook met zoekwoorden zoeken naar de emoji waarmee je wilt reageren.
-• Je kunt de standaardemojis waarmee je reageert aanpassen zodat je sneller kunt reageren met je favoriete emojis.
-• Word je de vele meldingen zat? Dan kun je een gesprek naar links vegen om die direct te dempen of om dempen juist op te heffen.
-• Er is een fout opgelost waarbij lange tekstberichten in het invoerveld soms onzichtbaar werden.
+• Profielfotos van een-op-een gesprekken zullen vanaf nu juist worden weergegeven in meldingen
+• Verschillende prestatieverbeteringen voor groepen met zeer veel leden

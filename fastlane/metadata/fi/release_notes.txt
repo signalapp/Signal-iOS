@@ -1,7 +1,2 @@
-Vaihtuiko puhelinnumerosi? Voit nyt vaihtaa Signaliin rekisteröityä puhelinnumeroasi menettämättä viestihistoriaasi, ryhmiä ja Signal-profiiliasi. Valitse Asetukset > Tili > Vaihda puhelinnumero.
-Uusi toiminto: voit valita useita keskusteluja keskustelulistalta ja merkitä ne luetuiksi, arkistoida ne tai poistaa ne. Napauta profiilikuvaasi vasemmassa ylänurkassa ja kokeile.
-Arkistoituihin keskusteluihin pääsee nyt helpommin käsiksi. Napauta vain profiilikuvaasi vasemmassa ylänurkassa.
-Niin paljon reaktioita, niin vähän aikaa. Voit nyt käyttää helppoa hakutoimintoa oikean reaktion löytämiseen.
-Mukauta vakioreaktiosi niin pääset niihin nopeasti käsiksi.
-Ilmoitusväsymystä? Pyyhkäise vasemmalle keskustelulistan keskustelua niin saat kytkettyä mykistyksen helposti päälle ja pois.
-Korjattu virhe, joka saattoi aiheuttaa sen, että pitkä viesti ei näkynyt kokonaan tekstinsyöttöruudussa.
+• 1-1 ryhmäkeskustelujen profiilikuvat näkyvät nyt luotettavasti ilmoituksissa.
+• Useita suorituskykyparannuksia erittäin suurille ryhmille

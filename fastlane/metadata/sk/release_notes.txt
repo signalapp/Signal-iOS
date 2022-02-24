@@ -1,7 +1,2 @@
-• Máte nové telefónne číslo? Teraz môžete zmeniť číslo, ktoré ste zaregistrovali na Signal, bez toho, aby ste stratili svoju históriu, skupiny a profil Signal. Prejdite do Nastavenia > Účet > Zmeniť číslo.
-• Nová funkcia viacnásobného výberu vám umožňuje vybrať viacero správ naraz zo zoznamu konverzácie a označiť ich ako prečítané, archivovať ich, alebo odstrániť. Vyskúšate to ťuknutím na svoju profilovú fotku vľavo hore.
-• Prístup k archivovaným konverzáciam je teraz rýchlejší. Jednoducho sa k nim dostanete ťuknutím na svoju profilovú fotku vľavo hore.
-• Toľko reakcií na výber, tak málo času. Teraz môžete ľahko vyhľadať svoju obľúbenú reakciu.
-• Prispôsobte si predvolené reakcie, aby ste svoje obľúbené emócie mohli mať po ruke.
-• Unavený z upozornení? Stačí potiahnuť prstom doľava na správe zo zoznamu konverzácií a rýchlo ho stlmiť alebo zapnúť.
-• Bola opravená chyba, ktorá spôsobovala, že časti dlhých textových správ sa vo vstupnom nezobrazovali.
+• Profilové fotky pre konverzácie 1-1 a skupinové konverzácie sa teraz spoľahlivo zobrazia v upozorneniach
+• Rôzne vylepšenia výkonu pre veľmi veľké skupiny

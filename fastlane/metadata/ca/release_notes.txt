@@ -1,7 +1,2 @@
-• Teniu un número de telèfon nou? Ara podeu canviar el número que heu registrat al Signal sense perdre l'historial de converses, els grups i el perfil del Signal. Aneu a Configuració > Compte > Canvia el número, per provar-ho.
-• Una nova funció de selecció múltiple us permet seleccionar diverses converses alhora de la llista i marcar-les com a llegides, arxivar-les o suprimir-les. Toqueu la fotografia del perfil a la part superior esquerra per provar-ho.
-• Ara s'accedeix més ràpidament a les converses arxivades. Només cal que toqueu la fotografia del perfil a la part superior esquerra per accedir-hi fàcilment.
-• Tantes reaccions per triar, tan poc temps. Ara podeu cercar fàcilment la reacció preferida.
-• Personalitzeu les reaccions predeterminades per poder portar les emocions preferides més a prop de la màniga.
-• Cansats de les notificacions? Només heu de lliscar cap a l'esquerra en una conversa de la llista per silenciar-la o reactivar-la ràpidament.
-• S'ha corregit un error que provocava que parts d'un missatge de text llarg es fessin invisibles al quadre d'entrada.
+• Profile photos for 1-1 and group chats will now reliably appear in notifications
+• Various performance improvements for very large groups

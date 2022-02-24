@@ -254,7 +254,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Não foi possível analisar a imagem.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Não foi possível suprimir os metadados da imagem.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Não foi possível apagar os metadados da imagem.";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Impossível redimensionar imagem.";
@@ -776,7 +776,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Essa ação irá reiniciar as configurações o aplicativo, suprimindo todas as suas mensagens salvas neste aparelho. Você poderá vincular seu telefone novamente a esta conta do Signal, mas isso não restaurará as mensagens suprimidas. O aplicativo será fechado após o término do processo.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Tem certeza que deseja suprimir todos os dados?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Tem certeza que deseja apagar todos os dados?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Você não poderá mais enviar nem receber mensagens neste grupo.";
@@ -1211,16 +1211,16 @@
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Permissões";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Suprimir do grupo";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Apagar do grupo";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Suprimir %@ do grupo?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Apagar %@ do grupo?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Suprimir como admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Apagar como admin";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Suprimir %@ como admin do grupo?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Apagar %@ como admin do grupo?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "pesquisar";
@@ -1265,7 +1265,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "Você enviou:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Suprimir todas";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Apagar todas";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Carrengando Mais Mensagens...";
@@ -1330,9 +1330,6 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Ontem";
 
-/* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Não foi possível copiar os registros.";
-
 /* Error indicating that the debug logs could not be packaged. */
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Não foi possível empacotar os registros.";
 
@@ -1353,6 +1350,9 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Suporte por e-mail";
+
+/* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Enviar para mim";
@@ -1412,13 +1412,13 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Apagar todas as mensagens na conversa?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Suprimir todas as mensagens";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Apagar todas as mensagens";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Suprimir as mensagens de %Id?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Apagar as mensagens de %ld?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Suprimir mensagem?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Apagar mensagem?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registrar este número de telefone novamente";
@@ -3182,10 +3182,10 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Todas as mídias";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Suprimir %d mensagens";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Apagar %d mensagens";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Suprimir mensagem";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Apagar mensagem";
 
 /* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
 "MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ fotos";
@@ -3212,22 +3212,22 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensagem de texto";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Suprimir para todas as pessoas";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Apagar para todas as pessoas";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Esta mensagem será apagada para todos os participantes desta conversa, se estiverem usando a versão mais recente do Signal. Eles poderão ver que você apagou uma mensagem.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Para quem você deseja que essa mensagem seja suprimida?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Para quem você deseja que essa mensagem seja apagada?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Suprimir para mim";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Apagar para mim";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Suprimir essa mensagem";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Apagar esta mensagem";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Suprimir as mensagens selecionadas";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Apagar as mensagens selecionadas";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Detalhes";
@@ -3353,7 +3353,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Bloquear";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Bloquear e suprimir";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Bloquear e apagar";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Denunciar spam e bloquear";
@@ -3371,7 +3371,7 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Bloquear e sair de %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Suprimir";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Apagar";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Esta conversa será excluída de todos os seus dispositivos.";
@@ -3380,13 +3380,13 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Excluir a conversa?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Suprimir e sair";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Apagar e sair";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Você sairá deste grupo, que será surprimido em todos os seus aparelhos.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Suprimir e sair do grupo?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Apagar grupo e sair?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Reveja as solicitações cuidadosamente. O Signal encontrou outro contato com o mesmo nome.";
@@ -3431,7 +3431,7 @@
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Continuar";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Suprimir";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Apagar";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continuar esta conversa com %@ e exibir seu nome e foto para essa pessoa?";
@@ -4280,7 +4280,7 @@
 "PIN_ACTION" = "Fixar";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Não foi possível criar o seu novo PIN. Seu PIN existente foi desativado. Verifique a sua conexão à internet e tente novamente.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_TITLE" = "Falha ao mudar o PIN";
@@ -4331,7 +4331,7 @@
 "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Verifique a sua conexão e tente novamente.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Sem conexão à internet";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "O PIN deve conter pelo menos quatro dígitos";
@@ -4345,9 +4345,6 @@
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Você pode modificar seu PIN enquanto este aparelho estiver registrado.";
 
-/* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Mude o seu PIN";
-
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Desabilitar";
 
@@ -4358,10 +4355,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Desabilitar o Bloqueio de Registro?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "A criação do PIN foi bem-sucedida, mas o desbloqueio de registro não pôde ser ativado. Verifique sua conexão à internet e tente novamente.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Falha ao ativar o desbloqueio de registro";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Desabilitar PIN";
@@ -4457,7 +4454,7 @@
 "PRIVACY_TAP_TO_SCAN" = "Toque para escanear";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Suprimir verificação";
+"PRIVACY_UNVERIFY_BUTTON" = "Apagar verificação";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Este não é o seu número de segurança com %@. Você está verificando o contato correto?";
@@ -5315,7 +5312,7 @@
 "SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Cronômetro padrão para novas conversas";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Suprimir conta";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Apagar conta";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Não transferir";
@@ -5330,13 +5327,13 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transferir saldo";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Suprimir todos os dados";
+"SETTINGS_DELETE_DATA_BUTTON" = "Apagar todos os dados";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Tem certeza de que deseja suprimir todo seu histórico (mensagens, anexos, chamadas, etc.)? Essa ação não pode ser revertida.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Tem certeza de que deseja apagar todo seu histórico (mensagens, anexos, chamadas, etc.)? Essa ação não pode ser revertida.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Suprimir tudo";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Apagar Tudo";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Mensagens efêmeras";
@@ -5696,7 +5693,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Colar senha de recuperação";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Sua senha de recuperação é uma senha de 24 palavras exclusiva para você. Use-a para restaurar sua conta de pagamentos.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Digite a senha de recuperação";
@@ -5939,7 +5936,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Doação única";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Torne-se um apoiador recorrente ao Signal";
+"SETTINGS_SUBSCRIPTION" = "Torne-se um Apoiador do Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueio de Registro";
@@ -6293,7 +6290,7 @@
 "TAP_REPLACE_EMOJI" = "Toque para substituir um emoji";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "Essa mensagem foi suprimida.";
+"THIS_MESSAGE_WAS_DELETED" = "Esta mensagem foi apagada.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membro de %@, %@, e %lu outros grupos";
@@ -6371,7 +6368,7 @@
 "TXT_CANCEL_TITLE" = "Cancelar";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "Suprimir";
+"TXT_DELETE_TITLE" = "Apagar";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "Desarquivar";
@@ -6644,7 +6641,7 @@
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Definir papel de parede";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "Você suprimiu esta mensagem.";
+"YOU_DELETED_THIS_MESSAGE" = "Você apagou esta mensagem.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Você desabilitou as mensagens efêmeras.";

@@ -1,7 +1,2 @@
-• Eine neue Rufnummer? Du kannst jetzt deine registrierte Rufnummer ändern ohne deinen Unterhaltungsverlauf, deine Gruppen und dein Signal-Profil zu verlieren. Um es auszutesten, gehe zu Einstellungen > Konto > Rufnummer ändern.
-• Die neue Mehrfachauswahl ermöglicht die Auswahl mehrerer Unterhaltungen aus der Unterhaltungsliste, um diese als gelesen zu markieren, zu archivieren oder zu löschen. Um es auszutesten, tippe auf dein Profilfoto oben links.
-• Archivierte Unterhaltungen sind jetzt schneller zugänglich. Tippe einfach auf dein Profilfoto oben links.
-• So viele Reaktionen zur Auswahl. Mit der Suche findest du deine gewünschte Reaktion ganz einfach.
-• Die Standardreaktionen können jetzt beliebig angepasst werden.
-Zu viele Mitteilungen? Wische einfach auf einer Unterhaltung in der Unterhaltungsliste nach links, um diesen schnell stummzuschalten oder die Stummschaltung aufzuheben.
-• Ein Fehler wurde behoben, bei dem Teile einer langen Nachricht im Texteingabefeld unsichtbar wurden.
+Profilfotos für 1:1- und Gruppen-Unterhaltungen werden nun zuverlässig in den Mitteilungen angezeigt
+• Verschiedene Leistungsverbesserungen für sehr große Gruppen
