@@ -491,6 +491,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
@@ -526,6 +532,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func sendInvitation() {
         let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey()) !"
         let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     

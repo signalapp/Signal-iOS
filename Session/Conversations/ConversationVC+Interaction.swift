@@ -486,6 +486,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     // Open the document if possible
                     guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
                     let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
+                    if UIDevice.current.isIPad {
+                        shareVC.excludedActivityTypes = []
+                        shareVC.popoverPresentationController?.permittedArrowDirections = []
+                        shareVC.popoverPresentationController?.sourceView = self.view
+                        shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+                    }
                     navigationController!.present(shareVC, animated: true, completion: nil)
                 }
             case .textOnlyMessage:

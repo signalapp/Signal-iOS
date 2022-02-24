@@ -232,7 +232,7 @@ private final class EnterPublicKeyVC : UIViewController {
         // Share button
         let shareButton = Button(style: .unimportant, size: .medium)
         shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
-        shareButton.addTarget(self, action: #selector(sharePublicKey(_:)), for: UIControl.Event.touchUpInside)
+        shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
         // Button container
         buttonContainer.addArrangedSubview(copyButton)
         buttonContainer.addArrangedSubview(shareButton)
@@ -330,12 +330,13 @@ private final class EnterPublicKeyVC : UIViewController {
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }
     
-    @objc private func sharePublicKey(_ sender: UIButton) {
+    @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
         if UIDevice.current.isIPad {
             shareVC.excludedActivityTypes = []
-            shareVC.popoverPresentationController?.sourceView = sender
-            shareVC.popoverPresentationController?.sourceRect = sender.bounds
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
         }
         NewDMVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
