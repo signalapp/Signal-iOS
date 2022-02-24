@@ -61,7 +61,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         tabBar.pin(.leading, to: .leading, of: view)
         let tabBarInset: CGFloat
         if #available(iOS 13, *) {
-            tabBarInset = navigationBar.height()
+            tabBarInset = UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height()
         } else {
             tabBarInset = 0
         }
