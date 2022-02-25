@@ -1160,8 +1160,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Link Preview
     if (self.linkPreview) {
-        SSKProtoDataMessagePreviewBuilder *previewBuilder =
-            [SSKProtoDataMessagePreview builderWithUrl:self.linkPreview.urlString];
+        SSKProtoPreviewBuilder *previewBuilder = [SSKProtoPreview builderWithUrl:self.linkPreview.urlString];
         if (self.linkPreview.title.length > 0) {
             [previewBuilder setTitle:self.linkPreview.title];
         }
@@ -1184,7 +1183,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
 
         NSError *error;
-        SSKProtoDataMessagePreview *_Nullable previewProto = [previewBuilder buildAndReturnError:&error];
+        SSKProtoPreview *_Nullable previewProto = [previewBuilder buildAndReturnError:&error];
         if (error || !previewProto) {
             OWSFailDebug(@"Could not build link preview protobuf: %@.", error);
         } else {
