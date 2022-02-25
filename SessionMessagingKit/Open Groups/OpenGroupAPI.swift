@@ -115,7 +115,7 @@ public final class OpenGroupAPI: NSObject {
                     // TODO: Limit?
 //                    queryParameters: [ .limit: 256 ]
                 ),
-                responseType: [DirectMessage].self
+                responseType: [DirectMessage]?.self // 'inboxSince' will return a `304` with an empty response if no messages
             )
         )
         
@@ -507,30 +507,30 @@ public final class OpenGroupAPI: NSObject {
     /// method, in order to call this directly remove the `@available` line and make sure to route the response of this method to the
     /// `OpenGroupManager.handleInbox` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
-    public static func inbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
+    public static func inbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         let request: Request = Request<NoBody>(
             server: server,
             endpoint: .inbox
         )
         
         return send(request, using: dependencies)
-            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
+            .decoded(as: [DirectMessage]?.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
-    /// Polls for any DMs received since the given id
+    /// Polls for any DMs received since the given id, this method will return a `304` with an empty response if there are no messages
     ///
     /// **Note:** This is the direct request to retrieve messages requests for a specific Open Group since a given messages so should be retrieved
     /// automatically from the `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response
     /// of this method to the `OpenGroupManager.handleInbox` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
-    public static func inboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
+    public static func inboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         let request: Request = Request<NoBody>(
             server: server,
             endpoint: .inboxSince(id: id)
         )
         
         return send(request, using: dependencies)
-            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
+            .decoded(as: [DirectMessage]?.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     /// Delivers a direct message to a user via their blinded Session ID

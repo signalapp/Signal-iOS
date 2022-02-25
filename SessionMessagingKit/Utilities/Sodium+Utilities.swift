@@ -1,5 +1,6 @@
 import Clibsodium
 import Sodium
+import Curve25519Kit
 
 extension Sign {
 
@@ -231,6 +232,33 @@ extension Sodium {
         guard let combinedKeyBytes: Bytes = combineKeys(lhsKeyBytes: aBytes, rhsKeyBytes: otherBlindedPublicKey) else { return nil }
         
         return genericHash.hash(message: (combinedKeyBytes + kA + kB), outputLength: 32)
+    }
+    
+    /// This method should be used to check if a users standard sessionId matches a blinded one
+    public func sessionId(_ standardSessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String) -> Bool {
+        // Only support generating blinded keys for standard session ids
+        guard let sessionId: SessionId = SessionId(from: standardSessionId), sessionId.prefix == .standard else { return false }
+        guard let blindedId: SessionId = SessionId(from: blindedSessionId), blindedId.prefix == .blinded else { return false }
+        guard let kBytes: Bytes = generateBlindingFactor(serverPublicKey: serverPublicKey) else { return false }
+
+        /// From the session id (ignoring 05 prefix) we have two possible ed25519 pubkeys; the first is the positive (which is what
+        /// Signal's XEd25519 conversion always uses)
+        ///
+        /// Note: The below method is code we have exposed from the `curve25519_verify` method within the Curve25519 library
+        /// rather than custom code we have written
+        guard let xEd25519Key: Data = try? Ed25519.publicKey(from: Data(hex: sessionId.publicKey)) else { return false }
+        
+        /// Blind the positive public key
+        guard let pk1: Bytes = combineKeys(lhsKeyBytes: kBytes, rhsKeyBytes: xEd25519Key.bytes) else { return false }
+        
+        /// For the negative, what we're going to get out of the above is simply the negative of pk1, so flip the sign bit to get pk2
+        ///     pk2 = pk1[0:31] + bytes([pk1[31] ^ 0b1000_0000])
+        let pk2: Bytes = (pk1[0..<31] + [(pk1[31] ^ 0b1000_0000)])
+        
+        return (
+            SessionId(.blinded, publicKey: pk1).publicKey == blindedId.publicKey ||
+            SessionId(.blinded, publicKey: pk2).publicKey == blindedId.publicKey
+        )
     }
 }
 

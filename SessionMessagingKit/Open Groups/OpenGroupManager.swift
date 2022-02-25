@@ -319,6 +319,8 @@ public final class OpenGroupManager: NSObject {
         isBackgroundPoll: Bool,
         using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
     ) {
+        // Don't need to do anything if we have no messages (it's a valid case)
+        guard !messages.isEmpty else { return }
         guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: server) else {
             SNLog("Couldn't receive inbox message.")
             return

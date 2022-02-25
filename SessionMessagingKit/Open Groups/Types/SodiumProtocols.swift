@@ -15,6 +15,8 @@ public protocol SodiumType {
     
     func combineKeys(lhsKeyBytes: Bytes, rhsKeyBytes: Bytes) -> Bytes?
     func sharedBlindedEncryptionKey(secretKey a: Bytes, otherBlindedPublicKey: Bytes, fromBlindedPublicKey kA: Bytes, toBlindedPublicKey kB: Bytes, genericHash: GenericHashType) -> Bytes?
+    
+    func sessionId(_ sessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String) -> Bool
 }
 
 public protocol AeadXChaCha20Poly1305IetfType {

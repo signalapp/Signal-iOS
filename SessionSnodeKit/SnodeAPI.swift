@@ -131,8 +131,15 @@ public final class SnodeAPI : NSObject {
     // MARK: Internal API
     internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> RawResponsePromise {
         if Features.useOnionRequests {
-            // TODO: Ensure this should use the v3 request?
-            return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, using: .v3, associatedWith: publicKey).map2 { $0 as Any }
+            return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, using: .v3, associatedWith: publicKey)
+                .map2 { responseData in
+                    guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                        throw Error.generic
+                    }
+                    
+                    // FIXME: Would be nice to change this to not send 'Any'
+                    return responseJson as Any
+                }
         } else {
             let url = "\(snode.address):\(snode.port)/storage_rpc/v1"
             return HTTP.execute(.post, url, parameters: parameters).map2 { $0 as Any }.recover2 { error -> Promise<Any> in

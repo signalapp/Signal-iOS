@@ -245,7 +245,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: String, targetedAt destination: Destination) -> Promise<OnionBuildingResult> {
+    private static func buildOnion(around payload: String, targetedAt destination: Destination, version: Version) -> Promise<OnionBuildingResult> {
         var guardSnode: Snode!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the destination
         var encryptionResult: AESGCM.EncryptionResult!
@@ -254,7 +254,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         return getPath(excluding: snodeToExclude).then2 { path -> Promise<AESGCM.EncryptionResult> in
             guardSnode = path.first!
             // Encrypt in reverse order, i.e. the destination first
-            return encrypt(payload, for: destination).then2 { r -> Promise<AESGCM.EncryptionResult> in
+            return encrypt(payload, for: destination, with: version).then2 { r -> Promise<AESGCM.EncryptionResult> in
                 targetSnodeSymmetricKey = r.symmetricKey
                 // Recursively encrypt the layers of the onion (again in reverse order)
                 encryptionResult = r
@@ -328,7 +328,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         let (promise, seal) = Promise<(OnionRequestResponseInfoType, Data?)>.pending()
         var guardSnode: Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
-            buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
+            buildOnion(around: payload, targetedAt: destination, version: version).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
                 let url = "\(guardSnode!.address):\(guardSnode!.port)/onion_req/v2"
                 let finalEncryptionResult = intermediate.finalEncryptionResult

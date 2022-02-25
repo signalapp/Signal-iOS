@@ -80,6 +80,9 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Message Handling
 
+    func getAllMessageRequestThreads() -> [String: TSContactThread]
+    func getAllMessageRequestThreads(using transaction: YapDatabaseReadTransaction) -> [String: TSContactThread]
+    
     func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64]
     func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any)
     /// Returns the ID of the thread.

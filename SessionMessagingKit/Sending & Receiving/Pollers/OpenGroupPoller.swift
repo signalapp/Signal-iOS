@@ -124,13 +124,13 @@ extension OpenGroupAPI {
                         )
                         
                     case .inbox, .inboxSince:
-                        guard let responseData: BatchSubResponse<[DirectMessage]> = endpointResponse.data as? BatchSubResponse<[DirectMessage]>, let responseBody: [DirectMessage] = responseData.body else {
+                        guard let responseData: BatchSubResponse<[DirectMessage]?> = endpointResponse.data as? BatchSubResponse<[DirectMessage]?>, let responseBody: [DirectMessage]? = responseData.body else {
                             SNLog("Open group polling failed due to invalid data.")
                             return
                         }
                         
                         OpenGroupManager.handleInbox(
-                            responseBody,
+                            (responseBody ?? []),
                             on: server,
                             isBackgroundPoll: isBackgroundPoll
                         )
