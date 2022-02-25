@@ -171,7 +171,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             let numMessageRequests = threads.numberOfItems(inGroup: TSMessageRequestGroup)
             
             // Allow this to show a notification if there are no message requests (ie. this is the first one)
-            guard numMessageRequests <= 1 else { return }
+            guard numMessageRequests == 0 else { return }
         }
         else if thread.isMessageRequest() && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
             // If there are other interactions on this thread already then don't show the notification
