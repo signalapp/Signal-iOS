@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 import SignalRingRTC
 
 // TODO: Eventually add 1:1 call support to this view
@@ -206,21 +207,19 @@ class GroupCallViewController: UIViewController {
         guard !hasAppeared else { return }
         hasAppeared = true
 
-        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
-            return owsFailDebug("failed to snapshot rootViewController")
-        }
+        if let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) {
+            view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
+            splitViewSnapshot.autoPinEdgesToSuperviewEdges()
 
-        view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
-        splitViewSnapshot.autoPinEdgesToSuperviewEdges()
+            view.transform = .scale(1.5)
+            view.alpha = 0
 
-        view.transform = .scale(1.5)
-        view.alpha = 0
-
-        UIView.animate(withDuration: 0.2, animations: {
-            self.view.alpha = 1
-            self.view.transform = .identity
-        }) { _ in
-            splitViewSnapshot.removeFromSuperview()
+            UIView.animate(withDuration: 0.2, animations: {
+                self.view.alpha = 1
+                self.view.transform = .identity
+            }) { _ in
+                splitViewSnapshot.removeFromSuperview()
+            }
         }
     }
 

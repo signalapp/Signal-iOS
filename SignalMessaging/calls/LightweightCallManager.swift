@@ -6,7 +6,7 @@ import SignalServiceKit
 import SignalRingRTC
 
 @objc
-public class LightweightCallManager: NSObject, Dependencies {
+open class LightweightCallManager: NSObject, Dependencies {
 
     public let managerLite: CallManagerLite
     private var sfuUrl: String { DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL }
@@ -18,7 +18,7 @@ public class LightweightCallManager: NSObject, Dependencies {
     }
 
     @objc
-    public func peekCallAndUpdateThread(
+    open dynamic func peekCallAndUpdateThread(
         _ thread: TSGroupThread,
         expectedEraId: String? = nil,
         triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
@@ -26,31 +26,32 @@ public class LightweightCallManager: NSObject, Dependencies {
     ) {
         guard RemoteConfig.groupCalling, thread.isLocalUserFullMember else { return }
 
-        if let expectedEraId = expectedEraId {
-            // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
-            // If it's the current call, we'll update with the PeekInfo once fetched
-            // Otherwise, it'll be marked as ended as soon as we complete the fetch
-            // If we fail to fetch, the entry will be kept around until the next PeekInfo fetch completes.
-            self.insertPlaceholderGroupCallMessageIfNecessary(
-                eraId: expectedEraId,
-                timestamp: triggerEventTimestamp,
-                thread: thread)
-        }
+        firstly(on: .global()) { () -> Promise<PeekInfo> in
+            if let expectedEraId = expectedEraId {
+                // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
+                // If it's the current call, we'll update with the PeekInfo once fetched
+                // Otherwise, it'll be marked as ended as soon as we complete the fetch
+                // If we fail to fetch, the entry will be kept around until the next PeekInfo fetch completes.
+                self.insertPlaceholderGroupCallMessageIfNecessary(
+                    eraId: expectedEraId,
+                    timestamp: triggerEventTimestamp,
+                    thread: thread)
+            }
+            return self.fetchPeekInfo(for: thread)
 
-        firstly {
-            fetchPeekInfo(for: thread)
-        }.done { info in
+        }.then(on: .main) { (info: PeekInfo) -> Promise<Void> in
             // We only want to update the call message with the participants of the peekInfo if the peek's
             // era matches the era for the expected message. This wouldn't be the case if say, a device starts
             // fetching a whole batch of messages offline and it includes the group call signaling messages from
             // two different eras.
             if expectedEraId == nil || info.eraId == nil || expectedEraId == info.eraId {
                 Logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
-                self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
+                return self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
             } else {
                 Logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
+                return Promise.value(())
             }
-        }.ensure {
+        }.done {
             completion?()
         }.catch(on: .global()) { error in
             if error.isNetworkFailureOrTimeout {
@@ -61,8 +62,8 @@ public class LightweightCallManager: NSObject, Dependencies {
         }
     }
 
-    public func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) {
-        databaseStorage.write { writeTx in
+    public func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) -> Promise<Void> {
+        databaseStorage.write(.promise) { writeTx in
             let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
 
             // Any call in our database that hasn't ended yet that doesn't match the current era
@@ -117,7 +118,7 @@ public class LightweightCallManager: NSObject, Dependencies {
         }
     }
 
-    public func fetchPeekInfo(for thread: TSGroupThread) -> Promise<PeekInfo> {
+    fileprivate func fetchPeekInfo(for thread: TSGroupThread) -> Promise<PeekInfo> {
         firstly {
             self.fetchGroupMembershipProof(for: thread)
 
@@ -132,9 +133,11 @@ public class LightweightCallManager: NSObject, Dependencies {
         }
     }
 
-    fileprivate func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+    @objc
+    open dynamic func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
         // The message must have at least one participant
         guard (groupCallMessage.joinedMemberUuids?.count ?? 0) > 0 else { return }
+
         guard let thread = TSGroupThread.anyFetch(uniqueId: groupCallMessage.uniqueThreadId, transaction: transaction) else {
             owsFailDebug("Unknown thread")
             return

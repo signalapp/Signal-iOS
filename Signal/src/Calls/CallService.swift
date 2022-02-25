@@ -16,10 +16,20 @@ protocol CallServiceObserver: AnyObject {
 }
 
 @objc
-public final class CallService: NSObject {
+public final class CallService: LightweightCallManager {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
-    public let callManager: CallManagerType
-    public let callManagerLite: LightweightCallManager
+
+    private var _callManager: CallManagerType! = nil
+    public private(set) var callManager: CallManagerType {
+        get { _callManager }
+        set {
+            if _callManager == nil {
+                _callManager = newValue
+            } else {
+                owsFailDebug("Should only be set once")
+            }
+        }
+    }
 
     @objc
     public let individualCallService = IndividualCallService()
@@ -125,11 +135,10 @@ public final class CallService: NSObject {
     }
 
     public override init() {
-        let callManagerLite = LightweightCallManager()
-        self.callManagerLite = callManagerLite
-        self.callManager = CallManagerType(callManagerLite: callManagerLite.managerLite)
-
         super.init()
+        callManager = CallManager(callManagerLite: managerLite)
+        callManager.delegate = self
+
         SwiftSingletons.register(self)
         callManager.delegate = self
 
@@ -614,7 +623,7 @@ public final class CallService: NSObject {
             let membershipInfo: [GroupMemberInfo]
             do {
                 membershipInfo = try self.databaseStorage.read {
-                    try self.callManagerLite.groupMemberInfo(for: groupThread, transaction: $0)
+                    try self.groupMemberInfo(for: groupThread, transaction: $0)
                 }
             } catch {
                 owsFailDebug("Failed to fetch membership info: \(error)")
@@ -680,7 +689,7 @@ extension CallService: CallObserver {
             return
         }
         DispatchQueue.sharedUtility.async {
-            self.callManagerLite.updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: Date.ows_millisecondTimestamp())
+            self.updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: Date.ows_millisecondTimestamp())
         }
     }
 
@@ -695,7 +704,7 @@ extension CallService: CallObserver {
         }
 
         firstly {
-            callManagerLite.fetchGroupMembershipProof(for: groupThread)
+            fetchGroupMembershipProof(for: groupThread)
         }.done(on: .main) { proof in
             call.groupCall.updateMembershipProof(proof: proof)
         }.catch(on: .main) { error in
@@ -720,12 +729,11 @@ extension CallService: CallObserver {
 // MARK: - Group call participant updates
 
 extension CallService {
-
     @objc
-    func peekCallAndUpdateThread(_ thread: TSGroupThread,
-                                 expectedEraId: String? = nil,
-                                 triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
-                                 completion: (() -> Void)? = nil) {
+    override public func peekCallAndUpdateThread(_ thread: TSGroupThread,
+                                                 expectedEraId: String? = nil,
+                                                 triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
+                                                 completion: (() -> Void)? = nil) {
         AssertIsOnMainThread()
         // If the currentCall is for the provided thread, we don't need to perform an explict
         // peek. Connected calls will receive automatic updates from RingRTC
@@ -733,32 +741,19 @@ extension CallService {
             Logger.info("Ignoring peek request for the current call")
             return
         }
-
-        DispatchQueue.main.async {
-            self.callManagerLite.peekCallAndUpdateThread(
-                thread,
-                expectedEraId: expectedEraId,
-                triggerEventTimestamp: triggerEventTimestamp,
-                completion: completion)
-        }
+        super.peekCallAndUpdateThread(thread, expectedEraId: expectedEraId, triggerEventTimestamp: triggerEventTimestamp, completion: completion)
     }
 
-    fileprivate func postUserNotificationIfNecessary(message: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
-        // The message can't be for the current call
-        guard self.currentCall?.thread.uniqueId != message.uniqueThreadId else { return }
-        // The creator of the call must be known, and it can't be the local user
-        guard let creator = message.creatorUuid, !SignalServiceAddress(uuidString: creator).isLocalAddress else { return }
-        // The message must have at least one participant
-        guard (message.joinedMemberUuids?.count ?? 0) > 0 else { return }
+    @objc
+    override public func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+        AssertIsOnMainThread()
 
-        guard let thread = TSGroupThread.anyFetch(uniqueId: message.uniqueThreadId, transaction: transaction) else {
-            owsFailDebug("Unknown thread")
-            return
-        }
-        Self.notificationPresenter.notifyUser(forPreviewableInteraction: message,
-                                              thread: thread,
-                                              wantsSound: true,
-                                              transaction: transaction)
+        // The message can't be for the current call
+        guard self.currentCall?.thread.uniqueId != groupCallMessage.uniqueThreadId else { return }
+        // The creator of the call must be known, and it can't be the local user
+        guard let creator = groupCallMessage.creatorUuid, !SignalServiceAddress(uuidString: creator).isLocalAddress else { return }
+
+        super.postUserNotificationIfNecessary(groupCallMessage: groupCallMessage, transaction: transaction)
     }
 }
 
@@ -790,7 +785,7 @@ extension CallService: DatabaseChangeDelegate {
     }
 }
 
-extension CallService: CallManagerDelegate, CallManagerLiteDelegate {
+extension CallService: CallManagerDelegate {
     public typealias CallManagerDelegateCallType = SignalCall
 
     /**
@@ -865,66 +860,6 @@ extension CallService: CallManagerDelegate, CallManagerLiteDelegate {
         urgency: CallMessageUrgency
     ) {
         Logger.info("Stubbed \(#function)")
-    }
-
-    /**
-     * A HTTP request should be sent to the given url.
-     * Invoked on the main thread, asychronously.
-     * The result of the call should be indicated by calling the receivedHttpResponse() function.
-     */
-    public func callManagerLite(
-        _ callManagerLite: CallManagerLite,
-        shouldSendHttpRequest requestId: UInt32,
-        url: String,
-        method: CallManagerHttpMethod,
-        headers: [String: String],
-        body: Data?
-    ) {
-        AssertIsOnMainThread()
-        Logger.info("shouldSendHttpRequest")
-
-        let httpMethod: HTTPMethod
-        switch method {
-        case .get: httpMethod = .get
-        case .post: httpMethod = .post
-        case .put: httpMethod = .put
-        case .delete: httpMethod = .delete
-        }
-
-        let session = OWSURLSession(
-            securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
-            configuration: OWSURLSession.defaultConfigurationWithoutCaching
-        )
-        session.require2xxOr3xx = false
-        session.allowRedirects = true
-        session.customRedirectHandler = { request in
-            var request = request
-
-            if let authHeader = headers.first(where: {
-                $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
-            }) {
-                request.addValue(authHeader.value, forHTTPHeaderField: authHeader.key)
-            }
-
-            return request
-        }
-
-        firstly(on: .sharedUtility) {
-            session.dataTaskPromise(url, method: httpMethod, headers: headers, body: body)
-        }.done(on: .main) { response in
-            callManagerLite.receivedHttpResponse(
-                requestId: requestId,
-                statusCode: UInt16(response.responseStatusCode),
-                body: response.responseBodyData
-            )
-        }.catch(on: .main) { error in
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Call manager http request failed \(error)")
-            } else {
-                owsFailDebug("Call manager http request failed \(error)")
-            }
-            callManagerLite.httpRequestFailed(requestId: requestId)
-        }
     }
 
     public func callManager(
