@@ -18,6 +18,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUserED25519KeyPair() -> Box.KeyPair?
     func getUser() -> Contact?
     func getAllContacts() -> Set<Contact>
+    func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact>
 
     // MARK: - Closed Groups
 

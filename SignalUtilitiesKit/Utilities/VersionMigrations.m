@@ -47,11 +47,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"Checking migrations. currentVersion: %@, lastRanVersion: %@", currentVersion, previousVersion);
 
     if (!previousVersion) {
-        OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
-        OWSDatabaseMigrationRunner *runner = [[OWSDatabaseMigrationRunner alloc] init];
+        // Note: We need to run the migrations here anyway to ensure that they don't run on subsequent launches
+        // and result in unexpected data changes (eg. 'MessageRequestsMigration' auto-approves all threads
+        // if this happens on the 2nd launch then any threads created during the 1st launch which haven't
+        // been approved would get auto-approved, allowing the user to use contacts which haven't approved
+        // comms to appear as options when creating closed groups)
+        OWSLogInfo(@"No previous version found. Probably first launch since install - running migrations so they don't run on second launch.");
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            completion();
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:completion];
         });
         return;
     }

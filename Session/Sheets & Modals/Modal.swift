@@ -1,6 +1,7 @@
+import UIKit
 
 @objc(LKModal)
-class Modal : BaseVC {
+class Modal: BaseVC, UIGestureRecognizerDelegate {
     private(set) var verticalCenteringConstraint: NSLayoutConstraint!
     
     // MARK: Components
@@ -38,9 +39,15 @@ class Modal : BaseVC {
         let alpha = isLightMode ? CGFloat(0.1) : Values.highOpacity
         view.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(alpha)
         cancelButton.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
+        
         let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
         swipeGestureRecognizer.direction = .down
         view.addGestureRecognizer(swipeGestureRecognizer)
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(close))
+        tapGestureRecognizer.delegate = self
+        view.addGestureRecognizer(tapGestureRecognizer)
+        
         setUpViewHierarchy()
     }
     
@@ -57,18 +64,17 @@ class Modal : BaseVC {
         preconditionFailure("populateContentView() is abstract and must be overridden.")
     }
     
-    // MARK: Interaction
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first!
-        let location = touch.location(in: view)
-        if contentView.frame.contains(location) {
-            super.touchesBegan(touches, with: event)
-        } else {
-            close()
-        }
-    }
+    // MARK: - Interaction
     
     @objc func close() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    // MARK: - UIGestureRecognizerDelegate
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        let location: CGPoint = touch.location(in: contentView)
+        
+        return !contentView.point(inside: location, with: nil)
     }
 }

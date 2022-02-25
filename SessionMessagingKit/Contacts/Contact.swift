@@ -12,6 +12,12 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     @objc public var threadID: String?
     /// This flag is used to determine whether we should auto-download files sent by this contact.
     @objc public var isTrusted = false
+    /// This flag is used to determine whether message requests from this contact are approved
+    @objc public var isApproved = false
+    /// This flag is used to determine whether message requests from this contact are blocked
+    @objc public var isBlocked = false
+    /// This flag is used to determine whether this contact has approved the current users message request
+    @objc public var didApproveMe = false
     
     // MARK: Name
     /// The name of the contact. Use this whenever you need the "real", underlying name of a user (e.g. when sending a message).
@@ -65,6 +71,10 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         if let profilePictureFileName = coder.decodeObject(forKey: "profilePictureFileName") as! String? { self.profilePictureFileName = profilePictureFileName }
         if let profileEncryptionKey = coder.decodeObject(forKey: "profilePictureEncryptionKey") as! OWSAES256Key? { self.profileEncryptionKey = profileEncryptionKey }
         if let threadID = coder.decodeObject(forKey: "threadID") as! String? { self.threadID = threadID }
+        
+        isApproved = coder.decodeBool(forKey: "isApproved")
+        isBlocked = coder.decodeBool(forKey: "isBlocked")
+        didApproveMe = coder.decodeBool(forKey: "didApproveMe")
     }
 
     public func encode(with coder: NSCoder) {
@@ -76,6 +86,9 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         coder.encode(profileEncryptionKey, forKey: "profilePictureEncryptionKey")
         coder.encode(threadID, forKey: "threadID")
         coder.encode(isTrusted, forKey: "isTrusted")
+        coder.encode(isApproved, forKey: "isApproved")
+        coder.encode(isBlocked, forKey: "isBlocked")
+        coder.encode(didApproveMe, forKey: "didApproveMe")
     }
     
     // MARK: Equality
