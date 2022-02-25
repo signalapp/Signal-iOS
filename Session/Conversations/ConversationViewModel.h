@@ -120,7 +120,7 @@ static const int kYapDatabaseRangeMaxLength = 250000;
           focusMessageIdOnOpen:(nullable NSString *)focusMessageIdOnOpen
                       delegate:(id<ConversationViewModelDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
-- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary;
+- (void)ensureDynamicInteractionsAndUpdateIfNecessary;
 
 - (void)loadAnotherPageOfMessages;
 

@@ -295,13 +295,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 }
 
-- (void)signalAccountsDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:YES];
-}
-
 - (void)profileWhitelistDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
@@ -334,7 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary];
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
 
     [self createNewMessageMapping];
@@ -490,7 +483,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.collapseCutoffDate = [NSDate new];
 }
 
-- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
+- (void)ensureDynamicInteractionsAndUpdateIfNecessary
 {
     OWSAssertIsOnMainThread();
 
@@ -508,7 +501,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL didChange = ![NSObject isNullableObject:self.dynamicInteractions equalTo:dynamicInteractions];
     self.dynamicInteractions = dynamicInteractions;
 
-    if (didChange && updateIfNecessary) {
+    if (didChange) {
         if (![self reloadViewItems]) {
             OWSFailDebug(@"Failed to reload view items.");
         }
@@ -953,7 +946,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary];
 
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1392,7 +1385,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary];
 
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1416,7 +1409,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary];
 
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
