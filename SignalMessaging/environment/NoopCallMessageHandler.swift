@@ -40,7 +40,7 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         owsFailDebug("")
     }
 
-    public func receivedGroupCallUpdateMessage(_ update: SSKProtoDataMessageGroupCallUpdate, for groupThread: TSGroupThread, serverReceivedTimestamp: UInt64) {
+    public func receivedGroupCallUpdateMessage(_ updateMessage: SSKProtoDataMessageGroupCallUpdate, for groupThread: TSGroupThread, serverReceivedTimestamp: UInt64, completion: @escaping () -> Void) {
         owsFailDebug("")
     }
 

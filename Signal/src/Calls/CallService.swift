@@ -442,7 +442,7 @@ public final class CallService: NSObject {
 
             // Kick off a peek now that we've disconnected to get an updated participant state.
             if let thread = call.thread as? TSGroupThread {
-                peekCallAndUpdateThread(thread, transaction: transaction)
+                peekCallAndUpdateThread(thread)
             } else {
                 owsFailDebug("Invalid thread type")
             }
@@ -679,7 +679,9 @@ extension CallService: CallObserver {
             Logger.warn("No peek info for call: \(call)")
             return
         }
-        updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: Date.ows_millisecondTimestamp())
+        DispatchQueue.sharedUtility.async {
+            self.callManagerLite.updateGroupCallMessageWithInfo(peekInfo, for: thread, timestamp: Date.ows_millisecondTimestamp())
+        }
     }
 
     public func groupCallRequestMembershipProof(_ call: SignalCall) {
@@ -723,11 +725,8 @@ extension CallService {
     func peekCallAndUpdateThread(_ thread: TSGroupThread,
                                  expectedEraId: String? = nil,
                                  triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
-                                 transaction: SDSAnyReadTransaction) {
+                                 completion: (() -> Void)? = nil) {
         AssertIsOnMainThread()
-
-        guard RemoteConfig.groupCalling, thread.isLocalUserFullMember else { return }
-
         // If the currentCall is for the provided thread, we don't need to perform an explict
         // peek. Connected calls will receive automatic updates from RingRTC
         guard currentCall?.thread != thread else {
@@ -735,90 +734,12 @@ extension CallService {
             return
         }
 
-        firstly(on: .global()) {
-            if let expectedEraId = expectedEraId {
-                // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
-                // If it's the current call, we'll update with the PeekInfo once fetched
-                // Otherwise, it'll be marked as ended as soon as we complete the fetch
-                // If we fail to fetch, the entry will be kept around until the next PeekInfo fetch completes.
-                self.insertPlaceholderGroupCallMessageIfNecessary(eraId: expectedEraId,
-                                                                  timestamp: triggerEventTimestamp,
-                                                                  thread: thread)
-            }
-
-            firstly {
-                self.callManagerLite.fetchPeekInfo(for: thread)
-            }.done(on: .main) { info in
-                // If we're expecting an eraId, the timestamp is only valid for PeekInfo with the same eraId.
-                // We may have a more appropriate timestamp waiting in the message processing queue.
-                Logger.info("Fetched group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
-                if expectedEraId == nil || info.eraId == nil || expectedEraId == info.eraId {
-                    self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
-                }
-            }.catch(on: .global()) { error in
-                if error.isNetworkFailureOrTimeout {
-                    Logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
-                } else {
-                    owsFailDebug("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
-                }
-            }
-        }.catch(on: .global()) { error in
-            owsFailDebug("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
-        }
-    }
-
-    fileprivate func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) {
-        databaseStorage.write { writeTx in
-            let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
-
-            // Update everything that doesn't match the current call era to mark as ended
-            results
-                .filter { $0.eraId != info.eraId }
-                .forEach { toExpire in
-                    toExpire.update(withHasEnded: true, transaction: writeTx)
-                }
-
-            // Update the message for the current era if it exists, or insert a new one.
-            guard let currentEraId = info.eraId, let creatorUuid = info.creator else {
-                Logger.info("No active call")
-                return
-            }
-            let currentEraMessages = results.filter { $0.eraId == currentEraId }
-            owsAssertDebug(currentEraMessages.count <= 1)
-
-            if let currentMessage = currentEraMessages.first {
-                let wasOldMessageEmpty = currentMessage.joinedMemberUuids?.count == 0 && !currentMessage.hasEnded
-
-                currentMessage.update(
-                    withJoinedMemberUuids: info.joinedMembers,
-                    creatorUuid: creatorUuid,
-                    transaction: writeTx)
-
-                // Only notify if the message we updated had no participants
-                if wasOldMessageEmpty {
-                    self.postUserNotificationIfNecessary(message: currentMessage, transaction: writeTx)
-                }
-
-            } else if !info.joinedMembers.isEmpty {
-                let newMessage = OWSGroupCallMessage(
-                    eraId: currentEraId,
-                    joinedMemberUuids: info.joinedMembers,
-                    creatorUuid: creatorUuid,
-                    thread: thread,
-                    sentAtTimestamp: timestamp)
-                newMessage.anyInsert(transaction: writeTx)
-                self.postUserNotificationIfNecessary(message: newMessage, transaction: writeTx)
-            }
-        }
-    }
-
-    fileprivate func insertPlaceholderGroupCallMessageIfNecessary(eraId: String, timestamp: UInt64, thread: TSGroupThread) {
-        databaseStorage.write { writeTx in
-            guard !GRDBInteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
-
-            Logger.info("Inserting placeholder group call message with eraId: \(eraId)")
-            let message = OWSGroupCallMessage(eraId: eraId, joinedMemberUuids: [], creatorUuid: nil, thread: thread, sentAtTimestamp: timestamp)
-            message.anyInsert(transaction: writeTx)
+        DispatchQueue.main.async {
+            self.callManagerLite.peekCallAndUpdateThread(
+                thread,
+                expectedEraId: expectedEraId,
+                triggerEventTimestamp: triggerEventTimestamp,
+                completion: completion)
         }
     }
 

@@ -121,10 +121,19 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     public func receivedGroupCallUpdateMessage(
-        _ update: SSKProtoDataMessageGroupCallUpdate,
+        _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
         for groupThread: TSGroupThread,
-        serverReceivedTimestamp: UInt64) {
-            // TODO: Let's fix this soon, but for now let's just ignore to unblock iOS 15
-            Logger.warn("Ignoring group call update message delivered to NSE")
+        serverReceivedTimestamp: UInt64,
+        completion: @escaping () -> Void
+    ) {
+        Logger.info("Received group call update for thread \(groupThread.uniqueId)")
+
+        DispatchQueue.global().async {
+            self.lightweightCallManager?.peekCallAndUpdateThread(
+                groupThread,
+                expectedEraId: updateMessage.eraID,
+                triggerEventTimestamp: serverReceivedTimestamp,
+                completion: completion)
+        }
     }
 }

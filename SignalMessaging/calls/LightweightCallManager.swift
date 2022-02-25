@@ -6,7 +6,7 @@ import SignalServiceKit
 import SignalRingRTC
 
 @objc
-public class LightweightCallManager: NSObject, CallManagerLiteDelegate, Dependencies {
+public class LightweightCallManager: NSObject, Dependencies {
 
     public let managerLite: CallManagerLite
     private var sfuUrl: String { DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL }
@@ -15,6 +15,106 @@ public class LightweightCallManager: NSObject, CallManagerLiteDelegate, Dependen
         managerLite = CallManagerLite()
         super.init()
         managerLite.delegate = self
+    }
+
+    @objc
+    public func peekCallAndUpdateThread(
+        _ thread: TSGroupThread,
+        expectedEraId: String? = nil,
+        triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
+        completion: (() -> Void)? = nil
+    ) {
+        guard RemoteConfig.groupCalling, thread.isLocalUserFullMember else { return }
+
+        if let expectedEraId = expectedEraId {
+            // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
+            // If it's the current call, we'll update with the PeekInfo once fetched
+            // Otherwise, it'll be marked as ended as soon as we complete the fetch
+            // If we fail to fetch, the entry will be kept around until the next PeekInfo fetch completes.
+            self.insertPlaceholderGroupCallMessageIfNecessary(
+                eraId: expectedEraId,
+                timestamp: triggerEventTimestamp,
+                thread: thread)
+        }
+
+        firstly {
+            fetchPeekInfo(for: thread)
+        }.done { info in
+            // We only want to update the call message with the participants of the peekInfo if the peek's
+            // era matches the era for the expected message. This wouldn't be the case if say, a device starts
+            // fetching a whole batch of messages offline and it includes the group call signaling messages from
+            // two different eras.
+            if expectedEraId == nil || info.eraId == nil || expectedEraId == info.eraId {
+                Logger.info("Applying group call PeekInfo for thread: \(thread.uniqueId) eraId: \(info.eraId ?? "(null)")")
+                self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
+            } else {
+                Logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
+            }
+        }.ensure {
+            completion?()
+        }.catch(on: .global()) { error in
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
+            } else {
+                owsFailDebug("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
+            }
+        }
+    }
+
+    public func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) {
+        databaseStorage.write { writeTx in
+            let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
+
+            // Any call in our database that hasn't ended yet that doesn't match the current era
+            // must have ended by definition. We do that update now.
+            results
+                .filter { $0.eraId != info.eraId }
+                .forEach { toExpire in
+                    toExpire.update(withHasEnded: true, transaction: writeTx)
+                }
+
+            // Update the message for the current era if it exists, or insert a new one.
+            guard let currentEraId = info.eraId, let creatorUuid = info.creator else {
+                Logger.info("No active call")
+                return
+            }
+            let currentEraMessages = results.filter { $0.eraId == currentEraId }
+            owsAssertDebug(currentEraMessages.count <= 1)
+
+            if let currentMessage = currentEraMessages.first {
+                let wasOldMessageEmpty = currentMessage.joinedMemberUuids?.count == 0 && !currentMessage.hasEnded
+
+                currentMessage.update(
+                    withJoinedMemberUuids: info.joinedMembers,
+                    creatorUuid: creatorUuid,
+                    transaction: writeTx)
+
+                // Only notify if the message we updated had no participants
+                if wasOldMessageEmpty {
+                    self.postUserNotificationIfNecessary(groupCallMessage: currentMessage, transaction: writeTx)
+                }
+
+            } else if !info.joinedMembers.isEmpty {
+                let newMessage = OWSGroupCallMessage(
+                    eraId: currentEraId,
+                    joinedMemberUuids: info.joinedMembers,
+                    creatorUuid: creatorUuid,
+                    thread: thread,
+                    sentAtTimestamp: timestamp)
+                newMessage.anyInsert(transaction: writeTx)
+                self.postUserNotificationIfNecessary(groupCallMessage: newMessage, transaction: writeTx)
+            }
+        }
+    }
+
+    fileprivate func insertPlaceholderGroupCallMessageIfNecessary(eraId: String, timestamp: UInt64, thread: TSGroupThread) {
+        databaseStorage.write { writeTx in
+            guard !GRDBInteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
+
+            Logger.info("Inserting placeholder group call message with eraId: \(eraId)")
+            let message = OWSGroupCallMessage(eraId: eraId, joinedMemberUuids: [], creatorUuid: nil, thread: thread, sentAtTimestamp: timestamp)
+            message.anyInsert(transaction: writeTx)
+        }
     }
 
     public func fetchPeekInfo(for thread: TSGroupThread) -> Promise<PeekInfo> {
@@ -32,7 +132,24 @@ public class LightweightCallManager: NSObject, CallManagerLiteDelegate, Dependen
         }
     }
 
+    fileprivate func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+        // The message must have at least one participant
+        guard (groupCallMessage.joinedMemberUuids?.count ?? 0) > 0 else { return }
+        guard let thread = TSGroupThread.anyFetch(uniqueId: groupCallMessage.uniqueThreadId, transaction: transaction) else {
+            owsFailDebug("Unknown thread")
+            return
+        }
+        Self.notificationPresenter?.notifyUser(forPreviewableInteraction: groupCallMessage,
+                                               thread: thread,
+                                               wantsSound: true,
+                                               transaction: transaction)
+    }
+}
 
+extension LightweightCallManager {
+
+    /// Fetches a data blob that serves as proof of membership in the group
+    /// Used by RingRTC to verify access to group call information
     public func fetchGroupMembershipProof(for thread: TSGroupThread) -> Promise<Data> {
         guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
             owsFailDebug("unexpectedly missing group model")
@@ -49,6 +166,33 @@ public class LightweightCallManager: NSObject, CallManagerLiteDelegate, Dependen
         }
     }
 
+    public func groupMemberInfo(for thread: TSGroupThread, transaction: SDSAnyReadTransaction) throws -> [GroupMemberInfo] {
+        // Make sure we're working with the latest group state.
+        thread.anyReload(transaction: transaction)
+
+        guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
+            throw OWSAssertionError("Invalid group thread")
+        }
+        let groupV2Params = try groupModel.groupV2Params()
+
+        return thread.groupMembership.fullMembers.compactMap {
+            guard let uuid = $0.uuid else {
+                owsFailDebug("Skipping group member, missing uuid")
+                return nil
+            }
+            guard let uuidCipherText = try? groupV2Params.userId(forUuid: uuid) else {
+                owsFailDebug("Skipping group member, missing uuidCipherText")
+                return nil
+            }
+
+            return GroupMemberInfo(userId: uuid, userIdCipherText: uuidCipherText)
+        }
+    }
+}
+
+// MARK: - <CallManagerLiteDelegate>
+
+extension LightweightCallManager: CallManagerLiteDelegate {
     /**
      * A HTTP request should be sent to the given url.
      * Invoked on the main thread, asychronously.
@@ -100,30 +244,9 @@ public class LightweightCallManager: NSObject, CallManagerLiteDelegate, Dependen
             callManagerLite.httpRequestFailed(requestId: requestId)
         }
     }
-
-    public func groupMemberInfo(for thread: TSGroupThread, transaction: SDSAnyReadTransaction) throws -> [GroupMemberInfo] {
-        // Make sure we're working with the latest group state.
-        thread.anyReload(transaction: transaction)
-
-        guard let groupModel = thread.groupModel as? TSGroupModelV2 else {
-            throw OWSAssertionError("Invalid group thread")
-        }
-        let groupV2Params = try groupModel.groupV2Params()
-
-        return thread.groupMembership.fullMembers.compactMap {
-            guard let uuid = $0.uuid else {
-                owsFailDebug("Skipping group member, missing uuid")
-                return nil
-            }
-            guard let uuidCipherText = try? groupV2Params.userId(forUuid: uuid) else {
-                owsFailDebug("Skipping group member, missing uuidCipherText")
-                return nil
-            }
-
-            return GroupMemberInfo(userId: uuid, userIdCipherText: uuidCipherText)
-        }
-    }
 }
+
+// MARK: - Helpers
 
 extension CallManagerHttpMethod {
     var httpMethod: HTTPMethod {
