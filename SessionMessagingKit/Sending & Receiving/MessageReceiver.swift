@@ -125,6 +125,7 @@ public enum MessageReceiver {
             if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
             if let configurationMessage = ConfigurationMessage.fromProto(proto) { return configurationMessage }
             if let unsendRequest = UnsendRequest.fromProto(proto) { return unsendRequest }
+            if let messageRequestResponse = MessageRequestResponse.fromProto(proto) { return messageRequestResponse }
             if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
             return nil
         }()

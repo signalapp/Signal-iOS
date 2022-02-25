@@ -36,6 +36,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         UIView.animate(withDuration: 0.25, animations: {
             self.blockedBanner.alpha = 0
         }, completion: { _ in
+            if let contact: Contact = Storage.shared.getContact(with: publicKey) {
+                Storage.shared.write { transaction in
+                    contact.isBlocked = false
+                    Storage.shared.setContact(contact, using: transaction)
+                }
+            }
+            
             OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
         })
     }
@@ -217,9 +224,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func sendMessage(hasPermissionToSendSeed: Bool = false) {
         guard !showBlockedModalIfNeeded() else { return }
+        
         let text = replaceMentions(in: snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines))
         let thread = self.thread
+        
         guard !text.isEmpty else { return }
+        
         if text.contains(mnemonic) && !thread.isNoteToSelf() && !hasPermissionToSendSeed {
             // Warn the user if they're about to send their seed to someone
             let modal = SendSeedModal()
@@ -228,28 +238,55 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             modal.proceed = { self.sendMessage(hasPermissionToSendSeed: true) }
             return present(modal, animated: true, completion: nil)
         }
-        let message = VisibleMessage()
-        message.sentTimestamp = NSDate.millisecondTimestamp()
+        
+        let sentTimestamp: UInt64 = NSDate.millisecondTimestamp()
+        let message: VisibleMessage = VisibleMessage()
+        message.sentTimestamp = sentTimestamp
         message.text = text
         message.quote = VisibleMessage.Quote.from(snInputView.quoteDraftInfo?.model)
+        
+        // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
+        // use it to determine if the user is creating a new thread and update the 'isApproved'
+        // flags appropriately
+        let oldThreadShouldBeVisible: Bool = thread.shouldBeVisible
         let linkPreviewDraft = snInputView.linkPreviewInfo?.draft
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
+        
         viewModel.appendUnsavedOutgoingTextMessage(tsMessage)
+        
         Storage.write(with: { transaction in
             message.linkPreview = VisibleMessage.LinkPreview.from(linkPreviewDraft, using: transaction)
         }, completion: { [weak self] in
             tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
-            Storage.shared.write(with: { transaction in
-                tsMessage.save(with: transaction as! YapDatabaseReadWriteTransaction)
-            }, completion: { [weak self] in
-                // At this point the TSOutgoingMessage should have its link preview set, so we can scroll to the bottom knowing
-                // the height of the new message cell
-                self?.scrollToBottom(isAnimated: false)
-            })
-            Storage.shared.write { transaction in
-                MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
-            }
-            self?.handleMessageSent()
+            
+            Storage.shared.write(
+                with: { transaction in
+                    tsMessage.save(with: transaction as! YapDatabaseReadWriteTransaction)
+                },
+                completion: { [weak self] in
+                    // At this point the TSOutgoingMessage should have its link preview set, so we can scroll to the bottom knowing
+                    // the height of the new message cell
+                    self?.scrollToBottom(isAnimated: false)
+                }
+            )
+            
+            Storage.shared.write(
+                with: { transaction in
+                    self?.approveMessageRequestIfNeeded(
+                        for: self?.thread,
+                        with: (transaction as! YapDatabaseReadWriteTransaction),
+                        isNewThread: !oldThreadShouldBeVisible,
+                        timestamp: (sentTimestamp - 1)  // Set 1ms earlier as this is used for sorting
+                    )
+                },
+                completion: { [weak self] in
+                    Storage.shared.write { transaction in
+                        MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
+                    }
+                    
+                    self?.handleMessageSent()
+                }
+            )
         })
     }
 
@@ -287,6 +324,21 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         resetMentions()
         self.snInputView.text = ""
         self.snInputView.quoteDraftInfo = nil
+        
+        // Update the input state if this is a contact thread
+        if let contactThread: TSContactThread = thread as? TSContactThread {
+            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            
+            // If the contact doesn't exist yet then it's a message request without the first message sent
+            // so only allow text-based messages
+            self.snInputView.setEnabledMessageTypes(
+                (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
+                    .all : .textOnly
+                ),
+                message: nil
+            )
+        }
+        
         self.markAllAsRead()
         if Environment.shared.preferences.soundInForeground() {
             let soundID = OWSSounds.systemSoundID(for: .messageSent, quiet: true)
@@ -1005,5 +1057,155 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 extension ConversationVC: UIDocumentInteractionControllerDelegate {
     func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
         return self
+    }
+}
+
+// MARK: - Message Request Actions
+
+extension ConversationVC {
+    @objc func handleBackPressed() {
+        // If this thread started as a message request but isn't one anymore then we want to skip the
+        // `MessageRequestsViewController` when going back
+        guard
+            threadStartedAsMessageRequest,
+            !thread.isMessageRequest(),
+            let viewControllers: [UIViewController] = navigationController?.viewControllers,
+            let messageRequestsIndex = viewControllers.firstIndex(where: { $0 is MessageRequestsViewController }),
+            messageRequestsIndex > 0
+        else {
+            navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        navigationController?.popToViewController(viewControllers[messageRequestsIndex - 1], animated: true)
+    }
+    
+    fileprivate func approveMessageRequestIfNeeded(for thread: TSThread?, with transaction: YapDatabaseReadWriteTransaction, isNewThread: Bool, timestamp: UInt64) {
+        guard let contactThread: TSContactThread = thread as? TSContactThread else { return }
+        
+        // If the contact doesn't exist then we should create it so we can store the 'isApproved' state
+        // (it'll be updated with correct profile info if they accept the message request so this
+        // shouldn't cause weird behaviours)
+        let sessionId: String = contactThread.contactSessionID()
+        let contact: Contact = (Storage.shared.getContact(with: sessionId) ?? Contact(sessionID: sessionId))
+        
+        if !contact.isApproved {
+            // Default 'didApproveMe' to true for the person approving the message request
+            contact.isApproved = true
+            contact.didApproveMe = (contact.didApproveMe || !isNewThread)
+            Storage.shared.setContact(contact, using: transaction)
+            
+            // If we aren't creating a new thread (ie. sending a message request) then send a
+            // messageRequestResponse back to the sender (this allows the sender to know that
+            // they have been approved and can now use this contact in closed groups)
+            if !isNewThread {
+                let messageRequestResponse: MessageRequestResponse = MessageRequestResponse(
+                    isApproved: true
+                )
+                messageRequestResponse.sentTimestamp = timestamp
+                
+                MessageSender.send(messageRequestResponse, in: contactThread, using: transaction)
+            }
+            
+            // Hide the 'messageRequestView' since the request has been approved and force a config
+            // sync to propagate the contact approval state (both must run on the main thread)
+            DispatchQueue.main.async { [weak self] in
+                let messageRequestViewWasVisible: Bool = (self?.messageRequestView.isHidden == false)
+                
+                UIView.animate(withDuration: 0.3) {
+                    self?.messageRequestView.isHidden = true
+                    self?.scrollButtonMessageRequestsBottomConstraint?.isActive = false
+                    self?.scrollButtonBottomConstraint?.isActive = true
+                    
+                    // Update the table content inset and offset to account for the dissapearance of
+                    // the messageRequestsView
+                    if messageRequestViewWasVisible {
+                        let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
+                        let oldContentInset: UIEdgeInsets = (self?.messagesTableView.contentInset ?? UIEdgeInsets.zero)
+                        self?.messagesTableView.contentInset = UIEdgeInsets(
+                            top: 0,
+                            leading: 0,
+                            bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
+                            trailing: 0
+                        )
+                    }
+                }
+            
+                // Send a sync message with the details of the contact
+                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                    appDelegate.forceSyncConfigurationNowIfNeeded(with: transaction).retainUntilComplete()
+                }
+            }
+        }
+    }
+    
+    @objc func acceptMessageRequest() {
+        Storage.write { [weak self] transaction in
+            self?.approveMessageRequestIfNeeded(
+                for: self?.thread,
+                with: transaction,
+                isNewThread: false,
+                timestamp: NSDate.millisecondTimestamp()
+            )
+        }
+    }
+    
+    @objc func deleteMessageRequest() {
+        guard let uniqueId: String = thread.uniqueId else { return }
+        
+        let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON", comment: ""), message: nil, preferredStyle: .actionSheet)
+        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
+            // Delete the request
+            Storage.write(
+                with: { [weak self] transaction in
+                    Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+                    
+                    // Update the contact
+                    if let contactThread: TSContactThread = self?.thread as? TSContactThread {
+                        let sessionId: String = contactThread.contactSessionID()
+                        
+                        if let contact: Contact = Storage.shared.getContact(with: sessionId) {
+                            contact.isApproved = false
+                            contact.isBlocked = true
+                            
+                            // Note: We set this to true so the current user will be able to send a
+                            // message to the person who originally sent them the message request in
+                            // the future if they unblock them
+                            contact.didApproveMe = true
+                            
+                            Storage.shared.setContact(contact, using: transaction)
+                        }
+                    }
+                    
+                    // Delete all thread content
+                    self?.thread.removeAllThreadInteractions(with: transaction)
+                    self?.thread.remove(with: transaction)
+                },
+                completion: { [weak self] in
+                    // Block the contact
+                    if let sessionId: String = (self?.thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
+                        
+                        // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
+                        // so showing the banner just looks buggy)
+                        if let strongSelf = self {
+                            NotificationCenter.default.removeObserver(strongSelf, name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
+                        }
+                        
+                        OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
+                    }
+                    
+                    // Force a config sync and pop to the previous screen (both must run on the main thread)
+                    DispatchQueue.main.async {
+                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                            appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+                        }
+                        
+                        self?.navigationController?.popViewController(animated: true)
+                    }
+                }
+            )
+        })
+        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
+        self.present(alertVC, animated: true, completion: nil)
     }
 }

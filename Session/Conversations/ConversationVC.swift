@@ -1,3 +1,5 @@
+import SessionUIKit
+import SessionMessagingKit
 
 // TODO:
 // • Slight paging glitch when scrolling up and loading more content
@@ -6,10 +8,13 @@
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     let thread: TSThread
+    let threadStartedAsMessageRequest: Bool
     let focusedMessageID: String? // This is used for global search
     var focusedMessageIndexPath: IndexPath?
     var unreadViewItems: [ConversationViewItem] = []
-    var scrollButtonConstraint: NSLayoutConstraint?
+    var scrollButtonBottomConstraint: NSLayoutConstraint?
+    var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
+    var messageRequestsViewBotomConstraint: NSLayoutConstraint?
     // Search
     var isShowingSearchUI = false
     var lastSearchedText: String?
@@ -92,7 +97,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return result
     }()
     
-    // MARK: UI Components
+    // MARK: - UI
+    
+    private static let messageRequestButtonHeight: CGFloat = 34
+    
     lazy var titleView: ConversationTitleView = {
         let result = ConversationTitleView(thread: thread)
         result.delegate = self
@@ -100,13 +108,21 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }()
 
     lazy var messagesTableView: MessagesTableView = {
-        let result = MessagesTableView()
+        let result: MessagesTableView = MessagesTableView()
         result.dataSource = self
         result.delegate = self
+        result.contentInsetAdjustmentBehavior = .never
+        result.contentInset = UIEdgeInsets(
+            top: 0,
+            leading: 0,
+            bottom: Values.mediumSpacing,
+            trailing: 0
+        )
+        
         return result
     }()
     
-    lazy var snInputView = InputView(delegate: self)
+    lazy var snInputView: InputView = InputView(delegate: self)
     
     lazy var unreadCountView: UIView = {
         let result = UIView()
@@ -127,8 +143,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return result
     }()
     
-    lazy var scrollButton = ScrollToBottomButton(delegate: self)
-    
     lazy var blockedBanner: InfoBanner = {
         let name: String
         if let thread = thread as? TSContactThread {
@@ -142,6 +156,104 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let result = InfoBanner(message: message, backgroundColor: Colors.destructive)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(unblock))
         result.addGestureRecognizer(tapGestureRecognizer)
+        return result
+    }()
+    
+    lazy var footerControlsStackView: UIStackView = {
+        let result: UIStackView = UIStackView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.axis = .vertical
+        result.alignment = .trailing
+        result.distribution = .equalSpacing
+        result.spacing = 10
+        result.layoutMargins = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        result.isLayoutMarginsRelativeArrangement = true
+        
+        return result
+    }()
+    
+    lazy var scrollButton = ScrollToBottomButton(delegate: self)
+    
+    lazy var messageRequestView: UIView = {
+        let result: UIView = UIView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.isHidden = !thread.isMessageRequest()
+        result.setGradient(Gradients.defaultBackground)
+        
+        return result
+    }()
+    
+    private let messageRequestDescriptionLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = UIFont.systemFont(ofSize: 12)
+        result.text = NSLocalizedString("MESSAGE_REQUESTS_INFO", comment: "")
+        result.textColor = Colors.sessionMessageRequestsInfoText
+        result.textAlignment = .center
+        result.numberOfLines = 2
+        
+        return result
+    }()
+    
+    private let messageRequestAcceptButton: UIButton = {
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        result.setTitle(NSLocalizedString("TXT_DELETE_ACCEPT", comment: ""), for: .normal)
+        result.setTitleColor(Colors.sessionHeading, for: .normal)
+        result.setBackgroundImage(
+            Colors.sessionHeading
+                .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
+                .toImage(isDarkMode: isDarkMode),
+            for: .highlighted
+        )
+        result.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
+        result.layer.borderColor = {
+            if #available(iOS 13.0, *) {
+                return Colors.sessionHeading
+                    .resolvedColor(
+                        // Note: This is needed for '.cgColor' to support dark mode
+                        with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
+                    ).cgColor
+            }
+            
+            return Colors.sessionHeading.cgColor
+        }()
+        result.layer.borderWidth = 1
+        result.addTarget(self, action: #selector(acceptMessageRequest), for: .touchUpInside)
+        
+        return result
+    }()
+    
+    private let messageRequestDeleteButton: UIButton = {
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        result.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: .normal)
+        result.setTitleColor(Colors.destructive, for: .normal)
+        result.setBackgroundImage(
+            Colors.destructive
+                .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
+                .toImage(isDarkMode: isDarkMode),
+            for: .highlighted
+        )
+        result.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
+        result.layer.borderColor = {
+            if #available(iOS 13.0, *) {
+                return Colors.destructive
+                    .resolvedColor(
+                        // Note: This is needed for '.cgColor' to support dark mode
+                        with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
+                    ).cgColor
+            }
+            
+            return Colors.destructive.cgColor
+        }()
+        result.layer.borderWidth = 1
+        result.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
+        
         return result
     }()
     
@@ -161,6 +273,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     // MARK: Lifecycle
     init(thread: TSThread, focusedMessageID: String? = nil) {
         self.thread = thread
+        self.threadStartedAsMessageRequest = thread.isMessageRequest()
         self.focusedMessageID = focusedMessageID
         super.init(nibName: nil, bundle: nil)
         var unreadCount: UInt = 0
@@ -186,9 +299,49 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // Constraints
         view.addSubview(messagesTableView)
         messagesTableView.pin(to: view)
+        
+        // Blocked banner
+        addOrRemoveBlockedBanner()
+        
+        // Message requests view & scroll to bottom
         view.addSubview(scrollButton)
-        scrollButton.pin(.right, to: .right, of: view, withInset: -16)
-        scrollButtonConstraint = scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -16)
+        view.addSubview(messageRequestView)
+        
+        messageRequestView.addSubview(messageRequestDescriptionLabel)
+        messageRequestView.addSubview(messageRequestAcceptButton)
+        messageRequestView.addSubview(messageRequestDeleteButton)
+        
+        scrollButton.pin(.right, to: .right, of: view, withInset: -20)
+        messageRequestView.pin(.left, to: .left, of: view)
+        messageRequestView.pin(.right, to: .right, of: view)
+        self.messageRequestsViewBotomConstraint = messageRequestView.pin(.bottom, to: .bottom, of: view, withInset: -16)
+        self.scrollButtonBottomConstraint = scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -16)
+        self.scrollButtonBottomConstraint?.isActive = false // Note: Need to disable this to avoid a conflict with the other bottom constraint
+        self.scrollButtonMessageRequestsBottomConstraint = scrollButton.pin(.bottom, to: .top, of: messageRequestView, withInset: -16)
+        self.scrollButtonMessageRequestsBottomConstraint?.isActive = thread.isMessageRequest()
+        self.scrollButtonBottomConstraint?.isActive = !thread.isMessageRequest()
+        
+        messageRequestDescriptionLabel.pin(.top, to: .top, of: messageRequestView, withInset: 10)
+        messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
+        messageRequestDescriptionLabel.pin(.right, to: .right, of: messageRequestView, withInset: -40)
+        
+        messageRequestAcceptButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
+        messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
+        messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
+        messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
+        
+        messageRequestAcceptButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
+        messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
+        messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
+        messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
+        
+        messageRequestDeleteButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
+        messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: 20)
+        messageRequestDeleteButton.pin(.right, to: .right, of: messageRequestView, withInset: -20)
+        messageRequestDeleteButton.pin(.bottom, to: .bottom, of: messageRequestView)
+        messageRequestDeleteButton.set(.width, to: .width, of: messageRequestAcceptButton)
+        messageRequestDeleteButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
+        
         // Unread count view
         view.addSubview(unreadCountView)
         unreadCountView.addSubview(unreadCountLabel)
@@ -199,8 +352,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         unreadCountView.centerYAnchor.constraint(equalTo: scrollButton.topAnchor).isActive = true
         unreadCountView.center(.horizontal, in: scrollButton)
         updateUnreadCountView()
-        // Blocked banner
-        addOrRemoveBlockedBanner()
+        
         // Notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -220,6 +372,21 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         if !draft.isEmpty {
             snInputView.text = draft
         }
+        
+        // Update the input state if this is a contact thread
+        if let contactThread: TSContactThread = thread as? TSContactThread {
+            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            
+            // If the contact doesn't exist yet then it's a message request without the first message sent
+            // so only allow text-based messages
+            self.snInputView.setEnabledMessageTypes(
+                (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
+                    .all : .textOnly
+                ),
+                message: nil
+            )
+        }
+        
         // Update member count if this is a V2 open group
         if let v2OpenGroup = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
             OpenGroupAPIV2.getMemberCount(for: v2OpenGroup.room, on: v2OpenGroup.server).retainUntilComplete()
@@ -296,11 +463,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     // MARK: Updating
+    
     func updateNavBarButtons() {
-        navigationItem.hidesBackButton = isShowingSearchUI
         if isShowingSearchUI {
+            navigationItem.leftBarButtonItem = nil
             navigationItem.rightBarButtonItems = []
         } else {
+            navigationItem.leftBarButtonItem = UIViewController.createOWSBackButton(withTarget: self, selector: #selector(handleBackPressed))
+            
             let rightBarButtonItem: UIBarButtonItem
             if thread is TSContactThread {
                 let size = Values.verySmallProfilePictureSize
@@ -330,24 +500,96 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
-        guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
-        if (newHeight > 0 && baselineKeyboardHeight == 0) {
-            baselineKeyboardHeight = newHeight
-            self.messagesTableView.keyboardHeight = newHeight
+        // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
+        // and https://stackoverflow.com/a/25260930 to better understand what we are
+        // doing with the UIViewAnimationOptions
+        let userInfo: [AnyHashable: Any] = (notification.userInfo ?? [:])
+        let duration = ((userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval) ?? 0)
+        let curveValue: Int = ((userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int) ?? Int(UIView.AnimationOptions.curveEaseInOut.rawValue))
+        let options: UIView.AnimationOptions = UIView.AnimationOptions(rawValue: UInt(curveValue << 16))
+        let keyboardRect: CGRect = ((userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect) ?? CGRect.zero)
+        
+        // Calculate new positions (Need the ensure the 'messageRequestView' has been layed out as it's
+        // needed for proper calculations, so force an initial layout if it doesn't have a size)
+        var hasDoneLayout: Bool = true
+        
+        if messageRequestView.bounds.height <= CGFloat.leastNonzeroMagnitude {
+            hasDoneLayout = false
+            
+            UIView.performWithoutAnimation {
+                self.view.layoutIfNeeded()
+            }
         }
-        scrollButtonConstraint?.constant = -(newHeight + 16)
-        let newContentOffsetY = max(self.messagesTableView.contentOffset.y + min(lastPageTop, 0) + newHeight - self.messagesTableView.keyboardHeight, 0.0)
-        self.messagesTableView.contentOffset.y = newContentOffsetY
-        self.messagesTableView.keyboardHeight = newHeight
-        self.scrollButton.alpha = self.getScrollButtonOpacity()
+        
+        let keyboardTop = (UIScreen.main.bounds.height - keyboardRect.minY)
+        let messageRequestsOffset: CGFloat = (messageRequestView.isHidden ? 0 : messageRequestView.bounds.height + 16)
+        let oldContentInset: UIEdgeInsets = messagesTableView.contentInset
+        let newContentInset: UIEdgeInsets = UIEdgeInsets(
+            top: 0,
+            leading: 0,
+            bottom: (Values.mediumSpacing + keyboardTop + messageRequestsOffset),
+            trailing: 0
+        )
+        let newContentOffsetY: CGFloat = (messagesTableView.contentOffset.y + (newContentInset.bottom - oldContentInset.bottom))
+        let changes = { [weak self] in
+            self?.scrollButtonBottomConstraint?.constant = -(keyboardTop + 16)
+            self?.messageRequestsViewBotomConstraint?.constant = -(keyboardTop + 16)
+            self?.messagesTableView.contentInset = newContentInset
+            self?.messagesTableView.contentOffset.y = newContentOffsetY
+            
+            let scrollButtonOpacity: CGFloat = (self?.getScrollButtonOpacity() ?? 0)
+            self?.scrollButton.alpha = scrollButtonOpacity
+            
+            self?.view.setNeedsLayout()
+            self?.view.layoutIfNeeded()
+        }
+        
+        // Perform the changes (don't animate if the initial layout hasn't been completed)
+        guard hasDoneLayout else {
+            UIView.performWithoutAnimation {
+                changes()
+            }
+            return
+        }
+        
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            options: options,
+            animations: changes,
+            completion: nil
+        )
     }
     
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
-        self.messagesTableView.contentOffset.y -= (self.messagesTableView.keyboardHeight - self.baselineKeyboardHeight)
-        self.messagesTableView.keyboardHeight = self.baselineKeyboardHeight
-        scrollButtonConstraint?.constant = -(self.baselineKeyboardHeight + 16)
-        self.scrollButton.alpha = self.getScrollButtonOpacity()
-        self.unreadCountView.alpha = self.scrollButton.alpha
+        // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
+        // and https://stackoverflow.com/a/25260930 to better understand what we are
+        // doing with the UIViewAnimationOptions
+        let userInfo: [AnyHashable: Any] = (notification.userInfo ?? [:])
+        let duration = ((userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval) ?? 0)
+        let curveValue: Int = ((userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int) ?? Int(UIView.AnimationOptions.curveEaseInOut.rawValue))
+        let options: UIView.AnimationOptions = UIView.AnimationOptions(rawValue: UInt(curveValue << 16))
+        
+        let keyboardRect: CGRect = ((userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect) ?? CGRect.zero)
+        let keyboardTop = (UIScreen.main.bounds.height - keyboardRect.minY)
+        
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            options: options,
+            animations: { [weak self] in
+                self?.scrollButtonBottomConstraint?.constant = -(keyboardTop + 16)
+                self?.messageRequestsViewBotomConstraint?.constant = -(keyboardTop + 16)
+                
+                let scrollButtonOpacity: CGFloat = (self?.getScrollButtonOpacity() ?? 0)
+                self?.scrollButton.alpha = scrollButtonOpacity
+                self?.unreadCountView.alpha = scrollButtonOpacity
+                
+                self?.view.setNeedsLayout()
+                self?.view.layoutIfNeeded()
+            },
+            completion: nil
+        )
     }
     
     func conversationViewModelWillUpdate() {
@@ -391,6 +633,20 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             if shouldScrollToBottom {
                 self.scrollToBottom(isAnimated: false)
             }
+        }
+        
+        // Update the input state if this is a contact thread
+        if let contactThread: TSContactThread = thread as? TSContactThread {
+            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            
+            // If the contact doesn't exist yet then it's a message request without the first message sent
+            // so only allow text-based messages
+            self.snInputView.setEnabledMessageTypes(
+                (thread.isNoteToSelf() || contact?.didApproveMe == true || thread.isMessageRequest() ?
+                    .all : .textOnly
+                ),
+                message: nil
+            )
         }
     }
     
@@ -457,6 +713,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func markAllAsRead() {
+        guard !thread.isMessageRequest() else { return }
         guard let lastSortID = viewItems.last?.interaction.sortId else { return }
         OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: lastSortID, thread: thread)
         SSKEnvironment.shared.disappearingMessagesJob.cleanupMessagesWhichFailedToStartExpiringFromNow()

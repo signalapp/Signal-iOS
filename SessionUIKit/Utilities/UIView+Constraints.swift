@@ -97,6 +97,25 @@ public extension UIView {
     }
     
     @discardableResult
+    func set(_ dimension: Dimension, to otherDimension: Dimension, of view: UIView, withOffset offset: CGFloat = 0) -> NSLayoutConstraint {
+        translatesAutoresizingMaskIntoConstraints = false
+        let otherAnchor: NSLayoutAnchor<NSLayoutDimension> = {
+            switch otherDimension {
+                case .width: return view.widthAnchor
+                case .height: return view.heightAnchor
+            }
+        }()
+        let constraint: NSLayoutConstraint = {
+            switch dimension {
+                case .width: return widthAnchor.constraint(equalTo: otherAnchor, constant: offset)
+                case .height: return heightAnchor.constraint(equalTo: otherAnchor, constant: offset)
+            }
+        }()
+        constraint.isActive = true
+        return constraint
+    }
+    
+    @discardableResult
     func set(_ dimension: Dimension, greaterThanOrEqualTo size: CGFloat) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint: NSLayoutConstraint = {

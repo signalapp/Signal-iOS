@@ -98,6 +98,8 @@ final class InputViewButton : UIView {
     // We want to detect both taps and long presses
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard isUserInteractionEnabled else { return }
+        
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         expand()
         invalidateLongPressIfNeeded()
@@ -109,12 +111,16 @@ final class InputViewButton : UIView {
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard isUserInteractionEnabled else { return }
+        
         if isLongPress {
             delegate?.handleInputViewButtonLongPressMoved(self, with: touches.first!)
         }
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard isUserInteractionEnabled else { return }
+        
         collapse()
         if !isLongPress {
             delegate?.handleInputViewButtonTapped(self)

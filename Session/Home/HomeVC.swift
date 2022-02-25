@@ -7,6 +7,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
     private var tableViewTopConstraint: NSLayoutConstraint!
     
+    private var messageRequestCount: UInt {
+        threads.numberOfItems(inGroup: TSMessageRequestGroup)
+    }
+    
     private var threadCount: UInt {
         threads.numberOfItems(inGroup: TSInboxGroup)
     }
@@ -36,6 +40,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let result = UITableView()
         result.backgroundColor = .clear
         result.separatorStyle = .none
+        result.register(MessageRequestsCell.self, forCellReuseIdentifier: MessageRequestsCell.reuseIdentifier)
         result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
         let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
         result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
@@ -135,7 +140,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         notificationCenter.addObserver(self, selector: #selector(handleBlockedContactsUpdatedNotification(_:)), name: .blockedContactsUpdated, object: nil)
         notificationCenter.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
         // Threads (part 2)
-        threads = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
+        threads = YapDatabaseViewMappings(groups: [ TSMessageRequestGroup, TSInboxGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
         threads.setIsReversed(true, forGroup: TSInboxGroup)
         dbConnection.read { transaction in
             self.threads.update(with: transaction) // Perform the initial update
@@ -174,18 +179,42 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         NotificationCenter.default.removeObserver(self)
     }
     
-    // MARK: Table View Data Source
+    // MARK: - UITableViewDataSource
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Int(threadCount)
+        switch section {
+            case 0:
+                if messageRequestCount > 0 && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+                    return 1
+                }
+                
+                return 0
+                
+            case 1: return Int(threadCount)
+            default: return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
-        cell.threadViewModel = threadViewModel(at: indexPath.row)
-        return cell
+        switch indexPath.section {
+            case 0:
+                let cell = tableView.dequeueReusableCell(withIdentifier: MessageRequestsCell.reuseIdentifier) as! MessageRequestsCell
+                cell.update(with: Int(messageRequestCount))
+                return cell
+                
+            default:
+                let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
+                cell.threadViewModel = threadViewModel(at: indexPath.row)
+                return cell
+        }
     }
         
     // MARK: Updating
+    
     private func reload() {
         AssertIsOnMainThread()
         guard !isReloading else { return }
@@ -213,28 +242,94 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let notifications = dbConnection.beginLongLivedReadTransaction()
         guard !notifications.isEmpty else { return }
         let ext = dbConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
-        let hasChanges = ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
+        let hasChanges = (
+            ext.hasChanges(forGroup: TSMessageRequestGroup, in: notifications) ||
+            ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
+        )
+        
         guard hasChanges else { return }
+        
         if let firstChangeSet = notifications[0].userInfo {
             let firstSnapshot = firstChangeSet[YapDatabaseSnapshotKey] as! UInt64
+            
+            // The 'getSectionChanges' code below will crash if we try to process multiple commits at once
+            // so just force a full reload
             if threads.snapshotOfLastUpdate != firstSnapshot - 1 {
-                return reload() // The code below will crash if we try to process multiple commits at once
+                // Check if we inserted a new message request (if so then unhide the message request banner)
+                if
+                    let extensions: [String: Any] = firstChangeSet[YapDatabaseExtensionsKey] as? [String: Any],
+                    let viewExtensions: [String: Any] = extensions[TSThreadDatabaseViewExtensionName] as? [String: Any]
+                {
+                    // Note: We do a 'flatMap' here rather than explicitly grab the desired key because
+                    // the key we need is 'changeset_key_changes' in 'YapDatabaseViewPrivate.h' so could
+                    // change due to an update and silently break this - this approach is a bit safer
+                    let allChanges: [Any] = Array(viewExtensions.values).compactMap { $0 as? [Any] }.flatMap { $0 }
+                    let messageRequestInserts = allChanges
+                        .compactMap { $0 as? YapDatabaseViewRowChange }
+                        .filter { $0.finalGroup == TSMessageRequestGroup && $0.type == .insert }
+                    
+                    if !messageRequestInserts.isEmpty && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+                        CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
+                    }
+                }
+                
+                return reload()
             }
         }
+        
         var sectionChanges = NSArray()
         var rowChanges = NSArray()
         ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)
-        guard sectionChanges.count > 0 || rowChanges.count > 0 else { return }
+        
+        // Separate out the changes for new message requests and the inbox (so we can avoid updating for
+        // new messages within an existing message request)
+        let messageRequestChanges = rowChanges
+            .compactMap { $0 as? YapDatabaseViewRowChange }
+            .filter { $0.originalGroup == TSMessageRequestGroup || $0.finalGroup == TSMessageRequestGroup }
+        let inboxRowChanges = rowChanges
+            .compactMap { $0 as? YapDatabaseViewRowChange }
+            .filter { $0.originalGroup == TSInboxGroup || $0.finalGroup == TSInboxGroup }
+        
+        guard sectionChanges.count > 0 || inboxRowChanges.count > 0 || messageRequestChanges.count > 0 else { return }
+        
         tableView.beginUpdates()
-        rowChanges.forEach { rowChange in
-            let rowChange = rowChange as! YapDatabaseViewRowChange
+        
+        // If we need to unhide the message request row and then re-insert it
+        if !messageRequestChanges.isEmpty {
+            if tableView.numberOfRows(inSection: 0) == 1 && Int(messageRequestCount) <= 0 {
+                tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            }
+            else if tableView.numberOfRows(inSection: 0) == 0 && Int(messageRequestCount) > 0 && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+                tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            }
+        }
+        
+        inboxRowChanges.forEach { rowChange in
             let key = rowChange.collectionKey.key
             threadViewModelCache[key] = nil
+            
             switch rowChange.type {
-            case .delete: tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
-            case .insert: tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.automatic)
-            case .update: tableView.reloadRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
-            default: break
+                case .delete:
+                    tableView.deleteRows(at: [ rowChange.indexPath! ], with: .automatic)
+                    
+                case .insert:
+                    tableView.insertRows(at: [ rowChange.newIndexPath! ], with: .automatic)
+                    
+                case .update:
+                    tableView.reloadRows(at: [ rowChange.indexPath! ], with: .automatic)
+                    
+                case .move:
+                    // Note: We need to handle the move from the message requests section to the inbox (since
+                    // we are only showing a single row for message requests we need to custom handle this as
+                    // an insert as the change won't be defined correctly)
+                    if rowChange.originalGroup == TSMessageRequestGroup && rowChange.finalGroup == TSInboxGroup {
+                        tableView.insertRows(at: [ rowChange.newIndexPath! ], with: .automatic)
+                    }
+                    else if rowChange.originalGroup == TSInboxGroup && rowChange.finalGroup == TSMessageRequestGroup {
+                        tableView.deleteRows(at: [ rowChange.indexPath! ], with: .automatic)
+                    }
+                    
+                default: break
             }
         }
         tableView.endUpdates()
@@ -247,9 +342,18 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             let rowChange = rowChange as! YapDatabaseViewRowChange
             let key = rowChange.collectionKey.key
             threadViewModelCache[key] = nil
+            
             switch rowChange.type {
-            case .move: tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
-            default: break
+                case .move:
+                    // Since we are custom handling this specific movement in the above 'updates' call we need
+                    // to avoid trying to handle it here
+                    if rowChange.originalGroup == TSMessageRequestGroup || rowChange.finalGroup == TSMessageRequestGroup {
+                        return
+                    }
+                    
+                    tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
+                    
+                default: break
             }
         }
         tableView.endUpdates()
@@ -318,17 +422,102 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         tableView.reloadData()
     }
     
-    // MARK: Interaction
+    // MARK: - UITableViewDelegate
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        switch indexPath.section {
+            case 0:
+                let viewController: MessageRequestsViewController = MessageRequestsViewController()
+                self.navigationController?.pushViewController(viewController, animated: true)
+                return
+                
+            default:
+                guard let thread = self.thread(at: indexPath.row) else { return }
+                show(thread, with: ConversationViewAction.none, highlightedMessageID: nil, animated: true)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        switch indexPath.section {
+            case 0:
+                let hide = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_HIDE_TITLE", comment: "")) { [weak self] _, _ in
+                    CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = true
+
+                    // Animate the row removal
+                    self?.tableView.beginUpdates()
+                    self?.tableView.deleteRows(at: [indexPath], with: .automatic)
+                    self?.tableView.endUpdates()
+                }
+                hide.backgroundColor = Colors.destructive
+                
+                return [hide]
+                
+            default:
+                guard let thread = self.thread(at: indexPath.row) else { return [] }
+                let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
+                    var message = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: "")
+                    if let thread = thread as? TSGroupThread, thread.isClosedGroup, thread.groupModel.groupAdminIds.contains(getUserHexEncodedPublicKey()) {
+                        message = NSLocalizedString("admin_group_leave_warning", comment: "")
+                    }
+                    let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: message, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { [weak self] _ in
+                        self?.delete(thread)
+                    })
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .default) { _ in })
+                    guard let self = self else { return }
+                    self.present(alert, animated: true, completion: nil)
+                }
+                delete.backgroundColor = Colors.destructive
+                
+                let isPinned = thread.isPinned
+                let pin = UITableViewRowAction(style: .normal, title: NSLocalizedString("PIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
+                    thread.isPinned = true
+                    thread.save()
+                    self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
+                    tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                }
+                pin.backgroundColor = Colors.pathsBuilding
+                let unpin = UITableViewRowAction(style: .normal, title: NSLocalizedString("UNPIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
+                    thread.isPinned = false
+                    thread.save()
+                    self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
+                    tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                }
+                unpin.backgroundColor = Colors.pathsBuilding
+                
+                if let thread = thread as? TSContactThread {
+                    let publicKey = thread.contactSessionID()
+                    let blockingManager = SSKEnvironment.shared.blockingManager
+                    let isBlocked = blockingManager.isRecipientIdBlocked(publicKey)
+                    let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in
+                        blockingManager.addBlockedPhoneNumber(publicKey)
+                        tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                    }
+                    block.backgroundColor = Colors.unimportant
+                    let unblock = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "")) { _, _ in
+                        blockingManager.removeBlockedPhoneNumber(publicKey)
+                        tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                    }
+                    unblock.backgroundColor = Colors.unimportant
+                    return [ delete, (isBlocked ? unblock : block), (isPinned ? unpin : pin) ]
+                } else {
+                    return [ delete, (isPinned ? unpin : pin) ]
+                }
+        }
+    }
+    
+    // MARK: - Interaction
+    
     func handleContinueButtonTapped(from seedReminderView: SeedReminderView) {
         let seedVC = SeedVC()
         let navigationController = OWSNavigationController(rootViewController: seedVC)
         present(navigationController, animated: true, completion: nil)
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let thread = self.thread(at: indexPath.row) else { return }
-        show(thread, with: ConversationViewAction.none, highlightedMessageID: nil, animated: true)
-        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     @objc func show(_ thread: TSThread, with action: ConversationViewAction, highlightedMessageID: String?, animated: Bool) {
@@ -338,63 +527,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             }
             let conversationVC = ConversationVC(thread: thread)
             self.navigationController?.setViewControllers([ self, conversationVC ], animated: true)
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        guard let thread = self.thread(at: indexPath.row) else { return [] }
-        let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
-            var message = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: "")
-            if let thread = thread as? TSGroupThread, thread.isClosedGroup, thread.groupModel.groupAdminIds.contains(getUserHexEncodedPublicKey()) {
-                message = NSLocalizedString("admin_group_leave_warning", comment: "")
-            }
-            let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { [weak self] _ in
-                self?.delete(thread)
-            })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .default) { _ in })
-            guard let self = self else { return }
-            self.present(alert, animated: true, completion: nil)
-        }
-        delete.backgroundColor = Colors.destructive
-        
-        let isPinned = thread.isPinned
-        let pin = UITableViewRowAction(style: .normal, title: NSLocalizedString("PIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
-            thread.isPinned = true
-            thread.save()
-            self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
-            tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-        }
-        pin.backgroundColor = Colors.pathsBuilding
-        let unpin = UITableViewRowAction(style: .normal, title: NSLocalizedString("UNPIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
-            thread.isPinned = false
-            thread.save()
-            self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
-            tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-        }
-        unpin.backgroundColor = Colors.pathsBuilding
-        
-        if let thread = thread as? TSContactThread {
-            let publicKey = thread.contactSessionID()
-            let blockingManager = SSKEnvironment.shared.blockingManager
-            let isBlocked = blockingManager.isRecipientIdBlocked(publicKey)
-            let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in
-                blockingManager.addBlockedPhoneNumber(publicKey)
-                tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-            }
-            block.backgroundColor = Colors.unimportant
-            let unblock = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "")) { _, _ in
-                blockingManager.removeBlockedPhoneNumber(publicKey)
-                tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-            }
-            unblock.backgroundColor = Colors.unimportant
-            return [ delete, (isBlocked ? unblock : block), (isPinned ? unpin : pin) ]
-        } else {
-            return [ delete, (isPinned ? unpin : pin) ]
         }
     }
     
@@ -460,8 +592,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     private func thread(at index: Int) -> TSThread? {
         var thread: TSThread? = nil
         dbConnection.read { transaction in
+            // Note: Section needs to be '1' as we now have 'TSMessageRequests' as the 0th section
             let ext = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
-            thread = ext.object(atRow: UInt(index), inSection: 0, with: self.threads) as! TSThread?
+            thread = ext.object(atRow: UInt(index), inSection: 1, with: self.threads) as? TSThread
         }
         return thread
     }

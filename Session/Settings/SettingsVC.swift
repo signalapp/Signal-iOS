@@ -264,6 +264,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
             getSeparator(),
+            getSettingButton(withTitle: NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: ""), color: Colors.text, action: #selector(showMessageRequests)),
+            getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_clear_all_data_button_title", comment: ""), color: Colors.destructive, action: #selector(clearAllData)),
@@ -507,6 +509,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func showNotificationSettings() {
         let notificationSettingsVC = NotificationSettingsViewController()
         navigationController!.pushViewController(notificationSettingsVC, animated: true)
+    }
+    
+    @objc private func showMessageRequests() {
+        let viewController: MessageRequestsViewController = MessageRequestsViewController()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     @objc private func showSeed() {

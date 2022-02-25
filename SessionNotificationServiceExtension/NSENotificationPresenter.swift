@@ -6,9 +6,25 @@ import UserNotifications
 public class NSENotificationPresenter: NSObject, NotificationsProtocol {
     
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
-        guard !thread.isMuted else {
-            // Ignore PNs if the thread is muted
-            return
+        guard !thread.isMuted else { return }
+        guard let threadID = thread.uniqueId else { return }
+        
+        // If the thread is a message request and the user hasn't hidden message requests then we need
+        // to check if this is the only message request thread (group threads can't be message requests
+        // so just ignore those and if the user has hidden message requests then we want to show the
+        // notification regardless of how many message requests there are)
+        if !thread.isGroupThread() && thread.isMessageRequest() && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+            let threads = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+            let numMessageRequests = threads.numberOfItems(inGroup: TSMessageRequestGroup)
+            
+            // Allow this to show a notification if there are no message requests (ie. this is the first one)
+            guard numMessageRequests <= 1 else { return }
+        }
+        else if thread.isMessageRequest() && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+            // If there are other interactions on this thread already then don't show the notification
+            if thread.numberOfInteractions() > 1 { return }
+            
+            CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
         }
         
         let senderPublicKey = incomingMessage.authorId
@@ -37,7 +53,6 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
         }
         
-        let threadID = thread.uniqueId!
         let snippet = incomingMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
         ?? "APN_Message".localized()
         
@@ -47,12 +62,13 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         let notificationContent = UNMutableNotificationContent()
         notificationContent.userInfo = userInfo
         notificationContent.sound = OWSSounds.notificationSound(for: thread).notificationSound(isQuiet: false)
-        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            let newBadgeNumber = sharedUserDefaults.integer(forKey: "currentBadgeNumber") + 1
-            notificationContent.badge = NSNumber(value: newBadgeNumber)
-            sharedUserDefaults.set(newBadgeNumber, forKey: "currentBadgeNumber")
-        }
         
+        // Badge Number
+        let newBadgeNumber = CurrentAppContext().appUserDefaults().integer(forKey: "currentBadgeNumber") + 1
+        notificationContent.badge = NSNumber(value: newBadgeNumber)
+        CurrentAppContext().appUserDefaults().set(newBadgeNumber, forKey: "currentBadgeNumber")
+        
+        // Title & body
         let notificationsPreference = Environment.shared.preferences!.notificationPreviewType()
         switch notificationsPreference {
         case .namePreview:
@@ -67,6 +83,13 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         default: break
         }
         
+        // If it's a message request then overwrite the body to be something generic (only show a notification
+        // when receiving a new message request if there aren't any others or the user had hidden them)
+        if thread.isMessageRequest() {
+            notificationContent.body = "MESSAGE_REQUESTS_NOTIFICATION".localized()
+        }
+        
+        // Add request
         let identifier = incomingMessage.notificationIdentifier ?? UUID().uuidString
         let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
         SNLog("Add remote notification request")
