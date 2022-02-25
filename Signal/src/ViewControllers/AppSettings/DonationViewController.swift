@@ -466,7 +466,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                     paymentButtonType: .donate,
                     paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
                 )
-                if #available(iOS 12, *) { donateButton.cornerRadius = 12 }
+                donateButton.cornerRadius = 12
                 donateButton.addTarget(self, action: #selector(self.requestApplePayDonation), for: .touchUpInside)
                 cell.contentView.addSubview(donateButton)
                 donateButton.autoPinEdgesToSuperviewMargins()

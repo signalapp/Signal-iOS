@@ -342,13 +342,6 @@ const NSUInteger kMinimumSearchLength = 1;
     [self showContactAppropriateViews];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-
-    [OWSActionSheets showIOSUpgradeNagIfNecessary];
-}
-
 #pragma mark - Table Contents
 
 - (void)reloadContent

@@ -130,31 +130,4 @@ import SignalMessaging
 
         OWSActionSheets.showActionSheet(actionSheet)
     }
-
-    @objc
-    public class func showIOSUpgradeNagIfNecessary() {
-        // We want to nag iOS 10 users now that we're bumping up
-        // our min SDK to iOS 11.
-        if #available(iOS 11.0, *) { return }
-
-        // Don't show the nag to users who have just launched
-        // the app for the first time.
-        guard AppVersion.shared().lastAppVersion != nil else {
-            return
-        }
-
-        if let iOSUpgradeNagDate = Self.preferences.iOSUpgradeNagDate() {
-            let kNagFrequencySeconds = 3 * kDayInterval
-            guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
-                return
-            }
-        }
-
-        Self.preferences.setIOSUpgradeNagDate(Date())
-
-        OWSActionSheets.showActionSheet(title: NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
-                                                        comment: "Title for the alert indicating that user should upgrade iOS."),
-                            message: NSLocalizedString("UPGRADE_IOS_ALERT_MESSAGE",
-                                                      comment: "Message for the alert indicating that user should upgrade iOS."))
-    }
 }

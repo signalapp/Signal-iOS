@@ -311,11 +311,7 @@ public extension NSAttributedString {
 
 public extension String {
     private var dominantLanguage: String? {
-        if #available(iOS 12, *) {
-            return NLLanguageRecognizer.dominantLanguage(for: self)?.rawValue
-        } else {
-            return NSLinguisticTagger.dominantLanguage(for: self)
-        }
+        return NLLanguageRecognizer.dominantLanguage(for: self)?.rawValue
     }
 
     /// The natural text alignment of a given string. This may be different

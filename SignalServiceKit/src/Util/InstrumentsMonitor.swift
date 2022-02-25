@@ -54,54 +54,47 @@ import os.signpost
     }
 
     public static let defaultStartImplementation: startSpanInterface? = { (category: String, parent: String?, name: String) -> UInt64? in
-        if #available(iOS 12.0, *) {
-            let log = OSLog(subsystem: SUBSYSTEM, category: category)
-            let signpostID = OSSignpostID(log: log)
-            var thread = Thread.current.debugDescription
-            thread += ", Prio \(Thread.current.threadPriority) (qos: "
-            switch Thread.current.qualityOfService {
-            case .userInteractive:
-                thread += "userInteractive"
-            case .userInitiated:
-                thread += "userInitiated"
-            case .utility:
-                thread += "utility"
-            case .background:
-                thread += "background"
-            case .default:
-                thread += "default"
-            default:
-                thread += "\(Thread.current.qualityOfService.rawValue)"
-            }
-            thread += ")"
-            var params = [Thread.current.isMainThread ? "Main" : "Background", thread, name]
-            if let parent = parent {
-                params.append(parent)
-            }
-            send(.begin, to: log, id: signpostID, params: params)
-            return signpostID.rawValue
+        let log = OSLog(subsystem: SUBSYSTEM, category: category)
+        let signpostID = OSSignpostID(log: log)
+        var thread = Thread.current.debugDescription
+        thread += ", Prio \(Thread.current.threadPriority) (qos: "
+        switch Thread.current.qualityOfService {
+        case .userInteractive:
+            thread += "userInteractive"
+        case .userInitiated:
+            thread += "userInitiated"
+        case .utility:
+            thread += "utility"
+        case .background:
+            thread += "background"
+        case .default:
+            thread += "default"
+        default:
+            thread += "\(Thread.current.qualityOfService.rawValue)"
         }
-        return nil
+        thread += ")"
+        var params = [Thread.current.isMainThread ? "Main" : "Background", thread, name]
+        if let parent = parent {
+            params.append(parent)
+        }
+        send(.begin, to: log, id: signpostID, params: params)
+        return signpostID.rawValue
     }
 
     public static let defaultStopImplementation: stopSpanInterface? = { (category: String, hash: UInt64, success: Bool?, params: [String]) in
-        if #available(iOS 12.0, *) {
-            var params = params
-            if let success = success {
-                params.insert(success ? "1" : "0", at: 0)
-            }
-            send(.end, to: OSLog(subsystem: SUBSYSTEM, category: category), id: OSSignpostID(hash), params: params)
+        var params = params
+        if let success = success {
+            params.insert(success ? "1" : "0", at: 0)
         }
+        send(.end, to: OSLog(subsystem: SUBSYSTEM, category: category), id: OSSignpostID(hash), params: params)
     }
 
     // @inlinable allows the call to be compiled out in non-testable builds where it does nothing.
     @objc @inlinable
     public static func trackEvent(name s: String) {
         #if TESTABLE_BUILD
-        if #available(iOS 12.0, *) {
-            let log = OSLog(subsystem: SUBSYSTEM, category: OSLog.Category.pointsOfInterest)
-            os_signpost(.event, log: log, name: "trackEvent", signpostID: OSSignpostID(log: log), "%{private}s", s)
-        }
+        let log = OSLog(subsystem: SUBSYSTEM, category: OSLog.Category.pointsOfInterest)
+        os_signpost(.event, log: log, name: "trackEvent", signpostID: OSSignpostID(log: log), "%{private}s", s)
         #endif
     }
 

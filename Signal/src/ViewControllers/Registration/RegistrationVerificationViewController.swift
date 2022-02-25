@@ -535,9 +535,7 @@ class RegistrationVerificationCodeView: UIView {
         textfield.textColor = Theme.primaryTextColor
         textfield.font = UIFont.ows_dynamicTypeLargeTitle1Clamped
         textfield.keyboardType = .numberPad
-        if #available(iOS 12, *) {
-            textfield.textContentType = .oneTimeCode
-        }
+        textfield.textContentType = .oneTimeCode
 
         var digitViews = [UIView]()
         (0..<digitCount).forEach { (_) in

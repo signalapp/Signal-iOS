@@ -50,9 +50,7 @@ private class LoopingVideoPlayer: AVPlayer {
 
         isMuted = true
         allowsExternalPlayback = true
-        if #available(iOS 12, *) {
-            preventsDisplaySleepDuringVideoPlayback = false
-        }
+        preventsDisplaySleepDuringVideoPlayback = false
     }
 
     override func replaceCurrentItem(with newItem: AVPlayerItem?) {

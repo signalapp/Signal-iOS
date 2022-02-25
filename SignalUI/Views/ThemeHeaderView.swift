@@ -18,13 +18,6 @@ public class ThemeHeaderView: UIView {
 
     override public class var layerClass: AnyClass {
         get {
-            guard #available(iOS 11.4, *) else {
-                // HACK: scrollbar incorrectly appears *behind* section headers
-                // in collection view on early iOS11.
-                // Appears fine on iOS11.4+
-                return AlwaysOnTopLayer.self
-            }
-
             return super.layerClass
         }
     }

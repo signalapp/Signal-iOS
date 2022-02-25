@@ -12,18 +12,13 @@ public class DonationUtilities: NSObject {
     }
 
     public static var supportedNetworks: [PKPaymentNetwork] {
-        let additionalNetworks: [PKPaymentNetwork]
-        if #available(iOS 12, *) {
-            additionalNetworks = [.maestro]
-        } else {
-            additionalNetworks = []
-        }
         return [
             .visa,
             .masterCard,
             .amex,
-            .discover
-        ] + additionalNetworks
+            .discover,
+            .maestro
+        ]
     }
 
     public enum Symbol: Equatable {

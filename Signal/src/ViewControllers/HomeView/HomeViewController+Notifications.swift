@@ -136,7 +136,6 @@ extension HomeViewController {
         updateShouldBeUpdatingView()
 
         if !ExperienceUpgradeManager.presentNext(fromViewController: self) {
-            OWSActionSheets.showIOSUpgradeNagIfNecessary()
             presentGetStartedBannerIfNecessary()
         }
     }

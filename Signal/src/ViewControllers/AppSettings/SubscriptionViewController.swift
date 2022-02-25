@@ -1062,7 +1062,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
         )
 
-        if #available(iOS 12, *) { applePayContributeButton.cornerRadius = 12 }
+        applePayContributeButton.cornerRadius = 12
         applePayContributeButton.addTarget(self, action: #selector(self.requestApplePayDonation), for: .touchUpInside)
         return applePayContributeButton
     }

@@ -462,7 +462,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [ExperienceUpgradeManager presentNextFromViewController:self]) {
         self.hasEverPresentedExperienceUpgrade = YES;
     } else if (!self.hasEverAppeared) {
-        [OWSActionSheets showIOSUpgradeNagIfNecessary];
         [self presentGetStartedBannerIfNecessary];
     }
 
