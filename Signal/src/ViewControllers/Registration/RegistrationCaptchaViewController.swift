@@ -20,7 +20,7 @@ protocol RegistrationCaptchaViewController: AnyObject {
 class RegistrationCaptchaViewModel: NSObject {
     weak var viewController: RegistrationCaptchaViewController?
 
-    let captchaView = CaptchaView()
+    let captchaView = CaptchaView(context: .registration)
 
     // MARK: - Methods
 

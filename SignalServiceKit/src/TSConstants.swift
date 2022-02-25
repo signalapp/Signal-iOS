@@ -45,6 +45,10 @@ public class TSConstants: NSObject {
     @objc
     public static var sfuTestURL: String { shared.sfuTestURL }
     @objc
+    public static var registrationCaptchaURL: String { shared.registrationCaptchaURL }
+    @objc
+    public static var challengeCaptchaURL: String { shared.challengeCaptchaURL }
+    @objc
     public static var kUDTrustRoot: String { shared.kUDTrustRoot }
     @objc
     public static var updatesURL: String { shared.updatesURL }
@@ -109,6 +113,8 @@ private protocol TSConstantsProtocol: AnyObject {
     var storageServiceURL: String { get }
     var sfuURL: String { get }
     var sfuTestURL: String { get }
+    var registrationCaptchaURL: String { get }
+    var challengeCaptchaURL: String { get }
     var kUDTrustRoot: String { get }
     var updatesURL: String { get }
     var updates2URL: String { get }
@@ -159,6 +165,8 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let storageServiceURL = "https://storage.signal.org"
     public let sfuURL = "https://sfu.voip.signal.org"
     public let sfuTestURL = "https://sfu.test.voip.signal.org"
+    public let registrationCaptchaURL = "https://signalcaptchas.org/registration/generate.html"
+    public let challengeCaptchaURL = "https://signalcaptchas.org/challenge/generate.html"
     public let kUDTrustRoot = "BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
     public let updatesURL = "https://updates.signal.org"
     public let updates2URL = "https://updates2.signal.org"
@@ -225,6 +233,8 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let keyBackupURL = "https://api-staging.backup.signal.org"
     public let storageServiceURL = "https://storage-staging.signal.org"
     public let sfuURL = "https://sfu.staging.voip.signal.org"
+    public let registrationCaptchaURL = "https://signalcaptchas.org/staging/registration/generate.html"
+    public let challengeCaptchaURL = "https://signalcaptchas.org/staging/challenge/generate.html"
     // There's no separate test SFU for staging.
     public let sfuTestURL = "https://sfu.test.voip.signal.org"
     public let kUDTrustRoot = "BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"

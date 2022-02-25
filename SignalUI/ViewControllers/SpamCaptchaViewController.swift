@@ -11,9 +11,40 @@ public protocol CaptchaViewDelegate: NSObjectProtocol {
     func captchaViewDidFailToCompleteCaptcha(_: CaptchaView)
 }
 
+public enum CaptchaContext {
+    case registration, challenge
+}
+
 public class CaptchaView: UIView {
 
-    private let captchaURL = URL(string: "https://signalcaptchas.org/registration/generate.html")!
+    private let context: CaptchaContext
+
+    private var captchaURL: URL {
+        switch context {
+        case .registration:
+            return URL(string: TSConstants.registrationCaptchaURL)!
+        case .challenge:
+            return URL(string: TSConstants.challengeCaptchaURL)!
+        }
+    }
+
+    public init(context: CaptchaContext) {
+        self.context = context
+
+        super.init(frame: .zero)
+
+        addSubview(webView)
+        webView.autoPinEdgesToSuperviewEdges()
+
+        webView.navigationDelegate = self
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil)
+    }
+
 
     private var webView: WKWebView = {
         // We want the CAPTCHA web content to "fill the screen (honoring margins)".
@@ -47,20 +78,6 @@ public class CaptchaView: UIView {
         webView.accessibilityIdentifier = "onboarding.captcha." + "webView"
         return webView
     }()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        addSubview(webView)
-        webView.autoPinEdgesToSuperviewEdges()
-
-        webView.navigationDelegate = self
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didBecomeActive),
-            name: .OWSApplicationDidBecomeActive,
-            object: nil)
-    }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -168,7 +185,7 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
     }
 
     override public func loadView() {
-        let captchaView = CaptchaView()
+        let captchaView = CaptchaView(context: .challenge)
         captchaView.delegate = self
 
         let view = UIView()
