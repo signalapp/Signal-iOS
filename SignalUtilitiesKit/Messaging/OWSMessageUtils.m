@@ -75,8 +75,12 @@ NS_ASSUME_NONNULL_BEGIN
         // FIXME: Confusingly, `allGroups` includes contact threads as well
         for (NSString *groupID in allGroups) {
             TSThread *thread = [TSThread fetchObjectWithUniqueID:groupID transaction:transaction];
-            if (thread.isMuted) { continue; }
+            
+            // Don't increase the count for muted threads or message requests
+            if (thread.isMuted || thread.isMessageRequest) { continue; }
+            
             BOOL isGroupThread = thread.isGroupThread;
+            
             [unreadMessages enumerateKeysAndObjectsInGroup:groupID
                 usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                 if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {

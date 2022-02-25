@@ -8,11 +8,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSInboxGroup;
+extern NSString *const TSMessageRequestGroup;
 extern NSString *const TSArchiveGroup;
+extern NSString *const TSShareExtensionGroup;
 extern NSString *const TSUnreadIncomingMessagesGroup;
 extern NSString *const TSSecondaryDevicesGroup;
 
 extern NSString *const TSThreadDatabaseViewExtensionName;
+extern NSString *const TSThreadShareExtensionDatabaseViewExtensionName;
 
 extern NSString *const TSMessageDatabaseViewExtensionName;
 extern NSString *const TSMessageDatabaseViewExtensionName_Legacy;

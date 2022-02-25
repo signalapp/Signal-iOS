@@ -11,7 +11,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     var shareVC: ShareVC?
     
     private var threadCount: UInt {
-        threads.numberOfItems(inGroup: TSInboxGroup)
+        threads.numberOfItems(inGroup: TSShareExtensionGroup)
     }
     
     private lazy var dbConnection: YapDatabaseConnection = {
@@ -65,8 +65,8 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         
         // Threads
         dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
-        threads = YapDatabaseViewMappings(groups: [ TSInboxGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
-        threads.setIsReversed(true, forGroup: TSInboxGroup)
+        threads = YapDatabaseViewMappings(groups: [ TSShareExtensionGroup ], view: TSThreadShareExtensionDatabaseViewExtensionName) // The extension should be registered at this point
+        threads.setIsReversed(true, forGroup: TSShareExtensionGroup)
         dbConnection.read { transaction in
             self.threads.update(with: transaction) // Perform the initial update
         }
@@ -222,7 +222,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     private func thread(at index: Int) -> TSThread? {
         var thread: TSThread? = nil
         dbConnection.read { transaction in
-            let ext = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+            let ext = transaction.ext(TSThreadShareExtensionDatabaseViewExtensionName) as! YapDatabaseViewTransaction
             thread = ext.object(atRow: UInt(index), inSection: 0, with: self.threads) as! TSThread?
         }
         return thread
