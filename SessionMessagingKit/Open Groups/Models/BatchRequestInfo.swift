@@ -70,22 +70,37 @@ extension OpenGroupAPI {
     // MARK: - BatchSubResponse<T>
     
     struct BatchSubResponse<T: Codable>: Codable {
+        /// The numeric http response code (e.g. 200 for success)
         let code: Int32
+        
+        /// This should always include the content type of the request
         let headers: [String: String]
-        let body: T
+        
+        /// The body of the request; will be plain json if content-type is `application/json`, otherwise it will be base64 encoded data
+        let body: T?
+        
+        /// A flag to indicate that there was a body but it failed to parse
+        let failedToParseBody: Bool
     }
     
     // MARK: - BatchRequestInfo<T, R>
     
-    struct BatchRequestInfo<T: Encodable, R: Codable>: BatchRequestInfoType {
+    struct BatchRequestInfo<T: Encodable>: BatchRequestInfoType {
         let request: Request<T>
         let responseType: Codable.Type
         
         var endpoint: Endpoint { request.endpoint }
         
-        init(request: Request<T>, responseType: R.Type) {
+        init<R: Codable>(request: Request<T>, responseType: R.Type) {
             self.request = request
             self.responseType = BatchSubResponse<R>.self
+        }
+        
+        init(request: Request<T>) {
+            self.init(
+                request: request,
+                responseType: NoResponse.self
+            )
         }
         
         func toSubRequest() -> BatchSubRequest {
@@ -97,7 +112,21 @@ extension OpenGroupAPI {
     
     typealias BatchRequest = [BatchSubRequest]
     typealias BatchResponseTypes = [Codable.Type]
-    typealias BatchResponse = [(OnionRequestResponseInfoType, Codable)]
+    typealias BatchResponse = [(OnionRequestResponseInfoType, Codable?)]
+}
+
+extension OpenGroupAPI.BatchSubResponse {
+    init(from decoder: Decoder) throws {
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+        let body: T? = try? container.decode(T.self, forKey: .body)
+        
+        self = OpenGroupAPI.BatchSubResponse(
+            code: try container.decode(Int32.self, forKey: .code),
+            headers: try container.decode([String: String].self, forKey: .headers),
+            body: body,
+            failedToParseBody: (body == nil && T.self != OpenGroupAPI.NoResponse.self)
+        )
+    }
 }
 
 // MARK: - BatchRequestInfoType

@@ -66,4 +66,5 @@ protocol MessageCellDelegate : AnyObject {
     func openURL(_ url: URL)
     func handleReplyButtonTapped(for viewItem: ConversationViewItem)
     func showUserDetails(for sessionID: String)
+    func startThread(with sessionID: String, openGroupServer: String, openGroupPublicKey: String)
 }

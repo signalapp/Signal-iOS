@@ -48,66 +48,90 @@ public enum MessageReceiver {
         }
     }
 
-    public static func parse(_ data: Data, openGroupMessageServerID: UInt64?, isRetry: Bool = false, using transaction: Any) throws -> (Message, SNProtoContent) {
+    public static func parse(_ data: Data, openGroupMessageServerID: UInt64?, openGroupServerPublicKey: String? = nil, isRetry: Bool = false, using transaction: Any) throws -> (Message, SNProtoContent) {
         let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey()
         let isOpenGroupMessage = (openGroupMessageServerID != nil)
+        
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
         let storage = SNMessagingKitConfiguration.shared.storage
+        
         // Decrypt the contents
         guard let ciphertext = envelope.content else { throw Error.noData }
+        
         var plaintext: Data!
         var sender: String!
         var groupPublicKey: String? = nil
+        
         if isOpenGroupMessage {
             (plaintext, sender) = (envelope.content!, envelope.source!)
-        } else {
+        }
+        else {
             switch envelope.type {
-            case .sessionMessage:
-                guard let userX25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { throw Error.noUserX25519KeyPair }
-                (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: userX25519KeyPair)
-            case .closedGroupMessage:
-                guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else { throw Error.invalidGroupPublicKey }
-                var encryptionKeyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
-                guard !encryptionKeyPairs.isEmpty else { throw Error.noGroupKeyPair }
-                // Loop through all known group key pairs in reverse order (i.e. try the latest key pair first (which'll more than
-                // likely be the one we want) but try older ones in case that didn't work)
-                var encryptionKeyPair = encryptionKeyPairs.removeLast()
-                func decrypt() throws {
-                    do {
-                        (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: encryptionKeyPair)
-                    } catch {
-                        if !encryptionKeyPairs.isEmpty {
-                            encryptionKeyPair = encryptionKeyPairs.removeLast()
-                            try decrypt()
-                        } else {
-                            throw error
+                case .sessionMessage:
+                    // Default to 'standard' as the old code didn't seem to require an `envelope.source`
+                    switch (SessionId.Prefix(from: envelope.source) ?? .standard) {
+                        case .standard, .unblinded:
+                            guard let userX25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else {
+                                throw Error.noUserX25519KeyPair
+                            }
+                            
+                            (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: userX25519KeyPair)
+                            
+                        case .blinded:
+                            guard let senderSessionId: String = envelope.source else { throw Error.noData }
+                            guard let openGroupServerPublicKey: String = openGroupServerPublicKey else {
+                                throw Error.invalidGroupPublicKey
+                            }
+                            guard let userEd25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserED25519KeyPair() else {
+                                throw Error.noUserED25519KeyPair
+                            }
+                            
+                            (plaintext, sender) = try decryptWithSessionBlindingProtocol(
+                                data: ciphertext,
+                                fromBlindedPublicKey: senderSessionId,
+                                with: openGroupServerPublicKey,
+                                userEd25519KeyPair: userEd25519KeyPair
+                            )
+                    }
+                    
+                case .closedGroupMessage:
+                    guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else {
+                        throw Error.invalidGroupPublicKey
+                    }
+                    
+                    var encryptionKeyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
+                    
+                    guard !encryptionKeyPairs.isEmpty else { throw Error.noGroupKeyPair }
+                    
+                    // Loop through all known group key pairs in reverse order (i.e. try the latest key pair first (which'll more than
+                    // likely be the one we want) but try older ones in case that didn't work)
+                    var encryptionKeyPair = encryptionKeyPairs.removeLast()
+                    
+                    func decrypt() throws {
+                        do {
+                            (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: encryptionKeyPair)
+                        }
+                        catch {
+                            if !encryptionKeyPairs.isEmpty {
+                                encryptionKeyPair = encryptionKeyPairs.removeLast()
+                                try decrypt()
+                            }
+                            else {
+                                throw error
+                            }
                         }
                     }
-                }
-                groupPublicKey = envelope.source
-                try decrypt()
-                /*
-                do {
+                    groupPublicKey = envelope.source
                     try decrypt()
-                } catch {
-                    do {
-                        let now = Date()
-                        // Don't spam encryption key pair requests
-                        let shouldRequestEncryptionKeyPair = given(lastEncryptionKeyPairRequest[groupPublicKey!]) { now.timeIntervalSince($0) > 30 } ?? true
-                        if shouldRequestEncryptionKeyPair {
-                            try MessageSender.requestEncryptionKeyPair(for: groupPublicKey!, using: transaction as! YapDatabaseReadWriteTransaction)
-                            lastEncryptionKeyPairRequest[groupPublicKey!] = now
-                        }
-                    }
-                    throw error // Throw the * decryption * error and not the error generated by requestEncryptionKeyPair (if it generated one)
-                }
-                 */
-            default: throw Error.unknownEnvelopeType
+                        
+                default: throw Error.unknownEnvelopeType
             }
         }
+        
         // Don't process the envelope any further if the sender is blocked
         guard !isBlocked(sender) else { throw Error.senderBlocked }
+        
         // Parse the proto
         let proto: SNProtoContent
         do {

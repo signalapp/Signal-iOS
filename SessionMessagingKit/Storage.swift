@@ -71,6 +71,12 @@ public protocol SessionMessagingKitStorageProtocol {
     func getOpenGroupSequenceNumber(for room: String, on server: String) -> Int64?
     func setOpenGroupSequenceNumber(for room: String, on server: String, to newValue: Int64, using transaction: Any)
     func removeOpenGroupSequenceNumber(for room: String, on server: String, using transaction: Any)
+    
+    // MARK: - -- Open Group Inbox Latest Message Id
+
+    func getOpenGroupInboxLatestMessageId(for server: String) -> Int64?
+    func setOpenGroupInboxLatestMessageId(for server: String, to newValue: Int64, using transaction: Any)
+    func removeOpenGroupInboxLatestMessageId(for server: String, using transaction: Any)
 
     // MARK: - Message Handling
 

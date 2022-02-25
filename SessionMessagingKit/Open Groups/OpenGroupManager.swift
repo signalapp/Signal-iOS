@@ -130,11 +130,12 @@ public final class OpenGroupManager: NSObject {
         isBackgroundPoll: Bool,
         using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
     ) {
-        // Sorting the messages by server ID before importing them fixes an issue where messages that quote older messages can't find those older messages
+        // Sorting the messages by server ID before importing them fixes an issue where messages
+        // that quote older messages can't find those older messages
         let openGroupID = "\(server).\(roomToken)"
         let sortedMessages: [OpenGroupAPI.Message] = messages
-            .sorted { lhs, rhs in lhs.seqNo < rhs.seqNo }
-        let seqNo: Int64 = (sortedMessages.last?.seqNo ?? 0)
+            .sorted { lhs, rhs in lhs.id < rhs.id }
+        let seqNo: Int64 = (sortedMessages.map { $0.seqNo }.max() ?? 0)
         
         dependencies.storage.write { transaction in
             var messageServerIDsToRemove: [UInt64] = []
@@ -256,7 +257,6 @@ public final class OpenGroupManager: NSObject {
                     imageID: (pollInfo.details?.imageId.map { "\($0)" } ?? existingOpenGroup?.imageID),
                     infoUpdates: ((pollInfo.details?.infoUpdates ?? existingOpenGroup?.infoUpdates) ?? 0)
                 )
-                let existingUserCount: UInt64? = dependencies.storage.getUserCount(forOpenGroupWithID: updatedOpenGroup.id)
                 
                 // - Thread changes
                 thread.shouldBeVisible = true
@@ -268,7 +268,7 @@ public final class OpenGroupManager: NSObject {
                 
                 // - User Count
                 dependencies.storage.setUserCount(
-                    to: ((pollInfo.activeUsers.map { UInt64($0) } ?? existingUserCount) ?? 0),
+                    to: UInt64(pollInfo.activeUsers),
                     forOpenGroupWithID: updatedOpenGroup.id,
                     using: transaction
                 )
@@ -313,6 +313,51 @@ public final class OpenGroupManager: NSObject {
         )
     }
     
+    internal static func handleInbox(
+        _ messages: [OpenGroupAPI.DirectMessage],
+        on server: String,
+        isBackgroundPoll: Bool,
+        using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
+    ) {
+        guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: server) else {
+            SNLog("Couldn't receive inbox message.")
+            return
+        }
+        
+        // Sorting the messages by server ID before importing them fixes an issue where messages
+        // that quote older messages can't find those older messages
+        let sortedMessages: [OpenGroupAPI.DirectMessage] = messages
+            .sorted { lhs, rhs in lhs.id < rhs.id }
+        let latestMessageId: Int64 = (sortedMessages.last?.id ?? 0)
+        
+        dependencies.storage.write { transaction in
+            // Update the 'latestMessageId' value
+            dependencies.storage.setOpenGroupInboxLatestMessageId(for: server, to: latestMessageId, using: transaction)
+
+            // Process the messages
+            sortedMessages.forEach { message in
+                guard let messageData = Data(base64Encoded: message.base64EncodedMessage) else {
+                    SNLog("Couldn't receive inbox message.")
+                    return
+                }
+
+                // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
+                let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
+                envelope.setContent(messageData)
+                envelope.setSource(message.sender)
+
+                do {
+                    let data = try envelope.buildSerializedData()
+                    let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: nil, openGroupServerPublicKey: serverPublicKey, isRetry: false, using: transaction)
+                    try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: isBackgroundPoll, using: transaction)
+                }
+                catch let error {
+                    SNLog("Couldn't receive inbox message due to error: \(error).")
+                }
+            }
+        }
+    }
+    
     // MARK: - Convenience
     
     /// This method specifies if the given publicKey is a moderator or an admin within a specified Open Group
@@ -332,7 +377,7 @@ public final class OpenGroupManager: NSObject {
             }
             
             // Add the unblinded key as an option
-            targetKeys.append(IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey))
+            targetKeys.append(SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString)
             
             let server: OpenGroupAPI.Server? = dependencies.storage.getOpenGroupServer(name: server)
             
@@ -343,7 +388,7 @@ public final class OpenGroupManager: NSObject {
                 }
     
                 // Add the blinded key as an option
-                targetKeys.append(IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey))
+                targetKeys.append(SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString)
             }
         }
         

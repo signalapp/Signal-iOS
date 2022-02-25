@@ -497,12 +497,27 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let location = gestureRecognizer.location(in: self)
         if profilePictureView.frame.contains(location) && VisibleMessageCell.shouldShowProfilePicture(for: viewItem) {
             guard let message = viewItem.interaction as? TSIncomingMessage else { return }
-            guard !message.isOpenGroupMessage else { return } // Do not show user details to prevent spam
-            delegate?.showUserDetails(for: message.authorId)
-        } else if replyButton.frame.contains(location) {
+            
+            // For open groups only attempt to start a conversation if the author has a blinded id
+            if message.isOpenGroupMessage {
+                guard SessionId.Prefix(from: message.authorId) == .blinded else { return }
+                guard let openGroup: OpenGroup = Storage.shared.getOpenGroup(for: message.uniqueThreadId) else { return }
+                
+                delegate?.startThread(
+                    with: message.authorId,
+                    openGroupServer: openGroup.server,
+                    openGroupPublicKey: openGroup.publicKey
+                )
+            }
+            else {
+                delegate?.showUserDetails(for: message.authorId)
+            }
+        }
+        else if replyButton.frame.contains(location) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             reply()
-        } else {
+        }
+        else {
             delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)
         }
     }

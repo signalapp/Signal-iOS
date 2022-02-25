@@ -40,10 +40,13 @@ public final class OpenGroupAPI: NSObject {
     /// - For each room:
     ///    - Poll Info
     ///    - Messages (includes additions and deletions)
-    public static func poll(_ server: String, using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable)]> {
+    /// - Inbox for the server
+    public static func poll(_ server: String, using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         // Store a local copy of the cached state for this server
         let hadPerformedInitialPoll: Bool = (hasPerformedInitialPoll[server] == true)
         let originalTimeSinceLastPoll: TimeInterval = (timeSinceLastPoll[server] ?? min(lastPollTime, timeSinceLastOpen))
+        let maybeLastInboxMessageId: Int64? = dependencies.storage.getOpenGroupInboxLatestMessageId(for: server)
+        let lastInboxMessageId: Int64 = (maybeLastInboxMessageId ?? 0)
         
         // Update the cached state for this server
         hasPerformedInitialPoll[server] = true
@@ -100,16 +103,32 @@ public final class OpenGroupAPI: NSObject {
                     ]
                 }
         )
+        .appending(
+            // Inbox
+            BatchRequestInfo(
+                request: Request<NoBody>(
+                    server: server,
+                    endpoint: (maybeLastInboxMessageId == nil ?
+                        .inbox :
+                        .inboxSince(id: lastInboxMessageId)
+                   )
+                    // TODO: Limit?
+//                    queryParameters: [ .limit: 256 ]
+                ),
+                responseType: [DirectMessage].self
+            )
+        )
         
         return batch(server, requests: requestResponseType, using: dependencies)
     }
     
-    /// This is used, for example, to poll multiple rooms on the same server for updates in a single query rather than needing to make multiple requests for each room.
+    /// Submits multiple requests wrapped up in a single request, runs them all, then returns the result of each one
     ///
-    /// No guarantee is made as to the order in which sub-requests are processed; use the `/sequence` instead if you need that.
+    /// Requests are performed independently, that is, if one fails the others will still be attempted - there is no guarantee on the order in which requests will be
+    /// carried out (for sequential, related requests invoke via `/sequence` instead)
     ///
     /// For contained subrequests that specify a body (i.e. POST or PUT requests) exactly one of `json`, `b64`, or `bytes` must be provided with the request body.
-    private static func batch(_ server: String, requests: [BatchRequestInfoType], using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable)]> {
+    private static func batch(_ server: String, requests: [BatchRequestInfoType], using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let requestBody: BatchRequest = requests.map { $0.toSubRequest() }
         let responseTypes = requests.map { $0.responseType }
         
@@ -130,12 +149,16 @@ public final class OpenGroupAPI: NSObject {
             }
     }
     
-    /// The requests are guaranteed to be performed sequentially in the order given in the request and will abort if any request does not return a status-`2xx` response.
+    /// This is like `/batch`, except that it guarantees to perform requests sequentially in the order provided and will stop processing requests if the previous request
+    /// returned a non-`2xx` response
     ///
     /// For example, this can be used to ban and delete all of a user's messages by sequencing the ban followed by the `delete_all`: if the ban fails (e.g. because
     /// permission is denied) then the `delete_all` will not occur. The batch body and response are identical to the `/batch` endpoint; requests that are not
     /// carried out because of an earlier failure will have a response code of `412` (Precondition Failed)."
-    private static func sequence(_ server: String, requests: [BatchRequestInfoType], using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable)]> {
+    ///
+    /// Like `/batch`, responses are returned in the same order as requests, but unlike `/batch` there may be fewer elements in the response list (if requests were
+    /// stopped because of a non-2xx response) - In such a case, the final, non-2xx response is still included as the final response value
+    private static func sequence(_ server: String, requests: [BatchRequestInfoType], using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let requestBody: BatchRequest = requests.map { $0.toSubRequest() }
         let responseTypes = requests.map { $0.responseType }
         
@@ -159,6 +182,13 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Capabilities
     
+    /// Return the list of server features/capabilities
+    ///
+    /// Optionally takes a `required` parameter containing a comma-separated list of capabilites; if any are not satisfied a 412 (Precondition Failed) response
+    /// will be returned with missing requested capabilities in the `missing` key
+    ///
+    /// Eg. `GET /capabilities` could return `{"capabilities": ["sogs", "batch"]}` `GET /capabilities?required=magic,batch`
+    /// could return: `{"capabilities": ["sogs", "batch"], "missing": ["magic"]}`
     public static func capabilities(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Capabilities)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -173,6 +203,9 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Room
     
+    /// Returns a list of available rooms on the server
+    ///
+    /// Rooms to which the user does not have access (e.g. because they are banned, or the room has restricted access permissions) are not included
     public static func rooms(for server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Room])> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -183,6 +216,7 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: [Room].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
+    /// Returns the details of a single room
     public static func room(for roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Room)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -193,6 +227,15 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: Room.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
+    /// Polls a room for metadata updates
+    ///
+    /// The endpoint polls room metadata for this room, always including the instantaneous room details (such as the user's permission and current
+    /// number of active users), and including the full room metadata if the room's info_updated counter has changed from the provided value
+    ///
+    /// **Note:** This is the direct request to retrieve room updates so should be retrieved automatically from the `poll()` method, in order to call
+    /// this directly remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handlePollInfo`
+    /// method to ensure things are processed correctly
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
     public static func roomPollInfo(lastUpdated: Int64, for roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, RoomPollInfo)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -205,6 +248,7 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Messages
     
+    /// Posts a new message to a room
     public static func send(
         _ plaintext: Data,
         to roomToken: String,
@@ -236,6 +280,7 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: Message.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
+    /// Returns a single message by ID
     public static func message(_ id: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Message)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -246,9 +291,13 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: Message.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
+    /// Edits a message, replacing its existing content with new content and a new signature
+    ///
+    /// **Note:** This edit may only be initiated by the creator of the post, and the poster must currently have write permissions in the room
     public static func messageUpdate(
         _ id: Int64,
         plaintext: Data,
+        fileIds: [Int64]?,
         in roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
@@ -259,7 +308,8 @@ public final class OpenGroupAPI: NSObject {
         
         let requestBody: UpdateMessageRequest = UpdateMessageRequest(
             data: plaintext,
-            signature: Data(signResult.signature)
+            signature: Data(signResult.signature),
+            fileIds: fileIds
         )
         
         let request: Request = Request(
@@ -294,10 +344,10 @@ public final class OpenGroupAPI: NSObject {
                 return response
             }
     }
-
-    /// This is the direct request to retrieve recent messages from an Open Group so should be retrieved automatically from the `poll()`
-    /// method, if the logic should change then remove the `@available` line and make sure to route the response of this method to
-    /// the `OpenGroupManager` `handleMessages` method (otherwise the logic may not work correctly)
+    
+    /// **Note:** This is the direct request to retrieve recent messages so should be retrieved automatically from the `poll()` method, in order to call
+    /// this directly remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handleMessages`
+    /// method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
     public static func recentMessages(in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         let request: Request = Request<NoBody>(
@@ -311,9 +361,9 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
-    /// This is the direct request to retrieve recent messages from an Open Group so should be retrieved automatically from the `poll()`
-    /// method, if the logic should change then remove the `@available` line and make sure to route the response of this method to
-    /// the `OpenGroupManager` `handleMessages` method (otherwise the logic may not work correctly)
+    /// **Note:** This is the direct request to retrieve recent messages before a given message  and is currently unused, in order to call this directly
+    /// remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handleMessages`
+    /// method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
     public static func messagesBefore(messageId: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         // TODO: Do we need to be able to load old messages?
@@ -328,9 +378,9 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
-    /// This is the direct request to retrieve recent messages from an Open Group so should be retrieved automatically from the `poll()`
-    /// method, if the logic should change then remove the `@available` line and make sure to route the response of this method to
-    /// the `OpenGroupManager` `handleMessages` method (otherwise the logic may not work correctly)
+    /// **Note:** This is the direct request to retrieve messages since a given message `seqNo` so should be retrieved automatically from the
+    /// `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response of this method to the
+    /// `OpenGroupManager.handleMessages` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
     public static func messagesSince(seqNo: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         let request: Request = Request<NoBody>(
@@ -346,6 +396,16 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Pinning
     
+    /// Adds a pinned message to this room
+    ///
+    /// **Note:** Existing pinned messages are not removed: the new message is added to the pinned message list (If you want to remove existing
+    /// pins then build a sequence request that first calls .../unpin/all)
+    ///
+    /// The user must have admin (not just moderator) permissions in the room in order to pin messages
+    ///
+    /// Pinned messages that are already pinned will be re-pinned (that is, their pin timestamp and pinning admin user will be updated) - because pinned
+    /// messages are returned in pinning-order this allows admins to order multiple pinned messages in a room by re-pinning (via this endpoint) in the
+    /// order in which pinned messages should be displayed
     public static func pinMessage(id: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
         let request: Request = Request<NoBody>(
             method: .post,
@@ -357,6 +417,9 @@ public final class OpenGroupAPI: NSObject {
             .map { responseInfo, _ in responseInfo }
     }
     
+    /// Remove a message from this room's pinned message list
+    ///
+    /// The user must have `admin` (not just `moderator`) permissions in the room
     public static func unpinMessage(id: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
         let request: Request = Request<NoBody>(
             method: .post,
@@ -368,6 +431,9 @@ public final class OpenGroupAPI: NSObject {
             .map { responseInfo, _ in responseInfo }
     }
 
+    /// Removes _all_ pinned messages from this room
+    ///
+    /// The user must have `admin` (not just `moderator`) permissions in the room
     public static func unpinAll(in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
         let request: Request = Request<NoBody>(
             method: .post,
@@ -435,7 +501,13 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Inbox (Message Requests)
 
-    public static func messageRequests(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
+    /// Retrieves all of the user's current DMs (up to limit)
+    ///
+    /// **Note:** This is the direct request to retrieve DMs for a specific Open Group so should be retrieved automatically from the `poll()`
+    /// method, in order to call this directly remove the `@available` line and make sure to route the response of this method to the
+    /// `OpenGroupManager.handleInbox` method to ensure things are processed correctly
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    public static func inbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
         let request: Request = Request<NoBody>(
             server: server,
             endpoint: .inbox
@@ -445,7 +517,13 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
-    public static func messageRequestsSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
+    /// Polls for any DMs received since the given id
+    ///
+    /// **Note:** This is the direct request to retrieve messages requests for a specific Open Group since a given messages so should be retrieved
+    /// automatically from the `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response
+    /// of this method to the `OpenGroupManager.handleInbox` method to ensure things are processed correctly
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    public static func inboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
         let request: Request = Request<NoBody>(
             server: server,
             endpoint: .inboxSince(id: id)
@@ -455,14 +533,12 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
-    public static func sendMessageRequest(_ plaintext: Data, to blindedSessionId: String, on server: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage])> {
-        guard let signedMessage: Data = sign(message: plaintext, to: blindedSessionId, on: server, with: serverPublicKey, using: dependencies) else {
-            return Promise(error: Error.signingFailed)
-        }
-        
+    /// Delivers a direct message to a user via their blinded Session ID
+    ///
+    /// The body of this request is a JSON object containing a message key with a value of the encrypted-then-base64-encoded message to deliver
+    public static func send(_ ciphertext: Data, toInboxFor blindedSessionId: String, on server: String/*, with serverPublicKey: String*/, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let requestBody: SendDirectMessageRequest = SendDirectMessageRequest(
-            data: signedMessage
-//            signature: signedMessage.signature    // TODO: Confirm whether this needs a signature??
+            message: ciphertext
         )
         
         let request: Request = Request(
@@ -478,7 +554,44 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Users
     
-    public static func userBan(_ sessionId: String, for timeout: TimeInterval? = nil, from roomTokens: [String]? = nil, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+    /// Applies a ban of a user from specific rooms, or from the server globally
+    ///
+    /// The invoking user must have `moderator` (or `admin`) permission in all given rooms when specifying rooms, and must be a
+    /// `globalModerator` (or `globalAdmin`) if using the global parameter
+    ///
+    /// **Note:** The user's messages are not deleted by this request - In order to ban and delete all messages use the `/sequence` endpoint to
+    /// bundle a `/user/.../ban` with a `/user/.../deleteMessages` request
+    ///
+    /// - Parameters:
+    ///   - sessionId: The sessionId (either standard or blinded) of the user whose messages should be deleted
+    ///
+    ///   - timeout: Value specifying a time limit on the ban, in seconds
+    ///
+    ///     The applied ban will expire and be removed after the given interval - If omitted (or `null`) then the ban is permanent
+    ///
+    ///     If this endpoint is called multiple times then the timeout of the last call takes effect (eg. a permanent ban can be replaced
+    ///     with a time-limited ban by calling the endpoint again with a timeout value, and vice versa)
+    ///
+    ///   - roomTokens: List of one or more room tokens from which the user should be banned from
+    ///
+    ///     The invoking user **must** be a moderator of all of the given rooms.
+    ///
+    ///     This may be set to the single-element list `["*"]` to ban the user from all rooms in which the current user has moderator
+    ///     permissions (the call will succeed if the calling user is a moderator in at least one channel)
+    ///
+    ///     **Note:** You can ban from all rooms on a server by providing a `nil` value for this parameter (the invoking user must be a
+    ///     global moderator in order to add a global ban)
+    ///
+    ///   - server: The server to delete messages from
+    ///
+    ///   - dependencies: Injected dependencies (used for unit testing)
+    public static func userBan(
+        _ sessionId: String,
+        for timeout: TimeInterval? = nil,
+        from roomTokens: [String]? = nil,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let requestBody: UserBanRequest = UserBanRequest(
             rooms: roomTokens,
             global: (roomTokens == nil ? true : nil),
@@ -495,7 +608,36 @@ public final class OpenGroupAPI: NSObject {
         return send(request, using: dependencies)
     }
     
-    public static func userUnban(_ sessionId: String, from roomTokens: [String]? = nil, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+    /// Removes a user ban from specific rooms, or from the server globally
+    ///
+    /// The invoking user must have `moderator` (or `admin`) permission in all given rooms when specifying rooms, and must be a global server `moderator`
+    /// (or `admin`) if using the `global` parameter
+    ///
+    /// **Note:** Room and global bans are independent: if a user is banned globally and has a room-specific ban then removing the global ban does not remove
+    /// the room specific ban, and removing the room-specific ban does not remove the global ban (to fully unban a user globally and from all rooms, submit a
+    /// `/sequence` request with a global unban followed by a "rooms": ["*"] unban)
+    ///
+    /// - Parameters:
+    ///   - sessionId: The sessionId (either standard or blinded) of the user whose messages should be deleted
+    ///
+    ///   - roomTokens: List of one or more room tokens from which the user should be unbanned from
+    ///
+    ///     The invoking user **must** be a moderator of all of the given rooms.
+    ///
+    ///     This may be set to the single-element list `["*"]` to unban the user from all rooms in which the current user has moderator
+    ///     permissions (the call will succeed if the calling user is a moderator in at least one channel)
+    ///
+    ///     **Note:** You can ban from all rooms on a server by providing a `nil` value for this parameter
+    ///
+    ///   - server: The server to delete messages from
+    ///
+    ///   - dependencies: Injected dependencies (used for unit testing)
+    public static func userUnban(
+        _ sessionId: String,
+        from roomTokens: [String]?,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let requestBody: UserUnbanRequest = UserUnbanRequest(
             rooms: roomTokens,
             global: (roomTokens == nil ? true : nil)
@@ -511,26 +653,68 @@ public final class OpenGroupAPI: NSObject {
         return send(request, using: dependencies)
     }
     
-    public static func userPermissionUpdate(_ sessionId: String, read: Bool, write: Bool, upload: Bool, for roomTokens: [String], timeout: TimeInterval, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        let requestBody: UserPermissionsRequest = UserPermissionsRequest(
-            rooms: roomTokens,
-            timeout: timeout,
-            read: read,
-            write: write,
-            upload: upload
-        )
+    /// Appoints or removes a moderator or admin
+    ///
+    /// This endpoint is used to appoint or remove moderator/admin permissions either for specific rooms or for server-wide global moderator permissions
+    ///
+    /// Admins/moderators of rooms can only be appointed or removed by a user who has admin permissions in the room (including global admins)
+    ///
+    /// Global admins/moderators may only be appointed by a global admin
+    ///
+    /// The admin/moderator paramters interact as follows:
+    /// - **admin=true, moderator omitted:** This adds admin permissions, which automatically also implies moderator permissions
+    /// - **admin=true, moderator=true:** Exactly the same as above
+    /// - **admin=false, moderator=true:** Removes any existing admin permissions from the rooms (or globally), if present, and adds
+    /// moderator permissions to the rooms/globally (if not already present)
+    /// - **admin=false, moderator omitted:** This removes admin permissions but leaves moderator permissions, if present (this
+    /// effectively "downgrades" an admin to a moderator).  Unlike the above this does **not** add moderator permissions to matching rooms
+    /// if not already present
+    /// - **moderator=true, admin omitted:** Adds moderator permissions to the given rooms (or globally), if not already present.  If
+    /// the user already has admin permissions this does nothing (that is, admin permission is *not* removed, unlike the above)
+    /// - **moderator=false, admin omitted:** This removes moderator **and** admin permissions from all given rooms (or globally)
+    /// - **moderator=false, admin=false:** Exactly the same as above
+    /// - **moderator=false, admin=true:** This combination is **not permitted** (because admin permissions imply moderator
+    /// permissions) and will result in Bad Request error if given
+    ///
+    /// - Parameters:
+    ///   - sessionId: The sessionId (either standard or blinded) of the user to modify the permissions of
+    ///
+    ///   - moderator: Value indicating that this user should have moderator permissions added (true), removed (false), or left alone (null)
+    ///
+    ///   - admin: Value indicating that this user should have admin permissions added (true), removed (false), or left alone (null)
+    ///
+    ///     Granting admin permission automatically includes granting moderator permission (and thus it is an error to use admin=true with
+    ///     moderator=false)
+    ///
+    ///   - visible: Value indicating whether the moderator/admin should be made publicly visible as a moderator/admin of the room(s)
+    ///   (if true) or hidden (false)
+    ///
+    ///     Hidden moderators/admins still have all the same permissions as visible moderators/admins, but are visible only to other
+    ///     moderators/admins; regular users in the room will not know their moderator status
+    ///
+    ///   - roomTokens: List of one or more room tokens to which the permission changes should be applied
+    ///
+    ///     The invoking user **must** be an admin of all of the given rooms.
+    ///
+    ///     This may be set to the single-element list `["*"]` to add or remove the moderator from all rooms in which the current user has admin
+    ///     permissions (the call will succeed if the calling user is an admin in at least one channel)
+    ///
+    ///     **Note:** You can specify a change to global permisisons by providing a `nil` value for this parameter
+    ///
+    ///   - server: The server to perform the permission changes on
+    ///
+    ///   - dependencies: Injected dependencies (used for unit testing)
+    public static func userModeratorUpdate(
+        _ sessionId: String,
+        moderator: Bool? = nil,
+        admin: Bool? = nil,
+        visible: Bool,
+        for roomTokens: [String]?,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+        guard (moderator != nil && admin == nil) || (moderator == nil && admin != nil) else { return Promise(error: Error.generic) }
         
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: .userPermission(sessionId),
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
-    }
-    
-    public static func userModeratorUpdate(_ sessionId: String, moderator: Bool, admin: Bool, visible: Bool, for roomTokens: [String]? = nil, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let requestBody: UserModeratorRequest = UserModeratorRequest(
             rooms: roomTokens,
             global: (roomTokens == nil ? true : nil),
@@ -549,7 +733,31 @@ public final class OpenGroupAPI: NSObject {
         return send(request, using: dependencies)
     }
     
-    public static func userDeleteMessages(_ sessionId: String, for roomTokens: [String]? = nil, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, UserDeleteMessagesResponse)> {
+    // TODO: Need to test this once the API has been implemented
+    // TODO: Update docs to align with the API documentation once implemented
+    /// Deletes all messages from a given sessionId within the provided rooms (or globally) on a server
+    ///
+    /// - Parameters:
+    ///   - sessionId: The sessionId (either standard or blinded) of the user whose messages should be deleted
+    ///
+    ///   - roomTokens: List of one or more room tokens from which the messages should be deleted
+    ///
+    ///     The invoking user **must** be an admin of all of the given rooms.
+    ///
+    ///     This may be set to the single-element list `["*"]` to add or remove the moderator from all rooms in which the current user has admin
+    ///     permissions (the call will succeed if the calling user is an admin in at least one channel)
+    ///
+    ///     **Note:** You can delete messages from all rooms on a server by providing a `nil` value for this parameter
+    ///
+    ///   - server: The server to delete messages from
+    ///
+    ///   - dependencies: Injected dependencies (used for unit testing)
+    public static func userDeleteMessages(
+        _ sessionId: String,
+        for roomTokens: [String]?,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, UserDeleteMessagesResponse)> {
         let requestBody: UserDeleteMessagesRequest = UserDeleteMessagesRequest(
             rooms: roomTokens,
             global: (roomTokens == nil ? true : nil)
@@ -566,7 +774,15 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: UserDeleteMessagesResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
-    public static func userBanAndDeleteAllMessage(_ sessionId: String, for roomTokens: [String]? = nil, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<[OnionRequestResponseInfoType]> {
+    // TODO: Need to test this once the API has been implemented
+    /// This is a convenience method which constructs a `/sequence` of the `userBan` and `userDeleteMessages`  requests, refer to those
+    /// methods for the documented behaviour of each method
+    public static func userBanAndDeleteAllMessage(
+        _ sessionId: String,
+        for roomTokens: [String]?,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<[OnionRequestResponseInfoType]> {
         let banRequestBody: UserBanRequest = UserBanRequest(
             rooms: roomTokens,
             global: (roomTokens == nil ? true : nil),
@@ -585,8 +801,7 @@ public final class OpenGroupAPI: NSObject {
                     server: server,
                     endpoint: .userBan(sessionId),
                     body: banRequestBody
-                ),
-                responseType: Data?.self
+                )
             ),
             BatchRequestInfo(
                 request: Request(
@@ -608,46 +823,8 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Authentication
     
-    // TODO: This is going to have to work differently (ie. `MessageSender+Encryption`)
-    /// Sign a blinded message request to be sent to a users inbox via SOGS v4
-    private static func sign(message: Data, to blindedSessionId: String, on serverName: String, with serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> Data? {
-        guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
-        // TODO: Re-do this
-        return nil
-//        guard let blindedKeyPair: BlindedECKeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
-//            return nil
-//        }
-//        guard let blindedRecipientPublicKey: Data = String(blindedSessionId.suffix(from: blindedSessionId.index(blindedSessionId.startIndex, offsetBy: IdPrefix.blinded.rawValue.count))).dataFromHex() else {
-//            return nil
-//        }
-//
-//        /// Generate the sharedSecret by "a kB || kA || kB" where
-//        /// a, A are the users private and public keys respectively,
-//        /// kA is the users blinded public key
-//        /// kB is the recipients blinded public key
-//        let maybeSharedSecret: Data? = dependencies.sodium
-//            .sharedEdSecret(userEdKeyPair.secretKey, blindedRecipientPublicKey.bytes)?
-//            .appending(blindedKeyPair.publicKey.bytes)
-//            .appending(blindedRecipientPublicKey.bytes)
-//
-//        guard let sharedSecret: Data = maybeSharedSecret else { return nil }
-//        guard let intermediateHash: Bytes = dependencies.genericHash.hash(message: sharedSecret.bytes) else { return nil }
-//
-//        /// Generate the inner message by "message || A" where
-//        /// A is the sender's ed25519 master pubkey (**not** kA blinded pubkey)
-//        let innerMessage: Bytes = (message.bytes + userEdKeyPair.publicKey)
-//        guard let (ciphertext, nonce) = dependencies.aeadXChaCha20Poly1305Ietf.encrypt(message: innerMessage, secretKey: intermediateHash) else {
-//            return nil
-//        }
-//
-//        /// Generate the final data by "b'\x00' + ciphertext + nonce"
-//        let finalData: Bytes = [0] + ciphertext + nonce
-//
-//        return Data(finalData)
-    }
-    
     /// Sign a message to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
-    public static func sign(_ messageBytes: Bytes, for serverName: String, using dependencies: Dependencies = Dependencies()) -> (publicKey: String, signature: Bytes)? {
+    private static func sign(_ messageBytes: Bytes, for serverName: String, using dependencies: Dependencies = Dependencies()) -> (publicKey: String, signature: Bytes)? {
         guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
         guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: serverName) else {
             return nil
@@ -666,7 +843,7 @@ public final class OpenGroupAPI: NSObject {
             }
             
             return (
-                publicKey: IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey),
+                publicKey: SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString,
                 signature: signatureResult
             )
         }
@@ -677,7 +854,7 @@ public final class OpenGroupAPI: NSObject {
         }
         
         return (
-            publicKey: IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey),
+            publicKey: SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString,
             signature: signatureResult
         )
     }
@@ -691,7 +868,7 @@ public final class OpenGroupAPI: NSObject {
             .appending(url.query.map { value in "?\(value)" })
         let method: String = (request.httpMethod ?? "GET")
         let timestamp: Int = Int(floor(dependencies.date.timeIntervalSince1970))
-        let nonce: Data = Data(dependencies.nonceGenerator.nonce())
+        let nonce: Data = Data(dependencies.nonceGenerator16.nonce())
         
         guard let serverPublicKeyData: Data = serverPublicKey.dataFromHex() else { return nil }
         guard let timestampBytes: Bytes = "\(timestamp)".data(using: .ascii)?.bytes else { return nil }

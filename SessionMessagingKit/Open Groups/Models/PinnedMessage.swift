@@ -10,8 +10,13 @@ extension OpenGroupAPI {
             case pinnedBy = "pinned_by"
         }
     
+        /// The numeric message id
         let id: Int64
+        
+        /// The unix timestamp when the message was pinned
         let pinnedAt: TimeInterval
+        
+        /// The session ID of the admin who pinned this message (which is not necessarily the same as the author of the message)
         let pinnedBy: String
     }
 }

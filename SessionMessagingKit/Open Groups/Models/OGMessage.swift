@@ -51,10 +51,10 @@ extension OpenGroupAPI.Message {
                 throw OpenGroupAPI.Error.parsingFailed
             }
             
-            // Verify the signature based on the IdPrefix
+            // Verify the signature based on the SessionId.Prefix type
             let publicKey: Data = Data(hex: sender.removingIdPrefixIfNeeded())
             
-            switch IdPrefix(with: sender) {
+            switch SessionId.Prefix(from: sender) {
                 case .blinded:
                     guard dependencies.sign.verify(message: data.bytes, publicKey: publicKey.bytes, signature: signature.bytes) else {
                         SNLog("Ignoring message with invalid signature.")

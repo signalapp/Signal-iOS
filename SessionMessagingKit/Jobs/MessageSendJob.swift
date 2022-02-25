@@ -110,6 +110,25 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                 fileIds: fileIds
             )
         }
+        else if rawDestination.removePrefix("openGroupInbox(") {
+            guard rawDestination.removeSuffix(")") else { return nil }
+            
+            let components = rawDestination
+                .split(separator: ",")
+                .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            
+            guard components.count == 3 else { return nil }
+            
+            let server: String = components[0]
+            let openGroupPublicKey: String = components[1]
+            let blindedPublicKey: String = components[2]
+            
+            destination = .openGroupInbox(
+                server: server,
+                openGroupPublicKey: openGroupPublicKey,
+                blindedPublicKey: blindedPublicKey
+            )
+        }
         else {
             return nil
         }
@@ -141,6 +160,9 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                     "openGroupV4(\(room), \(server), \(whisperToString), \(whisperModsString), [\(fileIdString)])",
                     forKey: "destination"
                 )
+                
+            case .openGroupInbox(let server, let openGroupPublicKey, let blindedPublicKey):
+                coder.encode("openGroupInbox(\(server), \(openGroupPublicKey), \(blindedPublicKey)", forKey: "destination")
         }
         
         coder.encode(id, forKey: "id")

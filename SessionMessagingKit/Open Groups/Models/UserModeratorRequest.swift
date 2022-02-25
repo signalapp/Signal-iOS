@@ -25,7 +25,7 @@ extension OpenGroupAPI {
         /// that may also be present.
         ///
         /// See the `admin` parameter description for information on how `admin` and `moderator` parameters interact.
-        let moderator: Bool
+        let moderator: Bool?
         
         /// If `true` then this user will be granted moderator and admin permissions to the given rooms or server.  Admin permissions are
         /// required to appoint new moderators or administrators and to alter room info such as the image, adding/removing pinned messages,
@@ -51,7 +51,7 @@ extension OpenGroupAPI {
         /// - `moderator=false, admin=false`: exactly the same as above.
         /// - `moderator=false, admin=true`: this combination is *not* *permitted* (because admin permissions imply moderator
         /// permissions) and will result in Bad Request error if given.
-        let admin: Bool
+        let admin: Bool?
         
         /// Whether this user should be a "visible" moderator or admin in the specified rooms (or globally).  Visible moderators are identified to all
         /// room users (e.g. via a special status badge in Session clients).

@@ -12,9 +12,22 @@ public extension Message {
             whisperMods: Bool = false,
             fileIds: [Int64]? = nil // TODO: Handle 'fileIds'
         )
+        case openGroupInbox(server: String, openGroupPublicKey: String, blindedPublicKey: String)
 
         static func from(_ thread: TSThread) -> Message.Destination {
             if let thread = thread as? TSContactThread {
+                if SessionId.Prefix(from: thread.contactSessionID()) == .blinded {
+                    guard let server: String = thread.originalOpenGroupServer, let publicKey: String = thread.originalOpenGroupPublicKey else {
+                        preconditionFailure("Attempting to send message to blinded id without the Open Group information")
+                    }
+                    
+                    return .openGroupInbox(
+                        server: server,
+                        openGroupPublicKey: publicKey,
+                        blindedPublicKey: thread.contactSessionID()
+                    )
+                }
+                
                 return .contact(publicKey: thread.contactSessionID())
             }
             

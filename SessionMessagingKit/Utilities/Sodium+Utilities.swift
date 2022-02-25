@@ -47,14 +47,9 @@ extension Sodium {
     private static let publicKeyLength: Int = Int(crypto_scalarmult_bytes())        // 32
     private static let secretKeyLength: Int = Int(crypto_sign_secretkeybytes())     // 64
     
-    /// Constructs a "blinded" key pair (`ka, kA`) based on an open group server `publicKey` and an ed25519 `keyPair`
-    public func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
-        guard edKeyPair.publicKey.count == Sodium.publicKeyLength && edKeyPair.secretKey.count == Sodium.secretKeyLength else {
-            return nil
-        }
-        
-        /// 64-byte blake2b hash then reduce to get the blinding factor:
-        ///     k = salt.crypto_core_ed25519_scalar_reduce(blake2b(server_pk, digest_size=64).digest())
+    /// 64-byte blake2b hash then reduce to get the blinding factor
+    public func generateBlindingFactor(serverPublicKey: String) -> Bytes? {
+        /// k = salt.crypto_core_ed25519_scalar_reduce(blake2b(server_pk, digest_size=64).digest())
         guard let serverPubKeyData: Data = serverPublicKey.dataFromHex() else { return nil }
         guard let serverPublicKeyHashBytes: Bytes = genericHash.hash(message: [UInt8](serverPubKeyData), outputLength: 64) else {
             return nil
@@ -75,15 +70,18 @@ extension Sodium {
         /// Ensure the above worked
         guard kResult == 0 else { return nil }
         
-        /// Calculate k*a.  To get 'a' (the Ed25519 private key scalar) we call the sodium function to
-        /// convert to an *x* secret key, which seems wrong--but isn't because converted keys use the
-        /// same secret scalar secret.  (And so this is just the most convenient way to get 'a' out of
-        /// a sodium Ed25519 secret key).
-        ///     a = s.to_curve25519_private_key().encode()
-        let secretKeyBytes: Bytes = [UInt8](edKeyPair.secretKey)
+        return Data(bytes: kPtr, count: Sodium.scalarLength).bytes
+    }
+    
+    /// Calculate k*a.  To get 'a' (the Ed25519 private key scalar) we call the sodium function to
+    /// convert to an *x* secret key, which seems wrong--but isn't because converted keys use the
+    /// same secret scalar secret (and so this is just the most convenient way to get 'a' out of
+    /// a sodium Ed25519 secret key)
+    private func generatePrivateKeyScalar(secretKey: Bytes) -> Bytes? {
+        /// a = s.to_curve25519_private_key().encode()
         let aPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.scalarMultLength)
         
-        let aResult = secretKeyBytes.withUnsafeBytes { (secretKeyPtr: UnsafeRawBufferPointer) -> Int32 in
+        let aResult = secretKey.withUnsafeBytes { (secretKeyPtr: UnsafeRawBufferPointer) -> Int32 in
             guard let secretKeyBaseAddress: UnsafePointer<UInt8> = secretKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
                 return -1
             }
@@ -94,10 +92,38 @@ extension Sodium {
         /// Ensure the above worked
         guard aResult == 0 else { return nil }
         
+        return Data(bytes: aPtr, count: Sodium.scalarMultLength).bytes
+    }
+    
+    /// Constructs a "blinded" key pair (`ka, kA`) based on an open group server `publicKey` and an ed25519 `keyPair`
+    public func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
+        guard edKeyPair.publicKey.count == Sodium.publicKeyLength && edKeyPair.secretKey.count == Sodium.secretKeyLength else {
+            return nil
+        }
+        guard let kBytes: Bytes = generateBlindingFactor(serverPublicKey: serverPublicKey) else { return nil }
+        guard let aBytes: Bytes = generatePrivateKeyScalar(secretKey: edKeyPair.secretKey) else { return nil }
+        
         /// Generate the blinded key pair `ka`, `kA`
         let kaPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.secretKeyLength)
         let kAPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.publicKeyLength)
-        crypto_core_ed25519_scalar_mul(kaPtr, kPtr, aPtr)
+        
+        let kaResult = aBytes.withUnsafeBytes { (aPtr: UnsafeRawBufferPointer) -> Int32 in
+            return kBytes.withUnsafeBytes { (kPtr: UnsafeRawBufferPointer) -> Int32 in
+                guard let kBaseAddress: UnsafePointer<UInt8> = kPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
+                    return -1
+                }
+                guard let aBaseAddress: UnsafePointer<UInt8> = aPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
+                    return -1
+                }
+                
+                crypto_core_ed25519_scalar_mul(kaPtr, kBaseAddress, aBaseAddress)
+                return 0
+            }
+        }
+        
+        /// Ensure the above worked
+        guard kaResult == 0 else { return nil }
+        
         guard crypto_scalarmult_ed25519_base_noclamp(kAPtr, kaPtr) == 0 else { return nil }
         
         return Box.KeyPair(
@@ -108,7 +134,7 @@ extension Sodium {
     
     /// Constructs an Ed25519 signature from a root Ed25519 key and a blinded scalar/pubkey pair, with one tweak to the
     /// construction: we add kA into the hashed value that yields r so that we have domain separation for different blinded
-    /// pubkeys (This doesn't affect verification at all).
+    /// pubkeys (this doesn't affect verification at all)
     public func sogsSignature(message: Bytes, secretKey: Bytes, blindedSecretKey ka: Bytes, blindedPublicKey kA: Bytes) -> Bytes? {
         /// H_rh = sha512(s.encode()).digest()[32:]
         let H_rh: Bytes = Bytes(secretKey.sha512().suffix(32))
@@ -170,25 +196,41 @@ extension Sodium {
         return (Data(bytes: sig_RPtr, count: Sodium.noClampLength).bytes + Data(bytes: sig_sPtr, count: Sodium.scalarLength).bytes)
     }
     
-    // TODO: Determine if we still need this? (To generate the `kB` value for the `/inbox` API????)
-    public func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes? {
-        let sharedSecretPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.noClampLength)
-        let result = secondKeyBytes.withUnsafeBytes { (secondKeyPtr: UnsafeRawBufferPointer) -> Int32 in
-            return firstKeyBytes.withUnsafeBytes { (firstKeyPtr: UnsafeRawBufferPointer) -> Int32 in
-                guard let firstKeyBaseAddress: UnsafePointer<UInt8> = firstKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
+    /// Combines two keys (`kA`)
+    public func combineKeys(lhsKeyBytes: Bytes, rhsKeyBytes: Bytes) -> Bytes? {
+        let combinedPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.noClampLength)
+        
+        let result = rhsKeyBytes.withUnsafeBytes { (rhsKeyBytesPtr: UnsafeRawBufferPointer) -> Int32 in
+            return lhsKeyBytes.withUnsafeBytes { (lhsKeyBytesPtr: UnsafeRawBufferPointer) -> Int32 in
+                guard let lhsKeyBytesBaseAddress: UnsafePointer<UInt8> = lhsKeyBytesPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
                     return -1
                 }
-                guard let secondKeyBaseAddress: UnsafePointer<UInt8> = secondKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
+                guard let rhsKeyBytesBaseAddress: UnsafePointer<UInt8> = rhsKeyBytesPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
                     return -1
                 }
                 
-                return crypto_scalarmult_ed25519_noclamp(sharedSecretPtr, firstKeyBaseAddress, secondKeyBaseAddress)
+                return crypto_scalarmult_ed25519_noclamp(combinedPtr, lhsKeyBytesBaseAddress, rhsKeyBytesBaseAddress)
             }
         }
         
+        /// Ensure the above worked
         guard result == 0 else { return nil }
         
-        return Data(bytes: sharedSecretPtr, count: Sodium.scalarMultLength).bytes
+        return Data(bytes: combinedPtr, count: Sodium.noClampLength).bytes
+    }
+    
+    /// Calculate a shared secret for a message from A to B:
+    ///
+    /// BLAKE2b(a kB || kA || kB)
+    ///
+    /// The receiver can calulate the same value via:
+    ///
+    /// BLAKE2b(b kA || kA || kB)
+    public func sharedBlindedEncryptionKey(secretKey: Bytes, otherBlindedPublicKey: Bytes, fromBlindedPublicKey kA: Bytes, toBlindedPublicKey kB: Bytes, genericHash: GenericHashType) -> Bytes? {
+        guard let aBytes: Bytes = generatePrivateKeyScalar(secretKey: secretKey) else { return nil }
+        guard let combinedKeyBytes: Bytes = combineKeys(lhsKeyBytes: aBytes, rhsKeyBytes: otherBlindedPublicKey) else { return nil }
+        
+        return genericHash.hash(message: (combinedKeyBytes + kA + kB), outputLength: 32)
     }
 }
 
@@ -216,5 +258,27 @@ extension GenericHash {
         guard result == 0 else { return nil }
         
         return output
+    }
+}
+
+extension AeadXChaCha20Poly1305IetfType {
+    /// This method is the same as the standard AeadXChaCha20Poly1305IetfType `encrypt` method except it allows the
+    /// specification of a nonce which allows for deterministic behaviour with unit testing
+    public func encrypt(message: Bytes, secretKey: Bytes, nonce: Bytes, additionalData: Bytes? = nil) -> Bytes? {
+        guard secretKey.count == KeyBytes else { return nil }
+
+        var authenticatedCipherText = Bytes(repeating: 0, count: message.count + ABytes)
+        var authenticatedCipherTextLen: UInt64 = 0
+
+        let result = crypto_aead_xchacha20poly1305_ietf_encrypt(
+            &authenticatedCipherText, &authenticatedCipherTextLen,
+            message, UInt64(message.count),
+            additionalData, UInt64(additionalData?.count ?? 0),
+            nil, nonce, secretKey
+        )
+        
+        guard result == 0 else { return nil }
+
+        return authenticatedCipherText
     }
 }

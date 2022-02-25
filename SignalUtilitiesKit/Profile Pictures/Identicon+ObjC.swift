@@ -5,7 +5,7 @@ public final class Identicon : NSObject {
     @objc public static func generatePlaceholderIcon(seed: String, text: String, size: CGFloat) -> UIImage {
         let icon = PlaceholderIcon(seed: seed)
         var content = text
-        if content.count > 2 && IdPrefix(with: content) != nil {
+        if content.count > 2 && SessionId.Prefix(from: content) != nil {
             content.removeFirst(2)
         }
         let layer = icon.generateLayer(with: size, text: content.substring(to: 1))

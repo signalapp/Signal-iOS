@@ -8,7 +8,7 @@ extension MessageSender {
         var members = members
         let userPublicKey = getUserHexEncodedPublicKey()
         // Generate the group's public key
-        let groupPublicKey = Curve25519.generateKeyPair().hexEncodedPublicKey // Includes the 'IdPrefix.standard' prefix
+        let groupPublicKey = Curve25519.generateKeyPair().hexEncodedPublicKey // Includes the 'SessionId.Prefix.standard' prefix
         // Generate the key pair that'll be used for encryption and decryption
         let encryptionKeyPair = Curve25519.generateKeyPair()
         // Ensure the current user is included in the member list

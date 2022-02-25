@@ -136,7 +136,7 @@ extension OpenGroupAPI {
                 // Inbox (Message Requests)
     
                 case .inbox: return "inbox"
-                case .inboxSince(let id): return "inbox/\(id)"
+                case .inboxSince(let id): return "inbox/since/\(id)"
                 case .inboxFor(let sessionId): return "inbox/\(sessionId)"
                 
                 // Users

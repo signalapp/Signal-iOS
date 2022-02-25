@@ -34,30 +34,32 @@ extension Storage {
         if let sender: String = message.sender, let openGroupID: String = openGroupID {
             guard let userEdKeyPair: Box.KeyPair = Storage.shared.getUserED25519KeyPair() else { return nil }
             
-            switch IdPrefix(with: sender) {
-                case .blinded:
-                    let sodium: Sodium = Sodium()
-                    let serverNameParts: [String.SubSequence] = openGroupID.split(separator: ".")
-                    let serverName: String = serverNameParts[0..<(serverNameParts.count - 1)].joined(separator: ".")
-                    
-                    // Note: This is horrible but it doesn't look like there is going to be a nicer way to do it...
-                    guard let serverPublicKey: String = Storage.shared.getOpenGroupPublicKey(for: serverName) else {
-                        return nil
-                    }
-                    guard let blindedKeyPair: Box.KeyPair = sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: sodium.genericHash) else {
-                        return nil
-                    }
-                    
-                    isOutgoingMessage = (sender == IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey))
-                    
-                case .standard, .unblinded:
-                    isOutgoingMessage = (
-                        message.sender == getUserPublicKey() ||
-                        sender == IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey)
-                    )
-                    
-                case .none:
-                    isOutgoingMessage = false
+            if let senderSessionId: SessionId = SessionId(from: sender) {
+                switch senderSessionId.prefix {
+                    case .blinded:
+                        let sodium: Sodium = Sodium()
+                        let serverNameParts: [String.SubSequence] = openGroupID.split(separator: ".")
+                        let serverName: String = serverNameParts[0..<(serverNameParts.count - 1)].joined(separator: ".")
+                        
+                        // Note: This is horrible but it doesn't look like there is going to be a nicer way to do it...
+                        guard let serverPublicKey: String = Storage.shared.getOpenGroupPublicKey(for: serverName) else {
+                            return nil
+                        }
+                        guard let blindedKeyPair: Box.KeyPair = sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: sodium.genericHash) else {
+                            return nil
+                        }
+                        
+                        isOutgoingMessage = (sender == SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString)
+                        
+                    case .standard, .unblinded:
+                        isOutgoingMessage = (
+                            message.sender == getUserPublicKey() ||
+                            sender == SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString
+                        )
+                }
+            }
+            else {
+                isOutgoingMessage = false
             }
         }
         else {

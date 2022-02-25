@@ -4,7 +4,10 @@ import Foundation
 import SessionUtilitiesKit
 
 extension OpenGroupAPI {
-    struct NoBody: Encodable {}
+    struct Empty: Codable {}
+    
+    typealias NoBody = Empty
+    typealias NoResponse = Empty
     
     struct Request<T: Encodable> {
         let method: HTTP.Verb

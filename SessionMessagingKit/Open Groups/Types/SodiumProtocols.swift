@@ -9,14 +9,20 @@ public protocol SodiumType {
     func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType
     func getSign() -> SignType
     
+    func generateBlindingFactor(serverPublicKey: String) -> Bytes?
     func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair?
     func sogsSignature(message: Bytes, secretKey: Bytes, blindedSecretKey ka: Bytes, blindedPublicKey kA: Bytes) -> Bytes?
     
-    func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes?
+    func combineKeys(lhsKeyBytes: Bytes, rhsKeyBytes: Bytes) -> Bytes?
+    func sharedBlindedEncryptionKey(secretKey a: Bytes, otherBlindedPublicKey: Bytes, fromBlindedPublicKey kA: Bytes, toBlindedPublicKey kB: Bytes, genericHash: GenericHashType) -> Bytes?
 }
 
 public protocol AeadXChaCha20Poly1305IetfType {
-    func encrypt(message: Bytes, secretKey: Aead.XChaCha20Poly1305Ietf.Key, additionalData: Bytes?) -> (authenticatedCipherText: Bytes, nonce: Aead.XChaCha20Poly1305Ietf.Nonce)?
+    var KeyBytes: Int { get }
+    var ABytes: Int { get }
+    
+    func encrypt(message: Bytes, secretKey: Bytes, nonce: Bytes, additionalData: Bytes?) -> Bytes?
+    func decrypt(authenticatedCipherText: Bytes, secretKey: Bytes, nonce: Bytes, additionalData: Bytes?) -> Bytes?
 }
 
 public protocol Ed25519Type {
@@ -24,6 +30,9 @@ public protocol Ed25519Type {
 }
 
 public protocol SignType {
+    var PublicKeyBytes: Int { get }
+    
+    func toX25519(ed25519PublicKey: Bytes) -> Bytes?
     func signature(message: Bytes, secretKey: Bytes) -> Bytes?
     func verify(message: Bytes, publicKey: Bytes, signature: Bytes) -> Bool
 }
@@ -37,8 +46,12 @@ public protocol GenericHashType {
 // MARK: - Default Values
 
 extension AeadXChaCha20Poly1305IetfType {
-    func encrypt(message: Bytes, secretKey: Aead.XChaCha20Poly1305Ietf.Key) -> (authenticatedCipherText: Bytes, nonce: Aead.XChaCha20Poly1305Ietf.Nonce)? {
-        return encrypt(message: message, secretKey: secretKey, additionalData: nil)
+    func encrypt(message: Bytes, secretKey: Bytes, nonce: Bytes) -> Bytes? {
+        return encrypt(message: message, secretKey: secretKey, nonce: nonce, additionalData: nil)
+    }
+    
+    func decrypt(authenticatedCipherText: Bytes, secretKey: Bytes, nonce: Bytes) -> Bytes? {
+        return decrypt(authenticatedCipherText: authenticatedCipherText, secretKey: secretKey, nonce: nonce, additionalData: nil)
     }
 }
 

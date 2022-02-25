@@ -103,6 +103,9 @@ public final class MessageSender : NSObject {
                 
             case .legacyOpenGroup, .openGroup:
                 return sendToOpenGroupDestination(destination, message: message, using: transaction)
+                
+            case .openGroupInbox:
+                return sendToOpenGroupInboxDestination(destination, message: message, using: transaction)
         }
     }
 
@@ -125,7 +128,7 @@ public final class MessageSender : NSObject {
         switch destination {
             case .contact(let publicKey): message.recipient = publicKey
             case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey
-            case .legacyOpenGroup, .openGroup: preconditionFailure()
+            case .legacyOpenGroup, .openGroup, .openGroupInbox: preconditionFailure()
         }
         
         let isSelfSend = (message.recipient == userPublicKey)
@@ -183,7 +186,7 @@ public final class MessageSender : NSObject {
                     
                     ciphertext = try encryptWithSessionProtocol(plaintext, for: encryptionKeyPair.hexEncodedPublicKey)
                     
-                case .legacyOpenGroup, .openGroup: preconditionFailure()
+                case .legacyOpenGroup, .openGroup, .openGroupInbox: preconditionFailure()
             }
         }
         catch {
@@ -205,7 +208,7 @@ public final class MessageSender : NSObject {
                 kind = .closedGroupMessage
                 senderPublicKey = groupPublicKey
                 
-            case .legacyOpenGroup, .openGroup: preconditionFailure()
+            case .legacyOpenGroup, .openGroup, .openGroupInbox: preconditionFailure()
         }
         
         let wrappedMessage: Data
@@ -302,15 +305,14 @@ public final class MessageSender : NSObject {
                 preconditionFailure()
             }
             
-            message.sender = IdPrefix.blinded.hexEncodedPublicKey(for: blindedKeyPair.publicKey)
+            message.sender = SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
         }
         else {
-            message.sender = IdPrefix.unblinded.hexEncodedPublicKey(for: userEdKeyPair.publicKey)
+            message.sender = SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString
         }
         
         switch destination {
-            case .contact(_): preconditionFailure()
-            case .closedGroup(_): preconditionFailure()
+            case .contact, .closedGroup, .openGroupInbox: preconditionFailure()
             case .legacyOpenGroup(let channel, let server): message.recipient = "\(server).\(channel)"
             
             case .openGroup(let room, let server, let whisperTo, let whisperMods, _):
@@ -394,6 +396,99 @@ public final class MessageSender : NSObject {
 
                 dependencies.storage.write { transaction in
                     MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: UInt64(floor(data.posted)), using: transaction)
+                    seal.fulfill(())
+                }
+            }
+            .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                dependencies.storage.write { transaction in
+                    handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
+                }
+            }
+        
+        return promise
+    }
+    
+    internal static func sendToOpenGroupInboxDestination(_ destination: Message.Destination, message: Message, using transaction: Any, dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<Void> {
+        let (promise, seal) = Promise<Void>.pending()
+        let storage = SNMessagingKitConfiguration.shared.storage
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let userPublicKey = storage.getUserPublicKey()
+        
+        guard case .openGroupInbox(let server, let openGroupPublicKey, let recipientBlindedPublicKey) = destination else {
+            preconditionFailure()
+        }
+        
+        // Set the timestamp, sender and recipient
+        if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
+            message.sentTimestamp = NSDate.millisecondTimestamp()
+        }
+        
+        message.sender = userPublicKey
+        message.recipient = recipientBlindedPublicKey
+        
+        // Set the failure handler (need it here already for precondition failure handling)
+        func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
+            MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
+            seal.reject(error)
+        }
+        
+        // Attach the user's profile if needed
+        if let message = message as? VisibleMessage {
+            guard let name = storage.getUser()?.name else {
+                handleFailure(with: Error.noUsername, using: transaction)
+                return promise
+            }
+            
+            if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
+                message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
+            }
+            else {
+                message.profile = VisibleMessage.Profile(displayName: name)
+            }
+        }
+        
+        // Convert it to protobuf
+        guard let proto = message.toProto(using: transaction) else {
+            handleFailure(with: Error.protoConversionFailed, using: transaction)
+            return promise
+        }
+        
+        // Serialize the protobuf
+        let plaintext: Data
+        
+        do {
+            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+        }
+        catch {
+            SNLog("Couldn't serialize proto due to error: \(error).")
+            handleFailure(with: error, using: transaction)
+            return promise
+        }
+        
+        // Encrypt the serialized protobuf
+        let ciphertext: Data
+        
+        do {
+            ciphertext = try encryptWithSessionBlindingProtocol(plaintext, for: recipientBlindedPublicKey, openGroupPublicKey: openGroupPublicKey, using: dependencies)
+        }
+        catch {
+            SNLog("Couldn't encrypt message for destination: \(destination) due to error: \(error).")
+            handleFailure(with: error, using: transaction)
+            return promise
+        }
+        
+        // Send the result
+        
+        OpenGroupAPI
+            .send(
+                ciphertext,
+                toInboxFor: recipientBlindedPublicKey,
+                on: server,
+                using: dependencies
+            )
+            .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
+                dependencies.storage.write { transaction in
+                    MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                     seal.fulfill(())
                 }
             }

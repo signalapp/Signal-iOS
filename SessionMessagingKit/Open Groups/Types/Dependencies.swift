@@ -13,7 +13,8 @@ extension OpenGroupAPI {
         let sign: SignType
         let genericHash: GenericHashType
         let ed25519: Ed25519Type.Type
-        let nonceGenerator: NonceGenerator16ByteType
+        let nonceGenerator16: NonceGenerator16ByteType
+        let nonceGenerator24: NonceGenerator24ByteType
         let date: Date
         
         public init(
@@ -25,7 +26,8 @@ extension OpenGroupAPI {
             sign: SignType? = nil,
             genericHash: GenericHashType? = nil,
             ed25519: Ed25519Type.Type = Ed25519.self,
-            nonceGenerator: NonceGenerator16ByteType = NonceGenerator16Byte(),
+            nonceGenerator16: NonceGenerator16ByteType = NonceGenerator16Byte(),
+            nonceGenerator24: NonceGenerator24ByteType = NonceGenerator24Byte(),
             date: Date = Date()
         ) {
             self.api = api
@@ -35,7 +37,8 @@ extension OpenGroupAPI {
             self.sign = (sign ?? sodium.getSign())
             self.genericHash = (genericHash ?? sodium.getGenericHash())
             self.ed25519 = ed25519
-            self.nonceGenerator = nonceGenerator
+            self.nonceGenerator16 = nonceGenerator16
+            self.nonceGenerator24 = nonceGenerator24
             self.date = date
         }
         
@@ -49,7 +52,8 @@ extension OpenGroupAPI {
             sign: SignType? = nil,
             genericHash: GenericHashType? = nil,
             ed25519: Ed25519Type.Type? = nil,
-            nonceGenerator: NonceGenerator16ByteType? = nil,
+            nonceGenerator16: NonceGenerator16ByteType? = nil,
+            nonceGenerator24: NonceGenerator24ByteType? = nil,
             date: Date? = nil
         ) -> Dependencies {
             return Dependencies(
@@ -60,7 +64,8 @@ extension OpenGroupAPI {
                 sign: (sign ?? self.sign),
                 genericHash: (genericHash ?? self.genericHash),
                 ed25519: (ed25519 ?? self.ed25519),
-                nonceGenerator: (nonceGenerator ?? self.nonceGenerator),
+                nonceGenerator16: (nonceGenerator16 ?? self.nonceGenerator16),
+                nonceGenerator24: (nonceGenerator24 ?? self.nonceGenerator24),
                 date: (date ?? self.date)
             )
         }
