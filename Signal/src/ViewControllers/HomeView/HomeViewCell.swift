@@ -1043,12 +1043,11 @@ class HVCellContentToken {
     fileprivate var hasOverrideSnippet: Bool { configs.hasOverrideSnippet }
 
     fileprivate var shouldLoadAvatarAsync: Bool {
+        // We want reloads to load avatars sync, but subsequent avatar loads
+        // (e.g. from scrolling) and the initial load should be async.
         guard let lastReloadDate = configs.lastReloadDate else {
-            return false
+            return true
         }
-        // We want initial loads and reloads to load avatars sync,
-        // but subsequent avatar loads (e.g. from scrolling) should
-        // be async.
         let avatarAsyncLoadInterval = kSecondInterval * 1
         return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
     }
