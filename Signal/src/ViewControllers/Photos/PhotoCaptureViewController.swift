@@ -251,6 +251,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     private let bottomBar = BottomBar(frame: .zero)
     private var bottomBarVerticalPositionConstraint: NSLayoutConstraint!
 
+    private var cameraZoomControl: CameraZoomSelectionControl?
+    private var cameraZoomControlIPhoneConstraints: [NSLayoutConstraint]?
+    private var cameraZoomControlIPadConstraints: [NSLayoutConstraint]?
+
     private var sideBar: SideBar? // Optional because most devices are iPhones and will never need this.
 
     private lazy var tapToFocusView: AnimationView = {
@@ -309,6 +313,22 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             view.addConstraint(bottomBarVerticalPositionConstraint)
         }
 
+        let availableRearCameras = photoCapture.rearCameraZoomFactorMap
+        if availableRearCameras.count > 0 {
+            let cameras = availableRearCameras.sorted { $0.0 < $1.0 }.map { ($0.0, $0.1) }
+
+            let cameraZoomControl = CameraZoomSelectionControl(availableCameras: cameras)
+            cameraZoomControl.delegate = self
+            view.addSubview(cameraZoomControl)
+            self.cameraZoomControl = cameraZoomControl
+
+            let cameraZoomControlConstraints =
+            [ cameraZoomControl.centerXAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerXAnchor),
+              cameraZoomControl.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.topAnchor, constant: -32) ]
+            view.addConstraints(cameraZoomControlConstraints)
+            self.cameraZoomControlIPhoneConstraints = cameraZoomControlConstraints
+        }
+
         view.addSubview(doneButton)
         doneButton.isHidden = true
         doneButton.translatesAutoresizingMaskIntoConstraints = false
@@ -359,6 +379,12 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
         doneButtonIPadConstraints = [ doneButton.centerXAnchor.constraint(equalTo: sideBar.centerXAnchor),
                                       doneButton.bottomAnchor.constraint(equalTo: sideBar.topAnchor, constant: -16)]
+
+        if let cameraZoomControl = cameraZoomControl {
+            let constraints = [ cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
+                                cameraZoomControl.trailingAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.leadingAnchor, constant: -32)]
+            cameraZoomControlIPadConstraints = constraints
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -400,6 +426,21 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         } else {
             view.removeConstraints(doneButtonIPadConstraints)
             view.addConstraints(doneButtonIPhoneConstraints)
+        }
+
+        if let cameraZoomControl = cameraZoomControl {
+            cameraZoomControl.axis = isIPadUIInRegularMode ? .vertical : .horizontal
+
+            if let iPhoneConstraints = cameraZoomControlIPhoneConstraints,
+               let iPadConstraints = cameraZoomControlIPadConstraints {
+                if isIPadUIInRegularMode {
+                    view.removeConstraints(iPhoneConstraints)
+                    view.addConstraints(iPadConstraints)
+                } else {
+                    view.removeConstraints(iPadConstraints)
+                    view.addConstraints(iPhoneConstraints)
+                }
+            }
         }
 
         if !isRecordingVideo {
@@ -481,6 +522,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         photoCapture.switchCamera().catch { error in
             self.showFailureUI(error: error)
         }
+
+        if let cameraZoomControl = cameraZoomControl {
+            cameraZoomControl.isHidden = photoCapture.desiredPosition != .back
+        }
     }
 
     @objc
@@ -515,10 +560,13 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     @objc
     func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
         switch pinchGesture.state {
-        case .began, .changed:
-            photoCapture.updateZoom(scaleFromPreviousZoomFactor: pinchGesture.scale)
+        case .began:
+            photoCapture.beginPinchZoom()
+            fallthrough
+        case .changed:
+            photoCapture.updatePinchZoom(withScale: pinchGesture.scale)
         case .ended:
-            photoCapture.completeZoom(scaleFromPreviousZoomFactor: pinchGesture.scale)
+            photoCapture.completePinchZoom(withScale: pinchGesture.scale)
         default:
             break
         }
@@ -691,6 +739,13 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         if let sideBar = sideBar {
             sideBar.flashModeButton.setImage(image, for: .normal)
         }
+    }
+}
+
+extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
+
+    fileprivate func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: PhotoCapture.CameraType) {
+        photoCapture.switchRearCamera(to: camera, animated: true)
     }
 }
 
@@ -971,6 +1026,11 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         return view.bounds.height
     }
 
+    func photoCapture(_ photoCapture: PhotoCapture, didChangeVideoZoomFactor zoomFactor: CGFloat) {
+        guard let cameraZoomControl = cameraZoomControl else { return }
+        cameraZoomControl.currentZoomFactor = zoomFactor
+    }
+
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
         bottomBar.captureControl.setState(.recording, animationDuration: duration)
         if let sideBar = sideBar {
@@ -1200,6 +1260,225 @@ private class RecordingTimerView: PillView {
         let recordingDuration = self.recordingDuration
         let durationDate = Date(timeIntervalSinceReferenceDate: recordingDuration)
         label.text = timeFormatter.string(from: durationDate)
+    }
+}
+
+private protocol CameraZoomSelectionControlDelegate: AnyObject {
+    func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: PhotoCapture.CameraType)
+}
+
+private class CameraZoomSelectionControl: PillView {
+
+    weak var delegate: CameraZoomSelectionControlDelegate?
+
+    var selectedCamera: PhotoCapture.CameraType
+    var currentZoomFactor: CGFloat {
+        didSet {
+            var viewFound = false
+            for selectionView in selectionViews.reversed() {
+                if currentZoomFactor >= selectionView.defaultZoomFactor && !viewFound {
+                    selectionView.isSelected = true
+                    selectionView.currentZoomFactor = currentZoomFactor
+                    selectionView.update(animated: true)
+                    viewFound = true
+                } else if selectionView.isSelected {
+                    selectionView.isSelected = false
+                    selectionView.update(animated: true)
+                }
+            }
+        }
+    }
+
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.spacing = 2
+        stackView.axis = UIDevice.current.isIPad ? .vertical : .horizontal
+        stackView.preservesSuperviewLayoutMargins = true
+        stackView.isLayoutMarginsRelativeArrangement = true
+        return stackView
+    }()
+    private let selectionViews: [CameraSelectionCircleView]
+
+    var axis: NSLayoutConstraint.Axis {
+        get {
+            stackView.axis
+        }
+        set {
+            stackView.axis = newValue
+        }
+    }
+
+    required init(availableCameras: [(PhotoCapture.CameraType, CGFloat)]) {
+        owsAssertDebug(!availableCameras.isEmpty, "availableCameras must not be empty.")
+
+        let (wideAngleCamera, wideAngleCameraZoomFactor) = availableCameras.first(where: { $0.0 == .wideAngle }) ?? availableCameras.first!
+        selectedCamera = wideAngleCamera
+        currentZoomFactor = wideAngleCameraZoomFactor
+
+        selectionViews = availableCameras.map { (camera, zoomFactor) in
+            return CameraSelectionCircleView(camera: camera, defaultZoomFactor: zoomFactor)
+        }
+
+        super.init(frame: .zero)
+
+        backgroundColor = .ows_blackAlpha20
+        layoutMargins = UIEdgeInsets(margin: 2)
+
+        selectionViews.forEach { view in
+            view.isSelected = view.camera == selectedCamera
+            view.autoSetDimensions(to: .square(38))
+            view.update(animated: false)
+        }
+        stackView.addArrangedSubviews(selectionViews)
+        addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
+
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(gesture:)))
+        addGestureRecognizer(tapGestureRecognizer)
+    }
+
+    @available(*, unavailable, message: "Use init(availableCameras:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
+    }
+
+    // MARK: - Selection
+
+    @objc
+    public func handleTap(gesture: UITapGestureRecognizer) {
+        guard gesture.state == .ended else { return }
+
+        var tappedView: CameraSelectionCircleView?
+        for selectionView in selectionViews {
+            if selectionView.point(inside: gesture.location(in: selectionView), with: nil) {
+                tappedView = selectionView
+                break
+            }
+        }
+
+        if let selectedView = tappedView {
+            selectionViews.forEach { view in
+                if view.isSelected && view != selectedView {
+                    view.isSelected = false
+                    view.update(animated: true)
+                } else if view == selectedView {
+                    view.isSelected = true
+                    view.update(animated: true)
+                }
+            }
+            selectedCamera = selectedView.camera
+            delegate?.cameraZoomControl(self, didSelect: selectedCamera)
+        }
+    }
+
+    private class CameraSelectionCircleView: UIView {
+
+        let camera: PhotoCapture.CameraType
+        let defaultZoomFactor: CGFloat
+        var currentZoomFactor: CGFloat = 1
+
+        private let circleView: CircleView = {
+            let circleView = CircleView()
+            circleView.backgroundColor = .ows_blackAlpha60
+            return circleView
+        }()
+
+        private let textLabel: UILabel = {
+            let label = UILabel()
+            label.textAlignment = .center
+            label.textColor = .ows_white
+            label.font = .ows_semiboldFont(withSize: 11)
+            return label
+        }()
+
+        required init(camera: PhotoCapture.CameraType, defaultZoomFactor: CGFloat) {
+            self.camera = camera
+            self.defaultZoomFactor = defaultZoomFactor
+            self.currentZoomFactor = defaultZoomFactor
+
+            super.init(frame: .zero)
+
+            addSubview(circleView)
+            addSubview(textLabel)
+            textLabel.autoPinEdgesToSuperviewEdges()
+        }
+
+        @available(*, unavailable, message: "Use init(frame:) instead")
+        required init?(coder: NSCoder) {
+            notImplemented()
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            circleView.bounds = CGRect(origin: .zero, size: CGSize(square: circleDiameter))
+            circleView.center = bounds.center
+        }
+
+        var isSelected: Bool = false {
+            didSet {
+                if !isSelected {
+                    currentZoomFactor = defaultZoomFactor
+                }
+            }
+        }
+
+        private var circleDiameter: CGFloat {
+            let circleDiameter = isSelected ? bounds.width : bounds.width * 24 / 38
+            return ceil(circleDiameter)
+        }
+
+        private static let numberFormatterNormal: NumberFormatter = {
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+            numberFormatter.minimumIntegerDigits = 0
+            numberFormatter.maximumFractionDigits = 1
+            return numberFormatter
+        }()
+
+        private static let numberFormatterSelected: NumberFormatter = {
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+            numberFormatter.minimumIntegerDigits = 1
+            numberFormatter.maximumFractionDigits = 1
+            return numberFormatter
+        }()
+
+        private class func cameraLabel(forZoomFactor zoomFactor: CGFloat, isSelected: Bool) -> String {
+            let numberFormatter = isSelected ? numberFormatterSelected : numberFormatterNormal
+            guard var scaleString = numberFormatter.string(for: zoomFactor) else {
+                return ""
+            }
+            if isSelected {
+                scaleString.append("×")
+            }
+            return scaleString
+        }
+
+        static private let animationDuration: TimeInterval = 0.2
+        func update(animated: Bool) {
+            textLabel.text = Self.cameraLabel(forZoomFactor: currentZoomFactor, isSelected: isSelected)
+
+            let animations = {
+                if self.isSelected {
+                    self.textLabel.layer.transform = CATransform3DMakeScale(1.2, 1.2, 1)
+                } else {
+                    self.textLabel.layer.transform = CATransform3DIdentity
+                }
+
+                self.setNeedsLayout()
+                self.layoutIfNeeded()
+            }
+
+            if animated {
+                UIView.animate(withDuration: Self.animationDuration,
+                               delay: 0,
+                               options: [ .curveEaseInOut ]) {
+                    animations()
+                }
+            } else {
+                animations()
+            }
+        }
     }
 }
 

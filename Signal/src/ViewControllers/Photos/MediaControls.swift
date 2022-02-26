@@ -384,8 +384,7 @@ class CameraCaptureControl: UIView {
                     }
                 }()
 
-                let distanceForFullZoom = referenceDistance / 4
-                let ratio = currentDistance / distanceForFullZoom
+                let ratio = currentDistance / referenceDistance
                 zoomLevel = ratio.clamp(0, 1)
                 delegate?.cameraCaptureControl(self, didUpdateZoomLevel: zoomLevel)
             } else {
