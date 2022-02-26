@@ -1,2 +1,2 @@
-• Profile photos for 1-1 and group chats will now reliably appear in notifications
-• Various performance improvements for very large groups
+• Egyének közti üzenetek esetén az értesítésekben mostantól megbízhatóan megjelenik a küldő profilképe
+• Számos teljesítményt érintő javítás nagy méretű csoportok számára

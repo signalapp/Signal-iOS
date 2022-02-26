@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProfileManager.h"
@@ -1536,7 +1536,10 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileAvatarDataWithFilename:userProfile.avatarFileName];
     } else {
-        OWSLogWarn(@"Failed to get user profile to generate avatar data");
+        OWSLogWarn(@"Failed to get user profile to generate avatar data for %@. Has profile? %i. Has filename? %i",
+            address,
+            userProfile != nil,
+            userProfile.avatarFileName != nil);
     }
 
     return nil;

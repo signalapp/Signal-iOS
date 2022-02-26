@@ -220,6 +220,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
 + (SignalServiceAddress *)resolveUserProfileAddress:(SignalServiceAddress *)address
 {
+    OWSAssertDebug(self.tsAccountManager.localAddress != nil);
     return ([self isLocalProfileAddress:address] ? self.localProfileAddress : address);
 }
 

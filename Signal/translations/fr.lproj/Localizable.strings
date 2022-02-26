@@ -1352,7 +1352,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Envoyer un courriel à l’assistance";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Exporter les journaux";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Envoyer à soi-même";
@@ -1610,7 +1610,7 @@
 "DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Merci pour votre aide !";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal est propulsé par des personnes telles que vous.";
+"DONATION_VIEW_TITLE" = "Signal est propulsée par des personnes telles que vous.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_BODY" = "Chez Signal, l’équipe s’est donné comme mission de développer une technologie à code source ouvert de protection de la vie privée et des données personnelles, qui protège la liberté d’expression et permet une communication sécurisée à l’échelle planétaire. Votre contribution alimente cette cause. Aucune publicité, aucun traqueur, vraiment.\n\nVotre don aide à financer le développement, les serveurs et la bande passante d’une appli utilisée par des millions de personnes dans le monde entier pour des communications confidentielles, protégées et instantanées.";
@@ -3563,7 +3563,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Ignorer";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Veuillez vous assurer d’être en ligne et réessayer.";
+"NETWORK_ERROR_RECOVERY" = "Veuillez vous assurer d’être en ligne, réessayez.";
 
 /* String representing only the cellular interface */
 "NETWORK_INTERFACE_SET_CELLULAR" = "Cellulaire seulement";
@@ -4319,7 +4319,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Échec de création du NIP";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Les NIP font en sorte que les renseignements sont enregistrés chiffrés dans Signal afin que vous seul puissiez y accéder. Votre profil, vos paramètres et vos contacts seront restaurés quand vous réinstallerez Signal. Vous n’aurez pas besoin de votre NIP pour ouvrir l’appli.";
+"PIN_CREATION_EXPLANATION" = "Les NIP renforcent par le chiffrement les renseignements enregistrés dans Signal afin que vous seul puissiez y accéder. Votre profil, vos paramètres et vos contacts seront restaurés quand vous réinstallerez Signal. Vous n’aurez pas besoin de votre NIP pour ouvrir l’appli.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "En apprendre davantage les NIP";
@@ -4556,7 +4556,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Le profil ne peut être mis à jour qu’une fois connecté à Internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Votre profil est chiffré de bout en bout. Avec ses modifications, il est visible par vos contacts et si vous lancez ou acceptez de nouvelles conversations.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Votre profil est chiffré de bout en bout. Avec ses modifications, il sera visible par vos contacts si vous lancez ou acceptez de nouvelles conversations.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Enregistrer";
@@ -4616,7 +4616,7 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Toutes · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "A réagi 1%@ à votre message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "A réagi %@ à votre message";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "A réagi %@ à votre album";
@@ -4700,7 +4700,7 @@
 "REGISTER_2FA_SUBMIT_BUTTON" = "Envoyer";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "Bienvenue.";
+"REGISTER_CONTACTS_WELCOME" = "Bienvenue !";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "Trop de tentatives. Veuillez attendre une minute avant de réessayer.";
@@ -5099,7 +5099,7 @@
 "SEND_INVITE_FAILURE" = "Échec d’envoi de l’invitation. Veuillez réessayer plus tard.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Vous avez invité votre ami à utiliser Signal.";
+"SEND_INVITE_SUCCESS" = "Vous avez invité votre amie ou ami à utiliser Signal.";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Abandonner le média";
