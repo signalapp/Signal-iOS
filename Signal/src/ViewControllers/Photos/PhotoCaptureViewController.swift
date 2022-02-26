@@ -985,6 +985,10 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     // MARK: - Video
 
+    func photoCaptureWillBeginRecording(_ photoCapture: PhotoCapture) {
+        isRecordingVideo = true
+    }
+
     func photoCaptureDidBeginRecording(_ photoCapture: PhotoCapture) {
         isRecordingVideo = true
     }

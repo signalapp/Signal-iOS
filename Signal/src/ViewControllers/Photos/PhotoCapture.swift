@@ -15,6 +15,7 @@ protocol PhotoCaptureDelegate: AnyObject {
 
     // MARK: Video
 
+    func photoCaptureWillBeginRecording(_ photoCapture: PhotoCapture)
     func photoCaptureDidBeginRecording(_ photoCapture: PhotoCapture)
     func photoCaptureDidFinishRecording(_ photoCapture: PhotoCapture)
     func photoCaptureDidCancelRecording(_ photoCapture: PhotoCapture)
@@ -521,6 +522,8 @@ class PhotoCapture: NSObject {
         }.catch { error in
             self.handleMovieCaptureError(error)
         }
+
+        delegate.photoCaptureWillBeginRecording(self)
     }
 
     private func completeMovieCapture() {
