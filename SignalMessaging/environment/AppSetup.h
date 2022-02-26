@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setupEnvironmentWithPaymentsEvents:(id<PaymentsEvents>)paymentsEvents
                           mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
                           webSocketFactory:(id<WebSocketFactory>)webSocketFactory
-                 appSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
+                 appSpecificSingletonBlock:(NS_NOESCAPE dispatch_block_t)appSpecificSingletonBlock
                        migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
 NS_SWIFT_NAME(setupEnvironment(paymentsEvents:mobileCoinHelper:webSocketFactory:appSpecificSingletonBlock:migrationCompletion:));
 
