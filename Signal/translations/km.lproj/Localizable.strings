@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "លើកក្រោយ";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "មិនមែនឥឡូវ";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "អំពី Signal";
@@ -32,7 +32,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "សារសំឡេង";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "សារជាសំឡេង %@ វិនាទី";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "សារសំឡេង %@ វិនាទី";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "ការហៅ Signal ";
@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "ទទួលបាន";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "សារ រូបស្ទីកគ័រ ប្រតិកម្ម និងការទទួលការអាន មិនអាចបញ្ជូនទៅអ្នកពី %@នៅក្នុងការសន្ទនានេះ។";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "សារ រូបស្ទីកគ័រ ការប្រតិកម្ម និងការទទួលការអាន មិនអាចបញ្ជូនទៅអ្នកពី %@នៅក្នុងការសន្ទនានេះ។";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "បញ្ហាការបញ្ជូន";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "សារ រូបស្ទីកគ័រ ប្រតិកម្ម និងការទទួលការអាន មិនអាចបញ្ជូនទៅអ្នកពី %@ ទេ។​ ពួកគេអាចព្យាយាមបញ្ជូនវាទៅអ្នកផ្ទាល់ ឬនៅក្នុងក្រុម។";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "សារ រូបស្ទីកគ័រ ការប្រតិកម្ម និងការទទួលការអាន មិនអាចបញ្ជូនទៅអ្នកពី %@ ទេ។​ ពួកគេអាចព្យាយាមបញ្ជូនវាទៅអ្នកដោយផ្ទាល់ ឬ នៅក្នុងក្រុម។";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "បោះបង់";
@@ -227,7 +227,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "យឺតជាងមុន ទិន្នន័យច្រើនជាងមុន";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "លឿនជាងមុន ទិន្នន៏យតិចជាងមុន";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "លឿនជាងមុន ទិន្នន័យតិចជាងមុន";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "គុណភាពមេឌៀ";
@@ -371,22 +371,22 @@
 "BADGE_CONFIGURATION_TITLE" = "ស្លាកសម្គាល់";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "ក្លាយជា Sustainer​ ម្នាក់";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "ក្លាយជា​អ្នកទ្រទ្រង់ម្នាក់";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "អោយ Signal នូវការជំរុញមួយ";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "ស្លាកសម្គាល់ជំរុញរបស់អ្នកបានផុតសុពលភាព ហើយមិនអាចមើលឃើញលើគណនីអ្នកទៀតទេ។\n\nអ្នកអាចបន្តប្រើប្រាស់ Signal បាន ប៉ុន្តែដើម្បីបន្តការគាំទ្របច្ចេកវិទ្យាដែលត្រូវបានបង្កើតដើម្បីអ្នក សូមពិចារណាក្លាយអ្នកគាំទ្រប្រចាំខែរបស់យើង។";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "ស្លាកសម្គាល់ជំរុញរបស់អ្នកបានផុតសុពលភាព ហើយមិនអាចមើលឃើញលើគណនីអ្នកទៀតទេ។\n\nអ្នកអាចបន្តប្រើប្រាស់ Signal បាន ប៉ុន្តែដើម្បីបន្តការគាំទ្របច្ចេកវិទ្យាដែលត្រូវបានបង្កើតដើម្បីអ្នក សូមពិចារណាក្លាយអ្នកទ្រទ្រង់ប្រចាំខែរបស់យើង។";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "ស្លាកសម្គាល់ជំរុញរបស់អ្នកបានផុតសុពលភាព ហើយមិនអាចមើលឃើញលើគណនីអ្នកទៀតទេ។\n\nអ្នកអាចបន្តដំណើរការស្លាកសម្គាល់របស់អ្នកឡើងវិញបាន ៣០ ថ្ងៃទៀតដោយចូលរួមបរិច្ចាគម្ដង។";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "ស្លាកសម្គាល់ជំរុញរបស់អ្នកបានផុតសុពលភាព ហើយមិនអាចមើលឃើញលើគណនីអ្នកទៀតទេ។\n\nអ្នកអាចបន្តដំណើរការស្លាកសម្គាល់ជុំរុញរបស់អ្នកឡើងវិញបាន ៣០ ថ្ងៃទៀតដោយចូលរួមបរិច្ចាគម្ដង។";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "ការជាវជាអ្នកគាំទ្ររបស់អ្នកបានបញ្ឈប់ដោយស្វ័យប្រវត្តិដោយសារអ្នកបានអសកម្មរយៈពេលយូរ។ ស្លាកសម្គាល់អ្នក %@មិនអាចមើលឃើញទៀតទេលើគណនីអ្នក។\n\nអ្នកអាចបន្តការប្រើប្រាស់ Signal ប៉ុន្តែដើម្បីគាំទ្រកម្មវិធីនេះ និងដាក់ដំណើតរការស្លាកសម្គាល់របស់អ្នកឡើងវិញ សូមបន្តការជាវរបស់អ្នក។";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "ការជាវជាអ្នកទ្រទ្រង់ររបស់អ្នកបានបញ្ឈប់ដោយស្វ័យប្រវត្តិដោយសារអ្នកបានអសកម្មរយៈពេលយូរ។ ស្លាកសម្គាល់របស់អ្នក %@មិនអាចមើលឃើញទៀតទេលើគណនីអ្នក។\n\nអ្នកអាចបន្តការប្រើប្រាស់ Signal ប៉ុន្តែដើម្បីគាំទ្រកម្មវិធីនេះ និងដាក់ដំណើតរការស្លាកសម្គាល់របស់អ្នកឡើងវិញ សូមបន្តការជាវរបស់អ្នក។";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "ក្លាយជា Sustainer​ ម្នាក់";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "ក្លាយជាទ្រទ្រង់ម្នាក់";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "បន្ថែមការជំរុញ";
@@ -428,7 +428,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "ហាមឃាត់";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "ហាមឃាត់ និងចាកចេញពីក្រុម  \"%@\" ?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "រាំងខ្ទប់ និងចាកចេញពីក្រុម  \"%@\" ?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "ហាមឃាត់ %@?";
@@ -479,7 +479,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "អ្នកមិនអាចហាមឃាត់ខ្លួនអ្នកទេ។";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "បញ្ហា";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "កំហុសឆ្គង";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ ត្រូវបានបើកសោរ។";
@@ -515,7 +515,7 @@
 "BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "ជ្រើសរើសចំនួនតូចមួយដើម្បីឧបត្ថម្ភ";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"BOOST_VIEW_SELECT_AN_AMOUNT" = "ជ្រើសរើសចំនួនមួយ ដើម្បីឧបត្ថម្ភ";
+"BOOST_VIEW_SELECT_AN_AMOUNT" = "ជ្រើសរើសចំនួនមួយដើម្បីឧបត្ថម្ភ";
 
 /* Title for the donate to signal view */
 "BOOST_VIEW_TITLE" = "អោយ Signal នូវការជំរុញមួយ";
@@ -548,7 +548,7 @@
 "BUTTON_NO" = "ទេ";
 
 /* Label for the 'not now' button. */
-"BUTTON_NOT_NOW" = "លើកក្រោយ";
+"BUTTON_NOT_NOW" = "មិនមែនឥឡូវនេះ";
 
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "យល់ព្រម";
@@ -584,7 +584,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "ហៅម្តងទៀត";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ការហៅជាសំឡេងចូល…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ការហៅចូលជាសំឡេង…";
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 ខកខានហៅចូលជាសំឡេង";
@@ -623,7 +623,7 @@
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 ខកខានហៅចូលជាវីដេអូ";
 
 /* label for accepting incoming video calls as audio  only */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ឆ្លើយដោយគ្មានវីដេអូ";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ឆ្លើយតបដោយគ្មានវីដេអូ";
 
 /* label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "ឆ្លើយតប";
@@ -704,13 +704,13 @@
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "ពពុះមួយទៀត";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "ពណ៌នេះមើលឃើញតែអ្នកប៉ុណ្ណោះ";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "ពណ៌នេះមើលឃើញតែអ្នកប៉ុណ្ណោះ។";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "ពណ៌នេះមើលឃើញតែអ្នកប៉ុណ្ណោះ";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "ពណ៌នេះមើលឃើញតែអ្នកប៉ុណ្ណោះ។";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "ពណ៌នេះមើលឃើញតែអ្នកប៉ុណ្ណោះ";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "ពណ៌នេះមើលឃើញតែអ្នកប៉ុណ្ណោះ។";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "ស្វ័យប្រវត្តិ";
@@ -728,7 +728,7 @@
 "CHAT_COLOR_SETTINGS_TITLE" = "ពណ៌នៃការសន្ទនា";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "កែរពណ៌";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "កែពណ៌";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "ពណ៌នេះត្រូវបានប្រើក្នុងការសន្ទនា%@។ តើអ្នកចង់រក្សារទុកការប្ដូរនេះសម្រាប់ការសន្ទនាទាំងអស់ទេ?";
@@ -737,7 +737,7 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "ប្ដូរពណ៌ដោយស្វ័យប្រវត្តិទៅតាមផ្ទាំងខាងក្រោយ";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "ពណ៌ការជជែក & រូបភាពផ្ទៃក្រោយ";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "ពណ៌នៃការសន្ទនា & រូបភាពផ្ទៃក្រោយ";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "ប្រៀបធៀបជាមួយ ក្តាចុច";
@@ -770,7 +770,7 @@
 "CONFIRM_DELETE_DATA_TEXT" = "វានឹងកំណត់កម្មវិធីឡើងវិញដោយការលុបសាររបស់អ្នក។ កម្មវិធីនេះ នឹងបិទបន្ទាប់ពីដំណើរការនេះ បានបញ្ចប់។";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "តើអ្នកច្បាស់ថាចង់លុបទិន្នន័យទាំងអស់?";
+"CONFIRM_DELETE_DATA_TITLE" = "តើអ្នកច្បាស់ថាចង់លុបទិន្នន័យទាំងអស់ឬទេ?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "វានឹងកំណត់កម្មវិធីឡើងវិញដោយលុបរាល់សាររបស់អ្នកចេញពីឧបករណ៍នេះ។ អ្នកតែងតែភ្ជាប់ជាមួយទូរស័ព្ទរបស់អ្នកម្តងទៀត ប៉ុន្តែនោះនឹងមិនស្តារសារដែលបានលុបចោលទេ។ កម្មវិធីនឹងបិទបន្ទាប់ពីដំណើរការនេះចប់។";
@@ -1139,7 +1139,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "ជូនដំណឹងជានិច្ច";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "កុំជូនដំណឹងប្រសិនបើបិទ";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "កុំជូនដំណឹង ប្រសិនបើបិទ";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "ទទួលបានការជូនដំណឹងនៅពេលដែលអ្នកត្រូវបានគេហៅនៅក្នុងការសន្ទនាស្ងាត់ ៗ ?";
@@ -1235,7 +1235,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "ផ្ញើសារ";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "មានតែអ្នកគ្រប់គ្រង";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "មានតែអ្នកអភិបាល";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "លែងហាមឃាត់ក្រុម";
@@ -1352,7 +1352,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "សារអេឡិចត្រូនិចគាំទ្រ";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "ទាញកំណត់ត្រាចេញ";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "ផ្ញើទៅខ្លួនឯង";
@@ -1397,7 +1397,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "មិនមានការតភ្ជាប់អ៊ីនធឺណិត។ សូមប្រាកដថា Wi-Fi ឬ​ ទិន្នន័យទូរស័ព្ទត្រូវបានបើក បន្ទាប់មក សាកល្បងម្តងទៀត។";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "លេខទូរសព្ទ";
+"DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "លេខទូរស័ព្ទ";
 
 /* Section header */
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "បញ្ជាក់លេខ Signal របស់អ្នក";
@@ -1409,7 +1409,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "លេខទូរស័ព្ទដែលអ្នកបានបញ្ជូលមិនត្រូវគ្នាជាមួយគណនីអ្នក។";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "លុបសារទាំងអស់នៅក្នុងការជជែក?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "លុបសារទាំងអស់នៅក្នុងឈែត?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "លុបសារទាំងអស់";
@@ -1553,7 +1553,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "នៅពេលបើដំណើរការ រាល់សារដែលផ្ញើចេញ ចូលក្នុងការសន្ទនានេះនឹងលុបបាត់បន្ទាប់ពីបានអានរួច";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "សារបច្ចុប្បន្ននឹងរលុបបាត់បន្ទាប់ពី %@";
+"DISAPPEARING_MESSAGES_HINT" = "សារថ្មីៗនឹងរលុបបាត់បន្ទាប់ពី %@";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "ម៉ោង";
@@ -1595,7 +1595,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "ឧបត្ថម្ភទៅ Signal";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "វិធីផ្សេង ដើម្បីឧបត្ថម្ភ";
+"DONATION_VIEW_OTHER_WAYS" = "វិធីផ្សេងៗ ដើម្បីឧបត្ថម្ភ";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "ជ្រើសរើសចំនួនច្រើនមួយដើម្បីឧបត្ថម្ភ";
@@ -1619,7 +1619,7 @@
 "DONATION_VIEW_WHY_DONATE_TITLE" = "ហេតុអ្វីត្រូវឧបត្ថម្ភ?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "អ្នកអាចបើកការប្រើប្រាស់ក្នុងកម្មវិធី ការកំណត់ iOS.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "អ្នកអាចបើកការប្រើប្រាស់ក្នុងកម្មវិធី ការកំណត់របស់ iOS។";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signalត្រូវការចូលប្រើប្រាស់លេខទំនាក់ទំនង ដើម្បីកែប្រែព័ត៌មានទំនាក់ទំនង";
@@ -1658,7 +1658,7 @@
 "EMAIL_SIGNAL_MESSAGE" = "ឧបករណ៍មិនបានកំណត់ឲ្យផ្ញើអ៊ីម៉ែល។ ដើម្បីផ្ញើការស្នើសុំ កំណត់អ៊ីម៉ែលលើឧបករណ៍របស់អ្នក ឬផ្ញើអ៊ីម៉ែលទៅsupport@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "អ៊ីមែលមិនអាចប្រើបាន";
+"EMAIL_SIGNAL_TITLE" = "អ៉ីមែលមិនអាចប្រើបាន";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "សកម្មភាព";
@@ -1706,10 +1706,10 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "មិនអាចបញ្ជូនសារបន្ត";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "មិនអាចបញ្ជូនសារបន្តបាន ព្រោះសារត្រូវបានបាត់បង់";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "មិនអាចបញ្ជូនសារបន្តបាន ព្រោះសារត្រូវបានបាត់បង់។";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "មិនអាចបញ្ជូនសារបន្តបាន ព្រោះសារត្រូវបានបាត់បង់";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "មិនអាចបញ្ជូនសារបន្តបាន ព្រោះសារនានាត្រូវបានបាត់បង់។";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "មិនអាចបញ្ជូនសារបន្ត";
@@ -1721,7 +1721,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "បរាជ័យក្នុងការផ្ញើសារ។";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "បរាជ័យក្នុងការបើកកម្មវិធី អ៊ីម៉ែល";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "បរាជ័យក្នុងការបើកកម្មវិធី អ៉ីម៉ែល";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "មិនអាចបង្កើតសំណើគាំទ្រ";
@@ -1769,7 +1769,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "សារពី %@ មិនអាចបញ្ជូនបាន";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "សារមួយមិនអាចបញ្ជូនបាន";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "សារមិនអាចបញ្ជូនបាន";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "បានទទួលសារស្ទួនគ្នា។";
@@ -1841,7 +1841,7 @@
 "FAILED_VERIFICATION_TITLE" = "បរាជ័យក្នុងការផ្ទៀងផ្ទាត់លេខសុវត្ថិភាព!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "ជ្រើសរើសស្លាកសម្គាល់មួយ";
+"FEATURED_BADGE_SECTION_HEADER" = "ជ្រើសរើសស្លាកសម្គាល់";
 
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "ស្លាកសម្គាល់ពិសេស";
@@ -1862,7 +1862,7 @@
 "FORWARD_MESSAGE" = "បញ្ជូនសារបន្ត";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "ការបញ្ជូនសារបន្តនឹងផ្ញើចេញទៅភ្លាមៗ";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "ការបញ្ជូនសារបន្តនឹងផ្ញើចេញទៅភ្លាមៗ។";
 
 /* Label for button to proceed with forwarding a single message. */
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "ផ្ញើសារ";
@@ -1880,7 +1880,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "សារត្រូវបានផ្ញើចេញ";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "បន្ថែមសារមួយ";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "បន្ថែមសារ";
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "បញ្ជូនបន្តទៅកាន់";
@@ -1976,7 +1976,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "សមាជិកភាពក្រុមអាចត្រូវបានផ្លាស់ប្តូរដោយ “%@“។";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "មានតែអ្នកគ្រប់គ្រងប៉ុណ្ណោះ អាចផ្លាស់ប្តូរជម្រើសនេះ។";
+"GROUP_ADMIN_ONLY_WARNING" = "មានតែអ្នកអភិបាលប៉ុណ្ណោះ អាចផ្លាស់ប្តូរជម្រើសនេះ។";
 
 /* Message body for alert explaining that a group call participant is blocked */
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "អ្នកនឹងមិនទទួលបានសំឡេងឬវីដេអូរបស់ពួកគេទេ ហើយពួកគេនឹងមិនទទួលបានរបស់អ្នកដែរ។";
@@ -1988,7 +1988,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "មានតែអ្នកគ្រប់គ្រងនៃក្រុមនេះ​ អាចចាប់ផ្តើមការហៅ។";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "មិនអាចហៅចេញជាក្រុមបាន";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "មិនអាចហៅចេញជាក្រុមបានទេ";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ ត្រូវបានហាមឃាត់";
@@ -2039,7 +2039,7 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "គ្មាននរណានៅក្នុងការហៅនេះទេ។";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, និង %ld ដទៃទៀង បានចូលរួមការហៅ";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, និង %ld ដទៃទៀត បានចូលរួមការហៅ";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
 "GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, និង %ld ដទៃទៀតបានចេញពីការហៅ";
@@ -2072,7 +2072,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "នរណាម្នាក់បានចូលរួមការហៅនេះ ជាមួយលេខសុវត្ថិភាពដែលបានផ្លាស់ប្តូរ។";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "អូស ដើម្បីបង្ហាញអេក្រង់ចែករំលែក";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "អូសឡើងលើ ដើម្បីបង្ហាញអេក្រង់ចែករំលែក";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "នរណាម្នាក់បានចាប់ផ្តើមការហៅជាក្រុម";
@@ -2084,7 +2084,7 @@
 "GROUP_CALL_START_BUTTON" = "ចាប់ផ្តើមការហៅ";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "ប៉ះនៅទីនេះដើម្បីចាប់ផ្តើមការហៅជាក្រុម";
+"GROUP_CALL_START_TOOLTIP" = "ចុចនៅទីនេះដើម្បីចាប់ផ្តើមការហៅជាក្រុម";
 
 /* Text explaining that you started a group call. */
 "GROUP_CALL_STARTED_BY_YOU" = "អ្នកបានចាប់ផ្តើមការហៅជាក្រុម";
@@ -2183,46 +2183,46 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@​ បានបិទតំណភ្ជាប់ក្រុម។";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "តំណភ្ជាប់ក្រុមត្រូវបានបើក ជាមួយការអនុម័តពីអ្នកគ្រប់គ្រង បើក។";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "តំណភ្ជាប់ក្រុមត្រូវបានបើក ជាមួយការអនុម័តពីអ្នកអភិបាល បើក។";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកគ្រប់គ្រង បើក។";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកអភិបាល បើក។";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកគ្រប់គ្រង បើក។";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកអភិបាល បើក។";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "តំណភ្ជាប់ក្រុមត្រូវបានបើក ជាមួយការអនុម័តពីអ្នកគ្រប់គ្រង បិទ។";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "តំណភ្ជាប់ក្រុមត្រូវបានបើក ជាមួយការអនុម័តពីអ្នកអភិបាល បិទ។";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកគ្រប់គ្រង បិទ។";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកអភិបាល បិទ។";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកគ្រប់គ្រង បិទ។";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកអភិបាល បិទ។";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "តំណភ្ជាប់ក្រុមត្រូវបានកំណត់ឡើងវិញ។";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "អ្នកបានកំណត់តំណភ្ជាប់សារឡើងវិញ";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "អ្នកបានកំណត់តំណភ្ជាប់ក្រុមឡើងវិញ។";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ បានកំណត់តំណភ្ជាប់ក្រុមឡើងវិញ។";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "ការអនុម័តអ្នកគ្រប់គ្រងត្រូវបានបិទសម្រាប់តំណភ្ជាប់ក្រុម។";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "ការអនុម័តអ្នកអភិបាលត្រូវបានបិទសម្រាប់តំណភ្ជាប់ក្រុម។";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបិទការអនុម័តពីអ្នកគ្រប់គ្រង សម្រាប់តំណភ្ជាប់ក្រុម។";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបិទការអនុម័តពីអ្នកអភិបាល សម្រាប់តំណភ្ជាប់ក្រុម។";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបិទការអនុម័តពីអ្នកគ្រប់គ្រង សម្រាប់តំណភ្ជាប់ក្រុម។";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបិទការអនុម័តពីអ្នកអភិបាល សម្រាប់តំណភ្ជាប់ក្រុម។";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "ការអនុម័តអ្នកគ្រប់គ្រងត្រូវបានបើកសម្រាប់តំណភ្ជាប់ក្រុម។";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "ការអនុម័តអ្នកអភិបាលត្រូវបានបើកសម្រាប់តំណភ្ជាប់ក្រុម។";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកការអនុម័តពីអ្នកគ្រប់គ្រង សម្រាប់តំណភ្ជាប់ក្រុម។";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកការអនុម័តពីអ្នកអភិបាល សម្រាប់តំណភ្ជាប់ក្រុម។";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបើកការអនុម័តពីអ្នកគ្រប់គ្រង សម្រាប់តំណភ្ជាប់ក្រុម។";
@@ -2243,28 +2243,28 @@
 "GROUP_INVITES_VIEW_TITLE" = "ការអញ្ជើញសមាជិក";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "ការកំណត់ក្រុមត្រូវបានផ្លាស់ប្តូរ ដើម្បីអនុញ្ញាតសមាជិកទាំងអស់ផ្ញើសារ។";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "ការកំណត់ក្រុមត្រូវបានផ្លាស់ប្តូរ ដើម្បីអនុញ្ញាតសមាជិកទាំងអស់ផ្ញើសារបាន។";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "អ្នកបានផ្លាស់ប្តូរការកំណត់ក្រុម ដើម្បីអនុញ្ញាតសមាជិកទាំងអស់ផ្ញើសារ។";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "អ្នកបានផ្លាស់ប្តូរការកំណត់ក្រុម ដើម្បីអនុញ្ញាតសមាជិកទាំងអស់ផ្ញើសារបាន។";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@បានប្ដូរការកំណត់ក្រុមដែលអនុញាតិអោយសមាជិកក្រុមផ្ញើសារបាន";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@បានប្ដូរការកំណត់ក្រុមដែលអនុញាតិអោយសមាជិកក្រុមផ្ញើសារបាន។";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "ការកំណត់ក្រុម ត្រូវបានផ្លាស់ប្តូរសម្រាប់តែអ្នកគ្រប់គ្រងផ្ញើសារប៉ុណ្ណោះ។";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "ការកំណត់ក្រុមត្រូវបានផ្លាស់ប្តូរសម្រាប់តែអ្នកអភិបាលផ្ញើសារប៉ុណ្ណោះ។";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "អ្នកបានផ្លាស់ប្តូរការកំណត់ក្រុម ដើម្បីអនុញ្ញាតតែអ្នកគ្រប់គ្រងផ្ញើសារ។";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "អ្នកបានផ្លាស់ប្តូរការកំណត់ក្រុម ដើម្បីអនុញ្ញាតតែអ្នកអភិបាលផ្ញើសារ។";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@បានប្ដូរការកំណត់ក្រុមដែលមានតែអ្នកគ្រប់គ្រងក្រុមទើបអាចផ្ញើសារបាន";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@បានផ្លាស់ប្ដូរការកំណត់ក្រុមដែលមានតែអ្នកអភិបាលក្រុមទើបអាចផ្ញើសារបាន។";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "តំណភ្ជាប់ក្រុមនេះ លែងមានសុពលភាពហើយ។";
 
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "មិនអាចចូលរួមក្រុម";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "មិនអាចចូលរួមក្រុមបានទេ";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "ក្រុម";
@@ -2312,7 +2312,7 @@
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "អញ្ជើញមិត្តភក្តិ";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "អញ្ជើញមិត្តភក្តិ ទៅក្រុមនេះ តាមរយៈតំណភ្ជាប់ក្រុម";
+"GROUP_LINK_PROMOTION_UPDATE" = "អញ្ជើញមិត្តភក្តិទៅកាន់ក្រុមរបស់អ្នក តាមរយៈតំណភ្ជាប់ក្រុម";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "អ្នកដែលអាចស្កេនកូដនេះ នឹងអាចចូលរួមក្រុមរបស់អ្នក។ អ្នកគ្រប់គ្រងនឹងនៅតែត្រូវការអនុម័តសមាជិកថ្មី បើសិនអ្នកបានបើកការកំណត់នេះ៕";
@@ -2414,7 +2414,7 @@
 "GROUP_LOCAL_USER_REQUEST_REJECTED" = "សំណើចូលរួមក្រុមរបស់អ្នកត្រូវបានបដិសេធ។";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "អ្នកបានស្នើសុំចួលរួមក្រុម។";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "អ្នកបានស្នើសុំចូលរួមក្រុម។";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "សិទ្ធិអ្នកគ្រប់គ្រងត្រូវបានដកហូត។";
@@ -2429,10 +2429,10 @@
 "GROUP_MEMBER_ADMIN_INDICATOR" = "អ្នកគ្រប់គ្រង";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "គ្មានសមាជិក។";
+"GROUP_MEMBER_COUNT_LABEL_0" = "គ្មានសមាជិក";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "សមាជិក 1";
+"GROUP_MEMBER_COUNT_LABEL_1" = "សមាជិកម្នាក់";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
 "GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ សមាជិក";
@@ -2444,7 +2444,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "អ្នក";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "អ្នកអាចបន្ថែម ឬអញ្ជើញមិត្តភក្តិ បន្ទាប់ពីបង្កើតក្រុមនេះ។";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "អ្នកអាចបន្ថែម ឬ អញ្ជើញមិត្តភក្តិ បន្ទាប់ពីបង្កើតក្រុមនេះ។";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "សមាជិក";
@@ -2531,7 +2531,7 @@
 "GROUP_REMOTE_USER_INVITED_1" = "មនុស្សម្នាក់ ត្រូវបានអញ្ជើញចូលក្រុម។";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ត្រូវបានអញ្ជើញទៅក្រុម។";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ត្រូវបានអញ្ជើញទៅកាន់ក្រុម។";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "អ្នកបានអញ្ជើញ %@ ចូលក្រុម។";
@@ -2576,7 +2576,7 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ បានបដិសេធសំណើចូលរួមក្រុមពី​ %1$@។";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "សំណើចួលរួមក្រុមពី %@ ត្រូវបានបដិសេធ។";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "សំណើចូលរួមក្រុមពី %@ ត្រូវបានបដិសេធ។";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ បានស្នើសុំចូលរួម តាមរយៈតំណភ្ជាប់ក្រុម។";
@@ -2612,7 +2612,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ បានលុបរូបភាព។";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "រូបភាពក្រុម ត្រូវបានធ្វើបច្ចុប្បន្នភាព។";
+"GROUP_UPDATED_AVATAR_UPDATED" = "រូបភាពក្រុមត្រូវបានធ្វើបច្ចុប្បន្នភាព។";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "អ្នកបានធ្វើបច្ចុប្បន្នភាពរូបភាព។";
@@ -2675,13 +2675,13 @@
 "GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "សមាជិក %@ នាក់មិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានលុបចេញពីក្រុម។";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "សមាជិកម្នាក់ មិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានអញ្ជើញឲ្យចូលរួម";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "សមាជិកម្នាក់ មិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានអញ្ជើញឱ្យចូលរួម";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "អ្នកមិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានអញ្ជើញចូលរួម";
 
 /* Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "សមាជិក %@​ នាក់មិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានអញ្ជើញឲ្យចូលរួម។";
+"GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "សមាជិក %@​ នាក់មិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានអញ្ជើញឱ្យចូលរួម។";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "អ្នកបានចាកចេញពីក្រុម។";
@@ -2693,7 +2693,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "មានតែ%@ អាចផ្ញើសារ។";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "ផ្ញើសារទៅអ្នកគ្រប់គ្រង";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "ផ្ញើសារទៅអ្នកអភិបាល";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "ជ្រើសរើសអ្នកគ្រប់គ្រងថ្មីសម្រាប់ក្រុមនេះ មុនពេលអ្នកចាកចេញ។";
@@ -2870,7 +2870,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "មិនអាចបញ្ចប់ការដំឡើង";
 
 /* Message indicating the group update succeeded. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "បានដំឡើងទៅក្រុមថ្មី";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "បានដំឡើងទៅក្រុមថ្មី។";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
 "GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "ដំឡើងក្រុមនេះ";
@@ -2951,19 +2951,19 @@
 "HOME_VIEW_TOOLBAR_READ_ALL" = "អានទាំងអស់";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "គូរកន្លែងដើម្បីព្រិល";
+"IMAGE_EDITOR_BLUR_HINT" = "គូរកន្លែងណាមួយឱ្យព្រាល";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "ព្រិលមុខ";
+"IMAGE_EDITOR_BLUR_SETTING" = "ព្រាលមុខ";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "គូរដើម្បីព្រិលមុខ ឬតំបន់បន្ថែម";
+"IMAGE_EDITOR_BLUR_TOAST" = "គូរឱ្យពារិលមុខ ឬ តំបន់បន្ថែម";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "អ្នកមិនអាចចែករំលែកលើសពី %@ ។";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
-"IMAGE_PICKER_CHANGE_PHOTOS" = "ជ្រើសរើសរូបភាព";
+"IMAGE_PICKER_CHANGE_PHOTOS" = "ប្តូររូបភាព";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "ផ្តល់សិទ្ធិប្រើប្រាស់ទាំងអស់ក្នុងការកំណត់ ឬផ្លាស់ប្តូររូបភាពណាមួយ ដែល Signal អាចប្រើប្រាស់។";
@@ -3134,7 +3134,7 @@
 "LINK_NEW_DEVICE_TITLE" = "ភ្ជាប់ឧបករណ៍ថ្មី";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "មើលតំណជាមុន";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "មើលតំណភ្ជាប់ជាមុន";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "បានតភ្ជាប់ឧបករណ៍";
@@ -3155,7 +3155,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "បើក “បណ្តាញខាងក្នុង”";
 
 /* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "រុករកទៅ Signal";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "ចូលទៅ Signal";
 
 /* Title for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "បើក ការចូលប្រើប្រាស់បណ្តាញខាងក្នុង";
@@ -3242,7 +3242,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "បញ្ជូនសារនេះបន្ត";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "បញ្ជូនសារដែលបានជ្រើសរើសបន្ត";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "បញ្ជូនបន្តសារដែលបានជ្រើសរើស";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "បើកការអញ្ជើញក្រុម";
@@ -3257,10 +3257,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "ហៅចេញ";
 
 /* Label for button to make a Facetime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetimeជាសម្លេង";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Facetime ជាសម្លេង";
 
 /* Label for button to make a Facetime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetimeជាវីដេអូ";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime ជាវីដេអូ";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "ផ្ញើសារជាអក្សរ";
@@ -3332,7 +3332,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "បានបញ្ជូន";
 
 /* Status label for messages which are viewed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "បានបង្ហាញដោយ";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "បានពិនិត្យដោយ";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "បានទទួល";
@@ -3410,7 +3410,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "ពិនិត្យមើលសំណើរ";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "បានរាយការណ៍សារឥតបានការ និងបានហាមឃាត់។";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "បានរាយការណ៍សារឥតបានការ និងហាមឃាត់។";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "យល់ព្រម";
@@ -3455,7 +3455,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "បោះបង់ការស្នើសុំ";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "បោះបង់សំណើរបស់អ្នក​ ដើម្បីចូលរួមក្រុមនេះ?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "បោះបង់សំណើរបស់អ្នក​សម្រាប់ចូលរួមក្រុមនេះ?";
 
 /* Indicator that you have requested to join this group. */
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "ការស្នើសុំរបស់អ្នកដើម្បីចូលក្រុម ត្រូវបានផ្ញើទៅកាន់អ្នកគ្រប់គ្រងក្រុម។ អ្នកនឹងទទួលដំណឹង នៅពេលគេមានសកម្មភាព។";
@@ -3473,7 +3473,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "បានបរាជ័យ";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "បានផ្ញើផ្នែកខ្លះ ប៉ះព័ត៌មើលលម្អិត";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "បានផ្ញើផ្នែកខ្លះ ចុចមើលព័ត៌លម្អិត";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING" = "ការផ្ញើបានផ្អាក";
@@ -3581,7 +3581,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ស្វែងរកតាមរយៈលេខទូរសព្ទ";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "សមាជិក 1";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "សមាជិកម្នាក់";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "ក្រុមថ្មី";
@@ -3644,7 +3644,7 @@
 "NO_GROUPS_IN_COMMON" = "គ្មានក្រុមរួម";
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
-"NO_OTHER_GROUPS_IN_COMMON" = "មិនមានក្រុមដទៃទៀតរួមគ្នាទេ";
+"NO_OTHER_GROUPS_IN_COMMON" = "មិនមានក្រុមរួមដទៃទៀតទេ";
 
 /* Explanation of how to see a conversation. */
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "ជ្រើសរើសលេខទំនាក់ទំនងមួយ ឬក្រុមមួយ ដើម្បីចាប់ផ្តើមការសន្ទនា។";
@@ -3794,7 +3794,7 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "ជ្រើសរើសអ្នកដែលអាចស្វែងរកអ្នកលើ Signal ជាមួយលេខទូរស័ព្ទរបស់អ្នក %@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "នរណាអាចស្វែងរកអ្នកជាមួយលេខទូរស័ព្ទរបស់អ្នកឯ";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "នរណាអាចស្វែងរកអ្នកជាមួយលេខទូរស័ព្ទរបស់អ្នក?";
 
 /* Placeholder string for phone number field during registration */
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "លេខទូរសព្ទរបស់អ្នក";
@@ -3839,7 +3839,7 @@
 "ONBOARDING_PROFILE_CREATION_TITLE" = "ប្រវត្តិរូបរបស់អ្នក";
 
 /* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "ត្រកូល (ទាមទារ)";
+"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "នាមត្រកូល (ទាមទារ)";
 
 /* Placeholder text for the given name field of the profile creation view. */
 "ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "ឈ្មោះ (ទាមទារ)";
@@ -3932,7 +3932,7 @@
 "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "ថវិកាមិនគ្រប់គ្រាន់";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "អ្នកទទួល មិនអាចផ្ញើទៅអ្នកទទួល";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "បង្កាន់ដៃ មិនអាចផ្ញើទៅអ្នកទទួល";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "មិនត្រឹមត្រូវ";
@@ -4082,7 +4082,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "មិនអាចផ្ញើការទូទាត់";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "មនុស្សនេះ មិនទាន់បើកដំណើរការការទូទាត់។";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "បុគ្គលនេះ មិនទាន់បើកដំណើរការការទូទាត់។";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "អ្នកទទួលមិនត្រឹមត្រូវ";
@@ -4160,7 +4160,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "ព័ត៌មានលំអិតនៃមនុស្ស ដែលត្រូវបានអញ្ជើញដោយសមាជិកក្រុមផ្សេង មិនត្រូវបានបង្ហាញ។ បើអ្នកត្រូវបានអញ្ជើញជ្រើសរើសចូលរួម ព័ត៌មានពួកគេនឹងត្រូវចែករំលែកជាមួយក្រុមគ្រប់ពេល។ ពួកគេនឹងមិនអាចឃើញសារក្នុងក្រុម រហូតដល់ពួកគេចូលរួមក្រុម។";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "អ្នកនៅលើបញ្ជីនេះ កំពុងព្យាយាមចួលរួម  “%@” តាមរយៈតំណភ្ជាប់ក្រុម។";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "អ្នកនៅលើបញ្ជីនេះ កំពុងព្យាយាមចូលរួម  “%@” តាមរយៈតំណភ្ជាប់ក្រុម។ ";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "ការអញ្ជើញមិនត្រឹមត្រូវ";
@@ -4256,7 +4256,7 @@
 "PHONE_NUMBER_TYPE_PAGER" = "Pager";
 
 /* Label used when we don't what kind of phone number it is (e.g. mobile/work/home). */
-"PHONE_NUMBER_TYPE_UNKNOWN" = "ទូរសព្ទ";
+"PHONE_NUMBER_TYPE_UNKNOWN" = "ទូរស័ព្ទ";
 
 /* Label for 'Work' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK" = "ការងារ";
@@ -4283,7 +4283,7 @@
 "PIN_CHANGE_ERROR_MESSAGE" = "មិនអាចបង្កើតលេខកូដថ្មីបាន។ លេខកូដដែលអ្នកធ្លាប់មានត្រូវបានផ្អាកដំណើរការ។ សូមពិនិត្យការភ្ជាប់អុីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "បរាជ័យការប្ដូរលេខកូដ";
+"PIN_CHANGE_ERROR_TITLE" = "បានបរាជ័យការប្ដូរលេខកូដ";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN ត្រូវមានយ៉ាងហោចណាស់4 តួ";
@@ -4358,7 +4358,7 @@
 "PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "ការបង្កើតលេខកូដជោគជ័យ ប៉ុន្តែការចាក់សោរការចុះឈ្មោះមិនបានបើកដំណើរការ។ សូមពិនិត្យបណ្ដាញរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "បរាជ័យក្នុងការបើកការចាក់សោរចុះឈ្មោះ";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "បានបរាជ័យក្នុងការបើកការចាក់សោរចុះឈ្មោះ";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "បិទលេខកូដ PIN";
@@ -4373,10 +4373,10 @@
 "PIN_DISABLE_ERROR_MESSAGE" = "លេខកូដ PIN មិនអាចបិទបាន។ យើងនឹងប្រាប់ម្តងទៀតពេលក្រោយ។";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "បរាជ័យបិទលេខកូដ​ PIN ";
+"PIN_DISABLE_ERROR_TITLE" = "បានបរាជ័យបិទលេខកូដ​ PIN ";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "ការបង្កើត PIN បរាជ័យ";
+"PIN_RECREATION_ERROR_TITLE" = "បានបរាជ័យការបង្កើត PIN ";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
 "PIN_RECRETION_ERROR_MESSAGE" = "មិនអាចបង្កើតលេខកូដរបស់អ្នកបាន។ សូមពិនិត្យបណ្ដាញរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
@@ -4427,7 +4427,7 @@
 "PINS_MEGAPHONE_ACTION" = "បង្កើតលេខកូដ PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "បញ្ចប់ការបង្កើតលេខកូដ Signal PIN។";
+"PINS_MEGAPHONE_BODY" = "បញ្ចប់ការបង្កើតលេខកូដ Signal។";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "យើងនឹងរំលឹកអ្នកពេលក្រោយ។ ការបង្កើតលេខកូដ PIN នឹងចាំបាច់ក្នុង %ld ថ្ងៃ។";
@@ -4508,7 +4508,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "និយាយដោយសេរី";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "សម្រាកបន្ថិច";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "សម្រាកបន្តិច";
 
 /* The 'Working on something new' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "ធ្វើការលើអ្វីដែលថ្មី";
@@ -4547,7 +4547,7 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "ឈ្មោះរបស់អ្នក វែងពេក។";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "ត្រកូល (ទាមទារ)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "គោត្តនាម (ទាមទារ)";
 
 /* Default text for the given name field of the profile view. */
 "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "ឈ្មោះ (ទាមទារ)";
@@ -4733,7 +4733,7 @@
 "REGISTRATION_NON_VALID_NUMBER" = "ទម្រង់លេខទូរស័ព្ទនេះមិនគាំទ្រទេ សូមទំនាក់ទំនងផ្នែកជំនួយ។";
 
 /* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "លេខទូរសព្ទ";
+"REGISTRATION_PHONENUMBER_BUTTON" = "លេខទូរស័ព្ទ";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "អ្នកត្រូវចុះឈ្មោះ មុនពេលអ្នកអាចផ្ញើសារបាន។";
@@ -4859,7 +4859,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "ការផ្ទៀងផ្ទាត់បរាជ័យ";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "ដោះសោរSignal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "ដោះសោរ Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";
@@ -5009,7 +5009,7 @@
 "SEARCH_SECTION_CONTACTS" = "បញ្ជីឈ្មោះផ្សេងទៀត";
 
 /* section header for search results that match existing 1:1 chats */
-"SEARCH_SECTION_CONVERSATIONS" = "ការជជែក";
+"SEARCH_SECTION_CONVERSATIONS" = "ការសន្ទនា";
 
 /* section header for search results that match existing groups */
 "SEARCH_SECTION_GROUPS" = "ក្រុម";
@@ -5126,7 +5126,7 @@
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal ប្រើប្រាស់កូដនីយកម្មទាំងសងខាង ហើយជួនកាល​វាអាចត្រូវការផ្ទុកឡើងវិញ​នូវវគ្គជជែករបស់អ្នក។ នេះមិនប៉ះពាល់សន្តិសុខនៃការជជែករបស់អ្នកទេ តែអ្នកអាចខកខានសារមួយពីលេខទំនាក់ទំនងនេះ និងអ្នកអាចសុំគេឲ្យផ្ញើម្តងទៀត។";
 
 /* Title for the session refresh alert */
-"SESSION_REFRESH_ALERT_TITLE" = "វគ្គជជែកត្រូវបានផ្ទុកឡើងវិញ";
+"SESSION_REFRESH_ALERT_TITLE" = "វគ្គសន្ទនាត្រូវបានផ្ទុកឡើងវិញ";
 
 /* Title for the wallpaper choose from photos option */
 "SET_WALLPAPER_CHOOSE_PHOTO" = "ជ្រើសរើសពីរូបភាព";
@@ -5135,7 +5135,7 @@
 "SET_WALLPAPER_PRESETS" = "ការកំណត់ជាមុន";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "កំណត់ផ្ទៃខាងក្រោយ";
+"SET_WALLPAPER_TITLE" = "កំណត់ផ្ទាំងពីក្រោយ";
 
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "គណនី";
@@ -5243,13 +5243,13 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "ឧទាហរណ៍៖ %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "លេខទូរស័ព្ទថ្មីអ្នក";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "លេខទូរស័ព្ទថ្មីរបស់អ្នក";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "លេខទូរស័ព្ទចាស់អ្នក";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "លេខទូរស័ព្ទចាស់របស់អ្នក";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "លេខទូរសព្ទ";
+"SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "លេខទូរស័ព្ទ";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "កំពុងផ្ទៀងផ្ទាត់៖ %@";
@@ -5267,7 +5267,7 @@
 "SETTINGS_CHATS" = "ការជជែក";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "សំអាតប្រវត្តិជជែក";
+"SETTINGS_CLEAR_HISTORY" = "សំអាតប្រវត្តិការសន្ទនា";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "រក្សាសិទ្ធិ Signal Messenger\nមានអាជ្ញាប័ណ្ណក្រោម GPLv3";
@@ -5354,7 +5354,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "អ្នកអាចទាក់ទងខ្ញុំតាម @signalapp។ ទាញយកវាឥឡូវនេះ៖ https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "ពណ៌ការជជែក & រូបភាពផ្ទៃក្រោយ";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "ពណ៌ការជជែក & ផ្ទាំងពីក្រោយ";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "សំឡេងសារ";
@@ -6590,7 +6590,7 @@
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "សម្អាតផ្ទៃខាងក្រោយសម្រាប់ការសន្ទនានេះ";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ផ្ទៃខាងក្រោយខ្មៅស្រទន់";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ផ្ទៃខាងក្រោយពណ៌ខ្មៅស្រទន់";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
 "WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "ផ្ទៃខាងក្រោយមិនអាចសម្អាតបាន សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ ឬទាក់ទងទៅកាន់សេវាគាំទ្រ ប្រសិនបើបញ្ហានៅតែកើតឡើង";
@@ -6602,7 +6602,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "កំណត់ពណ៌នៃការសន្ទនាទាំងអស់ឡើងវិញ";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "កំណត់ផ្ទៃខាងក្រោយទាំងអស់ឡើងវិញ";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "កំណត់ផ្ទាំងពីក្រោយទាំងអស់ឡើងវិញ";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "តើអ្នកចង់លុបពណ៌តំណាងការសន្ទនាទាំងអស់មែនទេ?";
@@ -6611,10 +6611,10 @@
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "កំណត់ពណ៌ការសន្ទនាឡើងវិញ";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "កំណត់ពណ៌នៃការសន្ទនាឡើងវិញ";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "កំណត់ពណ៌ការសន្ទនាឡើងវិញ";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "កំណត់ផ្ទៃខាងក្រោយឡើងវិញ";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "កំណត់ផ្ទាំងពីក្រោយឡើងវិញ";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "កំណត់ពណ៌ការសន្ទនាលំនាំដើមឡើងវិញ";
@@ -6623,22 +6623,22 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "កំណត់ពណ៌ការសន្ទនាឡើងវិញ";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "កំណត់ផ្ទៃខាងក្រោយលំនាំដើមឡើងវិញ";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "កំណត់ផ្ទាំងពីក្រោយលំនាំដើមឡើងវិញ";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "កំណត់ផ្ទៃខាងក្រោយឡើងវិញ";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "កំណត់ផ្ទាំងពីក្រោយឡើងវិញ";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "តើអ្នកចង់លុបផ្ទៃខាងក្រោយទាំងអស់មែនទេ?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "តើអ្នកចង់លុបផ្ទាំងពីក្រោយទាំងអស់មែនទេ? ";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "កំណត់ផ្ទៃខាងក្រោយឡើងវិញ";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "កំណត់ផ្ទាំងពីក្រោយឡើងវិញ";
 
 /* Set chat color action in color and wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "ពណ៌នៃការសន្ទនា";
+"WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "ពណ៌ការសន្ទនា";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "កំណត់ផ្ទៃខាងក្រោយ";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "កំណត់ផ្ទាំងពីក្រោយ ";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "អ្នកបានលុបសារនេះ។";

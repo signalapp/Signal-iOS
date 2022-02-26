@@ -497,7 +497,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Definir a moeda";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Diga “Obrigado!” e ganhe o selo Boost por 30 dias.";
+"BOOST_VIEW_BODY" = "Mostre que você adora o Signal e ganhe o selo Boost por 30 dias.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "O seu selo Boost expirará em %@.";
@@ -4490,7 +4490,7 @@
 "PROCEED_BUTTON" = "Prosseguir";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Escreva algumas palavras sobre você…";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Escreva algo sobre você…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Seja gentil";
@@ -4529,7 +4529,7 @@
 "PROFILE_NAME_VIEW_TITLE" = "Seu nome";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
-"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Sobre";
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Sobre mim";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Nome";
