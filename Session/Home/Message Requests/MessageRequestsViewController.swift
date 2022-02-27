@@ -24,53 +24,69 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     // MARK: - UI
         
     private lazy var tableView: UITableView = {
-        let tableView: UITableView = UITableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none
-        tableView.register(MessageRequestsCell.self, forCellReuseIdentifier: MessageRequestsCell.reuseIdentifier)
-        tableView.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
-        tableView.dataSource = self
-        tableView.delegate = self
+        let result: UITableView = UITableView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.backgroundColor = .clear
+        result.separatorStyle = .none
+        result.register(MessageRequestsCell.self, forCellReuseIdentifier: MessageRequestsCell.reuseIdentifier)
+        result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
+        result.dataSource = self
+        result.delegate = self
         
         let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
-        tableView.showsVerticalScrollIndicator = false
+        result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+        result.showsVerticalScrollIndicator = false
         
-        return tableView
+        return result
+    }()
+    
+    private lazy var emptyStateLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.isUserInteractionEnabled = false
+        result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
+        result.text = NSLocalizedString("MESSAGE_REQUESTS_EMPTY_TEXT", comment: "")
+        result.textColor = Colors.text
+        result.textAlignment = .center
+        result.numberOfLines = 0
+        result.isHidden = true
+        
+        return result
     }()
     
     private lazy var fadeView: UIView = {
-        let view: UIView = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.isUserInteractionEnabled = false
-        view.setGradient(Gradients.homeVCFade)
+        let result: UIView = UIView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.isUserInteractionEnabled = false
+        result.setGradient(Gradients.homeVCFade)
         
-        return view
+        return result
     }()
     
     private lazy var clearAllButton: UIButton = {
-        let button: UIButton = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.clipsToBounds = true
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
-        button.setTitleColor(Colors.destructive, for: .normal)
-        button.setBackgroundImage(
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        result.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
+        result.setTitleColor(Colors.destructive, for: .normal)
+        result.setBackgroundImage(
             Colors.destructive
                 .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
                 .toImage(isDarkMode: isDarkMode),
             for: .highlighted
         )
-        button.layer.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
-        button.layer.borderColor = Colors.destructive.cgColor
-        button.layer.borderWidth = 1.5
-        button.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
+        result.isHidden = true
+        result.layer.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
+        result.layer.borderColor = Colors.destructive.cgColor
+        result.layer.borderWidth = 1.5
+        result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
         
-        return button
+        return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -83,6 +99,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         // Add the UI (MUST be done after the thread freeze so the 'tableView' creation and setting
         // the dataSource has the correct data)
         view.addSubview(tableView)
+        view.addSubview(emptyStateLabel)
         view.addSubview(fadeView)
         view.addSubview(clearAllButton)
         
@@ -134,6 +151,11 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
+            emptyStateLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.massiveSpacing),
+            emptyStateLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.mediumSpacing),
+            emptyStateLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.mediumSpacing),
+            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
             fadeView.topAnchor.constraint(equalTo: view.topAnchor, constant: (0.15 * view.bounds.height)),
             fadeView.leftAnchor.constraint(equalTo: view.leftAnchor),
             fadeView.rightAnchor.constraint(equalTo: view.rightAnchor),
@@ -172,6 +194,8 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         threadViewModelCache.removeAll()
         tableView.reloadData()
         clearAllButton.isHidden = (messageRequestCount == 0)
+        emptyStateLabel.isHidden = (messageRequestCount != 0)
+        emptyStateLabel.isHidden = (messageRequestCount != 0)
     }
     
     @objc private func handleYapDatabaseModifiedNotification(_ yapDatabase: YapDatabase) {
@@ -244,6 +268,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         tableView.endUpdates()
         clearAllButton.isHidden = (messageRequestCount == 0)
+        emptyStateLabel.isHidden = (messageRequestCount != 0)
     }
     
     @objc private func handleProfileDidChangeNotification(_ notification: Notification) {
@@ -281,17 +306,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         guard let thread = self.thread(at: indexPath.row) else { return [] }
         
         let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
-            var message = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: "")
-            if let thread = thread as? TSGroupThread, thread.isClosedGroup, thread.groupModel.groupAdminIds.contains(getUserHexEncodedPublicKey()) {
-                message = NSLocalizedString("admin_group_leave_warning", comment: "")
-            }
-            let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { [weak self] _ in
-                self?.delete(thread)
-            })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .default) { _ in })
-            guard let self = self else { return }
-            self.present(alert, animated: true, completion: nil)
+            self?.delete(thread)
         }
         delete.backgroundColor = Colors.destructive
         
@@ -331,62 +346,73 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         let threads: [TSThread] = (0..<threadCount).compactMap { self.thread(at: $0) }
         var needsSync: Bool = false
         
-        Storage.write(
-            with: { [weak self] transaction in
-                threads.forEach { thread in
-                    if let uniqueId: String = thread.uniqueId {
-                        Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+        let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE", comment: ""), message: nil, preferredStyle: .actionSheet)
+        alertVC.addAction(UIAlertAction(title: NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON", comment: ""), style: .destructive) { _ in
+            // Clear the requests
+            Storage.write(
+                with: { [weak self] transaction in
+                    threads.forEach { thread in
+                        if let uniqueId: String = thread.uniqueId {
+                            Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+                        }
+                        
+                        self?.updateContactAndThread(thread: thread, with: transaction) { threadNeedsSync in
+                            if threadNeedsSync {
+                                needsSync = true
+                            }
+                        }
+                    }
+                },
+                completion: {
+                    // Block all the contacts
+                    threads.forEach { thread in
+                        if let sessionId: String = (thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
+                            OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
+                        }
                     }
                     
-                    self?.updateContactAndThread(thread: thread, with: transaction) { threadNeedsSync in
-                        if threadNeedsSync {
-                            needsSync = true
+                    // Force a config sync (must run on the main thread)
+                    if needsSync {
+                        DispatchQueue.main.async {
+                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+                            }
                         }
                     }
                 }
-            },
-            completion: {
-                // Block all the contacts
-                threads.forEach { thread in
-                    if let sessionId: String = (thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                        OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                    }
-                }
-                
-                // Force a config sync (must run on the main thread)
-                if needsSync {
-                    DispatchQueue.main.async {
-                        (UIApplication.shared.delegate as? AppDelegate)?
-                            .forceSyncConfigurationNowIfNeeded()
-                            .retainUntilComplete()
-                    }
-                }
-            }
-        )
+            )
+        })
+        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
+        self.present(alertVC, animated: true, completion: nil)
     }
     
     private func delete(_ thread: TSThread) {
         guard let uniqueId: String = thread.uniqueId else { return }
         
-        Storage.write(
-            with: { [weak self] transaction in
-                Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                self?.updateContactAndThread(thread: thread, with: transaction)
-            },
-            completion: {
-                // Block the contact
-                if let sessionId: String = (thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                    OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                }
-                
-                // Force a config sync (must run on the main thread)
-                DispatchQueue.main.async {
-                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+        let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON", comment: ""), message: nil, preferredStyle: .actionSheet)
+        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
+            Storage.write(
+                with: { [weak self] transaction in
+                    Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+                    self?.updateContactAndThread(thread: thread, with: transaction)
+                },
+                completion: {
+                    // Block the contact
+                    if let sessionId: String = (thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
+                        OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
+                    }
+                    
+                    // Force a config sync (must run on the main thread)
+                    DispatchQueue.main.async {
+                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                            appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+                        }
                     }
                 }
-            }
-        )
+            )
+        })
+        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
+        self.present(alertVC, animated: true, completion: nil)
     }
     
     // MARK: - Convenience

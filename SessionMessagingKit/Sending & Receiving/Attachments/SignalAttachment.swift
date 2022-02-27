@@ -462,7 +462,12 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var isText: Bool {
-        return UTTypeConformsTo(dataUTI as CFString, kUTTypeText) || isOversizeText
+        return (
+            isConvertibleToTextMessage && (
+                UTTypeConformsTo(dataUTI as CFString, kUTTypeText) ||
+                isOversizeText
+            )
+        )
     }
 
     @objc

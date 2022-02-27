@@ -1,5 +1,13 @@
+import UIKit
+import SessionUIKit
 
 final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, QuoteViewDelegate, LinkPreviewViewDelegate, MentionSelectionViewDelegate {
+    enum MessageTypes {
+        case all
+        case textOnly
+        case none
+    }
+    
     private weak var delegate: InputViewDelegate?
     var quoteDraftInfo: (model: OWSQuotedReplyModel, isOutgoing: Bool)? { didSet { handleQuoteDraftChanged() } }
     var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
@@ -16,10 +24,18 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         set { inputTextView.text = newValue }
     }
     
+    var enabledMessageTypes: MessageTypes = .all {
+        didSet {
+            setEnabledMessageTypes(enabledMessageTypes, message: nil)
+        }
+    }
+    
     override var intrinsicContentSize: CGSize { CGSize.zero }
     var lastSearchedText: String? { nil }
     
     // MARK: UI Components
+    
+    private var bottomStackView: UIStackView?
     private lazy var attachmentsButton = ExpandingAttachmentsButton(delegate: delegate)
     
     private lazy var voiceMessageButton: InputViewButton = {
@@ -28,6 +44,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         result.accessibilityHint = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE", comment: "")
         return result
     }()
+    
     
     private lazy var sendButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
@@ -65,6 +82,17 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         let adjustment = (InputViewButton.expandedSize - InputViewButton.size) / 2
         let maxWidth = UIScreen.main.bounds.width - 2 * InputViewButton.expandedSize - 2 * Values.smallSpacing - 2 * (Values.mediumSpacing - adjustment)
         return InputTextView(delegate: self, maxWidth: maxWidth)
+    }()
+    
+    private lazy var disabledInputLabel: UILabel = {
+        let label: UILabel = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: Values.smallFontSize)
+        label.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        label.textAlignment = .center
+        label.alpha = 0
+        
+        return label
     }()
 
     private lazy var additionalContentContainer = UIView()
@@ -109,6 +137,7 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         bottomStackView.axis = .horizontal
         bottomStackView.spacing = Values.smallSpacing
         bottomStackView.alignment = .center
+        self.bottomStackView = bottomStackView
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ additionalContentContainer, bottomStackView ])
         mainStackView.axis = .vertical
@@ -119,6 +148,14 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         mainStackView.pin(.top, to: .bottom, of: separator)
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
         mainStackView.pin(.bottom, to: .bottom, of: self)
+        
+        addSubview(disabledInputLabel)
+        
+        disabledInputLabel.pin(.top, to: .top, of: mainStackView)
+        disabledInputLabel.pin(.left, to: .left, of: mainStackView)
+        disabledInputLabel.pin(.right, to: .right, of: mainStackView)
+        disabledInputLabel.set(.height, to: InputViewButton.expandedSize)
+        
         // Mentions
         insertSubview(mentionsViewContainer, belowSubview: mainStackView)
         mentionsViewContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
@@ -168,6 +205,9 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     }
 
     private func autoGenerateLinkPreviewIfPossible() {
+        // Don't allow link previews on 'none' or 'textOnly' input
+        guard enabledMessageTypes == .all else { return }
+            
         // Suggest that the user enable link previews if they haven't already and we haven't
         // told them about link previews yet
         let text = inputTextView.text!
@@ -214,6 +254,29 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
             self.linkPreviewInfo = nil
             self.additionalContentContainer.subviews.forEach { $0.removeFromSuperview() }
         }.retainUntilComplete()
+    }
+    
+    func setEnabledMessageTypes(_ messageTypes: MessageTypes, message: String?) {
+        guard enabledMessageTypes != messageTypes else { return }
+        
+        enabledMessageTypes = messageTypes
+        disabledInputLabel.text = (message ?? "")
+        
+        attachmentsButton.isUserInteractionEnabled = (messageTypes == .all)
+        voiceMessageButton.isUserInteractionEnabled = (messageTypes == .all)
+        
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.bottomStackView?.alpha = (messageTypes != .none ? 1 : 0)
+            self?.attachmentsButton.alpha = (messageTypes == .all ?
+                1 :
+                (messageTypes == .textOnly ? 0.4 : 0)
+            )
+            self?.voiceMessageButton.alpha =  (messageTypes == .all ?
+                1 :
+                (messageTypes == .textOnly ? 0.4 : 0)
+            )
+            self?.disabledInputLabel.alpha = (messageTypes != .none ? 0 : 1)
+        }
     }
     
     // MARK: Interaction

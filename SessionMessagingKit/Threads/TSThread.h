@@ -53,6 +53,7 @@ BOOL IsNoteToSelfEnabled(void);
  *  @return YES if the combination of thread and contact approval means this thread should appear in the message requests section, NO otherwise.
  */
 - (BOOL)isMessageRequest;
+- (BOOL)isMessageRequestUsingTransaction:(YapDatabaseReadTransaction *)transaction;
 
 #pragma mark Interactions
 

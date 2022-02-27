@@ -70,6 +70,19 @@ NSString *const TSContactThreadPrefix = @"c";
     );
 }
 
+- (BOOL)isMessageRequestUsingTransaction:(YapDatabaseReadTransaction *)transaction {
+    NSString *sessionID = self.contactSessionID;
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID using:transaction];
+    
+    return (
+        self.shouldBeVisible &&
+        !self.isNoteToSelf && (
+           contact == nil ||
+           !contact.isApproved
+        )
+    );
+}
+
 - (BOOL)isGroupThread
 {
     return NO;

@@ -13,12 +13,16 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
+#import <SessionUtilitiesKit/AppContext.h>
+#import <SessionUtilitiesKit/SessionUtilitiesKit-Swift.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TSInboxGroup = @"TSInboxGroup";
 NSString *const TSMessageRequestGroup = @"TSMessageRequestGroup";
 NSString *const TSArchiveGroup = @"TSArchiveGroup";
+NSString *const TSShareExtensionGroup = @"TSShareExtensionGroup";
 
 NSString *const TSUnreadIncomingMessagesGroup = @"TSUnreadIncomingMessagesGroup";
 NSString *const TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
@@ -26,6 +30,8 @@ NSString *const TSSecondaryDevicesGroup = @"TSSecondaryDevicesGroup";
 // YAPDB BUG: when changing from non-persistent to persistent view, we had to rename TSThreadDatabaseViewExtensionName
 // -> TSThreadDatabaseViewExtensionName2 to work around https://github.com/yapstudios/YapDatabase/issues/324
 NSString *const TSThreadDatabaseViewExtensionName = @"TSThreadDatabaseViewExtensionName2";
+
+NSString *const TSThreadShareExtensionDatabaseViewExtensionName = @"TSThreadShareExtensionDatabaseViewExtensionName";
 
 // We sort interactions by a monotonically increasing counter.
 //
@@ -236,7 +242,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         }
         TSThread *thread = (TSThread *)object;
 
-        if (thread.isMessageRequest) {
+        if ([thread isMessageRequestUsingTransaction:transaction]) {
             // Don't show blocked threads at all
             if ([[OWSBlockingManager sharedManager] isThreadBlocked: thread]) {
                 return nil;
@@ -268,6 +274,53 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"4" options:options];
 
     [storage asyncRegisterExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
+    
+    YapDatabaseView *shareExtensionThreadView = [storage registeredExtension:TSThreadShareExtensionDatabaseViewExtensionName];
+    if (shareExtensionThreadView) {
+        return;
+    }
+    
+    YapDatabaseViewGrouping *shareExtensionViewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if (![object isKindOfClass:[TSThread class]]) {
+            return nil;
+        }
+        TSThread *thread = (TSThread *)object;
+
+        if (thread.isMessageRequest) {
+            return nil;
+        }
+        else {
+            YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
+            NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
+            if (threadMessageCount < 1) {
+                return nil;
+            }
+            
+            if (!thread.isGroupThread) {
+                TSContactThread *contactThead = (TSContactThread *)thread;
+                SNContact *contact = [LKStorage.shared getContactWithSessionID:[contactThead contactSessionID]];
+                
+                if (contact == nil || !contact.didApproveMe) {
+                    return nil;
+                }
+            }
+        }
+
+        return TSShareExtensionGroup;
+    }];
+
+    YapDatabaseViewSorting *shareExtensionViewSorting = [self threadSorting];
+
+    YapDatabaseViewOptions *shareExtensionOptions = [[YapDatabaseViewOptions alloc] init];
+    shareExtensionOptions.isPersistent = YES;
+    shareExtensionOptions.allowedCollections =
+        [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
+
+    YapDatabaseView *shareExtensionDatabaseView =
+        [[YapDatabaseAutoView alloc] initWithGrouping:shareExtensionViewGrouping sorting:shareExtensionViewSorting versionTag:@"1" options:shareExtensionOptions];
+
+    [storage asyncRegisterExtension:shareExtensionDatabaseView withName:TSThreadShareExtensionDatabaseViewExtensionName];
 }
 
 + (YapDatabaseViewSorting *)threadSorting {

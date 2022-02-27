@@ -76,7 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
         for (NSString *groupID in allGroups) {
             TSThread *thread = [TSThread fetchObjectWithUniqueID:groupID transaction:transaction];
             
-            if (thread.isMuted || !thread.isMessageRequest) { continue; }
+            // Don't increase the count for muted threads or message requests
+            if (thread.isMuted || thread.isMessageRequest) { continue; }
             
             BOOL isGroupThread = thread.isGroupThread;
             

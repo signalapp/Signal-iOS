@@ -25,54 +25,54 @@ class MessageRequestsCell: UITableViewCell {
     // MARK: - UI
     
     private let iconContainerView: UIView = {
-        let view: UIView = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.clipsToBounds = true
-        view.backgroundColor = Colors.sessionMessageRequestsBubble
-        view.layer.cornerRadius = (Values.mediumProfilePictureSize / 2)
+        let result: UIView = UIView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.backgroundColor = Colors.sessionMessageRequestsBubble
+        result.layer.cornerRadius = (Values.mediumProfilePictureSize / 2)
         
-        return view
+        return result
     }()
     
     private let iconImageView: UIImageView = {
-        let view: UIImageView = UIImageView(image: #imageLiteral(resourceName: "message_requests").withRenderingMode(.alwaysTemplate))
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.tintColor = Colors.sessionMessageRequestsIcon
+        let result: UIImageView = UIImageView(image: #imageLiteral(resourceName: "message_requests").withRenderingMode(.alwaysTemplate))
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.tintColor = Colors.sessionMessageRequestsIcon
         
-        return view
+        return result
     }()
     
     private let titleLabel: UILabel = {
-        let label: UILabel = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        label.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        label.text = NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: "")
-        label.textColor = Colors.sessionMessageRequestsTitle
-        label.lineBreakMode = .byTruncatingTail
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        result.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        result.text = NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: "")
+        result.textColor = Colors.sessionMessageRequestsTitle
+        result.lineBreakMode = .byTruncatingTail
         
-        return label
+        return result
     }()
     
     private let unreadCountView: UIView = {
-        let view: UIView = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.clipsToBounds = true
-        view.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
-        view.layer.cornerRadius = (ConversationCell.unreadCountViewSize / 2)
+        let result: UIView = UIView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
+        result.layer.cornerRadius = (ConversationCell.unreadCountViewSize / 2)
         
-        return view
+        return result
     }()
     
     private let unreadCountLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        label.textColor = Colors.text
-        label.textAlignment = .center
+        let result = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        result.textColor = Colors.text
+        result.textAlignment = .center
         
-        return label
+        return result
     }()
     
     private func setUpViewHierarchy() {

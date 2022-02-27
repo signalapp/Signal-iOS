@@ -14,12 +14,19 @@ extension AppDelegate {
             let job = MessageSendJob(message: configurationMessage, destination: destination)
             JobQueue.shared.add(job, using: transaction)
         }
-        userDefaults[.lastConfigurationSync] = Date()
+        
+        // Only update the 'lastConfigurationSync' timestamp if we have done the first sync (Don't want
+        // a new device config sync to override config syncs from other devices)
+        if userDefaults[.hasSyncedInitialConfiguration] {
+            userDefaults[.lastConfigurationSync] = Date()
+        }
     }
 
-    func forceSyncConfigurationNowIfNeeded() -> Promise<Void> {
-        guard Storage.shared.getUser()?.name != nil,
-            let configurationMessage = ConfigurationMessage.getCurrent() else { return Promise.value(()) }
+    func forceSyncConfigurationNowIfNeeded(with transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Void> {
+        guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
+            return Promise.value(())
+        }
+        
         let destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
         let (promise, seal) = Promise<Void>.pending()
         Storage.writeSync { transaction in
@@ -40,20 +47,4 @@ extension AppDelegate {
     @objc func stopClosedGroupPoller() {
         ClosedGroupPoller.shared.stop()
     }
-    
-    @objc func getAppModeOrSystemDefault() -> AppMode {
-        let userDefaults = UserDefaults.standard
-        
-        guard userDefaults.dictionaryRepresentation().keys.contains("appMode") else {
-            if #available(iOS 13.0, *) {
-                return UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light
-            } else {
-                return .light
-            }
-        }
-        
-        let mode = userDefaults.integer(forKey: "appMode")
-        return AppMode(rawValue: mode) ?? .light
-    }
-    
 }

@@ -1,7 +1,7 @@
 
 extension ConfigurationMessage {
 
-    public static func getCurrent() -> ConfigurationMessage? {
+    public static func getCurrent(with transaction: YapDatabaseReadWriteTransaction? = nil) -> ConfigurationMessage? {
         let storage = Storage.shared
         guard let user = storage.getUser() else { return nil }
         
@@ -13,7 +13,7 @@ extension ConfigurationMessage {
         var contacts: Set<Contact> = []
         var contactCount = 0
         
-        Storage.read { transaction in
+        let populateDataClosure: (YapDatabaseReadTransaction) -> () = { transaction in
             TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
                 guard let thread = object as? TSGroupThread else { return }
                 
@@ -47,7 +47,8 @@ extension ConfigurationMessage {
                 }
             }
             
-            var truncatedContacts = storage.getAllContacts()
+            let currentUserPublicKey: String = getUserHexEncodedPublicKey()
+            var truncatedContacts = storage.getAllContacts(with: transaction)
             
             if truncatedContacts.count > 200 {
                 truncatedContacts = Set(Array(truncatedContacts)[0..<200])
@@ -57,14 +58,18 @@ extension ConfigurationMessage {
                 let publicKey = contact.sessionID
                 let threadID = TSContactThread.threadID(fromContactSessionID: publicKey)
                 
+                // Want to sync contacts for visible threads and blocked contacts between devices
                 guard
-                    let thread = TSContactThread.fetch(uniqueId: threadID, transaction: transaction),
-                    thread.shouldBeVisible &&
-                    !SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
+                    publicKey != currentUserPublicKey && (
+                        TSContactThread.fetch(uniqueId: threadID, transaction: transaction)?.shouldBeVisible == true ||
+                        SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
+                    )
                 else {
                     return
                 }
                 
+                // Can just default the 'hasX' values to true as they will be set to this
+                // when converting to proto anyway
                 let profilePictureURL = contact.profilePictureURL
                 let profileKey = contact.profileEncryptionKey?.keyData
                 let contact = ConfigurationMessage.Contact(
@@ -72,14 +77,26 @@ extension ConfigurationMessage {
                     displayName: (contact.name ?? publicKey),
                     profilePictureURL: profilePictureURL,
                     profileKey: profileKey,
+                    hasIsApproved: true,
                     isApproved: contact.isApproved,
+                    hasIsBlocked: true,
                     isBlocked: contact.isBlocked,
+                    hasDidApproveMe: true,
                     didApproveMe: contact.didApproveMe
                 )
                 
                 contacts.insert(contact)
                 contactCount += 1
             }
+        }
+        
+        // If we are provided with a transaction then read the data based on the state of the database
+        // from within the transaction rather than the state in disk
+        if let transaction: YapDatabaseReadWriteTransaction = transaction {
+            populateDataClosure(transaction)
+        }
+        else {
+            Storage.read { transaction in populateDataClosure(transaction) }
         }
         
         return ConfigurationMessage(

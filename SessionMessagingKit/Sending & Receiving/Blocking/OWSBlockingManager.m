@@ -12,6 +12,7 @@
 #import "TSGroupThread.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
+#import <SessionUtilitiesKit/SessionUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -250,7 +251,27 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                           forKey:kOWSBlockingManager_BlockedGroupMapKey
                     inCollection:kOWSBlockingManager_BlockListCollection];
 
-
+    // Update the contact blocked state (so sync'ing won't be busted)
+    NSMutableArray<SNContact *> *contactsToUpdate = [[NSMutableArray alloc] init];
+    
+    [[[LKStorage shared] getAllContacts] enumerateObjectsUsingBlock:^(SNContact * _Nonnull obj, BOOL * _Nonnull stop) {
+        // If the blocked flag doesn't match then add it to the array to be saved
+        BOOL contactInBlockedList = [blockedPhoneNumbers containsObject:obj.sessionID];
+        
+        if (obj.isBlocked != contactInBlockedList) {
+            obj.isBlocked = contactInBlockedList;
+            [contactsToUpdate addObject:obj];
+        }
+    }];
+    
+    if ([contactsToUpdate count] > 0) {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+            [contactsToUpdate enumerateObjectsUsingBlock:^(SNContact * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                [[LKStorage shared] setContact:obj usingTransaction:transaction];
+            }];
+        }];
+    }
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (sendSyncMessage) {
             

@@ -1,11 +1,11 @@
-import Foundation
+import UIKit
 
 @objc(LKAppModeManager)
 public final class AppModeManager : NSObject {
     private let delegate: AppModeManagerDelegate
 
     public var currentAppMode: AppMode {
-        return delegate.getCurrentAppMode()
+        return AppModeManager.getAppModeOrSystemDefault()
     }
 
     public static var shared: AppModeManager!
@@ -29,19 +29,33 @@ public final class AppModeManager : NSObject {
     public func setAppModeToSystemDefault() {
         delegate.setAppModeToSystemDefault()
     }
+    
+    @objc public static func getAppModeOrSystemDefault() -> AppMode {
+        let userDefaults = UserDefaults.standard
+        
+        guard userDefaults.dictionaryRepresentation().keys.contains("appMode") else {
+            if #available(iOS 13.0, *) {
+                return UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light
+            }
+            
+            return .light
+        }
+        
+        let mode = userDefaults.integer(forKey: "appMode")
+        return AppMode(rawValue: mode) ?? .light
+    }
 }
 
 @objc(LKAppModeManagerDelegate)
 public protocol AppModeManagerDelegate {
 
-    func getCurrentAppMode() -> AppMode
     @objc(setCurrentAppMode:)
     func setCurrentAppMode(to appMode: AppMode)
     func setAppModeToSystemDefault()
 }
 
 @objc(LKAppMode)
-public enum AppMode : Int {
+public enum AppMode: Int {
     case light, dark
 }
 
