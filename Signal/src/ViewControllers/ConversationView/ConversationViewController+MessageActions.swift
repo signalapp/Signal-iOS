@@ -99,8 +99,13 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         _ interaction: ContextMenuInteraction,
         configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
 
-        return ContextMenuConfiguration(identifier: UUID() as NSCopying, actionProvider: { _ in
+        return ContextMenuConfiguration(identifier: UUID() as NSCopying, actionProvider: { [weak self] _ in
 
+            guard let self = self else {
+                owsFailDebug("conversationViewController was unexpectedly nil")
+                return ContextMenu([])
+            }
+            
             var contextMenuActions: [ContextMenuAction] = []
             if let actions = self.collectionViewActiveContextMenuInteraction?.messageActions {
 
@@ -146,7 +151,13 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         // Add reaction bar if necessary
         if thread.canSendReactionToThread && shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
             let reactionBarAccessory = ContextMenuRectionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
-            reactionBarAccessory.didSelectReactionHandler = {(message: TSMessage, reaction: String, isRemoving: Bool) in
+            reactionBarAccessory.didSelectReactionHandler = { [weak self] (message: TSMessage, reaction: String, isRemoving: Bool) in
+                
+                guard let self = self else {
+                    owsFailDebug("conversationViewController was unexpectedly nil")
+                    return
+                }
+                
                 self.databaseStorage.asyncWrite { transaction in
                     ReactionManager.localUserReacted(
                         to: message,
