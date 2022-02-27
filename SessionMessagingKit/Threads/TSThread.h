@@ -47,6 +47,14 @@ BOOL IsNoteToSelfEnabled(void);
 
 - (BOOL)isNoteToSelf;
 
+/**
+ *  Whether the thread is a message request.
+ *
+ *  @return YES if the combination of thread and contact approval means this thread should appear in the message requests section, NO otherwise.
+ */
+- (BOOL)isMessageRequest;
+- (BOOL)isMessageRequestUsingTransaction:(YapDatabaseReadTransaction *)transaction;
+
 #pragma mark Interactions
 
 - (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction usingBlock:(void (^)(TSInteraction *interaction, BOOL *stop))block;
