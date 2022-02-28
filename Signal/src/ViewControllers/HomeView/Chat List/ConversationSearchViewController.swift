@@ -20,7 +20,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
 
     private var hasEverAppeared = false
     private var lastReloadDate: Date?
-    private let cellContentCache = LRUCache<String, HVCellContentToken>(maxSize: 256)
+    private let cellContentCache = LRUCache<String, CLVCellContentToken>(maxSize: 256)
 
     @objc
     public var searchText = "" {
@@ -84,7 +84,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
         tableView.separatorStyle = .none
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
-        tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.reuseIdentifier)
+        tableView.register(ChatListCell.self, forCellReuseIdentifier: ChatListCell.reuseIdentifier)
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -251,14 +251,14 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 return UITableView.automaticDimension
             }
             let cellContentToken = cellContentToken(forConfiguration: configuration)
-            return HomeViewCell.measureCellHeight(cellContentToken: cellContentToken)
+            return ChatListCell.measureCellHeight(cellContentToken: cellContentToken)
         }
     }
 
-    private func cellContentToken(forConfiguration configuration: HomeViewCell.Configuration, useCache: Bool = true) -> HVCellContentToken {
+    private func cellContentToken(forConfiguration configuration: ChatListCell.Configuration, useCache: Bool = true) -> CLVCellContentToken {
         AssertIsOnMainThread()
 
-        // If we have an existing HVCellContentToken, use it.
+        // If we have an existing CLVCellContentToken, use it.
         // Cell measurement/arrangement is expensive.
         let cacheKey = "\(configuration.thread.threadRecord.uniqueId).\(configuration.overrideSnippet?.string ?? "")"
         if useCache {
@@ -267,7 +267,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
             }
         }
 
-        let cellContentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
+        let cellContentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
         cellContentCache.set(key: cacheKey, value: cellContentToken)
         return cellContentToken
     }
@@ -312,7 +312,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
             }
             return cell
         case .contactThreads, .groupThreads, .messages:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatListCell.reuseIdentifier) as? ChatListCell else {
                 owsFailDebug("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -326,7 +326,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
         }
     }
 
-    private func cellConfiguration(searchSection: SearchSection, row: Int) -> HomeViewCell.Configuration? {
+    private func cellConfiguration(searchSection: SearchSection, row: Int) -> ChatListCell.Configuration? {
         AssertIsOnMainThread()
 
         let lastReloadDate: Date? = {
@@ -345,7 +345,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 owsFailDebug("searchResult was unexpectedly nil")
                 return nil
             }
-            return HomeViewCell.Configuration(
+            return ChatListCell.Configuration(
                 thread: searchResult.thread,
                 lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
@@ -356,7 +356,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 owsFailDebug("searchResult was unexpectedly nil")
                 return nil
             }
-            return HomeViewCell.Configuration(
+            return ChatListCell.Configuration(
                 thread: searchResult.thread,
                 lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
@@ -391,7 +391,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                     owsFailDebug("message search result is missing message snippet")
                 }
             }
-            return HomeViewCell.Configuration(
+            return ChatListCell.Configuration(
                 thread: searchResult.thread,
                 lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
@@ -535,9 +535,9 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
 
         // a database change will lead to a search with the searchText=lastSearchText
         // in this case we only want to update the visible cells
-        var updateCellCandidates: [HomeViewCell]?
+        var updateCellCandidates: [ChatListCell]?
         if lastSearchText == searchText {
-            updateCellCandidates = tableView.visibleCells.filter {$0 as? HomeViewCell != nil} as? [HomeViewCell]
+            updateCellCandidates = tableView.visibleCells.filter {$0 as? ChatListCell != nil} as? [ChatListCell]
         }
         guard updateCellCandidates == nil || updateCellCandidates!.count > 0 else {
             // Ignoring redundant search.
@@ -583,9 +583,9 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
     }
 
     private func isBlocked(thread: ThreadViewModel) -> Bool {
-        owsAssertDebug(thread.homeViewInfo != nil)
+        owsAssertDebug(thread.chatListInfo != nil)
 
-        return thread.homeViewInfo?.isBlocked == true
+        return thread.chatListInfo?.isBlocked == true
     }
 }
 

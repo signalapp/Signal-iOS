@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension HomeViewController {
+extension ChatListViewController {
 
     @objc
     public var isViewVisible: Bool {
@@ -59,18 +59,18 @@ extension HomeViewController {
 
     // MARK: -
 
-    fileprivate func loadRenderStateForReset(viewInfo: HVViewInfo,
-                                             transaction: SDSAnyReadTransaction) -> HVLoadResult {
+    fileprivate func loadRenderStateForReset(viewInfo: CLVViewInfo,
+                                             transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
         return Bench(title: "loadNewRenderState") {
-            HVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
+            CLVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
         }
     }
 
-    fileprivate func loadNewRenderStateWithDiff(viewInfo: HVViewInfo,
+    fileprivate func loadNewRenderStateWithDiff(viewInfo: CLVViewInfo,
                                                 updatedThreadIds: Set<String>,
-                                                transaction: SDSAnyReadTransaction) -> HVLoadResult {
+                                                transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
         guard !updatedThreadIds.isEmpty else {
@@ -79,13 +79,13 @@ extension HomeViewController {
             return .noChanges
         }
 
-        return HVLoader.loadRenderStateAndDiff(viewInfo: viewInfo,
+        return CLVLoader.loadRenderStateAndDiff(viewInfo: viewInfo,
                                                updatedItemIds: updatedThreadIds,
                                                lastRenderState: renderState,
                                                transaction: transaction)
     }
 
-    fileprivate func applyLoadResult(_ loadResult: HVLoadResult,
+    fileprivate func applyLoadResult(_ loadResult: CLVLoadResult,
                                      isAnimated: Bool) {
         AssertIsOnMainThread()
 
@@ -115,7 +115,7 @@ extension HomeViewController {
         updateViewState()
     }
 
-    fileprivate func applyPartialLoadResult(rowChanges: [HVRowChange],
+    fileprivate func applyPartialLoadResult(rowChanges: [CLVRowChange],
                                             isAnimated: Bool) {
         AssertIsOnMainThread()
 
@@ -185,7 +185,7 @@ extension HomeViewController {
                 if tableView.isEditing && !viewState.multiSelectState.isActive {
                     checkAndSetTableUpdates()
                 }
-                if !useFallBackUpdateMechanism, let tds = tableView.dataSource as? HVTableDataSource {
+                if !useFallBackUpdateMechanism, let tds = tableView.dataSource as? CLVTableDataSource {
                     useFallBackUpdateMechanism = !tds.updateVisibleCellContent(at: oldIndexPath, for: tableView)
                 }
                 if useFallBackUpdateMechanism {
@@ -203,7 +203,7 @@ extension HomeViewController {
 
 // MARK: -
 
-private enum HVLoadType {
+private enum CLVLoadType {
     case resetAll
     case incrementalDiff(updatedThreadIds: Set<String>)
     case reloadTableOnly
@@ -213,44 +213,44 @@ private enum HVLoadType {
 // MARK: -
 
 @objc
-public class HVLoadCoordinator: NSObject {
+public class CLVLoadCoordinator: NSObject {
     @objc
-    public weak var viewController: HomeViewController?
+    public weak var viewController: ChatListViewController?
 
-    private struct HVLoadInfo {
-        let viewInfo: HVViewInfo
-        let loadType: HVLoadType
+    private struct CLVLoadInfo {
+        let viewInfo: CLVViewInfo
+        let loadType: CLVLoadType
     }
-    private class HVLoadInfoBuilder {
+    private class CLVLoadInfoBuilder {
         var shouldResetAll = false
         var updatedThreadIds = Set<String>()
 
-        func build(homeViewMode: HomeViewMode,
+        func build(chatListMode: ChatListMode,
                    hasVisibleReminders: Bool,
                    canApplyRowChanges: Bool,
-                   lastViewInfo: HVViewInfo,
-                   transaction: SDSAnyReadTransaction) -> HVLoadInfo {
-            let viewInfo = HVViewInfo.build(homeViewMode: homeViewMode,
+                   lastViewInfo: CLVViewInfo,
+                   transaction: SDSAnyReadTransaction) -> CLVLoadInfo {
+            let viewInfo = CLVViewInfo.build(chatListMode: chatListMode,
                                             hasVisibleReminders: hasVisibleReminders,
                                             transaction: transaction)
             if shouldResetAll ||
                 viewInfo.hasArchivedThreadsRow != lastViewInfo.hasArchivedThreadsRow ||
                 viewInfo.hasVisibleReminders != lastViewInfo.hasVisibleReminders {
-                return HVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
+                return CLVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
             } else if !updatedThreadIds.isEmpty {
                 if canApplyRowChanges {
-                    return HVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
+                    return CLVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
                 } else {
-                    return HVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
+                    return CLVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
                 }
             } else if viewInfo != lastViewInfo {
-                return HVLoadInfo(viewInfo: viewInfo, loadType: .reloadTableOnly)
+                return CLVLoadInfo(viewInfo: viewInfo, loadType: .reloadTableOnly)
             } else {
-                return HVLoadInfo(viewInfo: viewInfo, loadType: .none)
+                return CLVLoadInfo(viewInfo: viewInfo, loadType: .none)
             }
         }
     }
-    private var loadInfoBuilder = HVLoadInfoBuilder()
+    private var loadInfoBuilder = CLVLoadInfoBuilder()
 
     @objc
     public override required init() {
@@ -283,7 +283,7 @@ public class HVLoadCoordinator: NSObject {
             return
         }
 
-        // During main app launch, the home view becomes visible _before_
+        // During main app launch, the chat list becomes visible _before_
         // app is foreground and active.  Therefore we need to make an
         // exception and update the view contents; otherwise, the home
         // view will briefly appear empty after launch.
@@ -332,16 +332,16 @@ public class HVLoadCoordinator: NSObject {
         let reminderViews = viewController.viewState.reminderViews
         let hasVisibleReminders = reminderViews.hasVisibleReminders
 
-        let loadResult: HVLoadResult = databaseStorage.read { transaction in
+        let loadResult: CLVLoadResult = databaseStorage.read { transaction in
             // Decide what kind of load we prefer.
             let canApplyRowChanges = viewController.tableDataSource.renderState.visibleThreadCount > 0
-            let loadInfo = loadInfoBuilder.build(homeViewMode: viewController.homeViewMode,
+            let loadInfo = loadInfoBuilder.build(chatListMode: viewController.chatListMode,
                                                  hasVisibleReminders: hasVisibleReminders,
                                                  canApplyRowChanges: canApplyRowChanges,
                                                  lastViewInfo: viewController.renderState.viewInfo,
                                                  transaction: transaction)
             // Reset the builder.
-            loadInfoBuilder = HVLoadInfoBuilder()
+            loadInfoBuilder = CLVLoadInfoBuilder()
 
             // Perform the load.
             //

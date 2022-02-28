@@ -9,7 +9,7 @@ import SignalMessaging
 import UIKit
 
 @objc
-public extension HomeViewController {
+public extension ChatListViewController {
 
     func reloadTableDataAndResetCellContentCache() {
         AssertIsOnMainThread()
@@ -21,7 +21,7 @@ public extension HomeViewController {
 
     func reloadTableData() {
         AssertIsOnMainThread()
-        InstrumentsMonitor.measure(category: "runtime", parent:"HomeViewController", name: "reloadTableData") {
+        InstrumentsMonitor.measure(category: "runtime", parent: "ChatListViewController", name: "reloadTableData") {
             var selectedThreadIds: Set<String> = []
             for indexPath in tableView.indexPathsForSelectedRows ?? [] {
                 if let key = tableDataSource.thread(forIndexPath: indexPath, expectsSuccess: false)?.uniqueId {
@@ -53,14 +53,14 @@ public extension HomeViewController {
         AssertIsOnMainThread()
 
         for cell in tableView.visibleCells {
-            guard let cell = cell as? HomeViewCell else {
+            guard let cell = cell as? ChatListCell else {
                 continue
             }
             updateCellVisibility(cell: cell, isCellVisible: true)
         }
     }
 
-    func updateCellVisibility(cell: HomeViewCell, isCellVisible: Bool) {
+    func updateCellVisibility(cell: ChatListCell, isCellVisible: Bool) {
         AssertIsOnMainThread()
 
         cell.isCellVisible = self.isViewVisible && isCellVisible
@@ -70,7 +70,7 @@ public extension HomeViewController {
         AssertIsOnMainThread()
 
         for cell in tableView.visibleCells {
-            guard let cell = cell as? HomeViewCell else {
+            guard let cell = cell as? ChatListCell else {
                 continue
             }
             cell.ensureCellAnimations()
@@ -340,7 +340,7 @@ public enum ShowAppSettingsMode {
 
 // MARK: -
 
-public extension HomeViewController {
+public extension ChatListViewController {
 
     @objc
     func createAvatarBarButtonViewWithSneakyTransaction() -> UIView {
@@ -417,7 +417,7 @@ public extension HomeViewController {
     }
 }
 
-extension HomeViewController: BadgeExpirationSheetDelegate {
+extension ChatListViewController: BadgeExpirationSheetDelegate {
     func badgeExpirationSheetActionButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
         SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
         if BoostBadgeIds.contains(badgeExpirationSheet.badgeID), SubscriptionManager.hasCurrentSubscriptionWithSneakyTransaction() {
@@ -430,7 +430,7 @@ extension HomeViewController: BadgeExpirationSheetDelegate {
     func badgeExpirationSheetNotNowButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) { }
 }
 
-extension HomeViewController: ThreadSwipeHandler {
+extension ChatListViewController: ThreadSwipeHandler {
     func updateUIAfterSwipeAction() {
         updateViewState()
     }

@@ -3,7 +3,7 @@
 //
 
 #import "AppDelegate.h"
-#import "HomeViewController.h"
+#import "ChatListViewController.h"
 #import "MainAppContext.h"
 #import "OWSDeviceProvisioningURLParser.h"
 #import "OWSScreenLockUI.h"

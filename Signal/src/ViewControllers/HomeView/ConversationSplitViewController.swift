@@ -10,7 +10,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     fileprivate var deviceTransferNavController: DeviceTransferNavigationController?
 
-    private let homeVC = HomeViewController()
+    private let homeVC = ChatListViewController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
     private lazy var primaryNavController = OWSNavigationController(rootViewController: homeVC)
@@ -175,7 +175,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
         let threadViewModel = databaseStorage.read {
             return ThreadViewModel(thread: thread,
-                                   forHomeView: false,
+                                   forChatList: false,
                                    transaction: $0)
         }
         let vc = ConversationViewController(threadViewModel: threadViewModel, action: action, focusMessageId: focusMessageId)
@@ -554,7 +554,7 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         // If we're collapsed and navigating to a list VC (either inbox or archive)
         // the current conversation is no longer selected.
-        guard isCollapsed, viewController is HomeViewController else { return }
+        guard isCollapsed, viewController is ChatListViewController else { return }
         selectedConversationViewController = nil
     }
 
@@ -575,7 +575,7 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
     }
 }
 
-@objc extension HomeViewController {
+@objc extension ChatListViewController {
     var conversationSplitViewController: ConversationSplitViewController? {
         return splitViewController as? ConversationSplitViewController
     }

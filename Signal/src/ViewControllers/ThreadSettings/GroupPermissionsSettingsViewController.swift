@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -307,7 +307,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             }
             let newThreadViewModel = ThreadViewModel(
                 thread: newThread,
-                forHomeView: false,
+                forChatList: false,
                 transaction: transaction
             )
             self.threadViewModel = newThreadViewModel

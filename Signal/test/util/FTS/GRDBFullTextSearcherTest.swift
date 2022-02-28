@@ -175,24 +175,24 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                                                                             name: "Book Club",
                                                                             transaction: transaction)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread,
-                                                  forHomeView: true,
+                                                  forChatList: true,
                                                   transaction: transaction)
 
             let snackClubGroupThread = try! GroupManager.createGroupForTests(members: [self.aliceRecipient],
                                                                              name: "Snack Club",
                                                                              transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread,
-                                                   forHomeView: true,
+                                                   forChatList: true,
                                                    transaction: transaction)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.aliceRecipient, transaction: transaction)
             self.aliceThread = ThreadViewModel(thread: aliceContactThread,
-                                               forHomeView: true,
+                                               forChatList: true,
                                                transaction: transaction)
 
             let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.bobRecipient, transaction: transaction)
             self.bobEmptyThread = ThreadViewModel(thread: bobContactThread,
-                                                  forHomeView: true,
+                                                  forChatList: true,
                                                   transaction: transaction)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)

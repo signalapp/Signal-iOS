@@ -272,7 +272,7 @@ public class ConversationViewController: OWSViewController {
         self.viewWillAppearForLoad()
 
         // We should have already requested contact access at this point, so this should be a no-op
-        // unless it ever becomes possible to load this VC without going via the HomeViewController.
+        // unless it ever becomes possible to load this VC without going via the ChatListViewController.
         self.contactsManagerImpl.requestSystemContactsOnce()
 
         self.updateBarButtonItems()
