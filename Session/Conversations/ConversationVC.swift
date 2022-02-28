@@ -728,7 +728,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func scrollToBottom(isAnimated: Bool) {
-        guard !isUserScrolling else { return }
+        guard !isUserScrolling && !viewItems.isEmpty else { return }
         messagesTableView.scrollToRow(at: IndexPath(row: viewItems.count - 1, section: 0), at: .top, animated: isAnimated)
     }
     
