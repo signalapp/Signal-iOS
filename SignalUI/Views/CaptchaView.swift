@@ -13,20 +13,20 @@ public protocol CaptchaViewDelegate: NSObjectProtocol {
 
 public enum CaptchaContext {
     case registration, challenge
-}
 
-public class CaptchaView: UIView {
-
-    private let context: CaptchaContext
-
-    private var captchaURL: URL {
-        switch context {
+    fileprivate var url: URL {
+        switch self {
         case .registration:
             return URL(string: TSConstants.registrationCaptchaURL)!
         case .challenge:
             return URL(string: TSConstants.challengeCaptchaURL)!
         }
     }
+}
+
+public class CaptchaView: UIView {
+
+    private let context: CaptchaContext
 
     public init(context: CaptchaContext) {
         self.context = context
@@ -86,7 +86,7 @@ public class CaptchaView: UIView {
     public weak var delegate: CaptchaViewDelegate?
 
     public func loadCaptcha() {
-        webView.load(URLRequest(url: captchaURL))
+        webView.load(URLRequest(url: context.url))
     }
 
     @objc
