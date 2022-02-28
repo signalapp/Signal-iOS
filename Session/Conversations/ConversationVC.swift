@@ -466,11 +466,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     // MARK: Updating
     
     func updateNavBarButtons() {
-        // Back button (to appear on pushed screen)
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        backButton.tintColor = Colors.text
-        navigationItem.backBarButtonItem = backButton
-        
         navigationItem.hidesBackButton = isShowingSearchUI
         
         if isShowingSearchUI {
@@ -478,7 +473,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             navigationItem.rightBarButtonItems = []
         }
         else {
-            navigationItem.hidesBackButton = false
             navigationItem.leftBarButtonItem = UIViewController.createOWSBackButton(withTarget: self, selector: #selector(handleBackPressed))
             
             if let contactThread: TSContactThread = thread as? TSContactThread {

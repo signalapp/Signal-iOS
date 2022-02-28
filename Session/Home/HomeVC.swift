@@ -394,11 +394,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         pathStatusView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
         pathStatusView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
         
-        // Back button (to appear on pushed screen)
-        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        backButton.tintColor = Colors.text
-        navigationItem.backBarButtonItem = backButton
-        
         // Left bar button item
         let leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
         leftBarButtonItem.accessibilityLabel = "Settings button"
