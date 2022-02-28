@@ -13,6 +13,7 @@ protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController)
+    func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
     func photoCaptureViewControllerDidRequestPresentPhotoLibrary(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didRequestSwitchBatchMode batchMode: Bool) -> Bool
@@ -106,6 +107,8 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        delegate?.photoCaptureViewControllerViewWillAppear(self)
 
         isVisible = true
         let previewOrientation: AVCaptureVideoOrientation
@@ -232,7 +235,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         }
     }
 
-    private var isInBatchMode: Bool = false {
+    private(set) var isInBatchMode: Bool = false {
         didSet {
             let buttonImage = isInBatchMode ? ButtonImages.batchModeOn : ButtonImages.batchModeOff
             topBar.batchModeButton.setImage(buttonImage, for: .normal)

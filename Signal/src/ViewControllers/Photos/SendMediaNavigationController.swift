@@ -216,18 +216,6 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         updateNavbarTheme(for: viewController, animated: animated)
-
-        switch viewController {
-        case is PhotoCaptureViewController:
-            if attachmentCount == 1, navigationController.topViewController is AttachmentApprovalViewController {
-                // User is navigating "back" to the previous view, indicating
-                // they want to discard the previously captured item
-                discardDraft()
-            }
-
-        default:
-            break
-        }
     }
 
     // In case back navigation was canceled, we re-apply whatever is showing.
@@ -295,6 +283,13 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController) {
         let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_CAMERA", comment: "alert action when the user decides not to cancel the media flow after all.")
         didRequestExit(dontAbandonText: dontAbandonText)
+    }
+
+    func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController) {
+        if !photoCaptureViewController.isInBatchMode, attachmentCount == 1, case .camera(_) = attachmentDraftCollection.attachmentDrafts.last {
+            // User is navigating back to the camera screen, indicating they want to discard the previously captured item.
+           discardDraft()
+        }
     }
 
     func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController) {
