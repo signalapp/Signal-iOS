@@ -289,7 +289,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     override func viewDidLoad() {
-        SNLog("Ryan: Conversation VC starts loading at \(NSDate.ows_millisecondTimeStamp())")
         super.viewDidLoad()
         // Gradient
         setUpGradientBackground()
@@ -392,8 +391,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         if let v2OpenGroup = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
             OpenGroupAPIV2.getMemberCount(for: v2OpenGroup.room, on: v2OpenGroup.server).retainUntilComplete()
         }
-        
-        SNLog("Ryan: Conversation VC ends loading at \(NSDate.ows_millisecondTimeStamp())")
     }
     
     override func viewDidLayoutSubviews() {
@@ -405,7 +402,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             // unreadIndicatorIndex is calculated during loading of the viewItems, so it's
             // supposed to be accurate.
             DispatchQueue.main.async {
-                SNLog("Ryan: Conversation VC starts layout subviews at \(NSDate.ows_millisecondTimeStamp())")
                 if let focusedMessageID = self.focusedMessageID {
                     self.scrollToInteraction(with: focusedMessageID, isAnimated: false, highlighted: true)
                 } else {
@@ -419,13 +415,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                     }
                 }
                 self.scrollButton.alpha = self.getScrollButtonOpacity()
-                SNLog("Ryan: Conversation VC ends layout subviews at \(NSDate.ows_millisecondTimeStamp())")
             }
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        SNLog("Ryan: Conversation VC did appear at \(NSDate.ows_millisecondTimeStamp())")
         super.viewDidAppear(animated)
         highlightFocusedMessageIfNeeded()
         didFinishInitialLayout = true
