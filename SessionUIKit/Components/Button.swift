@@ -6,7 +6,7 @@ public final class Button : UIButton {
     private var heightConstraint: NSLayoutConstraint!
     
     public enum Style {
-        case unimportant, regular, prominentOutline, prominentFilled, regularBorderless
+        case unimportant, regular, prominentOutline, prominentFilled, regularBorderless, destructiveOutline
     }
     
     public enum Size {
@@ -41,6 +41,7 @@ public final class Button : UIButton {
         case .prominentOutline: fillColor = UIColor.clear
         case .prominentFilled: fillColor = isLightMode ? Colors.text : Colors.accent
         case .regularBorderless: fillColor = UIColor.clear
+        case .destructiveOutline: fillColor = UIColor.clear
         }
         let borderColor: UIColor
         switch style {
@@ -49,6 +50,7 @@ public final class Button : UIButton {
         case .prominentOutline: borderColor = isLightMode ? Colors.text : Colors.accent
         case .prominentFilled: borderColor = isLightMode ? Colors.text : Colors.accent
         case .regularBorderless: borderColor = UIColor.clear
+        case .destructiveOutline: borderColor = Colors.destructive
         }
         let textColor: UIColor
         switch style {
@@ -57,6 +59,7 @@ public final class Button : UIButton {
         case .prominentOutline: textColor = isLightMode ? Colors.text : Colors.accent
         case .prominentFilled: textColor = isLightMode ? UIColor.white : Colors.text
         case .regularBorderless: textColor = Colors.text
+        case .destructiveOutline: textColor = Colors.destructive
         }
         let height: CGFloat
         switch size {

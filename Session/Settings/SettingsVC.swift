@@ -139,7 +139,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         setUpNavBarStyle()
         setNavBarTitle(NSLocalizedString("vc_settings_title", comment: ""))
         // Navigation bar buttons
-        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         backButton.tintColor = Colors.text
         navigationItem.backBarButtonItem = backButton
         updateNavigationBarButtons()
@@ -253,8 +253,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         pathButton.addSubview(pathStatusView)
         pathStatusView.pin(.leading, to: .trailing, of: pathButton.titleLabel!, withInset: Values.smallSpacing)
         pathStatusView.autoVCenterInSuperview()
-        
-        pathButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: Values.smallSpacing)
         
         return [
             getSeparator(),
