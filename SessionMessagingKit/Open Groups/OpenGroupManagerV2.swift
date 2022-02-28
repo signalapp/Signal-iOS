@@ -117,7 +117,8 @@ public final class OpenGroupManagerV2 : NSObject {
         // https://143.198.213.225:443/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         // 143.198.213.255:80/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         let useTLS = (url.scheme == "https")
-        let room = String(url.path.dropFirst()) // Drop the leading slash
+        let updatedPath = (url.path.starts(with: "/r/") ? url.path.substring(from: 2) : url.path)
+        let room = String(updatedPath.dropFirst()) // Drop the leading slash
         let queryParts = query.split(separator: "=")
         guard !room.isEmpty && !room.contains("/"), queryParts.count == 2, queryParts[0] == "public_key" else { return nil }
         let publicKey = String(queryParts[1])
