@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,6 +8,7 @@ import GRDB
 @objc
 public protocol DatabaseChanges: AnyObject {
     typealias UniqueId = String
+    typealias RowId = Int64
 
     var threadUniqueIds: Set<UniqueId> { get }
     var interactionUniqueIds: Set<UniqueId> { get }
@@ -15,6 +16,8 @@ public protocol DatabaseChanges: AnyObject {
 
     var interactionDeletedUniqueIds: Set<UniqueId> { get }
     var attachmentDeletedUniqueIds: Set<UniqueId> { get }
+
+    var storyMessageRowIds: Set<RowId> { get }
 
     var tableNames: Set<String> { get }
     var collections: Set<String> { get }
@@ -87,6 +90,7 @@ class ObservedDatabaseChanges: NSObject {
                     _tableNames.isEmpty &&
                     threads.isEmpty &&
                     interactions.isEmpty &&
+                    _storyMessageRowIds.isEmpty &&
                     attachments.isEmpty &&
                     _lastError == nil)
     }
@@ -208,6 +212,38 @@ class ObservedDatabaseChanges: NSObject {
         #endif
 
         interactions.append(rowIds: interactionRowIds)
+    }
+
+    // MARK: - Stories
+
+    private var _storyMessageRowIds = Set<Int64>()
+
+    func append(storyMessage: StoryMessageRecord) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        guard let id = storyMessage.id else {
+            return owsFailDebug("missing id for StoryMessage")
+        }
+
+        _storyMessageRowIds.insert(id)
+    }
+
+    func append(storyMessageRowId: RowId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        _storyMessageRowIds.insert(storyMessageRowId)
+    }
+
+    func append(storyMessageRowIds: Set<RowId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        _storyMessageRowIds.formUnion(storyMessageRowIds)
     }
 
     // MARK: - Attachments
@@ -452,6 +488,14 @@ extension ObservedDatabaseChanges: DatabaseChanges {
 
             return attachments.deletedUniqueIds
         }
+    }
+
+    var storyMessageRowIds: Set<RowId> {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        return _storyMessageRowIds
     }
 
     var tableNames: Set<String> {

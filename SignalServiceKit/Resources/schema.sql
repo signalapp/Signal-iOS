@@ -1254,3 +1254,29 @@ CREATE
             ,"localization" TEXT NOT NULL
         )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "story_messages" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"timestamp" INTEGER NOT NULL
+            ,"authorUuid" TEXT NOT NULL
+            ,"groupId" BLOB
+            ,"direction" INTEGER NOT NULL
+            ,"manifest" BLOB NOT NULL
+            ,"attachment" BLOB NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_story_messages_on_timestamp_and_authorUuid"
+        ON "story_messages"("timestamp"
+    ,"authorUuid"
+)
+;
+
+CREATE
+    INDEX "index_story_messages_on_direction"
+        ON "story_messages"("direction"
+)
+;

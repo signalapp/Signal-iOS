@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -339,6 +339,19 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
+
+        didModifyPendingChanges()
+    }
+
+    // internal - should only be called by DatabaseStorage
+    func didTouch(storyMessage: StoryMessageRecord, transaction: GRDBWriteTransaction) {
+        // Note: We don't actually use the `transaction` param, but touching must happen within
+        // a write transaction in order for the touch machinery to notify it's observers
+        // in the expected way.
+        AssertHasDatabaseChangeObserverLock()
+
+        pendingChanges.append(storyMessage: storyMessage)
+        pendingChanges.append(tableName: StoryMessageRecord.databaseTableName)
 
         didModifyPendingChanges()
     }

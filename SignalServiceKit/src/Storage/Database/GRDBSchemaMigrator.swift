@@ -123,6 +123,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createProfileBadgeTable
         case createSubscriptionDurableJob
         case addReceiptPresentationToSubscriptionDurableJob
+        case createStoryMessageTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1508,6 +1509,39 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
                     table.add(column: "receiptCredentialPresentation", .blob)
                 }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.createStoryMessageTable.rawValue) { db in
+            do {
+                try db.create(table: "story_messages") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                        .notNull()
+                    table.column("timestamp", .integer)
+                        .notNull()
+                    table.column("authorUuid", .text)
+                        .notNull()
+                    table.column("groupId", .blob)
+                    table.column("direction", .integer)
+                        .notNull()
+                    table.column("manifest", .blob)
+                        .notNull()
+                    table.column("attachment", .blob)
+                        .notNull()
+                }
+
+                try db.create(
+                    index: "index_story_messages_on_timestamp_and_authorUuid",
+                    on: "story_messages",
+                    columns: ["timestamp", "authorUuid"]
+                )
+                try db.create(
+                    index: "index_story_messages_on_direction",
+                    on: "story_messages",
+                    columns: ["direction"]
+                )
             } catch {
                 owsFail("Error: \(error)")
             }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,11 +11,14 @@ public class OWSAttachmentDownloads: NSObject {
 
     private enum JobType {
         case messageAttachment(attachmentId: AttachmentId, message: TSMessage)
+        case storyMessageAttachment(attachmentId: AttachmentId, storyMessage: StoryMessageRecord)
         case headlessAttachment(attachmentPointer: TSAttachmentPointer)
 
         var attachmentId: AttachmentId {
             switch self {
             case .messageAttachment(let attachmentId, _):
+                return attachmentId
+            case .storyMessageAttachment(let attachmentId, _):
                 return attachmentId
             case .headlessAttachment(let attachmentPointer):
                 return attachmentPointer.uniqueId
@@ -26,7 +29,18 @@ public class OWSAttachmentDownloads: NSObject {
             switch self {
             case .messageAttachment(_, let message):
                 return message
+            case .storyMessageAttachment:
+                return nil
             case .headlessAttachment:
+                return nil
+            }
+        }
+
+        var storyMessage: StoryMessageRecord? {
+            switch self {
+            case .storyMessageAttachment(_, let storyMessage):
+                return storyMessage
+            default:
                 return nil
             }
         }
@@ -55,6 +69,7 @@ public class OWSAttachmentDownloads: NSObject {
         var progress: CGFloat = 0
         var attachmentId: AttachmentId { jobType.attachmentId }
         var message: TSMessage? { jobType.message }
+        var storyMessage: StoryMessageRecord? { jobType.storyMessage }
         var category: AttachmentCategory { jobRequest.category }
 
         init(jobRequest: JobRequest, downloadBehavior: AttachmentDownloadBehavior) {
@@ -136,6 +151,7 @@ public class OWSAttachmentDownloads: NSObject {
     // MARK: -
 
     private static let pendingNewMessageDownloads = SDSKeyValueStore(collection: "PendingNewMessageDownloads")
+    private static let pendingNewStoryMessageDownloads = SDSKeyValueStore(collection: "PendingNewStoryMessageDownloads")
 
     private func startPendingNewMessageDownloads() {
         owsAssertDebug(CurrentAppContext().isMainApp)
@@ -310,6 +326,31 @@ public class OWSAttachmentDownloads: NSObject {
                                                                    transaction: transaction)
                     return nil
                 }
+            case .storyMessageAttachment:
+                if DebugFlags.forceAttachmentDownloadFailures.get() {
+                    Logger.info("Skipping media download for thread due to debug settings: \(job.category).")
+                    attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                   to: .failed,
+                                                                   transaction: transaction)
+                    return nil
+                }
+
+                if self.isDownloadBlockedByActiveCall(job: job) {
+                    Logger.info("Skipping media download due to active call: \(job.category).")
+                    attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                   to: .pendingManualDownload,
+                                                                   transaction: transaction)
+                    return nil
+                }
+                if self.isDownloadBlockedByAutoDownloadSettingsSettings(job: job,
+                                                                        attachmentPointer: attachmentPointer,
+                                                                        transaction: transaction) {
+                    Logger.info("Skipping media download for thread due to auto-download settings: \(job.category).")
+                    attachmentPointer.updateAttachmentPointerState(from: .enqueued,
+                                                                   to: .pendingManualDownload,
+                                                                   transaction: transaction)
+                    return nil
+                }
             case .headlessAttachment:
                 // We don't need to apply attachment download settings
                 // to headless attachments.
@@ -322,6 +363,8 @@ public class OWSAttachmentDownloads: NSObject {
 
             if let message = job.message {
                 Self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+            } else if let storyMessage = job.storyMessage {
+                Self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
             }
             return attachmentPointer
         }
@@ -451,6 +494,8 @@ public class OWSAttachmentDownloads: NSObject {
 
             if let message = job.message {
                 Self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+            } else if let storyMessage = job.storyMessage {
+                Self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
             }
         }
 
@@ -485,6 +530,8 @@ public class OWSAttachmentDownloads: NSObject {
 
             if let message = job.message {
                 Self.reloadAndTouchLatestVersionOfMessage(message, transaction: transaction)
+            } else if let storyMessage = job.storyMessage {
+                Self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
             }
         }
 
@@ -890,6 +937,95 @@ public extension OWSAttachmentDownloads {
         }
     }
 
+    func enqueueDownloadOfAttachmentsForNewStoryMessage(_ message: StoryMessageRecord, transaction: SDSAnyWriteTransaction) {
+        // No attachments, nothing to do.
+        guard let messageId = message.id else { return owsFailDebug("Missing id for story message") }
+        guard !message.allAttachmentIds.isEmpty else { return }
+
+        enqueueDownloadOfAttachmentsForNewStoryMessageId(
+            messageId,
+            downloadBehavior: message.direction == .outgoing ? .bypassAll : .default,
+            touchMessageImmediately: false,
+            transaction: transaction
+        )
+    }
+
+    private func enqueueDownloadOfAttachmentsForNewStoryMessageId(
+        _ storyMessageId: Int64,
+        downloadBehavior: AttachmentDownloadBehavior,
+        touchMessageImmediately: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        // If we're not the main app, queue up the download for the next time
+        // the main app launches.
+        guard CurrentAppContext().isMainApp else {
+            Self.pendingNewStoryMessageDownloads.setUInt(
+                downloadBehavior.rawValue,
+                key: String(storyMessageId),
+                transaction: transaction
+            )
+            return
+        }
+
+        Self.pendingNewStoryMessageDownloads.removeValue(forKey: String(storyMessageId), transaction: transaction)
+
+        // Don't enqueue the attachment downloads until the write
+        // transaction is committed or attachmentDownloads might race
+        // and not be able to find the attachment(s)/message/thread.
+        transaction.addAsyncCompletionOffMain {
+            self.enqueueDownloadOfAttachments(
+                forStoryMessageId: storyMessageId,
+                attachmentGroup: .allAttachmentsIncoming,
+                downloadBehavior: downloadBehavior,
+                touchMessageImmediately: touchMessageImmediately
+            ) { streams in
+                Logger.debug("Successfully fetched attachments: \(streams.count) for StoryMessage: \(storyMessageId)")
+            } failure: { error in
+                Logger.warn("Failed to fetch attachments for StoryMessage: \(storyMessageId) with error: \(error)")
+            }
+        }
+    }
+
+    @objc
+    func enqueueDownloadOfAttachments(forStoryMessageId storyMessageId: Int64,
+                                      attachmentGroup: AttachmentGroup,
+                                      downloadBehavior: AttachmentDownloadBehavior,
+                                      touchMessageImmediately: Bool,
+                                      success: @escaping ([TSAttachmentStream]) -> Void,
+                                      failure: @escaping (Error) -> Void) {
+
+        Self.serialQueue.async {
+            guard !CurrentAppContext().isRunningTests else {
+                failure(Self.buildError())
+                return
+            }
+            Self.databaseStorage.read { transaction in
+                guard let message = try? StoryMessageRecord.fetchOne(transaction.unwrapGrdbRead.database, key: storyMessageId) else {
+                    failure(Self.buildError())
+                    return
+                }
+                let jobRequests = Self.buildJobRequests(forStoryMessage: message,
+                                                        attachmentGroup: attachmentGroup,
+                                                        transaction: transaction)
+                guard !jobRequests.isEmpty else {
+                    success([])
+                    return
+                }
+                self.enqueueJobs(jobRequests: jobRequests,
+                                 downloadBehavior: downloadBehavior,
+                                 transaction: transaction,
+                                 success: success,
+                                 failure: failure)
+
+                if touchMessageImmediately {
+                    Self.databaseStorage.asyncWrite { transaction in
+                        Self.databaseStorage.touch(storyMessage: message, transaction: transaction)
+                    }
+                }
+            }
+        }
+    }
+
     // TODO: Can we simplify this?
     @objc
     enum AttachmentGroup: UInt, Equatable {
@@ -1069,6 +1205,102 @@ public extension OWSAttachmentDownloads {
             } else {
                 owsFailDebug("Missing attachment: \(attachmentId)")
             }
+        }
+
+        return jobRequests
+    }
+
+    private class func buildJobRequests(forStoryMessage storyMessage: StoryMessageRecord,
+                                        attachmentGroup: AttachmentGroup,
+                                        transaction: SDSAnyReadTransaction) -> [JobRequest] {
+
+        var jobRequests = [JobRequest]()
+        var attachmentIds = Set<AttachmentId>()
+
+        func addJobRequest(attachment: TSAttachment, category: AttachmentCategory) {
+
+            if let attachmentPointer = attachment as? TSAttachmentPointer {
+                if attachmentPointer.pointerType == .restoring {
+                    Logger.warn("Ignoring restoring attachment.")
+                    return
+                }
+                if attachmentGroup.justIncomingAttachments,
+                   attachmentPointer.pointerType != .incoming {
+                    Logger.warn("Ignoring non-incoming attachment.")
+                    return
+                }
+            }
+
+            let attachmentId = attachment.uniqueId
+            guard !attachmentIds.contains(attachmentId) else {
+                // Ignoring duplicate
+                return
+            }
+            attachmentIds.insert(attachmentId)
+            let jobType = JobType.storyMessageAttachment(attachmentId: attachmentId, storyMessage: storyMessage)
+            jobRequests.append(JobRequest(jobType: jobType, category: category))
+        }
+
+        func addJobRequest(attachmentId: AttachmentId, category: AttachmentCategory) {
+            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
+                                                         transaction: transaction) else {
+                owsFailDebug("Missing attachment: \(attachmentId)")
+                return
+            }
+            addJobRequest(attachment: attachment, category: category)
+        }
+
+        switch storyMessage.attachment {
+        case .file(let attachmentId):
+            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
+                                                         transaction: transaction) else {
+                owsFailDebug("Missing attachment: \(attachmentId)")
+                break
+            }
+            let category: AttachmentCategory = {
+                if attachment.isImage {
+                    return .bodyMediaImage
+                } else if attachment.isVideo {
+                    return .bodyMediaVideo
+                } else if attachment.isVoiceMessage {
+                    return .bodyAudioVoiceMemo
+                } else if attachment.isAudio {
+                    return .bodyAudioOther
+                } else if attachment.isOversizeText {
+                    return .bodyOversizeText
+                } else {
+                    return .bodyFile
+                }
+            }()
+            addJobRequest(attachment: attachment, category: category)
+        case .text(let attachment):
+            if let attachmentId = attachment.preview?.imageAttachmentId {
+                addJobRequest(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
+            }
+        }
+
+        for attachmentId in storyMessage.allAttachmentIds {
+            guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId,
+                                                         transaction: transaction) else {
+                owsFailDebug("Missing attachment: \(attachmentId)")
+                continue
+            }
+            let category: AttachmentCategory = {
+                if attachment.isImage {
+                    return .bodyMediaImage
+                } else if attachment.isVideo {
+                    return .bodyMediaVideo
+                } else if attachment.isVoiceMessage {
+                    return .bodyAudioVoiceMemo
+                } else if attachment.isAudio {
+                    return .bodyAudioOther
+                } else if attachment.isOversizeText {
+                    return .bodyOversizeText
+                } else {
+                    return .bodyFile
+                }
+            }()
+            addJobRequest(attachment: attachment, category: category)
         }
 
         return jobRequests

@@ -470,6 +470,8 @@ NS_ASSUME_NONNULL_BEGIN
             // processed in the -preprocess phase that occurs post-decryption.
             //
             // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
+        } else if (contentProto.storyMessage) {
+            [self handleIncomingEnvelope:envelope withStoryMessage:contentProto.storyMessage transaction:transaction];
         } else {
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
         }
@@ -946,6 +948,34 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Move to internal logging without flush.
     OWSLogInfo(@"Complete.");
+}
+
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+              withStoryMessage:(SSKProtoStoryMessage *)storyMessage
+                   transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!envelope) {
+        OWSFailDebug(@"Missing envelope.");
+        return;
+    }
+    if (!storyMessage) {
+        OWSFailDebug(@"Missing storyMessage.");
+        return;
+    }
+    if (!transaction) {
+        OWSFail(@"Missing transaction.");
+        return;
+    }
+
+    NSError *error;
+    [StoryManager processIncomingStoryMessage:storyMessage
+                                    timestamp:envelope.timestamp
+                                       author:envelope.sourceAddress
+                                  transaction:transaction
+                                        error:&error];
+    if (error) {
+        OWSLogInfo(@"Failed to insert story message with error %@", error.localizedDescription);
+    }
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope

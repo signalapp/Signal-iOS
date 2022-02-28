@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -70,7 +70,7 @@ public class OWSLinkPreviewDraft: NSObject {
 // MARK: - OWSLinkPreview
 
 @objc
-public class OWSLinkPreview: MTLModel {
+public class OWSLinkPreview: MTLModel, Codable {
 
     @objc
     public var urlString: String?
@@ -120,9 +120,11 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public class func buildValidatedLinkPreview(dataMessage: SSKProtoDataMessage,
-                                                body: String?,
-                                                transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
+    public class func buildValidatedLinkPreview(
+        dataMessage: SSKProtoDataMessage,
+        body: String?,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OWSLinkPreview {
         guard let previewProto = dataMessage.preview.first else {
             throw LinkPreviewError.noPreview
         }
@@ -130,27 +132,35 @@ public class OWSLinkPreview: MTLModel {
             Logger.error("Discarding link preview; message has attachments.")
             throw LinkPreviewError.invalidPreview
         }
-        let urlString = previewProto.url
+        guard let body = body, body.contains(previewProto.url) else {
+            Logger.error("Url not present in body")
+            throw LinkPreviewError.invalidPreview
+        }
+
+       return try buildValidatedLinkPreview(proto: previewProto, transaction: transaction)
+    }
+
+    @objc
+    public class func buildValidatedLinkPreview(
+        proto: SSKProtoPreview,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OWSLinkPreview {
+        let urlString = proto.url
 
         guard let url = URL(string: urlString), url.isPermittedLinkPreviewUrl() else {
             Logger.error("Could not parse preview url.")
             throw LinkPreviewError.invalidPreview
         }
 
-        guard let body = body, body.contains(urlString) else {
-            Logger.error("Url not present in body")
-            throw LinkPreviewError.invalidPreview
-        }
-
         var title: String?
         var previewDescription: String?
-        if let rawTitle = previewProto.title {
+        if let rawTitle = proto.title {
             let normalizedTitle = normalizeString(rawTitle, maxLines: 2)
             if normalizedTitle.count > 0 {
                 title = normalizedTitle
             }
         }
-        if let rawDescription = previewProto.previewDescription, previewProto.title != previewProto.previewDescription {
+        if let rawDescription = proto.previewDescription, proto.title != proto.previewDescription {
             let normalizedDescription = normalizeString(rawDescription, maxLines: 3)
             if normalizedDescription.count > 0 {
                 previewDescription = normalizedDescription
@@ -158,7 +168,7 @@ public class OWSLinkPreview: MTLModel {
         }
 
         var imageAttachmentId: String?
-        if let imageProto = previewProto.image {
+        if let imageProto = proto.image {
             if let imageAttachmentPointer = TSAttachmentPointer(fromProto: imageProto, albumMessage: nil) {
                 imageAttachmentPointer.anyInsert(transaction: transaction)
                 imageAttachmentId = imageAttachmentPointer.uniqueId
@@ -172,8 +182,8 @@ public class OWSLinkPreview: MTLModel {
         linkPreview.previewDescription = previewDescription
 
         // Zero check required. Some devices in the wild will explicitly set zero to mean "no date"
-        if previewProto.hasDate, previewProto.date > 0 {
-            linkPreview.date = Date(millisecondsSince1970: previewProto.date)
+        if proto.hasDate, proto.date > 0 {
+            linkPreview.date = Date(millisecondsSince1970: proto.date)
         }
 
         guard linkPreview.isValid() else {
@@ -265,6 +275,41 @@ public class OWSLinkPreview: MTLModel {
     @objc
     public func displayDomain() -> String? {
         return OWSLinkPreviewManager.displayDomain(forUrl: urlString)
+    }
+
+    // MARK: - Codable
+
+    enum CodingKeys: String, CodingKey {
+        case urlString, title, imageAttachmentId, previewDescription, date
+    }
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        urlString = try container.decodeIfPresent(String.self, forKey: .urlString)
+        title = try container.decodeIfPresent(String.self, forKey: .title)
+        imageAttachmentId = try container.decodeIfPresent(String.self, forKey: .imageAttachmentId)
+        previewDescription = try container.decodeIfPresent(String.self, forKey: .previewDescription)
+        date = try container.decodeIfPresent(Date.self, forKey: .date)
+        super.init()
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let urlString = urlString {
+            try container.encode(urlString, forKey: .urlString)
+        }
+        if let title = title {
+            try container.encode(title, forKey: .title)
+        }
+        if let imageAttachmentId = imageAttachmentId {
+            try container.encode(imageAttachmentId, forKey: .imageAttachmentId)
+        }
+        if let previewDescription = previewDescription {
+            try container.encode(previewDescription, forKey: .previewDescription)
+        }
+        if let date = date {
+            try container.encode(date, forKey: .date)
+        }
     }
 }
 
