@@ -527,7 +527,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // needed for proper calculations, so force an initial layout if it doesn't have a size)
         var hasDoneLayout: Bool = true
         
-        if thread.isMessageRequest() && messageRequestView.bounds.height <= CGFloat.leastNonzeroMagnitude {
+        if messageRequestView.bounds.height <= CGFloat.leastNonzeroMagnitude {
             hasDoneLayout = false
             
             UIView.performWithoutAnimation {
