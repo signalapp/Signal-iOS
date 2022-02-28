@@ -359,15 +359,20 @@ final class ConversationCell : UITableViewCell {
         if threadViewModel.isGroupThread {
             if threadViewModel.name.isEmpty {
                 return "Unknown Group"
-            } else {
+            }
+            else {
                 return threadViewModel.name
             }
-        } else {
+        }
+        else {
             if threadViewModel.threadRecord.isNoteToSelf() {
                 return NSLocalizedString("NOTE_TO_SELF", comment: "")
-            } else {
-                let hexEncodedPublicKey = threadViewModel.contactSessionID!
-                return Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ?? hexEncodedPublicKey
+            }
+            else {
+                let hexEncodedPublicKey: String = threadViewModel.contactSessionID!
+                let displayName: String = (Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ?? hexEncodedPublicKey)
+                let middleTruncatedHexKey: String = "\(hexEncodedPublicKey.prefix(4))...\(hexEncodedPublicKey.suffix(4))"
+                return (displayName == hexEncodedPublicKey ? middleTruncatedHexKey : displayName)
             }
         }
     }

@@ -63,23 +63,16 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         return result
     }()
     
-    private lazy var clearAllButton: UIButton = {
-        let result: UIButton = UIButton()
+    private lazy var clearAllButton: Button = {
+        let result: Button = Button(style: .destructiveOutline, size: .large)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.clipsToBounds = true
-        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         result.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
-        result.setTitleColor(Colors.destructive, for: .normal)
         result.setBackgroundImage(
             Colors.destructive
                 .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
                 .toImage(isDarkMode: isDarkMode),
             for: .highlighted
         )
-        result.isHidden = true
-        result.layer.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
-        result.layer.borderColor = Colors.destructive.cgColor
-        result.layer.borderWidth = 1.5
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
         
         return result
@@ -163,10 +156,11 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             
             clearAllButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             clearAllButton.bottomAnchor.constraint(
-                equalTo: view.bottomAnchor,
-                constant: -Values.newConversationButtonBottomOffset // Negative due to how the constraint is set up
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                constant: -Values.largeSpacing
             ),
-            clearAllButton.widthAnchor.constraint(equalToConstant: 155),
+            // Note: The '182' is to match the 'Next' button on the New DM page (which doesn't have a fixed width)
+            clearAllButton.widthAnchor.constraint(equalToConstant: 182),
             clearAllButton.heightAnchor.constraint(equalToConstant: NewConversationButtonSet.collapsedButtonSize)
         ])
     }

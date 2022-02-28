@@ -277,7 +277,7 @@ CGFloat kIconViewLength = 24;
     contents.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
     BOOL isNoteToSelf = self.thread.isNoteToSelf;
-
+    
     __weak OWSConversationSettingsViewController *weakSelf = self;
 
     OWSTableSection *section = [OWSTableSection new];
@@ -332,7 +332,7 @@ CGFloat kIconViewLength = 24;
     } actionBlock:^{
         [weakSelf tappedConversationSearch];
     }]];
-
+    
     // Disappearing messages
     if (![self isOpenGroup]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -358,13 +358,6 @@ CGFloat kIconViewLength = 24;
             switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
             [switchView addTarget:strongSelf action:@selector(disappearingMessagesSwitchValueDidChange:)
                 forControlEvents:UIControlEventValueChanged];
-            
-            // Disable Disappearing Messages if the conversation hasn't been approved
-            if (!self.thread.isGroupThread) {
-                TSContactThread *thread = (TSContactThread *)self.thread;
-                SNContact *contact = [LKStorage.shared getContactWithSessionID:thread.contactSessionID];
-                [switchView setEnabled:(contact.isApproved && contact.didApproveMe)];
-            }
 
             UIStackView *topRow =
                 [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];
@@ -438,13 +431,6 @@ CGFloat kIconViewLength = 24;
                 [slider autoPinTrailingToSuperviewMargin];
                 [slider autoPinBottomToSuperviewMargin];
                 
-                // Disable Disappearing Messages slider if the conversation hasn't been approved (just in case)
-                if (!self.thread.isGroupThread) {
-                    TSContactThread *thread = (TSContactThread *)self.thread;
-                    SNContact *contact = [LKStorage.shared getContactWithSessionID:thread.contactSessionID];
-                    [slider setEnabled:(contact.isApproved && contact.didApproveMe)];
-                }
-
                 cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
                 cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
