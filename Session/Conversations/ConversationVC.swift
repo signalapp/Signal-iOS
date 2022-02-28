@@ -11,6 +11,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     let threadStartedAsMessageRequest: Bool
     let focusedMessageID: String? // This is used for global search
     var focusedMessageIndexPath: IndexPath?
+    var initialUnreadCount: UInt = 0
     var unreadViewItems: [ConversationViewItem] = []
     var scrollButtonBottomConstraint: NSLayoutConstraint?
     var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
@@ -276,11 +277,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         self.threadStartedAsMessageRequest = thread.isMessageRequest()
         self.focusedMessageID = focusedMessageID
         super.init(nibName: nil, bundle: nil)
-        var unreadCount: UInt = 0
         Storage.read { transaction in
-            unreadCount = self.thread.unreadMessageCount(transaction: transaction)
+            self.initialUnreadCount = self.thread.unreadMessageCount(transaction: transaction)
         }
-        let clampedUnreadCount = min(unreadCount, UInt(kConversationInitialMaxRangeSize), UInt(viewItems.endIndex))
+        let clampedUnreadCount = min(self.initialUnreadCount, UInt(kConversationInitialMaxRangeSize), UInt(viewItems.endIndex))
         unreadViewItems = clampedUnreadCount != 0 ? [ConversationViewItem](viewItems[viewItems.endIndex - Int(clampedUnreadCount) ..< viewItems.endIndex]) : []
     }
     
@@ -289,6 +289,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     override func viewDidLoad() {
+        SNLog("Ryan: Conversation VC starts loading at \(NSDate.ows_millisecondTimeStamp())")
         super.viewDidLoad()
         // Gradient
         setUpGradientBackground()
@@ -391,27 +392,26 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         if let v2OpenGroup = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
             OpenGroupAPIV2.getMemberCount(for: v2OpenGroup.room, on: v2OpenGroup.server).retainUntilComplete()
         }
+        
+        SNLog("Ryan: Conversation VC ends loading at \(NSDate.ows_millisecondTimeStamp())")
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         if !didFinishInitialLayout {
             // Scroll to the last unread message if possible; otherwise scroll to the bottom.
-            var unreadCount: UInt = 0
-            Storage.read { transaction in
-                unreadCount = self.thread.unreadMessageCount(transaction: transaction)
-            }
             // When the unread message count is more than the number of view items of a page,
             // the screen will scroll to the bottom instead of the first unread message.
             // unreadIndicatorIndex is calculated during loading of the viewItems, so it's
             // supposed to be accurate.
             DispatchQueue.main.async {
+                SNLog("Ryan: Conversation VC starts layout subviews at \(NSDate.ows_millisecondTimeStamp())")
                 if let focusedMessageID = self.focusedMessageID {
                     self.scrollToInteraction(with: focusedMessageID, isAnimated: false, highlighted: true)
                 } else {
                     let firstUnreadMessageIndex = self.viewModel.viewState.unreadIndicatorIndex?.intValue
                         ?? (self.viewItems.count - self.unreadViewItems.count)
-                    if unreadCount > 0, let viewItem = self.viewItems[ifValid: firstUnreadMessageIndex], let interactionID = viewItem.interaction.uniqueId {
+                    if self.initialUnreadCount > 0, let viewItem = self.viewItems[ifValid: firstUnreadMessageIndex], let interactionID = viewItem.interaction.uniqueId {
                         self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
                         self.unreadCountView.alpha = self.scrollButton.alpha
                     } else {
@@ -419,11 +419,13 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                     }
                 }
                 self.scrollButton.alpha = self.getScrollButtonOpacity()
+                SNLog("Ryan: Conversation VC ends layout subviews at \(NSDate.ows_millisecondTimeStamp())")
             }
         }
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        SNLog("Ryan: Conversation VC did appear at \(NSDate.ows_millisecondTimeStamp())")
         super.viewDidAppear(animated)
         highlightFocusedMessageIfNeeded()
         didFinishInitialLayout = true
@@ -777,6 +779,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let isMainAppAndActive = CurrentAppContext().isMainAppAndActive
         guard isMainAppAndActive && viewModel.canLoadMoreItems() && !isLoadingMore
             && messagesTableView.contentOffset.y < ConversationVC.loadMoreThreshold else { return }
+        print("Ryan: auto loading more")
         isLoadingMore = true
         viewModel.loadAnotherPageOfMessages()
     }

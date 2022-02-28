@@ -335,7 +335,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 if viewItem.quotedReply != nil {
                     let direction: QuoteView.Direction = isOutgoing ? .outgoing : .incoming
                     let hInset: CGFloat = 2
-                    let quoteView = QuoteView(for: viewItem, direction: direction, hInset: hInset, maxWidth: maxWidth)
+                    let quoteView = QuoteView(for: viewItem, in: thread, direction: direction, hInset: hInset, maxWidth: maxWidth)
                     let quoteViewContainer = UIView(wrapping: quoteView, withInsets: UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset))
                     stackView.addArrangedSubview(quoteViewContainer)
                 }
