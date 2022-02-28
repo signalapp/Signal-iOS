@@ -777,9 +777,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func autoLoadMoreIfNeeded() {
         let isMainAppAndActive = CurrentAppContext().isMainAppAndActive
-        guard isMainAppAndActive && viewModel.canLoadMoreItems() && !isLoadingMore
+        guard isMainAppAndActive && didFinishInitialLayout && viewModel.canLoadMoreItems() && !isLoadingMore
             && messagesTableView.contentOffset.y < ConversationVC.loadMoreThreshold else { return }
-        print("Ryan: auto loading more")
         isLoadingMore = true
         viewModel.loadAnotherPageOfMessages()
     }
