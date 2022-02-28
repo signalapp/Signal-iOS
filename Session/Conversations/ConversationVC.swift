@@ -77,7 +77,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
     }()
     
-    lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: focusedMessageID, delegate: self)
+    lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: nil, delegate: self)
     
     lazy var mediaCache: NSCache<NSString, AnyObject> = {
         let result = NSCache<NSString, AnyObject>()
@@ -515,7 +515,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // needed for proper calculations, so force an initial layout if it doesn't have a size)
         var hasDoneLayout: Bool = true
         
-        if messageRequestView.bounds.height <= CGFloat.leastNonzeroMagnitude {
+        if thread.isMessageRequest() && messageRequestView.bounds.height <= CGFloat.leastNonzeroMagnitude {
             hasDoneLayout = false
             
             UIView.performWithoutAnimation {
@@ -735,16 +735,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func scrollToBottom(isAnimated: Bool) {
         guard !isUserScrolling else { return }
-        if let interactionID = viewItems.last?.interaction.uniqueId {
-            self.scrollToInteraction(with: interactionID, position: .top, isAnimated: isAnimated)
-            return
-        }
-        // Ensure the view is fully up to date before we try to scroll to the bottom, since
-        // we use the table view's bounds to determine where the bottom is.
-        view.layoutIfNeeded()
-        let firstContentPageTop: CGFloat = 0
-        let contentOffsetY = max(firstContentPageTop, lastPageTop)
-        messagesTableView.setContentOffset(CGPoint(x: 0, y: contentOffsetY), animated: isAnimated)
+        messagesTableView.scrollToRow(at: IndexPath(row: viewItems.count - 1, section: 0), at: .top, animated: isAnimated)
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
