@@ -806,6 +806,11 @@ extension OWSURLSession: URLSessionDownloadDelegate {
             completionHandler(.cancel)
             return
         }
+        if response.expectedContentLength > 800_000 {
+            let formattedContentLength = OWSFormat.formatFileSize(UInt(response.expectedContentLength))
+            let urlString = response.url.map { String(describing: $0) } ?? "<unknown URL>"
+            Logger.warn("Large response (\(formattedContentLength)) for \(urlString)")
+        }
         completionHandler(.allow)
     }
 
