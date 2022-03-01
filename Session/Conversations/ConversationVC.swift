@@ -820,28 +820,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     func showSearchUI() {
         isShowingSearchUI = true
         // Search bar
-        // FIXME: This code is duplicated with SearchBar
         let searchBar = searchController.uiSearchController.searchBar
-        searchBar.searchBarStyle = .minimal
-        searchBar.barStyle = .black
-        searchBar.tintColor = Colors.text
-        let searchIcon = UIImage(named: "searchbar_search")!.asTintedImage(color: Colors.searchBarPlaceholder)
-        searchBar.setImage(searchIcon, for: .search, state: UIControl.State.normal)
-        let clearIcon = UIImage(named: "searchbar_clear")!.asTintedImage(color: Colors.searchBarPlaceholder)
-        searchBar.setImage(clearIcon, for: .clear, state: UIControl.State.normal)
-        let searchTextField: UITextField
-        if #available(iOS 13, *) {
-            searchTextField = searchBar.searchTextField
-        } else {
-            searchTextField = searchBar.value(forKey: "_searchField") as! UITextField
-        }
-        searchTextField.backgroundColor = Colors.searchBarBackground
-        searchTextField.textColor = Colors.text
-        searchTextField.attributedPlaceholder = NSAttributedString(string: "Search", attributes: [ .foregroundColor : Colors.searchBarPlaceholder ])
-        searchTextField.keyboardAppearance = isLightMode ? .default : .dark
-        searchBar.setPositionAdjustment(UIOffset(horizontal: 4, vertical: 0), for: .search)
-        searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 2, vertical: 0)
-        searchBar.setPositionAdjustment(UIOffset(horizontal: -4, vertical: 0), for: .clear)
+        searchBar.setUpSessionStyle()
         navigationItem.titleView = searchBar
         // Nav bar buttons
         updateNavBarButtons()
