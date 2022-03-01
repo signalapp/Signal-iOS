@@ -309,7 +309,7 @@ BOOL IsNoteToSelfEnabled(void)
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
+        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] trySendReadReceipt:YES transaction:transaction];
     }
 }
 
