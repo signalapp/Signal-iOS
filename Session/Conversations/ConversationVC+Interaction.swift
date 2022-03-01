@@ -10,6 +10,16 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     ConversationTitleViewDelegate {
 
     func handleTitleViewTapped() {
+        // Don't take the user to settings for message requests
+        guard
+            let contactThread: TSContactThread = thread as? TSContactThread,
+            let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()),
+            contact.isApproved,
+            contact.didApproveMe
+        else {
+            return
+        }
+        
         openSettings()
     }
     
@@ -292,32 +302,56 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     func sendAttachments(_ attachments: [SignalAttachment], with text: String, onComplete: (() -> ())? = nil) {
         guard !showBlockedModalIfNeeded() else { return }
+        
         for attachment in attachments {
             if attachment.hasError {
                 return showErrorAlert(for: attachment, onDismiss: onComplete)
             }
         }
+        
         let thread = self.thread
+        let sentTimestamp: UInt64 = NSDate.millisecondTimestamp()
         let message = VisibleMessage()
-        message.sentTimestamp = NSDate.millisecondTimestamp()
+        message.sentTimestamp = sentTimestamp
         message.text = replaceMentions(in: text)
+        
+        // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
+        // use it to determine if the user is creating a new thread and update the 'isApproved'
+        // flags appropriately
+        let oldThreadShouldBeVisible: Bool = thread.shouldBeVisible
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
-        Storage.write(with: { transaction in
-            tsMessage.save(with: transaction)
-            // The new message cell is inserted at this point, but the TSOutgoingMessage doesn't have its attachment yet
-        }, completion: { [weak self] in
-            Storage.write(with: { transaction in
-                MessageSender.send(message, with: attachments, in: thread, using: transaction)
-            }, completion: { [weak self] in
-                // At this point the TSOutgoingMessage should have its attachments set, so we can scroll to the bottom knowing
-                // the height of the new message cell
-                self?.scrollToBottom(isAnimated: false)
-            })
-            self?.handleMessageSent()
-            
-            // Attachment successfully sent - dismiss the screen
-            onComplete?()
-        })
+        
+        Storage.write(
+            with: { transaction in
+                tsMessage.save(with: transaction)
+                // The new message cell is inserted at this point, but the TSOutgoingMessage doesn't have its attachment yet
+            },
+            completion: { [weak self] in
+                Storage.shared.write(
+                    with: { transaction in
+                        self?.approveMessageRequestIfNeeded(
+                            for: self?.thread,
+                            with: (transaction as! YapDatabaseReadWriteTransaction),
+                            isNewThread: !oldThreadShouldBeVisible,
+                            timestamp: (sentTimestamp - 1)  // Set 1ms earlier as this is used for sorting
+                        )
+                    },
+                    completion: { [weak self] in
+                        Storage.write(with: { transaction in
+                            MessageSender.send(message, with: attachments, in: thread, using: transaction)
+                        }, completion: { [weak self] in
+                            // At this point the TSOutgoingMessage should have its attachments set, so we can scroll to the bottom knowing
+                            // the height of the new message cell
+                            self?.scrollToBottom(isAnimated: false)
+                        })
+                        self?.handleMessageSent()
+                
+                        // Attachment successfully sent - dismiss the screen
+                        onComplete?()
+                    }
+                )
+            }
+        )
     }
 
     func handleMessageSent() {

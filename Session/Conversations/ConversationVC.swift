@@ -1,5 +1,6 @@
 import SessionUIKit
 import SessionMessagingKit
+import UIKit
 
 // TODO:
 // • Slight paging glitch when scrolling up and loading more content
@@ -465,30 +466,47 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     // MARK: Updating
     
     func updateNavBarButtons() {
+        navigationItem.hidesBackButton = isShowingSearchUI
+        
         if isShowingSearchUI {
             navigationItem.leftBarButtonItem = nil
             navigationItem.rightBarButtonItems = []
-        } else {
+        }
+        else {
             navigationItem.leftBarButtonItem = UIViewController.createOWSBackButton(withTarget: self, selector: #selector(handleBackPressed))
             
-            let rightBarButtonItem: UIBarButtonItem
-            if thread is TSContactThread {
-                let size = Values.verySmallProfilePictureSize
-                let profilePictureView = ProfilePictureView()
-                profilePictureView.accessibilityLabel = "Settings button"
-                profilePictureView.size = size
-                profilePictureView.update(for: thread)
-                profilePictureView.set(.width, to: size)
-                profilePictureView.set(.height, to: size)
-                let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
-                profilePictureView.addGestureRecognizer(tapGestureRecognizer)
-                rightBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-            } else {
-                rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+            if let contactThread: TSContactThread = thread as? TSContactThread {
+                // Don't show the settings button for message requests
+                if let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()), contact.isApproved, contact.didApproveMe {
+                    let size = Values.verySmallProfilePictureSize
+                    let profilePictureView = ProfilePictureView()
+                    profilePictureView.size = size
+                    profilePictureView.update(for: thread)
+                    profilePictureView.set(.width, to: size)
+                    profilePictureView.set(.height, to: size)
+                    
+                    let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
+                    profilePictureView.addGestureRecognizer(tapGestureRecognizer)
+                    
+                    let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: profilePictureView)
+                    rightBarButtonItem.accessibilityLabel = "Settings button"
+                    rightBarButtonItem.isAccessibilityElement = true
+                    
+                    navigationItem.rightBarButtonItem = rightBarButtonItem
+                }
+                else {
+                    // Note: Adding an empty button because without it the title alignment is busted (Note: The size was
+                    // taken from the layout inspector for the back button in Xcode
+                    navigationItem.rightBarButtonItem = UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 37, height: 44)))
+                }
             }
-            rightBarButtonItem.accessibilityLabel = "Settings button"
-            rightBarButtonItem.isAccessibilityElement = true
-            navigationItem.rightBarButtonItem = rightBarButtonItem
+            else {
+                let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+                rightBarButtonItem.accessibilityLabel = "Settings button"
+                rightBarButtonItem.isAccessibilityElement = true
+                
+                navigationItem.rightBarButtonItem = rightBarButtonItem
+            }
         }
     }
     
@@ -815,7 +833,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     func showSearchUI() {
         isShowingSearchUI = true
         // Search bar
-        // FIXME: This code is duplicated with SearchBar
         let searchBar = searchController.uiSearchController.searchBar
         searchBar.setUpSessionStyle()
         

@@ -76,7 +76,7 @@ class MessageRequestsCell: UITableViewCell {
     }()
     
     private func setUpViewHierarchy() {
-        backgroundColor = Colors.cellBackground
+        backgroundColor = Colors.cellPinned
         selectedBackgroundView = UIView()
         selectedBackgroundView?.backgroundColor = Colors.cellSelected
         
