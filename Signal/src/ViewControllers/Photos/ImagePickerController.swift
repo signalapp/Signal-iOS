@@ -8,7 +8,6 @@ import UIKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidRequestSendMedia(_ imagePicker: ImagePickerGridController)
-    func imagePickerDidRequestPresentCamera(_ imagePicker: ImagePickerGridController)
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController)
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>)
@@ -37,7 +36,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private var titleView: TitleView!
 
     private var bottomBar: UIView!
-    private var cameraButton: CameraOverlayButton!
     private var doneButton: MediaDoneButton!
 
     init() {
@@ -97,15 +95,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         bottomBar.preservesSuperviewLayoutMargins = true
         bottomBar.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 0 : 8)
         bottomBar.autoPinHorizontalEdges(toEdgesOf: view)
-
-        cameraButton = CameraOverlayButton(image: UIImage(named: "media-composer-camera-outline-28"), userInterfaceStyleOverride: .light)
-        cameraButton.addTarget(self, action: #selector(didTapCameraButton), for: .touchUpInside)
-        bottomBar.addSubview(cameraButton)
-        cameraButton.contentInsets = .zero
-        cameraButton.autoSetDimensions(to: .square(40))
-        cameraButton.autoPinLeadingToSuperviewMargin()
-        cameraButton.autoPinTopToSuperviewMargin()
-        cameraButton.autoPinBottomToSuperviewMargin()
 
         doneButton = MediaDoneButton()
         doneButton.userInterfaceStyleOverride = .light
@@ -335,11 +324,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     @objc
     private func didPressCancel() {
         self.delegate?.imagePickerDidCancel(self)
-    }
-
-    @objc
-    private func didTapCameraButton() {
-        delegate?.imagePickerDidRequestPresentCamera(self)
     }
 
     @objc

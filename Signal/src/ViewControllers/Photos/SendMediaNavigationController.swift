@@ -4,6 +4,7 @@
 
 import Foundation
 import Photos
+import SignalUI
 
 @objc
 protocol SendMediaNavDelegate: AnyObject {
@@ -308,7 +309,11 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
-            self.fadeTo(viewControllers: [self.mediaLibraryViewController], duration: 0.3)
+            let presentedViewController = OWSNavigationController(rootViewController: self.mediaLibraryViewController)
+            if let owsNavBar = presentedViewController.navigationBar as? OWSNavigationBar {
+                owsNavBar.switchToStyle(.alwaysDarkAndClear)
+            }
+            self.presentFullScreen(presentedViewController, animated: true)
         }
     }
 
@@ -338,19 +343,23 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDataSource {
 extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
     func imagePickerDidRequestSendMedia(_ imagePicker: ImagePickerGridController) {
+        if let navigationController = presentedViewController as? OWSNavigationController,
+           navigationController.viewControllers.contains(imagePicker) {
+            dismiss(animated: true) {
+                self.showApprovalAfterProcessingAnyMediaLibrarySelections()
+            }
+            return
+        }
         showApprovalAfterProcessingAnyMediaLibrarySelections()
     }
 
-    func imagePickerDidRequestPresentCamera(_ imagePicker: ImagePickerGridController) {
-        self.ows_askForCameraPermissions { isGranted in
-            guard isGranted else { return }
-
-            BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
-            self.fadeTo(viewControllers: [self.captureViewController], duration: 0.3)
-        }
-    }
-
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController) {
+        if let navigationController = presentedViewController as? OWSNavigationController,
+           navigationController.viewControllers.contains(imagePicker) {
+            dismiss(animated: true)
+            return
+        }
+
         let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY", comment: "alert action when the user decides not to cancel the media flow after all.")
         didRequestExit(dontAbandonText: dontAbandonText)
     }
