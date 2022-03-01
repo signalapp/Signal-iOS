@@ -2,6 +2,7 @@ import UIKit
 import CoreServices
 import Photos
 import PhotosUI
+import PromiseKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
@@ -262,41 +263,48 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let linkPreviewDraft = snInputView.linkPreviewInfo?.draft
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
         
-        viewModel.appendUnsavedOutgoingTextMessage(tsMessage)
-        
         Storage.write(with: { transaction in
-            message.linkPreview = VisibleMessage.LinkPreview.from(linkPreviewDraft, using: transaction)
-        }, completion: { [weak self] in
-            tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
-            
-            Storage.shared.write(
-                with: { transaction in
-                    tsMessage.save(with: transaction as! YapDatabaseReadWriteTransaction)
-                },
-                completion: { [weak self] in
-                    // At this point the TSOutgoingMessage should have its link preview set, so we can scroll to the bottom knowing
-                    // the height of the new message cell
-                    self?.scrollToBottom(isAnimated: false)
-                }
+            let promise: Promise<Void> = self.approveMessageRequestIfNeeded(
+                for: self.thread,
+                with: transaction,
+                isNewThread: !oldThreadShouldBeVisible,
+                timestamp: (sentTimestamp - 1)  // Set 1ms earlier as this is used for sorting
             )
-            
-            Storage.shared.write(
-                with: { transaction in
-                    self?.approveMessageRequestIfNeeded(
-                        for: self?.thread,
-                        with: (transaction as! YapDatabaseReadWriteTransaction),
-                        isNewThread: !oldThreadShouldBeVisible,
-                        timestamp: (sentTimestamp - 1)  // Set 1ms earlier as this is used for sorting
+            .map { [weak self] _ in
+                self?.viewModel.appendUnsavedOutgoingTextMessage(tsMessage)
+        
+                Storage.write(with: { transaction in
+                    message.linkPreview = VisibleMessage.LinkPreview.from(linkPreviewDraft, using: transaction)
+                }, completion: { [weak self] in
+                    tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
+                    
+                    Storage.shared.write(
+                        with: { transaction in
+                            tsMessage.save(with: transaction as! YapDatabaseReadWriteTransaction)
+                        },
+                        completion: { [weak self] in
+                            // At this point the TSOutgoingMessage should have its link preview set, so we can scroll to the bottom knowing
+                            // the height of the new message cell
+                            self?.scrollToBottom(isAnimated: false)
+                        }
                     )
-                },
-                completion: { [weak self] in
+                    
                     Storage.shared.write { transaction in
                         MessageSender.send(message, with: [], in: thread, using: transaction as! YapDatabaseReadWriteTransaction)
                     }
                     
                     self?.handleMessageSent()
-                }
-            )
+                })
+            }
+            
+            // Show an error indicating that approving the thread failed
+            promise.catch(on: DispatchQueue.main) { [weak self] _ in
+                let alert = UIAlertController(title: "Session", message: "An error occurred when trying to accept this message request", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self?.present(alert, animated: true, completion: nil)
+            }
+            
+            promise.retainUntilComplete()
         })
     }
 
@@ -321,20 +329,18 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let oldThreadShouldBeVisible: Bool = thread.shouldBeVisible
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
         
-        Storage.write(
-            with: { transaction in
-                tsMessage.save(with: transaction)
-                // The new message cell is inserted at this point, but the TSOutgoingMessage doesn't have its attachment yet
-            },
-            completion: { [weak self] in
-                Storage.shared.write(
+        Storage.write(with: { transaction in
+            let promise: Promise<Void> = self.approveMessageRequestIfNeeded(
+                for: self.thread,
+                with: transaction,
+                isNewThread: !oldThreadShouldBeVisible,
+                timestamp: (sentTimestamp - 1)  // Set 1ms earlier as this is used for sorting
+            )
+            .map { [weak self] _ in
+                Storage.write(
                     with: { transaction in
-                        self?.approveMessageRequestIfNeeded(
-                            for: self?.thread,
-                            with: (transaction as! YapDatabaseReadWriteTransaction),
-                            isNewThread: !oldThreadShouldBeVisible,
-                            timestamp: (sentTimestamp - 1)  // Set 1ms earlier as this is used for sorting
-                        )
+                        tsMessage.save(with: transaction)
+                        // The new message cell is inserted at this point, but the TSOutgoingMessage doesn't have its attachment yet
                     },
                     completion: { [weak self] in
                         Storage.write(with: { transaction in
@@ -351,7 +357,16 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     }
                 )
             }
-        )
+        
+            // Show an error indicating that approving the thread failed
+            promise.catch(on: DispatchQueue.main) { [weak self] _ in
+                let alert = UIAlertController(title: "Session", message: "An error occurred when trying to accept this message request", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self?.present(alert, animated: true, completion: nil)
+            }
+            
+            promise.retainUntilComplete()
+        })
     }
 
     func handleMessageSent() {
@@ -1119,8 +1134,8 @@ extension ConversationVC {
         navigationController?.popToViewController(viewControllers[messageRequestsIndex - 1], animated: true)
     }
     
-    fileprivate func approveMessageRequestIfNeeded(for thread: TSThread?, with transaction: YapDatabaseReadWriteTransaction, isNewThread: Bool, timestamp: UInt64) {
-        guard let contactThread: TSContactThread = thread as? TSContactThread else { return }
+    fileprivate func approveMessageRequestIfNeeded(for thread: TSThread?, with transaction: YapDatabaseReadWriteTransaction, isNewThread: Bool, timestamp: UInt64) -> Promise<Void> {
+        guard let contactThread: TSContactThread = thread as? TSContactThread else { return Promise.value(()) }
         
         // If the contact doesn't exist then we should create it so we can store the 'isApproved' state
         // (it'll be updated with correct profile info if they accept the message request so this
@@ -1128,64 +1143,77 @@ extension ConversationVC {
         let sessionId: String = contactThread.contactSessionID()
         let contact: Contact = (Storage.shared.getContact(with: sessionId) ?? Contact(sessionID: sessionId))
         
-        if !contact.isApproved {
-            // Default 'didApproveMe' to true for the person approving the message request
-            contact.isApproved = true
-            contact.didApproveMe = (contact.didApproveMe || !isNewThread)
-            Storage.shared.setContact(contact, using: transaction)
-            
-            // If we aren't creating a new thread (ie. sending a message request) then send a
-            // messageRequestResponse back to the sender (this allows the sender to know that
-            // they have been approved and can now use this contact in closed groups)
-            if !isNewThread {
+        guard !contact.isApproved else { return Promise.value(()) }
+        
+        return Promise.value(())
+            .then { _ -> Promise<Void> in
+                guard !isNewThread else { return Promise.value(()) }
+                
+                // If we aren't creating a new thread (ie. sending a message request) then send a
+                // messageRequestResponse back to the sender (this allows the sender to know that
+                // they have been approved and can now use this contact in closed groups)
                 let messageRequestResponse: MessageRequestResponse = MessageRequestResponse(
                     isApproved: true
                 )
                 messageRequestResponse.sentTimestamp = timestamp
                 
-                MessageSender.send(messageRequestResponse, in: contactThread, using: transaction)
+                return MessageSender.sendNonDurably(messageRequestResponse, in: contactThread, using: transaction)
             }
-            
-            // Hide the 'messageRequestView' since the request has been approved and force a config
-            // sync to propagate the contact approval state (both must run on the main thread)
-            DispatchQueue.main.async { [weak self] in
-                let messageRequestViewWasVisible: Bool = (self?.messageRequestView.isHidden == false)
+            .map { _ in
+                // Default 'didApproveMe' to true for the person approving the message request
+                contact.isApproved = true
+                contact.didApproveMe = (contact.didApproveMe || !isNewThread)
+                Storage.shared.setContact(contact, using: transaction)
                 
-                UIView.animate(withDuration: 0.3) {
-                    self?.messageRequestView.isHidden = true
-                    self?.scrollButtonMessageRequestsBottomConstraint?.isActive = false
-                    self?.scrollButtonBottomConstraint?.isActive = true
+                // Hide the 'messageRequestView' since the request has been approved and force a config
+                // sync to propagate the contact approval state (both must run on the main thread)
+                DispatchQueue.main.async { [weak self] in
+                    let messageRequestViewWasVisible: Bool = (self?.messageRequestView.isHidden == false)
                     
-                    // Update the table content inset and offset to account for the dissapearance of
-                    // the messageRequestsView
-                    if messageRequestViewWasVisible {
-                        let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
-                        let oldContentInset: UIEdgeInsets = (self?.messagesTableView.contentInset ?? UIEdgeInsets.zero)
-                        self?.messagesTableView.contentInset = UIEdgeInsets(
-                            top: 0,
-                            leading: 0,
-                            bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
-                            trailing: 0
-                        )
+                    UIView.animate(withDuration: 0.3) {
+                        self?.messageRequestView.isHidden = true
+                        self?.scrollButtonMessageRequestsBottomConstraint?.isActive = false
+                        self?.scrollButtonBottomConstraint?.isActive = true
+                        
+                        // Update the table content inset and offset to account for the dissapearance of
+                        // the messageRequestsView
+                        if messageRequestViewWasVisible {
+                            let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
+                            let oldContentInset: UIEdgeInsets = (self?.messagesTableView.contentInset ?? UIEdgeInsets.zero)
+                            self?.messagesTableView.contentInset = UIEdgeInsets(
+                                top: 0,
+                                leading: 0,
+                                bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
+                                trailing: 0
+                            )
+                        }
+                    }
+                
+                    // Send a sync message with the details of the contact
+                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                        appDelegate.forceSyncConfigurationNowIfNeeded(with: transaction).retainUntilComplete()
                     }
                 }
-            
-                // Send a sync message with the details of the contact
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    appDelegate.forceSyncConfigurationNowIfNeeded(with: transaction).retainUntilComplete()
-                }
             }
-        }
     }
     
     @objc func acceptMessageRequest() {
-        Storage.write { [weak self] transaction in
-            self?.approveMessageRequestIfNeeded(
-                for: self?.thread,
+        Storage.write { transaction in
+            let promise: Promise<Void> = self.approveMessageRequestIfNeeded(
+                for: self.thread,
                 with: transaction,
                 isNewThread: false,
                 timestamp: NSDate.millisecondTimestamp()
             )
+            
+            // Show an error indicating that approving the thread failed
+            promise.catch(on: DispatchQueue.main) { [weak self] _ in
+                let alert = UIAlertController(title: "Session", message: "An error occurred when trying to accept this message request", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self?.present(alert, animated: true, completion: nil)
+            }
+            
+            promise.retainUntilComplete()
         }
     }
     
