@@ -66,6 +66,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     lazy var bubbleView: UIView = {
         let result = UIView()
         result.layer.cornerRadius = VisibleMessageCell.largeCornerRadius
+        result.set(.width, greaterThanOrEqualTo: VisibleMessageCell.largeCornerRadius * 2)
         return result
     }()
     
