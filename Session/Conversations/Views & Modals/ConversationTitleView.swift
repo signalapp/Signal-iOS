@@ -73,13 +73,17 @@ final class ConversationTitleView : UIView {
     private func getTitle() -> String {
         if let thread = thread as? TSGroupThread {
             return thread.groupModel.groupName!
-        } else if thread.isNoteToSelf() {
+        }
+        else if thread.isNoteToSelf() {
             return "Note to Self"
-        } else {
+        }
+        else {
             let sessionID = (thread as! TSContactThread).contactSessionID()
             var result = sessionID
             Storage.read { transaction in
-                result = Storage.shared.getContact(with: sessionID)?.displayName(for: .regular) ?? "Anonymous"
+                let displayName: String = ((Storage.shared.getContact(with: sessionID)?.displayName(for: .regular)) ?? sessionID)
+                let middleTruncatedHexKey: String = "\(sessionID.prefix(4))...\(sessionID.suffix(4))"
+                result = (displayName == sessionID ? middleTruncatedHexKey : displayName)
             }
             return result
         }
