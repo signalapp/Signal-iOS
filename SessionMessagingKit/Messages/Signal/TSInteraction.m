@@ -269,6 +269,12 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 }
 
 
+#pragma mark - Message Request Thread Migration
+
+- (void)moveToThreadWithId:(NSString *)threadId {
+    _uniqueThreadId = threadId;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

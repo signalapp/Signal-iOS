@@ -1,3 +1,4 @@
+import UIKit
 import SessionUIKit
 import SessionMessagingKit
 
@@ -13,9 +14,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     let focusedMessageID: String? // This is used for global search
     var focusedMessageIndexPath: IndexPath?
     var unreadViewItems: [ConversationViewItem] = []
-    var scrollButtonBottomConstraint: NSLayoutConstraint?
-    var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
-    var messageRequestsViewBotomConstraint: NSLayoutConstraint?
+    var isReplacingThread: Bool = false
+    
     // Search
     var isShowingSearchUI = false
     var lastSearchedText: String?
@@ -40,7 +40,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     var audioSession: OWSAudioSession { Environment.shared.audioSession }
     var dbConnection: YapDatabaseConnection { OWSPrimaryStorage.shared().uiDatabaseConnection }
     var viewItems: [ConversationViewItem] { viewModel.viewState.viewItems }
-    override var canBecomeFirstResponder: Bool { true }
+    
+    override var canBecomeFirstResponder: Bool {
+        // Need to return false during the swap between threads to prevent keyboard dismissal
+        !isReplacingThread
+    }
     
     override var inputAccessoryView: UIView? {
         if let thread = thread as? TSGroupThread, thread.groupModel.groupType == .closedGroup && !thread.isCurrentUserMemberInGroup() {
@@ -101,6 +105,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     // MARK: - UI
     
     private static let messageRequestButtonHeight: CGFloat = 34
+    
+    var scrollButtonBottomConstraint: NSLayoutConstraint?
+    var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
+    var messageRequestsViewBotomConstraint: NSLayoutConstraint?
     
     lazy var titleView: ConversationTitleView = {
         let result = ConversationTitleView(thread: thread)
@@ -363,6 +371,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         notificationCenter.addObserver(self, selector: #selector(handleGroupUpdatedNotification), name: .groupThreadUpdated, object: nil)
         notificationCenter.addObserver(self, selector: #selector(sendScreenshotNotificationIfNeeded), name: UIApplication.userDidTakeScreenshotNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleMessageSentStatusChanged), name: .messageSentStatusDidChange, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleContactThreadReplaced(_:)), name: .contactThreadReplaced, object: nil)
         // Mentions
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: thread.uniqueId!)
         // Draft
@@ -428,6 +437,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        // Don't set the draft or resign the first responder if we are replacing the thread (want the keyboard
+        // to appear to remain focussed)
+        guard !isReplacingThread else { return }
+        
         let text = snInputView.text
         Storage.write { transaction in
             self.thread.setDraft(text, transaction: transaction)
@@ -689,6 +703,90 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             }
             UIView.performWithoutAnimation {
                 self.messagesTableView.reloadRows(at: indexPathsToReload, with: .none)
+            }
+        }
+    }
+    
+    @objc private func handleContactThreadReplaced(_ notification: Notification) {
+        // Ensure the current thread is one of the removed ones
+        guard let newThreadId: String = notification.userInfo?[NotificationUserInfoKey.threadId] as? String else { return }
+        guard let removedThreadIds: [String] = notification.userInfo?[NotificationUserInfoKey.removedThreadIds] as? [String] else {
+            return
+        }
+        guard let threadId: String = thread.uniqueId, removedThreadIds.contains(threadId) else { return }
+        
+        // Then look to swap the current ConversationVC with a replacement one with the new thread
+        DispatchQueue.main.async {
+            guard let navController: UINavigationController = self.navigationController else { return }
+            guard let viewControllerIndex: Int = navController.viewControllers.firstIndex(of: self) else { return }
+            guard let newThread: TSContactThread = TSContactThread.fetch(uniqueId: newThreadId) else { return }
+            
+            // Let the view controller know we are replacing the thread
+            self.isReplacingThread = true
+            
+            // Create the new ConversationVC and swap the old one out for it
+            let conversationVC: ConversationVC = ConversationVC(thread: newThread)
+            let currentlyOnThisScreen: Bool = (navController.topViewController == self)
+            
+            navController.viewControllers = [
+                (viewControllerIndex == 0 ?
+                    [] :
+                    navController.viewControllers[0..<viewControllerIndex]
+                ),
+                [conversationVC],
+                (viewControllerIndex == (navController.viewControllers.count - 1) ?
+                    [] :
+                    navController.viewControllers[(viewControllerIndex + 1)..<navController.viewControllers.count]
+                )
+            ].flatMap { $0 }
+            
+            // If the top vew controller isn't the current one then we need to make sure to swap out child ones as well
+            if !currentlyOnThisScreen {
+                let maybeSettingsViewController: UIViewController? = navController
+                    .viewControllers[viewControllerIndex..<navController.viewControllers.count]
+                    .first(where: { $0 is OWSConversationSettingsViewController })
+                
+                // Update the settings screen (if there is one)
+                if let settingsViewController: OWSConversationSettingsViewController = maybeSettingsViewController as? OWSConversationSettingsViewController {
+                    settingsViewController.configure(with: newThread, uiDatabaseConnection: OWSPrimaryStorage.shared().uiDatabaseConnection)
+                }
+            }
+            
+            // Try to minimise painful UX issues by keeping the 'first responder' state, current input text and
+            // cursor position (Unfortunately there doesn't seem to be a way to prevent the keyboard from
+            // flickering during the swap but other than that it's relatively seamless)
+            if self.snInputView.inputTextViewIsFirstResponder {
+                conversationVC.isReplacingThread = true
+                conversationVC.snInputView.frame = self.snInputView.frame
+                conversationVC.snInputView.text = self.snInputView.text
+                conversationVC.snInputView.selectedRange = self.snInputView.selectedRange
+                
+                // Make the current snInputView invisible and add the new one the the UI
+                self.snInputView.alpha = 0
+                self.snInputView.superview?.addSubview(conversationVC.snInputView)
+                
+                // Add the old first responder to the window so it the keyboard won't get dismissed when the
+                // OS removes it's parent view from the view hierarchy due to the view controller swap
+                var maybeOldFirstResponderView: UIView?
+                
+                if let oldFirstResponderView: UIView = UIResponder.currentFirstResponder() as? UIView {
+                    maybeOldFirstResponderView = oldFirstResponderView
+                    self.view.window?.addSubview(oldFirstResponderView)
+                }
+                
+                // On the next run loop setup the first responder state for the new screen and remove the
+                // old first responder from the window
+                DispatchQueue.main.async {
+                    UIView.performWithoutAnimation {
+                        conversationVC.isReplacingThread = false
+                        maybeOldFirstResponderView?.resignFirstResponder()
+                        maybeOldFirstResponderView?.removeFromSuperview()
+                        conversationVC.snInputView.removeFromSuperview()
+                        
+                        _ = conversationVC.becomeFirstResponder()
+                        conversationVC.snInputView.inputTextViewBecomeFirstResponder()
+                    }
+                }
             }
         }
     }

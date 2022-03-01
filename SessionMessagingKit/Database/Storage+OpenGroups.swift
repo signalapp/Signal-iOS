@@ -55,34 +55,8 @@ extension Storage {
         return result
     }
     
-    public func storeOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any) {
+    public func setOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(server, forKey: "SOGS.\(server.name)", inCollection: Storage.openGroupCollection)
-    }
-    
-    // MARK: - Authorization
-
-    private static let authTokenCollection = "SNAuthTokenCollection"
-
-    public func getAuthToken(for room: String, on server: String) -> String? {
-        let collection = Storage.authTokenCollection
-        let key = "\(server).\(room)"
-        var result: String? = nil
-        Storage.read { transaction in
-            result = transaction.object(forKey: key, inCollection: collection) as? String
-        }
-        return result
-    }
-
-    public func setAuthToken(for room: String, on server: String, to newValue: String, using transaction: Any) {
-        let collection = Storage.authTokenCollection
-        let key = "\(server).\(room)"
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: key, inCollection: collection)
-    }
-
-    public func removeAuthToken(for room: String, on server: String, using transaction: Any) {
-        let collection = Storage.authTokenCollection
-        let key = "\(server).\(room)"
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: collection)
     }
 
 
@@ -109,12 +83,12 @@ extension Storage {
     
 
 
-    // MARK: - Last Message Server ID
+    // MARK: - Open Group Sequence Number
 
-    public static let lastMessageServerIDCollection = "SNLastMessageServerIDCollection"
+    public static let openGroupSequenceNumberCollection = "SNOpenGroupSequenceNumberCollection"
 
-    public func getLastMessageServerID(for room: String, on server: String) -> Int64? {
-        let collection = Storage.lastMessageServerIDCollection
+    public func getOpenGroupSequenceNumber(for room: String, on server: String) -> Int64? {
+        let collection = Storage.openGroupSequenceNumberCollection
         let key = "\(server).\(room)"
         var result: Int64? = nil
         Storage.read { transaction in
@@ -123,47 +97,40 @@ extension Storage {
         return result
     }
 
-    public func setLastMessageServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any) {
-        let collection = Storage.lastMessageServerIDCollection
+    public func setOpenGroupSequenceNumber(for room: String, on server: String, to newValue: Int64, using transaction: Any) {
+        let collection = Storage.openGroupSequenceNumberCollection
         let key = "\(server).\(room)"
         (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: key, inCollection: collection)
     }
 
-    public func removeLastMessageServerID(for room: String, on server: String, using transaction: Any) {
-        let collection = Storage.lastMessageServerIDCollection
+    public func removeOpenGroupSequenceNumber(for room: String, on server: String, using transaction: Any) {
+        let collection = Storage.openGroupSequenceNumberCollection
         let key = "\(server).\(room)"
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: collection)
     }
 
+    // MARK: - -- Open Group Inbox Latest Message Id
+    
+    public static let openGroupInboxLatestMessageIdCollection = "SNOpenGroupInboxLatestMessageIdCollection"
 
-
-    // MARK: - Last Deletion Server ID
-
-    public static let lastDeletionServerIDCollection = "SNLastDeletionServerIDCollection"
-
-    public func getLastDeletionServerID(for room: String, on server: String) -> Int64? {
-        let collection = Storage.lastDeletionServerIDCollection
-        let key = "\(server).\(room)"
+    public func getOpenGroupInboxLatestMessageId(for server: String) -> Int64? {
+        let collection = Storage.openGroupInboxLatestMessageIdCollection
         var result: Int64? = nil
         Storage.read { transaction in
-            result = transaction.object(forKey: key, inCollection: collection) as? Int64
+            result = transaction.object(forKey: server, inCollection: collection) as? Int64
         }
         return result
     }
-
-    public func setLastDeletionServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any) {
-        let collection = Storage.lastDeletionServerIDCollection
-        let key = "\(server).\(room)"
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: key, inCollection: collection)
+    
+    public func setOpenGroupInboxLatestMessageId(for server: String, to newValue: Int64, using transaction: Any) {
+        let collection = Storage.openGroupInboxLatestMessageIdCollection
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: server, inCollection: collection)
     }
-
-    public func removeLastDeletionServerID(for room: String, on server: String, using transaction: Any) {
-        let collection = Storage.lastDeletionServerIDCollection
-        let key = "\(server).\(room)"
-        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: collection)
+    
+    public func removeOpenGroupInboxLatestMessageId(for server: String, using transaction: Any) {
+        let collection = Storage.openGroupInboxLatestMessageIdCollection
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: collection)
     }
-
-
 
     // MARK: - Metadata
 

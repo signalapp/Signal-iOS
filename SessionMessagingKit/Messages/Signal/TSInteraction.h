@@ -79,6 +79,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 - (void)updateTimestamp:(uint64_t)timestamp;
 
+#pragma mark Message Request Thread Migration
+
+- (void)moveToThreadWithId:(NSString *)threadId;
+
 @end
 
 NS_ASSUME_NONNULL_END

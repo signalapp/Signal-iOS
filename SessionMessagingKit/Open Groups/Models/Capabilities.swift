@@ -35,6 +35,13 @@ extension OpenGroupAPI {
         
         public let capabilities: [Capability]
         public let missing: [Capability]?
+        
+        // MARK: - Initialization
+        
+        public init(capabilities: [Capability], missing: [Capability]? = nil) {
+            self.capabilities = capabilities
+            self.missing = missing
+        }
     }
 }
 

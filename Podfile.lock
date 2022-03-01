@@ -123,7 +123,7 @@ PODS:
 DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
-  - Curve25519Kit (from `https://github.com/mpretty-cyro/session-ios-curve-25519-kit.git`, branch `session`)
+  - Curve25519Kit (from `https://github.com/oxen-io/session-ios-curve-25519-kit.git`, branch `session-version`)
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - Nimble
   - NVActivityIndicatorView
@@ -156,8 +156,8 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   Curve25519Kit:
-    :branch: session
-    :git: https://github.com/mpretty-cyro/session-ios-curve-25519-kit.git
+    :branch: session-version
+    :git: https://github.com/oxen-io/session-ios-curve-25519-kit.git
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
@@ -175,8 +175,8 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   Curve25519Kit:
-    :commit: a23049232dc6c18928cdacfbcef287dad954c5c6
-    :git: https://github.com/mpretty-cyro/session-ios-curve-25519-kit.git
+    :commit: b79c2ace600bfd3784e9c33cf1f254b121312edc
+    :git: https://github.com/oxen-io/session-ios-curve-25519-kit.git
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
@@ -214,6 +214,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 918ef11baf24eac2df681cd6a3781f536f9d384a
+PODFILE CHECKSUM: 2cc64d50f25c3b1627c3e958ae50e25fead25564
 
 COCOAPODS: 1.11.2

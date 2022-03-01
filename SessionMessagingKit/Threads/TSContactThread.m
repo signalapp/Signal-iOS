@@ -34,10 +34,39 @@ NSString *const TSContactThreadPrefix = @"c";
 }
 
 + (instancetype)getOrCreateThreadWithContactSessionID:(NSString *)contactSessionID
+                                      openGroupServer:(NSString *)openGroupServer
+                                   openGroupPublicKey:(NSString *)openGroupPublicKey
+                                          transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    TSContactThread *thread = [self fetchObjectWithUniqueID:[self threadIDFromContactSessionID:contactSessionID] transaction:transaction];
+
+    if (!thread) {
+        thread = [[TSContactThread alloc] initWithContactSessionID:contactSessionID];
+        thread.originalOpenGroupServer = openGroupServer;
+        thread.originalOpenGroupPublicKey = openGroupPublicKey;
+        [thread saveWithTransaction:transaction];
+    }
+
+    return thread;
+}
+
++ (instancetype)getOrCreateThreadWithContactSessionID:(NSString *)contactSessionID
 {
     __block TSContactThread *thread;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithContactSessionID:contactSessionID transaction:transaction];
+    }];
+
+    return thread;
+}
+
++ (instancetype)getOrCreateThreadWithContactSessionID:(NSString *)contactSessionID
+                                      openGroupServer:(NSString *)openGroupServer
+                                   openGroupPublicKey:(NSString *)openGroupPublicKey
+{
+    __block TSContactThread *thread;
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [self getOrCreateThreadWithContactSessionID:contactSessionID openGroupServer:openGroupServer openGroupPublicKey:openGroupPublicKey transaction:transaction];
     }];
 
     return thread;

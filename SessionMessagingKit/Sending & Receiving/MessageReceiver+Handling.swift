@@ -1,3 +1,5 @@
+import Foundation
+import Sodium
 import SignalCoreKit
 import SessionSnodeKit
 
@@ -238,8 +240,10 @@ extension MessageReceiver {
                         thread.remove(with: transaction)
                     }
                 }
-                else {
-                    // Otherwise create and save the thread
+                else if SessionId.Prefix(from: sessionID) != .blinded {
+                    // Otherwise create and save the thread (if the contact isn't a blinded contact - we don't want to
+                    // auto-create threads for blinded contacts if they have no messages)
+                    // TODO: See what this will do with blinded->unblinded conversations?
                     let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
                     thread.shouldBeVisible = true
                     thread.save(with: transaction)
@@ -839,26 +843,130 @@ extension MessageReceiver {
     
     public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {
         let userPublicKey = getUserHexEncodedPublicKey()
+        var blindedContactIds: [String] = []
+        var blindedThreadIds: [String] = []
         
         // Ignore messages which were sent from the current user
         guard message.sender != userPublicKey else { return }
         guard let senderId: String = message.sender else { return }
-        
-        // Get the existing thead and notify the user
-        if let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction, let thread: TSContactThread = TSContactThread.getWithContactSessionID(senderId, transaction: transaction) {
-            let infoMessage = TSInfoMessage(
-                timestamp: (message.sentTimestamp ?? NSDate.ows_millisecondTimeStamp()),
-                in: thread,
-                messageType: .messageRequestAccepted
-            )
-            infoMessage.save(with: transaction)
+        guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else {
+            return
         }
         
+        // Prep the unblinded thread
+        let unblindedThreadId: String = TSContactThread.threadID(fromContactSessionID: senderId)
+        let unblindedThread: TSContactThread = TSContactThread.getOrCreateThread(withContactSessionID: senderId, transaction: transaction)
+        
+        // Need to handle a `MessageRequestResponse` sent to a blinded thread (ie. check if the sender matches
+        // the blinded ids of any threads)
+        let messageRequestThreads: [String: TSContactThread] = Storage.shared.getAllMessageRequestThreads(using: transaction)
+        
+        if !messageRequestThreads.isEmpty {
+            var interactionsToMove: [TSInteraction] = []
+            var threadsToDelete: [TSContactThread] = []
+            
+            // Loop through all blinded threads and extract any interactions relating to the user accepting
+            // the message request
+            for blindedThread in messageRequestThreads.values {
+                let blindedId: String = blindedThread.contactSessionID()
+                
+                // If the sessionId matches the blindedId then this thread needs to be converted to an un-blinded thread
+                guard let serverPublicKey: String = blindedThread.originalOpenGroupPublicKey else { continue }
+                guard Sodium().sessionId(senderId, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey) else { continue }
+                guard let blindedThreadId: String = blindedThread.uniqueId else { continue }
+                guard let view: YapDatabaseAutoViewTransaction = transaction.ext(TSMessageDatabaseViewExtensionName) as? YapDatabaseAutoViewTransaction else {
+                    continue
+                }
+                
+                // Cache the mapping
+                let mapping: BlindedIdMapping = BlindedIdMapping(blindedId: blindedId, sessionId: senderId, serverPublicKey: serverPublicKey)
+                Storage.shared.cacheBlindedIdMapping(mapping, using: transaction)
+                
+                // Add the `blindedId` to an array so we can remove them at the end of processing
+                blindedContactIds.append(blindedId)
+                blindedThreadIds.append(blindedThreadId)
+                
+                // Loop through all of the interactions and add them to a list to be moved to the new thread
+                view.enumerateRows(inGroup: blindedThreadId) { _, _, object, _, _, _ in
+                    guard let interaction: TSInteraction = object as? TSInteraction else {
+                        return
+                    }
+                    
+                    interactionsToMove.append(interaction)
+                }
+                
+                threadsToDelete.append(blindedThread)
+                
+                // TODO: Pending jobs???
+//                Storage.shared.getAllPendingJobs(of: <#T##Job.Type#>)
+            }
+            
+            // Sort the interactions by their `sortId` (which looks to be a global sort id for all interactions) just in case
+            // the behaviour changes in the future and the value can get reset (this way we process the interactions in the
+            // correct order regardless of how many threads they came from)
+            let sortedInteractionsToMove: [TSInteraction] = interactionsToMove
+                .sorted { lhs, rhs -> Bool in lhs.sortId < rhs.sortId }
+            
+            // Note: Unfortunately we need to move the interactions separately from enumerating them to avoid mutating the
+            // `TSMessageDatabaseViewExtensionName` while enumerating it (this does mean paying the cost of looping a second time)
+            for interaction in sortedInteractionsToMove {
+                interaction.moveToThread(withId: unblindedThreadId)
+                interaction.save(with: transaction)
+            }
+            
+            // Delete the old threads
+            for thread in threadsToDelete {
+                // TODO: This isn't updating the HomeVC... Race condition??? (Seems to not happen when stepping through with breakpoints)
+                thread.removeAllThreadInteractions(with: transaction)
+                thread.remove(with: transaction)
+            }
+        }
+        
+        // Update the `didApproveMe` state of the sender
         updateContactApprovalStatusIfNeeded(
             senderSessionId: senderId,
             threadId: nil,
-            forceConfigSync: true,
+            forceConfigSync: blindedContactIds.isEmpty, // Sync here if there are no blinded contacts
             using: transaction
         )
+        
+        // If there were blinded contacts then we should remove them
+        if !blindedContactIds.isEmpty {
+            // Delete all of the processed blinded contacts (shouldn't need them anymore and don't want them taking up
+            // space in the config message)
+            for blindedId in blindedContactIds {
+                // TODO: OWSBlockingManager...???
+            }
+            
+            // We should assume the 'sender' is a newly created contact and hence need to update it's `isApproved` state
+            updateContactApprovalStatusIfNeeded(
+                senderSessionId: userPublicKey,
+                threadId: unblindedThreadId,
+                forceConfigSync: true,
+                using: transaction
+            )
+        }
+        
+        // Notify the user of their approval (Note: This will always appear in the un-blinded thread)
+        // Note: We want to do this last as it'll mean the un-blinded thread gets updated and the contact approval status
+        // will have been updated at this point (which will mean the `TSThread.isMessageRequest` will return correctly
+        // after this is saved
+        let infoMessage = TSInfoMessage(
+            timestamp: (message.sentTimestamp ?? NSDate.ows_millisecondTimeStamp()),
+            in: unblindedThread,
+            messageType: .messageRequestAccepted
+        )
+        infoMessage.save(with: transaction)
+        
+        // Finally we need to send a notification that the thread was replaced so we can handle the case where the
+        // user might currently have the replaced thread open (only need to do this if we actually had blindedIds)
+        if !blindedThreadIds.isEmpty {
+            let userInfo: [NotificationUserInfoKey: Any] = [
+                .threadId: unblindedThreadId,
+                .removedThreadIds: blindedThreadIds
+            ]
+            
+            NotificationCenter.default.post(name: .contactThreadReplaced, object: nil, userInfo: userInfo)
+        }
     }
 }

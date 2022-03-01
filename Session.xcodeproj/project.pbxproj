@@ -771,6 +771,8 @@
 		F5765D284BC6ECAC0C1D33F0 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_SessionNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4A93ECA93B3DE800CC7D7F6 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_SessionNotificationServiceExtension.framework */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
+		FD0BA51B27CD88EC00CC6805 /* BlindedIdMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */; };
+		FD0BA51D27CDC34600CC6805 /* SOGSV4Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */; };
 		FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */; };
 		FD5D201127AA331F00FEA984 /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */; };
 		FD5D201E27B0D87C00FEA984 /* SessionId.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201D27B0D87C00FEA984 /* SessionId.swift */; };
@@ -1906,6 +1908,8 @@
 		F9BBF530D71905BA9007675F /* Pods-SessionShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionShareExtension/Pods-SessionShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindedIdMapping.swift; sourceTree = "<group>"; };
+		FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSV4Migration.swift; sourceTree = "<group>"; };
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
 		FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
 		FD5D201D27B0D87C00FEA984 /* SessionId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionId.swift; sourceTree = "<group>"; };
@@ -2564,6 +2568,7 @@
 			isa = PBXGroup;
 			children = (
 				B8B32020258B1A650020074B /* Contact.swift */,
+				FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -3237,6 +3242,7 @@
 			children = (
 				B8B32044258C117C0020074B /* ContactsMigration.swift */,
 				FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */,
+				FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */,
 				C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */,
 				C38EF270255B6D79007E1867 /* OWSDatabaseMigration.m */,
 				C38EF26F255B6D79007E1867 /* OWSDatabaseMigrationRunner.h */,
@@ -4988,6 +4994,7 @@
 				C33FDC98255A582000E217F9 /* SwiftSingletons.swift in Sources */,
 				C33FDC27255A581F00E217F9 /* YapDatabase+Promise.swift in Sources */,
 				C33FDCD3255A582000E217F9 /* GroupUtilities.swift in Sources */,
+				FD0BA51D27CDC34600CC6805 /* SOGSV4Migration.swift in Sources */,
 				FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */,
 				C38EF326255B6DBF007E1867 /* ConversationStyle.swift in Sources */,
 				C38EF3B8255B6DE7007E1867 /* ImageEditorTextViewController.swift in Sources */,
@@ -5117,6 +5124,7 @@
 				C3C2A74D2553A39700C340D1 /* VisibleMessage.swift in Sources */,
 				C32C5AAD256DBE8F003C73A2 /* TSInfoMessage.m in Sources */,
 				FD5D201127AA331F00FEA984 /* ConfigurationMessage+Convenience.swift in Sources */,
+				FD0BA51B27CD88EC00CC6805 /* BlindedIdMapping.swift in Sources */,
 				FDC4386927B4E6B800C60D73 /* String+Utlities.swift in Sources */,
 				C32C5A13256DB7A5003C73A2 /* PushNotificationAPI.swift in Sources */,
 				FDC4385F27B4C4A200C60D73 /* PinnedMessage.swift in Sources */,

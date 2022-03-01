@@ -2,35 +2,6 @@ import PromiseKit
 import Sodium
 
 extension Storage {
-    
-    public func getAllMessageRequestThreads() -> [String: TSContactThread] {
-        var result: [String: TSContactThread] = [:]
-        
-        Storage.read { transaction in
-            result = self.getAllMessageRequestThreads(using: transaction)
-        }
-        
-        return result
-    }
-    
-    public func getAllMessageRequestThreads(using transaction: YapDatabaseReadTransaction) -> [String: TSContactThread] {
-        var result = [String: TSContactThread]()
-        
-        // FIXME: We might be able to optimise this further by filtering the SQL query `WHERE uniqueId LIKE '_c15'
-        let blindedThreadPrefix: String = TSContactThread.threadID(fromContactSessionID: SessionId.Prefix.blinded.rawValue)
-        
-        transaction.enumerateKeysAndObjects(
-            inCollection: TSContactThread.collection(),
-            using: { threadID, object, _ in
-                guard let contactThread = object as? TSContactThread else { return }
-                result[threadID] = contactThread
-            },
-            withFilter: { key -> Bool in key.starts(with: blindedThreadPrefix) }
-        )
-        
-        return result
-    }
-
     /// Returns the ID of the thread.
     public func getOrCreateThread(for publicKey: String, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String? {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
@@ -179,6 +150,36 @@ extension Storage {
         receivedMessageTimestamps.append(timestamp)
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         transaction.setObject(receivedMessageTimestamps, forKey: "receivedMessageTimestamps", inCollection: Storage.receivedMessageTimestampsCollection)
+    }
+    
+    // MARK: -  Message Request Handling
+    
+    public func getAllMessageRequestThreads() -> [String: TSContactThread] {
+        var result: [String: TSContactThread] = [:]
+        
+        Storage.read { transaction in
+            result = self.getAllMessageRequestThreads(using: transaction)
+        }
+        
+        return result
+    }
+    
+    public func getAllMessageRequestThreads(using transaction: YapDatabaseReadTransaction) -> [String: TSContactThread] {
+        var result = [String: TSContactThread]()
+        
+        // FIXME: We might be able to optimise this further by filtering the SQL query `WHERE uniqueId LIKE '_c15'
+        let blindedThreadPrefix: String = TSContactThread.threadID(fromContactSessionID: SessionId.Prefix.blinded.rawValue)
+        
+        transaction.enumerateKeysAndObjects(
+            inCollection: TSContactThread.collection(),
+            using: { threadID, object, _ in
+                guard let contactThread = object as? TSContactThread else { return }
+                result[threadID] = contactThread
+            },
+            withFilter: { key -> Bool in key.starts(with: blindedThreadPrefix) }
+        )
+        
+        return result
     }
 }
 

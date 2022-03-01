@@ -189,7 +189,8 @@ enum MockDataGenerator {
                     image: nil,
                     groupId: groupId,
                     groupType: .closedGroup,
-                    adminIds: [members.randomElement(using: &cgThreadRandomGenerator) ?? userSessionId]
+                    adminIds: [members.randomElement(using: &cgThreadRandomGenerator) ?? userSessionId],
+                    moderatorIds: [members.randomElement(using: &cgThreadRandomGenerator) ?? userSessionId]
                 )
                 let thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
                 thread.shouldBeVisible = true
@@ -232,23 +233,49 @@ enum MockDataGenerator {
                 let randomGroupPublicKey: String = KeyPairUtilities.generate(from: data).x25519KeyPair.hexEncodedPublicKey
                 let serverNameLength: Int = ((5..<20).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let roomNameLength: Int = ((5..<20).randomElement(using: &ogThreadRandomGenerator) ?? 0)
+                let groupDescriptionLength: Int = ((10..<50).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let serverName: String = (0..<serverNameLength)
                     .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
                     .joined()
                 let roomName: String = (0..<roomNameLength)
                     .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
                     .joined()
+                let groupDescription: String = (0..<groupDescriptionLength)
+                    .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
+                    .joined()
     
                 // Create the open group model and the thread
-                let openGroup: OpenGroupV2 = OpenGroupV2(server: serverName, room: roomName, name: roomName, publicKey: randomGroupPublicKey, imageID: nil)
+                let openGroup: OpenGroup = OpenGroup(
+                    server: serverName,
+                    room: roomName,
+                    publicKey: randomGroupPublicKey,
+                    name: roomName,
+                    groupDescription: groupDescription,
+                    imageID: nil,
+                    infoUpdates: 0
+                )
                 let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroup.id)
-                let model = TSGroupModel(title: openGroup.name, memberIds: [ userSessionId ], image: nil, groupId: groupId, groupType: .openGroup, adminIds: [])
+                let model = TSGroupModel(title: openGroup.name, memberIds: [ userSessionId ], image: nil, groupId: groupId, groupType: .openGroup, adminIds: [], moderatorIds: [])
                 
                 let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
                 thread.shouldBeVisible = true
                 thread.save(with: transaction)
                 
-                Storage.shared.setV2OpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
+                Storage.shared.setOpenGroup(openGroup, for: thread.uniqueId!, using: transaction)
+                
+                // Generate the 'Server' object
+                let hasBlinding: Bool = Bool.random(using: &dmThreadRandomGenerator)
+                
+                let server: OpenGroupAPI.Server = OpenGroupAPI.Server(
+                    name: serverName,
+                    capabilities: OpenGroupAPI.Capabilities(
+                        capabilities: [.sogs]
+                            .appending(hasBlinding ? [.blind] : []),
+                        missing: nil
+                    )
+                )
+                
+                Storage.shared.setOpenGroupServer(server, using: transaction)
             }
         }
     }

@@ -60,7 +60,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func setUserCount(to newValue: UInt64, forOpenGroupWithID openGroupID: String, using transaction: Any)
     
     func getOpenGroupServer(name: String) -> OpenGroupAPI.Server?
-    func storeOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any)
+    func setOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any)
     
     // MARK: - -- Open Group Public Keys
 

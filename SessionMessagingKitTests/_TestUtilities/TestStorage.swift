@@ -86,7 +86,7 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func getOpenGroup(for threadID: String) -> OpenGroup? { return (mockData[.openGroup] as? OpenGroup) }
     func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any) { mockData[.openGroup] = openGroup }
     func getOpenGroupServer(name: String) -> OpenGroupAPI.Server? { return mockData[.openGroupServer] as? OpenGroupAPI.Server }
-    func storeOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any) { mockData[.openGroupServer] = server }
+    func setOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any) { mockData[.openGroupServer] = server }
     
     func getUserCount(forOpenGroupWithID openGroupID: String) -> UInt64? {
         return (mockData[.openGroupUserCount] as? UInt64)

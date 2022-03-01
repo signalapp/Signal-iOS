@@ -68,4 +68,44 @@ extension Storage {
         }
         return result
     }
+    
+    // MARK: - Blinded Id cache
+    
+    private static let blindedIdCacheCollection = "BlindedIdCacheCollection"
+    
+    public func getBlindedIdMapping(with blindedId: String) -> BlindedIdMapping? {
+        var result: BlindedIdMapping?
+        Storage.read { transaction in
+            result = self.getBlindedIdMapping(with: blindedId, using: transaction)
+        }
+        return result
+    }
+    
+    public func getBlindedIdMapping(with blindedId: String, using transaction: YapDatabaseReadTransaction) -> BlindedIdMapping? {
+        return transaction.object(forKey: blindedId, inCollection: Storage.blindedIdCacheCollection) as? BlindedIdMapping
+    }
+    
+    public func cacheBlindedIdMapping(_ mapping: BlindedIdMapping) {
+        Storage.write { transaction in
+            self.cacheBlindedIdMapping(mapping, using: transaction)
+        }
+    }
+    
+    public func cacheBlindedIdMapping(_ mapping: BlindedIdMapping, using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setObject(mapping, forKey: mapping.blindedId, inCollection: Storage.blindedIdCacheCollection)
+    }
+    
+    public func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> ()) {
+        Storage.read { transaction in
+            self.enumerateBlindedIdMapping(with: block, transaction: transaction)
+        }
+    }
+    
+    public func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> (), transaction: YapDatabaseReadTransaction) {
+        transaction.enumerateRows(inCollection: Storage.blindedIdCacheCollection) { _, object, _, stop in
+            guard let mapping = object as? BlindedIdMapping else { return }
+            
+            block(mapping, stop)
+        }
+    }
 }

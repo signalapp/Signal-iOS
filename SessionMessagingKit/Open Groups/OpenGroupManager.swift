@@ -93,7 +93,6 @@ public final class OpenGroupManager: NSObject {
         }
         storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
         Storage.shared.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
-        let _ = OpenGroupAPI.legacyDeleteAuthToken(for: openGroup.room, on: openGroup.server)
         Storage.shared.removeOpenGroupSequenceNumber(for: openGroup.room, on: openGroup.server, using: transaction)
         
         thread.removeAllThreadInteractions(with: transaction)
@@ -119,7 +118,7 @@ public final class OpenGroupManager: NSObject {
                 capabilities: capabilities
             )
             
-            dependencies.storage.storeOpenGroupServer(updatedServer, using: transaction)
+            dependencies.storage.setOpenGroupServer(updatedServer, using: transaction)
         }
     }
     
