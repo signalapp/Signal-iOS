@@ -30,7 +30,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
 
         // Handle the push notification
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            let openGorupPollingPromises = self.pollForOpneGorups()
+            let openGorupPollingPromises = self.pollForOpenGroups()
             defer {
                 when(resolved: openGorupPollingPromises).done { _ in
                     self.completeSilenty()
@@ -173,7 +173,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     }
     
     // MARK: Poll for open groups
-    private func pollForOpneGorups() -> [Promise<Void>] {
+    private func pollForOpenGroups() -> [Promise<Void>] {
         var promises: [Promise<Void>] = []
         let servers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
         servers.forEach { server in
