@@ -1146,18 +1146,31 @@ extension ConversationVC {
         guard !contact.isApproved else { return Promise.value(()) }
         
         return Promise.value(())
-            .then { _ -> Promise<Void> in
+            .then { [weak self] _ -> Promise<Void> in
                 guard !isNewThread else { return Promise.value(()) }
+                guard let strongSelf = self else { return Promise(error: MessageSender.Error.noThread) }
                 
                 // If we aren't creating a new thread (ie. sending a message request) then send a
                 // messageRequestResponse back to the sender (this allows the sender to know that
                 // they have been approved and can now use this contact in closed groups)
+                let (promise, seal) = Promise<Void>.pending()
                 let messageRequestResponse: MessageRequestResponse = MessageRequestResponse(
                     isApproved: true
                 )
                 messageRequestResponse.sentTimestamp = timestamp
                 
-                return MessageSender.sendNonDurably(messageRequestResponse, in: contactThread, using: transaction)
+                // Show a loading indicator
+                ModalActivityIndicatorViewController.present(fromViewController: strongSelf, canCancel: false) { _ in
+                    seal.fulfill(())
+                }
+                
+                return promise
+                    .then { MessageSender.sendNonDurably(messageRequestResponse, in: contactThread, using: transaction) }
+                    .map { _ in
+                        if self?.presentedViewController is ModalActivityIndicatorViewController {
+                            self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                        }
+                    }
             }
             .map { _ in
                 // Default 'didApproveMe' to true for the person approving the message request
