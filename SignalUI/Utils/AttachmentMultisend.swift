@@ -52,7 +52,7 @@ public class AttachmentMultisend: Dependencies {
                     messages.append(message)
                     threads.append(thread)
 
-                    thread.donateSendMessageIntent(transaction: transaction)
+                    thread.donateSendMessageIntent(for: message, transaction: transaction)
                 }
 
                 // map of attachments we'll upload to their copies in each recipient thread
@@ -126,7 +126,7 @@ public class AttachmentMultisend: Dependencies {
                     messages.append(message)
                     threads.append(thread)
 
-                    thread.donateSendMessageIntent(transaction: transaction)
+                    thread.donateSendMessageIntent(for: message, transaction: transaction)
                 }
 
                 // map of attachments we'll upload to their copies in each recipient thread
