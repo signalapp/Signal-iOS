@@ -28,9 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 // regardless of which view is currently visible.
 @property (nonatomic, nullable) NSNumber *ows_prefersStatusBarHidden;
 
-// Defaults to UIStatusBarStyleDefault. If set to a non-default value, this status bar style will be used.
-@property (nonatomic, assign) UIStatusBarStyle ows_preferredStatusBarStyle;
-
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initWithNavigationBarClass:(nullable Class)navigationBarClass
                               toolbarClass:(nullable Class)toolbarClass NS_UNAVAILABLE;

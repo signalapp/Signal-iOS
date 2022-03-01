@@ -54,16 +54,11 @@ class SendMediaNavigationController: OWSNavigationController {
         return true
     }
 
-    override var ows_preferredStatusBarStyle: UIStatusBarStyle {
-        get {
-            if topViewController is ConversationPickerViewController {
-                return .default
-            }
-            return  .lightContent
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        if topViewController is ConversationPickerViewController {
+            return .default
         }
-        set {
-            super.ows_preferredStatusBarStyle = newValue
-        }
+        return  .lightContent
     }
 
     override func viewDidLoad() {

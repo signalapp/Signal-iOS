@@ -154,10 +154,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         return true
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
     }
