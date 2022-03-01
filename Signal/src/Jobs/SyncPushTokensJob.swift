@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalServiceKit
@@ -112,5 +112,5 @@ class SyncPushTokensJob: NSObject {
 
 private func redact(_ string: String?) -> String {
     guard let string = string else { return "nil" }
-    return OWSIsDebugBuild() ? string : "[ READACTED \(string.prefix(2))...\(string.suffix(2)) ]"
+    return OWSIsDebugBuild() ? string : "[ REDACTED \(string.prefix(2))...\(string.suffix(2)) ]"
 }
