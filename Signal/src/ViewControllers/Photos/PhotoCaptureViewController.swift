@@ -522,43 +522,19 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     @objc
     func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
-        let viewLocation = tapGesture.location(in: view)
+        guard previewView.bounds.contains(tapGesture.location(in: previewView)) else {
+            return
+        }
+
+        let viewLocation = tapGesture.location(in: previewView)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
-
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
-
-//        // If the user taps near the capture button, it's more likely a mis-tap than intentional.
-//        // Skip the focus animation in that case, since it looks bad.
-//        let captureButtonOrigin = captureButton.superview!.convert(captureButton.frame.origin, to: view)
-//        if UIDevice.current.isIPad {
-//            guard viewLocation.x < captureButtonOrigin.x else {
-//                Logger.verbose("Skipping animation for right edge on iPad")
-//
-//                // Finish any outstanding focus animation, otherwise it will remain in an
-//                // uncompleted state.
-//                if let lastUserFocusTapPoint = lastUserFocusTapPoint {
-//                    completeFocusAnimation(forFocusPoint: lastUserFocusTapPoint)
-//                }
-//                return
-//            }
-//        } else {
-//            guard viewLocation.y < captureButtonOrigin.y else {
-//                Logger.verbose("Skipping animation for bottom row on iPhone")
-//
-//                // Finish any outstanding focus animation, otherwise it will remain in an
-//                // uncompleted state.
-//                if let lastUserFocusTapPoint = lastUserFocusTapPoint {
-//                    completeFocusAnimation(forFocusPoint: lastUserFocusTapPoint)
-//                }
-//                return
-//            }
-//        }
 
         lastUserFocusTapPoint = devicePoint
         do {
-            let convertedPoint = tapToFocusView.superview!.convert(viewLocation, from: view)
-            positionTapToFocusView(center: convertedPoint)
-            tapToFocusView.superview?.layoutIfNeeded()
+            let focusFrameSuperview = tapToFocusView.superview!
+            positionTapToFocusView(center: tapGesture.location(in: focusFrameSuperview))
+            focusFrameSuperview.layoutIfNeeded()
             startFocusAnimation()
         }
     }
