@@ -313,7 +313,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
-            self.pushViewController(self.mediaLibraryViewController, animated: true)
+            self.fadeTo(viewControllers: [self.mediaLibraryViewController], duration: 0.3)
         }
     }
 
@@ -347,16 +347,11 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func imagePickerDidRequestPresentCamera(_ imagePicker: ImagePickerGridController) {
-        if let cameraViewController = viewControllers.first as? PhotoCaptureViewController {
-            popToViewController(cameraViewController, animated: true)
-            return
-        }
-
         self.ows_askForCameraPermissions { isGranted in
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
-            self.fadeTo(viewControllers: [self.captureViewController], duration: 0.08)
+            self.fadeTo(viewControllers: [self.captureViewController], duration: 0.3)
         }
     }
 
