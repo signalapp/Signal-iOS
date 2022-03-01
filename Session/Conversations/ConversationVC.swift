@@ -469,8 +469,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             navigationItem.rightBarButtonItems = []
         }
         else {
-            navigationItem.leftBarButtonItem = UIViewController.createOWSBackButton(withTarget: self, selector: #selector(handleBackPressed))
-            
             if let contactThread: TSContactThread = thread as? TSContactThread {
                 // Don't show the settings button for message requests
                 if let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()), contact.isApproved, contact.didApproveMe {
