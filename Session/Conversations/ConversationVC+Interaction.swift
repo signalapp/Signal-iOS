@@ -1221,8 +1221,8 @@ extension ConversationVC {
             
             // Show an error indicating that approving the thread failed
             promise.catch(on: DispatchQueue.main) { [weak self] _ in
-                let alert = UIAlertController(title: "Session", message: "An error occurred when trying to accept this message request", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                let alert = UIAlertController(title: "Session", message: NSLocalizedString("MESSAGE_REQUESTS_APPROVAL_ERROR_MESSAGE", comment: ""), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
                 self?.present(alert, animated: true, completion: nil)
             }
             
