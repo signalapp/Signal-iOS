@@ -534,7 +534,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
                                                  ignoreMissingProfiles: Bool) -> Promise<Void> {
-        owsFail("Not implemented.")
+        return Promise.value(())
     }
 
     public func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot> {

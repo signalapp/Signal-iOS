@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSRecipientIdentity.h>
@@ -51,8 +51,13 @@ typedef NS_ENUM(NSInteger, TSMessageDirection) {
                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address;
+- (BOOL)groupContainsUnverifiedMember:(NSString *)threadUniqueID;
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address
                                         transaction:(SDSAnyReadTransaction *)transaction;
+
+- (NSArray<SignalServiceAddress *> *)noLongerVerifiedAddressesInGroup:(NSString *)groupThreadID
+                                                                limit:(NSInteger)limit
+                                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
