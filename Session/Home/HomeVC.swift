@@ -6,6 +6,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     private var threads: YapDatabaseViewMappings!
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
     private var tableViewTopConstraint: NSLayoutConstraint!
+    private var unreadMessageRequestCount: UInt = 0
     
     private var messageRequestCount: UInt {
         threads.numberOfItems(inGroup: TSMessageRequestGroup)
@@ -203,7 +204,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         switch indexPath.section {
             case 0:
                 let cell = tableView.dequeueReusableCell(withIdentifier: MessageRequestsCell.reuseIdentifier) as! MessageRequestsCell
-                cell.update(with: Int(messageRequestCount))
+                cell.update(with: Int(unreadMessageRequestCount))
                 return cell
                 
             default:
@@ -273,6 +274,14 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                     }
                 }
                 
+                // Update the number of unread message requests
+                unreadMessageRequestCount = OWSMessageUtils.sharedManager().unreadMessageRequestCount()
+                
+                // If there are no unread message requests then hide the message request banner
+                if unreadMessageRequestCount == 0 {
+                    CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = true
+                }
+                
                 return reload()
             }
         }
@@ -296,11 +305,21 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         
         // If we need to unhide the message request row and then re-insert it
         if !messageRequestChanges.isEmpty {
-            if tableView.numberOfRows(inSection: 0) == 1 && Int(messageRequestCount) <= 0 {
+            // Update the number of unread message requests
+            unreadMessageRequestCount = OWSMessageUtils.sharedManager().unreadMessageRequestCount()
+            
+            // If there are no unread message requests then hide the message request banner
+            if unreadMessageRequestCount == 0 && tableView.numberOfRows(inSection: 0) == 1 {
+                CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = true
                 tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
             }
-            else if tableView.numberOfRows(inSection: 0) == 0 && Int(messageRequestCount) > 0 && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
-                tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            else {
+                if tableView.numberOfRows(inSection: 0) == 1 && Int(messageRequestCount) <= 0 {
+                    tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                }
+                else if tableView.numberOfRows(inSection: 0) == 0 && Int(messageRequestCount) > 0 && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+                    tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                }
             }
         }
         
@@ -554,6 +573,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     @objc private func openSettings() {
         let settingsVC = SettingsVC()
         let navigationController = OWSNavigationController(rootViewController: settingsVC)
+        navigationController.modalPresentationStyle = .fullScreen
         present(navigationController, animated: true, completion: nil)
     }
     

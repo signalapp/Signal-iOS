@@ -722,9 +722,12 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func markAllAsRead() {
-        guard !thread.isMessageRequest() else { return }
         guard let lastSortID = viewItems.last?.interaction.sortId else { return }
-        OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: lastSortID, thread: thread)
+        OWSReadReceiptManager.shared().markAsReadLocally(
+            beforeSortId: lastSortID,
+            thread: thread,
+            trySendReadReceipt: !thread.isMessageRequest()
+        )
         SSKEnvironment.shared.disappearingMessagesJob.cleanupMessagesWhichFailedToStartExpiringFromNow()
     }
     

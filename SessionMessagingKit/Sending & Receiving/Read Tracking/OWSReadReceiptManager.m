@@ -180,13 +180,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Mark as Read Locally
 
-- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread
+- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread trySendReadReceipt:(BOOL)trySendReadReceipt
 {
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self markAsReadBeforeSortId:sortId
                               thread:thread
                        readTimestamp:[NSDate millisecondTimestamp]
-                            wasLocal:YES
+                  trySendReadReceipt:trySendReadReceipt
                          transaction:transaction];
     }];
 }
@@ -254,7 +254,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 - (void)markAsReadBeforeSortId:(uint64_t)sortId
                         thread:(TSThread *)thread
                  readTimestamp:(uint64_t)readTimestamp
-                      wasLocal:(BOOL)wasLocal
+            trySendReadReceipt:(BOOL)trySendReadReceipt
                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSMutableArray<id<OWSReadTracking>> *newlyReadList = [NSMutableArray new];
@@ -285,7 +285,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
 
     for (id<OWSReadTracking> readItem in newlyReadList) {
-        [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
+        [readItem markAsReadAtTimestamp:readTimestamp trySendReadReceipt:trySendReadReceipt transaction:transaction];
     }
     
     // Update unread mention.

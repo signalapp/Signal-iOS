@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Used both for *responding* to a remote read receipt and in response to the local user's activity.
  */
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
+           trySendReadReceipt:(BOOL)trySendReadReceipt
                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
