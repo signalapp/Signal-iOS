@@ -644,9 +644,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 }
                 self.markAllAsRead()
             }
-            if shouldScrollToBottom {
-                self.scrollToBottom(isAnimated: false)
-            }
         }
         
         // Update the input state if this is a contact thread
@@ -747,7 +744,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func scrollToBottom(isAnimated: Bool) {
         guard !isUserScrolling && !viewItems.isEmpty else { return }
-        messagesTableView.scrollToRow(at: IndexPath(row: viewItems.count - 1, section: 0), at: .top, animated: isAnimated)
+        messagesTableView.scrollToRow(at: IndexPath(row: viewItems.count - 1, section: 0), at: .bottom, animated: isAnimated)
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
