@@ -206,6 +206,7 @@ class NotificationService: UNNotificationServiceExtension {
                 runningAndCompletedPromises.append(("MessageProcessorCompletion", promise))
                 return promise
             }.then(on: .global()) { () -> Promise<Void> in
+                Logger.info("Initial message processing complete.")
                 // Wait until all async side effects of
                 // message processing are complete.
                 let completionPromises: [(String, Promise<Void>)] = [
@@ -220,7 +221,11 @@ class NotificationService: UNNotificationServiceExtension {
                     // Wait until all sync requests are fulfilled.
                     ("Pending sync request", OWSMessageManager.pendingTasksPromise())
                 ]
-                let joinedPromise = Promise.when(resolved: completionPromises.map { $0.1 })
+                let joinedPromise = Promise.when(resolved: completionPromises.map { (name, promise) in
+                    promise.done(on: .global()) {
+                        Logger.info("\(name) complete")
+                    }
+                })
                 completionPromises.forEach { runningAndCompletedPromises.append($0) }
                 return joinedPromise.asVoid()
             }
