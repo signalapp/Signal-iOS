@@ -45,7 +45,6 @@ public final class OpenGroupManager: NSObject {
         
         // Clear any existing data if needed
         storage.removeOpenGroupSequenceNumber(for: roomToken, on: server, using: transaction)
-        storage.removeAuthToken(for: roomToken, on: server, using: transaction)
         
         // Store the public key
         storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)

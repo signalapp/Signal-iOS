@@ -15,19 +15,19 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Polling State
     
-    private static var hasPerformedInitialPoll: [String: Bool] = [:]
-    private static var timeSinceLastPoll: [String: TimeInterval] = [:]
-    private static var lastPollTime: TimeInterval = .greatestFiniteMagnitude
+    private static var hasPerformedInitialPoll: AtomicDict<String, Bool> = AtomicDict()
+    private static var timeSinceLastPoll: AtomicDict<String, TimeInterval> = AtomicDict()
+    private static var lastPollTime: Atomic<TimeInterval> = Atomic(.greatestFiniteMagnitude)
 
-    private static let timeSinceLastOpen: TimeInterval = {
-        guard let lastOpen = UserDefaults.standard[.lastOpen] else { return .greatestFiniteMagnitude }
+    private static let timeSinceLastOpen: Atomic<TimeInterval> = {
+        guard let lastOpen = UserDefaults.standard[.lastOpen] else { return Atomic(.greatestFiniteMagnitude) }
         
-        return Date().timeIntervalSince(lastOpen)
+        return Atomic(Date().timeIntervalSince(lastOpen))
     }()
     
     
     // TODO: Remove these
-    private static var legacyAuthTokenPromises: Atomic<[String: Promise<String>]> = Atomic([:])
+    private static var legacyAuthTokenPromises: AtomicDict<String, Promise<String>> = AtomicDict()
     private static var legacyHasUpdatedLastOpenDate = false
     private static var legacyGroupImagePromises: [String: Promise<Data>] = [:]
     
@@ -44,13 +44,13 @@ public final class OpenGroupAPI: NSObject {
     public static func poll(_ server: String, using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         // Store a local copy of the cached state for this server
         let hadPerformedInitialPoll: Bool = (hasPerformedInitialPoll[server] == true)
-        let originalTimeSinceLastPoll: TimeInterval = (timeSinceLastPoll[server] ?? min(lastPollTime, timeSinceLastOpen))
+        let originalTimeSinceLastPoll: TimeInterval = (timeSinceLastPoll[server] ?? min(lastPollTime.wrappedValue, timeSinceLastOpen.wrappedValue))
         let maybeLastInboxMessageId: Int64? = dependencies.storage.getOpenGroupInboxLatestMessageId(for: server)
         let lastInboxMessageId: Int64 = (maybeLastInboxMessageId ?? 0)
         
         // Update the cached state for this server
-        hasPerformedInitialPoll[server] = true
-        lastPollTime = min(lastPollTime, timeSinceLastOpen)
+        hasPerformedInitialPoll.wrappedValue[server] = true
+        lastPollTime.wrappedValue = min(lastPollTime.wrappedValue, timeSinceLastOpen.wrappedValue)
         UserDefaults.standard[.lastOpen] = Date()
         
         // Generate the requests

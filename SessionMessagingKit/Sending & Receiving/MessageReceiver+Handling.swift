@@ -843,7 +843,7 @@ extension MessageReceiver {
     
     public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {
         let userPublicKey = getUserHexEncodedPublicKey()
-        var blindedContactIds: [String] = []
+        var hadBlindedContact: Bool = false
         var blindedThreadIds: [String] = []
         
         // Ignore messages which were sent from the current user
@@ -882,11 +882,16 @@ extension MessageReceiver {
                 let mapping: BlindedIdMapping = BlindedIdMapping(blindedId: blindedId, sessionId: senderId, serverPublicKey: serverPublicKey)
                 Storage.shared.cacheBlindedIdMapping(mapping, using: transaction)
                 
-                // Add the `blindedId` to an array so we can remove them at the end of processing
-                blindedContactIds.append(blindedId)
+                // Flag that we had a blinded contact and add the `blindedThreadId` to an array so we can remove
+                // them at the end of processing
+                hadBlindedContact = true
                 blindedThreadIds.append(blindedThreadId)
                 
                 // Loop through all of the interactions and add them to a list to be moved to the new thread
+                // Note: Pending `MessageSendJobs` _shouldn't_ be an issue as even if they are sent after the
+                // un-blinding of a thread, the logic when handling the sent messages should automatically
+                // assign them to the correct thread
+                // TODO: Validate the above note once `/outbox` has been implemented
                 view.enumerateRows(inGroup: blindedThreadId) { _, _, object, _, _, _ in
                     guard let interaction: TSInteraction = object as? TSInteraction else {
                         return
@@ -896,9 +901,6 @@ extension MessageReceiver {
                 }
                 
                 threadsToDelete.append(blindedThread)
-                
-                // TODO: Pending jobs???
-//                Storage.shared.getAllPendingJobs(of: <#T##Job.Type#>)
             }
             
             // Sort the interactions by their `sortId` (which looks to be a global sort id for all interactions) just in case
@@ -916,7 +918,6 @@ extension MessageReceiver {
             
             // Delete the old threads
             for thread in threadsToDelete {
-                // TODO: This isn't updating the HomeVC... Race condition??? (Seems to not happen when stepping through with breakpoints)
                 thread.removeAllThreadInteractions(with: transaction)
                 thread.remove(with: transaction)
             }
@@ -926,19 +927,13 @@ extension MessageReceiver {
         updateContactApprovalStatusIfNeeded(
             senderSessionId: senderId,
             threadId: nil,
-            forceConfigSync: blindedContactIds.isEmpty, // Sync here if there are no blinded contacts
+            forceConfigSync: !hadBlindedContact, // Sync here if there were no blinded contacts
             using: transaction
         )
         
-        // If there were blinded contacts then we should remove them
-        if !blindedContactIds.isEmpty {
-            // Delete all of the processed blinded contacts (shouldn't need them anymore and don't want them taking up
-            // space in the config message)
-            for blindedId in blindedContactIds {
-                // TODO: OWSBlockingManager...???
-            }
-            
-            // We should assume the 'sender' is a newly created contact and hence need to update it's `isApproved` state
+        // If there were blinded contacts then we need to assume that the 'sender' is a newly create contact and hence
+        // need to update it's `isApproved` state
+        if hadBlindedContact {
             updateContactApprovalStatusIfNeeded(
                 senderSessionId: userPublicKey,
                 threadId: unblindedThreadId,

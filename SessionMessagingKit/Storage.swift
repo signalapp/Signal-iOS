@@ -38,12 +38,6 @@ public protocol SessionMessagingKitStorageProtocol {
     func resumeMessageSendJobIfNeeded(_ messageSendJobID: String)
     func isJobCanceled(_ job: Job) -> Bool
 
-    // MARK: - Authorization
-
-    func getAuthToken(for room: String, on server: String) -> String?
-    func setAuthToken(for room: String, on server: String, to newValue: String, using transaction: Any)
-    func removeAuthToken(for room: String, on server: String, using transaction: Any)
-
     // MARK: - Open Groups
 
     func getAllOpenGroups() -> [String: OpenGroup]
