@@ -639,6 +639,9 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     private func captureReady() {
         self.hasCaptureStarted = true
         BenchEventComplete(eventId: "Show-Camera")
+        if isVisible {
+            VolumeButtons.shared?.addObserver(observer: photoCapture)
+        }
     }
 
     private func setupPhotoCapture() {

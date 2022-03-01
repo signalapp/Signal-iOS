@@ -48,6 +48,7 @@ class CameraCaptureControl: UIView {
     private lazy var slidingCircleView: CircleView = {
         let view = CircleView(diameter: CameraCaptureControl.recordingLockControlSize)
         view.backgroundColor = .ows_white
+        view.isHidden = true
         return view
     }()
     private lazy var lockIconView = LockView(frame: CGRect(origin: .zero, size: .square(CameraCaptureControl.recordingLockControlSize)))
@@ -60,7 +61,7 @@ class CameraCaptureControl: UIView {
         button.dimsWhenHighlighted = true
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 4
-        button.alpha = 0
+        button.isHidden = true
         return button
     }()
 
@@ -176,9 +177,9 @@ class CameraCaptureControl: UIView {
         case .initial:
             // element visibility
             if slidingCircleHPositionConstraint != nil {
-                stopButton.alpha = 0
-                slidingCircleView.alpha = 0
-                lockIconView.alpha = 0
+                stopButton.isHidden = true
+                slidingCircleView.isHidden = true
+                lockIconView.isHidden = true
                 lockIconView.state = .unlocked
             }
             shutterButtonInnerCircle.alpha = 1
@@ -189,24 +190,26 @@ class CameraCaptureControl: UIView {
 
         case .recording:
             prepareRecordingControlsIfNecessary()
+            let recordingWithLongPress = longPressGesture.state != .possible
+            let sliderProgress = recordingWithLongPress ? sliderTrackingProgress : 0
             // element visibility
-            stopButton.alpha = sliderTrackingProgress > 0 ? 1 : 0
-            slidingCircleView.alpha = sliderTrackingProgress > 0 ? 1 : 0
-            lockIconView.alpha = 1
-            lockIconView.setState(sliderTrackingProgress > 0.5 ? .locking : .unlocked, animated: true)
+            stopButton.isHidden = sliderProgress == 0
+            slidingCircleView.isHidden = sliderProgress == 0
+            lockIconView.isHidden = !recordingWithLongPress
+            lockIconView.setState(sliderProgress > 0.5 ? .locking : .unlocked, animated: true)
             shutterButtonInnerCircle.backgroundColor = .ows_white
             // element sizes
             outerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonRecordingSize
             // Inner (white) circle gets smaller as user drags the slider and reveals stop button when the slider is halfway to the lock icon.
-            let circleSizeOffset = 2 * sliderTrackingProgress * (CameraCaptureControl.shutterButtonDefaultSize - CameraCaptureControl.recordingLockControlSize)
+            let circleSizeOffset = 2 * sliderProgress * (CameraCaptureControl.shutterButtonDefaultSize - CameraCaptureControl.recordingLockControlSize)
             innerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonDefaultSize - circleSizeOffset
 
         case .recordingLocked:
             prepareRecordingControlsIfNecessary()
             // element visibility
-            stopButton.alpha = 1
-            slidingCircleView.alpha = 1
-            lockIconView.alpha = 1
+            stopButton.isHidden = false
+            slidingCircleView.isHidden = false
+            lockIconView.isHidden = false
             lockIconView.setState(.locked, animated: true)
             shutterButtonInnerCircle.alpha = 0
             shutterButtonInnerCircle.backgroundColor = .ows_white
