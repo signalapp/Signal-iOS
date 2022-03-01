@@ -322,10 +322,12 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 linkPreviewView.linkPreviewState = LinkPreviewSent(linkPreview: linkPreview, imageAttachment: viewItem.linkPreviewAttachment)
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
+                linkPreviewView.layer.mask = bubbleViewMaskLayer
             } else if let openGroupInvitationName = message.openGroupInvitationName, let openGroupInvitationURL = message.openGroupInvitationURL {
                 let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor, isOutgoing: isOutgoing)
                 snContentView.addSubview(openGroupInvitationView)
                 openGroupInvitationView.pin(to: snContentView)
+                openGroupInvitationView.layer.mask = bubbleViewMaskLayer
             } else {
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])
@@ -389,6 +391,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 let voiceMessageView = VoiceMessageView(viewItem: viewItem)
                 snContentView.addSubview(voiceMessageView)
                 voiceMessageView.pin(to: snContentView)
+                voiceMessageView.layer.mask = bubbleViewMaskLayer
                 viewItem.lastAudioMessageView = voiceMessageView
             }
         case .genericAttachment:
