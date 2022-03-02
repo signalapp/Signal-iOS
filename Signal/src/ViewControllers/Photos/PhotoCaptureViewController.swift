@@ -707,45 +707,38 @@ private struct ButtonImages {
 }
 
 private class TopBar: UIView {
-    private(set) var closeButton: CameraOverlayButton!
+    let closeButton = CameraOverlayButton(image: ButtonImages.close, userInterfaceStyleOverride: .dark)
 
-    private var cameraControlsContainerView: UIView!
-    private(set) var flashModeButton: CameraOverlayButton!
-    private(set) var batchModeButton: CameraOverlayButton!
+    private let cameraControlsContainerView: UIStackView
+    let flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
+    let batchModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
 
-    private(set) var recordingTimerView: RecordingTimerView!
+    let recordingTimerView = RecordingTimerView(frame: .zero)
 
     override init(frame: CGRect) {
+        cameraControlsContainerView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton ])
+
         super.init(frame: frame)
-        commonInit()
-    }
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
         layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 4)
 
-        closeButton = CameraOverlayButton(image: ButtonImages.close, userInterfaceStyleOverride: .dark)
         addSubview(closeButton)
         closeButton.autoPinHeightToSuperviewMargins()
         closeButton.autoPinLeadingToSuperviewMargin()
 
-        recordingTimerView = RecordingTimerView(frame: .zero)
         addSubview(recordingTimerView)
         recordingTimerView.autoPinHeightToSuperview(withMargin: 8)
         recordingTimerView.autoHCenterInSuperview()
 
-        flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
-        batchModeButton = CameraOverlayButton(image: ButtonImages.batchModeOff, userInterfaceStyleOverride: .dark)
-        let stackView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton ])
-        stackView.spacing = 16
-        addSubview(stackView)
-        stackView.autoPinHeightToSuperviewMargins()
-        stackView.autoPinTrailingToSuperviewMargin()
-        cameraControlsContainerView = stackView
+        cameraControlsContainerView.spacing = 16
+        addSubview(cameraControlsContainerView)
+        cameraControlsContainerView.autoPinHeightToSuperviewMargins()
+        cameraControlsContainerView.autoPinTrailingToSuperviewMargin()
+    }
+
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 
     // MARK: - Mode
@@ -760,12 +753,12 @@ private class TopBar: UIView {
             case .cameraControls:
                 closeButton.isHidden = false
                 cameraControlsContainerView.isHidden = false
-                recordingTimerView?.isHidden = true
+                recordingTimerView.isHidden = true
 
             case .closeButton:
                 closeButton.isHidden = false
                 cameraControlsContainerView.isHidden = true
-                recordingTimerView?.isHidden = true
+                recordingTimerView.isHidden = true
 
             case .videoRecording:
                 closeButton.isHidden = true
@@ -793,47 +786,36 @@ private class BottomBar: UIView {
         }
     }
 
-    private(set) var photoLibraryButton: MediaPickerThumbnailButton!
-    private(set) var switchCameraButton: CameraOverlayButton!
+    let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
+    let switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
 
-    private(set) var captureControl: CameraCaptureControl!
+    let captureControl = CameraCaptureControl(axis: .horizontal)
     var shutterButtonLayoutGuide: UILayoutGuide {
         captureControl.shutterButtonLayoutGuide
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
-    }
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
         layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 14)
 
         addLayoutGuide(controlButtonsLayoutGuide)
         addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
                          controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor) ])
 
-        photoLibraryButton = MediaPickerThumbnailButton(frame: CGRect(origin: .zero, size: .square(bounds.height)))
         photoLibraryButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(photoLibraryButton)
         addConstraints([ photoLibraryButton.leadingAnchor.constraint(equalTo: controlButtonsLayoutGuide.leadingAnchor),
                          photoLibraryButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
                          photoLibraryButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor) ])
 
-        switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
         switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(switchCameraButton)
         addConstraints([ switchCameraButton.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
                          switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
                          switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
 
-        captureControl = CameraCaptureControl(axis: .horizontal)
         captureControl.translatesAutoresizingMaskIntoConstraints = false
         addSubview(captureControl)
         captureControl.autoPinTopToSuperviewMargin()
@@ -847,6 +829,11 @@ private class BottomBar: UIView {
                                                             captureControl.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor) ])
 
         updateCompactHeightLayoutConstraints()
+    }
+
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 
     private func updateCompactHeightLayoutConstraints() {
@@ -869,49 +856,41 @@ private class SideBar: UIView {
         }
     }
 
-    private var cameraControlsContainerView: UIView!
-    private(set) var flashModeButton: CameraOverlayButton!
-    private(set) var batchModeButton: CameraOverlayButton!
-    private(set) var switchCameraButton: CameraOverlayButton!
+    private let cameraControlsContainerView: UIStackView
+    let flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
+    let batchModeButton = CameraOverlayButton(image: ButtonImages.batchModeOff, userInterfaceStyleOverride: .dark)
+    let switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
 
-    private(set) var photoLibraryButton: MediaPickerThumbnailButton!
+    let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
 
     private(set) var cameraCaptureControl = CameraCaptureControl(axis: .vertical)
 
     override init(frame: CGRect) {
+        cameraControlsContainerView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton, switchCameraButton ])
+
         super.init(frame: frame)
-        commonInit()
-    }
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
         layoutMargins = UIEdgeInsets(margin: 8)
 
-        flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
-        switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
-        batchModeButton = CameraOverlayButton(image: ButtonImages.batchModeOff, userInterfaceStyleOverride: .dark)
-        let stackView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton, switchCameraButton ])
-        stackView.spacing = 16
-        stackView.axis = .vertical
-        addSubview(stackView)
-        stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoPinTopToSuperviewMargin()
-        cameraControlsContainerView = stackView
+        cameraControlsContainerView.spacing = 16
+        cameraControlsContainerView.axis = .vertical
+        addSubview(cameraControlsContainerView)
+        cameraControlsContainerView.autoPinWidthToSuperviewMargins()
+        cameraControlsContainerView.autoPinTopToSuperviewMargin()
 
         addSubview(cameraCaptureControl)
         cameraCaptureControl.autoHCenterInSuperview()
-        cameraCaptureControl.shutterButtonLayoutGuide.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 36).isActive = true
+        cameraCaptureControl.shutterButtonLayoutGuide.topAnchor.constraint(equalTo: cameraControlsContainerView.bottomAnchor, constant: 36).isActive = true
 
-        photoLibraryButton = MediaPickerThumbnailButton(frame: CGRect(origin: .zero, size: .square(bounds.height)))
         addSubview(photoLibraryButton)
         photoLibraryButton.autoHCenterInSuperview()
         photoLibraryButton.topAnchor.constraint(equalTo: cameraCaptureControl.shutterButtonLayoutGuide.bottomAnchor, constant: 36).isActive = true
         photoLibraryButton.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor).isActive = true
+    }
 
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 }
 
@@ -1114,8 +1093,9 @@ class CapturePreviewView: UIView {
         layer.addSublayer(previewLayer)
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    @available(*, unavailable, message: "Use init(session:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 }
 
@@ -1123,15 +1103,7 @@ private class RecordingTimerView: PillView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
-    }
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
         layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 0)
 
         let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
@@ -1148,9 +1120,14 @@ private class RecordingTimerView: PillView {
         updateView()
     }
 
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
+    }
+
     // MARK: - Subviews
 
-    private lazy var label: UILabel = {
+    private let label: UILabel = {
         let label = UILabel()
         label.font = UIFont.ows_monospacedDigitFont(withSize: 20)
         label.textAlignment = .center

@@ -562,7 +562,7 @@ private class TitleView: UIView {
 
     private let label = UILabel()
     private let iconView = UIImageView()
-    private var stackView: UIStackView!
+    private let stackView: UIStackView
 
     // Returns same font as UIBarButtonItem uses.
     private func titleLabelFont() -> UIFont {
@@ -573,18 +573,10 @@ private class TitleView: UIView {
     // MARK: - Initializers
 
     override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
         stackView = UIStackView(arrangedSubviews: [label, iconView])
+
+        super.init(frame: frame)
+
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = 5
@@ -603,6 +595,11 @@ private class TitleView: UIView {
         }
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
+    }
+
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 
     override func tintColorDidChange() {

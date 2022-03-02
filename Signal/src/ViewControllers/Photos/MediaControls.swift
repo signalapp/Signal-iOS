@@ -40,8 +40,8 @@ class CameraCaptureControl: UIView {
     private static let shutterButtonDefaultSize: CGFloat = 72
     private static let shutterButtonRecordingSize: CGFloat = 122
 
-    private var outerCircleSizeConstraint: NSLayoutConstraint!
-    private var innerCircleSizeConstraint: NSLayoutConstraint!
+    private let outerCircleSizeConstraint: NSLayoutConstraint
+    private let innerCircleSizeConstraint: NSLayoutConstraint
     private var slidingCircleHPositionConstraint: NSLayoutConstraint!
     private var slidingCircleVPositionConstraint: NSLayoutConstraint!
 
@@ -67,23 +67,13 @@ class CameraCaptureControl: UIView {
 
     weak var delegate: CameraCaptureControlDelegate?
 
-    convenience init(axis: NSLayoutConstraint.Axis) {
-        self.init(frame: CGRect(origin: .zero, size: CameraCaptureControl.intrinsicContentSize(forAxis: axis)))
+    required init(axis: NSLayoutConstraint.Axis) {
+        innerCircleSizeConstraint = shutterButtonInnerCircle.autoSetDimension(.width, toSize: CameraCaptureControl.shutterButtonDefaultSize)
+        outerCircleSizeConstraint = shutterButtonOuterCircle.autoSetDimension(.width, toSize: CameraCaptureControl.shutterButtonDefaultSize)
+
+        super.init(frame: CGRect(origin: .zero, size: CameraCaptureControl.intrinsicContentSize(forAxis: axis)))
+
         self.axis = axis
-        reactivateConstraintsForCurrentAxis()
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
 
         // Round Shutter Button
         addLayoutGuide(shutterButtonLayoutGuide)
@@ -104,11 +94,9 @@ class CameraCaptureControl: UIView {
         addSubview(shutterButtonOuterCircle)
         shutterButtonOuterCircle.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor).isActive = true
         shutterButtonOuterCircle.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor).isActive = true
-        outerCircleSizeConstraint = shutterButtonOuterCircle.autoSetDimension(.width, toSize: CameraCaptureControl.shutterButtonDefaultSize)
         shutterButtonOuterCircle.autoPin(toAspectRatio: 1)
 
         addSubview(shutterButtonInnerCircle)
-        innerCircleSizeConstraint = shutterButtonInnerCircle.autoSetDimension(.width, toSize: CameraCaptureControl.shutterButtonDefaultSize)
         shutterButtonInnerCircle.autoPin(toAspectRatio: 1)
         shutterButtonInnerCircle.isUserInteractionEnabled = false
         shutterButtonInnerCircle.backgroundColor = .clear
@@ -119,11 +107,16 @@ class CameraCaptureControl: UIView {
 
         // The long press handles both the tap and the hold interaction, as well as the animation
         // the presents as the user begins to hold (and the button begins to grow prior to recording)
-        longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
         longPressGesture.minimumPressDuration = 0
         shutterButtonOuterCircle.addGestureRecognizer(longPressGesture)
 
         reactivateConstraintsForCurrentAxis()
+    }
+
+    @available(*, unavailable, message: "Use init(axis:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 
     // MARK: - UI State
@@ -154,12 +147,13 @@ class CameraCaptureControl: UIView {
         }
     }
 
-    func setState(_ state: State, animationDuration: TimeInterval = 0) {
+    func setState(_ state: State, isRecordingWithLongPress: Bool = false, animationDuration: TimeInterval = 0) {
         guard _internalState != state else { return }
 
         Logger.debug("New state: \(_internalState) -> \(state)")
 
         _internalState = state
+        self.isRecordingWithLongPress = isRecordingWithLongPress
         if animationDuration > 0 {
             UIView.animate(withDuration: animationDuration,
                            delay: 0,
@@ -190,12 +184,11 @@ class CameraCaptureControl: UIView {
 
         case .recording:
             prepareRecordingControlsIfNecessary()
-            let recordingWithLongPress = longPressGesture.state != .possible
-            let sliderProgress = recordingWithLongPress ? sliderTrackingProgress : 0
+            let sliderProgress = isRecordingWithLongPress ? sliderTrackingProgress : 0
             // element visibility
             stopButton.isHidden = sliderProgress == 0
             slidingCircleView.isHidden = sliderProgress == 0
-            lockIconView.isHidden = !recordingWithLongPress
+            lockIconView.isHidden = !isRecordingWithLongPress
             lockIconView.setState(sliderProgress > 0.5 ? .locking : .unlocked, animated: true)
             shutterButtonInnerCircle.backgroundColor = .ows_white
             // element sizes
@@ -307,7 +300,7 @@ class CameraCaptureControl: UIView {
 
     // MARK: - Gestures
 
-    private var longPressGesture: UILongPressGestureRecognizer!
+    private var isRecordingWithLongPress = false
     private static let longPressDurationThreshold = 0.5
     private static let minDistanceBeforeActivatingLockSlider: CGFloat = 30
     private var initialTouchLocation: CGPoint?
@@ -340,7 +333,7 @@ class CameraCaptureControl: UIView {
             ) { [weak self] _ in
                 guard let self = self else { return }
 
-                self.setState(.recording, animationDuration: 0.4)
+                self.setState(.recording, isRecordingWithLongPress: true, animationDuration: 0.4)
 
                 self.delegate?.cameraCaptureControlDidRequestStartVideoRecording(self)
             }
@@ -471,10 +464,10 @@ class CameraCaptureControl: UIView {
 
 private class LockView: UIView {
 
-    private var imageViewLock = UIImageView(image: UIImage(named: "media-composer-lock-outline-24"))
-    private var blurBackgroundView = CircleBlurView(effect: UIBlurEffect(style: .dark))
-    private var whiteBackgroundView = CircleView()
-    private var whiteCircleView = CircleView()
+    private let imageViewLock = UIImageView(image: UIImage(named: "media-composer-lock-outline-24"))
+    private let blurBackgroundView = CircleBlurView(effect: UIBlurEffect(style: .dark))
+    private let whiteBackgroundView = CircleView()
+    private let whiteCircleView = CircleView()
 
     enum State {
         case unlocked
@@ -531,15 +524,7 @@ private class LockView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
-    }
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
         isUserInteractionEnabled = false
 
         addSubview(blurBackgroundView)
@@ -560,6 +545,11 @@ private class LockView: UIView {
         imageViewLock.autoCenterInSuperview()
 
         updateAppearance()
+    }
+
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 
     override var intrinsicContentSize: CGSize {
@@ -621,7 +611,11 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         }
     }
 
-    private var backgroundView: UIVisualEffectView!
+    private let backgroundView: CircleBlurView = {
+        let view = CircleBlurView(effect: UIBlurEffect(style: .regular))
+        view.isUserInteractionEnabled = false
+        return view
+    }()
 
     private static let visibleButtonSize: CGFloat = 36  // both height and width
     private static let defaultInset: CGFloat = 4
@@ -632,32 +626,28 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         }
     }
 
-    convenience init(image: UIImage?, userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified) {
-        self.init(frame: CGRect(origin: .zero, size: .square(Self.visibleButtonSize + 2*Self.defaultInset)))
+    required init(image: UIImage?, userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified) {
+        super.init(frame: CGRect(origin: .zero, size: .square(Self.visibleButtonSize + 2*Self.defaultInset)))
+
         self.userInterfaceStyleOverride = userInterfaceStyleOverride
+
+        layoutMargins = contentInsets
+
+        addSubview(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewMargins()
+
         setImage(image, for: .normal)
         updateStyle()
     }
 
-    private override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
+    @available(*, unavailable, message: "Use init(image:userInterfaceStyleOverride:) instead")
+    override init(frame: CGRect) {
+        notImplemented()
     }
 
+    @available(*, unavailable, message: "Use init(image:userInterfaceStyleOverride:) instead")
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
-        layoutMargins = contentInsets
-
-        backgroundView = CircleBlurView(effect: UIBlurEffect(style: CameraOverlayButton.blurEffectStyle(for: effectiveUserInterfaceStyle)))
-        backgroundView.isUserInteractionEnabled = false
-        addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewMargins()
-
-        updateStyle()
+        notImplemented()
     }
 
     override func layoutSubviews() {
@@ -700,14 +690,8 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
         }
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
+    private static var font: UIFont {
+        return UIFont.ows_dynamicTypeSubheadline.ows_monospaced
     }
 
     private let numberFormatter: NumberFormatter = {
@@ -720,22 +704,38 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
         let label = UILabel()
         label.textColor = .ows_white
         label.textAlignment = .center
-        label.font = .ows_dynamicTypeSubheadline.ows_monospaced
+        label.font = MediaDoneButton.font
         return label
     }()
-    private var pillView: PillView!
-    private var blurBackgroundView: UIVisualEffectView!
-    private var chevronImageView: UIImageView!
-    private var dimmerView: UIView!
-
-    private func commonInit() {
-        pillView = PillView(frame: bounds)
+    private let pillView: PillView = {
+        let pillView = PillView(frame: .zero)
         pillView.isUserInteractionEnabled = false
         pillView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
+        return pillView
+    }()
+    private let blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+    private let chevronImageView: UIImageView = {
+        let image: UIImage?
+        if #available(iOS 13, *) {
+            image = CurrentAppContext().isRTL ? UIImage(systemName: "chevron.backward") : UIImage(systemName: "chevron.right")
+        } else {
+            image = CurrentAppContext().isRTL ? UIImage(named: "chevron-left-20") : UIImage(named: "chevron-right-20")
+        }
+        let chevronImageView = UIImageView(image: image!.withRenderingMode(.alwaysTemplate))
+        chevronImageView.contentMode = .center
+        if #available(iOS 13, *) {
+            chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: MediaDoneButton.font.pointSize)
+        }
+        return chevronImageView
+    }()
+    private var dimmerView: UIView?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
         addSubview(pillView)
         pillView.autoPinEdgesToSuperviewEdges()
 
-        blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: MediaDoneButton.blurEffectStyle(for: effectiveUserInterfaceStyle)))
         pillView.addSubview(blurBackgroundView)
         blurBackgroundView.autoPinEdgesToSuperviewEdges()
 
@@ -745,24 +745,17 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
         blueBadgeView.addSubview(textLabel)
         textLabel.autoPinEdgesToSuperviewMargins()
 
-        let image: UIImage?
-        if #available(iOS 13, *) {
-            image = CurrentAppContext().isRTL ? UIImage(systemName: "chevron.backward") : UIImage(systemName: "chevron.right")
-        } else {
-            image = CurrentAppContext().isRTL ? UIImage(named: "chevron-left-20") : UIImage(named: "chevron-right-20")
-        }
-        chevronImageView = UIImageView(image: image!.withRenderingMode(.alwaysTemplate))
-        chevronImageView.contentMode = .center
-        if #available(iOS 13, *) {
-            chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: textLabel.font.pointSize)
-        }
-
         let hStack = UIStackView(arrangedSubviews: [blueBadgeView, chevronImageView])
         hStack.spacing = 6
         pillView.addSubview(hStack)
         hStack.autoPinEdgesToSuperviewMargins()
 
         updateStyle()
+    }
+
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -781,13 +774,14 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
         didSet {
             if isHighlighted {
                 if dimmerView == nil {
-                    dimmerView = UIView(frame: bounds)
+                    let dimmerView = UIView(frame: bounds)
                     dimmerView.isUserInteractionEnabled = false
                     dimmerView.backgroundColor = .ows_black
                     pillView.addSubview(dimmerView)
                     dimmerView.autoPinEdgesToSuperviewEdges()
+                    self.dimmerView = dimmerView
                 }
-                dimmerView.alpha = 0.5
+                dimmerView?.alpha = 0.5
             } else if let dimmerView = dimmerView {
                 dimmerView.alpha = 0
             }
