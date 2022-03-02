@@ -466,6 +466,10 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
         // Current design dicates we'll go "back" to the single thing before us.
         owsAssertDebug(viewControllers.count == 2)
 
+        if let cameraViewController = viewControllers.first as? PhotoCaptureViewController {
+            cameraViewController.switchToBatchMode()
+        }
+
         popViewController(animated: true)
     }
 

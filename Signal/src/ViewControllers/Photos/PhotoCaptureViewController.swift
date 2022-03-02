@@ -231,6 +231,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         }
     }
 
+    func switchToBatchMode() {
+        isInBatchMode = true
+    }
+
     private(set) var isInBatchMode: Bool = false {
         didSet {
             let buttonImage = isInBatchMode ? ButtonImages.batchModeOn : ButtonImages.batchModeOff
