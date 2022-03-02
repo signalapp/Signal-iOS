@@ -55,10 +55,16 @@ extension Storage {
     @objc public func getAllContacts() -> Set<Contact> {
         var result: Set<Contact> = []
         Storage.read { transaction in
-            transaction.enumerateRows(inCollection: Storage.contactCollection) { _, object, _, _ in
-                guard let contact = object as? Contact else { return }
-                result.insert(contact)
-            }
+            result = self.getAllContacts(with: transaction)
+        }
+        return result
+    }
+    
+    @objc public func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact> {
+        var result: Set<Contact> = []
+        transaction.enumerateRows(inCollection: Storage.contactCollection) { _, object, _, _ in
+            guard let contact = object as? Contact else { return }
+            result.insert(contact)
         }
         return result
     }

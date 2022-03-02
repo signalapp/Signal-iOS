@@ -229,6 +229,28 @@ struct SessionProtos_UnsendRequest {
   fileprivate var _author: String? = nil
 }
 
+struct SessionProtos_MessageRequestResponse {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// @required
+  var isApproved: Bool {
+    get {return _isApproved ?? false}
+    set {_isApproved = newValue}
+  }
+  /// Returns true if `isApproved` has been explicitly set.
+  var hasIsApproved: Bool {return self._isApproved != nil}
+  /// Clears the value of `isApproved`. Subsequent reads from it will return its default value.
+  mutating func clearIsApproved() {self._isApproved = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _isApproved: Bool? = nil
+}
+
 struct SessionProtos_Content {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -296,6 +318,15 @@ struct SessionProtos_Content {
   var hasUnsendRequest: Bool {return _storage._unsendRequest != nil}
   /// Clears the value of `unsendRequest`. Subsequent reads from it will return its default value.
   mutating func clearUnsendRequest() {_uniqueStorage()._unsendRequest = nil}
+
+  var messageRequestResponse: SessionProtos_MessageRequestResponse {
+    get {return _storage._messageRequestResponse ?? SessionProtos_MessageRequestResponse()}
+    set {_uniqueStorage()._messageRequestResponse = newValue}
+  }
+  /// Returns true if `messageRequestResponse` has been explicitly set.
+  var hasMessageRequestResponse: Bool {return _storage._messageRequestResponse != nil}
+  /// Clears the value of `messageRequestResponse`. Subsequent reads from it will return its default value.
+  mutating func clearMessageRequestResponse() {_uniqueStorage()._messageRequestResponse = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1165,6 +1196,36 @@ struct SessionProtos_ConfigurationMessage {
     /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
     mutating func clearProfileKey() {self._profileKey = nil}
 
+    /// added for msg requests
+    var isApproved: Bool {
+      get {return _isApproved ?? false}
+      set {_isApproved = newValue}
+    }
+    /// Returns true if `isApproved` has been explicitly set.
+    var hasIsApproved: Bool {return self._isApproved != nil}
+    /// Clears the value of `isApproved`. Subsequent reads from it will return its default value.
+    mutating func clearIsApproved() {self._isApproved = nil}
+
+    /// added for msg requests
+    var isBlocked: Bool {
+      get {return _isBlocked ?? false}
+      set {_isBlocked = newValue}
+    }
+    /// Returns true if `isBlocked` has been explicitly set.
+    var hasIsBlocked: Bool {return self._isBlocked != nil}
+    /// Clears the value of `isBlocked`. Subsequent reads from it will return its default value.
+    mutating func clearIsBlocked() {self._isBlocked = nil}
+
+    /// added for msg requests
+    var didApproveMe: Bool {
+      get {return _didApproveMe ?? false}
+      set {_didApproveMe = newValue}
+    }
+    /// Returns true if `didApproveMe` has been explicitly set.
+    var hasDidApproveMe: Bool {return self._didApproveMe != nil}
+    /// Clears the value of `didApproveMe`. Subsequent reads from it will return its default value.
+    mutating func clearDidApproveMe() {self._didApproveMe = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -1173,6 +1234,9 @@ struct SessionProtos_ConfigurationMessage {
     fileprivate var _name: String? = nil
     fileprivate var _profilePicture: String? = nil
     fileprivate var _profileKey: Data? = nil
+    fileprivate var _isApproved: Bool? = nil
+    fileprivate var _isBlocked: Bool? = nil
+    fileprivate var _didApproveMe: Bool? = nil
   }
 
   init() {}
@@ -1680,6 +1744,43 @@ extension SessionProtos_UnsendRequest: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
+extension SessionProtos_MessageRequestResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".MessageRequestResponse"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "isApproved"),
+  ]
+
+  public var isInitialized: Bool {
+    if self._isApproved == nil {return false}
+    return true
+  }
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBoolField(value: &self._isApproved) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._isApproved {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SessionProtos_MessageRequestResponse, rhs: SessionProtos_MessageRequestResponse) -> Bool {
+    if lhs._isApproved != rhs._isApproved {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Content"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -1690,6 +1791,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     7: .same(proto: "configurationMessage"),
     8: .same(proto: "dataExtractionNotification"),
     9: .same(proto: "unsendRequest"),
+    10: .same(proto: "messageRequestResponse"),
   ]
 
   fileprivate class _StorageClass {
@@ -1700,6 +1802,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     var _configurationMessage: SessionProtos_ConfigurationMessage? = nil
     var _dataExtractionNotification: SessionProtos_DataExtractionNotification? = nil
     var _unsendRequest: SessionProtos_UnsendRequest? = nil
+    var _messageRequestResponse: SessionProtos_MessageRequestResponse? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -1713,6 +1816,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       _configurationMessage = source._configurationMessage
       _dataExtractionNotification = source._dataExtractionNotification
       _unsendRequest = source._unsendRequest
+      _messageRequestResponse = source._messageRequestResponse
     }
   }
 
@@ -1732,6 +1836,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       if let v = _storage._configurationMessage, !v.isInitialized {return false}
       if let v = _storage._dataExtractionNotification, !v.isInitialized {return false}
       if let v = _storage._unsendRequest, !v.isInitialized {return false}
+      if let v = _storage._messageRequestResponse, !v.isInitialized {return false}
       return true
     }
   }
@@ -1751,6 +1856,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         case 7: try { try decoder.decodeSingularMessageField(value: &_storage._configurationMessage) }()
         case 8: try { try decoder.decodeSingularMessageField(value: &_storage._dataExtractionNotification) }()
         case 9: try { try decoder.decodeSingularMessageField(value: &_storage._unsendRequest) }()
+        case 10: try { try decoder.decodeSingularMessageField(value: &_storage._messageRequestResponse) }()
         default: break
         }
       }
@@ -1780,6 +1886,9 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
       if let v = _storage._unsendRequest {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 9)
       }
+      if let v = _storage._messageRequestResponse {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 10)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1796,6 +1905,7 @@ extension SessionProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
         if _storage._configurationMessage != rhs_storage._configurationMessage {return false}
         if _storage._dataExtractionNotification != rhs_storage._dataExtractionNotification {return false}
         if _storage._unsendRequest != rhs_storage._unsendRequest {return false}
+        if _storage._messageRequestResponse != rhs_storage._messageRequestResponse {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -2679,6 +2789,9 @@ extension SessionProtos_ConfigurationMessage.Contact: SwiftProtobuf.Message, Swi
     2: .same(proto: "name"),
     3: .same(proto: "profilePicture"),
     4: .same(proto: "profileKey"),
+    5: .same(proto: "isApproved"),
+    6: .same(proto: "isBlocked"),
+    7: .same(proto: "didApproveMe"),
   ]
 
   public var isInitialized: Bool {
@@ -2697,6 +2810,9 @@ extension SessionProtos_ConfigurationMessage.Contact: SwiftProtobuf.Message, Swi
       case 2: try { try decoder.decodeSingularStringField(value: &self._name) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._profilePicture) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self._profileKey) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self._isApproved) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self._isBlocked) }()
+      case 7: try { try decoder.decodeSingularBoolField(value: &self._didApproveMe) }()
       default: break
       }
     }
@@ -2715,6 +2831,15 @@ extension SessionProtos_ConfigurationMessage.Contact: SwiftProtobuf.Message, Swi
     if let v = self._profileKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
     }
+    if let v = self._isApproved {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 5)
+    }
+    if let v = self._isBlocked {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
+    }
+    if let v = self._didApproveMe {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2723,6 +2848,9 @@ extension SessionProtos_ConfigurationMessage.Contact: SwiftProtobuf.Message, Swi
     if lhs._name != rhs._name {return false}
     if lhs._profilePicture != rhs._profilePicture {return false}
     if lhs._profileKey != rhs._profileKey {return false}
+    if lhs._isApproved != rhs._isApproved {return false}
+    if lhs._isBlocked != rhs._isBlocked {return false}
+    if lhs._didApproveMe != rhs._didApproveMe {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

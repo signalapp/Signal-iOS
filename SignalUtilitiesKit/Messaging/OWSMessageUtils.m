@@ -75,8 +75,12 @@ NS_ASSUME_NONNULL_BEGIN
         // FIXME: Confusingly, `allGroups` includes contact threads as well
         for (NSString *groupID in allGroups) {
             TSThread *thread = [TSThread fetchObjectWithUniqueID:groupID transaction:transaction];
-            if (thread.isMuted) { continue; }
+            
+            // Don't increase the count for muted threads or message requests
+            if (thread.isMuted || thread.isMessageRequest) { continue; }
+            
             BOOL isGroupThread = thread.isGroupThread;
+            
             [unreadMessages enumerateKeysAndObjectsInGroup:groupID
                 usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                 if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
@@ -106,6 +110,38 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return numberOfItems;
+}
+
+- (NSUInteger)unreadMessageRequestCount {
+    __block NSUInteger count = 0;
+
+    [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
+        NSArray<NSString *> *allGroups = [unreadMessages allGroups];
+        // FIXME: Confusingly, `allGroups` includes contact threads as well
+        for (NSString *groupID in allGroups) {
+            TSThread *thread = [TSThread fetchObjectWithUniqueID:groupID transaction:transaction];
+            
+            // Only increase the count for message requests
+            if (!thread.isMessageRequest) { continue; }
+            
+            [unreadMessages enumerateKeysAndObjectsInGroup:groupID
+                usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
+                    return;
+                }
+                id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
+                if (unread.read) {
+                    NSLog(@"Found an already read message in the * unread * messages list.");
+                    return;
+                }
+                count += 1;
+                *stop = YES;
+            }];
+        }
+    }];
+
+    return count;
 }
 
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread

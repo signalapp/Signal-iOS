@@ -64,7 +64,16 @@ final class ShareLogsModal : Modal {
         if let latestLogFilePath = logFilePaths.first {
             let latestLogFileURL = URL(fileURLWithPath: latestLogFilePath)
             self.dismiss(animated: true, completion: {
-                AttachmentSharing.showShareUI(for: latestLogFileURL)
+                if let vc = CurrentAppContext().frontmostViewController() {
+                    let shareVC = UIActivityViewController(activityItems: [ latestLogFileURL ], applicationActivities: nil)
+                    if UIDevice.current.isIPad {
+                        shareVC.excludedActivityTypes = []
+                        shareVC.popoverPresentationController?.permittedArrowDirections = []
+                        shareVC.popoverPresentationController?.sourceView = vc.view
+                        shareVC.popoverPresentationController?.sourceRect = vc.view.bounds
+                    }
+                    vc.present(shareVC, animated: true, completion: nil)
+                }
             })
         }
     }

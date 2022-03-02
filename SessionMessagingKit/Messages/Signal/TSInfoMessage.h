@@ -16,7 +16,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeDisappearingMessagesUpdate,
     TSInfoMessageTypeScreenshotNotification,
     TSInfoMessageTypeMediaSavedNotification,
-    TSInfoMessageTypeCall
+    TSInfoMessageTypeCall,
+    TSInfoMessageTypeMessageRequestAccepted
 };
 
 typedef NS_ENUM(NSInteger, TSInfoMessageCallState) {

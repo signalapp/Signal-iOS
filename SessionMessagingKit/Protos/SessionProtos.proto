@@ -41,6 +41,11 @@ message UnsendRequest {
     required string author    = 2;
 }
 
+message MessageRequestResponse {
+  // @required
+  required bool   isApproved        = 1; // Whether the request was approved
+}
+
 message Content {
   optional DataMessage                dataMessage                = 1;
   optional CallMessage                callMessage                = 3;
@@ -49,6 +54,7 @@ message Content {
   optional ConfigurationMessage       configurationMessage       = 7;
   optional DataExtractionNotification dataExtractionNotification = 8;
   optional UnsendRequest              unsendRequest              = 9;
+  optional MessageRequestResponse     messageRequestResponse     = 10;
 }
 
 message CallMessage {
@@ -202,6 +208,9 @@ message ConfigurationMessage {
     required string name              = 2;
     optional string profilePicture    = 3;
     optional bytes  profileKey        = 4;
+    optional bool   isApproved        = 5; // added for msg requests
+    optional bool   isBlocked         = 6; // added for msg requests
+    optional bool   didApproveMe      = 7; // added for msg requests
   }
 
   repeated ClosedGroup closedGroups   = 1;

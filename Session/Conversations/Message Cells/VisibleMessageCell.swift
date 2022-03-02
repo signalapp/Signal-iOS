@@ -121,7 +121,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private static let authorLabelInset: CGFloat = 12
     private static let replyButtonSize: CGFloat = 24
     private static let maxBubbleTranslationX: CGFloat = 40
-    private static let swipeToReplyThreshold: CGFloat = 130
+    private static let swipeToReplyThreshold: CGFloat = 110
     static let smallCornerRadius: CGFloat = 4
     static let largeCornerRadius: CGFloat = 18
     static let contactThreadHSpacing = Values.mediumSpacing

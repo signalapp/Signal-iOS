@@ -9,6 +9,7 @@ public enum SNUserDefaults {
         case hasSeenCallIPExposureWarning
         case hasSeenCallMissedTips
         case isUsingFullAPNs
+        case hasHiddenMessageRequests
     }
 
     public enum Date : Swift.String {

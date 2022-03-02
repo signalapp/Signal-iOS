@@ -45,4 +45,8 @@ public final class Colors : NSObject {
     @objc public static var callMessageBackground: UIColor { UIColor(named: "session_call_message_background")! }
     @objc public static var pinIcon: UIColor { UIColor(named: "session_pin_icon")! }
     @objc public static var sessionHeading: UIColor { UIColor(named: "session_heading")! }
+    @objc public static var sessionMessageRequestsBubble: UIColor { UIColor(named: "session_message_requests_bubble")! }
+    @objc public static var sessionMessageRequestsIcon: UIColor { UIColor(named: "session_message_requests_icon")! }
+    @objc public static var sessionMessageRequestsTitle: UIColor { UIColor(named: "session_message_requests_title")! }
+    @objc public static var sessionMessageRequestsInfoText: UIColor { UIColor(named: "session_message_requests_info_text")! }
 }

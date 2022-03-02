@@ -28,7 +28,7 @@ public final class ViewControllerUtilities : NSObject {
         }
         // Set up back button
         if hasCustomBackButton {
-            let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
+            let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
             backButton.tintColor = Colors.text
             vc.navigationItem.backBarButtonItem = backButton
         }

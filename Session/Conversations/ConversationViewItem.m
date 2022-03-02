@@ -800,42 +800,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [UIPasteboard.generalPasteboard setData:data forPasteboardType:utiType];
 }
 
-- (void)shareMediaAction
-{
-    if (self.attachmentPointer != nil) {
-        OWSFailDebug(@"Can't share not-yet-downloaded attachment");
-        return;
-    }
-
-    switch (self.messageCellType) {
-        case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextOnlyMessage:
-        case OWSMessageCellType_Audio:
-        case OWSMessageCellType_GenericAttachment:
-            [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
-            break;
-        case OWSMessageCellType_MediaMessage: {
-            // TODO: We need a "canShareMediaAction" method.
-            OWSAssertDebug(self.mediaAlbumItems);
-            NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
-            for (ConversationMediaAlbumItem *mediaAlbumItem in self.mediaAlbumItems) {
-                if (mediaAlbumItem.attachmentStream && mediaAlbumItem.attachmentStream.isValidVisualMedia) {
-                    [attachmentStreams addObject:mediaAlbumItem.attachmentStream];
-                }
-            }
-            if (attachmentStreams.count < 1) {
-                OWSFailDebug(@"Can't share media album; no valid items.");
-                return;
-            }
-            [AttachmentSharing showShareUIForAttachments:attachmentStreams completion:nil];
-            break;
-        }
-        case OWSMessageCellType_OversizeTextDownloading:
-            OWSFailDebug(@"Can't share not-yet-downloaded attachment");
-            return;
-    }
-}
-
 - (BOOL)canCopyMedia
 {
     if (self.attachmentPointer != nil) {

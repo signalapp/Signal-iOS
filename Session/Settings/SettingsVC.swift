@@ -139,9 +139,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         setUpNavBarStyle()
         setNavBarTitle(NSLocalizedString("vc_settings_title", comment: ""))
         // Navigation bar buttons
-        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
-        backButton.tintColor = Colors.text
-        navigationItem.backBarButtonItem = backButton
         updateNavigationBarButtons()
         // Profile picture view
         let profilePictureTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditProfilePictureUI))
@@ -254,8 +251,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         pathStatusView.pin(.leading, to: .trailing, of: pathButton.titleLabel!, withInset: Values.smallSpacing)
         pathStatusView.autoVCenterInSuperview()
         
-        pathButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: Values.smallSpacing)
-        
         return [
             getSeparator(),
             pathButton,
@@ -263,6 +258,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
+            getSeparator(),
+            getSettingButton(withTitle: NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: ""), color: Colors.text, action: #selector(showMessageRequests)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)),
             getSeparator(),
@@ -392,7 +389,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                         let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
                         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                        self?.present(alert, animated: true, completion: nil)
+                        self?.presentAlert(alert)
                     }
                 }
             }, requiresSync: true)
@@ -491,6 +488,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
@@ -507,6 +510,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func showNotificationSettings() {
         let notificationSettingsVC = NotificationSettingsViewController()
         navigationController!.pushViewController(notificationSettingsVC, animated: true)
+    }
+    
+    @objc private func showMessageRequests() {
+        let viewController: MessageRequestsViewController = MessageRequestsViewController()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     @objc private func showSeed() {
@@ -526,6 +534,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func sendInvitation() {
         let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey()) !"
         let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     

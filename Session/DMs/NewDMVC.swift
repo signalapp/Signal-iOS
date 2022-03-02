@@ -73,7 +73,7 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         tabBar.pin(.leading, to: .leading, of: view)
         let tabBarInset: CGFloat
         if #available(iOS 13, *) {
-            tabBarInset = navigationBar.height()
+            tabBarInset = UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height()
         } else {
             tabBarInset = 0
         }
@@ -332,6 +332,12 @@ private final class EnterPublicKeyVC : UIViewController {
     
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         NewDMVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
     

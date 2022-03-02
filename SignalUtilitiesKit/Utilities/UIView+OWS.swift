@@ -132,11 +132,12 @@ public extension UIView {
 
 @objc
 public extension UIViewController {
-    public func presentAlert(_ alert: UIAlertController) {
+    func presentAlert(_ alert: UIAlertController) {
         self.presentAlert(alert, animated: true)
     }
 
-    public func presentAlert(_ alert: UIAlertController, animated: Bool) {
+    func presentAlert(_ alert: UIAlertController, animated: Bool) {
+        setupForIPadIfNeeded(alert: alert)
         self.present(alert,
                      animated: animated,
                      completion: {
@@ -144,7 +145,8 @@ public extension UIViewController {
         })
     }
 
-    public func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+    func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+        setupForIPadIfNeeded(alert: alert)
         self.present(alert,
                      animated: true,
                      completion: {
@@ -152,6 +154,14 @@ public extension UIViewController {
 
                         completion()
         })
+    }
+    
+    private func setupForIPadIfNeeded(alert: UIAlertController) {
+        if UIDevice.current.isIPad {
+            alert.popoverPresentationController?.permittedArrowDirections = []
+            alert.popoverPresentationController?.sourceView = self.view
+            alert.popoverPresentationController?.sourceRect = self.view.bounds
+        }
     }
 }
 

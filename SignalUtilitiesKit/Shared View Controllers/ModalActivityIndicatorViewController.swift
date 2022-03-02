@@ -25,8 +25,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         return result
     }()
 
-    var presentTimer: Timer?
-
     var wasDimissed: Bool = false
 
     // MARK: Initializers
@@ -127,41 +125,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
         self.spinner.startAnimating()
 
-        // Hide the the modal and wait for a second before revealing it,
-        // to avoid "blipping" in the modal during short blocking operations.
-        //
-        // NOTE: It will still intercept user interactions while hidden, as it
-        //       should.
-        let kPresentationDelaySeconds = TimeInterval(1)
-        self.presentTimer?.invalidate()
-        self.presentTimer = Timer.weakScheduledTimer(withTimeInterval: kPresentationDelaySeconds, target: self, selector: #selector(presentTimerFired), userInfo: nil, repeats: false)
-    }
-
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        clearTimer()
-    }
-
-    public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        self.spinner.stopAnimating()
-
-        clearTimer()
-    }
-
-    private func clearTimer() {
-        self.presentTimer?.invalidate()
-        self.presentTimer = nil
-    }
-
-    @objc func presentTimerFired() {
-        AssertIsOnMainThread()
-
-        clearTimer()
-
-        // Fade in the modal.
+        // Fade in the modal
         UIView.animate(withDuration: 0.35) {
             self.view.layer.opacity = 1.0
         }

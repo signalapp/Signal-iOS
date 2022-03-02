@@ -132,6 +132,16 @@ BOOL IsNoteToSelfEnabled(void)
     return [self.contactSessionID isEqual:[SNGeneralUtilities getUserPublicKey]];
 }
 
+// Override in ContactThread
+- (BOOL)isMessageRequest {
+    return NO;
+}
+
+// Override in ContactThread
+- (BOOL)isMessageRequestUsingTransaction:(YapDatabaseReadTransaction *)transaction {
+    return NO;
+}
+
 #pragma mark To be subclassed.
 
 - (BOOL)isGroupThread {
@@ -311,7 +321,7 @@ BOOL IsNoteToSelfEnabled(void)
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
+        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] trySendReadReceipt:YES transaction:transaction];
     }
 }
 

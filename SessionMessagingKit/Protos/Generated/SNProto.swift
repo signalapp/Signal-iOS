@@ -450,6 +450,103 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
 #endif
 
+// MARK: - SNProtoMessageRequestResponse
+
+@objc public class SNProtoMessageRequestResponse: NSObject {
+
+    // MARK: - SNProtoMessageRequestResponseBuilder
+
+    @objc public class func builder(isApproved: Bool) -> SNProtoMessageRequestResponseBuilder {
+        return SNProtoMessageRequestResponseBuilder(isApproved: isApproved)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoMessageRequestResponseBuilder {
+        let builder = SNProtoMessageRequestResponseBuilder(isApproved: isApproved)
+        return builder
+    }
+
+    @objc public class SNProtoMessageRequestResponseBuilder: NSObject {
+
+        private var proto = SessionProtos_MessageRequestResponse()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(isApproved: Bool) {
+            super.init()
+
+            setIsApproved(isApproved)
+        }
+
+        @objc public func setIsApproved(_ valueParam: Bool) {
+            proto.isApproved = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoMessageRequestResponse {
+            return try SNProtoMessageRequestResponse.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoMessageRequestResponse.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_MessageRequestResponse
+
+    @objc public let isApproved: Bool
+
+    private init(proto: SessionProtos_MessageRequestResponse,
+                 isApproved: Bool) {
+        self.proto = proto
+        self.isApproved = isApproved
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoMessageRequestResponse {
+        let proto = try SessionProtos_MessageRequestResponse(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_MessageRequestResponse) throws -> SNProtoMessageRequestResponse {
+        guard proto.hasIsApproved else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: isApproved")
+        }
+        let isApproved = proto.isApproved
+
+        // MARK: - Begin Validation Logic for SNProtoMessageRequestResponse -
+
+        // MARK: - End Validation Logic for SNProtoMessageRequestResponse -
+
+        let result = SNProtoMessageRequestResponse(proto: proto,
+                                                   isApproved: isApproved)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoMessageRequestResponse {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoMessageRequestResponse.SNProtoMessageRequestResponseBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoMessageRequestResponse? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SNProtoContent
 
 @objc public class SNProtoContent: NSObject {
@@ -483,6 +580,9 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
         }
         if let _value = unsendRequest {
             builder.setUnsendRequest(_value)
+        }
+        if let _value = messageRequestResponse {
+            builder.setMessageRequestResponse(_value)
         }
         return builder
     }
@@ -521,6 +621,10 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
             proto.unsendRequest = valueParam.proto
         }
 
+        @objc public func setMessageRequestResponse(_ valueParam: SNProtoMessageRequestResponse) {
+            proto.messageRequestResponse = valueParam.proto
+        }
+
         @objc public func build() throws -> SNProtoContent {
             return try SNProtoContent.parseProto(proto)
         }
@@ -546,6 +650,8 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
     @objc public let unsendRequest: SNProtoUnsendRequest?
 
+    @objc public let messageRequestResponse: SNProtoMessageRequestResponse?
+
     private init(proto: SessionProtos_Content,
                  dataMessage: SNProtoDataMessage?,
                  callMessage: SNProtoCallMessage?,
@@ -553,7 +659,8 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
                  typingMessage: SNProtoTypingMessage?,
                  configurationMessage: SNProtoConfigurationMessage?,
                  dataExtractionNotification: SNProtoDataExtractionNotification?,
-                 unsendRequest: SNProtoUnsendRequest?) {
+                 unsendRequest: SNProtoUnsendRequest?,
+                 messageRequestResponse: SNProtoMessageRequestResponse?) {
         self.proto = proto
         self.dataMessage = dataMessage
         self.callMessage = callMessage
@@ -562,6 +669,7 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
         self.configurationMessage = configurationMessage
         self.dataExtractionNotification = dataExtractionNotification
         self.unsendRequest = unsendRequest
+        self.messageRequestResponse = messageRequestResponse
     }
 
     @objc
@@ -610,6 +718,11 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
             unsendRequest = try SNProtoUnsendRequest.parseProto(proto.unsendRequest)
         }
 
+        var messageRequestResponse: SNProtoMessageRequestResponse? = nil
+        if proto.hasMessageRequestResponse {
+            messageRequestResponse = try SNProtoMessageRequestResponse.parseProto(proto.messageRequestResponse)
+        }
+
         // MARK: - Begin Validation Logic for SNProtoContent -
 
         // MARK: - End Validation Logic for SNProtoContent -
@@ -621,7 +734,8 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
                                     typingMessage: typingMessage,
                                     configurationMessage: configurationMessage,
                                     dataExtractionNotification: dataExtractionNotification,
-                                    unsendRequest: unsendRequest)
+                                    unsendRequest: unsendRequest,
+                                    messageRequestResponse: messageRequestResponse)
         return result
     }
 
@@ -2603,6 +2717,15 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
         if let _value = profileKey {
             builder.setProfileKey(_value)
         }
+        if hasIsApproved {
+            builder.setIsApproved(isApproved)
+        }
+        if hasIsBlocked {
+            builder.setIsBlocked(isBlocked)
+        }
+        if hasDidApproveMe {
+            builder.setDidApproveMe(didApproveMe)
+        }
         return builder
     }
 
@@ -2633,6 +2756,18 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
 
         @objc public func setProfileKey(_ valueParam: Data) {
             proto.profileKey = valueParam
+        }
+
+        @objc public func setIsApproved(_ valueParam: Bool) {
+            proto.isApproved = valueParam
+        }
+
+        @objc public func setIsBlocked(_ valueParam: Bool) {
+            proto.isBlocked = valueParam
+        }
+
+        @objc public func setDidApproveMe(_ valueParam: Bool) {
+            proto.didApproveMe = valueParam
         }
 
         @objc public func build() throws -> SNProtoConfigurationMessageContact {
@@ -2668,6 +2803,27 @@ extension SNProtoConfigurationMessageClosedGroup.SNProtoConfigurationMessageClos
     }
     @objc public var hasProfileKey: Bool {
         return proto.hasProfileKey
+    }
+
+    @objc public var isApproved: Bool {
+        return proto.isApproved
+    }
+    @objc public var hasIsApproved: Bool {
+        return proto.hasIsApproved
+    }
+
+    @objc public var isBlocked: Bool {
+        return proto.isBlocked
+    }
+    @objc public var hasIsBlocked: Bool {
+        return proto.hasIsBlocked
+    }
+
+    @objc public var didApproveMe: Bool {
+        return proto.didApproveMe
+    }
+    @objc public var hasDidApproveMe: Bool {
+        return proto.hasDidApproveMe
     }
 
     private init(proto: SessionProtos_ConfigurationMessage.Contact,
