@@ -21,8 +21,16 @@ class OpenGroupAPITests: XCTestCase {
         }
     }
     
-    struct TestNonceGenerator: NonceGenerator16ByteType {
+    struct TestNonce16Generator: NonceGenerator16ByteType {
+        var NonceBytes: Int = 16
+        
         func nonce() -> Array<UInt8> { return Data(base64Encoded: "pK6YRtQApl4NhECGizF0Cg==")!.bytes }
+    }
+    
+    struct TestNonce24Generator: NonceGenerator24ByteType {
+        var NonceBytes: Int = 24
+        
+        func nonce() -> Array<UInt8> { return Data(base64Encoded: "pbTUizreT0sqJ2R2LloseQDyVL2RYztD")!.bytes }
     }
 
     class TestApi: OnionRequestAPIType {
@@ -89,7 +97,8 @@ class OpenGroupAPITests: XCTestCase {
             sign: testSign,
             genericHash: testGenericHash,
             ed25519: TestEd25519.self,
-            nonceGenerator: TestNonceGenerator(),
+            nonceGenerator16: TestNonce16Generator(),
+            nonceGenerator24: TestNonce24Generator(),
             date: Date(timeIntervalSince1970: 1234567890)
         )
         
@@ -142,21 +151,35 @@ class OpenGroupAPITests: XCTestCase {
                         OpenGroupAPI.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: OpenGroupAPI.Capabilities(capabilities: [], missing: nil)
+                            body: OpenGroupAPI.Capabilities(capabilities: [], missing: nil),
+                            failedToParseBody: false
                         )
                     ),
                     try! JSONEncoder().encode(
                         OpenGroupAPI.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: try! JSONDecoder().decode(OpenGroupAPI.RoomPollInfo.self, from: "{}".data(using: .utf8)!)
+                            body: try! JSONDecoder().decode(
+                                OpenGroupAPI.RoomPollInfo.self,
+                                from: """
+                                {
+                                    \"token\":\"test\",
+                                    \"active_users\":1,
+                                    \"read\":true,
+                                    \"write\":true,
+                                    \"upload\":true
+                                }
+                                """.data(using: .utf8)!
+                            ),
+                            failedToParseBody: false
                         )
                     ),
                     try! JSONEncoder().encode(
                         OpenGroupAPI.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: [OpenGroupAPI.Message]()
+                            body: [OpenGroupAPI.Message](),
+                            failedToParseBody: false
                         )
                     )
                 ]
@@ -166,7 +189,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         dependencies = dependencies.with(api: LocalTestApi.self)
         
-        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]? = nil
         var error: Error? = nil
         
         OpenGroupAPI.poll("testServer", using: dependencies)
@@ -197,7 +220,7 @@ class OpenGroupAPITests: XCTestCase {
     }
     
     func testPollReturnsAnErrorWhenGivenNoData() throws {
-        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]? = nil
         var error: Error? = nil
         
         OpenGroupAPI.poll("testServer", using: dependencies)
@@ -220,7 +243,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         dependencies = dependencies.with(api: LocalTestApi.self)
         
-        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]? = nil
         var error: Error? = nil
         
         OpenGroupAPI.poll("testServer", using: dependencies)
@@ -243,7 +266,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         dependencies = dependencies.with(api: LocalTestApi.self)
         
-        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]? = nil
         var error: Error? = nil
         
         OpenGroupAPI.poll("testServer", using: dependencies)
@@ -266,7 +289,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         dependencies = dependencies.with(api: LocalTestApi.self)
         
-        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]? = nil
         var error: Error? = nil
         
         OpenGroupAPI.poll("testServer", using: dependencies)
@@ -291,14 +314,27 @@ class OpenGroupAPITests: XCTestCase {
                         OpenGroupAPI.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: OpenGroupAPI.Capabilities(capabilities: [], missing: nil)
+                            body: OpenGroupAPI.Capabilities(capabilities: [], missing: nil),
+                            failedToParseBody: false
                         )
                     ),
                     try! JSONEncoder().encode(
                         OpenGroupAPI.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: try! JSONDecoder().decode(OpenGroupAPI.RoomPollInfo.self, from: "{}".data(using: .utf8)!)
+                            body: try! JSONDecoder().decode(
+                                OpenGroupAPI.RoomPollInfo.self,
+                                from: """
+                                {
+                                    \"token\":\"test\",
+                                    \"active_users\":1,
+                                    \"read\":true,
+                                    \"write\":true,
+                                    \"upload\":true
+                                }
+                                """.data(using: .utf8)!
+                            ),
+                            failedToParseBody: false
                         )
                     )
                 ]
@@ -308,7 +344,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         dependencies = dependencies.with(api: LocalTestApi.self)
         
-        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]? = nil
         var error: Error? = nil
         
         OpenGroupAPI.poll("testServer", using: dependencies)
@@ -333,21 +369,24 @@ class OpenGroupAPITests: XCTestCase {
                         OpenGroupAPI.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: OpenGroupAPI.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: "")
+                            body: OpenGroupAPI.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: ""),
+                            failedToParseBody: false
                         )
                     ),
                     try! JSONEncoder().encode(
                         OpenGroupAPI.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: OpenGroupAPI.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: "")
+                            body: OpenGroupAPI.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: ""),
+                            failedToParseBody: false
                         )
                     ),
                     try! JSONEncoder().encode(
                         OpenGroupAPI.BatchSubResponse(
                             code: 200,
                             headers: [:],
-                            body: OpenGroupAPI.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: "")
+                            body: OpenGroupAPI.PinnedMessage(id: 1, pinnedAt: 1, pinnedBy: ""),
+                            failedToParseBody: false
                         )
                     )
                 ]
@@ -357,7 +396,7 @@ class OpenGroupAPITests: XCTestCase {
         }
         dependencies = dependencies.with(api: LocalTestApi.self)
         
-        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable)]? = nil
+        var response: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]? = nil
         var error: Error? = nil
         
         OpenGroupAPI.poll("testServer", using: dependencies)
@@ -566,6 +605,7 @@ class OpenGroupAPITests: XCTestCase {
             func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return Sodium().aead.xchacha20poly1305ietf }
             func getSign() -> SignType { return Sodium().sign }
             
+            func generateBlindingFactor(serverPublicKey: String) -> Bytes? { return nil }
             func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
                 return nil
             }
@@ -573,7 +613,14 @@ class OpenGroupAPITests: XCTestCase {
                 return nil
             }
             
-            func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes? { return nil }
+            func combineKeys(lhsKeyBytes: Bytes, rhsKeyBytes: Bytes) -> Bytes? { return nil }
+            func sharedBlindedEncryptionKey(secretKey a: Bytes, otherBlindedPublicKey: Bytes, fromBlindedPublicKey kA: Bytes, toBlindedPublicKey kB: Bytes, genericHash: GenericHashType) -> Bytes? {
+                return nil
+            }
+            
+            func sessionId(_ sessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String) -> Bool {
+                return false
+            }
         }
         testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
             name: "testServer",
@@ -604,6 +651,7 @@ class OpenGroupAPITests: XCTestCase {
             func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return Sodium().aead.xchacha20poly1305ietf }
             func getSign() -> SignType { return Sodium().sign }
             
+            func generateBlindingFactor(serverPublicKey: String) -> Bytes? { return nil }
             func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
                 return Box.KeyPair(
                     publicKey: Data.data(fromHex: "7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d")!.bytes,
@@ -614,7 +662,14 @@ class OpenGroupAPITests: XCTestCase {
                 return nil
             }
             
-            func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes? { return nil }
+            func combineKeys(lhsKeyBytes: Bytes, rhsKeyBytes: Bytes) -> Bytes? { return nil }
+            func sharedBlindedEncryptionKey(secretKey a: Bytes, otherBlindedPublicKey: Bytes, fromBlindedPublicKey kA: Bytes, toBlindedPublicKey kB: Bytes, genericHash: GenericHashType) -> Bytes? {
+                return nil
+            }
+            
+            func sessionId(_ sessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String) -> Bool {
+                return false
+            }
         }
         testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
             name: "testServer",
@@ -641,8 +696,11 @@ class OpenGroupAPITests: XCTestCase {
     
     func testItFailsToSignIfUnblindedAndTheSignatureDoesNotGetGenerated() throws {
         class InvalidSign: SignType {
+            var PublicKeyBytes: Int = 32
+
             func signature(message: Bytes, secretKey: Bytes) -> Bytes? { return nil }
             func verify(message: Bytes, publicKey: Bytes, signature: Bytes) -> Bool { return false }
+            func toX25519(ed25519PublicKey: Bytes) -> Bytes? { return nil }
         }
         testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
             name: "testServer",

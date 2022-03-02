@@ -7,10 +7,14 @@ import Sodium
 @testable import SessionMessagingKit
 
 class TestAeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType, Mockable {
+    var KeyBytes: Int = 32
+    var ABytes: Int = 16
+    
     // MARK: - Mockable
     
     enum DataKey: Hashable {
         case encrypt
+        case decrypt
     }
     
     typealias Key = DataKey
@@ -19,7 +23,11 @@ class TestAeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType, Mockable {
     
     // MARK: - SignType
     
-    func encrypt(message: Bytes, secretKey: Aead.XChaCha20Poly1305Ietf.Key, additionalData: Bytes?) -> (authenticatedCipherText: Bytes, nonce: Aead.XChaCha20Poly1305Ietf.Nonce)? {
-        return (mockData[.encrypt] as? (authenticatedCipherText: Bytes, nonce: Aead.XChaCha20Poly1305Ietf.Nonce))
+    func encrypt(message: Bytes, secretKey: Bytes, nonce: Bytes, additionalData: Bytes?) -> Bytes? {
+        return (mockData[.encrypt] as? Bytes)
+    }
+    
+    func decrypt(authenticatedCipherText: Bytes, secretKey: Bytes, nonce: Bytes, additionalData: Bytes?) -> Bytes? {
+        return (mockData[.decrypt] as? Bytes)
     }
 }

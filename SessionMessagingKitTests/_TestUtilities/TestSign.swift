@@ -7,11 +7,14 @@ import Sodium
 @testable import SessionMessagingKit
 
 class TestSign: SignType, Mockable {
+    var PublicKeyBytes: Int = 32
+    
     // MARK: - Mockable
     
     enum DataKey: Hashable {
         case signature
         case verify
+        case toX25519
     }
     
     typealias Key = DataKey
@@ -26,5 +29,9 @@ class TestSign: SignType, Mockable {
     
     func verify(message: Bytes, publicKey: Bytes, signature: Bytes) -> Bool {
         return (mockData[.verify] as! Bool)
+    }
+    
+    func toX25519(ed25519PublicKey: Bytes) -> Bytes? {
+        return (mockData[.toX25519] as? Bytes)
     }
 }

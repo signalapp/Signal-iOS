@@ -13,9 +13,12 @@ class TestSodium: SodiumType, Mockable {
         case genericHash
         case aeadXChaCha20Poly1305Ietf
         case sign
+        case blindingFactor
         case blindedKeyPair
         case sogsSignature
-        case sharedEdSecret
+        case combinedKeys
+        case sharedBlindedEncryptionKey
+        case sessionIdMatches
     }
     
     typealias Key = DataKey
@@ -32,6 +35,8 @@ class TestSodium: SodiumType, Mockable {
     
     func getSign() -> SignType { return (mockData[.sign] as! SignType) }
     
+    func generateBlindingFactor(serverPublicKey: String) -> Bytes? { return (mockData[.blindingFactor] as? Bytes) }
+    
     func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
         return (mockData[.blindedKeyPair] as? Box.KeyPair)
     }
@@ -40,7 +45,15 @@ class TestSodium: SodiumType, Mockable {
         return (mockData[.sogsSignature] as? Bytes)
     }
     
-    func sharedEdSecret(_ firstKeyBytes: [UInt8], _ secondKeyBytes: [UInt8]) -> Bytes? {
-        return (mockData[.sharedEdSecret] as? Bytes)
+    func combineKeys(lhsKeyBytes: Bytes, rhsKeyBytes: Bytes) -> Bytes? {
+        return (mockData[.combinedKeys] as? Bytes)
+    }
+    
+    func sharedBlindedEncryptionKey(secretKey a: Bytes, otherBlindedPublicKey: Bytes, fromBlindedPublicKey kA: Bytes, toBlindedPublicKey kB: Bytes, genericHash: GenericHashType) -> Bytes? {
+        return (mockData[.sharedBlindedEncryptionKey] as? Bytes)
+    }
+    
+    func sessionId(_ sessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String) -> Bool {
+        return ((mockData[.sessionIdMatches] as? Bool) ?? false)
     }
 }

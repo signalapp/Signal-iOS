@@ -15,8 +15,8 @@ public final class OpenGroupAPI: NSObject {
     
     // MARK: - Polling State
     
-    private static var hasPerformedInitialPoll: AtomicDict<String, Bool> = AtomicDict()
-    private static var timeSinceLastPoll: AtomicDict<String, TimeInterval> = AtomicDict()
+    private static var hasPerformedInitialPoll: Atomic<[String: Bool]> = Atomic([:])
+    private static var timeSinceLastPoll: Atomic<[String: TimeInterval]> = Atomic([:])
     private static var lastPollTime: Atomic<TimeInterval> = Atomic(.greatestFiniteMagnitude)
 
     private static let timeSinceLastOpen: Atomic<TimeInterval> = {
@@ -27,7 +27,7 @@ public final class OpenGroupAPI: NSObject {
     
     
     // TODO: Remove these
-    private static var legacyAuthTokenPromises: AtomicDict<String, Promise<String>> = AtomicDict()
+    private static var legacyAuthTokenPromises: Atomic<[String: Promise<String>]> = Atomic([:])
     private static var legacyHasUpdatedLastOpenDate = false
     private static var legacyGroupImagePromises: [String: Promise<Data>] = [:]
     
@@ -43,14 +43,14 @@ public final class OpenGroupAPI: NSObject {
     /// - Inbox for the server
     public static func poll(_ server: String, using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         // Store a local copy of the cached state for this server
-        let hadPerformedInitialPoll: Bool = (hasPerformedInitialPoll[server] == true)
-        let originalTimeSinceLastPoll: TimeInterval = (timeSinceLastPoll[server] ?? min(lastPollTime.wrappedValue, timeSinceLastOpen.wrappedValue))
+        let hadPerformedInitialPoll: Bool = (hasPerformedInitialPoll.wrappedValue[server] == true)
+        let originalTimeSinceLastPoll: TimeInterval = (timeSinceLastPoll.wrappedValue[server] ?? min(lastPollTime.wrappedValue, timeSinceLastOpen.wrappedValue))
         let maybeLastInboxMessageId: Int64? = dependencies.storage.getOpenGroupInboxLatestMessageId(for: server)
         let lastInboxMessageId: Int64 = (maybeLastInboxMessageId ?? 0)
         
         // Update the cached state for this server
-        hasPerformedInitialPoll.wrappedValue[server] = true
-        lastPollTime.wrappedValue = min(lastPollTime.wrappedValue, timeSinceLastOpen.wrappedValue)
+        hasPerformedInitialPoll.mutate { $0[server] = true }
+        lastPollTime.mutate { $0 = min($0, timeSinceLastOpen.wrappedValue)}
         UserDefaults.standard[.lastOpen] = Date()
         
         // Generate the requests
@@ -58,13 +58,13 @@ public final class OpenGroupAPI: NSObject {
             BatchRequestInfo(
                 request: Request<NoBody>(
                     server: server,
-                    endpoint: .capabilities,
-                    queryParameters: [:] // TODO: Add any requirements '.required'
+                    endpoint: .capabilities
                 ),
                 responseType: Capabilities.self
             )
         ]
         .appending(
+            // Per-room requests
             dependencies.storage.getAllOpenGroups().values
                 .filter { $0.server == server.lowercased() }    // Note: The `OpenGroup` type converts to lowercase in init
                 .flatMap { openGroup -> [BatchRequestInfoType] in

@@ -18,6 +18,8 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
         case openGroupServer
         case openGroupImage
         case openGroupUserCount
+        case openGroupSequenceNumber
+        case openGroupLatestMessageId
     }
     
     typealias Key = DataKey
@@ -47,6 +49,7 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func getUserED25519KeyPair() -> Box.KeyPair? { return (mockData[.userEdKeyPair] as? Box.KeyPair) }
     func getUser() -> Contact? { return nil }
     func getAllContacts() -> Set<Contact> { return Set() }
+    func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact> { return Set() }
 
     // MARK: - Closed Groups
 
@@ -65,12 +68,6 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob? { return nil }
     func resumeMessageSendJobIfNeeded(_ messageSendJobID: String) {}
     func isJobCanceled(_ job: Job) -> Bool { return true }
-
-    // MARK: - Authorization
-
-    func getAuthToken(for room: String, on server: String) -> String? { return nil }
-    func setAuthToken(for room: String, on server: String, to newValue: String, using transaction: Any) {}
-    func removeAuthToken(for room: String, on server: String, using transaction: Any) {}
 
     // MARK: - Open Groups
     
@@ -96,6 +93,40 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
         mockData[.openGroupUserCount] = newValue
     }
     
+    func getOpenGroupSequenceNumber(for room: String, on server: String) -> Int64? {
+        let data: [String: Int64] = ((mockData[.openGroupSequenceNumber] as? [String: Int64]) ?? [:])
+        return data["\(server).\(room)"]
+    }
+    
+    func setOpenGroupSequenceNumber(for room: String, on server: String, to newValue: Int64, using transaction: Any) {
+        var updatedData: [String: Int64] = ((mockData[.openGroupSequenceNumber] as? [String: Int64]) ?? [:])
+        updatedData["\(server).\(room)"] = newValue
+        mockData[.openGroupSequenceNumber] = updatedData
+    }
+    
+    func removeOpenGroupSequenceNumber(for room: String, on server: String, using transaction: Any) {
+        var updatedData: [String: Int64] = ((mockData[.openGroupSequenceNumber] as? [String: Int64]) ?? [:])
+        updatedData["\(server).\(room)"] = nil
+        mockData[.openGroupSequenceNumber] = updatedData
+    }
+
+    func getOpenGroupInboxLatestMessageId(for server: String) -> Int64? {
+        let data: [String: Int64] = ((mockData[.openGroupLatestMessageId] as? [String: Int64]) ?? [:])
+        return data[server]
+    }
+    
+    func setOpenGroupInboxLatestMessageId(for server: String, to newValue: Int64, using transaction: Any) {
+        var updatedData: [String: Int64] = ((mockData[.openGroupLatestMessageId] as? [String: Int64]) ?? [:])
+        updatedData[server] = newValue
+        mockData[.openGroupLatestMessageId] = updatedData
+    }
+    
+    func removeOpenGroupInboxLatestMessageId(for server: String, using transaction: Any) {
+        var updatedData: [String: Int64] = ((mockData[.openGroupLatestMessageId] as? [String: Int64]) ?? [:])
+        updatedData[server] = nil
+        mockData[.openGroupLatestMessageId] = updatedData
+    }
+    
     // MARK: - Open Group Public Keys
     
     func getOpenGroupPublicKey(for server: String) -> String? {
@@ -108,19 +139,10 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     
     func setOpenGroupPublicKey(for server: String, to newValue: String, using transaction: Any) {}
 
-    // MARK: - Last Message Server ID
-
-    func getLastMessageServerID(for room: String, on server: String) -> Int64? { return nil }
-    func setLastMessageServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any) {}
-    func removeLastMessageServerID(for room: String, on server: String, using transaction: Any) {}
-
-    // MARK: - Last Deletion Server ID
-
-    func getLastDeletionServerID(for room: String, on server: String) -> Int64? { return nil }
-    func setLastDeletionServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any) {}
-    func removeLastDeletionServerID(for room: String, on server: String, using transaction: Any) {}
-
     // MARK: - Message Handling
+    
+    func getAllMessageRequestThreads() -> [String: TSContactThread] { return [:] }
+    func getAllMessageRequestThreads(using transaction: YapDatabaseReadTransaction) -> [String: TSContactThread] { return [:] }
 
     func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64] { return [] }
     func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any) {}

@@ -2,94 +2,45 @@
 
 import Foundation
 
-/// See https://www.donnywals.com/why-your-atomic-property-wrapper-doesnt-work-for-collection-types/
-/// for more information about the below types
-
-protocol UnsupportedType {}
-
-extension Array: UnsupportedType {}
-extension Set: UnsupportedType {}
-extension Dictionary: UnsupportedType {}
-
 // MARK: - Atomic<Value>
 
 /// The `Atomic<Value>` wrapper is a generic wrapper providing a thread-safe way to get and set a value
+///
+/// A write-up on the need for this class and it's approach can be found here:
+/// https://www.vadimbulavin.com/swift-atomic-properties-with-property-wrappers/
+/// there is also another approach which can be taken but it requires separate types for collections and results in
+/// a somewhat inconsistent interface between different `Atomic` wrappers
 @propertyWrapper
-struct Atomic<Value> {
-    private let queue: DispatchQueue = DispatchQueue(label: "io.oxen.\(UUID().uuidString)", qos: .utility, attributes: .concurrent, autoreleaseFrequency: .inherit, target: .global())
+public class Atomic<Value> {
+    private let queue: DispatchQueue = DispatchQueue(label: "io.oxen.\(UUID().uuidString)")
     private var value: Value
+    
+    /// In order to change the value you **must** use the `mutate` function
+    public var wrappedValue: Value {
+        return queue.sync { return value }
+    }
+    
+    /// For more information see https://github.com/apple/swift-evolution/blob/master/proposals/0258-property-wrappers.md#projections
+    public var projectedValue: Atomic<Value> {
+        return self
+    }
+    
+    // MARK: - Initialization
 
     init(_ initialValue: Value) {
-        if initialValue is UnsupportedType { preconditionFailure("Use the appropriate Aromic... type for collections") }
-        
         self.value = initialValue
     }
-
-    var wrappedValue: Value {
-        get { return queue.sync { return value } }
-        set { return queue.sync { value = newValue } }
+    
+    // MARK: - Functions
+    
+    func mutate(_ mutation: (inout Value) -> Void) {
+        return queue.sync {
+            mutation(&value)
+        }
     }
 }
 
 extension Atomic where Value: CustomDebugStringConvertible {
-    var debugDescription: String {
-        return value.debugDescription
-    }
-}
-
-// MARK: - AtomicArray<Value>
-
-/// The `AtomicArray<Value>` wrapper is a generic wrapper providing a thread-safe way to get and set an array or one of it's values
-///
-/// Note: This is a class rather than a struct as you need to modify a reference rather than a copy for the concurrency to work
-@propertyWrapper
-class AtomicArray<Value>: CustomDebugStringConvertible {
-    private let queue: DispatchQueue = DispatchQueue(label: "io.oxen.\(UUID().uuidString)", qos: .utility, attributes: .concurrent, autoreleaseFrequency: .inherit, target: .global())
-    private var value: [Value]
-
-    init(_ initialValue: [Value] = []) {
-        self.value = initialValue
-    }
-
-    var wrappedValue: [Value] {
-        get { return queue.sync { return value } }
-        set { return queue.sync { value = newValue } }
-    }
-    
-    subscript(index: Int) -> Value {
-        get { queue.sync { value[index] }}
-        set { queue.async(flags: .barrier) { self.value[index] = newValue } }
-    }
-    
-    public var debugDescription: String {
-        return value.debugDescription
-    }
-}
-
-// MARK: - AtomicDict<Key, Value>
-
-/// The `AtomicDict<Key, Value>` wrapper is a generic wrapper providing a thread-safe way to get and set a dictionaries or one of it's values
-///
-/// Note: This is a class rather than a struct as you need to modify a reference rather than a copy for the concurrency to work
-@propertyWrapper
-class AtomicDict<Key: Hashable, Value>: CustomDebugStringConvertible {
-    private let queue: DispatchQueue = DispatchQueue(label: "io.oxen.\(UUID().uuidString)", qos: .utility, attributes: .concurrent, autoreleaseFrequency: .inherit, target: .global())
-    private var value: [Key: Value]
-
-    init(_ initialValue: [Key: Value] = [:]) {
-        self.value = initialValue
-    }
-    
-    var wrappedValue: [Key: Value] {
-        get { return queue.sync { return value } }
-        set { return queue.sync { value = newValue } }
-    }
-    
-    subscript(key: Key) -> Value? {
-        get { queue.sync { value[key] }}
-        set { queue.async(flags: .barrier) { self.value[key] = newValue } }
-    }
-    
     var debugDescription: String {
         return value.debugDescription
     }
