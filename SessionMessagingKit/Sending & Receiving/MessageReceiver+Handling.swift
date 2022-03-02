@@ -390,7 +390,7 @@ extension MessageReceiver {
         if let tsOutgoingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSOutgoingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
             // Mark previous messages as read if there is a sync message
-            OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: tsOutgoingMessage.sortId, thread: thread)
+            OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: tsOutgoingMessage.sortId, thread: thread, trySendReadReceipt: true)
         }
         
         // Update the contact's approval status of the current user if needed (if we are getting messages from

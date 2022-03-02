@@ -229,7 +229,7 @@ public class ConversationMessageMapping: NSObject {
         let indexPtr: UnsafeMutablePointer<UInt> = UnsafeMutablePointer<UInt>.allocate(capacity: 1)
         let wasFound = view.getGroup(nil, index: indexPtr, forKey: uniqueId, inCollection: TSInteraction.collection())
         guard wasFound else {
-            owsFailDebug("Could not find interaction.")
+            SNLog("Could not find interaction.")
             return nil
         }
         let index = indexPtr.pointee

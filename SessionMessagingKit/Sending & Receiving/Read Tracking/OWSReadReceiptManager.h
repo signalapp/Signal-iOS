@@ -45,7 +45,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 // This method can be called from any thread.
 - (void)messageWasReadLocally:(TSIncomingMessage *)message;
 
-- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread;
+- (void)markAsReadLocallyBeforeSortId:(uint64_t)sortId thread:(TSThread *)thread trySendReadReceipt:(BOOL)trySendReadReceipt;
 
 #pragma mark - Settings
 
