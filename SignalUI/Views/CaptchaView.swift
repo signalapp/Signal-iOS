@@ -45,7 +45,6 @@ public class CaptchaView: UIView {
             object: nil)
     }
 
-
     private var webView: WKWebView = {
         // We want the CAPTCHA web content to "fill the screen (honoring margins)".
         // The way to do this with WKWebView is to inject a javascript snippet that
