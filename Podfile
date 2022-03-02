@@ -56,12 +56,20 @@ abstract_target 'GlobalDependencies' do
         target 'SessionMessagingKitTests' do
           inherit! :complete
           
+          pod 'Quick'
           pod 'Nimble'
         end
       end
       
       target 'SessionUtilitiesKit' do
         pod 'SAMKeychain'
+        
+        target 'SessionUtilitiesKitTests' do
+          inherit! :complete
+          
+          pod 'Quick'
+          pod 'Nimble'
+        end
       end
     end
   end

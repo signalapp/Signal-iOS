@@ -24,7 +24,7 @@ extension OpenGroupAPI {
                 }
             }
             
-            // MARK: - Codable
+            // MARK: - Initialization
             
             public init(from valueString: String) {
                 let maybeValue: Capability? = Capability.allCases.first { $0.rawValue == valueString }

@@ -19,7 +19,8 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
         case openGroupImage
         case openGroupUserCount
         case openGroupSequenceNumber
-        case openGroupLatestMessageId
+        case openGroupInboxLatestMessageId
+        case openGroupOutboxLatestMessageId
     }
     
     typealias Key = DataKey
@@ -50,6 +51,19 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func getUser() -> Contact? { return nil }
     func getAllContacts() -> Set<Contact> { return Set() }
     func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact> { return Set() }
+    
+    // MARK: - Blinded Id cache
+    
+    func getBlindedIdMapping(with blindedId: String) -> BlindedIdMapping? { return nil }
+    func getBlindedIdMapping(with blindedId: String, using transaction: YapDatabaseReadTransaction) -> BlindedIdMapping? {
+        return nil
+    }
+    
+    func cacheBlindedIdMapping(_ mapping: BlindedIdMapping) {}
+    func cacheBlindedIdMapping(_ mapping: BlindedIdMapping, using transaction: YapDatabaseReadWriteTransaction) {}
+    func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> ()) {}
+    func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> (), transaction: YapDatabaseReadTransaction) {
+    }
 
     // MARK: - Closed Groups
 
@@ -111,20 +125,37 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     }
 
     func getOpenGroupInboxLatestMessageId(for server: String) -> Int64? {
-        let data: [String: Int64] = ((mockData[.openGroupLatestMessageId] as? [String: Int64]) ?? [:])
+        let data: [String: Int64] = ((mockData[.openGroupInboxLatestMessageId] as? [String: Int64]) ?? [:])
         return data[server]
     }
     
     func setOpenGroupInboxLatestMessageId(for server: String, to newValue: Int64, using transaction: Any) {
-        var updatedData: [String: Int64] = ((mockData[.openGroupLatestMessageId] as? [String: Int64]) ?? [:])
+        var updatedData: [String: Int64] = ((mockData[.openGroupInboxLatestMessageId] as? [String: Int64]) ?? [:])
         updatedData[server] = newValue
-        mockData[.openGroupLatestMessageId] = updatedData
+        mockData[.openGroupInboxLatestMessageId] = updatedData
     }
     
     func removeOpenGroupInboxLatestMessageId(for server: String, using transaction: Any) {
-        var updatedData: [String: Int64] = ((mockData[.openGroupLatestMessageId] as? [String: Int64]) ?? [:])
+        var updatedData: [String: Int64] = ((mockData[.openGroupInboxLatestMessageId] as? [String: Int64]) ?? [:])
         updatedData[server] = nil
-        mockData[.openGroupLatestMessageId] = updatedData
+        mockData[.openGroupInboxLatestMessageId] = updatedData
+    }
+    
+    func getOpenGroupOutboxLatestMessageId(for server: String) -> Int64? {
+        let data: [String: Int64] = ((mockData[.openGroupOutboxLatestMessageId] as? [String: Int64]) ?? [:])
+        return data[server]
+    }
+    
+    func setOpenGroupOutboxLatestMessageId(for server: String, to newValue: Int64, using transaction: Any) {
+        var updatedData: [String: Int64] = ((mockData[.openGroupOutboxLatestMessageId] as? [String: Int64]) ?? [:])
+        updatedData[server] = newValue
+        mockData[.openGroupOutboxLatestMessageId] = updatedData
+    }
+    
+    func removeOpenGroupOutboxLatestMessageId(for server: String, using transaction: Any) {
+        var updatedData: [String: Int64] = ((mockData[.openGroupOutboxLatestMessageId] as? [String: Int64]) ?? [:])
+        updatedData[server] = nil
+        mockData[.openGroupOutboxLatestMessageId] = updatedData
     }
     
     // MARK: - Open Group Public Keys

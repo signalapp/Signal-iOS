@@ -1,6 +1,6 @@
 import SessionUtilitiesKit
 
-enum ContactUtilities {
+public enum ContactUtilities {
     private static func approvedContact(in threadObject: Any, using transaction: Any) -> Contact? {
         guard let thread: TSContactThread = threadObject as? TSContactThread else { return nil }
         guard thread.shouldBeVisible else { return nil }
@@ -12,7 +12,7 @@ enum ContactUtilities {
         return contact
     }
 
-    static func getAllContacts() -> [String] {
+    public static func getAllContacts() -> [String] {
         // Collect all contacts
         var result: [Contact] = []
         Storage.read { transaction in
@@ -39,7 +39,7 @@ enum ContactUtilities {
             .map { $0.sessionID }
     }
     
-    static func enumerateApprovedContactThreads(with block: @escaping (TSContactThread, Contact, UnsafeMutablePointer<ObjCBool>) -> ()) {
+    public static func enumerateApprovedContactThreads(with block: @escaping (TSContactThread, Contact, UnsafeMutablePointer<ObjCBool>) -> ()) {
         Storage.read { transaction in
             TSContactThread.enumerateCollectionObjects(with: transaction) { object, stop in
                 guard let contactThread: TSContactThread = object as? TSContactThread else { return }
@@ -50,7 +50,7 @@ enum ContactUtilities {
         }
     }
     
-    static func mapping(for blindedId: String, serverPublicKey: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> BlindedIdMapping? {
+    public static func mapping(for blindedId: String, serverPublicKey: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> BlindedIdMapping? {
         // TODO: Ensure the above case isn't going to be an issue due to legacy messages?.
         // Unfortunately the whole point of id-blinding is to make it hard to reverse-engineer a standard
         // sessionId, as a result in order to see if there is an unblinded contact for this blindedId we

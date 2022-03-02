@@ -63,5 +63,5 @@ public final class OpenGroup: NSObject, NSCoding { // NSObject/NSCoding conforma
         coder.encode(infoUpdates, forKey: "infoUpdates")
     }
 
-    override public var description: String { "\(name) (Server: \(server), Room: \(room)" }
+    override public var description: String { "\(name) (Server: \(server), Room: \(room))" }
 }

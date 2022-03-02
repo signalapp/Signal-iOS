@@ -43,13 +43,6 @@ public struct SessionId {
         self.publicKey = idString.substring(from: 2)
     }
     
-    public init?(_ type: Prefix, publicKey: String) {
-        guard ECKeyPair.isValidHexEncodedPublicKey(candidate: publicKey) else { return nil }
-        
-        self.prefix = type
-        self.publicKey = publicKey
-    }
-    
     public init(_ type: Prefix, publicKey: Bytes) {
         self.prefix = type
         self.publicKey = publicKey.map { String(format: "%02hhx", $0) }.joined()

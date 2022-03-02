@@ -39,6 +39,7 @@ PODS:
   - PromiseKit/UIKit (6.15.3):
     - PromiseKit/CorePromise
   - PureLayout (3.1.9)
+  - Quick (4.0.0)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
   - SignalCoreKit (1.0.0):
@@ -129,6 +130,7 @@ DEPENDENCIES:
   - NVActivityIndicatorView
   - PromiseKit
   - PureLayout (~> 3.1.8)
+  - Quick
   - Reachability
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/oxen-io/session-ios-core-kit`, branch `session-version`)
@@ -148,6 +150,7 @@ SPEC REPOS:
     - OpenSSL-Universal
     - PromiseKit
     - PureLayout
+    - Quick
     - Reachability
     - SAMKeychain
     - SQLCipher
@@ -204,6 +207,7 @@ SPEC CHECKSUMS:
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
   PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
   PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
+  Quick: 6473349e43b9271a8d43839d9ba1c442ed1b7ac4
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 1fbd8732163ef76de16cd1107d1fa3684b607e5d
@@ -214,6 +218,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 2cc64d50f25c3b1627c3e958ae50e25fead25564
+PODFILE CHECKSUM: b95d8bb031996cffdb5d9b9b49bce3b24d6026d7
 
 COCOAPODS: 1.11.2
