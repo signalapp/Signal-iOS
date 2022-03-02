@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)sharedManager;
 
 - (NSUInteger)unreadMessagesCount;
+- (NSUInteger)unreadMessageRequestCount;
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread;
 
 - (void)updateApplicationBadgeCount;

@@ -1,6 +1,7 @@
 import UIKit
 import SessionUIKit
 import SessionMessagingKit
+import UIKit
 
 // TODO:
 // • Slight paging glitch when scrolling up and loading more content
@@ -474,30 +475,47 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     // MARK: Updating
     
     func updateNavBarButtons() {
+        navigationItem.hidesBackButton = isShowingSearchUI
+        
         if isShowingSearchUI {
             navigationItem.leftBarButtonItem = nil
             navigationItem.rightBarButtonItems = []
-        } else {
+        }
+        else {
             navigationItem.leftBarButtonItem = UIViewController.createOWSBackButton(withTarget: self, selector: #selector(handleBackPressed))
             
-            let rightBarButtonItem: UIBarButtonItem
-            if thread is TSContactThread {
-                let size = Values.verySmallProfilePictureSize
-                let profilePictureView = ProfilePictureView()
-                profilePictureView.accessibilityLabel = "Settings button"
-                profilePictureView.size = size
-                profilePictureView.update(for: thread)
-                profilePictureView.set(.width, to: size)
-                profilePictureView.set(.height, to: size)
-                let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
-                profilePictureView.addGestureRecognizer(tapGestureRecognizer)
-                rightBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-            } else {
-                rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+            if let contactThread: TSContactThread = thread as? TSContactThread {
+                // Don't show the settings button for message requests
+                if let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()), contact.isApproved, contact.didApproveMe {
+                    let size = Values.verySmallProfilePictureSize
+                    let profilePictureView = ProfilePictureView()
+                    profilePictureView.size = size
+                    profilePictureView.update(for: thread)
+                    profilePictureView.set(.width, to: size)
+                    profilePictureView.set(.height, to: size)
+                    
+                    let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
+                    profilePictureView.addGestureRecognizer(tapGestureRecognizer)
+                    
+                    let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: profilePictureView)
+                    rightBarButtonItem.accessibilityLabel = "Settings button"
+                    rightBarButtonItem.isAccessibilityElement = true
+                    
+                    navigationItem.rightBarButtonItem = rightBarButtonItem
+                }
+                else {
+                    // Note: Adding an empty button because without it the title alignment is busted (Note: The size was
+                    // taken from the layout inspector for the back button in Xcode
+                    navigationItem.rightBarButtonItem = UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 37, height: 44)))
+                }
             }
-            rightBarButtonItem.accessibilityLabel = "Settings button"
-            rightBarButtonItem.isAccessibilityElement = true
-            navigationItem.rightBarButtonItem = rightBarButtonItem
+            else {
+                let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+                rightBarButtonItem.accessibilityLabel = "Settings button"
+                rightBarButtonItem.isAccessibilityElement = true
+                
+                navigationItem.rightBarButtonItem = rightBarButtonItem
+            }
         }
     }
     
@@ -806,9 +824,12 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func markAllAsRead() {
-        guard !thread.isMessageRequest() else { return }
         guard let lastSortID = viewItems.last?.interaction.sortId else { return }
-        OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: lastSortID, thread: thread)
+        OWSReadReceiptManager.shared().markAsReadLocally(
+            beforeSortId: lastSortID,
+            thread: thread,
+            trySendReadReceipt: !thread.isMessageRequest()
+        )
         SSKEnvironment.shared.disappearingMessagesJob.cleanupMessagesWhichFailedToStartExpiringFromNow()
     }
     
@@ -912,7 +933,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let searchBar = searchController.uiSearchController.searchBar
         searchBar.searchBarStyle = .minimal
         searchBar.barStyle = .black
-        searchBar.tintColor = Colors.accent
+        searchBar.tintColor = Colors.text
         let searchIcon = UIImage(named: "searchbar_search")!.asTintedImage(color: Colors.searchBarPlaceholder)
         searchBar.setImage(searchIcon, for: .search, state: UIControl.State.normal)
         let clearIcon = UIImage(named: "searchbar_clear")!.asTintedImage(color: Colors.searchBarPlaceholder)
