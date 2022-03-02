@@ -397,8 +397,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
                                                        selector: #selector(processDownloadNotification(notification:)),
                                                        name: OWSAttachmentDownloads.attachmentDownloadProgressNotification,
                                                        object: nil)
-            @unknown default:
-                owsFailDebug("Invalid value.")
             }
         }
     }
@@ -534,9 +532,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 return .pendingDownload(attachmentPointer: attachmentPointer)
             case .failed, .enqueued, .downloading:
                 return .downloading(attachmentPointer: attachmentPointer)
-            @unknown default:
-                owsFailDebug("Invalid value.")
-                return .unknown
             }
 
         } else {

@@ -413,6 +413,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
         }
     }
 
+    @discardableResult
     func handleGestureEnded(locationInView: CGPoint) -> Bool {
         guard !isScrolling else {
             return false

@@ -766,9 +766,6 @@ fileprivate extension CVComponentState.Builder {
                         mediaAlbumHasPendingAttachment = true
                     case .pendingManualDownload:
                         mediaAlbumHasPendingAttachment = true
-                    @unknown default:
-                        owsFailDebug("Invalid attachment pointer state.")
-                        continue
                     }
                 }
 
@@ -861,9 +858,6 @@ fileprivate extension CVComponentState.Builder {
                     return buildViewOnce(viewOnceState: .incomingFailed)
                 case .pendingMessageRequest, .pendingManualDownload:
                     return buildViewOnce(viewOnceState: .incomingPending)
-                @unknown default:
-                    owsFailDebug("Invalid value.")
-                    return buildViewOnce(viewOnceState: .incomingFailed)
                 }
             } else if let attachmentStream = mediaAttachment as? TSAttachmentStream {
                 if attachmentStream.isValidVisualMedia
@@ -946,8 +940,6 @@ fileprivate extension CVComponentState.Builder {
             case .failed, .pendingManualDownload, .pendingMessageRequest:
                 Logger.verbose("Sticker failed or pending.")
                 self.sticker = .failedOrPending(attachmentPointer: attachmentPointer)
-            @unknown default:
-                throw OWSAssertionError("Invalid sticker.")
             }
             return build()
         } else {

@@ -737,7 +737,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
         switch self {
         case .address(let address): return "[Address: \(address)]"
         case .thread(let thread): return "[Thread \(type(of: thread)):\(thread.uniqueId)]"
-        case .asset(let avatar, let badge): return "[AvatarImage: \(avatar), BadgeImage: \(badge)]"
+        case .asset(let avatar, let badge): return "[AvatarImage: \(String(describing: avatar)), BadgeImage: \(String(describing: badge))]"
         }
     }
 }

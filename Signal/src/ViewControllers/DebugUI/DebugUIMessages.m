@@ -3387,7 +3387,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     [self sendAttachment:attachment thread:thread messageBody:nil];
 }
 
-+ (SSKProtoEnvelope *)createEnvelopeForThread:(TSThread *)thread
++ (SSKProtoEnvelope *_Nullable)createEnvelopeForThread:(TSThread *)thread
 {
     OWSAssertDebug(thread);
 

@@ -258,6 +258,7 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
     NSString *zipDirPath = [self collectLogsWithErrorString:&errorString];
     if (!zipDirPath) {
         failure(errorString, nil);
+        return;
     }
 
     // Phase 2. Zip up the log files.

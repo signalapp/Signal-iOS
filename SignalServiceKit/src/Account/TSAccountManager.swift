@@ -82,6 +82,7 @@ public extension TSAccountManager {
     // then returns a promise for the current attempt.
     @objc
     @available(swift, obsoleted: 1.0)
+    @discardableResult
     func updateAccountAttributes() -> AnyPromise {
         return AnyPromise(updateAccountAttributes())
     }

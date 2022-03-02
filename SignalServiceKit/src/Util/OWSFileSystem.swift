@@ -14,6 +14,7 @@ public extension OWSFileSystem {
         fileOrFolderExists(atPath: url.path)
     }
 
+    @discardableResult
     class func deleteFile(_ filePath: String) -> Bool {
         deleteFile(filePath, ignoreIfMissing: false)
     }
