@@ -42,4 +42,8 @@ public final class Values : NSObject {
     @objc public static let massiveSpacing = CGFloat(64)
     @objc public static let newConversationButtonBottomOffset = CGFloat(52)
     @objc public static let onboardingButtonBottomOffset = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(72)
+    
+    // MARK: - iPad Sizes
+    @objc public static let iPadButtonWidth = UIScreen.main.bounds.width / 2
+    @objc public static let iPadButtonSpacing = CGFloat(32)
 }

@@ -68,6 +68,11 @@ final class LandingVC : BaseVC {
         buttonStackView.axis = .vertical
         buttonStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         buttonStackView.alignment = .fill
+        if UIDevice.current.isIPad {
+            registerButton.set(.width, to: Values.iPadButtonWidth)
+            restoreButton.set(.width, to: Values.iPadButtonWidth)
+            buttonStackView.alignment = .center
+        }
         // Button stack view container
         let buttonStackViewContainer = UIView()
         buttonStackViewContainer.addSubview(buttonStackView)

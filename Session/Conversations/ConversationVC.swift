@@ -332,13 +332,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
         messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
         
-        messageRequestAcceptButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
-        messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
-        messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
-        messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
-        
         messageRequestDeleteButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
-        messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: 20)
+        messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: UIDevice.current.isIPad ? Values.iPadButtonSpacing : 20)
         messageRequestDeleteButton.pin(.right, to: .right, of: messageRequestView, withInset: -20)
         messageRequestDeleteButton.pin(.bottom, to: .bottom, of: messageRequestView)
         messageRequestDeleteButton.set(.width, to: .width, of: messageRequestAcceptButton)
