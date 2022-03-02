@@ -718,7 +718,6 @@
 		C3A7225E2558C38D0043A11F /* Promise+Retaining.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A7225D2558C38D0043A11F /* Promise+Retaining.swift */; };
 		C3A76A8D25DB83F90074CB90 /* PermissionMissingModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A76A8C25DB83F90074CB90 /* PermissionMissingModal.swift */; };
 		C3AABDDF2553ECF00042FF4C /* Array+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Description.swift */; };
-		C3AAFFE825AE975D0089E6DD /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */; };
 		C3AAFFF225AE99710089E6DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3AAFFF125AE99710089E6DD /* AppDelegate.swift */; };
 		C3ADC66126426688005F1414 /* ShareVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3ADC66026426688005F1414 /* ShareVC.swift */; };
 		C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BBE0752554CDA60050F1E3 /* Configuration.swift */; };
@@ -1767,7 +1766,6 @@
 		C3A76A8C25DB83F90074CB90 /* PermissionMissingModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionMissingModal.swift; sourceTree = "<group>"; };
 		C3A8AF752665B03900A467FE /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = hi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3A8AF762665F97A00A467FE /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/Localizable.strings; sourceTree = "<group>"; };
-		C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
 		C3AAFFF125AE99710089E6DD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C3ADC66026426688005F1414 /* ShareVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareVC.swift; sourceTree = "<group>"; };
 		C3AECBEA24EF5244005743DE /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fa; path = fa.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -3279,7 +3277,6 @@
 				C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */,
 				C33FDAE8255A580500E217F9 /* OWSMessageUtils.h */,
 				C33FDBD7255A581900E217F9 /* OWSMessageUtils.m */,
-				C3AAFFDE25AE96FF0089E6DD /* ConfigurationMessage+Convenience.swift */,
 			);
 			path = Messaging;
 			sourceTree = "<group>";
@@ -4704,7 +4701,6 @@
 				B8C2B332256376F000551B4D /* ThreadUtil.m in Sources */,
 				C38EF40B255B6DF7007E1867 /* TappableStackView.swift in Sources */,
 				C38EF31D255B6DBF007E1867 /* UIImage+OWS.swift in Sources */,
-				C3AAFFE825AE975D0089E6DD /* ConfigurationMessage+Convenience.swift in Sources */,
 				C38EF359255B6DCC007E1867 /* SheetViewController.swift in Sources */,
 				B8F5F52925EC4F8A003BF8D4 /* BlockListUIUtils.m in Sources */,
 				C38EF386255B6DD2007E1867 /* AttachmentApprovalInputAccessoryView.swift in Sources */,

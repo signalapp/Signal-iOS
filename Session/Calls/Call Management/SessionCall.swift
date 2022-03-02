@@ -257,7 +257,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
                     }
                 }
                 if shouldMarkAsRead {
-                    messageToUpdate.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), sendReadReceipt: false, transaction: transaction)
+                    messageToUpdate.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), trySendReadReceipt: false, transaction: transaction)
                 }
             }
         }
