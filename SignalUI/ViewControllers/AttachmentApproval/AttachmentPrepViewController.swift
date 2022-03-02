@@ -37,7 +37,13 @@ public class AttachmentPrepViewController: OWSViewController {
     private(set) var contentContainer: UIView!
 
     private var imageEditorView: ImageEditorView?
+    private var imageEditorViewConstraintsPortrait: [NSLayoutConstraint]?
+    private var imageEditorViewConstraintsLandscape: [NSLayoutConstraint]?
+
     private var videoEditorView: VideoEditorView?
+    private var videoEditorViewConstraintsPortrait: [NSLayoutConstraint]?
+    private var videoEditorViewConstraintsLandscape: [NSLayoutConstraint]?
+
     private var mediaMessageView: MediaMessageView?
 
     public var shouldHideControls: Bool {
@@ -61,20 +67,20 @@ public class AttachmentPrepViewController: OWSViewController {
     // MARK: - View Lifecycle
 
     override public func loadView() {
-        self.view = UIView()
+        view = UIView(frame: UIScreen.main.bounds)
+        view.backgroundColor = .ows_black
 
         // Anything that should be shrunk when user pops keyboard lives in the contentContainer.
-        let contentContainer = UIView()
-        self.contentContainer = contentContainer
+        contentContainer = UIView(frame: view.bounds)
         view.addSubview(contentContainer)
         contentContainer.autoPinEdgesToSuperviewEdges()
 
         // Scroll View - used to zoom/pan on images and video
-        scrollView = UIScrollView()
-        contentContainer.addSubview(scrollView)
+        scrollView = UIScrollView(frame: contentContainer.bounds)
         scrollView.delegate = self
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
+        contentContainer.addSubview(scrollView)
 
         // Panning should stop pretty soon after the user stops scrolling
         scrollView.decelerationRate = UIScrollView.DecelerationRate.fast
@@ -85,26 +91,38 @@ public class AttachmentPrepViewController: OWSViewController {
 
         scrollView.autoPinEdgesToSuperviewEdges()
 
-        let backgroundColor = UIColor.black
-        self.view.backgroundColor = backgroundColor
-
         // Create full screen container view so the scrollView
         // can compute an appropriate content size in which to center
         // our media view.
         let containerView = UIView.container()
+        containerView.frame = view.bounds
         scrollView.addSubview(containerView)
         containerView.autoPinEdgesToSuperviewEdges()
-        containerView.autoMatch(.height, to: .height, of: self.view)
-        containerView.autoMatch(.width, to: .width, of: self.view)
+        containerView.autoMatch(.height, to: .height, of: view)
+        containerView.autoMatch(.width, to: .width, of: view)
+
+        let contentMarginTop = UIDevice.current.hasIPhoneXNotch ? CurrentAppContext().statusBarHeight : 0
 
         if let imageEditorModel = attachmentApprovalItem.imageEditorModel {
 
             let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
+            imageEditorView.frame = view.bounds
             imageEditorView.configureSubviews()
-            self.imageEditorView = imageEditorView
-
+            imageEditorView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(imageEditorView)
-            imageEditorView.autoPinEdgesToSuperviewEdges()
+
+            imageEditorViewConstraintsPortrait = [
+                imageEditorView.heightAnchor.constraint(equalTo: imageEditorView.widthAnchor, multiplier: 16/9),
+                imageEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                imageEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                imageEditorView.topAnchor.constraint(equalTo: view.topAnchor, constant: contentMarginTop) ]
+            imageEditorViewConstraintsLandscape = [
+                imageEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                imageEditorView.topAnchor.constraint(equalTo: view.topAnchor),
+                imageEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                imageEditorView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]
+
+            self.imageEditorView = imageEditorView
 
             imageEditorUpdateNavigationBar()
         } else if let videoEditorModel = attachmentApprovalItem.videoEditorModel {
@@ -112,11 +130,23 @@ public class AttachmentPrepViewController: OWSViewController {
             let videoEditorView = VideoEditorView(model: videoEditorModel,
                                                   attachmentApprovalItem: attachmentApprovalItem,
                                                   delegate: self)
+            videoEditorView.frame = view.bounds
             videoEditorView.configureSubviews()
-            self.videoEditorView = videoEditorView
-
+            videoEditorView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(videoEditorView)
-            videoEditorView.autoPinEdgesToSuperviewEdges()
+
+            videoEditorViewConstraintsPortrait = [
+                videoEditorView.heightAnchor.constraint(equalTo: videoEditorView.widthAnchor, multiplier: 16/9),
+                videoEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                videoEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                videoEditorView.topAnchor.constraint(equalTo: view.topAnchor, constant: contentMarginTop) ]
+            videoEditorViewConstraintsLandscape = [
+                videoEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                videoEditorView.topAnchor.constraint(equalTo: view.topAnchor),
+                videoEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                videoEditorView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]
+
+            self.videoEditorView = videoEditorView
 
             videoEditorUpdateNavigationBar()
         } else {
@@ -125,6 +155,12 @@ public class AttachmentPrepViewController: OWSViewController {
             mediaMessageView.autoPinEdgesToSuperviewEdges()
             self.mediaMessageView = mediaMessageView
         }
+    }
+
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        updateLayoutConstraints()
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -157,6 +193,14 @@ public class AttachmentPrepViewController: OWSViewController {
         ensureAttachmentViewScale(animated: false)
 
         positionBlurTooltip()
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
+            updateLayoutConstraints()
+        }
     }
 
     // MARK: - Navigation Bar
@@ -233,6 +277,37 @@ public class AttachmentPrepViewController: OWSViewController {
 
                 self.contentContainer.transform = scale.concatenating(translate)
             }
+        }
+    }
+
+    private func updateLayoutConstraints() {
+        let isPortraitLayout = traitCollection.horizontalSizeClass == .compact
+
+        var constraintsToRemove: [NSLayoutConstraint]?
+        var constraintsToAdd: [NSLayoutConstraint]?
+
+        if imageEditorView != nil {
+            if isPortraitLayout {
+                constraintsToRemove = imageEditorViewConstraintsLandscape
+                constraintsToAdd = imageEditorViewConstraintsPortrait
+            } else {
+                constraintsToRemove = imageEditorViewConstraintsPortrait
+                constraintsToAdd = imageEditorViewConstraintsLandscape
+            }
+        } else if videoEditorView != nil {
+            if isPortraitLayout {
+                constraintsToRemove = videoEditorViewConstraintsLandscape
+                constraintsToAdd = videoEditorViewConstraintsPortrait
+            } else {
+                constraintsToRemove = videoEditorViewConstraintsPortrait
+                constraintsToAdd = videoEditorViewConstraintsLandscape
+            }
+        }
+        if let constraintsToRemove = constraintsToRemove {
+            view.removeConstraints(constraintsToRemove)
+        }
+        if let constraintsToAdd = constraintsToAdd {
+            view.addConstraints(constraintsToAdd)
         }
     }
 
