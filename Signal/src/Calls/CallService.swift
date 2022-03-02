@@ -142,7 +142,7 @@ public final class CallService: LightweightCallManager {
 
     public override init() {
         super.init()
-        callManager = CallManager(callManagerLite: managerLite)
+        callManager = CallManager(httpClient: httpClient)
         callManager.delegate = self
         SwiftSingletons.register(self)
 

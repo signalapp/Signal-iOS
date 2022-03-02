@@ -8,13 +8,16 @@ import SignalRingRTC
 @objc
 open class LightweightCallManager: NSObject, Dependencies {
 
-    public let managerLite: CallManagerLite
+    public let sfuClient: SFUClient
+    public let httpClient: HTTPClient
     private var sfuUrl: String { DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL }
 
     public override init() {
-        managerLite = CallManagerLite()
+        let newClient = HTTPClient(delegate: nil)
+        sfuClient = SFUClient(httpClient: newClient)
+        httpClient = newClient
         super.init()
-        managerLite.delegate = self
+        httpClient.delegate = self
     }
 
     @objc
@@ -127,11 +130,18 @@ open class LightweightCallManager: NSObject, Dependencies {
 
         return firstly { () -> Promise<Data> in
             self.fetchGroupMembershipProof(for: thread)
-        }.then(on: .main) { (membershipProof: Data) -> Guarantee<PeekInfo> in
+        }.then(on: .main) { (membershipProof: Data) -> Guarantee<PeekResponse> in
             let membership = try self.databaseStorage.read {
                 try self.groupMemberInfo(for: thread, transaction: $0)
             }
-            return self.managerLite.peekGroupCall(sfuUrl: self.sfuUrl, membershipProof: membershipProof, groupMembers: membership)
+            let peekRequest = PeekRequest(sfuURL: self.sfuUrl, membershipProof: membershipProof, groupMembers: membership)
+            return self.sfuClient.peek(request: peekRequest)
+        }.map(on: .sharedUtility) { peekResponse in
+            if let errorCode = peekResponse.errorStatusCode {
+                throw OWSGenericError("Failed to peek with status code: \(errorCode)")
+            } else {
+                return peekResponse.peekInfo
+            }
         }
     }
 
@@ -199,22 +209,15 @@ extension LightweightCallManager {
 
 // MARK: - <CallManagerLiteDelegate>
 
-extension LightweightCallManager: CallManagerLiteDelegate {
+extension LightweightCallManager: HTTPDelegate {
     /**
      * A HTTP request should be sent to the given url.
      * Invoked on the main thread, asychronously.
      * The result of the call should be indicated by calling the receivedHttpResponse() function.
      */
-    public func callManagerLite(
-        _ callManagerLite: CallManagerLite,
-        shouldSendHttpRequest requestId: UInt32,
-        url: String,
-        method: CallManagerHttpMethod,
-        headers: [String: String],
-        body: Data?
-    ) {
+    public func sendRequest(requestId: UInt32, request: HTTPRequest) {
         AssertIsOnMainThread()
-        Logger.info("shouldSendHttpRequest")
+        Logger.info("sendRequest")
 
         let session = OWSURLSession(
             securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
@@ -222,46 +225,52 @@ extension LightweightCallManager: CallManagerLiteDelegate {
         )
         session.require2xxOr3xx = false
         session.allowRedirects = true
-        session.customRedirectHandler = { request in
-            var request = request
-
-            if let authHeader = headers.first(where: {
+        session.customRedirectHandler = { redirectedRequest in
+            var redirectedRequest = redirectedRequest
+            if let authHeader = request.headers.first(where: {
                 $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
             }) {
-                request.addValue(authHeader.value, forHTTPHeaderField: authHeader.key)
+                redirectedRequest.addValue(authHeader.value, forHTTPHeaderField: authHeader.key)
             }
-
-            return request
+            return redirectedRequest
         }
 
-        firstly {
-            session.dataTaskPromise(url, method: method.httpMethod, headers: headers, body: body)
+        firstly { () -> Promise<SignalServiceKit.HTTPResponse> in
+            session.dataTaskPromise(
+                request.url,
+                method: request.method.httpMethod,
+                headers: request.headers,
+                body: request.body)
+
         }.done(on: .main) { response in
-            callManagerLite.receivedHttpResponse(
-                requestId: requestId,
-                statusCode: UInt16(response.responseStatusCode),
-                body: response.responseBodyData
-            )
+            self.httpClient.receivedResponse(requestId: requestId, response: response.asRingRTCResponse)
+
         }.catch(on: .main) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Call manager http request failed \(error)")
             } else {
                 owsFailDebug("Call manager http request failed \(error)")
             }
-            callManagerLite.httpRequestFailed(requestId: requestId)
+            self.httpClient.httpRequestFailed(requestId: requestId)
         }
     }
 }
 
 // MARK: - Helpers
 
-extension CallManagerHttpMethod {
-    var httpMethod: HTTPMethod {
+extension SignalRingRTC.HTTPMethod {
+    var httpMethod: SignalServiceKit.HTTPMethod {
         switch self {
         case .get: return .get
         case .post: return .post
         case .put: return .put
         case .delete: return .delete
         }
+    }
+}
+
+extension SignalServiceKit.HTTPResponse {
+    var asRingRTCResponse: SignalRingRTC.HTTPResponse {
+        SignalRingRTC.HTTPResponse(statusCode: UInt16(responseStatusCode), body: responseBodyData)
     }
 }
