@@ -32,8 +32,10 @@ enum ContactUtilities {
         
         // Sort alphabetically
         return result
-            .map { contact -> String in (contact.displayName(for: .regular) ?? contact.sessionID) }
-            .sorted()
+            .sorted(by: { lhs, rhs in
+                (lhs.displayName(for: .regular) ?? lhs.sessionID) < (rhs.displayName(for: .regular) ?? rhs.sessionID)
+            })
+            .map { $0.sessionID }
     }
     
     static func enumerateApprovedContactThreads(with block: @escaping (TSContactThread, Contact, UnsafeMutablePointer<ObjCBool>) -> ()) {

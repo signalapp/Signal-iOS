@@ -5,7 +5,7 @@ import SessionUtilitiesKit
 
 extension OnionRequestAPI {
     public enum Error: LocalizedError {
-        case httpRequestFailedAtDestination(statusCode: UInt, json: JSON, destination: Destination)
+        case httpRequestFailedAtDestination(statusCode: UInt, data: Data, destination: Destination)
         case insufficientSnodes
         case invalidURL
         case missingSnodeVersion

@@ -87,9 +87,9 @@ public final class Poller : NSObject {
     private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard isPolling else { return Promise { $0.fulfill(()) } }
         let userPublicKey = getUserHexEncodedPublicKey()
-        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: DispatchQueue.main) { [weak self] rawResponse -> Promise<Void> in
+        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: DispatchQueue.main) { [weak self] responseData -> Promise<Void> in
             guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
-            let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
+            let messages = SnodeAPI.parseRawMessagesResponse(responseData, from: snode, associatedWith: userPublicKey)
             if !messages.isEmpty {
                 SNLog("Received \(messages.count) new message(s).")
             }

@@ -9,10 +9,6 @@ public protocol OnionRequestAPIType {
 }
 
 public extension OnionRequestAPIType {
-    static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, using version: OnionRequestAPI.Version = .v3) -> Promise<Data> {
-        return sendOnionRequest(to: snode, invoking: method, with: parameters, using: version, associatedWith: nil)
-    }
-    
     static func sendOnionRequest(_ request: URLRequest, to server: String, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         sendOnionRequest(request, to: server, using: .v4, with: x25519PublicKey)
     }
@@ -50,24 +46,32 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     // MARK: Onion Building Result
     private typealias OnionBuildingResult = (guardSnode: Snode, finalEncryptionResult: AESGCM.EncryptionResult, destinationSymmetricKey: Data)
 
-    // MARK: Private API
+    // MARK: - Private API
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.
     private static func testSnode(_ snode: Snode) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         DispatchQueue.global(qos: .userInitiated).async {
             let url = "\(snode.address):\(snode.port)/get_stats/v1"
             let timeout: TimeInterval = 3 // Use a shorter timeout for testing
-            HTTP.execute(.get, url, timeout: timeout).done2 { json in
-                guard let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
-                if version >= "2.0.7" {
-                    seal.fulfill(())
-                } else {
-                    SNLog("Unsupported snode version: \(version).")
-                    seal.reject(Error.unsupportedSnodeVersion(version))
+            
+            HTTP.execute(.get, url, timeout: timeout)
+                .done2 { responseData in
+                    guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
+                        throw HTTP.Error.invalidJSON
+                    }
+                    guard let version = responseJson["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
+                    
+                    if version >= "2.0.7" {
+                        seal.fulfill(())
+                    }
+                    else {
+                        SNLog("Unsupported snode version: \(version).")
+                        seal.reject(Error.unsupportedSnodeVersion(version))
+                    }
                 }
-            }.catch2 { error in
-                seal.reject(error)
-            }
+                .catch2 { error in
+                    seal.reject(error)
+                }
         }
         return promise
     }
@@ -280,7 +284,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     // MARK: - Public API
     
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, using version: Version = .v3, associatedWith publicKey: String? = nil) -> Promise<Data> {
+    public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, using version: Version, associatedWith publicKey: String?) -> Promise<Data> {
         let payloadJson: JSON = [ "method": method.rawValue, "params": parameters ]
         
         guard let jsonData: Data = try? JSONSerialization.data(withJSONObject: payloadJson, options: []), let payload: String = String(data: jsonData, encoding: .utf8) else {
@@ -294,11 +298,11 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 return data
             }
             .recover2 { error -> Promise<Data> in
-                guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json, _) = error else {
+                guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let data, _) = error else {
                     throw error
                 }
                 
-                throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
+                throw SnodeAPI.handleError(withStatusCode: statusCode, data: data, forSnode: snode, associatedWith: publicKey) ?? error
             }
     }
 
@@ -347,7 +351,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 }
                 let destinationSymmetricKey = intermediate.destinationSymmetricKey
                 
-                HTTP.updatedExecute(.post, url, body: body)
+                HTTP.execute(.post, url, body: body)
                     .done2 { responseData in
                         handleResponse(
                             responseData: responseData,
@@ -366,7 +370,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         }
         
         promise.catch2 { error in // Must be invoked on Threading.workQueue
-            guard case HTTP.Error.httpRequestFailed(let statusCode, let json) = error, let guardSnode = guardSnode else {
+            guard case HTTP.Error.httpRequestFailed(let statusCode, let data) = error, let guardSnode = guardSnode else {
                 return
             }
             
@@ -381,7 +385,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 if pathFailureCount >= pathFailureThreshold {
                     dropGuardSnode(guardSnode)
                     path.forEach { snode in
-                        SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                        SnodeAPI.handleError(withStatusCode: statusCode, data: data, forSnode: snode) // Intentionally don't throw
                     }
                     
                     drop(path)
@@ -392,6 +396,17 @@ public enum OnionRequestAPI: OnionRequestAPIType {
             }
             
             let prefix = "Next node not found: "
+            let json: JSON?
+            
+            if let data: Data = data, let processedJson = try? JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON {
+                json = processedJson
+            }
+            else if let data: Data = data, let result: String = String(data: data, encoding: .utf8) {
+                json = [ "result": result ]
+            }
+            else {
+                json = nil
+            }
             
             if let message = json?["result"] as? String, message.hasPrefix(prefix) {
                 let ed25519PublicKey = message[message.index(message.startIndex, offsetBy: prefix.count)..<message.endIndex]
@@ -401,7 +416,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     snodeFailureCount += 1
                     
                     if snodeFailureCount >= snodeFailureThreshold {
-                        SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode) // Intentionally don't throw
+                        SnodeAPI.handleError(withStatusCode: statusCode, data: data, forSnode: snode) // Intentionally don't throw
                         do {
                             try drop(snode)
                         }
@@ -483,7 +498,6 @@ public enum OnionRequestAPI: OnionRequestAPIType {
             case .v4:
                 // Note: We need to remove the leading forward slash unless we are explicitly hitting a legacy
                 // endpoint (in which case we need it to ensure the request signing works correctly
-                // TODO: Confirm the 'removingPrefix' isn't going to break the request signing on non-legacy endpoints
                 let endpoint: String = url.path
                     .appending(url.query.map { value in "?\(value)" })
                 
@@ -493,9 +507,9 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     headers: (request.allHTTPHeaderFields ?? [:])
                         .setting(
                             "Content-Type",
-                            // TODO: Determine what 'Content-Type' 'httpBodyStream' should have???.
                             (request.httpBody == nil && request.httpBodyStream == nil ? nil :
-                                ((request.allHTTPHeaderFields ?? [:])["Content-Type"] ?? "application/json")    // Default to JSON if not defined
+                                // Default to JSON if not defined
+                                ((request.allHTTPHeaderFields ?? [:])["Content-Type"] ?? "application/json")
                             )
                         )
                         .removingValue(forKey: "User-Agent")
@@ -573,14 +587,14 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         }
                         
                         guard 200...299 ~= statusCode else {
-                            return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: body, destination: destination))
+                            return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), data: bodyAsData, destination: destination))
                         }
                         
                         return seal.fulfill((OnionRequestAPI.ResponseInfo(code: statusCode, headers: [:]), bodyAsData))
                     }
                     
                     guard 200...299 ~= statusCode else {
-                        return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), json: json, destination: destination))
+                        return seal.reject(Error.httpRequestFailedAtDestination(statusCode: UInt(statusCode), data: data, destination: destination))
                     }
                     
                     return seal.fulfill((OnionRequestAPI.ResponseInfo(code: statusCode, headers: [:]), data))
@@ -628,7 +642,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         return seal.reject(
                             Error.httpRequestFailedAtDestination(
                                 statusCode: UInt(responseInfo.code),
-                                json: [:],  // TODO: Remove the 'json' value??
+                                data: data,
                                 destination: destination
                             )
                         )

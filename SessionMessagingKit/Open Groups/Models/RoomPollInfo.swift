@@ -27,7 +27,7 @@ extension OpenGroupAPI {
         }
         
         /// The room token as used in a URL, e.g. "sudoku"
-        public let token: String?
+        public let token: String
         
         /// Number of recently active users in the room over a recent time period (as given in the active_users_cutoff value)
         ///

@@ -9,7 +9,7 @@ public final class PushNotificationAPI : NSObject {
     }
     
     struct ClosedGroupRequestBody: Codable {
-        let token: String
+        let closedGroupPublicKey: String
         let pubKey: String
     }
 
@@ -51,7 +51,6 @@ public final class PushNotificationAPI : NSObject {
         request.httpBody = body
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            // TODO: Update this to use the V4 union requests once supported
             OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
                 .map2 { _, response in
                     guard let response: UnregisterResponse = try? response?.decoded(as: UnregisterResponse.self) else {
@@ -101,7 +100,6 @@ public final class PushNotificationAPI : NSObject {
         request.httpBody = body
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            // TODO: Update this to use the V4 union requests once supported
             OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
                 .map2 { _, response in
                     guard let response: RegisterResponse = try? response?.decoded(as: RegisterResponse.self) else {
@@ -134,7 +132,10 @@ public final class PushNotificationAPI : NSObject {
     @discardableResult
     public static func performOperation(_ operation: ClosedGroupOperation, for closedGroupPublicKey: String, publicKey: String) -> Promise<Void> {
         let isUsingFullAPNs = UserDefaults.standard[.isUsingFullAPNs]
-        let requestBody: ClosedGroupRequestBody = ClosedGroupRequestBody(token: closedGroupPublicKey, pubKey: publicKey)
+        let requestBody: ClosedGroupRequestBody = ClosedGroupRequestBody(
+            closedGroupPublicKey: closedGroupPublicKey,
+            pubKey: publicKey
+        )
         
         guard isUsingFullAPNs else { return Promise<Void> { $0.fulfill(()) } }
         guard let body: Data = try? JSONEncoder().encode(requestBody) else {
@@ -148,7 +149,6 @@ public final class PushNotificationAPI : NSObject {
         request.httpBody = body
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            // TODO: Update this to use the V4 union requests once supported
             OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
                 .map2 { _, response in
                     guard let response: RegisterResponse = try? response?.decoded(as: RegisterResponse.self) else {

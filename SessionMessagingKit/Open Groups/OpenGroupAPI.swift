@@ -549,7 +549,6 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
-            .decoded(as: [DirectMessage].self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     // MARK: - Users

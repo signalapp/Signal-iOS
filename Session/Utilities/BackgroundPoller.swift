@@ -50,8 +50,8 @@ public final class BackgroundPoller: NSObject {
                 
                 return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
                     return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey)
-                        .then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
-                            let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                        .then(on: DispatchQueue.main) { responseData -> Promise<Void> in
+                            let messages = SnodeAPI.parseRawMessagesResponse(responseData, from: snode, associatedWith: publicKey)
                             let promises = messages
                                 .compactMap { json -> Promise<Void>? in
                                     // Use a best attempt approach here; we don't want to fail
