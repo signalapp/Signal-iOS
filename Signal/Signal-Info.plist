@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>WebRTCCommit</key>
-		<string>630bb55bd76d6c50e72f6dd6bb68ce6a614f2732 Factor out group call peeking into CallManagerLite</string>
+		<string>afb4e7f19521dfb8849acf65543e1b963a0ffffc Update to the latest</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>

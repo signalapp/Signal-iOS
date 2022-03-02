@@ -332,7 +332,7 @@ CHECKOUT OPTIONS:
     :commit: 613338d54a4bb7eca9e78d643243cff74545d3b9
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: 8e193f70c3af425ca95c13c9da9cf10609c598cf
+    :commit: 9ab789a36ecc04bae69abd4f4aacfb9d72a0d291
     :git: "git@github.com:signalapp/SignalCoreKit-Private"
   Starscream:
     :commit: 71ebc08f248256497a237ece262e42e7ad05c4a5
