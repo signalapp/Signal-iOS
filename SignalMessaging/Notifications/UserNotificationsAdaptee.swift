@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -250,9 +250,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
-        if DebugFlags.internalLogging {
-            Logger.info("presenting notification with identifier: \(notificationIdentifier)")
-        }
+        Logger.info("presenting notification with identifier: \(notificationIdentifier)")
         notificationCenter.add(request) { (error: Error?) in
             if let error = error {
                 owsFailDebug("Error: \(error)")
