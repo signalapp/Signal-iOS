@@ -1,5 +1,6 @@
 import PromiseKit
 import Sodium
+import YapDatabase
 
 public protocol SessionMessagingKitStorageProtocol {
 
@@ -19,6 +20,15 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUser() -> Contact?
     func getAllContacts() -> Set<Contact>
     func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact>
+    
+    // MARK: - Blinded Id cache
+    
+    func getBlindedIdMapping(with blindedId: String) -> BlindedIdMapping?
+    func getBlindedIdMapping(with blindedId: String, using transaction: YapDatabaseReadTransaction) -> BlindedIdMapping?
+    func cacheBlindedIdMapping(_ mapping: BlindedIdMapping)
+    func cacheBlindedIdMapping(_ mapping: BlindedIdMapping, using transaction: YapDatabaseReadWriteTransaction)
+    func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> ())
+    func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> (), transaction: YapDatabaseReadTransaction)
 
     // MARK: - Closed Groups
 
@@ -72,6 +82,12 @@ public protocol SessionMessagingKitStorageProtocol {
     func getOpenGroupInboxLatestMessageId(for server: String) -> Int64?
     func setOpenGroupInboxLatestMessageId(for server: String, to newValue: Int64, using transaction: Any)
     func removeOpenGroupInboxLatestMessageId(for server: String, using transaction: Any)
+    
+    // MARK: - -- Open Group Outbox Latest Message Id
+
+    func getOpenGroupOutboxLatestMessageId(for server: String) -> Int64?
+    func setOpenGroupOutboxLatestMessageId(for server: String, to newValue: Int64, using transaction: Any)
+    func removeOpenGroupOutboxLatestMessageId(for server: String, using transaction: Any)
 
     // MARK: - Message Handling
 

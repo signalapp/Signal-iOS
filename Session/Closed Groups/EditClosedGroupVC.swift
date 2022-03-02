@@ -1,4 +1,5 @@
 import PromiseKit
+import SessionMessagingKit
 
 @objc(SNEditClosedGroupVC)
 final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {

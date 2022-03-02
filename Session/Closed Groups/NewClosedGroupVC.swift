@@ -1,4 +1,5 @@
 import PromiseKit
+import SessionMessagingKit
 
 private protocol TableViewTouchDelegate {
     

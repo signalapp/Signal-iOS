@@ -1,3 +1,4 @@
+import SessionMessagingKit
 
 @objc(SNUserSelectionVC)
 final class UserSelectionVC : BaseVC, UITableViewDataSource, UITableViewDelegate {

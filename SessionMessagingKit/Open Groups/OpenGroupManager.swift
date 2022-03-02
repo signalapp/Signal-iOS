@@ -248,7 +248,7 @@ public final class OpenGroupManager: NSObject {
                 maybeUpdatedModel = updatedModel
                 let updatedOpenGroup: OpenGroup = OpenGroup(
                     server: server,
-                    room: (pollInfo.token ?? roomToken),
+                    room: pollInfo.token,
                     publicKey: publicKey,
                     name: (pollInfo.details?.name ?? thread.name()),
                     groupDescription: (pollInfo.details?.description ?? existingOpenGroup?.description),
@@ -311,8 +311,11 @@ public final class OpenGroupManager: NSObject {
         )
     }
     
-    internal static func handleInbox(
+    internal static func handleDirectMessages(
         _ messages: [OpenGroupAPI.DirectMessage],
+        // We could infer where the messages come from based on their sender/recipient values but being since they
+        // are different endpoints being explicit here reduces the chance a future change will break things
+        fromOutbox: Bool,
         on server: String,
         isBackgroundPoll: Bool,
         using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
@@ -329,10 +332,17 @@ public final class OpenGroupManager: NSObject {
         let sortedMessages: [OpenGroupAPI.DirectMessage] = messages
             .sorted { lhs, rhs in lhs.id < rhs.id }
         let latestMessageId: Int64 = (sortedMessages.last?.id ?? 0)
+        let userSessionId: String = getUserHexEncodedPublicKey()
+        var mappingCache: [String: BlindedIdMapping] = [:]
         
         dependencies.storage.write { transaction in
             // Update the 'latestMessageId' value
-            dependencies.storage.setOpenGroupInboxLatestMessageId(for: server, to: latestMessageId, using: transaction)
+            if fromOutbox {
+                dependencies.storage.setOpenGroupOutboxLatestMessageId(for: server, to: latestMessageId, using: transaction)
+            }
+            else {
+                dependencies.storage.setOpenGroupInboxLatestMessageId(for: server, to: latestMessageId, using: transaction)
+            }
 
             // Process the messages
             sortedMessages.forEach { message in
@@ -344,12 +354,47 @@ public final class OpenGroupManager: NSObject {
                 // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
                 let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
                 envelope.setContent(messageData)
-                envelope.setSource(message.sender)
+                envelope.setSource(message.sender ?? userSessionId) // Outbox messages have no 'sender' so default to current user
 
                 do {
                     let data = try envelope.buildSerializedData()
-                    let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: nil, openGroupServerPublicKey: serverPublicKey, isRetry: false, using: transaction)
-                    try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: isBackgroundPoll, using: transaction)
+                    let (receivedMessage, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: nil, openGroupServerPublicKey: serverPublicKey, isRetry: false, using: transaction)
+                    
+                    // TODO: Need to test and validate this unblinding logic
+                    // If the message was an outgoing message then attempt to unblind the recipient (this will help put
+                    // messages in the correct thread in case of message request approval race conditions as well as
+                    // during device sync'ing and restoration)
+                    if fromOutbox, let recipientBlindedId: String = message.recipient {
+                        // Attempt to un-blind the 'message.recipient'
+                        let mapping: BlindedIdMapping
+                        
+                        // Minor optimisation to avoid processing the same sender multiple times
+                        if let result: BlindedIdMapping = mappingCache[recipientBlindedId] {
+                            mapping = result
+                        }
+                        else if let result: BlindedIdMapping = ContactUtilities.mapping(for: recipientBlindedId, serverPublicKey: serverPublicKey) {
+                            mapping = result
+                        }
+                        else {
+                            // Cache an "invalid" mapping that has the 'sessionId' set to the recipient so we don't
+                            // re-process this recipient if there is another message from them
+                            mapping = BlindedIdMapping(
+                                blindedId: "",
+                                sessionId: recipientBlindedId,
+                                serverPublicKey: ""
+                            )
+                        }
+                        
+                        switch receivedMessage {
+                            case let receivedMessage as VisibleMessage: receivedMessage.syncTarget = mapping.sessionId
+                            case let receivedMessage as ExpirationTimerUpdate: receivedMessage.syncTarget = mapping.sessionId
+                            default: break
+                        }
+                        
+                        mappingCache[recipientBlindedId] = mapping
+                    }
+                    
+                    try MessageReceiver.handle(receivedMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: isBackgroundPoll, using: transaction)
                 }
                 catch let error {
                     SNLog("Couldn't receive inbox message due to error: \(error).")

@@ -9,61 +9,61 @@ import SessionSnodeKit
 extension OpenGroupAPI {
     public class Dependencies {
         private var _api: OnionRequestAPIType.Type?
-        var api: OnionRequestAPIType.Type {
+        public var api: OnionRequestAPIType.Type {
             get { getValueSettingIfNull(&_api) { OnionRequestAPI.self } }
             set { _api = newValue }
         }
         
         private var _storage: SessionMessagingKitStorageProtocol?
-        var storage: SessionMessagingKitStorageProtocol {
+        public var storage: SessionMessagingKitStorageProtocol {
             get { getValueSettingIfNull(&_storage) { SNMessagingKitConfiguration.shared.storage } }
             set { _storage = newValue }
         }
         
         private var _sodium: SodiumType?
-        var sodium: SodiumType {
+        public var sodium: SodiumType {
             get { getValueSettingIfNull(&_sodium) { Sodium() } }
             set { _sodium = newValue }
         }
         
         private var _aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType?
-        var aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {
+        public var aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {
             get { getValueSettingIfNull(&_aeadXChaCha20Poly1305Ietf) { sodium.getAeadXChaCha20Poly1305Ietf() } }
             set { _aeadXChaCha20Poly1305Ietf = newValue }
         }
         
         private var _sign: SignType?
-        var sign: SignType {
+        public var sign: SignType {
             get { getValueSettingIfNull(&_sign) { sodium.getSign() } }
             set { _sign = newValue }
         }
         
         private var _genericHash: GenericHashType?
-        var genericHash: GenericHashType {
+        public var genericHash: GenericHashType {
             get { getValueSettingIfNull(&_genericHash) { sodium.getGenericHash() } }
             set { _genericHash = newValue }
         }
         
         private var _ed25519: Ed25519Type.Type?
-        var ed25519: Ed25519Type.Type {
+        public var ed25519: Ed25519Type.Type {
             get { getValueSettingIfNull(&_ed25519) { Ed25519.self } }
             set { _ed25519 = newValue }
         }
         
         private var _nonceGenerator16: NonceGenerator16ByteType?
-        var nonceGenerator16: NonceGenerator16ByteType {
+        public var nonceGenerator16: NonceGenerator16ByteType {
             get { getValueSettingIfNull(&_nonceGenerator16) { NonceGenerator16Byte() } }
             set { _nonceGenerator16 = newValue }
         }
         
         private var _nonceGenerator24: NonceGenerator24ByteType?
-        var nonceGenerator24: NonceGenerator24ByteType {
+        public var nonceGenerator24: NonceGenerator24ByteType {
             get { getValueSettingIfNull(&_nonceGenerator24) { NonceGenerator24Byte() } }
             set { _nonceGenerator24 = newValue }
         }
         
         private var _date: Date?
-        var date: Date {
+        public var date: Date {
             get { getValueSettingIfNull(&_date) { Date() } }
             set { _date = newValue }
         }

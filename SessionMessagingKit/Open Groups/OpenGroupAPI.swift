@@ -41,12 +41,15 @@ public final class OpenGroupAPI: NSObject {
     ///    - Poll Info
     ///    - Messages (includes additions and deletions)
     /// - Inbox for the server
+    /// - Outbox for the server
     public static func poll(_ server: String, using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         // Store a local copy of the cached state for this server
         let hadPerformedInitialPoll: Bool = (hasPerformedInitialPoll.wrappedValue[server] == true)
         let originalTimeSinceLastPoll: TimeInterval = (timeSinceLastPoll.wrappedValue[server] ?? min(lastPollTime.wrappedValue, timeSinceLastOpen.wrappedValue))
         let maybeLastInboxMessageId: Int64? = dependencies.storage.getOpenGroupInboxLatestMessageId(for: server)
+        let maybeLastOutboxMessageId: Int64? = dependencies.storage.getOpenGroupOutboxLatestMessageId(for: server)
         let lastInboxMessageId: Int64 = (maybeLastInboxMessageId ?? 0)
+        let lastOutboxMessageId: Int64 = (maybeLastOutboxMessageId ?? 0)
         
         // Update the cached state for this server
         hasPerformedInitialPoll.mutate { $0[server] = true }
@@ -95,15 +98,13 @@ public final class OpenGroupAPI: NSObject {
                                     .roomMessagesRecent(openGroup.room) :
                                     .roomMessagesSince(openGroup.room, seqNo: targetSeqNo)
                                 )
-                                // TODO: Limit?
-//                                queryParameters: [ .limit: 256 ]
                             ),
                             responseType: [Message].self
                         )
                     ]
                 }
         )
-        .appending(
+        .appending([
             // Inbox
             BatchRequestInfo(
                 request: Request<NoBody>(
@@ -112,12 +113,22 @@ public final class OpenGroupAPI: NSObject {
                         .inbox :
                         .inboxSince(id: lastInboxMessageId)
                    )
-                    // TODO: Limit?
-//                    queryParameters: [ .limit: 256 ]
                 ),
                 responseType: [DirectMessage]?.self // 'inboxSince' will return a `304` with an empty response if no messages
+            ),
+            
+            // Outbox
+            BatchRequestInfo(
+                request: Request<NoBody>(
+                    server: server,
+                    endpoint: (maybeLastOutboxMessageId == nil ?
+                        .outbox :
+                        .outboxSince(id: lastOutboxMessageId)
+                   )
+                ),
+                responseType: [DirectMessage]?.self // 'outboxSince' will return a `304` with an empty response if no messages
             )
-        )
+        ])
         
         return batch(server, requests: requestResponseType, using: dependencies)
     }
@@ -499,13 +510,13 @@ public final class OpenGroupAPI: NSObject {
             .decoded(as: FileDownloadResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
-    // MARK: - Inbox (Message Requests)
+    // MARK: - Inbox/Outbox (Message Requests)
 
     /// Retrieves all of the user's current DMs (up to limit)
     ///
     /// **Note:** This is the direct request to retrieve DMs for a specific Open Group so should be retrieved automatically from the `poll()`
     /// method, in order to call this directly remove the `@available` line and make sure to route the response of this method to the
-    /// `OpenGroupManager.handleInbox` method to ensure things are processed correctly
+    /// `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
     public static func inbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         let request: Request = Request<NoBody>(
@@ -521,7 +532,7 @@ public final class OpenGroupAPI: NSObject {
     ///
     /// **Note:** This is the direct request to retrieve messages requests for a specific Open Group since a given messages so should be retrieved
     /// automatically from the `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response
-    /// of this method to the `OpenGroupManager.handleInbox` method to ensure things are processed correctly
+    /// of this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
     public static func inboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         let request: Request = Request<NoBody>(
@@ -549,6 +560,38 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
+    }
+    
+    /// Retrieves all of the user's sent DMs (up to limit)
+    ///
+    /// **Note:** This is the direct request to retrieve DMs sent by the user for a specific Open Group so should be retrieved automatically
+    /// from the `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response of
+    /// this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    public static func outbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
+        let request: Request = Request<NoBody>(
+            server: server,
+            endpoint: .outbox
+        )
+        
+        return send(request, using: dependencies)
+            .decoded(as: [DirectMessage]?.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
+    }
+    
+    /// Polls for any DMs sent since the given id, this method will return a `304` with an empty response if there are no messages
+    ///
+    /// **Note:** This is the direct request to retrieve messages requests sent by the user for a specific Open Group since a given messages so
+    /// should be retrieved automatically from the `poll()` method, in order to call this directly remove the `@available` line and make sure
+    /// to route the response of this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    public static func outboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
+        let request: Request = Request<NoBody>(
+            server: server,
+            endpoint: .outboxSince(id: id)
+        )
+        
+        return send(request, using: dependencies)
+            .decoded(as: [DirectMessage]?.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
     }
     
     // MARK: - Users

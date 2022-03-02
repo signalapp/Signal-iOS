@@ -4,6 +4,7 @@ import Photos
 import PhotosUI
 import Sodium
 import PromiseKit
+import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
@@ -866,68 +867,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func startThread(with sessionId: String, openGroupServer: String, openGroupPublicKey: String) {
         // If the sessionId is blinded then check if there is an existing un-blinded thread with the contact
-        if SessionId.Prefix(from: sessionId) == .blinded {
-            // TODO: Ensure the above case isn't going to be an issue due to legacy messages?
-            // Unfortunately the whole point of id-blinding is to make it hard to reverse-engineer a standard
-            // sessionId, as a result in order to see if there is an unblinded contact for this blindedId we
-            // can only really generate blinded ids for each contact and check if any match
-            //
-            // Due to this we have made a few optimisations to try and early-out as often as possible, first
-            // we try to retrieve a direct cached mapping
-            if let mapping: BlindedIdMapping = Storage.shared.getBlindedIdMapping(with: sessionId) {
-                let thread: TSContactThread = TSContactThread.getOrCreateThread(contactSessionID: mapping.sessionId)
-                let conversationVC: ConversationVC = ConversationVC(thread: thread)
-                
-                self.navigationController?.pushViewController(conversationVC, animated: true)
-                return
-            }
+        if SessionId.Prefix(from: sessionId) == .blinded, let mapping: BlindedIdMapping = ContactUtilities.mapping(for: sessionId, serverPublicKey: openGroupPublicKey) {
+            let thread: TSContactThread = TSContactThread.getOrCreateThread(contactSessionID: mapping.sessionId)
+            let conversationVC: ConversationVC = ConversationVC(thread: thread)
             
-            var didFindContact: Bool = false
-            
-            // Then we try loop through all approved contact threads to see if one of those contacts can be blinded to match
-            ContactUtilities.enumerateApprovedContactThreads { contactThread, contact, stop in
-                guard Sodium().sessionId(contact.sessionID, matchesBlindedId: sessionId, serverPublicKey: openGroupPublicKey) else {
-                    return
-                }
-                
-                // Cache the mapping
-                let mapping: BlindedIdMapping = BlindedIdMapping(blindedId: sessionId, sessionId: contact.sessionID, serverPublicKey: openGroupPublicKey)
-                Storage.shared.cacheBlindedIdMapping(mapping)
-                
-                // Open the existing thread
-                let conversationVC: ConversationVC = ConversationVC(thread: contactThread)
-                self.navigationController?.pushViewController(conversationVC, animated: true)
-
-                didFindContact = true
-                stop.pointee = true
-            }
-            
-            // Don't continue if we found the contact
-            guard !didFindContact else { return }
-            
-            // Lastly loop through existing id mappings (in case the user is looking at a different SOGS but once had
-            // a thread with this contact in a different SOGS and had cached the mapping)
-            Storage.shared.enumerateBlindedIdMapping { mapping, stop in
-                guard mapping.serverPublicKey != openGroupPublicKey else { return }
-                guard Sodium().sessionId(mapping.sessionId, matchesBlindedId: sessionId, serverPublicKey: openGroupPublicKey) else {
-                    return
-                }
-                
-                // Cache the new mapping
-                let thread: TSContactThread = TSContactThread.getOrCreateThread(contactSessionID: mapping.sessionId)
-                let newMapping: BlindedIdMapping = BlindedIdMapping(blindedId: sessionId, sessionId: mapping.sessionId, serverPublicKey: openGroupPublicKey)
-                Storage.shared.cacheBlindedIdMapping(newMapping)
-                
-                // Open the existing thread
-                let conversationVC: ConversationVC = ConversationVC(thread: thread)
-                self.navigationController?.pushViewController(conversationVC, animated: true)
-
-                didFindContact = true
-                stop.pointee = true
-            }
-            
-            // Don't continue if we found the contact
-            guard !didFindContact else { return }
+            self.navigationController?.pushViewController(conversationVC, animated: true)
+            return
         }
         
         // Just create a new thread with the provided sessionId

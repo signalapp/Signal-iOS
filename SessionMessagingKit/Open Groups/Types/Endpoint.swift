@@ -38,11 +38,14 @@ extension OpenGroupAPI {
         case roomFileIndividual(String, Int64)
         case roomFileIndividualJson(String, Int64)
         
-        // Inbox (Message Requests)
+        // Inbox/Outbox (Message Requests)
         
         case inbox
         case inboxSince(id: Int64)
         case inboxFor(sessionId: String)
+        
+        case outbox
+        case outboxSince(id: Int64)
         
         // Users
         
@@ -133,11 +136,14 @@ extension OpenGroupAPI {
                 case .roomFileIndividualJson(let roomToken, let fileId):
                     return "room/\(roomToken)/file/\(fileId)"
                     
-                // Inbox (Message Requests)
+                // Inbox/Outbox (Message Requests)
     
                 case .inbox: return "inbox"
                 case .inboxSince(let id): return "inbox/since/\(id)"
                 case .inboxFor(let sessionId): return "inbox/\(sessionId)"
+                    
+                case .outbox: return "outbox"
+                case .outboxSince(let id): return "outbox/since/\(id)"
                 
                 // Users
                 

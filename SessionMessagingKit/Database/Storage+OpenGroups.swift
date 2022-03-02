@@ -131,6 +131,29 @@ extension Storage {
         let collection = Storage.openGroupInboxLatestMessageIdCollection
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: collection)
     }
+    
+    // MARK: - -- Open Group Outbox Latest Message Id
+    
+    public static let openGroupOutboxLatestMessageIdCollection = "SNOpenGroupOutboxLatestMessageIdCollection"
+
+    public func getOpenGroupOutboxLatestMessageId(for server: String) -> Int64? {
+        let collection = Storage.openGroupOutboxLatestMessageIdCollection
+        var result: Int64? = nil
+        Storage.read { transaction in
+            result = transaction.object(forKey: server, inCollection: collection) as? Int64
+        }
+        return result
+    }
+    
+    public func setOpenGroupOutboxLatestMessageId(for server: String, to newValue: Int64, using transaction: Any) {
+        let collection = Storage.openGroupOutboxLatestMessageIdCollection
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(newValue, forKey: server, inCollection: collection)
+    }
+    
+    public func removeOpenGroupOutboxLatestMessageId(for server: String, using transaction: Any) {
+        let collection = Storage.openGroupOutboxLatestMessageIdCollection
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: server, inCollection: collection)
+    }
 
     // MARK: - Metadata
 
