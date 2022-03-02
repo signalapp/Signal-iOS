@@ -140,16 +140,16 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
+- (void)markAsReadNowWithTrySendReadReceipt:(BOOL)trySendReadReceipt
                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
 {
     [self markAsReadAtTimestamp:[NSDate millisecondTimestamp]
-                sendReadReceipt:sendReadReceipt
+             trySendReadReceipt:trySendReadReceipt
                     transaction:transaction];
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
+           trySendReadReceipt:(BOOL)trySendReadReceipt
                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 {
     if (_read && readTimestamp >= self.expireStartedAt) {
@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      expirationStartedAt:readTimestamp
                                                              transaction:transaction];
 
-    if (sendReadReceipt) {
+    if (trySendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
 }
