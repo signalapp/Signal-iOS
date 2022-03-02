@@ -208,11 +208,8 @@ class NotificationService: UNNotificationServiceExtension {
                 return promise
             }.then(on: .global()) { () -> Promise<Void> in
                 Logger.info("Initial message processing complete.")
-                // Wait until all async side effects of
-                // message processing are complete.
+                // Wait until all async side effects of message processing are complete.
                 let completionPromises: [(String, Promise<Void>)] = [
-                    // Wait until all notifications are posted.
-                    ("Pending notification post", NotificationPresenter.pendingNotificationsPromise()),
                     // Wait until all ACKs are complete.
                     ("Pending messageFetch ack", Self.messageFetcherJob.pendingAcksPromise()),
                     // Wait until all outgoing receipt sends are complete.
@@ -229,6 +226,11 @@ class NotificationService: UNNotificationServiceExtension {
                 })
                 completionPromises.forEach { runningAndCompletedPromises.append($0) }
                 return joinedPromise.asVoid()
+            }.then(on: .global()) { () -> Promise<Void> in
+                // Finally, wait for any notifications to finish posting
+                let promise = NotificationPresenter.pendingNotificationsPromise()
+                runningAndCompletedPromises.append(("Pending notification post", promise))
+                return promise
             }
             processingCompletePromise.timeout(seconds: 20, ticksWhileSuspended: true, description: "Message Processing Timeout.") {
                 runningAndCompletedPromises.get().filter { $0.1.isSealed == false }.forEach {

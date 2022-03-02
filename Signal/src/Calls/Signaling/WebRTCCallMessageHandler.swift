@@ -172,13 +172,11 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         completion: @escaping () -> Void
     ) {
         Logger.info("Received group call update message for thread: \(groupThread.uniqueId) eraId: \(String(describing: updateMessage.eraID))")
-        DispatchQueue.main.async {
-            Self.callService.peekCallAndUpdateThread(
-                groupThread,
-                expectedEraId: updateMessage.eraID,
-                triggerEventTimestamp: serverReceivedTimestamp,
-                completion: completion)
-        }
+        callService.peekCallAndUpdateThread(
+            groupThread,
+            expectedEraId: updateMessage.eraID,
+            triggerEventTimestamp: serverReceivedTimestamp,
+            completion: completion)
     }
 
     public func externallyHandleCallMessage(envelope: SSKProtoEnvelope, plaintextData: Data, wasReceivedByUD: Bool, serverDeliveryTimestamp: UInt64, transaction: SDSAnyWriteTransaction) {

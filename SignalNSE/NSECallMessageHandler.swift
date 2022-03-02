@@ -127,13 +127,10 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         completion: @escaping () -> Void
     ) {
         Logger.info("Received group call update for thread \(groupThread.uniqueId)")
-
-        DispatchQueue.global().async {
-            self.lightweightCallManager?.peekCallAndUpdateThread(
-                groupThread,
-                expectedEraId: updateMessage.eraID,
-                triggerEventTimestamp: serverReceivedTimestamp,
-                completion: completion)
-        }
+        lightweightCallManager?.peekCallAndUpdateThread(
+            groupThread,
+            expectedEraId: updateMessage.eraID,
+            triggerEventTimestamp: serverReceivedTimestamp,
+            completion: completion)
     }
 }

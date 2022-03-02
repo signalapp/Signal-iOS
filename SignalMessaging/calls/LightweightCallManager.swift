@@ -39,7 +39,7 @@ open class LightweightCallManager: NSObject, Dependencies {
             }
             return self.fetchPeekInfo(for: thread)
 
-        }.then(on: .main) { (info: PeekInfo) -> Promise<Void> in
+        }.then { (info: PeekInfo) -> Guarantee<Void> in
             // We only want to update the call message with the participants of the peekInfo if the peek's
             // era matches the era for the expected message. This wouldn't be the case if say, a device starts
             // fetching a whole batch of messages offline and it includes the group call signaling messages from
@@ -49,7 +49,7 @@ open class LightweightCallManager: NSObject, Dependencies {
                 return self.updateGroupCallMessageWithInfo(info, for: thread, timestamp: triggerEventTimestamp)
             } else {
                 Logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
-                return Promise.value(())
+                return Guarantee.value(())
             }
         }.done {
             completion?()
@@ -62,7 +62,7 @@ open class LightweightCallManager: NSObject, Dependencies {
         }
     }
 
-    public func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) -> Promise<Void> {
+    public func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) -> Guarantee<Void> {
         databaseStorage.write(.promise) { writeTx in
             let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
 
@@ -105,10 +105,14 @@ open class LightweightCallManager: NSObject, Dependencies {
                 newMessage.anyInsert(transaction: writeTx)
                 self.postUserNotificationIfNecessary(groupCallMessage: newMessage, transaction: writeTx)
             }
+        }.recover { error in
+            owsFailDebug("Failed to update call message with error: \(error)")
         }
     }
 
     fileprivate func insertPlaceholderGroupCallMessageIfNecessary(eraId: String, timestamp: UInt64, thread: TSGroupThread) {
+        AssertNotOnMainThread()
+
         databaseStorage.write { writeTx in
             guard !GRDBInteractionFinder.existsGroupCallMessageForEraId(eraId, thread: thread, transaction: writeTx) else { return }
 
@@ -135,6 +139,8 @@ open class LightweightCallManager: NSObject, Dependencies {
 
     @objc
     open dynamic func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
+        AssertNotOnMainThread()
+
         // The message must have at least one participant
         guard (groupCallMessage.joinedMemberUuids?.count ?? 0) > 0 else { return }
 

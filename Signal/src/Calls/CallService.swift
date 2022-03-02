@@ -40,14 +40,20 @@ public final class CallService: LightweightCallManager {
 
     public var earlyRingNextIncomingCall = false
 
+    /// Current call *must* be set on the main thread. It may be read off the main thread if the current call state must be consulted,
+    /// but othere call state may race (observer state, sleep state, etc.)
+    private var _currentCallLock = UnfairLock()
     private var _currentCall: SignalCall?
     @objc
     public private(set) var currentCall: SignalCall? {
         set {
             AssertIsOnMainThread()
 
-            let oldValue = _currentCall
-            _currentCall = newValue
+            let oldValue: SignalCall? = _currentCallLock.withLock {
+                let oldValue = _currentCall
+                _currentCall = newValue
+                return oldValue
+            }
 
             oldValue?.removeObserver(self)
             newValue?.addObserverAndSyncState(observer: self)
@@ -89,9 +95,9 @@ public final class CallService: LightweightCallManager {
             }
         }
         get {
-            AssertIsOnMainThread()
-
-            return _currentCall
+            _currentCallLock.withLock {
+                _currentCall
+            }
         }
     }
 
@@ -138,9 +144,7 @@ public final class CallService: LightweightCallManager {
         super.init()
         callManager = CallManager(callManagerLite: managerLite)
         callManager.delegate = self
-
         SwiftSingletons.register(self)
-        callManager.delegate = self
 
         addObserverAndSyncState(observer: groupCallMessageHandler)
         addObserverAndSyncState(observer: groupCallRemoteVideoManager)
@@ -734,7 +738,6 @@ extension CallService {
                                                  expectedEraId: String? = nil,
                                                  triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
                                                  completion: (() -> Void)? = nil) {
-        AssertIsOnMainThread()
         // If the currentCall is for the provided thread, we don't need to perform an explict
         // peek. Connected calls will receive automatic updates from RingRTC
         guard currentCall?.thread != thread else {
@@ -746,7 +749,7 @@ extension CallService {
 
     @objc
     override public func postUserNotificationIfNecessary(groupCallMessage: OWSGroupCallMessage, transaction: SDSAnyWriteTransaction) {
-        AssertIsOnMainThread()
+        AssertNotOnMainThread()
 
         // The message can't be for the current call
         guard self.currentCall?.thread.uniqueId != groupCallMessage.uniqueThreadId else { return }
