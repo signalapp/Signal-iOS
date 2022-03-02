@@ -212,7 +212,7 @@ private final class EnterPublicKeyVC : UIViewController {
     private lazy var buttonContainer: UIStackView = {
         let result = UIStackView()
         result.axis = .horizontal
-        result.spacing = Values.mediumSpacing
+        result.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         result.distribution = .fillEqually
         return result
     }()
@@ -240,12 +240,7 @@ private final class EnterPublicKeyVC : UIViewController {
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(startNewDMIfPossible), for: UIControl.Event.touchUpInside)
-        let nextButtonContainer = UIView()
-        nextButtonContainer.addSubview(nextButton)
-        nextButton.pin(.leading, to: .leading, of: nextButtonContainer, withInset: 80)
-        nextButton.pin(.top, to: .top, of: nextButtonContainer)
-        nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
-        nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
+        let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPad: true)
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyLabel, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
         mainStackView.axis = .vertical

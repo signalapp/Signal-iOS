@@ -173,7 +173,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         // Button container
         let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
         buttonContainer.axis = .horizontal
-        buttonContainer.spacing = Values.mediumSpacing
+        buttonContainer.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         buttonContainer.distribution = .fillEqually
         // Top stack view
         let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, publicKeyLabel, buttonContainer ])

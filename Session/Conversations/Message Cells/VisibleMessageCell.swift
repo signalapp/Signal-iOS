@@ -126,7 +126,13 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     static let largeCornerRadius: CGFloat = 18
     static let contactThreadHSpacing = Values.mediumSpacing
     
-    static var gutterSize: CGFloat { groupThreadHSpacing + profilePictureSize + groupThreadHSpacing }
+    static var gutterSize: CGFloat = {
+        var result = groupThreadHSpacing + profilePictureSize + groupThreadHSpacing
+        if UIDevice.current.isIPad {
+            result += CGFloat(UIScreen.main.bounds.width / 2 - 88)
+        }
+        return result
+    }()
     
     private var bodyLabelTextColor: UIColor {
         switch (direction, AppModeManager.shared.currentAppMode) {
