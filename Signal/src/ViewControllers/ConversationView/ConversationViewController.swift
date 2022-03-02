@@ -60,6 +60,7 @@ public class ConversationViewController: OWSViewController {
 
         self.viewState.delegate = self
         self.viewState.selectionState.delegate = self
+        self.hidesBottomBarWhenPushed = true
 
         #if TESTABLE_BUILD
         self.initialLoadBenchSteps.step("Init CVC")

@@ -1542,6 +1542,10 @@ public class GRDBSchemaMigrator: NSObject {
                     on: "story_messages",
                     columns: ["direction"]
                 )
+                try db.execute(sql: """
+                    CREATE INDEX index_story_messages_on_incoming_viewed
+                    ON story_messages(json_extract(manifest, '$.incoming.viewed'));
+                """)
             } catch {
                 owsFail("Error: \(error)")
             }

@@ -4,16 +4,17 @@
 
 import Foundation
 import MultipeerConnectivity
+import SignalUI
 
 @objc
 class ConversationSplitViewController: UISplitViewController, ConversationSplit {
 
     fileprivate var deviceTransferNavController: DeviceTransferNavigationController?
 
-    private let homeVC = ChatListViewController()
+    private let homeVC = HomeTabBarController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
-    private lazy var primaryNavController = OWSNavigationController(rootViewController: homeVC)
+    private var chatListNavController: OWSNavigationController { homeVC.chatListNavController }
     private lazy var detailNavController = OWSNavigationController()
     private lazy var lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
 
@@ -31,7 +32,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // In order to not show selected when collapsed during an interactive dismissal,
         // we verify the conversation is still in the nav stack when collapsed. There is
         // no interactive dismissal when expanded, so we don't have to do any special check.
-        guard !isCollapsed || primaryNavController.viewControllers.contains(selectedConversationViewController) else { return nil }
+        guard !isCollapsed || chatListNavController.viewControllers.contains(selectedConversationViewController) else { return nil }
 
         return selectedConversationViewController.thread
     }
@@ -46,19 +47,19 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     @objc var topViewController: UIViewController? {
         guard !isCollapsed else {
-            return primaryNavController.topViewController
+            return chatListNavController.topViewController
         }
 
-        return detailNavController.topViewController ?? primaryNavController.topViewController
+        return detailNavController.topViewController ?? chatListNavController.topViewController
     }
 
     @objc
     init() {
         super.init(nibName: nil, bundle: nil)
 
-        viewControllers = [primaryNavController, detailPlaceholderVC]
+        viewControllers = [homeVC, detailPlaceholderVC]
 
-        primaryNavController.delegate = self
+        chatListNavController.delegate = self
         delegate = self
         preferredDisplayMode = .allVisible
 
@@ -99,7 +100,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     }
 
     func applyNavBarStyle(collapsed: Bool) {
-        guard let owsNavBar = primaryNavController.navigationBar as? OWSNavigationBar else {
+        guard let owsNavBar = chatListNavController.navigationBar as? OWSNavigationBar else {
             return owsFailDebug("unexpected nav bar")
         }
         owsNavBar.switchToStyle(collapsed ? .default : .secondaryBar)
@@ -131,9 +132,9 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             // If we're currently displaying the conversation in the primary nav controller, remove it
             // and everything it pushed to the navigation stack from the nav controller. We don't want
             // to just pop to root as we might have opened this conversation from the archive.
-            if let selectedConversationIndex = primaryNavController.viewControllers.firstIndex(of: selectedConversationViewController) {
-                let targetViewController = primaryNavController.viewControllers[max(0, selectedConversationIndex-1)]
-                primaryNavController.popToViewController(targetViewController, animated: animated)
+            if let selectedConversationIndex = chatListNavController.viewControllers.firstIndex(of: selectedConversationViewController) {
+                let targetViewController = chatListNavController.viewControllers[max(0, selectedConversationIndex-1)]
+                chatListNavController.popToViewController(targetViewController, animated: animated)
             }
         } else {
             viewControllers[1] = detailPlaceholderVC
@@ -162,7 +163,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             // anything else has been presented above the view.
             guard let selectedConversationVC = selectedConversationViewController else { return }
             if isCollapsed {
-                primaryNavController.popToViewController(selectedConversationVC, animated: animated)
+                chatListNavController.popToViewController(selectedConversationVC, animated: animated)
             } else {
                 detailNavController.popToViewController(selectedConversationVC, animated: animated)
             }
@@ -171,7 +172,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
         // Update the last viewed thread on the conversation list so it
         // can maintain its scroll position when navigating back.
-        homeVC.lastViewedThread = thread
+        homeVC.chatListViewController.lastViewedThread = thread
 
         let threadViewModel = databaseStorage.read {
             return ThreadViewModel(thread: thread,
@@ -223,7 +224,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     private weak var currentDetailViewController: UIViewController?
     override func showDetailViewController(_ vc: UIViewController, sender: Any?) {
         if isCollapsed {
-            var viewControllersToDisplay = primaryNavController.viewControllers
+            var viewControllersToDisplay = chatListNavController.viewControllers
             // If we already have a detail VC displayed, we want to replace it.
             // The normal behavior of `showDetailViewController` pushes on
             // top of it in collapsed mode.
@@ -232,7 +233,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
                 viewControllersToDisplay = Array(viewControllersToDisplay[0..<detailVCIndex])
             }
             viewControllersToDisplay.append(vc)
-            primaryNavController.setViewControllers(viewControllersToDisplay, animated: true)
+            chatListNavController.setViewControllers(viewControllersToDisplay, animated: true)
         } else {
             // There is a race condition at app launch where `isCollapsed` cannot be
             // relied upon. This leads to a crash where viewControllers is empty, so
@@ -242,8 +243,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             // is set in init this method is getting called OR this `viewControllers` is
             // returning stale information. The latter seems most plausible, but is near
             // impossible to reproduce.
-            owsAssertDebug(viewControllers.first == primaryNavController)
-            viewControllers = [primaryNavController, vc]
+            owsAssertDebug(viewControllers.first == chatListNavController)
+            viewControllers = [chatListNavController, vc]
         }
 
         // If the detail VC is a nav controller, we want to keep track of
@@ -264,7 +265,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         return true
     }
 
-    let globalKeyCommands = [
+    let chatListKeyCommands = [
         UIKeyCommand(
             input: "n",
             modifierFlags: .command,
@@ -405,47 +406,50 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // Don't allow keyboard commands while presenting context menu.
         guard selectedConversationViewController?.isPresentingContextMenu != true else { return nil }
 
+        var keyCommands = [UIKeyCommand]()
         if selectedThread != nil {
-            return selectedConversationKeyCommands + globalKeyCommands
-        } else {
-            return globalKeyCommands
+            keyCommands += selectedConversationKeyCommands
         }
+        if homeVC.selectedTab == .chatList {
+            keyCommands += chatListKeyCommands
+        }
+        return keyCommands
     }
 
     @objc func showNewConversationView() {
-        homeVC.showNewConversationView()
+        homeVC.chatListViewController.showNewConversationView()
     }
 
     @objc func showNewGroupView() {
-        homeVC.showNewGroupView()
+        homeVC.chatListViewController.showNewGroupView()
     }
 
     @objc func showAppSettings() {
-        homeVC.showAppSettings()
+        homeVC.chatListViewController.showAppSettings()
     }
 
     func showAppSettingsWithMode(_ mode: ShowAppSettingsMode) {
-        homeVC.showAppSettings(mode: mode)
+        homeVC.chatListViewController.showAppSettings(mode: mode)
     }
 
     @objc func focusSearch() {
-        homeVC.focusSearch()
+        homeVC.chatListViewController.focusSearch()
     }
 
     @objc func selectPreviousConversation() {
-        homeVC.selectPreviousConversation()
+        homeVC.chatListViewController.selectPreviousConversation()
     }
 
     @objc func selectNextConversation(_ sender: UIKeyCommand) {
-        homeVC.selectNextConversation()
+        homeVC.chatListViewController.selectNextConversation()
     }
 
     @objc func archiveSelectedConversation() {
-        homeVC.archiveSelectedConversation()
+        homeVC.chatListViewController.archiveSelectedConversation()
     }
 
     @objc func unarchiveSelectedConversation() {
-        homeVC.unarchiveSelectedConversation()
+        homeVC.chatListViewController.unarchiveSelectedConversation()
     }
 
     @objc func openConversationSettings() {
@@ -508,13 +512,13 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
         assert(secondaryViewController == detailNavController)
 
         // Move all the views from the detail nav controller onto the primary nav controller.
-        primaryNavController.viewControllers += detailNavController.viewControllers
+        chatListNavController.viewControllers += detailNavController.viewControllers
 
         return true
     }
 
     func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
-        assert(primaryViewController == primaryNavController)
+        assert(primaryViewController == chatListNavController)
 
         applyNavBarStyle(collapsed: false)
 
@@ -522,7 +526,7 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
         // show the placeholder view as no conversation is selected. The conversation
         // was likely popped from the stack while the split view was collapsed.
         guard let currentConversationVC = selectedConversationViewController,
-              let conversationVCIndex = primaryNavController.viewControllers.firstIndex(of: currentConversationVC) else {
+              let conversationVCIndex = chatListNavController.viewControllers.firstIndex(of: currentConversationVC) else {
             self.selectedConversationViewController = nil
             return detailPlaceholderVC
         }
@@ -530,9 +534,9 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
         // Move everything on the nav stack from the conversation view on back onto
         // the detail nav controller.
 
-        let allViewControllers = primaryNavController.viewControllers
+        let allViewControllers = chatListNavController.viewControllers
 
-        primaryNavController.viewControllers = Array(allViewControllers[0..<conversationVCIndex]).filter { vc in
+        chatListNavController.viewControllers = Array(allViewControllers[0..<conversationVCIndex]).filter { vc in
             // Don't ever allow a conversation view controller to be transfered on the master
             // stack when expanding from collapsed mode. This should never happen.
             guard let vc = vc as? ConversationViewController else { return true }
@@ -576,6 +580,12 @@ extension ConversationSplitViewController: UINavigationControllerDelegate {
 }
 
 @objc extension ChatListViewController {
+    var conversationSplitViewController: ConversationSplitViewController? {
+        return splitViewController as? ConversationSplitViewController
+    }
+}
+
+extension StoriesViewController {
     var conversationSplitViewController: ConversationSplitViewController? {
         return splitViewController as? ConversationSplitViewController
     }

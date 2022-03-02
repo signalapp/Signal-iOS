@@ -56,6 +56,7 @@ public extension ChatListViewController {
         // Push a separate instance of this view using "archive" mode.
         let chatList = ChatListViewController()
         chatList.chatListMode = .archive
+        chatList.hidesBottomBarWhenPushed = true
 
         if offerMultiSelectMode {
             chatList.navigationItem.rightBarButtonItem = UIBarButtonItem(

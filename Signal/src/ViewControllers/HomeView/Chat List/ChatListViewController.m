@@ -395,7 +395,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ChatListModeInbox:
             // TODO: Should our app name be translated?  Probably not.
             self.title
-                = NSLocalizedString(@"HOME_VIEW_TITLE_INBOX", @"Title for the conversation list's default mode.");
+                = NSLocalizedString(@"CHAT_LIST_TITLE_INBOX", @"Title for the chat list's default mode.");
             break;
         case ChatListModeArchive:
             self.title
