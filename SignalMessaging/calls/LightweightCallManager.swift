@@ -39,7 +39,7 @@ open class LightweightCallManager: NSObject, Dependencies {
             }
             return self.fetchPeekInfo(for: thread)
 
-        }.then { (info: PeekInfo) -> Guarantee<Void> in
+        }.then(on: .sharedUtility) { (info: PeekInfo) -> Guarantee<Void> in
             // We only want to update the call message with the participants of the peekInfo if the peek's
             // era matches the era for the expected message. This wouldn't be the case if say, a device starts
             // fetching a whole batch of messages offline and it includes the group call signaling messages from
@@ -51,9 +51,9 @@ open class LightweightCallManager: NSObject, Dependencies {
                 Logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
                 return Guarantee.value(())
             }
-        }.done {
+        }.done(on: .sharedUtility) {
             completion?()
-        }.catch(on: .global()) { error in
+        }.catch(on: .sharedUtility) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
             } else {
@@ -105,7 +105,7 @@ open class LightweightCallManager: NSObject, Dependencies {
                 newMessage.anyInsert(transaction: writeTx)
                 self.postUserNotificationIfNecessary(groupCallMessage: newMessage, transaction: writeTx)
             }
-        }.recover { error in
+        }.recover(on: .sharedUtility) { error in
             owsFailDebug("Failed to update call message with error: \(error)")
         }
     }
@@ -123,17 +123,15 @@ open class LightweightCallManager: NSObject, Dependencies {
     }
 
     fileprivate func fetchPeekInfo(for thread: TSGroupThread) -> Promise<PeekInfo> {
-        firstly {
-            self.fetchGroupMembershipProof(for: thread)
+        AssertNotOnMainThread()
 
-        }.map { proof in
+        return firstly { () -> Promise<Data> in
+            self.fetchGroupMembershipProof(for: thread)
+        }.then(on: .main) { (membershipProof: Data) -> Guarantee<PeekInfo> in
             let membership = try self.databaseStorage.read {
                 try self.groupMemberInfo(for: thread, transaction: $0)
             }
-            return (proof, membership)
-
-        }.then { (proof, membership) in
-            self.managerLite.peekGroupCall(sfuUrl: self.sfuUrl, membershipProof: proof, groupMembers: membership)
+            return self.managerLite.peekGroupCall(sfuUrl: self.sfuUrl, membershipProof: membershipProof, groupMembers: membership)
         }
     }
 
@@ -167,7 +165,7 @@ extension LightweightCallManager {
 
         return firstly {
             try groupsV2Impl.fetchGroupExternalCredentials(groupModel: groupModel)
-        }.map { (credential) -> Data in
+        }.map(on: .sharedUtility) { (credential) -> Data in
             guard let tokenData = credential.token?.data(using: .utf8) else {
                 throw OWSAssertionError("Invalid credential")
             }
@@ -236,7 +234,7 @@ extension LightweightCallManager: CallManagerLiteDelegate {
             return request
         }
 
-        firstly(on: .sharedUtility) {
+        firstly {
             session.dataTaskPromise(url, method: method.httpMethod, headers: headers, body: body)
         }.done(on: .main) { response in
             callManagerLite.receivedHttpResponse(
