@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>WebRTCCommit</key>
-		<string>1580a94b2a5e56861b3991b16f97064cea7ca766 Production build of v2.18.1</string>
+		<string>630bb55bd76d6c50e72f6dd6bb68ce6a614f2732 Factor out group call peeking into CallManagerLite</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>

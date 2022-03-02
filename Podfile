@@ -11,7 +11,7 @@ source 'https://cdn.cocoapods.org/'
 
 pod 'SwiftProtobuf', ">= 1.14.0"
 
-pod 'SignalCoreKit', git: 'git@github.com:signalapp/SignalCoreKit', testspecs: ["Tests"]
+pod 'SignalCoreKit', git: 'git@github.com:signalapp/SignalCoreKit-Private', testspecs: ["Tests"], branch: 'mlin/PR/OffMainHelper'
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
 pod 'SignalClient', git: 'https://github.com/signalapp/libsignal-client.git', testspecs: ["Tests"]
@@ -24,6 +24,7 @@ pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-ma
 # pod 'blurhash', path: '../blurhash'
 
 pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
+pod 'SignalRingRTC', path: 'ThirdParty/SignalRingRTC.podspec', inhibit_warnings: true
 
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'SignalArgon2', path: '../Argon2', testspecs: ["Tests"]
@@ -77,7 +78,6 @@ target 'Signal' do
 
   # Pods only available inside the main Signal app
   pod 'SSZipArchive', :inhibit_warnings => true
-  pod 'SignalRingRTC', path: 'ThirdParty/SignalRingRTC.podspec', inhibit_warnings: true
   ui_pods
 
   target 'SignalTests' do
