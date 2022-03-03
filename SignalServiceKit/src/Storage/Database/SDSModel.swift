@@ -140,5 +140,29 @@ public extension SDSModel {
 
 public protocol SDSCursor {
     associatedtype Model: SDSModel
-    func next() throws -> Model?
+    mutating func next() throws -> Model?
+}
+
+public struct SDSMappedCursor<Cursor: SDSCursor, Element> {
+    fileprivate var cursor: Cursor
+    fileprivate let transform: (Cursor.Model) throws -> Element?
+
+    public mutating func next() throws -> Element? {
+        while let next = try cursor.next() {
+            if let transformed = try transform(next) {
+                return transformed
+            }
+        }
+        return nil
+    }
+}
+
+public extension SDSCursor {
+    func map<Element>(transform: @escaping (Model) throws -> Element) -> SDSMappedCursor<Self, Element> {
+        return compactMap(transform: transform)
+    }
+
+    func compactMap<Element>(transform: @escaping (Model) throws -> Element?) -> SDSMappedCursor<Self, Element> {
+        return SDSMappedCursor(cursor: self, transform: transform)
+    }
 }

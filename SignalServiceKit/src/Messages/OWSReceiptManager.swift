@@ -215,16 +215,20 @@ public extension OWSReceiptManager {
             repeat {
                 batchQuotaRemaining = maxBatchSize
                 self.databaseStorage.write { transaction in
-                    interactionFinder.enumerateUnreadMessages(beforeSortId: sortId,
-                                                              transaction: transaction.unwrapGrdbRead) { readItem, stop in
-                        readItem.markAsRead(atTimestamp: readTimestamp,
-                                            thread: thread,
-                                            circumstance: circumstance,
-                                            transaction: transaction)
-                        batchQuotaRemaining -= 1
-                        if batchQuotaRemaining == 0 {
-                            stop.pointee = true
+                    var cursor = interactionFinder.fetchUnreadMessages(beforeSortId: sortId,
+                                                                       transaction: transaction.unwrapGrdbRead)
+                    do {
+                        while batchQuotaRemaining > 0, let readItem = try cursor.next() {
+                            readItem.markAsRead(atTimestamp: readTimestamp,
+                                                thread: thread,
+                                                circumstance: circumstance,
+                                                transaction: transaction)
+                            batchQuotaRemaining -= 1
                         }
+                    } catch {
+                        owsFailDebug("unexpected failure fetching unread messages: \(error)")
+                        // Bail out of the outer loop by leaving the quota > 0;
+                        // we're likely to hit the error multiple times.
                     }
                 }
                 // Continue until we process a batch and have some quota left.
@@ -235,24 +239,30 @@ public extension OWSReceiptManager {
                 batchQuotaRemaining = maxBatchSize
                 self.databaseStorage.write { transaction in
                     var receiptsForMessage: [OWSLinkedDeviceReadReceipt] = []
-                    interactionFinder.enumerateMessagesWithUnreadReactions(beforeSortId: sortId,
-                                                                           transaction: transaction.unwrapGrdbRead) {
-                        message, stop in
+                    var cursor = interactionFinder.fetchMessagesWithUnreadReactions(
+                        beforeSortId: sortId,
+                        transaction: transaction.unwrapGrdbRead)
 
-                        message.markUnreadReactionsAsRead(transaction: transaction)
-                        if let localAddress = localAddress {
-                            let receipt = OWSLinkedDeviceReadReceipt(senderAddress: localAddress,
-                                                                     messageUniqueId: message.uniqueId,
-                                                                     messageIdTimestamp: message.timestamp,
-                                                                     readTimestamp: readTimestamp)
-                            receiptsForMessage.append(receipt)
-                        }
+                    do {
+                        while batchQuotaRemaining > 0, let message = try cursor.next() {
+                            message.markUnreadReactionsAsRead(transaction: transaction)
 
-                        batchQuotaRemaining -= 1
-                        if batchQuotaRemaining == 0 {
-                            stop.pointee = true
+                            if let localAddress = localAddress {
+                                let receipt = OWSLinkedDeviceReadReceipt(senderAddress: localAddress,
+                                                                         messageUniqueId: message.uniqueId,
+                                                                         messageIdTimestamp: message.timestamp,
+                                                                         readTimestamp: readTimestamp)
+                                receiptsForMessage.append(receipt)
+                            }
+
+                            batchQuotaRemaining -= 1
                         }
+                    } catch {
+                        owsFailDebug("unexpected failure fetching messages with unread reactions: \(error)")
+                        // Bail out of the outer loop by leaving the quota > 0;
+                        // we're likely to hit the error multiple times.
                     }
+
                     if !receiptsForMessage.isEmpty {
                         let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread,
                                                                              readReceipts: receiptsForMessage)
@@ -273,12 +283,17 @@ public extension OWSReceiptManager {
                     transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(sortId > 0)
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        interactionFinder.enumerateUnreadMessages(beforeSortId: sortId,
-                                                  transaction: transaction.unwrapGrdbRead) { readItem, _ in
-            readItem.markAsRead(atTimestamp: readTimestamp,
-                                thread: thread,
-                                circumstance: circumstance,
-                                transaction: transaction)
+        var cursor = interactionFinder.fetchUnreadMessages(beforeSortId: sortId,
+                                                           transaction: transaction.unwrapGrdbRead)
+        do {
+            while let readItem = try cursor.next() {
+                readItem.markAsRead(atTimestamp: readTimestamp,
+                                    thread: thread,
+                                    circumstance: circumstance,
+                                    transaction: transaction)
+            }
+        } catch {
+            owsFailDebug("unexpected failure fetching unread messages: \(error)")
         }
     }
 
