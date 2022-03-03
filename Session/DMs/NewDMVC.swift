@@ -177,6 +177,7 @@ private final class EnterPublicKeyVC : UIViewController {
     weak var NewDMVC: NewDMVC!
     private var isKeyboardShowing = false
     private var bottomConstraint: NSLayoutConstraint!
+    private let bottomMargin: CGFloat = UIDevice.current.isIPad ? Values.largeSpacing : 0
     
     // MARK: Components
     private lazy var publicKeyTextView: TextView = {
@@ -214,6 +215,11 @@ private final class EnterPublicKeyVC : UIViewController {
         result.axis = .horizontal
         result.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         result.distribution = .fillEqually
+        if (UIDevice.current.isIPad) {
+            let margin = (UIScreen.main.bounds.width - result.spacing - Values.iPadButtonWidth * 2) / 2
+            result.layoutMargins = UIEdgeInsets(top: 0, left: margin, bottom: 0, right: margin)
+            result.isLayoutMarginsRelativeArrangement = true
+        }
         return result
     }()
     
@@ -251,7 +257,7 @@ private final class EnterPublicKeyVC : UIViewController {
         mainStackView.pin(.leading, to: .leading, of: view)
         mainStackView.pin(.top, to: .top, of: view)
         view.pin(.trailing, to: .trailing, of: mainStackView)
-        bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView)
+        bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView, withInset: bottomMargin)
         // Width constraint
         view.set(.width, to: UIScreen.main.bounds.width)
         // Dismiss keyboard on tap
@@ -292,7 +298,7 @@ private final class EnterPublicKeyVC : UIViewController {
         guard !isKeyboardShowing else { return }
         isKeyboardShowing = true
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
-        bottomConstraint.constant = newHeight
+        bottomConstraint.constant = newHeight + bottomMargin
         UIView.animate(withDuration: 0.25) {
             [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
                 $0.alpha = 0
@@ -305,7 +311,7 @@ private final class EnterPublicKeyVC : UIViewController {
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         guard isKeyboardShowing else { return }
         isKeyboardShowing = false
-        bottomConstraint.constant = 0
+        bottomConstraint.constant = bottomMargin
         UIView.animate(withDuration: 0.25) {
             [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
                 $0.alpha = 1

@@ -175,6 +175,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         buttonContainer.axis = .horizontal
         buttonContainer.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         buttonContainer.distribution = .fillEqually
+        if (UIDevice.current.isIPad) {
+            let margin = (UIScreen.main.bounds.width - buttonContainer.spacing - Values.iPadButtonWidth * 2) / 2
+            buttonContainer.layoutMargins = UIEdgeInsets(top: 0, left: margin, bottom: 0, right: margin)
+            buttonContainer.isLayoutMarginsRelativeArrangement = true
+        }
         // Top stack view
         let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, publicKeyLabel, buttonContainer ])
         topStackView.axis = .vertical
