@@ -711,7 +711,7 @@ private class TopBar: UIView {
 
     private let cameraControlsContainerView: UIStackView
     let flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
-    let batchModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
+    let batchModeButton = CameraOverlayButton(image: ButtonImages.batchModeOff, userInterfaceStyleOverride: .dark)
 
     let recordingTimerView = RecordingTimerView(frame: .zero)
 
