@@ -282,9 +282,9 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController) {
-        if !photoCaptureViewController.isInBatchMode, attachmentCount == 1, case .camera(_) = attachmentDraftCollection.attachmentDrafts.last {
+        if !photoCaptureViewController.isInBatchMode, attachmentCount == 1, case .camera = attachmentDraftCollection.attachmentDrafts.last {
             // User is navigating back to the camera screen, indicating they want to discard the previously captured item.
-           discardDraft()
+            discardDraft()
         }
     }
 
