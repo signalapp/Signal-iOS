@@ -44,6 +44,7 @@ public final class Values : NSObject {
     @objc public static let onboardingButtonBottomOffset = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(72)
     
     // MARK: - iPad Sizes
-    @objc public static let iPadButtonWidth = UIScreen.main.bounds.width / 2
+    @objc public static let iPadModalWidth = UIScreen.main.bounds.width / 2
+    @objc public static let iPadButtonWidth = CGFloat(196)
     @objc public static let iPadButtonSpacing = CGFloat(32)
 }

@@ -53,7 +53,7 @@ class Modal: BaseVC, UIGestureRecognizerDelegate {
     private func setUpViewHierarchy() {
         view.addSubview(contentView)
         if UIDevice.current.isIPad {
-            contentView.set(.width, to: Values.iPadButtonWidth)
+            contentView.set(.width, to: Values.iPadModalWidth)
             contentView.center(in: view)
         } else {
             contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Values.veryLargeSpacing).isActive = true
