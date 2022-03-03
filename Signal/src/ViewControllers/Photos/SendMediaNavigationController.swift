@@ -313,6 +313,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             if let owsNavBar = presentedViewController.navigationBar as? OWSNavigationBar {
                 owsNavBar.switchToStyle(.alwaysDark)
             }
+            presentedViewController.ows_prefersStatusBarHidden = true
             self.presentFullScreen(presentedViewController, animated: true)
         }
     }
