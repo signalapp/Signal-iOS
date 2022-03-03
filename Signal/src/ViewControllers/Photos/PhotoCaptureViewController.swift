@@ -1403,7 +1403,7 @@ private class CameraZoomSelectionControl: PillView {
             textLabel.autoPinEdgesToSuperviewEdges()
         }
 
-        @available(*, unavailable, message: "Use init(frame:) instead")
+        @available(*, unavailable, message: "Use init(camera:defaultZoomFactor:) instead")
         required init?(coder: NSCoder) {
             notImplemented()
         }
