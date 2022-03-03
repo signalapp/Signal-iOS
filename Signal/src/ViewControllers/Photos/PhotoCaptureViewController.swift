@@ -787,7 +787,7 @@ private class BottomBar: UIView {
     }
 
     let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
-    let switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
+    let switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, backgroundStyle: .solid, userInterfaceStyleOverride: .dark)
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
 
     let captureControl = CameraCaptureControl(axis: .horizontal)
