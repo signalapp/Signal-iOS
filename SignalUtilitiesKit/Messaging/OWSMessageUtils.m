@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
             TSThread *thread = [TSThread fetchObjectWithUniqueID:groupID transaction:transaction];
             
             // Only increase the count for message requests
-            if (!thread.isMessageRequest) { continue; }
+            if (![thread isMessageRequestUsingTransaction:transaction]) { continue; }
             
             [unreadMessages enumerateKeysAndObjectsInGroup:groupID
                 usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
