@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import SignalUI
 
 @objc
 public class GroupInviteLinksUI: UIView {
@@ -220,9 +221,14 @@ class GroupInviteLinksActionSheet: ActionSheetController {
                 self?.loadGroupAvatar(avatarUrlPath: avatarUrlPath)
             }
         }.catch { [weak self] error in
-            if case GroupsV2Error.expiredGroupInviteLink = error {
+            switch error {
+            case GroupsV2Error.expiredGroupInviteLink:
                 self?.applyExpiredGroupInviteLink()
-            } else {
+            case GroupsV2Error.localUserBlockedFromJoining:
+                // TODO: Do we expect this error here? How should this appear?
+                Logger.warn("User blocked: \(error)")
+                fallthrough
+            default:
                 // TODO: Retry errors?
                 owsFailDebugUnlessNetworkFailure(error)
             }
@@ -382,20 +388,32 @@ class GroupInviteLinksActionSheet: ActionSheetController {
                 modalActivityIndicator.dismiss {
                     AssertIsOnMainThread()
 
-                    let title = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE",
-                                                  comment: "Title indicating that the group invite link has expired in the 'group invite link' action sheet.")
-                    let message: String
-                    if case GroupsV2Error.expiredGroupInviteLink = error {
-                        message = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
-                                                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
-                    } else if error.isNetworkConnectivityFailure {
-                        message = NSLocalizedString("GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
-                                                    comment: "Error message the attempt to request to join the group failed due to network connectivity.")
-                    } else {
-                        message = NSLocalizedString("GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE",
-                                                    comment: "Error message the attempt to request to join the group failed.")
-                    }
-                    self.showActionSheet(title: title, message: message)
+                    self.showActionSheet(
+                        title: NSLocalizedString(
+                            "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE",
+                            comment: "Title indicating that the group invite link has expired in the 'group invite link' action sheet."),
+
+                        message: {
+                            switch error {
+                            case GroupsV2Error.expiredGroupInviteLink:
+                                return NSLocalizedString(
+                                    "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
+                                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
+                            case GroupsV2Error.localUserBlockedFromJoining:
+                                return NSLocalizedString(
+                                    "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
+                                    comment: "Subtitle indicating that the local user has been blocked from joining the group")
+                            case _ where error.isNetworkConnectivityFailure:
+                                return NSLocalizedString(
+                                    "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
+                                    comment: "Error message the attempt to request to join the group failed due to network connectivity.")
+                            default:
+                                return NSLocalizedString(
+                                    "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE",
+                                    comment: "Error message the attempt to request to join the group failed.")
+                            }
+                        }()
+                    )
                 }
             }
         }

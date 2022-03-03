@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 
 fileprivate extension CVComponentState {
 
@@ -110,12 +111,17 @@ extension CVComponentState {
                 Self.markGroupInviteLinkAsExpired(url: url, isExpired: false)
                 touchMessage()
             }.catch(on: .global()) { (error: Error) in
-                // TODO: Add retry?
-                if case GroupsV2Error.expiredGroupInviteLink = error {
+                switch error {
+                case GroupsV2Error.expiredGroupInviteLink:
                     Logger.warn("Error: \(error)")
                     Self.markGroupInviteLinkAsExpired(url: url, isExpired: true)
                     touchMessage()
-                } else {
+                case GroupsV2Error.localUserBlockedFromJoining:
+                    // TODO: Do we expect this error here? How should this appear?
+                    Logger.warn("User blocked: \(error)")
+                    fallthrough
+                default:
+                    // TODO: Add retry?
                     owsFailDebugUnlessNetworkFailure(error)
                 }
             }

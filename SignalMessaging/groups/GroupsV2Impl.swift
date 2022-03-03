@@ -871,7 +871,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         case removeFromGroup
         case fetchGroupUpdates
         case ignore
-        case expiredGroupInviteLink
+        case reportInvalidOrBlockedGroupLink
         case localUserIsNotARequestingMember
     }
 
@@ -922,53 +922,60 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 case 403:
                     // 403 indicates that we are no longer in the group for
                     // many (but not all) group v2 service requests.
+                    switch behavior403 {
+                    case .fail:
+                        // We should never receive 403 when creating groups.
+                        owsFailDebug("Unexpected 403.")
+                        break
+                    case .ignore:
+                        // We can't remove the local user from the group on 403
+                        // when fetching change actions.
+                        // For example, user might just be joining the group
+                        // using an invite OR have just been re-added after leaving.
+                        owsAssertDebug(groupId != nil, "Expecting a groupId for this path")
+                        break
+                    case .removeFromGroup:
+                        guard let groupId = groupId else {
+                            owsFailDebug("GroupId must be set to remove from group")
+                            break
+                        }
+                        // If we receive 403 when trying to fetch group state,
+                        // we have left the group, been removed from the group
+                        // or had our invite revoked and we should make sure
+                        // group state in the database reflects that.
+                        self.databaseStorage.write { transaction in
+                            GroupManager.handleNotInGroup(groupId: groupId, transaction: transaction)
+                        }
 
-                    if let groupId = groupId {
-                        switch behavior403 {
-                        case .fail:
-                            // We should never receive 403 when creating groups.
-                            owsFailDebug("Unexpected 403.")
+                    case .fetchGroupUpdates:
+                        guard let groupId = groupId else {
+                            owsFailDebug("GroupId must be set to fetch group updates")
                             break
-                        case .ignore:
-                            // We can't remove the local user from the group on 403
-                            // when fetching change actions.
-                            // For example, user might just be joining the group
-                            // using an invite OR have just been re-added after leaving.
-                            break
-                        case .removeFromGroup:
-                            // If we receive 403 when trying to fetch group state,
-                            // we have left the group, been removed from the group
-                            // or had our invite revoked and we should make sure
-                            // group state in the database reflects that.
-                            self.databaseStorage.write { transaction in
-                                GroupManager.handleNotInGroup(groupId: groupId,
-                                                              transaction: transaction)
-                            }
-                        case .fetchGroupUpdates:
-                            // Service returns 403 if client tries to perform an
-                            // update for which it is not authorized (e.g. add a
-                            // new member if membership access is admin-only).
-                            // The local client can't assume that 403 means they
-                            // are not in the group. Therefore we "update group
-                            // to latest" to check for and handle that case (see
-                            // previous case).
-                            self.tryToUpdateGroupToLatest(groupId: groupId)
-                        case .expiredGroupInviteLink:
-                            owsFailDebug("groupId should not be set in this code path.")
-                            throw GroupsV2Error.expiredGroupInviteLink
-                        case .localUserIsNotARequestingMember:
-                            owsFailDebug("groupId should not be set in this code path.")
-                            throw GroupsV2Error.localUserIsNotARequestingMember
                         }
-                    } else {
-                        // We should only receive 403 when groupId is not nil.
-                        if behavior403 == .expiredGroupInviteLink {
-                            throw GroupsV2Error.expiredGroupInviteLink
-                        } else if behavior403 == .localUserIsNotARequestingMember {
-                            throw GroupsV2Error.localUserIsNotARequestingMember
+                        // Service returns 403 if client tries to perform an
+                        // update for which it is not authorized (e.g. add a
+                        // new member if membership access is admin-only).
+                        // The local client can't assume that 403 means they
+                        // are not in the group. Therefore we "update group
+                        // to latest" to check for and handle that case (see
+                        // previous case).
+                        self.tryToUpdateGroupToLatest(groupId: groupId)
+
+                    case .reportInvalidOrBlockedGroupLink:
+                        owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
+
+                        // TODO: Fix this check once server API is finalized
+                        if let responseHeaders = error.httpResponseHeaders,
+                           responseHeaders.hasValueForHeader("X-Signal-Forbidden-Reason"),
+                           false /* Disabled until finalized */ {
+                            throw GroupsV2Error.localUserBlockedFromJoining
                         } else {
-                            owsFailDebug("Missing groupId.")
+                            throw GroupsV2Error.expiredGroupInviteLink
                         }
+
+                    case .localUserIsNotARequestingMember:
+                        owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
+                        throw GroupsV2Error.localUserIsNotARequestingMember
                     }
 
                     throw GroupsV2Error.localUserNotInGroup
@@ -1541,7 +1548,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let behavior403: Behavior403 = (inviteLinkPassword != nil
-                                                ? .expiredGroupInviteLink
+                                                ? .reportInvalidOrBlockedGroupLink
                                                 : .localUserIsNotARequestingMember)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: nil,
@@ -1706,7 +1713,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              behavior403: .expiredGroupInviteLink,
+                                              behavior403: .reportInvalidOrBlockedGroupLink,
                                               behavior404: .fail)
         }.then(on: .global()) { (response: HTTPResponse) -> Promise<TSGroupThread> in
             guard let changeActionsProtoData = response.responseBodyData else {
