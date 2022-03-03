@@ -1,2 +1,2 @@
-• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
-• Notifications now let you know if someone has replied to your message or mentioned you
+Kamera u aplikaciji  je osvježena tako da možete snimati fotografije i videozapise sa stilom
+Obavijesti vas sada obavještavaju je li netko odgovorio na vašu poruku ili vas je spomenuo

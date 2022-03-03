@@ -1,2 +1,2 @@
-• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
-• Notifications now let you know if someone has replied to your message or mentioned you
+Signalin sisäistä kamerasovellusta on tuunattu tyylikkäämmäksi.
+Saat nyt ilmoituksen mikäli joku on vastannut viestiisi tai maininnut sinut ryhmäkeskustelussa.

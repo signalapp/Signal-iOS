@@ -1,2 +1,2 @@
-• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
-• Notifications now let you know if someone has replied to your message or mentioned you
+• Het camerascherm binnen de Signal-app is vernieuwd
+• Bij meldingen wordt vanaf nu onderscheid gemaakt tussen een reactie op jouw bericht en een vermelding van je naam

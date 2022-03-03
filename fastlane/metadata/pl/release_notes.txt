@@ -1,2 +1,2 @@
-• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
-• Notifications now let you know if someone has replied to your message or mentioned you
+• Wbudowany interfejs aparatu został odświeżony, aby robienie zdjęć i filmików było przyjemniejsze
+• Powiadomienia dadzą Ci teraz znać, jeśli ktoś odpowiedział na Twoją wiadomość, albo Cię wspomniał

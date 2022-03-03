@@ -1352,7 +1352,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Podrška putem e-pošte";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Izvoz zapisnika";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Pošalji sebi";
@@ -4280,10 +4280,10 @@
 "PIN_ACTION" = "Prikvači";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Nije moguće stvoriti novi PIN. Vaš postojeći PIN je onemogućen. Provjerite vašu mrežnu vezu i pokušajte ponovno.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "Promjena PIN-a nije uspjela";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN mora imati najmanje 4 znaka";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-ovi se ne podudaraju. Pokušajte ponovno.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Provjerite vezu i pokušajte ponovno.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Nema mrežne veze";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN mora imati najmanje 4 znamenke";
@@ -4355,10 +4355,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Onemogući Zaključavanje registracije?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Izrada PIN-a je uspjela, ali zaključavanje registracije nije moguće. Provjerite mrežnu vezu i pokušajte ponovno.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Omogućavanje zaključavanja registracije nije uspjelo";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Onemogući PIN";
@@ -4379,7 +4379,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Stvaranje PIN-a nije uspjelo";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Nije moguće stvoriti PIN. Provjerite vašu mrežnu vezu i pokušajte ponovno.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Kako bismo vam pomogli da zapamtite vaš PIN, zamoliti ćemo vas da ga povremeno unesete. S vremenom ćemo vas rijeđe tražiti.";
@@ -4427,7 +4427,7 @@
 "PINS_MEGAPHONE_ACTION" = "Stvori PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "Završite stvaranje vašeg PIN-a.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Podsjetiti ćemo vas kasnije. Stvaranje PIN-a postati će obvezno za %ld dana.";
