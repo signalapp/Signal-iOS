@@ -480,7 +480,7 @@ class PhotoCapture: NSObject {
             cameraMap[.ultraWide] = rearCameraZoomFactorMultiplier
         }
         if avTypes.contains(.builtInTelephotoCamera), let lastZoomFactor = zoomFactors.last {
-            cameraMap[.telephoto] = rearCameraZoomFactorMultiplier * CGFloat(lastZoomFactor.floatValue)
+            cameraMap[.telephoto] = rearCameraZoomFactorMultiplier * lastZoomFactor
         }
         if !Platform.isSimulator {
             owsAssertDebug(avTypes.contains(.builtInWideAngleCamera))
@@ -970,7 +970,7 @@ protocol CaptureOutputDelegate: AnyObject {
 
 protocol ImageCaptureOutput: AnyObject {
     var availableRearDeviceTypes: [AVCaptureDevice.DeviceType] { get }
-    var rearCameraSwitchOverZoomFactors: [NSNumber] { get }
+    var rearCameraSwitchOverZoomFactors: [CGFloat] { get }
     var avOutput: AVCaptureOutput { get }
     var flashMode: AVCaptureDevice.FlashMode { get set }
     func videoDevice(for deviceType: AVCaptureDevice.DeviceType, position: AVCaptureDevice.Position) -> AVCaptureDevice?
@@ -1316,10 +1316,10 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
     }()
 
     var availableRearDeviceTypes: [AVCaptureDevice.DeviceType] {
-        return availableRearDeviceMap.keys.compactMap { $0 }
+        return availableRearDeviceMap.keys.map { $0 }
     }
 
-    lazy var rearCameraSwitchOverZoomFactors: [NSNumber] = {
+    lazy var rearCameraSwitchOverZoomFactors: [CGFloat] = {
         let deviceMap = availableRearDeviceMap
 
         guard #available(iOS 13, *) else {
@@ -1331,7 +1331,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
         }
 
         if let multiCameraDevice = deviceMap[.builtInTripleCamera] ?? deviceMap[.builtInDualCamera] {
-            return multiCameraDevice.virtualDeviceSwitchOverVideoZoomFactors
+            return multiCameraDevice.virtualDeviceSwitchOverVideoZoomFactors.map { CGFloat(truncating: $0) }
         }
         return []
     }()
