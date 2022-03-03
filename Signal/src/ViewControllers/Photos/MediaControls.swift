@@ -42,8 +42,8 @@ class CameraCaptureControl: UIView {
 
     private let outerCircleSizeConstraint: NSLayoutConstraint
     private let innerCircleSizeConstraint: NSLayoutConstraint
-    private var slidingCircleHPositionConstraint: NSLayoutConstraint!
-    private var slidingCircleVPositionConstraint: NSLayoutConstraint!
+    private var slidingCircleHPositionConstraint: NSLayoutConstraint?
+    private var slidingCircleVPositionConstraint: NSLayoutConstraint?
 
     private lazy var slidingCircleView: CircleView = {
         let view = CircleView(diameter: CameraCaptureControl.recordingLockControlSize)
@@ -228,13 +228,15 @@ class CameraCaptureControl: UIView {
         // 2. Slider.
         insertSubview(slidingCircleView, belowSubview: shutterButtonInnerCircle)
         slidingCircleView.translatesAutoresizingMaskIntoConstraints = false
-        slidingCircleHPositionConstraint = slidingCircleView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor)
-        var horizontalConstraints: [NSLayoutConstraint] = [ slidingCircleHPositionConstraint ]
+        let circleHPositionConstraint = slidingCircleView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor)
+        var horizontalConstraints: [NSLayoutConstraint] = [ circleHPositionConstraint ]
         horizontalConstraints.append(slidingCircleView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor))
+        slidingCircleHPositionConstraint = circleHPositionConstraint
 
-        slidingCircleVPositionConstraint = slidingCircleView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor)
-        var verticalConstraints: [NSLayoutConstraint] = [ slidingCircleVPositionConstraint ]
+        let circleVPositionConstraint = slidingCircleView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor)
+        var verticalConstraints: [NSLayoutConstraint] = [ circleVPositionConstraint ]
         verticalConstraints.append(slidingCircleView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor))
+        slidingCircleVPositionConstraint = circleVPositionConstraint
 
         // 3. Lock Icon
         addSubview(lockIconView)
@@ -438,21 +440,25 @@ class CameraCaptureControl: UIView {
     private func updateHorizontalTracking(xOffset: CGFloat) {
         let effectiveDistance = xOffset - Self.minDistanceBeforeActivatingLockSlider
         let distanceToLock = abs(lockIconView.center.x - stopButton.center.x)
-        let trackingPosition = effectiveDistance.clamp(0, distanceToLock)
-        slidingCircleHPositionConstraint.constant = trackingPosition
+        if let positionConstraint = slidingCircleHPositionConstraint {
+            let trackingPosition = effectiveDistance.clamp(0, distanceToLock)
+            positionConstraint.constant = trackingPosition
+        }
         sliderTrackingProgress = (effectiveDistance / distanceToLock).clamp(0, 1)
 
-        Logger.verbose("xOffset: \(xOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), trackingPosition: \(trackingPosition), progress: \(sliderTrackingProgress)")
+        Logger.debug("xOffset: \(xOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), progress: \(sliderTrackingProgress)")
     }
 
     private func updateVerticalTracking(yOffset: CGFloat) {
         let effectiveDistance = yOffset - Self.minDistanceBeforeActivatingLockSlider
         let distanceToLock = abs(lockIconView.center.y - stopButton.center.y)
-        let trackingPosition = effectiveDistance.clamp(0, distanceToLock)
-        slidingCircleVPositionConstraint.constant = trackingPosition
+        if let positionConstraint = slidingCircleVPositionConstraint {
+            let trackingPosition = effectiveDistance.clamp(0, distanceToLock)
+            positionConstraint.constant = trackingPosition
+        }
         sliderTrackingProgress = (effectiveDistance / distanceToLock).clamp(0, 1)
 
-        Logger.verbose("yOffset: \(yOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), trackingPosition: \(trackingPosition), progress: \(sliderTrackingProgress)")
+        Logger.debug("yOffset: \(yOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), progress: \(sliderTrackingProgress)")
     }
 
     // MARK: - Button Actions
