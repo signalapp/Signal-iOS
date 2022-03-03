@@ -15,6 +15,8 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
         super.setUp()
         aliceClient = FakeSignalClient.generate(e164Identifier: "+122233alice")
         bobClient = FakeSignalClient.generate(e164Identifier: "+12223334bob")
+
+        tsAccountManager.registerForTests(withLocalNumber: "+13235551234", uuid: UUID())
     }
 
     let runner = TestProtocolRunner()
