@@ -1352,7 +1352,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Написати е-листа до підтримки";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Експортувати журнали";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Надіслати собі";
@@ -4514,7 +4514,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Працюю над чимось новим";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "Про додаток";
+"PROFILE_BIO_VIEW_TITLE" = "Про себе";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Про (%@)";
@@ -4529,7 +4529,7 @@
 "PROFILE_NAME_VIEW_TITLE" = "Ваше ім'я";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
-"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Про додаток";
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Про себе";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Ім'я";

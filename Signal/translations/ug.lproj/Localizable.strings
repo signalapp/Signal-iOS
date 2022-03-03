@@ -2912,7 +2912,7 @@
 "HOME_VIEW_BLOCKED_CONVERSATION" = "چەكلەندى";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "ئاقتۇرۇش";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "ئىزدە";
 
 /* A prefix indicating that a message preview is a draft */
 "HOME_VIEW_DRAFT_PREFIX" = "ئارگىنال:";
@@ -3044,7 +3044,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "دوستلىرىڭىزنى Signal غا تەكلىپ قىلىڭ";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "ئاقتۇرۇش";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "ئىزدە";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "دوستلار تەكلىپى";
@@ -3071,7 +3071,7 @@
 "KEY_COMMAND_FOCUS_COMPOSER" = "كىرگۈزۈش بالدىقىنى فوكۇسلاش";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "GIF ئىزدەشكە يۆتكىلىڭ";
+"KEY_COMMAND_GIF_SEARCH" = "GIF ئىزدەشكە يۆتكەل";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "يېڭى گۇرۇپپا";
@@ -3161,7 +3161,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "يەرلىك تور زىيارەت ھوقۇقىنى قوزغىتىڭ";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ئات ياكى ئادرېس بويىچە ئىزدەڭ";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ئات ياكى ئادرېس بويىچە ئىزدەيدۇ";
 
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "ئورۇن تاللاڭ";
@@ -5003,7 +5003,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ئات ياكى نومۇر بويىچە ئىزدەيدۇ";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "ئاقتۇرۇش";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "ئىزدە";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "باشقا ئالاقىداشلار";

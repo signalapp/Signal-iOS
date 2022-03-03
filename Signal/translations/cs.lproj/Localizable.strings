@@ -4478,7 +4478,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Naskenovaný kód nevypadá jako bezpečnostní číslo. Používate oba aktuální verzi Signalu?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Pokud chcete ověřit bezpečnost koncového šifrování s %@, porovnete čísla výše s čísli na druhém zařízení.\n\nTaké můžete naskenovat kód z jejich telefonu, nebo je požádat o naskenování vašeho kódu.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Pokud chcete ověřit bezpečnost koncového šifrování s %@, porovnejte čísla výše s čísly na zařízení vašeho kontaktu.\n\nTaké můžete naskenovat kód z jejich telefonu, nebo je požádat o naskenování vašeho kódu.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Ověření bezpečnostního čísla";

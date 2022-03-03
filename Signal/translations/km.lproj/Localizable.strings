@@ -416,13 +416,13 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "នៅពេលអ្នកទទួលបានស្លាកសម្គាល់លើសពីមួយ អ្នកអាចជ្រើសយកស្លាកមួយណាក៏បានដើម្បីបង្ហាញអោយអ្នកដទៃបានឃើញលើគណនីអ្នក";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "អ្នកទទួលបាននូវស្លាកសម្គាល់ជំរុញ %@! ជួយកម្មវិធី Signal ក្នុងការលើកកម្ពស់ការយល់ដឹងដោយបង្ហាញស្លាកសម្គាល់លើគណនីអ្នក";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "អ្នកទទួលបាននូវស្លាកសម្គាល់ %@! ជួយកម្មវិធី Signal ក្នុងការលើកកម្ពស់ការយល់ដឹងដោយបង្ហាញស្លាកសម្គាល់លើគណនីអ្នក។";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "បិទផ្ទាំងបដា";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "អ្នកនឹងលែងទទួលសារឬការព័ត៌មានពីក្រុមនេះ";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "អ្នកនឹងលែងទទួលសារ ឬ ការធ្វើបច្ចុប្បន្នភាពព័ត៌មានពីក្រុមនេះ។";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "ហាមឃាត់";
@@ -491,16 +491,16 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "អ្នកប្រើប្រាស់ដែលបានហាមឃាត់ នឹងមិនអាចហៅ ឬផ្ញើសារមកអ្នកបានទេ។";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "ថ្មី៖ ព្រិលមុខ ឬគូរទីណាដើម្បីព្រិល។";
+"BLUR_TOOLTIP" = "ថ្មី៖ ព្រិលមុខ ឬ គូរកន្លែងណាដើម្បីឱ្យព្រិល។";
 
 /* Donation amount label for the donate to signal view */
 "BOOST_VIEW_AMOUNT_LABEL" = "កំណត់រូបិយវត្ថុ";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "និយាយ អរគុណ ហើយទទួលបានស្លាកសម្គាល់ជំរុញសម្រាប់ ៣០​ថ្ងៃ";
+"BOOST_VIEW_BODY" = "និយាយ អរគុណ ហើយទទួលបានស្លាកសម្គាល់ជំរុញសម្រាប់ ៣០​ថ្ងៃ។  ";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "ស្លាកសម្គាល់របស់អ្នកនឹងអស់សុពលភាពថ្ងៃទី %@។";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "ស្លាកសម្គាល់ជម្រុញរបស់អ្នកនឹងអស់សុពលភាពថ្ងៃទី %@។";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "បញ្ជូលចំនួនប្រាក់ដោយខ្លួនឯង";
@@ -590,7 +590,7 @@
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 ខកខានហៅចូលជាសំឡេង";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "អ្នកអាចបើកការអនុញ្ញាតចូលទៅប្រើប្រាស់មីក្រូហ្វូន នៅក្នុងការកំណត់របស់ iOS app ដើម្បីអាចធ្វើការហៅ និងថតសារជាសំឡេងក្នុង Signal";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "អ្នកអាចបើកការអនុញ្ញាតចូលទៅប្រើប្រាស់មីក្រូហ្វូន នៅក្នុងការកំណត់របស់ iOS app ដើម្បីអាចធ្វើការហៅ និងថតសារជាសំឡេងក្នុង Signal។";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "ទាមទារចូលប្រើប្រាស់ម៉ៃក្រូហ្វូន";
@@ -686,13 +686,13 @@
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "លេខទូរស័ព្ទដែលអ្នកបានបញ្ជូលមិនត្រូវគ្នាជាមួយគណនីអ្នក។";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "លេខទូរស័ព្ទថ្មីមិនត្រឹមត្រូវ។ សូមបញ្ចូលលេខទូរស័ព្ទត្រឹមត្រូវមួយ ដើម្បីចុះឈ្មោះ។";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "លេខទូរស័ព្ទថ្មីមិនត្រឹមត្រូវ។ សូមបញ្ចូលលេខទូរស័ព្ទ ដើម្បីផ្លាស់ប្តូរលេខទូរស័ព្ទ។ ";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "លេខទូរស័ព្ទចាស់មិនត្រឹមត្រូវ។ សូមបញ្ចូលលេខទូរស័ព្ទត្រឹមត្រូវមួយ ដើម្បីចុះឈ្មោះ។";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "លេខទូរស័ព្ទចាស់មិនត្រឹមត្រូវ។ សូមបញ្ចូលលេខទូរស័ព្ទត្រឹមត្រូវមួយ ដើម្បីផ្លាស់ប្តូរលេខទូរស័ព្ទ។";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "បញ្ចូលលេខកូដដែលអ្នកបានបង្កើតសម្រាប់គណនីរបស់អ្នក។ លេខកូដនេះខុសពីលេខកូដផ្ទៀងផ្ទាត់ពីសារ SMS ។";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "បញ្ចូលលេខកូដដែលអ្នកបានបង្កើតសម្រាប់គណនីនេះ។ លេខកូដនេះខុសពីលេខកូដផ្ទៀងផ្ទាត់ពីសារ SMS របស់អ្នក។";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "នេះជាការពិនិត្យម្ដងទៀតនូវពណ៌នៃការសន្ទនា";
@@ -716,7 +716,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "ស្វ័យប្រវត្តិ";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "ពណ៌នេះត្រូវបានប្រើនៅក្នុងការសន្ទនាមួយ។ តើអ្នកចង់លុបចេញពីការសន្ទនាមែនទេ?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "ពណ៌នេះត្រូវបានប្រើនៅក្នុងការសន្ទនា។ តើអ្នកចង់លុបចេញពីការសន្ទនាមែនទេ?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "ពណ៌នេះត្រូវបានប្រើនៅក្នុងការសន្ទនា %@។ តើអ្នកចង់លុបចេញពីការសន្ទនាទាំងអស់មែនទេ?";
@@ -731,7 +731,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "កែពណ៌";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "ពណ៌នេះត្រូវបានប្រើក្នុងការសន្ទនា%@។ តើអ្នកចង់រក្សារទុកការប្ដូរនេះសម្រាប់ការសន្ទនាទាំងអស់ទេ?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "ពណ៌នេះត្រូវបានប្រើក្នុងការសន្ទនានានា%@។ តើអ្នកចង់រក្សាទុកការប្ដូរទាំងនេះសម្រាប់ការសន្ទនាទាំងអស់ទេ?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "ប្ដូរពណ៌ដោយស្វ័យប្រវត្តិទៅតាមផ្ទាំងខាងក្រោយ";
@@ -767,7 +767,7 @@
 "CONFIGURE_REACTIONS" = "កំណត់ប្រតិកម្ម";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "វានឹងកំណត់កម្មវិធីឡើងវិញដោយការលុបសាររបស់អ្នក។ កម្មវិធីនេះ នឹងបិទបន្ទាប់ពីដំណើរការនេះ បានបញ្ចប់។";
+"CONFIRM_DELETE_DATA_TEXT" = "វានឹងកំណត់កម្មវិធីឡើងវិញដោយការលុបសាររបស់អ្នក។ កម្មវិធីនេះ នឹងបិទបន្ទាប់ពីដំណើរការនេះបានបញ្ចប់។";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "តើអ្នកច្បាស់ថាចង់លុបទិន្នន័យទាំងអស់ឬទេ?";
@@ -848,7 +848,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "ស្ថាប័ន";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "ដើម្បីមើលឈ្មោះទំនាក់ទំនង និងរូបភាពក្នុងការជជែករបស់អ្នក៖";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "ដើម្បីមើលឈ្មោះទំនាក់ទំនង និងរូបភាពនានាក្នុងការជជែករបស់អ្នក៖";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "ចុច “ទៅការកំណត់” ខាងក្រោម";
@@ -866,7 +866,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "បើក";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "មើលឈ្មោះទំនាក់ទំនង និងរូបភាពក្នុងការជជែករបស់អ្នក។";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "មើលឈ្មោះទំនាក់ទំនង និងរូបភាពនានាក្នុងការជជែករបស់អ្នក។";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "បើកបញ្ជីទំនាក់ទំនង?";
@@ -1025,10 +1025,10 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "ជានិច្ច";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "មានតែអ្នកគ្រប់គ្រងក្រុមទេដែលអាចផ្ញើសារក្នុងក្រុមនេះ";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "មានតែអ្នកអភិបាលក្រុមទេដែលអាចផ្ញើសារក្នុងក្រុមនេះ។";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "អ្នកអាចជ្រើសរើសការជជែកលើសពី %@";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "អ្នកមិនអាចជ្រើសរើសការសន្ទនាលើសពី %@ ទេ។ ";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "ក្រុម";
@@ -1073,7 +1073,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "បានបិទ";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ជ្រើសរើសអ្នកដែលអាចកែប្រែឈ្មោះក្រុម រូបភាព ការពណ៌នា និងកំណត់ម៉ោងសារបាត់ទៅវិញ។";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ជ្រើសរើសអ្នកដែលអាចកែប្រែឈ្មោះក្រុម រូបភាព ការពណ៌នា និងការកំណត់ម៉ោងសារដែលបាត់ទៅវិញ។ ";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "សំឡេង";
@@ -1142,7 +1142,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "កុំជូនដំណឹង ប្រសិនបើបិទ";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "ទទួលបានការជូនដំណឹងនៅពេលដែលអ្នកត្រូវបានគេហៅនៅក្នុងការសន្ទនាស្ងាត់ ៗ ?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "ទទួលបានការជូនដំណឹងនៅពេលដែលអ្នកត្រូវបានគេហៅនៅក្នុងការសន្ទនាស្ងាត់ ៗ?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "ហៅ";
@@ -1229,7 +1229,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "សមាជិកទាំងអស់";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "ជ្រើសរើសអ្នកដែលមានសិទ្ធអាចផ្ញើសារ និងចាប់ផ្ដើមការហៅចេញនៅក្នុងក្រុមនេះ។";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "ជ្រើសរើសអ្នកដែលមានសិទ្ធិអាចផ្ញើសារ និងចាប់ផ្ដើមការហៅចេញនៅក្នុងក្រុមនេះ។";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "ផ្ញើសារ";
@@ -1304,7 +1304,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "កំណត់ពណ៌ដោយខ្លួនឯង";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "អូសដើម្បីប្ដូរទិសដៅនៃពណ៌";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "អូសដើម្បីប្ដូរទិសដៅនៃជម្រាលពណ៌";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "វាអាចចំណាយពេលប៉ុន្មានទាទី។";
@@ -1388,13 +1388,13 @@
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "បរាជ័យក្នុងការលុបគណនី។ សូមប្រាកដថា Wi-Fi ឬ​ ទិន្នន័យទូរស័ព្ទត្រូវបានបើក បន្ទាប់មក សាកល្បងម្តងទៀត។";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "នេះ នឹងលុបព័ត៌មានគណនីរបស់អ្នក ប្រវត្តិរូប និងសាររបស់អ្នកទាំងអស់។";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "វានឹងលុបព័ត៌មានគណនី ប្រវត្តិរូប និងសាររបស់អ្នកទាំងអស់។";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "កំពុងលុបគណនី...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "មិនមានការតភ្ជាប់អ៊ីនធឺណិត។ សូមប្រាកដថា Wi-Fi ឬ​ ទិន្នន័យទូរស័ព្ទត្រូវបានបើក បន្ទាប់មក សាកល្បងម្តងទៀត។";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "មិនមានការតភ្ជាប់អុីនធឺណិត។ សូមប្រាកដថា Wi-Fi ឬ​ ទិន្នន័យទូរស័ព្ទត្រូវបានបើក បន្ទាប់មក សាកល្បងម្តងទៀត។";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "លេខទូរស័ព្ទ";
@@ -1406,7 +1406,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "លុបគណនី";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "លេខទូរស័ព្ទដែលអ្នកបានបញ្ជូលមិនត្រូវគ្នាជាមួយគណនីអ្នក។";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "លេខទូរស័ព្ទដែលអ្នកបានបញ្ជូលមិនត្រូវគ្នាជាមួយគណនីរបស់អ្នកទេ។";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "លុបសារទាំងអស់នៅក្នុងឈែត?";
@@ -1511,7 +1511,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "ដាក់កូដ QR នេះ ក្នុងស៊ុមនៃឧបករណ៍ផ្សេងរបស់អ្នក។";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "មើលមិនឃើញដំណឹងនៅលើឧបករណ៍ចាស់របស់អ្នកឯ";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "មើលមិនឃើញដំណឹងនៅលើឧបករណ៍ចាស់របស់អ្នកទេ?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "កំពុងរង់ចាំឧបករណ៍ផ្សេង...";
@@ -1541,7 +1541,7 @@
 "DISAPPEARING_MESSAGES" = "សារដែលមិនបង្ហាញ";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "សារនៅក្នុងការជជែកនេះ នឹងរលុបបាត់បន្ទាប់ពី %@។";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "សារនៅក្នុងការជជែកនេះនឹងរលុបបាត់បន្ទាប់ពី %@។";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "ថេរវេលាកំណត់ខ្លួនឯង";
@@ -1550,7 +1550,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "ថ្ងៃ";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "នៅពេលបើដំណើរការ រាល់សារដែលផ្ញើចេញ ចូលក្នុងការសន្ទនានេះនឹងលុបបាត់បន្ទាប់ពីបានអានរួច";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "នៅពេលបើកដំណើរការរាល់សារថ្មីៗដែលផ្ញើចេញ និងទទួលក្នុងការសន្ទនានេះនឹងលុបបាត់បន្ទាប់ពីបានអានរួច។";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "សារថ្មីៗនឹងរលុបបាត់បន្ទាប់ពី %@";
@@ -1568,7 +1568,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "វិនាទី";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "នៅពេលបើកដំណើរការ រាល់សារថ្មីដែលបានផ្ញើចេញ​ និងទទួលនៅក្នុងការសន្ទនាថ្មីដែលចាប់ផ្ដើមដោយអ្នកនឹងលុបបាត់បន្ទាប់ពីគេបានឃើញ";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "នៅពេលបើកដំណើរការ រាល់សារថ្មីៗដែលបានផ្ញើចេញ​ និងទទួលនៅក្នុងការសន្ទនាថ្មីៗដែលចាប់ផ្ដើមដោយអ្នកនឹងលុបបាត់បន្ទាប់ពីគេបានអានរួច។";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "សប្ដាហ៍";
@@ -1577,7 +1577,7 @@
 "DISMISS_BUTTON_TEXT" = "ច្រានចោល";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "បិទម៉ីនុយបរិបទ";
+"DISMISS_CONTEXT_MENU" = "បិទមុឺនុយបរិបទ";
 
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "បង្ហាញស្លាកសម្គាល់លើគណនី";
@@ -1613,7 +1613,7 @@
 "DONATION_VIEW_TITLE" = "Signal ត្រូវបានបង្កើតដោយមនុស្សដូចអ្នក។";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "Signal ប្ដេជ្ញាអភិវឌ្ឍន៍បច្ចេកវិទ្យាឯកជនភាពកូដចំហរ ដែលការពារការបញ្ចេញមតិដោយសេរី និងបង្កើតទំនាក់ទំនងដោយសុវត្ថិភាពជាសកល។ ការចូលរួមចំណែករបស់អ្នកនឹងជួយដល់បុព្វហេតុនេះ និងការអភិវឌ្ឍ និងដំណើរការរបស់កម្មវិធីមួយដែលប្រើដោយមនុស្សរាប់លាននាក់សម្រាប់ការទំនាក់ទំនងឯកជន។ គ្មានការផ្សាយពាណិជ្ជកម្ម គ្មានការតាមដាន គ្មានការលេងសើច!\n\nការបរិច្ចាគរបស់អ្នកជួយបង់ប្រាក់សម្រាប់ការអភិវឌ្ឍន៍ ម៉ាសុីនមេ និងកម្រិតបញ្ជូននៃកម្មវិធីដែលប្រើដោយមនុស្សរាប់លាននាក់ជុំវិញពិភពលោកសម្រាប់ការទំនាក់ទំនងឯកជនដែលឆាប់រហ័ស។ ";
+"DONATION_VIEW_WHY_DONATE_BODY" = "ក្រុមការងារនៅ Signal ប្ដេជ្ញាអភិវឌ្ឍន៍បច្ចេកវិទ្យាភាពឯកជនកូដចំហ ដែលការពារការបញ្ចេញមតិដោយសេរី និងបង្កើតទំនាក់ទំនងដោយសុវត្ថិភាពជាសកល។ ការចូលរួមចំណែករបស់អ្នកនឹងជួយដល់បុព្វហេតុនេះ។ គ្មានការផ្សាយពាណិជ្ជកម្ម គ្មានការតាមដាន គ្មានការលេងសើច!\n\nការបរិច្ចាគរបស់អ្នកជួយបង់ប្រាក់សម្រាប់ការអភិវឌ្ឍ ម៉ាសុីនមេ និងកម្រិតបញ្ជូននៃកម្មវិធីដែលប្រើដោយមនុស្សរាប់លាននាក់ជុំវិញពិភពលោកសម្រាប់ការទំនាក់ទំនងឯកជន និងឆាប់រហ័ស។ ";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "ហេតុអ្វីត្រូវឧបត្ថម្ភ?";
@@ -1622,13 +1622,13 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "អ្នកអាចបើកការប្រើប្រាស់ក្នុងកម្មវិធី ការកំណត់របស់ iOS។";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signalត្រូវការចូលប្រើប្រាស់លេខទំនាក់ទំនង ដើម្បីកែប្រែព័ត៌មានទំនាក់ទំនង";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal ត្រូវការចូលប្រើប្រាស់លេខទំនាក់ទំនង ដើម្បីកែប្រែព័ត៌មានទំនាក់ទំនង";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "កែប្រែក្រុម";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "អ្នកប្រើប្រាស់មួយនេះ មិនអាចបន្ថែមចូលក្នុងក្រុម លុះត្រាគេបានដំឡើង Signal។";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "អ្នកប្រើប្រាស់មួយនេះ មិនអាចបន្ថែមចូលក្នុងក្រុមហ្នឹង លុះត្រាតែគេបានដំឡើង Signal។";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "ទំហំក្រុមអតិបរមានៃសមាជិក %@ នាក់បានដល់កំណត់។";
@@ -1649,13 +1649,13 @@
 "EDIT_ITEM_COPY_ACTION" = "ថតចម្លង";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "សួស្តី\n\nថ្មីៗនេះ ខ្ញុំកំពុងប្រើប្រាស់ Signal ដើម្បីរក្សាការជជែកជាឯកជននៅលើ iPhone របស់ខ្ញុំ។ ខ្ញុំចង់ឲ្យអ្នកដំឡើងវាដែរ ដូចនេះ យើងអាចមិនទំនុកចិត្តថា មានតែអ្នកនិងខ្ញុំទេ ដែលអាចអានសារ និងស្តាប់ការហៅរបស់ពួកយើង។\n\nSignal មានសម្រាប់ iPhone និង Android។ ទាយយកវានៅទីនេះ៖ %@\n\nSignal ធ្វើការដូចកម្មវិធីផ្ញើសារដែលមានស្រាប់។ យើងអាចផ្ញើរូបភាព និងវីដេអូ ធ្វើការហៅចេញ និងចាប់ផ្តើមការជជែកជាក្រុម។ ផ្នែកដែលល្អបំផុតនោះគឺ គ្មាននរណាម្នាក់ អាចមើលឃើញផ្នែកណាមួយរបស់វា មិនសូម្បីតែមនុស្សដែលបង្កើត Signal!\n\nអ្នកអាចអានបន្ថែមអំពី Open Whisper Systems មនុស្សដែលបង្កើត Signal នៅទីនេះ៖ %@";
+"EMAIL_INVITE_BODY" = "សួស្តី\n\nថ្មីៗនេះ ខ្ញុំកំពុងប្រើប្រាស់ Signal ដើម្បីរក្សាការជជែកជាឯកជននៅលើ iPhone របស់ខ្ញុំ។ ខ្ញុំចង់ឱ្យអ្នកដំឡើងវាដែរ ដូចនេះ យើងអាចមិនទំនុកចិត្តថា មានតែអ្នកនិងខ្ញុំទេ ដែលអាចអានសារ និងស្តាប់ការហៅនានារបស់ពួកយើង។\n\nSignal មានសម្រាប់ iPhone និង Android។ ទាញយកវានៅទីនេះ៖ %@\n\nSignal ធ្វើការដូចកម្មវិធីផ្ញើសារដែលមានស្រាប់។ យើងអាចផ្ញើរូបភាព និងវីដេអូ ធ្វើការហៅចេញ និងចាប់ផ្តើមការជជែកជាក្រុម។ ផ្នែកដែលល្អបំផុតនោះគឺ គ្មាននរណាម្នាក់ អាចមើលឃើញផ្នែកណាមួយរបស់វា មិនមានសូម្បីតែអ្នកដែលបង្កើត Signal!\n\nអ្នកអាចអានបន្ថែមអំពី Open Whisper Systems អ្នកដែលបង្កើត Signal នៅទីនេះ៖ %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "តោះប្តូរទៅប្រើ Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "ឧបករណ៍មិនបានកំណត់ឲ្យផ្ញើអ៊ីម៉ែល។ ដើម្បីផ្ញើការស្នើសុំ កំណត់អ៊ីម៉ែលលើឧបករណ៍របស់អ្នក ឬផ្ញើអ៊ីម៉ែលទៅsupport@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "ឧបករណ៍របស់អ្នកមិនបានកំណត់ឲ្យផ្ញើអុីមែល។ ដើម្បីផ្ញើការស្នើសុំ កំណត់អុីមែលលើឧបករណ៍របស់អ្នក ឬ ផ្ញើអុីមែលទៅsupport@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "អ៉ីមែលមិនអាចប្រើបាន";
@@ -1805,7 +1805,7 @@
 "ERROR_NETWORK_FAILURE" = "បញ្ហាបណ្តាញ";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "សូមជួយពួកយើងធ្វើអោយ Signal កាន់តែប្រសើរឡើងដោយរាយការណ៍ពីកំហុសនានាពីក្នុងឧបករណ៍អ្នកទៅកាន់ support@signal.org%@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "សូមជួយពួកយើងធ្វើអោយ Signal កាន់តែប្រសើរឡើង ដោយរាយការណ៍ពីកំហុសនានាពីក្នុងឧបករណ៍អ្នកទៅកាន់ support@signal.org%@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal សាកល្បង៖ មានបញ្ហាមួយកើតឡើង";
@@ -1979,13 +1979,13 @@
 "GROUP_ADMIN_ONLY_WARNING" = "មានតែអ្នកអភិបាលប៉ុណ្ណោះ អាចផ្លាស់ប្តូរជម្រើសនេះ។";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "អ្នកនឹងមិនទទួលបានសំឡេងឬវីដេអូរបស់ពួកគេទេ ហើយពួកគេនឹងមិនទទួលបានរបស់អ្នកដែរ។";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "អ្នកនឹងមិនទទួលបានសំឡេង ឬ វីដេអូរបស់ពួកគេទេ ហើយពួកគេនឹងមិនទទួលបានរបស់អ្នកដែរ។";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ ត្រូវបានហាមឃាត់";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "មានតែអ្នកគ្រប់គ្រងនៃក្រុមនេះ​ អាចចាប់ផ្តើមការហៅ។";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "មានតែអ្នកអភិបាលនៃក្រុមនេះទេ​អាចចាប់ផ្តើមការហៅបាន។";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "មិនអាចហៅចេញជាក្រុមបានទេ";
@@ -2027,7 +2027,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "មិនអាចទទួលសំឡេងនិងវីដេអូពី %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "នេះអាចដោយសារ ពួកគេមិនត្រូវបានជូនដំណឹងការផ្លាស់ប្តូរលេខសុវត្ថិភាពរបស់អ្នក មានបញ្ហាជាមួយឧបករណ៍របស់ពួកគេ ឬពួកគេបានហាមឃាត់អ្នក។";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "នេះអាចដោយសារ ពួកគេមិនត្រូវបានជូនដំណឹងការផ្លាស់ប្តូរលេខសុវត្ថិភាពរបស់អ្នក មានបញ្ហាជាមួយឧបករណ៍របស់ពួកគេ ឬ ពួកគេបានហាមឃាត់អ្នក។";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "មិនអាចទទួលសំឡេងនិងវីដេអូពី %@";
@@ -2069,7 +2069,7 @@
 "GROUP_CALL_RECONNECTING" = "កំពុងតភ្ជាប់ម្តងទៀត";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "នរណាម្នាក់បានចូលរួមការហៅនេះ ជាមួយលេខសុវត្ថិភាពដែលបានផ្លាស់ប្តូរ។";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "មាននរណាម្នាក់បានចូលរួមការហៅនេះ ជាមួយលេខសុវត្ថិភាពដែលបានផ្លាស់ប្តូរ។";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "អូសឡើងលើ ដើម្បីបង្ហាញអេក្រង់ចែករំលែក";
@@ -2129,7 +2129,7 @@
 "GROUP_DESCRIPTION_PLACEHOLDER" = "បន្ថែមការពណ៌នាក្រុម...";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "ការពណ៌នាក្រុម នឹងត្រូវបង្ហាញទៅសមាជិកនៃក្រុមនេះ និងមនុស្សដែលត្រូវបានអញ្ជើញ។";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "ការពណ៌នាក្រុមនានា នឹងត្រូវបង្ហាញទៅសមាជិកនៃក្រុមនេះ និងអ្នកដែលត្រូវបានអញ្ជើញ។";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "ការពិពណ៌នាពីក្រុម";
@@ -2195,7 +2195,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "តំណភ្ជាប់ក្រុមត្រូវបានបើក ជាមួយការអនុម័តពីអ្នកអភិបាល បិទ។";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកអភិបាល បិទ។";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកអភិបាលឱ្យ បិទ។";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបើកតំណភ្ជាប់ក្រុម ជាមួយការអនុម័តពីអ្នកអភិបាល បិទ។";
@@ -2225,7 +2225,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "អ្នកបានបើកការអនុម័តពីអ្នកអភិបាល សម្រាប់តំណភ្ជាប់ក្រុម។";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបើកការអនុម័តពីអ្នកគ្រប់គ្រង សម្រាប់តំណភ្ជាប់ក្រុម។";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ បានបើកការអនុម័តពីអ្នកអភិបាល សម្រាប់តំណភ្ជាប់ក្រុម។";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ មិនអាចបន្ថែមចូលក្រុមតាមអ្នក ដោយស្វ័យប្រវត្តិនោះទេ។ ពួគគេត្រូវបានអញ្ជើញចូល និងមិនអាចឃើញសារណាមួយក្នុងក្រុម រហូតដល់ពួកគេយល់ព្រម។";
@@ -2276,10 +2276,10 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "កំពុងផ្ទុក...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "តើអ្នកចង់ចូលរួមក្រុមនេះ និងចែករំលែកឈ្មោះអ្នក និងរូបភាពជាមួយសមាជិកក្រុម?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "តើអ្នកចង់ចូលរួមក្រុមនេះ និងចែករំលែកឈ្មោះអ្នក និងរូបភាពជាមួយសមាជិកក្រុមដែរ ឬ ទេ?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "សូមពិនិត្យថា អ្នកកំពុងលើបណ្តាញ និងព្យាយាមម្តងទៀត។";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "សូមពិនិត្យថា អ្នកកំពុងនៅលើអនឡាញ និងព្យាយាមម្តងទៀត។";
 
 /* Error message the attempt to request to join the group failed. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "សូមព្យាយាមម្តងទៀត។";
@@ -2294,7 +2294,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "ធ្វើបច្ចុប្បន្នភាព Signal លើឧបករណ៍នេះ ដើម្បីចូលរួមក្រុមនេះ។";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "ទាមទារអ្នកគ្រប់គ្រង ដើម្បីអនុម័តសមាជិកថ្មី ចូលរួមតាមតំណភ្ជាប់ក្រុម។";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "ទាមទារអ្នកអភិបាល ដើម្បីអនុម័តសមាជិកថ្មី ចូលរួមតាមតំណភ្ជាប់ក្រុមហ្នឹង។";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "អនុម័តសមាជិកថ្មី";
@@ -2306,7 +2306,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "ចែករំលែកតំណភ្ជាប់";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "ចែករំលែកតំណភ្ជាប់ជាមួយមិត្តភក្តិ ដើម្បីអនុញ្ញាតគេឲ្យចូលក្រុមនេះ។";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "ចែករំលែកតំណភ្ជាប់ជាមួយមិត្តភក្តិ ដើម្បីអនុញ្ញាតគេឱ្យចូលភ្លាមៗក្នុងក្រុមនេះ។";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "អញ្ជើញមិត្តភក្តិ";
@@ -2315,7 +2315,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "អញ្ជើញមិត្តភក្តិទៅកាន់ក្រុមរបស់អ្នក តាមរយៈតំណភ្ជាប់ក្រុម";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "អ្នកដែលអាចស្កេនកូដនេះ នឹងអាចចូលរួមក្រុមរបស់អ្នក។ អ្នកគ្រប់គ្រងនឹងនៅតែត្រូវការអនុម័តសមាជិកថ្មី បើសិនអ្នកបានបើកការកំណត់នេះ៕";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "អ្នកដែលអាចស្កេនកូដនេះ នឹងអាចចូលរួមក្រុមរបស់អ្នក។ អ្នកអភិបាលនឹងនៅតែត្រូវការអនុម័តសមាជិកថ្មី បើសិនអ្នកបានបើកការកំណត់នេះ។";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "ចែករំលែកកូដ";
@@ -2333,13 +2333,13 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "តំណភ្ជាប់ក្រុម";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "ទាមទារអ្នកគ្រប់គ្រង ដើម្បីអនុម័តសមាជិកថ្មី ចូលរួមតាមតំណភ្ជាប់ក្រុម។";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "ទាមទារអ្នកអភិបាល ដើម្បីអនុម័តសមាជិកថ្មី ចូលរួមតាមតំណភ្ជាប់ក្រុមហ្នឹង។";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "កំណត់តំណភ្ជាប់ឡើងវិញ";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "តើអ្នកប្រាកដថាចង់កំណត់តំណភ្ជាប់ក្រុមឡើងវិញ? អ្នកដទៃ នឹងមិនអាចចូលរួមក្រុម ដោយប្រើប្រាស់តំណភ្ជាប់បច្ចុប្បន្នបានទេ។";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "តើអ្នកប្រាកដថាចង់កំណត់តំណភ្ជាប់ក្រុមឡើងវិញមែនទេ? អ្នកដទៃ នឹងមិនអាចចូលរួមក្រុម ដោយប្រើប្រាស់តំណភ្ជាប់បច្ចុប្បន្នបានទេ។";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "ចែករំលែក";
@@ -2354,7 +2354,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "ចែករំលែកតាមរយៈ Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "អ្នកដែលមានតំណរភ្ជាប់នេះនឹងអាចមើលឃើញឈ្មោះក្រុម សមាជិក និងស្នើសុំចូលក្រុមបាន។ សូមចែករំលែកតែជាមួយអ្នកដែលទុកចិត្ត។";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "អ្នកដែលមានតំណរភ្ជាប់នេះនឹងអាចមើលឃើញឈ្មោះក្រុម សមាជិក និងស្នើសុំចូលក្រុមបាន។ សូមចែករំលែកជាមួយតែអ្នកដែលទុកចិត្ត។";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "តំណភ្ជាប់ក្រុម";
@@ -2675,7 +2675,7 @@
 "GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "សមាជិក %@ នាក់មិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានលុបចេញពីក្រុម។";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "សមាជិកម្នាក់ មិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានអញ្ជើញឱ្យចូលរួម";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "សមាជិកម្នាក់ មិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានអញ្ជើញឱ្យចូលរួម។";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "អ្នកមិនអាចបន្ថែមចូលក្រុមថ្មី និងត្រូវបានអញ្ជើញចូលរួម";
@@ -2717,13 +2717,13 @@
 "GROUPS_INVITE_FRIENDS_BUTTON" = "អញ្ជើញមិត្តភក្តិ";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "ក្រុមជំនាន់មុនជាក្រុមដែលមិនមានមុខងារដូចក្រុមថ្មីមាន ដូចជាអ្នកគ្រប់គ្រងក្រុម និងបច្ចុប្បន្នភាពថ្មីៗសម្រាប់ក្រុម";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "ក្រុមជំនាន់មុនជាក្រុមដែលមិនមានមុខងារដូចក្រុមថ្មីមានដូចជាអ្នកអភិបាលក្រុម និងបច្ចុប្បន្នភាពថ្មីៗសម្រាប់ក្រុម។";
 
 /* Title for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "តើអ្វីទៅជាក្រុមជំនាន់មុន?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "ក្រុមជំនាន់មុនមិនអាចប្ដូរទៅជាក្រុមថ្មីបានទេ ប៉ុន្តែអ្នកអាចបង្កើតក្រុមថ្មីជាមួយសមាជិកដដែលបាន ប្រសិនបើពួកគេប្រើ Signal ជំនាន់ចុងក្រោយ\n\nSignal នឹងផ្តល់វិធីមួយ ដើម្បីដំឡើងក្រុមជំនាន់មុនក្នុងពេលអនាគត។";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "ក្រុមជំនាន់មុនមិនអាចប្ដូរទៅជាក្រុមថ្មីបានទេ ប៉ុន្តែអ្នកអាចបង្កើតក្រុមថ្មីជាមួយសមាជិកដដែលបាន ប្រសិនបើ ពួកគេប្រើ Signal ជំនាន់ចុងក្រោយ\n\nSignal នឹងផ្តល់វិធីមួយ ដើម្បីដំឡើងក្រុមជំនាន់មុនក្នុងពេលអនាគត។";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "តើខ្ញុំអាចប្ដូរទៅជាក្រុមជំនាន់មុនបានទេ?";
@@ -2735,13 +2735,13 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "ក្រុមជំនាន់មុន ជាមួយក្រុមថ្មី";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "ដំឡើងក្រុមនេះ ដើម្បីបើកមុខងារថ្មីៗដូចជា @mentions និងអ្នកគ្រប់គ្រង។ សមាជិកដែលមិនអាចចែករំលែកឈ្មោះ ឬរូបភាពរបស់ពួកគេនៅក្នុងក្រុម នឹងត្រូវបានអញ្ជើញឲ្យចូលរួម។ %@។";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "ដំឡើងក្រុមនេះ ដើម្បីបើកមុខងារថ្មីៗដូចជា @mentions និងអ្នកអ្នកអភិបាល។ សមាជិកដែលមិនអាចចែករំលែកឈ្មោះ ឬ រូបភាពរបស់ពួកគេនៅក្នុងក្រុមនេះនឹងត្រូវបានអញ្ជើញឱ្យចូលរួម។ %@។";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "មិនអាចដំឡើងទៅក្រុមថ្មី";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "ក្រុមនេះ មិនអាចដំឡើងទៅក្រុមថ្មីបាន ដោយសារវាមានសមាជិកច្រើនពេក។ ទំហំអតិបរមាក្រុមដែលអាចដំឡើងបានគឺ %@។";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "ក្រុមនេះ មិនអាចដំឡើងទៅក្រុមថ្មីបានទេ ដោយសារវាមានសមាជិកច្រើនពេក។ ទំហំអតិបរមាក្រុមដែលអាចដំឡើងបានគឺ %@។";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "នៅពេលសមាជិកក្រុមបច្ចុប្បន្នទាំងអស់ កំពុងប្រើប្រាស់ជំនាន់ Signal ដែលអាចចូលរួមក្រុមថ្មី ក្រុមនេះនឹងត្រូវដំឡើង។";
@@ -2750,58 +2750,58 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "ប្រវត្តិសារ​ និងឯកសារមេឌាទាំងអស់ នឹងត្រូវរក្សាទុកមុនពេលដំឡើង។";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "ក្រុមនេះមិនអាចបង្កើត ដោយសារសមាជិក 1 នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬលុបពួកគេចេញ មុនពេលបង្កើតក្រុម។";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "ក្រុមនេះមិនអាចបង្កើត ដោយសារសមាជិកម្នាក់ កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬ លុបពួកគេចេញ មុនពេលបង្កើតក្រុម។";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "ក្រុមនេះមិនអាចបង្កើត ដោយសារសមាជិក %@ នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬលុបពួកគេចេញ មុនពេលបង្កើតក្រុម។ ";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "ក្រុមនេះមិនអាចបង្កើត ដោយសារសមាជិក %@ នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬ លុបពួកគេចេញ មុនពេលបង្កើតក្រុម។ ";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "ក្រុមនេះមិនអាចបង្កើត ដោយសារសមាជិក 1 នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬលុបពួកគេចេញ មុនពេលបង្កើតក្រុម។ %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "ក្រុមនេះមិនអាចបង្កើត ដោយសារសមាជិកម្នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬ លុបពួកគេចេញ មុនពេលបង្កើតក្រុម។ %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "ក្រុមនេះមិនអាចបង្កើត ដោយសារសមាជិក %1$@ នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬលុបពួកគេចេញ មុនពេលបង្កើតក្រុម។ %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "ក្រុមនេះមិនអាចបង្កើត ដោយសារសមាជិក %1$@ នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬ លុបពួកគេចេញ មុនពេលបង្កើតក្រុម។ %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "ក្រុមជំនាន់មុនមួយនឹងត្រូវបង្កើត ដោយសារសមាជិក ១ នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬលុបពួកគេចេញ មុនពេលបង្កើតក្រុម។";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "ក្រុមជំនាន់មុននឹងត្រូវបង្កើត ដោយសារសមាជិកម្នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬ លុបពួកគេចេញ មុនពេលបង្កើតក្រុម។";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "ក្រុមជំនាន់មុនមួយនឹងត្រូវបង្កើត ដោយសារសមាជិក %@ នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬលុបពួកគេចេញ មុនពេលបង្កើតក្រុម។";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "ក្រុមជំនាន់មុននឹងត្រូវបង្កើត ដោយសារសមាជិក %@ នាក់កំពុងប្រើប្រាស់ Signal ជំនាន់ចាស់។ អ្នកអាចបង្កើតក្រុមស្ទាយថ្មី ជាមួយពួកគេ បន្ទាប់ពីពួកគេធ្វើបច្ចុប្បន្នភាព Signal ឬ លុបពួកគេចេញ មុនពេលបង្កើតក្រុម។";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "សមាជិក ១ មិនគាំទ្រក្រុមថ្មី ដូចនេះវានឹងក្លាយជាក្រុមជំនាន់មុន។ %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "សមាជិកម្នាក់ មិនគាំទ្រក្រុមថ្មី ដូចនេះវានឹងក្លាយជាក្រុមជំនាន់មុន។ %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "សមាជិក %1$@ មិនគាំទ្រក្រុមថ្មី ដូចនេះវានឹងក្លាយជាក្រុមជំនាន់មុន។ %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "សមាជិក %1$@ នាក់ មិនគាំទ្រក្រុមថ្មី ដូចនេះវានឹងក្លាយជាក្រុមជំនាន់មុន។ %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "នេះជាក្រុមជំនាន់មុនមួយ។ មុខងារដូចជា អ្នកគ្រប់គ្រងក្រុម មានតែសម្រាប់ក្រុមថ្មីប៉ុណ្ណោះ។ %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "នេះជាក្រុមជំនាន់មុន។ មុខងារដូចជា អ្នកអភិបាលក្រុម មានសម្រាប់តែក្រុមថ្មីប៉ុណ្ណោះ។ %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "ក្រុមជំនាន់មុននេះ មិនទាន់អាចដំឡើងទៅក្រុមថ្មីទេ។ %@។";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "នេះជាក្រុមជំនាន់មុន មិនអាចដំឡើងទៅក្រុមថ្មីបាន ដោយសារវាមានទំហំធំពេក។  %@។";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "នេះជាក្រុមជំនាន់មុន មិនអាចដំឡើងទៅក្រុមថ្មីបានទេ ដោយសារវាមានទំហំធំពេក។  %@។";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "នេះជាក្រុមជំនាន់មុន។ ដើម្បីចូលប្រើប្រាស់មុខងារថ្មី ដូចជា @mentions និងអ្នកគ្រប់គ្រង %@។";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "នេះជាក្រុមជំនាន់មុន។ ដើម្បីចូលប្រើប្រាស់មុខងារថ្មី ដូចជា @mentions និងអ្នកអភិបាល %@។";
 
 /* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "សមាជិក 1 នាក់មិនអាចបន្ថែមម្តងទៀតចូលក្រុមថ្មី។ តើអ្នកចង់បន្ថែមពួកគេឥឡូវនេះ?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "សមាជិកម្នាក់មិនអាចបន្ថែមម្តងទៀតចូលក្រុមថ្មីបានទេ។ តើអ្នកចង់បន្ថែមពួកគេឥឡូវនេះមែន ឬ ទេ?";
 
 /* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "សមាជិក %@ នាក់មិនអាចបន្ថែមម្តងទៀតចូលក្រុមថ្មី។ តើអ្នកចង់បន្ថែមពួកគេឥឡូវនេះ?";
+"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "សមាជិក %@ នាក់ មិនអាចបន្ថែមម្តងទៀតចូលក្រុមថ្មី។ តើអ្នកចង់បន្ថែមពួកគេឥឡូវនេះមែន ឬ ទេ?";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "ក្រុមមុន";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "អ្នកនឹងត្រូវយល់ព្រមការអញ្ជើញចួលរួមក្រុមនេះម្តងទៀត ហើយនឹងមិនអាចទទួលសារក្នុងក្រុម រហូតដល់អ្នកយល់ព្រម។";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "អ្នកនឹងត្រូវការយល់ព្រមការអញ្ជើញចូលរួមក្រុមនេះម្តងទៀត ហើយនឹងមិនអាចទទួលសារក្នុងក្រុម រហូតដល់អ្នកយល់ព្រម។";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ដំឡើងក្រុម";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "ដើម្បីចូលប្រើប្រាស់មុខងារថ្មី ដូចចជា @mentions និងអ្នកគ្រប់គ្រង សូមដំឡើងក្រុមនេះ។";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "ដើម្បីចូលប្រើប្រាស់មុខងារថ្មី ដូចចជា @mentions និងអ្នកអភិបាល សូមដំឡើងក្រុមនេះ។";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "តើអ្វីជាក្រុមថ្មី?";
@@ -2810,7 +2810,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "ប្រវត្តិសារ​ និងឯកសារមេឌាទាំងអស់ ត្រូវបានរក្សាទុកមុនពេលដំឡើង។";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "ក្រុមថ្មី មានមុខងារដូចជា @រៀបរាប់ និងអ្នកគ្រប់គ្រងក្រុម ហើយនឹងគាំទ្រមុខងារបន្ថែមនៅពេលអនាគត។";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "ក្រុមថ្មី មានមុខងារដូចជា @mention និងអ្នកអភិបាលក្រុម ហើយនឹងគាំទ្រមុខងារបន្ថែមនៅពេលអនាគត។";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "ក្រុមថ្មី";
@@ -2828,10 +2828,10 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "បន្ថែមសមាជិក";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "សមាជិកនេះ មិនអាចបន្ថែមស្វ័យប្រវត្តិទៅក្រុមថ្មី នៅពេលវាត្រូវបានដំឡើង៖";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_1" = "សមាជិកនេះ មិនអាចបន្ថែមដោយស្វ័យប្រវត្តិទៅក្នុងក្រុមថ្មី នៅពេលវាត្រូវបានដំឡើង៖";
 
 /* Explanation of 're-adding dropped group member' in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "សមាជិកទាំងនេះ មិនអាចបន្ថែមស្វ័យប្រវត្តិទៅក្រុមថ្មី នៅពេលវាត្រូវបានដំឡើង៖";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "សមាជិកទាំងនេះ មិនអាចបន្ថែមដោយស្វ័យប្រវត្តិទៅក្រុមថ្មី នៅពេលវាត្រូវបានដំឡើង៖";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "ប្រវត្តិសារ​ និងឯកសារមេឌាទាំងអស់ ត្រូវបានរក្សាទុកមុនពេលដំឡើង។";
@@ -2843,16 +2843,16 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "សមាជិកទាំងនេះ ត្រូវបានលុបចេញពីក្រុម ហើយនឹងមិនអាចចូលក្រុមម្តងទៀត រហូតដល់ពួកគេដំឡើង៖";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "សមាជិកទាំងនេះ នឹងត្រូវយល់ព្រមការអញ្ជើញចួលរួមក្រុមនេះម្តងទៀត ហើយនឹងមិនអាចទទួលសារក្នុងក្រុម រហូតដល់ពួកគេយល់ព្រម៖";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "សមាជិកនេះ នឹងត្រូវការយល់ព្រមការអញ្ជើញចូលរួមក្រុមនេះម្តងទៀត ហើយនឹងមិនអាចទទួលសារក្នុងក្រុម រហូតដល់ពួកគេយល់ព្រម៖";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "សមាជិកទាំងនេះ នឹងត្រូវយល់ព្រមការអញ្ជើញចួលរួមក្រុមនេះម្តងទៀត ហើយនឹងមិនអាចទទួលសារក្នុងក្រុម រហូតដល់ពួកគេយល់ព្រម៖";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "សមាជិកទាំងនេះ នឹងត្រូវយល់ព្រមការអញ្ជើញចូលរួមក្រុមនេះម្តងទៀត ហើយនឹងមិនអាចទទួលសារក្នុងក្រុម រហូតដល់ពួកគេយល់ព្រម៖";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "សមាជិកក្រុមទាំងនេះ មិនអាចចូលរួមក្រុមថ្មី ហើយនឹងត្រូវលុបចេញពីក្រុម៖";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "សមាជិកក្រុមនេះ មិនអាចចូលរួមក្រុមថ្មីបានទេ ហើយនឹងត្រូវលុបចេញពីក្រុម៖";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "សមាជិកក្រុមទាំងនេះ មិនអាចចូលរួមក្រុមថ្មី ហើយនឹងត្រូវលុបចេញពីក្រុម៖";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "សមាជិកក្រុមទាំងនេះ មិនអាចចូលរួមក្រុមថ្មីបានទេ ហើយនឹងត្រូវលុបចេញពីក្រុម៖";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "ដំឡើងទៅក្រុមថ្មី";
@@ -2864,7 +2864,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "ក្រុមនេះ មិនអាចដំឡើងទៅក្រុមថ្មីបានទេឥឡូវនេះ។";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "ក្រុមនេះ មិនអាចដំឡើងទៅក្រុមថ្មីបាន ដោយសារអ្នកមិនបានតភ្ជាប់ទៅកាន់អ៊ីនធឺណិត។ សាកល្បងម្តងទៀតពេលក្រោយ។";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "ក្រុមនេះ មិនអាចដំឡើងទៅក្រុមថ្មីបានទេ ដោយសារអ្នកមិនបានតភ្ជាប់ទៅកាន់អុីនធឺណិត។ សាកល្បងម្តងទៀតពេលក្រោយ។";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "មិនអាចបញ្ចប់ការដំឡើង";
@@ -2885,10 +2885,10 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "ជ្រើសរើសអ្នកគ្រប់គ្រងថ្មី";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "ក្រុម Signal ដំណើរការល្អបំផុតជាមួយសមាជិក %@ នាក់ ឬតិចជាងនេះ។ ការបន្ថែមសមាជិកច្រើន នឹងបណ្តាលឱ្យមានការពន្យារពេលការផ្ញើ និងទទួលសារ។";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "ក្រុម Signal ដំណើរការល្អបំផុតជាមួយសមាជិក %@ នាក់ ឬ តិចជាងនេះ។ ការបន្ថែមសមាជិកច្រើន នឹងបណ្តាលឱ្យមានការពន្យារពេលការផ្ញើ និងការទទួលសារ។";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "បានឈានដល់ដែនកំណត់សមាជិកដែលបានណែនាំ";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "សមាជិកដែលបានណែនាំបានឈានដល់ដែនកំណត់";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "បន្ថែមសមាជិកទោះយ៉ាងណាក៏ដោយ?";
@@ -2966,7 +2966,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "ប្តូររូបភាព";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "ផ្តល់សិទ្ធិប្រើប្រាស់ទាំងអស់ក្នុងការកំណត់ ឬផ្លាស់ប្តូររូបភាពណាមួយ ដែល Signal អាចប្រើប្រាស់។";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "ផ្តល់សិទ្ធិប្រើប្រាស់ទាំងអស់ក្នុងការកំណត់ ឬ ផ្លាស់ប្តូររូបភាពណាមួយ ដែល Signal អាចប្រើប្រាស់បាន។";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "មើលមិនឃើញរូបភាពរបស់អ្នក?";
@@ -3005,16 +3005,16 @@
 "IN_CALL_TERMINATED" = "ការហៅបានបញ្ចប់។";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "ការជជែកទាំងនេះ បានធ្វើបណ្ណសារ ហើយនឹងបង្ហាញក្នុងប្រអប់សារ បើទទួលបានសារថ្មី។";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "ការជជែកទាំងនេះ បានធ្វើបណ្ណសារ ហើយនឹងបង្ហាញក្នុងប្រអប់សារ ប្រសិនបើទទួលបានសារថ្មី។";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "មិនមានការជជែកទេ។\nចាប់ផ្តើមដោយផ្ញើសារទៅកាន់មិត្តភក្តិ។";
+"INBOX_VIEW_EMPTY_INBOX" = "មិនមានការជជែកទេ។\nបានចាប់ផ្តើមដោយផ្ញើសារទៅកាន់មិត្តភក្តិ។";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@បានហៅអ្នក";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "អ្នកអាចផ្ញើ និងទទួលសារសមកាល ចេញពីទូរស័ព្ទ ឬ iPad របស់អ្នក។  សម្រាប់សន្តិសុខរបស់អ្នក ប្រវត្តិការជជែក មិនត្រូវបានផ្ទេរទៅឧបករណ៍តភ្ជាប់ថ្មីទេ។";
+"INFO_MESSAGE_SYNCED_THREAD" = "អ្នកអាចផ្ញើ និងទទួលសារសមកាល ចេញពីទូរស័ព្ទ ឬ iPad របស់អ្នក។  សម្រាប់សន្តិសុខរបស់អ្នក ប្រវត្តិការជជែក មិនត្រូវបានផ្ទេរទៅឧបករណ៍តភ្ជាប់ថ្មីនានាទេ។";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@បានប្ដូរលេខទូរស័ព្ទ";
@@ -3026,7 +3026,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ស្ទីកគ័រ";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "ចុចពីរដងដើម្បីថតសម្លេង។ ដកដៃចេញដើម្បីផ្ញើ ឬអូសទៅឆ្វេងដើម្បីបញ្ឈប់។ ចុចពីរដង និងអូសឡើងលើដើម្បីចាក់សោរការថតសម្លេង។";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "ចុចពីរដងឱ្យជាប់ដើម្បីថតសម្លេង។ ដកដៃចេញដើម្បីផ្ញើ ឬ អូសទៅឆ្វេងដើម្បីបញ្ឈប់។ ចុចពីរដង និងអូសឡើងលើដើម្បីចាក់សោរការថតសម្លេង។";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "សារជាសំឡេង";
@@ -3143,7 +3143,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "ការភ្ជាប់ឧបករណ៍បានបរាជ័យ";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "ដើម្បីផ្ទេរគណនី Signal របស់អ្នក អ្នកត្រូវបើកការចូលប្រើប្រាស់បណ្តាញខាងក្នុង នៅលើឧបករណ៍ទាំងពីរ។";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "ដើម្បីផ្ទេរគណនី Signal របស់អ្នក អ្នកត្រូវបើកការចូលប្រើប្រាស់បណ្តាញខាងក្នុងនៅលើឧបករណ៍ទាំងពីរ។";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "ត្រូវការជំនួយ?";
@@ -3215,7 +3215,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "លុបសម្រាប់ទាំងអស់គ្នា";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "សារនេះ នឹងត្រូវលុបចោលសម្រាប់អ្នកទាំងអស់គ្នា នៅក្នុងការជជែក បើសិនពួកគេនៅលើជំនាន់ថ្មីរបស់ Signal។ ពួកគេនឹងអាចមើលឃើញថា អ្នកបានលុបសារមួយ។";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "សារនេះ នឹងត្រូវលុបចោលសម្រាប់អ្នកទាំងអស់គ្នានៅក្នុងការជជែក បើសិនពួកគេនៅលើជំនាន់ថ្មីរបស់ Signal។ ពួកគេនឹងអាចមើលឃើញថា អ្នកបានលុបសារមួយ។";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "តើនរណាដែលអ្នកចង់លុបសារនេះឲ្យគេ?";
@@ -3389,7 +3389,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "លុប និងចាកចេញពីក្រុម?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "ពិនិត្យសំណើដោយប្រុងប្រយ័ត្ន។ Signal បានរកឃើញឈ្មោះទំនាក់ទំនងផ្សេងទៀត ដែលមានឈ្មោះដូចគ្នា។";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "ពិនិត្យសំណើដោយប្រុងប្រយ័ត្ន។ Signal បានរកឃើញឈ្មោះទំនាក់ទំនងផ្សេងទៀតដែលមានឈ្មោះដូចគ្នា។";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "លេខទំនាក់ទំនងរបស់អ្នក";
@@ -3434,7 +3434,7 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "លុប";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "បន្តការជជែកនេះជាមួយ %@ និងចែករំលែកឈ្មោះ និងរូបភាពរបស់អ្នក ជាមួយពួកគេ?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "បន្តការជជែកនេះជាមួយ %@ និងចែករំលែកឈ្មោះ និងរូបភាពរបស់អ្នកជាមួយពួកគេ?";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "បន្តការជជែករបស់អ្នកជាមួយក្រុមនេះ និងចែករំលែកឈ្មោះ និងរូបភាពរបស់អ្នកជាមួយសមាជិកក្រុម។";
@@ -3446,7 +3446,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "ចូលក្រុមនេះ និងចែករំលែកឈ្មោះ និងរូបថតអ្នក ជាមួយសមាជិកក្រុម? ពួកគេនឹងមិនដឹងថាអ្នកបានឃើញសាររបស់ពួកគេ រហូតអ្នកយល់ព្រមទទួល។";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "ចូលរួមក្រុមនេះ? ពួកគេនឹងមិនដឹងថា អ្នកបានឃើញសាររបស់ពួកគេ រហូតអ្នកយល់ព្រម។";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "ចូលរួមក្រុមនេះ? ពួកគេនឹងមិនដឹងថា អ្នកបានឃើញសាររបស់ពួកគេរហូតអ្នកយល់ព្រម។";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "បើកវិញ";
@@ -3455,10 +3455,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "បោះបង់ការស្នើសុំ";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "បោះបង់សំណើរបស់អ្នក​សម្រាប់ចូលរួមក្រុមនេះ?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "បោះបង់សំណើរបស់អ្នក​សម្រាប់ចូលរួមក្រុមនេះមែនទេ?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "ការស្នើសុំរបស់អ្នកដើម្បីចូលក្រុម ត្រូវបានផ្ញើទៅកាន់អ្នកគ្រប់គ្រងក្រុម។ អ្នកនឹងទទួលដំណឹង នៅពេលគេមានសកម្មភាព។";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "ការស្នើសុំរបស់អ្នកដើម្បីចូលក្រុម ត្រូវបានផ្ញើទៅកាន់អ្នកអភិបាលក្រុម។ អ្នកនឹងទទួលដំណឹងនៅពេលគេមានសកម្មភាព។";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "បានទទួល";
@@ -3785,7 +3785,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "បើកការអនុញ្ញាត";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "ការអនុញ្ញាតសារជូនដំណឹង និងបញ្ជីទំនាក់ទំនង អាចឲ្យអ្នកមើលឃើញសារពេលមកដល់ និងជួយអ្នកស្វែងរកមនុស្សដែលអ្នកស្គាល់។ បញ្ជីទំនាក់ទំនងត្រូវបានធ្វើកូដនីយកម្ម ដូចនេះ សេវាកម្ម Signal មិនអាចមើលឃើញទេ។";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "ការអនុញ្ញាតសារជូនដំណឹង និងបញ្ជីទំនាក់ទំនង អាចឱ្យអ្នកមើលឃើញសារពេលមកដល់ និងជួយអ្នកស្វែងរកមនុស្សដែលអ្នកស្គាល់។ បញ្ជីទំនាក់ទំនងត្រូវបានធ្វើកូដនីយកម្ម ដូចនេះសេវាកម្ម Signal មិនអាចមើលឃើញទេ។";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "បើកការអនុញ្ញាត";
@@ -4076,7 +4076,7 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "ដើម្បីផ្ញើការទូទាត់ប្រាក់ទៅអ្នកប្រើប្រាស់នេះ គេចាំបាច់ទទួលនូវសំណើសារពីអ្នកជាមុនសិន។ ";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "ដើម្បីអាចផ្ញើការទូទាត់ប្រាក់ទៅអ្នកប្រើប្រាស់អ្នក គេចាំបាច់ទទួលនូវសំណើរសារពីអ្នកជាមុនសិន។ ផ្ញើសារទៅពួកគេដើម្បីបង្កើតសំណើរសុំសារមួយ។";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "ដើម្បីអាចផ្ញើការទូទាត់ប្រាក់ទៅអ្នកប្រើប្រាស់របស់អ្នក គេចាំបាច់ទទួលនូវសំណើសារពីអ្នកជាមុនសិន។ ផ្ញើសារទៅពួកគេដើម្បីបង្កើតសំណើសុំសារ។";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "មិនអាចផ្ញើការទូទាត់";
@@ -4199,13 +4199,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "អ្នកទាំងអស់គ្នា";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "នរណាម្នាក់ ដែលមានលេខទូរស័ព្ទរបស់អ្នកនៅក្នុងបញ្ជីទំនាក់ទំនងរបស់គេ នឹងឃើញអ្នកជាលេខទំនាក់ទំនងមួយនៅលើ Signal។ អ្នកដទៃ នឹងអាចរកអ្នកនៅ ការស្វែងរក។";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "នរណាម្នាក់ដែលមានលេខទូរស័ព្ទរបស់អ្នកនៅក្នុងបញ្ជីទំនាក់ទំនងរបស់គេ នឹងឃើញអ្នកជាលេខទំនាក់ទំនងមួយនៅលើ Signal។ អ្នកដទៃនឹងអាចរកអ្នកនៅការស្វែងរក។";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "គ្មាននរណា";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "គ្មាននរណានៅលើ Signal នឹងអាចស្វែងរកអ្នកជាមួយលេខទូរស័ព្ទរបស់អ្នក។ អ្នកនឹងមិនបង្ហាញជាលេខទំនាក់ទំនងសម្រាប់មនុស្សដែលមានលេខទូរស័ព្ទរបស់អ្នក ក្នុងបញ្ជីទំនាក់ទំនងរបស់គេ និងអ្នកដទៃនឹងមិនអាចស្វែងរកអ្នកជាមួយលេខទូរស័ព្ទរបស់អ្នក នៅក្នុងការស្វែងរក។";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "គ្មាននរណានៅលើ Signal នឹងអាចស្វែងរកអ្នកជាមួយលេខទូរស័ព្ទរបស់អ្នកទេ។ អ្នកនឹងមិនបង្ហាញជាលេខទំនាក់ទំនងសម្រាប់មនុស្សដែលមានលេខទូរស័ព្ទរបស់អ្នក ក្នុងបញ្ជីទំនាក់ទំនងរបស់គេ និងអ្នកដទៃនឹងមិនអាចស្វែងរកអ្នកជាមួយលេខទូរស័ព្ទរបស់អ្នកនៅក្នុងការស្វែងរក។";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "ឧទាហរណ៍៖ %@";
@@ -4214,13 +4214,13 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "លេខទំនាក់ទំនងរបស់ខ្ញុំ";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "មានតែលេខទំនាក់ទំនងរបស់អ្នកប៉ុណ្ណោះ នឹងមើលឃើញលេខទូរស័ព្ទរបស់អ្នកនៅលើ Signal។";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "មានតែលេខទំនាក់ទំនងរបស់អ្នកប៉ុណ្ណោះនឹងមើលឃើញលេខទូរស័ព្ទរបស់អ្នកនៅលើ Signal។";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "អ្នកទាំងអស់គ្នា";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "លេខទូរស័ព្ទរបស់អ្នកនឹងត្រូវបង្ហាញទៅមនុស្ស និងក្រុមដែលអ្នកផ្ញើសារ។ មនុស្សដែលមានលេខទូរស័ព្ទរបស់អ្នក នៅក្នុងបញ្ជីទំនាក់ទំនងរបស់គេ នឹងមើលឃើញនៅលើ  Signal ដែរ។";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "លេខទូរស័ព្ទរបស់អ្នកនឹងត្រូវបង្ហាញទៅមនុស្ស និងក្រុមជាច្រើនដែលអ្នកផ្ញើសារទៅកាន់។ អ្នកដែលមានលេខទូរស័ព្ទរបស់អ្នក នៅក្នុងបញ្ជីទំនាក់ទំនងរបស់គេនឹងមើលឃើញនៅលើ  Signal ដែរ។";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "គ្មាននរណា";
@@ -4280,7 +4280,7 @@
 "PIN_ACTION" = "ខ្ទាស់";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "មិនអាចបង្កើតលេខកូដថ្មីបាន។ លេខកូដដែលអ្នកធ្លាប់មានត្រូវបានផ្អាកដំណើរការ។ សូមពិនិត្យការភ្ជាប់អុីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
+"PIN_CHANGE_ERROR_MESSAGE" = "មិនអាចបង្កើតលេខកូដ PIN ថ្មីបានទេ។ លេខកូដដែលអ្នកធ្លាប់មានត្រូវបានផ្អាកដំណើរការ។ សូមពិនិត្យការភ្ជាប់អុីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
 
 /* Error title indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_TITLE" = "បានបរាជ័យការប្ដូរលេខកូដ";
@@ -4319,16 +4319,16 @@
 "PIN_CREATION_ERROR_TITLE" = "ការបង្កើត PIN បរាជ័យ";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "លេខកូដ​ PINs រក្សាទុកព័ត៌មានជាមួយកូដនីយកម្ម Signal ដូចនេះមានតែអ្នកប៉ុណ្ណោះចូលប្រើប្រាស់វាបាន។ ប្រវត្តិរូប ការកំណត់ និងបញ្ជីទំនាក់ទំនងរបស់អ្នក នឹងស្តារឡើងវិញនៅពេលអ្នកដំឡើងវិញ។ អ្នកនឹងមិនត្រូវការលេខកូដ PIN ដើម្បីបើកកម្មវិធីទេ។";
+"PIN_CREATION_EXPLANATION" = "លេខកូដ​ PINs រក្សាទុកព័ត៌មានជាមួយកូដនីយកម្ម Signal ដូចនេះមានតែអ្នកប៉ុណ្ណោះអាចចូលប្រើប្រាស់វាបាន។ គណនី ការកំណត់ និងបញ្ជីទំនាក់ទំនងរបស់អ្នកនឹងស្តារឡើងវិញនៅពេលអ្នកដំឡើងវិញ។ អ្នកនឹងមិនត្រូវការលេខកូដ PIN ដើម្បីបើកកម្មវិធីទេ។";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "សិក្សាបន្ថែមអំពីលេខកូដ​PINs";
+"PIN_CREATION_LEARN_MORE" = "សិក្សាបន្ថែមអំពីលេខកូដ​ PINs";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "លេខPIN  មិនត្រូវគ្នា។ ព្យាយាមម្តងទៀត។";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "ពិនិត្យបណ្ដាញរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "ពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
 "PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "មិនមានការភ្ជាប់បណ្ដាញ";
@@ -4349,16 +4349,16 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "បិទ";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "ដើម្បីបិទលេខកូដ PIN របស់អ្នក ដំបូងអ្នកត្រូវការ ការចាក់សោការចុះឈ្មោះ។";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "ដើម្បីបិទលេខកូដ PIN របស់អ្នក ដំបូងអ្នកត្រូវការការចាក់សោការចុះឈ្មោះ។";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "បិទការចាក់សោរចុះឈ្មោះ?";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "បិទការចាក់សោរការចុះឈ្មោះ?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "ការបង្កើតលេខកូដជោគជ័យ ប៉ុន្តែការចាក់សោរការចុះឈ្មោះមិនបានបើកដំណើរការ។ សូមពិនិត្យបណ្ដាញរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "ការបង្កើតលេខកូដ PIN ជោគជ័យ ប៉ុន្តែការចាក់សោរការចុះឈ្មោះមិនបានបើកដំណើរការបានទេ។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "បានបរាជ័យក្នុងការបើកការចាក់សោរចុះឈ្មោះ";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "បានបរាជ័យក្នុងការបើកការចាក់សោរការចុះឈ្មោះ";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "បិទលេខកូដ PIN";
@@ -4370,7 +4370,7 @@
 "PIN_CREATION_WEAK_ERROR" = "ជ្រើសរើសលេខ PIN ខ្លាំងជាងនេះ";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "លេខកូដ PIN មិនអាចបិទបាន។ យើងនឹងប្រាប់ម្តងទៀតពេលក្រោយ។";
+"PIN_DISABLE_ERROR_MESSAGE" = "លេខកូដ PIN មិនអាចបិទបានទេ។ យើងនឹងប្រាប់ម្តងទៀតពេលក្រោយ។";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "បានបរាជ័យបិទលេខកូដ​ PIN ";
@@ -4379,7 +4379,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "បានបរាជ័យការបង្កើត PIN ";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "មិនអាចបង្កើតលេខកូដរបស់អ្នកបាន។ សូមពិនិត្យបណ្ដាញរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
+"PIN_RECRETION_ERROR_MESSAGE" = "មិនអាចបង្កើតលេខកូដ PIN របស់អ្នកបានទេ។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "ដើម្បីជួយការចង់ចាំលេខ PIN របស់អ្នក យើងនឹងសួរអ្នក ឲ្យបញ្ចូលវាជាប្រចាំ។យើងនឹងសួរតិចជាងមុនលើកក្រោយ។";
@@ -4403,7 +4403,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "យើងនឹងរំលឹកអ្នកម្តងទៀតថ្ងៃស្អែក។";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "យើងនឹងរំលឹកអ្នកម្តងទៀត២សប្តាហ៍ក្រោយ។";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "យើងនឹងរំលឹកអ្នកម្តងទៀត ២សប្តាហ៍ក្រោយ។";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "យើងនឹងរំលឹកអ្នកម្តងទៀតសប្តាហ៍ក្រោយ។";
@@ -4418,7 +4418,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "លេខ PIN ត្រូវមានយ៉ាងហោច 4 ខ្ទង់។";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "អ្នកអាចខ្ទាស់ការជជែករហូតដល់ការជជែកចំនួន ៤។";
+"PINNED_CONVERSATION_LIMIT" = "អ្នកអាចខ្ទាស់ការជជែករហូតដល់ការជជែកចំនួន 4។";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "បានខ្ទាស់";
@@ -4460,7 +4460,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "នេះទំនងមិនមែនជាលេខសុវត្ថិភាពរបស់អ្នកជាមួយ%@ ទេ។ តើអ្នកផ្ទៀងផ្ទាត់លេខទំនាក់ទំនង ត្រឹមត្រូវឬនៅ?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "លេខនៅក្នុង clipboard របស់អ្នក មិនដូចលេខសុវត្ថិភាពត្រឹមត្រូវ សម្រាប់ការជជែកនេះទេ។";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "លេខនៅក្នុង clipboard របស់អ្នក មិនដូចជាលេខសុវត្ថិភាពត្រឹមត្រូវសម្រាប់ការជជែកនេះទេ។";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal មិនអាចស្វែងរកលេខសុវត្ថិភាពនៅក្នុងក្តាចុចរបស់អ្នកបានទេ។ តើអ្នកបានថតចម្លងវា ត្រឹមត្រូវឬទេ?";
@@ -4520,10 +4520,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "អំពី (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ បានផ្លាស់ប្តូរឈ្មោះប្រវត្តិរូបរបស់គេពី  %@ ទៅ %@។";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ បានផ្លាស់ប្តូរឈ្មោះគណនីរបស់គេពី  %@ ទៅ %@។";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ បានផ្លាស់ប្តូរឈ្មោះប្រវត្តិរូបរបស់គេទៅ %@។";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ បានផ្លាស់ប្តូរឈ្មោះគណនីរបស់គេទៅ %@។";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "ឈ្មោះរបស់អ្នក";
@@ -4556,7 +4556,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ពត៌មានផ្ទាល់ខ្លួនអាចធ្វើបច្ចុប្បន្នភាព នៅពេលតភ្ជាប់នឹងអ៊ីនធើណេត។";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ប្រវត្តិរូបរបស់អ្នក ត្រូវបានធ្វើកូដនីយកម្មទាំងសងខាង។ ប្រវត្តិរូប និងការផ្លាស់ប្តូរនឹងបង្ហាញទៅបញ្ជីទំនាក់ទំនងរបស់អ្នក នៅពេលចាប់ផ្តើម ឬទទួលការជជែលថ្មី។";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "គណនីរបស់អ្នកត្រូវបានធ្វើកូដនីយកម្មទាំងសងខាង។ គណនី និងការផ្លាស់ប្តូរនឹងបង្ហាញទៅបញ្ជីទំនាក់ទំនងរបស់អ្នក នៅពេលចាប់ផ្តើម ឬ ទទួលការជជែលថ្មីៗ។";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "រក្សា";
@@ -4661,7 +4661,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "អ្នកប្រើប្រាស់មិនអាចជ្រើសរើស។";
 
 /* Error message indicating that a user can't be selected until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "អ្នកប្រើប្រាស់មួយនេះ មិនអាចបន្ថែមចូលក្នុងក្រុម លុះត្រាគេបានដំឡើង Signal។";
+"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "អ្នកប្រើប្រាសម្នាក់នេះ មិនអាចបន្ថែមចូលក្នុងក្រុមបានទេ លុះត្រាគេបានដំឡើង Signal។";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ខ្ញុំបានភ្លេចលេខPIN ។";
@@ -4724,7 +4724,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "អ្នកមិនអាចបើកគណនីរបស់អ្នក រហូតអ្នកបានផ្ទៀងផ្ទាត់លេខកូដ ដែលយើងបានផ្ញើជូនអ្នក។";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "ដើម្បីបន្ត ពិនិត្យាការតភ្ជាប់អ៊ីនធឺណិតរបស់ទូរស័ព្ទអ្នក និងសាកល្បងម្តងទៀត។";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "ដើម្បីបន្ត ពិនិត្យការតភ្ជាប់អុីនធឺណិតទូរស័ព្ទរបស់ទអ្នក និងសាកល្បងម្តងទៀត។";
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "ពិនិត្យការតភ្ជាប់";
@@ -4763,7 +4763,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "គ្មានលេខទូរសព្ទ";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "លេខកូដផ្ទៀងផ្ទាត់ នឹងត្រូវផ្ញើទៅលេខទូរស័ព្ទនេះ។ តើលេខទូរស័ព្ទរបស់អ្នកខាងលើត្រឹមត្រូវទេ?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "លេខកូដផ្ទៀងផ្ទាត់ នឹងត្រូវផ្ញើទៅលេខទូរស័ព្ទនេះ។ តើលេខទូរស័ព្ទរបស់អ្នកខាងលើត្រឹមត្រូវដែរ ឬ ទេ?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "ការបញ្ជាក់លេខ៖ %@";
@@ -4808,7 +4808,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "បញ្ជូន យ៉ាងណាក៏ដោយ";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "អ្នកទាំងនេះអាចដំឡើង ឬផ្លាស់ប្តូរឧបករណ៍។​ ផ្ទៀងផ្ទាត់លេខសុវត្ថិភាពរបស់អ្នកជាមួយពួកគេ ដើម្បីធានាឯកជនភាព។";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "អ្នកទាំងនេះអាចដំឡើង ឬ ផ្លាស់ប្តូរឧបករណ៍បាន។​ ផ្ទៀងផ្ទាត់លេខសុវត្ថិភាពរបស់អ្នកជាមួយពួកគេ ដើម្បីធានាភាពឯកជន។";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "បានផ្ទៀងផ្ទាត់លើកមុន";
@@ -5021,7 +5021,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "មិនអាចទាញយកកូដតភ្ជាប់";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ដើម្បីភ្ជាប់ឧបករណ៍នេះទៅគណនីផ្សេង អ្នកត្រូវកំណត់ឧបករណ៍នេះឡើងវិញសិន។ តើអ្នកប្រាកដទេថាអ្នកចង់លុបប្រវត្តិទាំងអស់ (សារ ឯកសារភ្ជាប់ ឬការហៅចេញ)? សកម្មភាពនេះមិនអាចត្រឡប់ក្រោយបានទេ។";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ដើម្បីភ្ជាប់ឧបករណ៍នេះទៅគណនីផ្សេង អ្នកត្រូវកំណត់ឧបករណ៍នេះឡើងវិញសិន។ តើអ្នកប្រាកដទេថាអ្នកចង់លុបប្រវត្តិទាំងអស់ (សារ ឯកសារភ្ជាប់ ឬ ការហៅចេញ ។ល។)? សកម្មភាពនេះមិនអាចត្រឡប់ក្រោយបានទេ។";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "លុបចោលទាំងអស់";
@@ -5123,7 +5123,7 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "ស្ដង់ដារ";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal ប្រើប្រាស់កូដនីយកម្មទាំងសងខាង ហើយជួនកាល​វាអាចត្រូវការផ្ទុកឡើងវិញ​នូវវគ្គជជែករបស់អ្នក។ នេះមិនប៉ះពាល់សន្តិសុខនៃការជជែករបស់អ្នកទេ តែអ្នកអាចខកខានសារមួយពីលេខទំនាក់ទំនងនេះ និងអ្នកអាចសុំគេឲ្យផ្ញើម្តងទៀត។";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal ប្រើប្រាស់កូដនីយកម្មទាំងសងខាង ហើយជួនកាល​វាអាចត្រូវការផ្ទុកឡើងវិញ​នូវវគ្គជជែករបស់អ្នក។ នេះមិនប៉ះពាល់សន្តិសុខនៃការជជែករបស់អ្នកទេ តែអ្នកអាចខកខានសារមួយពីលេខទំនាក់ទំនងនេះ និងអ្នកអាចសុំគេឱ្យផ្ញើម្តងទៀត។";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "វគ្គសន្ទនាត្រូវបានផ្ទុកឡើងវិញ";
@@ -5255,7 +5255,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "កំពុងផ្ទៀងផ្ទាត់៖ %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "ប្រើការផ្លាស់ប្ដូរនេះ ដើម្បីប្ដូរលេខទូរស័ព្ទបច្ចុប្បន្នទៅលេខទូរស័ព្ទថ្មី។ អ្នកមិនអាចត្រឡប់ការប្ដូរនេះបានទេ។\n\nមុនពេលបន្ត អ្នកត្រូវប្រាកដថាលេខទូរស័ព្ទថ្មីរបស់អ្នកអាចទទួលសារ និងការហៅចូលបាន។";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "ប្រើការផ្លាស់ប្ដូរនេះ ដើម្បីប្ដូរលេខទូរស័ព្ទបច្ចុប្បន្នរបស់អ្នកទៅប្រើលេខទូរស័ព្ទថ្មី។ អ្នកមិនអាចត្រឡប់ការប្ដូរនេះបានទេ។\n\nមុនពេលបន្ត អ្នកត្រូវប្រាកដថា លេខទូរស័ព្ទថ្មីរបស់អ្នកអាចទទួលសារ SMS និងការហៅចូលបាននានា។";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "ប្ដូរលេខទូរស័ព្ទ";
@@ -5282,7 +5282,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "ប្រើប្រាស់ទិន្នន័យតិច";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "ការប្រើប្រាស់ទិន្នន័យតិច អាចជម្រុញការហៅទូរសព្ទនៅលើបណ្តាញមិនល្អ ";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "ការប្រើប្រាស់ទិន្នន័យតិច អាចជម្រុញការហៅទូរសព្ទនៅលើបណ្តាញមិនល្អ។ ";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "ការហៅ";
@@ -5300,7 +5300,7 @@
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "មេឌៀគុណភាពល្អត្រូវបានផ្ញើចេញ";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "ជ្រើសរើសគុណភាពវីដេអូ និងរូបភាពដែលអ្នកផ្ញើ";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "ជ្រើសរើសគុណភាពវីដេអូ និងរូបភាពនានាដែលអ្នកផ្ញើ។";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "មេឌៀរត្រូវបានផ្ញើចេញ";
@@ -5318,7 +5318,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "កុំផ្ទេរចេញ";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "សមតុល្យរបស់អ្នកគឺ %@។ ប្រសិនបើអ្នកមិនផ្ទេរប្រាក់ចេញទៅកាន់អាស័យដ្ឋានកាបូបលុយផ្សេងមុនពេលលុបគណនីទេ នោះអ្នកនឹងបាត់បង់វាជារៀងរហូត។";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "សមតុល្យរបស់អ្នកគឺ %@។ ប្រសិនបើអ្នកមិនផ្ទេរប្រាក់ចេញទៅកាន់អាសយដ្ឋានរបស់ Wallet ផ្សេង មុនពេលលុបគណនីរបស់អ្នកទេ នោះអ្នកនឹងបាត់បង់វាជារៀងរហូត។";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "ផ្ទេរសមតុល្យទូទាត់?";
@@ -5339,7 +5339,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "សារដែលមិនបង្ហាញ";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "កំណត់ថេរវេលានៃការលុបសារសម្រាប់រាល់ការសន្ទនាថ្មីៗដែលចាប់ផ្ដើមដោយអ្នក";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "កំណត់ថេរវេលានៃការលុបសារសម្រាប់រាល់ការសន្ទនាថ្មីៗដែលបានចាប់ផ្ដើមដោយអ្នក។";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "ឧបត្ថម្ភទៅ Signal";
@@ -5366,7 +5366,7 @@
 "SETTINGS_LINK_PREVIEWS" = "បង្កើតតំណភ្ជាប់មើលមុន";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "ទាញយកតំណភ្ជាប់មើលមុន ដោយផ្ទាល់ពីគេហទំព័រ សម្រាប់សារដែលអ្នកផ្ញើ។";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "ទាញយកតំណភ្ជាប់មើលមុនដោយផ្ទាល់ពីវេបសាយនានា សម្រាប់សារដែលអ្នកផ្ញើ។";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "មិនធ្លាប់";
@@ -5393,7 +5393,7 @@
 "SETTINGS_MESSAGING" = "ការផ្ញើសារ";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "មើល និងចែករំលែក នៅពេលសារត្រូវបានអាន និងវាយបញ្ចូល។ បើសិនបិទ អ្នកនឹងមិនអាចមើលការទទួលអាន ឬការបង្ហាញការវាយបញ្ចូលពីអ្នកដទៃទេ។";
+"SETTINGS_MESSAGING_FOOTER" = "មើល និងចែករំលែក នៅពេលសារត្រូវបានអាន និងវាយបញ្ចូល។ បើសិនបិទ អ្នកនឹងមិនអាចមើលការទទួលការអាន ឬការបង្ហាញការវាយបញ្ចូលពីអ្នកដទៃទេ។";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "ការកំណត់";
@@ -5423,7 +5423,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "ធ្វើឱ្យសកម្ម";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "អ្នកអាចប្រើប្រាស់ Signal ដើម្បីផ្ញើ និងទទួលMobileCoin។ ការទូទាត់ទាំងអស់គឺស្ថិតនៅក្រោមលក្ខខណ្ឌនៃការប្រើប្រាស់សម្រាប់MobileCoin និង MobileCoin Wallet។ នេះជាមុខងារបេតា ដូចនេះ អ្នកអាចជួបប្រទះបញ្ហាមួយចំនួន និងការទូទាត់ ឬសមតុល្យអាចបាត់បង់ មិនអាចស្តារឡើងវិញទេ។";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "អ្នកអាចប្រើប្រាស់ Signal ដើម្បីផ្ញើ និងទទួល MobileCoin។ ការទូទាត់ទាំងអស់ គឺស្ថិតនៅក្រោមលក្ខខណ្ឌនៃការប្រើប្រាស់សម្រាប់ MobileCoin និង MobileCoin Wallet។ នេះជាមុខងារបេតា ដូចនេះអ្នកអាចជួបប្រទះបញ្ហាមួយចំនួន និងការទូទាត់ ឬ សមតុល្យនានាអាចបាត់បង់មិនអាចស្តារឡើងវិញទេ។";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "ធ្វើឱ្យសកម្ម";
@@ -5435,10 +5435,10 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "បន្ថែមថវិកា";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ដើម្បីបន្ថែមថវិកា ផ្ញើ MobileCoin អាសយដ្ឋានកាបូបរបស់អ្នក។ ចាប់ផ្តើមប្រតិបត្តិការពីគណនីរបស់អ្នក នៅកន្លែងប្តូរប្រាក់ដែលគាំទ្រ MobileCoin បន្ទាប់មកស្កេនកូដ QR ឬចម្លងអាសយដ្ឋានកាបូបរបស់អ្នក។";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "ដើម្បីបន្ថែមថវិកា ផ្ញើ MobileCoin ទៅអាសយដ្ឋានរបស់ Wallet របស់អ្នក។ ចាប់ផ្តើមប្រតិបត្តិការពីគណនីរបស់អ្នក នៅកន្លែងប្តូរប្រាក់ដែលគាំទ្រ MobileCoin បន្ទាប់មកស្កេនកូដ QR ឬ ចម្លងអាសយដ្ឋានរបស់ Wallet របស់អ្នក។";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "បានចម្លងអាសយដ្ឋានកាបូប";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "បានចម្លងអាសយដ្ឋានរបស់ Wallet";
 
 /* Label for the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "ការទូទាត់ទាំងអស់";
@@ -5450,10 +5450,10 @@
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "ការទូទាត់នៅក្នុង Signal លែងមានហើយ។ អ្នកនៅតែអាចផ្ទេរប្រាក់ទៅប្តូរប្រាក់បាន ប៉ុន្តែអ្នកមិនអាចផ្ញើ និងទទួលការទូទាត់ ឬបន្ថែមថវិកាបានទេ។";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "មិនអាចបិទដំណើរការការទូទាត់ ដោយសារមិនមានសមតុល្យរបស់អ្នក។ ពិនិត្យការតភ្ជាប់របស់អ្នក និងសាកល្បងម្តងទៀត។";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "មិនអាចបិទដំណើរការការទូទាត់បានទេ ដោយសារសមតុល្យរបស់អ្នកមិនអាចប្រើបានទេ។ ពិនិត្យការតភ្ជាប់របស់អ្នក និងសាកល្បងម្តងទៀត។";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "មិនអាចបញ្ចប់ការទូទាត់ ដោយសារមិនមានសមតុល្យរបស់អ្នក។ ពិនិត្យការតភ្ជាប់របស់អ្នក និងសាកល្បងម្តងទៀត។";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "មិនអាចបញ្ចប់ការទូទាត់បានទេ ដោយសារសមតុល្យរបស់អ្នកមិនអាចប្រើបានទេ។ ពិនិត្យការតភ្ជាប់របស់អ្នក និងសាកល្បងម្តងទៀត។";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "ការទូទាត់នៅក្នុង Signal លែងមានហើយ។ អ្នកនៅតែអាចផ្ទេរប្រាក់ទៅប្តូរប្រាក់បាន ប៉ុន្តែអ្នកមិនអាចផ្ញើ និងទទួលការទូទាត់ ឬបន្ថែមថវិកាបានទេ។";
@@ -5462,7 +5462,7 @@
 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "ការទូទាត់នៅក្នុង Signal លែងមានហើយ។ អ្នកនៅតែអាចផ្ទេរប្រាក់ទៅប្តូរប្រាក់បាន ប៉ុន្តែអ្នកមិនអាចផ្ញើ និងទទួលការទូទាត់ ឬបន្ថែមថវិកាបានទេ។";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "ការបម្លែង ជាការប៉ាន់ស្មាន និងអាចមិនត្រឹមត្រូវ។";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "ការបំប្លែង ជាការប៉ាន់ស្មាន និងប្រហែលជាអាចមិនត្រឹមត្រូវ។";
 
 /* Label for 'all currencies' section in the payment currency settings. */
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "រូបិយវត្ថុទាំងអស់";
@@ -5477,7 +5477,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "បិទដំណើរការ ការទូទាត់";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "អ្នកនឹងមិនអាចផ្ញើនិងទទួល Mobilecoin ក្នុង Signal ​បើអ្នកបិទដំណើរការ ការទូទាត់។";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "អ្នកនឹងមិនអាចផ្ញើ និងទទួល Mobilecoin ក្នុង Signal ​បើអ្នកបិទដំណើរការការទូទាត់។";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "បិទដំណើរការ ការទូទាត់?";
@@ -5486,10 +5486,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "បិទដំណើរការ ការទូទាត់";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "អ្នកគួរតែផ្ទេរប្រាក់របស់អ្នកទៅកាន់អាសយដ្ឋានកាបូបមួយផ្សេងទៀត មុនពេលអ្នកបិទដំណើរការការទូទាត់ប្រាក់។ ប្រសិនបើអ្នកជ្រើសរើសមិនផ្ទេរប្រាក់របស់អ្នកឥឡូវនេះ ប្រាក់នឹងនៅតែមាននៅក្នុងកាបូបរបស់អ្នកដែលភ្ជាប់ទៅ Signal ប្រសិនបើអ្នកដំណើរការការទូទាត់ឡើងវិញ។";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "អ្នកគួរតែផ្ទេរប្រាក់របស់អ្នកទៅកាន់អាសយដ្ឋានរបស់ Wallet មួយផ្សេងទៀត មុនពេលអ្នកបិទដំណើរការការទូទាត់ប្រាក់នានា។ ប្រសិនបើអ្នកជ្រើសរើសមិនផ្ទេរប្រាក់របស់អ្នកឥឡូវនេះ ប្រាក់នឹងនៅតែមាននៅក្នុង​ Wallet របស់អ្នកដែលភ្ជាប់ទៅ Signal ប្រសិនបើអ្នកដំណើរការការទូទាត់ឡើងវិញ។";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "សមតុល្យរបស់អ្នកនឹងនៅក្នុងកាបូបលុយដែលអ្នកភ្ជាប់ជាមួយ Signal ប្រសិនបើអ្នកសម្រេចអោយការទូទាត់ប្រាក់ដំណើរការឡើងវិញ។";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "សមតុល្យរបស់អ្នកនឹងនៅក្នុង Wallet ដែលអ្នកភ្ជាប់ជាមួយ Signal ប្រសិនបើអ្នកសម្រេចអោយការទូទាត់ប្រាក់ដំណើរការឡើងវិញ។";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "បិទដំណើរការដោយមិនចាំបាច់ផ្ទេរ?";
@@ -5507,19 +5507,19 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "បើកការទូទាត់";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin គឺជារូបិយប័ណ្ណឌីជីថលថ្មីដែលផ្តោតលើឯកជនភាព។";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin គឺជារូបិយប័ណ្ណឌីជីថលថ្មីដែលផ្តោតលើភាពឯកជន។";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "អំពី MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "អ្នកអាចដាក់លុយដើម្បីប្រើនៅក្នុង Signal ដោយផ្ញើ MobileCoin ទៅកាន់អាសយដ្ឋានកាបូបរបស់អ្នក។";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "អ្នកអាចដាក់លុយដើម្បីប្រើនៅក្នុង Signal ដោយផ្ញើ MobileCoin ទៅកាន់អាសយដ្ឋានរបស់ Wallet របស់អ្នក។";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "បន្ថែមថវិកា";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "អ្នកអាចដកប្រាក់ចេញ MobileCoin គ្រប់ពេលវេលានៅកន្លែងប្តូរប្រាក់ដែលគាំទ្រ MobileCoin ។ គ្រាន់តែធ្វើការផ្ទេរប្រាក់ទៅកាន់គណនីរបស់អ្នកនៅកន្លែងប្តូរប្រាក់នោះ។";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "អ្នកអាចដកប្រាក់ MobileCoin គ្រប់ពេលវេលានៅកន្លែងប្តូរប្រាក់ដែលគាំទ្រ MobileCoin ។ គ្រាន់តែធ្វើការផ្ទេរប្រាក់ទៅកាន់គណនីរបស់អ្នកនៅកន្លែងប្តូរប្រាក់នោះ។";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "ដកប្រាក់";
@@ -5528,22 +5528,22 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "បច្ចុប្បន្នភាពកូដ PIN";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "អ្នកគួរតែធ្វើបច្ចុប្បន្នភាពលេខកូដរបស់អ្នកដោយបន្ថែមអក្សរ និងលេខដើម្បីបន្ថែមសុវត្ថិភាពគណនីដែលមានសមតុល្យខ្ពស់របស់អ្នក។";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "អ្នកគួរតែធ្វើបច្ចុប្បន្នភាពលេខកូដ PIN របស់អ្នកដោយបន្ថែមអក្សរ និងលេខ ដើម្បីបន្ថែមសុវត្ថិភាពគណនីដែលមានសមតុល្យភាពខ្ពស់។";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "ធ្វើបច្ចុប្បន្នភាពលេខកូដរបស់អ្នក";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "ធ្វើបច្ចុប្បន្នភាពលេខកូដ PIN របស់អ្នក";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "កត់ត្រាឃ្លាសង្គ្រោះ";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "ឃ្លាសង្គ្រោះរបស់អ្នក នឹងវិធីមួយទៀតសម្រាប់ជួយស្ដារគណនីទូទាត់ប្រាក់របស់អ្នក";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "ឃ្លាសង្គ្រោះរបស់អ្នកផ្តល់នូវវិធីមួយទៀតសម្រាប់ជួយស្ដារគណនីទូទាត់ប្រាក់របស់អ្នក។";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "កត់ត្រាឃ្លារបស់អ្នក";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "អាសយដ្ឋានកាបូបមិនត្រឹមត្រូវ";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "អាសយដ្ឋានរបស់ Wallet មិនត្រឹមត្រូវ";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "មិនមានសកម្មភាពថ្មីៗទេ។";
@@ -5564,19 +5564,19 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "បើកដំណើរការ ការទូទាត់";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "ការទូទាត់ បានបើកដំណើរការ។";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "ការទូទាត់បានបើកដំណើរការ។";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "ប្រើប្រាស់ Signal ដើម្បីផ្ញើ និងទទួល​កាក់ទូរស័ព្ទ រូបិយវត្ថុឌីជីថលផ្តោតលើឯកជនភាពថ្មីមួយ។ បើកដំណើរការ ដើម្បីចាប់ផ្តើម។";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "ប្រើប្រាស់ Signal ដើម្បីផ្ញើ និងទទួល​ MobileCoin រូបិយវត្ថុឌីជីថលផ្តោតលើភាពឯកជនថ្មីមួយ។ បើកដំណើរការ ដើម្បីចាប់ផ្តើម។";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "ការទូទាត់ ដំណើរការឡើងវិញ";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "ការទូទាត់នានាដំណើរការឡើងវិញ";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "សូមណែនាំ ការទូទាត់ (បេតា)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "សូមណែនាំការទូទាត់នានា (បេតា)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "សមតុល្យរបស់អ្នកនឹងស្ដារឡើងវិញដោយស្វ័យប្រវត្តិនៅពេលអ្នកដំឡើង Signal ឡើងវិញ ប្រសិនបើអ្នកបញ្ជាក់លេខកូដ Signal របស់អ្នក។ អ្នកក៏អាចស្ដារសមតុល្យរបស់អ្នកដោយប្រើឃ្លាសង្គ្រោះ ដែលជាឃ្លា 24ពាក្យ តែមួយគត់សម្រាប់អ្នក។ សរសេរ​វា​ ហើយ​ទុក​ក្នុង​កន្លែង​មាន​សុវត្ថិភាព។";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "សមតុល្យរបស់អ្នកនឹងស្ដារឡើងវិញដោយស្វ័យប្រវត្តិនៅពេលអ្នកដំឡើង Signal ឡើងវិញ ប្រសិនបើអ្នកបញ្ជាក់លេខកូដ Signal PIN របស់អ្នក។ អ្នកក៏អាចស្ដារសមតុល្យរបស់អ្នកដោយប្រើឃ្លាសង្គ្រោះ ដែលជាឃ្លា 24ពាក្យ តែមួយគត់សម្រាប់អ្នក។ សរសេរ​វា​ ហើយ​ទុក​ក្នុង​កន្លែង​មាន​សុវត្ថិភាព។";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "បន្ថែមថវិកា";
@@ -5585,7 +5585,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "ហាមឃាត់លេខ";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "ថ្លៃបណ្តាញ";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "ថ្លៃសេវាបណ្តាញ";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "បានទទួល";
@@ -5612,10 +5612,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "ស្ថានភាព";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "ព័ត៌មានលម្អិតអំពីប្រតិបត្តិការ រួមទាំងចំនួនទឹកប្រាក់ទូទាត់ និងពេលវេលានៃប្រតិបត្តិការ គឺជាផ្នែកមួយនៃ MobileCoin Ledger ។";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "ព័ត៌មានលម្អិតអំពីប្រតិបត្តិការ រួមទាំងចំនួនទឹកប្រាក់ការទូទាត់ និងពេលវេលានៃប្រតិបត្តិការ គឺជាផ្នែកមួយនៃ MobileCoin Ledger។";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "“ថ្លៃសំអាតកាក់” ត្រូវបានគិតប្រាក់នៅពេលដែលកាក់នៅក្នុងកម្មសិទ្ធិរបស់អ្នក មិនអាចបញ្ចូលគ្នាដើម្បីបញ្ចប់ប្រតិបត្តិការ។ ការសំអាត នឹងអនុញ្ញាតឱ្យអ្នកបន្តការផ្ញើការទូទាត់។";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "“ថ្លៃសេវាសំអាតកាក់” ត្រូវបានគិតប្រាក់នៅពេលដែលកាក់របស់អ្នកមិនអាចបញ្ចូលគ្នាដើម្បីបញ្ចប់ប្រតិបត្តិការ។ ការសំអាតនឹងអនុញ្ញាតឱ្យអ្នកបន្តការផ្ញើការទូទាត់។";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "អ្នកមិនមាន MOB គ្រប់គ្រាន់ ដើម្បីបញ្ចប់ការទូទាត់នេះ។ សមតុល្យបច្ចុប្បន្នរបស់អ្នកគឺ %@។";
@@ -5630,7 +5630,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "ទៅ %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "ការទូទាត់ បានបិតដំណើរការ។";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "ការទូទាត់បានបិទដំណើរការ។";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "ទាំងអស់";
@@ -5675,25 +5675,25 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "បញ្ជូលដោយខ្លួនឯង";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "សង្គ្រោះបរាជ័យ";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "ការសង្គ្រោះបរាជ័យ";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "នេះ មិនមែនជាឃ្លាសង្គ្រោះត្រឹមត្រូវទេ។";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "នេះមិនមែនជាឃ្លាសង្គ្រោះត្រឹមត្រូវទេ។";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "ឃ្លាមិនត្រឹមត្រូវ";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "បិតចេញពី Clipboard";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "បិទចេញពី Clipboard";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "ឃ្លាសង្គ្រោះ";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "បិតឃ្លាសង្គ្រោះ";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "បិទភ្ជាប់ឃ្លាសង្គ្រោះ";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "ឃ្លាសង្គ្រោះរបស់អ្នក គឺជា 24 ពាក្យដែលប្លែកសម្រាប់អ្នក។ សូមប្រើឃ្លានេះ ដើម្បីស្តារគណនីទួទាត់របស់អ្នក។";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "ឃ្លាសង្គ្រោះរបស់អ្នក គឺជា 24 ពាក្យតែមួយគត់សម្រាប់អ្នក។ សូមប្រើឃ្លានេះ ដើម្បីស្តារគណនីទូទាត់របស់អ្នក។";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "បញ្ជូលឃ្លាសង្គ្រោះ";
@@ -5729,31 +5729,31 @@
 "SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "ជ្រើសរើសអ្នកទទួល";
 
 /* Title for the 'set currency' view in the app settings. */
-"SETTINGS_PAYMENTS_SET_CURRENCY" = "ការបម្លែងរូបិយវត្ថុ";
+"SETTINGS_PAYMENTS_SET_CURRENCY" = "ការបំប្លែងរូបិយវត្ថុ";
 
 /* Label for the 'payments' section of the app settings. */
 "SETTINGS_PAYMENTS_TITLE" = "ការទូទាត់";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "អ្នកមិនអាចផ្ទេរទៅអាសយដ្ឋានកាបូប Signal ខ្លួនឯងទេ។ បញ្ចូលអាសយដ្ឋានកាបូបពីគណនីរបស់អ្នក នៅការផ្លាស់ប្តូរដែលគាំទ្រ។";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "អ្នកមិនអាចផ្ទេរទៅអាសយដ្ឋានរបស់ Signal Wallet ខ្លួនឯងទេ។ បញ្ចូលអាសយដ្ឋានរបស់ Wallet ពីគណនីរបស់អ្នកនៅការផ្លាស់ប្តូរដែលបានគាំទ្រ។";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "អ្នកអាចផ្ទេរ MobileCoin ដោយបញ្ចប់ការផ្ទេរទៅអាសយដ្ឋានកាបូប​ ដែលផ្តល់ដោយកន្លែងប្តូរប្រាក់។ អាសយដ្ឋានកាបូប ជាខ្សែអក្សរនៃលេខ និងអក្សរដែលជាទូទៅនៅខាងក្រោមកូដ QR ។ ";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "អ្នកអាចផ្ទេរ MobileCoin ដោយបញ្ចប់ការផ្ទេរទៅអាសយដ្ឋានរបស់ Wallet​ ដែលផ្តល់ដោយកន្លែងប្តូរប្រាក់។ អាសយដ្ឋានរបស់ Wallet​ ជាខ្សែអក្សរនៃលេខ និងអក្សរដែលជាធម្មតានៅខាងក្រោមកូដ QR ។ ";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "ពិនិត្យអាសយដ្ឋានកាបូប ដែលអ្នកព្យាយាមផ្ទេរទៅ ហើយសាកល្បងម្តងទៀត។";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "ពិនិត្យអាសយដ្ឋានរបស់ Wallet​ ដែលអ្នកព្យាយាមផ្ទេរទៅ ហើយសាកល្បងម្តងទៀត។";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "អាសយដ្ឋានមិនត្រឹមត្រូវ";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "ទៅ៖ ស្កេន ឬបញ្ចូលអាសយដ្ឋានកាបូបលុយ ";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "ទៅកាន់៖ ស្កេន ឬ បញ្ចូលអាសយដ្ឋានរបស់ Wallet​";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "ផ្ទេរដើម្បីផ្លាស់ប្តូរ";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "ផ្ទេរដើម្បីប្តូរប្រាក់";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "ផ្ទេរដើម្បីផ្លាស់ប្តូរ";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "ផ្ទេរដើម្បីប្តូរប្រាក់";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "ការ​រៀបចំ​ឃ្លា​សង្គ្រោះ​បាន​បញ្ចប់។";
@@ -5777,13 +5777,13 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "បញ្ជាក់ឃ្លាសង្គ្រោះ";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "បានចម្លងឃ្លាសង្គ្រោះត្រូវ";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "បានចម្លងឃ្លាសង្គ្រោះ";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "ចម្លងទៅ Clipboard";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "បើអ្នកជ្រើសរើសរក្សាទុកឃ្លាសង្គ្រោះអ្នកលើប្រព័ន្ធឌីជីថល អ្នកត្រូវប្រាកដថាវាត្រូវបានរក្សាទុកកន្លែងដែលអ្នកទុកចិត្ត។";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "បើអ្នកជ្រើសរើសរក្សាទុកឃ្លាសង្គ្រោះរបស់អ្នកលើប្រព័ន្ធឌីជីថល អ្នកត្រូវប្រាកដថាវាត្រូវបានរក្សាទុកកន្លែងដែលអ្នកទុកចិត្ត។";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "ចម្លងទៅ Clipboard?";
@@ -5801,7 +5801,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "សរសេរនូវពាក្យ 24 តាមលំដាប់លំដោយ។ រក្សាទុកបញ្ជីរបស់អ្នកនៅកន្លែងសុវត្ថិភាព។";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "កុំថតអេក្រង់ ឬផ្ញើតាមអុីម៉ែល";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "កុំថតអេក្រង់ ឬ ផ្ញើតាមអុីម៉ែល";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "ឃ្លាសង្គ្រោះ";
@@ -5810,7 +5810,7 @@
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "ការទូទាត់ (បេតា)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "អាសយដ្ឋានកាបូបរបស់អ្នក";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "អាសយដ្ឋានរបស់ Wallet​ របស់អ្នក";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "ស្វែងរកខ្ញុំតាមលេខទូរស័ព្ទ";
@@ -5837,7 +5837,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "ការរំលឹក PIN ";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "លេខកូដ PIN រក្សាទុកព័ត៌មានដែលផ្ទុកជាមួយ Signal ដែលបានធ្វើកូដនីយកម្ម​​ ដូច្នេះមានតែអ្នកប៉ុណ្ណោះដែលអាចចូលប្រើវាបាន។ លេខកូដ PIN មិនអាចស្តារឡើងវិញទេ។ ប្រវត្តិរូប ការកំណត់ និងទំនាក់ទំនងរបស់អ្នក នឹងស្តារឡើងវិញនៅពេលដែលអ្នកតំឡើង Signal ឡើងវិញ។";
+"SETTINGS_PINS_FOOTER" = "លេខកូដ PIN រក្សាទុកព័ត៌មានដែលផ្ទុកជាមួយ Signal ដែលបានធ្វើកូដនីយកម្ម​​ ដូច្នេះមានតែអ្នកប៉ុណ្ណោះដែលអាចចូលប្រើវាបាន។ លេខកូដ PIN មិនអាចស្តារឡើងវិញបានទេ។ គណនី ការកំណត់ និងទំនាក់ទំនងរបស់អ្នក នឹងស្តារឡើងវិញនៅពេលដែលអ្នកតំឡើង Signal ឡើងវិញ។";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
@@ -5894,7 +5894,7 @@
 "SETTINGS_SCREEN_SECURITY" = "លាក់អេក្រង់នៅក្នុង App Switcher";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "បង្ហាញការហៅក្នុងបញ្ជី “ថ្មីៗ” នៅក្នុងកម្មវិធីហៅទូរស័ព្ទ iOS។";
+"SETTINGS_SECTION_FOOTER_CALLING" = "បង្ហាញការហៅក្នុងបញ្ជី “ថ្មីៗ” នៅក្នុងកម្មវិធីទូរស័ព្ទ iOS។";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "សំឡេង";
@@ -5918,7 +5918,7 @@
 "SETTINGS_SECURITY_TITLE" = "សន្តិសុខកម្មវិធី";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "ការផ្ញើឯកសារមេឌៀដែលមានគុណភាពខ្ពស់នឹងអស់ទិន្នន័យអុីនធឺណិតច្រើន";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "ការផ្ញើឯកសារមេឌៀដែលមានគុណភាពខ្ពស់នឹងអស់ទិន្នន័យអុីនធឺណិតច្រើន។";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "រូបភាព និងវីដេអូ";
@@ -5927,22 +5927,22 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "ចែករំលកបញ្ជីទំនាក់ទំនងជាមួយ iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "អនុញ្ញាត iOS ចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង និងការជជែក Signal សម្រាប់មុខងារ ដូចជា ការណែនាំការចែករំលែក។";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "អនុញ្ញាត iOS ចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង និងការជជែករបស់ Signal សម្រាប់មុខងារ ដូចជា ការណែនាំការចែករំលែក។";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "អនុញ្ញាត iOS ចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង និងការជជែក Signal សម្រាប់មុខងារ ដូចជា ការណែនាំ និងការចែករំលែក។";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "អនុញ្ញាត iOS ចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង និងការជជែករបស់ Signal សម្រាប់មុខងារ ដូចជា ការណែនាំការចែករំលែក និងសារជូនដំណឹង។";
 
 /* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Signal Boost";
+"SETTINGS_SIGNAL_BOOST" = "ជម្រុញ Signal";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "ក្លាយជាអ្នកទ្រទ្រង់";
+"SETTINGS_SUBSCRIPTION" = "ក្លាយជាអ្នកទ្រទ្រង់ Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "ចាក់សោរការចុះឈ្មោះ";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "ទាមទារលេខកូដ Signal PIN របស់អ្នក ដើម្បីចុះឈ្មោះលេខទូរស័ព្ទរបស់អ្នកម្តងទៀតជាមួយ Signal។";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "ទាមទារលេខកូដ Signal របស់អ្នក ដើម្បីចុះឈ្មោះលេខទូរស័ព្ទរបស់អ្នកម្តងទៀតជាមួយ Signal។";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "វាស់ការវាយអក្សរ";
@@ -5963,7 +5963,7 @@
 "SETTINGS_VERSION" = "ជំនាន់";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "អ្នកអាច...";
+"SETTINGS_WHO_CAN" = "អ្នកណាអាច...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "សារ";
@@ -6008,7 +6008,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "ចែករំលែកទៅ Signal";
 
 /* Title of alert indicating sharing suggestions failed to deactivate */
-"SHARING_SUGGESTIONS_DISABLE_ERROR" = "បរាជ័យក្នុងការបិទការណែនាំការចែករំលែក។";
+"SHARING_SUGGESTIONS_DISABLE_ERROR" = "បានបរាជ័យក្នុងការបិទការណែនាំការចែករំលែក។";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "បង្ហាញលេខសុវត្ថិភាព";
@@ -6032,19 +6032,19 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ប្រសិនបើអ្នករំលងការផ្ទៀងផ្ទាត់ អ្នកអាចនឹងបាត់សារពីអ្នកដទៃ ហើយសាររបស់អ្នកប្រហែលបរាជ័យក្នុងការផ្ញើចេញ។";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "បន្តដោយមិនចាំបាច់ផ្ទៀងផ្ទាត់";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "បន្តដោយមិនចាំបាច់ផ្ទៀងផ្ទាត់?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "ដើម្បីជួយការសារមិនបានការនៅលើ Signal សូមបញ្ចប់ការផ្ទៀងផ្ទាត់";
+"SPAM_CAPTCHA_SHEET_BODY" = "ដើម្បីជួយការពារសារមិនបានការនៅលើ Signal សូមបញ្ចប់ការផ្ទៀងផ្ទាត់\n\nបន្ទាប់ពីការបញ្ជាក់ អ្នកអាចបន្តការផ្ញើសារបាន។ សារដែលបានផ្អាកណាមួយនឹងត្រូវបានផ្ញើដោយស្វ័យប្រវត្តិ។";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "ផ្ទៀងផ្ទាត់ដើម្បីបន្តផ្ញើសារ";
+"SPAM_CAPTCHA_SHEET_TITLE" = "ផ្ទៀងផ្ទាត់ដើម្បីបន្តការផ្ញើសារ";
 
 /* Action to skip verification */
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "រំលងការផ្ទៀងផ្ទាត់";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "បញ្ចប់ ការផ្ទៀងផ្ទាត់";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "បញ្ចប់ការផ្ទៀងផ្ទាត់";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "សារស្ទីកគ័រ";
@@ -6092,7 +6092,7 @@
 "SUBSCRIBER_BADGES" = "ស្លាកសម្គាល់";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "ចាត់ចែងការជាវ";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "គ្រប់គ្រងការជាវ";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "សំណួរដែលសួរញឺកញាប់អំពីការជាវ";
@@ -6107,7 +6107,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "ទេ អរគុណ";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "ក្លាយជា Sustainer​ ម្នាក់";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "ក្លាយជាទ្រទ្រង់ម្នាក់";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "លេខសុវត្ថិភាពរបស់អ្នក ជាមួយ %@ ត្រូវគ្នា។ អ្នកអាចដាក់លេខទំនាក់ទំនងនេះ ថាបានផ្ទៀងផ្ទាត់។";
@@ -6119,25 +6119,25 @@
 "SUPPORT_CONTACT_US_HEADER" = "ទាក់ទងយើង";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "ប្រាប់យើងអ្វីកំពុងកើតឡើង";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "សូមរៀបរាប់ពីអ្វីដែលកំពុងកើតឡើង";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "ប្រាប់យើងពីបញ្ហា៖";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "សូមរៀបរាប់ពីបញ្ហា៖";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "សូមផ្ញើអ៊ីម៉ែលសំណើគាំទ្រទៅកាន់ support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "សូមផ្ញើអុីមែលស្នើសុំការគាំទ្រទៅកាន់ support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
 "SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "តម្រង៖ %@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
-"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "ផ្នែករឹង៖ %@";
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardware៖ %@";
 
 /* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "--- ព័ត៌មានការគាំទ្រ---";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- ព័ត៌មានអំពីការគាំទ្រ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS ជំនាន់៖ %@";
@@ -6146,7 +6146,7 @@
 "SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "កន្លែង៖ %@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "អាសយដ្ឋាន URL កំណត់ត្រា៖ %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "កំណត់ត្រាអាសយដ្ឋាន URL ៖ %@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
 "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal ជំនាន់៖ %@";
@@ -6155,10 +6155,10 @@
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS សំណើគាំទ្រ";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "តើអ្នកមានអារម្មណ៍យ៉ាងមិច? (ជម្រើស)";
+"SUPPORT_EMOJI_PROMPT" = "តើអ្នកមានអារម្មណ៍យ៉ាងដូចម្តេច? (ជ្រើសរើស)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "តើអ្នកបានអាចសំណួរដែលសួរញឹកញាប់ហើយឬនៅ?";
+"SUPPORT_FAQ_PROMPT" = "តើអ្នកអាចបានសំណួរដែលសួរញឹកញាប់ហើយ ឬ នៅ?";
 
 /* Label describing support switch to attach debug logs */
 "SUPPORT_INCLUDE_DEBUG_LOG" = "រួមបញ្ចូលកំណត់ត្រាបញ្ហា";
@@ -6167,13 +6167,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "កំពុងផ្ទុក";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal គឺមិនរកប្រាក់ចំនូលពីអ្នកផ្សព្វផ្សាយពាណិជ្ជកម្ម ឬអ្នកបណ្ដាក់ទុន តែទ្រទ្រង់ដោយមនុស្សដែលប្រើប្រាស់ និងអោយតម្លៃកម្មវិធីនេះ។ សូមជួយចូលរួមចំណែកប្រចាំខែ និងទទួលបាននូវស្លាកសម្គាល់សម្រាប់គណនីអ្នកដើម្បីចែករំលែកពីការគាំទ្ររបស់អ្នក។";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal គឺមិនរកប្រាក់ចំណូលពីអ្នកផ្សព្វផ្សាយពាណិជ្ជកម្ម ឬ អ្នកវិនិយោគ តែទ្រទ្រង់ដោយមនុស្សដែលប្រើប្រាស់ និងអោយតម្លៃកម្មវិធីនេះតែប៉ុណ្ណោះ។ សូមជួយចូលរួមចំណែកប្រចាំខែ និងទទួលបាននូវស្លាកសម្គាល់សម្រាប់គណនីអ្នកដើម្បីចែករំលែកពីការគាំទ្ររបស់អ្នក។";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal ប្ដេជ្ញាអភិវឌ្ឍន៍បច្ចេកវិទ្យាឯកជនភាពកូដចំហរ ដែលការពារការបញ្ចេញមតិដោយសេរី និងបង្កើតទំនាក់ទំនងដោយសុវត្ថិភាពជាសកល។\n\nការចូលរួមចំណែករបស់អ្នកនឹងជួយដល់បុព្វហេតុនេះ និងការអភិវឌ្ឍ និងដំណើរការរបស់កម្មវិធីមួយដែលប្រើដោយមនុស្សរាប់លាននាក់សម្រាប់ការទំនាក់ទំនងឯកជន។ គ្មានការផ្សាយពាណិជ្ជកម្ម គ្មានការតាមដាន គ្មានការលេងសើច!";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal ប្ដេជ្ញាអភិវឌ្ឍន៍បច្ចេកវិទ្យាភាពឯកជនកូដចំហរដែលការពារការបញ្ចេញមតិដោយសេរី និងបង្កើតទំនាក់ទំនងដោយសុវត្ថិភាពជាសកល។\n\nការចូលរួមចំណែករបស់អ្នកនឹងជួយដល់បុព្វហេតុនេះ និងការចំណាយសម្រាប់ការអភិវឌ្ឍ និងដំណើរការរបស់កម្មវិធីដែលប្រើដោយមនុស្សរាប់លាននាក់សម្រាប់ការទំនាក់ទំនងឯកជន។ គ្មានការផ្សាយពាណិជ្ជកម្ម គ្មានការតាមដាន គ្មានការលេងសើច!";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "គាំទ្របច្ចេកវិទ្យាដែលបង្ហើតឡើងដើម្បីអ្នក មិនមែនដើម្បីទិន្នន័យអ្នក ដោយចូលរួមជាមួយសហគមន៍យើងដើម្បីនិរន្តភាពរបស់ Signal";
+"SUSTAINER_READ_MORE_TITLE" = "គាំទ្របច្ចេកវិទ្យាដែលបង្កើតឡើងដើម្បីអ្នក មិនមែនដើម្បីទិន្នន័យអ្នក ដោយចូលរួមជាមួយសហគមន៍យើងដើម្បីនិរន្តភាពរបស់ Signal។";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "ហេតុអ្វីចាំបាច់ចូលរួមចំណែក?";
@@ -6182,7 +6182,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "កំពុងដំណើការ";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "បន្ថែម Signal Boost";
+"SUSTAINER_VIEW_ADD_BOOST" = "បន្ថែមការជម្រុញ Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "ទទួលស្លាកសម្គាល់%@";
@@ -6191,7 +6191,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "ផ្ដាច់ការជាវ";
 
 /* Confirm Cancellation? Action sheet confirm button */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "ផ្ទៀងផ្ទាត់";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "បញ្ជាក់";
 
 /* Confirm Cancellation? Action sheet message */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "យើងនឹងមិនគិតលុយអ្នកម្ដងទៀតទេ។ ស្លាកសម្គាល់របស់អ្នកនឹងត្រូវដកចេញពីគណនីអ្នកនៅចុងបញ្ចប់នៃការជាវរបស់អ្នក។";
@@ -6200,34 +6200,34 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "បញ្ជាក់ការផ្ដាច់?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "មិនអាចបន្ថែមស្លាកសម្គាល់បាន %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "មិនអាចបន្ថែមស្លាកសម្គាល់បានទេ %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "ស្លាកសម្គាល់អ្នកមិនអាចដាក់ចូលគណនីអ្នកបានទេ។ សូមទាក់ទងផ្នែកគាំទ្រ។";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "មិនអាចដាក់ស្លាកសម្គាល់";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "មិនអាចដាក់ស្លាកសម្គាល់បានទេ";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "សូមទាក់ទងទៅកាន់សេវាគាំទ្រ";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "សូមទាក់ទងផ្នែកគាំទ្រ។";
 
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "កំណត់រូបិយវត្ថុ";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "បរាជ័យក្នុងដំណើរការទូទាត់ប្រាក់";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "មានបញ្ហាក្នុងដំណើរការទូទាត់ប្រាក់";
 
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "ការគាំទ្ររបស់ខ្ញុំ";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "បរាជ័យក្នុងដំណើរការទូទាត់ប្រាក់ %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "មានបញ្ហាក្នុងដំណើរការទូទាត់ប្រាក់ %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/ខែ";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = "សុពលភាព%@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = "អស់សុពលភាព%@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
 "SUSTAINER_VIEW_PRICING_RENEWAL" = "បន្ត%@";
@@ -6236,7 +6236,7 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "កំពុងដំណើរការការទូទាត់...";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "កំពុងដំណើការទូទាត់ប្រាក់";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "កំពុងដំណើការប្រតិបត្តិការ";
 
 /* Read More tappable text in sustainer view body */
 "SUSTAINER_VIEW_READ_MORE" = "អានបន្ថែមទៀត";
@@ -6245,13 +6245,13 @@
 "SUSTAINER_VIEW_RENEWAL" = "បន្ត%@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "ការទូទាត់ប្រាក់របស់អ្នកកំពុងដំណើរការ ដែលអាចចំណាយពេលពីរបីនាទីអាស្រ័យលើល្បឿនអុីនធឺណិត";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "ការទូទាត់ប្រាក់របស់អ្នកកំពុងដំណើរការ ដែលអាចចំណាយពេលពីរបីនាទីអាស្រ័យលើល្បឿនអុីនធឺណិតរបស់អ្នក។";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "ការជាវរបស់អ្នកត្រូវបានបញ្ចប់។";
 
 /* Sustainer view Not Now Action sheet button */
-"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "លើកក្រោយ";
+"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "មិនមែនឥឡូវនេះ";
 
 /* Title for the signal sustainer view */
 "SUSTAINER_VIEW_TITLE" = "Signal ត្រូវបានបង្កើតដោយមនុស្សដូចអ្នក។";
@@ -6266,7 +6266,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "បច្ចុប្បន្នភាព";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "គាំទ្របច្ចេកវិទ្យាដែលបង្ហើតឡើងដើម្បីអ្នក មិនមែនដើម្បីទិន្នន័យអ្នក ដោយចូលរួមជាមួយសហគមន៍យើងដើម្បីនិរន្តភាពរបស់ Signal";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "គាំទ្របច្ចេកវិទ្យាដែលបង្កើតឡើងដើម្បីអ្នក មិនមែនដើម្បីទិន្នន័យអ្នក ដោយចូលរួមជាមួយសហគមន៍យើងដើម្បីនិរន្តភាពរបស់ Signal។";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "បិទ";
@@ -6278,13 +6278,13 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ផ្ទៀងផ្ទាត់";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "រយៈពេលសារបាត់ទៅវិញ នឹងត្រូវកំណត់ទៅ %@ នៅពេលអ្នកផ្ញើសារពួកគេ។";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "រយៈពេលសារបាត់ទៅវិញនឹងត្រូវកំណត់ទៅ %@ នៅពេលអ្នកផ្ញើសារទៅកាន់ពួកគេ។";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "មិនមានក្រុមដូចគ្នា។ ត្រួតពិនិត្យការស្នើសុំដោយប្រុងប្រយ័ត្ន។";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "មិនមានក្រុមដូចគ្នាទេ។ សូមត្រួតពិនិត្យការស្នើសុំដោយប្រុងប្រយ័ត្ន។";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "មិនមានលេខទំនាក់ទំនងក្នុងក្រុមនេះ។ ត្រួតពិនិត្យការស្នើសុំដោយប្រុងប្រយ័ត្ន។";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "មិនមានលេខទំនាក់ទំនងក្នុងក្រុមនេះ។ សូមត្រួតពិនិត្យការស្នើសុំដោយប្រុងប្រយ័ត្ន។";
 
 /* Tap to Replace Emoji string for reaction configuration */
 "TAP_REPLACE_EMOJI" = "ចុចដើម្បីដាក់រូបតំណាងអារម្មណ៍ជំនួស";
@@ -6296,7 +6296,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "សមាជិកនៃ %@, %@, និង %lu ក្រុមផ្សេងទៀត";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "អ្នកអាចកត់ត្រាសម្រាប់ខ្លួនឯងនៅក្នុងការជជែក។ បើគណនីរបស់អ្នក បានតភ្ជាប់ទៅកាន់ឧបរករណ៍ច្រើន កំណត់ត្រាថ្មីៗនឹងត្រូវធ្វើសមកាលកម្ម។";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "អ្នកអាចកត់ត្រាសម្រាប់ខ្លួនឯងនៅក្នុងការជជែកនេះ។ បើគណនីរបស់អ្នកបានតភ្ជាប់ទៅកាន់ឧបរករណ៍ច្រើន កំណត់ត្រាថ្មីៗនឹងត្រូវធ្វើសមកាលកម្ម។";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "សមាជិកនៃ %@";
@@ -6449,7 +6449,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "ឧបករណ៍របស់អ្នកមិនគាំទ្រមុខងារនេះទេ។";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "លេខសុវត្ថិភាពរបស់អ្នកជាមួយ %@ បានផ្លាស់ប្តូរ អាចដោយសារពួកគេបានបញ្ចូល Signal សារឡើងវិញ ឬផ្លាស់ប្តូរឧបករណ៍។ ចុច ផ្ទៀងផ្ទាត់ ដើម្បីបញ្ជាក់លេខសុវត្ថិភាពថ្មី។​ នេះគឺជាជម្រើស។";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "លេខសុវត្ថិភាពរបស់អ្នកជាមួយ %@ បានផ្លាស់ប្តូរ អាចដោយសារពួកគេបានបញ្ចូល Signal សារឡើងវិញ ឬ ផ្លាស់ប្តូរឧបករណ៍។ ចុច ផ្ទៀងផ្ទាត់ ដើម្បីបញ្ជាក់លេខសុវត្ថិភាពថ្មី។​ នេះគឺជាជម្រើស។";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "ផ្ទៀងផ្ទាត់";
@@ -6458,13 +6458,13 @@
 "UPDATE_CONTACT_ACTION" = "ធ្វើបច្ចុប្បន្នភាពបញ្ជីទំនាក់ទំនង";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "ក្រុមមិនអាចធ្វើបច្ចុប្បន្នភាព។";
+"UPDATE_GROUP_FAILED" = "មិនអាចធ្វើបច្ចុប្បន្នភាពក្រុមបានទេ។";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "មិនអាចធ្វើបច្ចុប្បន្នភាពក្រុមបាន។ សូមពិនិត្យការភ្ជាប់អុីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "មិនអាចធ្វើបច្ចុប្បន្នភាពក្រុមបានទេ។ សូមពិនិត្យការភ្ជាប់អុីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal នឹងទាមទារ iOS 11 ឬថ្មីជាងនេះ។ សូមដំឡើងក្នុង ការកំណត់ >> ទូទៅ >> បច្ចុប្បភាពកម្មវិធី។";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal នឹងទាមទារ iOS ជំនាន់ 11 ឬ ថ្មីជាងនេះ។ សូមដំឡើងក្នុង ការកំណត់ >> ទូទៅ >> បច្ចុប្បភាពកម្មវិធី។";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "ធ្វើបច្ចុប្បន្នភាព iOS";
@@ -6566,37 +6566,37 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "ខ្ទាស់ដើម្បីពង្រីក អូសដើម្បីកែតម្រូវ។";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "អូសដើម្បីមើលផ្ទៃខាងក្រោយបន្ថែមទៀត";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "អូសដើម្បីមើលផ្ទាំងពីក្រោយបន្ថែមទៀត។";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "កំណត់ផ្ទៃខាងក្រោយសម្រាប់គ្រប់ការសន្ទនាទាំងអស់";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "កំណត់ផ្ទាំងពីក្រោយសម្រាប់គ្រប់ការសន្ទនាទាំងអស់។";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "កំណត់ផ្ទៃខាងក្រោយសម្រាប់ %@";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "កំណត់ផ្ទាំងពីក្រោយសម្រាប់ %@";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "ពិនិត្យឡើងវិញ";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "សម្អាតពណ៌សម្រាប់ការសន្ទនា";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "សម្អាតពណ៌ការសន្ទនា";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "សម្អាតពណ៌សម្រាប់ការសន្ទនានេះ?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "សម្អាតពណ៌ការសន្ទនានេះ?";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "សម្អាតផ្ទៃខាងក្រោយ";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "សម្អាតផ្ទាំងពីក្រោយ";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "សម្អាតផ្ទៃខាងក្រោយសម្រាប់ការសន្ទនានេះ";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "សម្អាតផ្ទាំងពីក្រោយការសន្ទនានេះ";
 
 /* Dim wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "ផ្ទៃខាងក្រោយពណ៌ខ្មៅស្រទន់";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "ផ្ទៃខាងក្រោយមិនអាចសម្អាតបាន សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ ឬទាក់ទងទៅកាន់សេវាគាំទ្រ ប្រសិនបើបញ្ហានៅតែកើតឡើង";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "ផ្ទាំងពីក្រោយមិនអាចសម្អាតបាន សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ ឬ ទាក់ទងទៅកាន់ផ្នែកគាំទ្រ ប្រសិនបើបញ្ហានៅតែកើតឡើង។";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "ផ្ទៃក្រោយទាំងអស់មិនអាចកំណត់ឡើងវិញ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ ឬទាក់ទងទៅសេវាគាំទ្រប្រសិនបើបញ្ហានៅតែកើតមាន";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "ផ្ទាំងពីក្រោយទាំងអស់មិនអាចកំណត់ឡើងវិញ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ ឬ ទាក់ទងទៅផ្នែកគាំទ្រ ប្រសិនបើបញ្ហានៅតែកើតមាន។";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "កំណត់ពណ៌នៃការសន្ទនាទាំងអស់ឡើងវិញ";

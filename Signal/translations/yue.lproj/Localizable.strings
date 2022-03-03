@@ -5153,7 +5153,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "啟用嘅時候，Signal 會嘗試迴避封網。除非您身處會審查 Signal 嘅地方，否則唔使啟用呢個功能。";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "鑑於您帳戶嘅電話冧把，已啟用封鎖迴避。";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "鑑於您帳戶嘅電話冧把，已啟用封網迴避。";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "您已經手動停用封網迴避。";

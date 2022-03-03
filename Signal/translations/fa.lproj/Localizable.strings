@@ -365,7 +365,7 @@
 "BACK_BUTTON" = "بازگشت";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "نشان‌های من";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "نشان‌ها";
@@ -677,7 +677,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "انتخاب کشور";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "ویرایش عکس";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
@@ -3581,7 +3581,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "جستجو از طریق شماره تلفن";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "۱ عضو";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "گروه جدید";
@@ -5219,10 +5219,10 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "بازپخش تمام تماس ها از طریق سرور سیگنال برای جلوگیری از افشا شدن آدرس IP شما برای مخاطبانتان. فعال سازی آن باعث کاهش کیفیت تماس می شود.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "ویرایش شماره";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "تغییر شماره‌ تلفن";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
 "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
@@ -5243,22 +5243,22 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "مثال: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "شماره جدید شما";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "شماره قدیمی شما";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "شماره تلفن";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "در حال تایید %@";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "تغییر شماره‌ تلفن";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "تغییر شماره";
@@ -6092,7 +6092,7 @@
 "SUBSCRIBER_BADGES" = "نشان‌ها";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "مدیریت اشتراک";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "پرسش‌های متداول اشتراک";
@@ -6179,7 +6179,7 @@
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "چرا کمک کنیم؟";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "هنوز در حال پردازش";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "یک تقویت سیگنال اضافه کنید";
@@ -6218,13 +6218,13 @@
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "پشتیبانی من";
 
 /* Payment error occured text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/ماه";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
@@ -6260,7 +6260,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "به‌روزرسانی اشتراک؟";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "به‌روزرسانی";
