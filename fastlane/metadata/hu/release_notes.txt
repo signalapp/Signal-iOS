@@ -1,2 +1,2 @@
-• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
-• Notifications now let you know if someone has replied to your message or mentioned you
+• A Signal kamera funkciója új fényben tündököl, a fotóidat még stílusosabban tudod elkattintani.
+• Az üzenet értesítésekben mostantól arról is tájékoztatást kapsz, ha valaki válaszolt az üzenetedre, vagy megemlített téged.
