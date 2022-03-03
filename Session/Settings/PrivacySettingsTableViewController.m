@@ -32,6 +32,14 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     
     [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:NSLocalizedString(@"vc_privacy_settings_title", @"") customBackButton:NO];
     self.tableView.backgroundColor = UIColor.clearColor;
+    
+    if (self.shouldShowCloseButton) {
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"X"]
+                                                                        style:UIBarButtonItemStylePlain
+                                                                       target:self
+                                                                       action:@selector(close:)];
+        [[self navigationItem] setLeftBarButtonItem:closeButton];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -349,6 +357,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
             @"Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately.");
     }
     return [NSString formatDurationSeconds:(uint32_t)value useShortFormat:useShortFormat];
+}
+
+- (void)close: (UIBarButtonItem *)sender
+{
+    [[self navigationController] dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

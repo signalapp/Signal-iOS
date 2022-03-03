@@ -54,6 +54,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             self.inputAccessoryView?.isHidden = true
             self.inputAccessoryView?.alpha = 0
             present(callVC, animated: true, completion: nil)
+        } else {
+            let callPermissionRequestModal = CallPermissionRequestModal()
+            self.navigationController?.present(callPermissionRequestModal, animated: true, completion: nil)
         }
     }
 

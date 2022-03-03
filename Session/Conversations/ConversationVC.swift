@@ -487,7 +487,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                     settingsButton.accessibilityLabel = "Settings button"
                     settingsButton.isAccessibilityElement = true
                     rightBarButtonItems.append(settingsButton)
-                    let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && SSKPreferences.areCallsEnabled
+                    let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isMessageRequest()
                     if shouldShowCallButton {
                         let callButton = UIBarButtonItem(image: UIImage(named: "Phone")!, style: .plain, target: self, action: #selector(startCall))
                         rightBarButtonItems.append(callButton)
