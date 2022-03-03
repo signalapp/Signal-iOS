@@ -1,2 +1,2 @@
-• Zdjęcia profilowe dla rozmów indywidualnych i grupowych będą się teraz poprawnie pojawiać w powiadomieniach
-• Różne poprawki wydajności dla bardzo dużych grup
+• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
+• Notifications now let you know if someone has replied to your message or mentioned you

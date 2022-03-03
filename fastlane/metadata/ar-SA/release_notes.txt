@@ -1,2 +1,2 @@
-• Profile photos for 1-1 and group chats will now reliably appear in notifications
-• Various performance improvements for very large groups
+• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
+• Notifications now let you know if someone has replied to your message or mentioned you

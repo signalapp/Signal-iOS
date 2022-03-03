@@ -1,2 +1,2 @@
-• Profilové fotografie pro chaty 1-1 a skupinové chaty se nyní spolehlivě zobrazují v oznámeních.
-• Různá výkonnostní vylepšení pro velmi velké skupiny.
+• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
+• Notifications now let you know if someone has replied to your message or mentioned you

@@ -1,2 +1,2 @@
-• 1対1のチャットやグループチャットの通知で、プロフィール画像が正しく表示されるようになりました。
-• 非常に大きなグループにおけるパフォーマンスを改善しました。
+• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
+• Notifications now let you know if someone has replied to your message or mentioned you

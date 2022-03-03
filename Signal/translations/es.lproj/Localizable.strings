@@ -680,7 +680,7 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Editar foto";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Tu nuevo número no puede ser el mismo que el actual. Introduce tu número nuevo para cambiarlo.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Tu nuevo número no puede ser el mismo que el actual. Introduce tu nuevo número para cambiarlo.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "El número introducido no coincide con el de tu cuenta.";
@@ -4358,7 +4358,7 @@
 "PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "El PIN se ha creado con éxito, pero no se ha podido activar el bloqueo de registro. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Fallo activando bloqueo de registro";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Fallo al activar el bloqueo de registro";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Desactivar PIN";

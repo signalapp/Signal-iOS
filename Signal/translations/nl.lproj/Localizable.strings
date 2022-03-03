@@ -3851,13 +3851,13 @@
 "ONBOARDING_SPLASH_TITLE" = "Neem privacy met je mee.\nWees jezelf in elk bericht.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "Verkeerd nummer?";
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Verkeerd telefoon­nummer?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Bel Me";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Bel me";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Bel me (beschikbaar na %@)";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Bel me (beschikbaar over %@)";
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "De code wordt gevalideerd …";
@@ -3869,10 +3869,10 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Stuur code opnieuw";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Stuur code opnieuw (beschikbaar na %@)";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Stuur code opnieuw (beschikbaar over %@)";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Voer de code in die we hebben verzonden naar %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Voer de code in die we naar %@ hebben verzonden";
 
 /* Title label for the onboarding verification page */
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verificatiecode";
@@ -5255,7 +5255,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ aan het verifiëren";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Gebruik dit als Signal wilt blijven gebruiken met een ander telefoonnummer. Je kunt het overstappen naar een nieuw telefoonnummer niet ongedaan maken.\n\nGa voordat je verder gaat na dat je op het nieuwe telefoonnummer sms-berichten of oproepen kunt ontvangen.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Gebruik dit als je Signal met een ander telefoonnummer wilt blijven gebruiken. Je kunt het overstappen naar een nieuw telefoonnummer niet ongedaan maken.\n\nGa voordat je verder gaat na dat je op het nieuwe telefoonnummer sms-berichten of oproepen kunt ontvangen.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Telefoonnummer wijzigen";
