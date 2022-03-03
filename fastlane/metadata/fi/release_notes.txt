@@ -1,2 +1,2 @@
-• 1-1 ryhmäkeskustelujen profiilikuvat näkyvät nyt luotettavasti ilmoituksissa.
-• Useita suorituskykyparannuksia erittäin suurille ryhmille
+• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
+• Notifications now let you know if someone has replied to your message or mentioned you

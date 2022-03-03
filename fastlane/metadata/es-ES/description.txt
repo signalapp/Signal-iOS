@@ -1,16 +1,16 @@
 Millones de personas utilizan Signal cada día para comunicarse instantáneamente y sin costes en cualquier parte del mundo. Envía y recibe mensajes confidenciales, participa en llamadas de vídeo/voz de alta definición y explora un sinfín de nuevas funciones que te permitirán estar conectada. La avanzada tecnología de Signal pensada para mantener la privacidad de tus conversaciones siempre está activada para que puedas centrarte en compartir momentos importantes con la gente que te importa.
 
-• Di lo que quieras - Signal utiliza un avanzado protocolo de código abierto con cifrado de extremo a extremo para mantener la privacidad de tus chats. La privacidad no es una opción configurable, es la manera como funciona Signal. Todos tus mensajes, todas tus llamadas, siempre.
+• Di lo que quieras - Signal utiliza un avanzado protocolo de código abierto con cifrado de extremo a extremo para mantener la privacidad de tus chats. La privacidad no es una opción configurable, es la manera como funciona Signal. En todos tus mensajes, todas tus llamadas. Siempre.
 
 • Rápida - Con Signal, los mensajes se entregan de forma rápida y fiable, incluso si la red es lenta. El protocolo de Signal está diseñado para funcionar en el entorno más restringido posible.
 
-• Sin ataduras – Signal es una organización 501c3 sin ánimo de lucro y totalmente independiente. Usuarios como tú participan en su desarrollo. Sin anuncios, sin rastreadores, sin engaños.
+• Sin ataduras – Signal es una organización 501c3 sin ánimo de lucro y totalmente independiente. Usuarias como tú participan en su desarrollo. Sin anuncios, sin rastreadores, sin engaños.
 
 • Sé tú misma - Puedes utilizar tu número de teléfono y libreta de direcciones existentes para comunicarte con total seguridad con tus amistades.
 
-• Habla con libertad - Haz llamadas y vídeollamadas de calidad cristalina a amistades y familiares que viven al otro lado de la ciudad o al otro lado del océano y creerás que están a tu lado.
+• Habla con libertad - Haz llamadas y videollamadas de calidad cristalina a amistades y familiares que viven al otro lado de la ciudad o al otro lado del océano y creerás que están a tu lado.
 
-• Susurra en la penumbra – Si te molesta la luz a ciertas horas, activa el modo noche.
+• Susurra en la penumbra – Si te molesta la luz a ciertas horas, activa el modo oscuro.
 
 • Personalízala – Selecciona alertas personalizadas para cada parsona o desactiva el sonido completemente. Al igual que en la canción de Simon & Garfunkel, puedes experimentar el sonido del silencio siempre que quieras eliminando el tono de llamada para notificaciones. Además, puedes seleccionar un fondo y color de chat especial para esas personas tan especiales.
 

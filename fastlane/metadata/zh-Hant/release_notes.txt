@@ -1,2 +1,2 @@
-• 個人一對一與群組聊天的個人資料照片現將更可靠地出現於通知中
-• 就龐大群組作出若干效能改進
+• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
+• Notifications now let you know if someone has replied to your message or mentioned you

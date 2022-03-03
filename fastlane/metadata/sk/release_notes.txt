@@ -1,2 +1,2 @@
-• Profilové fotky pre konverzácie 1-1 a skupinové konverzácie sa teraz spoľahlivo zobrazia v upozorneniach
-• Rôzne vylepšenia výkonu pre veľmi veľké skupiny
+• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
+• Notifications now let you know if someone has replied to your message or mentioned you
