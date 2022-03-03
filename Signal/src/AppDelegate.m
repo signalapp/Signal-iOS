@@ -161,6 +161,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     SetCurrentAppContext([MainAppContext new]);
 
     launchStartedAt = CACurrentMediaTime();
+    [BenchManager startEventWithTitle:@"Presenting HomeView" eventId:@"AppStart" logInProduction:TRUE];
 
     BOOL isLoggingEnabled;
     [InstrumentsMonitor enable];

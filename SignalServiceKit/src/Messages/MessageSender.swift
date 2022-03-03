@@ -873,7 +873,7 @@ public extension MessageSender {
             transaction.addSyncCompletion {
                 BenchManager.completeEvent(eventId: "sendMessageNetwork-\(message.timestamp)")
                 BenchManager.completeEvent(eventId: "sendMessageMarkedAsSent-\(message.timestamp)")
-                BenchManager.startEvent(title: "Send Message Milestone: Post-Network (\(message.timestamp)))",
+                BenchManager.startEvent(title: "Send Message Milestone: Post-Network (\(message.timestamp))",
                                         eventId: "sendMessagePostNetwork-\(message.timestamp)")
             }
 

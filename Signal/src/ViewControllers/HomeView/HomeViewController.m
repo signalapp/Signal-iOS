@@ -456,6 +456,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super viewDidAppear:animated];
 
+    [BenchManager completeEventWithEventId:@"AppStart" logIfAbsent:NO];
     [InstrumentsMonitor trackEventWithName:@"HomeViewController.viewDidAppear"];
 
     if (!self.getStartedBanner && !self.hasEverPresentedExperienceUpgrade &&

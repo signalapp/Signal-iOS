@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ import Foundation
 ///             }
 ///         }
 ///     }
-fileprivate func BenchAsync(title: String, logInProduction: Bool = false, block: (@escaping () -> Void) -> Void) {
+private func BenchAsync(title: String, logInProduction: Bool = false, block: (@escaping () -> Void) -> Void) {
     InstrumentsMonitor.measure(category: "runtime", parent: "BenchAsync", name: title) {
         let startTime = CACurrentMediaTime()
         block {
@@ -56,7 +56,7 @@ public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval 
         let startTime = CACurrentMediaTime()
         let value = try block()
         let timeElapsed = CACurrentMediaTime() - startTime
-        
+
         if timeElapsed > intervalLimit {
             let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
             let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
@@ -140,15 +140,17 @@ public func BenchEventStart(title: String, eventId: BenchmarkEventId, logInProdu
     }
 }
 
-public func BenchEventComplete(eventId: BenchmarkEventId) {
-    BenchEventComplete(eventIds: [eventId])
+public func BenchEventComplete(eventId: BenchmarkEventId, logIfAbsent: Bool = true) {
+    BenchEventComplete(eventIds: [eventId], logIfAbsent: logIfAbsent)
 }
 
-public func BenchEventComplete(eventIds: [BenchmarkEventId]) {
+public func BenchEventComplete(eventIds: [BenchmarkEventId], logIfAbsent: Bool = true) {
     eventQueue.sync {
         for eventId in eventIds {
             guard let event = runningEvents.removeValue(forKey: eventId) else {
-                Logger.debug("no active event with id: \(eventId)")
+                if logIfAbsent {
+                    Logger.debug("no active event with id: \(eventId)")
+                }
                 return
             }
 
@@ -187,9 +189,14 @@ public class BenchManager: NSObject {
     }
 
     @objc
-    public class func completeEvents(eventIds: [BenchmarkEventId]) {
+    public class func completeEvent(eventId: BenchmarkEventId, logIfAbsent: Bool) {
+        BenchEventComplete(eventId: eventId, logIfAbsent: logIfAbsent)
+    }
+
+    @objc
+    public class func completeEvents(eventIds: [BenchmarkEventId], logIfAbsent: Bool = true) {
         guard !eventIds.isEmpty else { return }
-        BenchEventComplete(eventIds: eventIds)
+        BenchEventComplete(eventIds: eventIds, logIfAbsent: logIfAbsent)
     }
 
     @objc

@@ -272,6 +272,7 @@ public class MessageProcessor: NSObject {
                 return false
             }
 
+            let startTime = CACurrentMediaTime()
             Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s). (memoryUsage: \(LocalDevice.memoryUsageString)")
 
             var processedEnvelopes: [PendingEnvelope] = []
@@ -288,6 +289,8 @@ public class MessageProcessor: NSObject {
                 }
             }
             pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopes)
+            let duration = CACurrentMediaTime() - startTime
+            Logger.info(String.init(format: "Processed %.0d envelopes in %0.2fms -> %.2f envelopes per second", batchEnvelopes.count, duration * 1000, duration > 0 ? Double(batchEnvelopes.count) / duration : 0))
             return true
         }
     }
