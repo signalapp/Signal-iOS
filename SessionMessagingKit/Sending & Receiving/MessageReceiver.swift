@@ -48,7 +48,15 @@ public enum MessageReceiver {
         }
     }
 
-    public static func parse(_ data: Data, openGroupMessageServerID: UInt64?, openGroupServerPublicKey: String? = nil, isRetry: Bool = false, using transaction: Any) throws -> (Message, SNProtoContent) {
+    public static func parse(
+        _ data: Data,
+        openGroupMessageServerID: UInt64?,
+        openGroupServerPublicKey: String? = nil,
+        isOutgoing: Bool? = nil,
+        otherBlindedPublicKey: String? = nil,
+        isRetry: Bool = false,
+        using transaction: Any
+    ) throws -> (Message, SNProtoContent) {
         let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey()
         let isOpenGroupMessage = (openGroupMessageServerID != nil)
         
@@ -79,7 +87,7 @@ public enum MessageReceiver {
                             (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: userX25519KeyPair)
                             
                         case .blinded:
-                            guard let senderSessionId: String = envelope.source else { throw Error.noData }
+                            guard let otherBlindedPublicKey: String = otherBlindedPublicKey else { throw Error.noData }
                             guard let openGroupServerPublicKey: String = openGroupServerPublicKey else {
                                 throw Error.invalidGroupPublicKey
                             }
@@ -89,7 +97,8 @@ public enum MessageReceiver {
                             
                             (plaintext, sender) = try decryptWithSessionBlindingProtocol(
                                 data: ciphertext,
-                                fromBlindedPublicKey: senderSessionId,
+                                isOutgoing: (isOutgoing == true),
+                                otherBlindedPublicKey: otherBlindedPublicKey,
                                 with: openGroupServerPublicKey,
                                 userEd25519KeyPair: userEd25519KeyPair
                             )

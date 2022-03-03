@@ -24,22 +24,22 @@ extension MessageReceiver {
         guard isValid else { throw Error.invalidSignature }
         // 4. ) Get the sender's X25519 public key
         guard let senderX25519PublicKey = sodium.sign.toX25519(ed25519PublicKey: senderED25519PublicKey) else { throw Error.decryptionFailed }
-        // TODO: Need to rework this as it'll be based on the blinded id
         return (Data(plaintext), SessionId(.standard, publicKey: senderX25519PublicKey).hexString)
     }
     
-    internal static func decryptWithSessionBlindingProtocol(data: Data, fromBlindedPublicKey: String, with openGroupPublicKey: String, userEd25519KeyPair: Box.KeyPair, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
+    internal static func decryptWithSessionBlindingProtocol(data: Data, isOutgoing: Bool, otherBlindedPublicKey: String, with openGroupPublicKey: String, userEd25519KeyPair: Box.KeyPair, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
         guard let blindedKeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroupPublicKey, edKeyPair: userEd25519KeyPair, genericHash: dependencies.genericHash) else {
             throw Error.decryptionFailed
         }
 
         /// Step one: calculate the shared encryption key, receiving from A to B
-        let kA: Bytes = Data(hex: fromBlindedPublicKey.removingIdPrefixIfNeeded()).bytes
+        let otherKeyBytes: Bytes = Data(hex: otherBlindedPublicKey.removingIdPrefixIfNeeded()).bytes
+        let kA: Bytes = (isOutgoing ? blindedKeyPair.publicKey : otherKeyBytes)
         guard let dec_key: Bytes = dependencies.sodium.sharedBlindedEncryptionKey(
             secretKey: userEd25519KeyPair.secretKey,
-            otherBlindedPublicKey: kA,
+            otherBlindedPublicKey: otherKeyBytes,
             fromBlindedPublicKey: kA,
-            toBlindedPublicKey: blindedKeyPair.publicKey,
+            toBlindedPublicKey: (isOutgoing ? otherKeyBytes : blindedKeyPair.publicKey),
             genericHash: dependencies.genericHash
         ) else {
             throw Error.decryptionFailed

@@ -5,9 +5,9 @@ import Foundation
 enum Header: String {
     case authorization = "Authorization"
     case contentType = "Content-Type"
+    case contentDisposition = "Content-Disposition"
     
     case room = "Room"  // TODO: Confirm this is needed
-    case fileName = "X-Filename"
     
     case sogsPubKey = "X-SOGS-Pubkey"
     case sogsNonce = "X-SOGS-Nonce"

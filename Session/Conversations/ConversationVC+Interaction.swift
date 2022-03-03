@@ -490,11 +490,17 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
 
     // MARK: View Item Interaction
     func handleViewItemLongPressed(_ viewItem: ConversationViewItem) {
-        // Show the context menu if applicable
-        guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
+        // Note: There seems to be some odd behaviours with how the UI and the data update and as a result the `viewItem` the
+        // user interacted with can be a different instance from what is in `viewItems` (likely the data updated but the user
+        // interacted with old UI which had cached the old value)
+        //
+        // By using an equality check on the interaction we avoid this odd behaviour
+        guard let index = viewItems.firstIndex(where: { $0.interaction == viewItem.interaction }),
             let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
             let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false), contextMenuWindow == nil,
             !ContextMenuVC.actions(for: viewItem, delegate: self).isEmpty else { return }
+        
+        // Show the context menu if applicable
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         let frame = cell.convert(cell.bubbleView.frame, to: UIApplication.shared.keyWindow!)
         let window = ContextMenuWindow()

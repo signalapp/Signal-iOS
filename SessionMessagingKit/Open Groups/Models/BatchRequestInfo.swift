@@ -124,7 +124,7 @@ extension OpenGroupAPI.BatchSubResponse {
             code: try container.decode(Int32.self, forKey: .code),
             headers: try container.decode([String: String].self, forKey: .headers),
             body: body,
-            failedToParseBody: (body == nil && T.self != OpenGroupAPI.NoResponse.self)
+            failedToParseBody: (body == nil && T.self != OpenGroupAPI.NoResponse.self && !(T.self is ExpressibleByNilLiteral.Type))
         )
     }
 }

@@ -105,12 +105,26 @@
       </CodeCoverageTargets>
       <Testables>
          <TestableReference
-            skipped = "NO">
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "FDC4388D27B9FFC700C60D73"
                BuildableName = "SessionMessagingKitTests.xctest"
                BlueprintName = "SessionMessagingKitTests"
+               ReferencedContainer = "container:Session.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FD83B9AE27CF200A005E1583"
+               BuildableName = "SessionUtilitiesKitTests.xctest"
+               BlueprintName = "SessionUtilitiesKitTests"
                ReferencedContainer = "container:Session.xcodeproj">
             </BuildableReference>
          </TestableReference>

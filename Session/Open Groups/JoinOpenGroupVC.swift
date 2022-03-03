@@ -142,7 +142,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             Storage.shared.write { transaction in
                 OpenGroupManager.shared
-                    .add(roomToken: roomToken, server: server, publicKey: publicKey, using: transaction)
+                    .add(roomToken: roomToken, server: server, publicKey: publicKey, isConfigMessage: false, using: transaction as! YapDatabaseReadWriteTransaction)
                     .done(on: DispatchQueue.main) { [weak self] _ in
                         self?.presentingViewController?.dismiss(animated: true, completion: nil)
                         let appDelegate = UIApplication.shared.delegate as! AppDelegate

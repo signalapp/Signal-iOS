@@ -392,10 +392,11 @@ public final class MessageSender : NSObject {
                 whisperMods: whisperMods
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
-                message.openGroupServerMessageID = given(data.id) { UInt64($0) }
+                message.openGroupServerMessageID = UInt64(data.id)
 
                 dependencies.storage.write { transaction in
-                    MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: UInt64(floor(data.posted)), using: transaction)
+                    // The `posted` value is in seconds but we sent it in ms so need that for de-duping
+                    MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: UInt64(floor(data.posted * 1000)), using: transaction)
                     seal.fulfill(())
                 }
             }

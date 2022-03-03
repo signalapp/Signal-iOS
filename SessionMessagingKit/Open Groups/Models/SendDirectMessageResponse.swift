@@ -3,14 +3,13 @@
 import Foundation
 
 extension OpenGroupAPI {
-    public struct DirectMessage: Codable {
+    public struct SendDirectMessageResponse: Codable {
         enum CodingKeys: String, CodingKey {
             case id
             case sender
             case recipient
             case posted = "posted_at"
             case expires = "expires_at"
-            case base64EncodedMessage = "message"
         }
         
         /// The unique integer message id
@@ -27,8 +26,5 @@ extension OpenGroupAPI {
         
         /// Unix timestamp when SOGS will expire and delete the message
         public let expires: TimeInterval
-        
-        /// The encrypted message body
-        public let base64EncodedMessage: String
     }
 }

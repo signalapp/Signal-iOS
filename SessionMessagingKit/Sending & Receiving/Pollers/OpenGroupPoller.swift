@@ -84,66 +84,79 @@ extension OpenGroupAPI {
         }
         
         private func handlePollResponse(_ response: [OpenGroupAPI.Endpoint: (info: OnionRequestResponseInfoType, data: Codable?)], isBackgroundPoll: Bool) {
-            response.forEach { endpoint, endpointResponse in
-                switch endpoint {
-                    case .capabilities:
-                        guard let responseData: BatchSubResponse<Capabilities> = endpointResponse.data as? BatchSubResponse<Capabilities>, let responseBody: Capabilities = responseData.body else {
-                            SNLog("Open group polling failed due to invalid data.")
-                            return
-                        }
-                        
-                        OpenGroupManager.handleCapabilities(
-                            responseBody,
-                            on: server
-                        )
-                        
-                    case .roomMessagesRecent(let roomToken), .roomMessagesBefore(let roomToken, _), .roomMessagesSince(let roomToken, _):
-                        guard let responseData: BatchSubResponse<[Message]> = endpointResponse.data as? BatchSubResponse<[Message]>, let responseBody: [Message] = responseData.body else {
-                            SNLog("Open group polling failed due to invalid data.")
-                            return
-                        }
-                        
-                        OpenGroupManager.handleMessages(
-                            responseBody,
-                            for: roomToken,
-                            on: server,
-                            isBackgroundPoll: isBackgroundPoll
-                        )
-                        
-                    case .roomPollInfo(let roomToken, _):
-                        guard let responseData: BatchSubResponse<RoomPollInfo> = endpointResponse.data as? BatchSubResponse<RoomPollInfo>, let responseBody: RoomPollInfo = responseData.body else {
-                            SNLog("Open group polling failed due to invalid data.")
-                            return
-                        }
-                        
-                        OpenGroupManager.handlePollInfo(
-                            responseBody,
-                            publicKey: nil,
-                            for: roomToken,
-                            on: server
-                        )
-                        
-                    case .inbox, .inboxSince, .outbox, .outboxSince:
-                        guard let responseData: BatchSubResponse<[DirectMessage]?> = endpointResponse.data as? BatchSubResponse<[DirectMessage]?>, let responseBody: [DirectMessage]? = responseData.body else {
-                            SNLog("Open group polling failed due to invalid data.")
-                            return
-                        }
-                        
-                        let fromOutbox: Bool = {
-                            switch endpoint {
-                                case .outbox, .outboxSince: return true
-                                default: return false
+            let server: String = self.server
+            
+            Storage.shared.write { anyTransaction in
+                guard let transaction: YapDatabaseReadWriteTransaction = anyTransaction as? YapDatabaseReadWriteTransaction else {
+                    SNLog("Open group polling failed due to invalid database transaction.")
+                    return
+                }
+                
+                response.forEach { endpoint, endpointResponse in
+                    switch endpoint {
+                        case .capabilities:
+                            guard let responseData: BatchSubResponse<Capabilities> = endpointResponse.data as? BatchSubResponse<Capabilities>, let responseBody: Capabilities = responseData.body else {
+                                SNLog("Open group polling failed due to invalid data.")
+                                return
                             }
-                        }()
-                        
-                        OpenGroupManager.handleDirectMessages(
-                            (responseBody ?? []),
-                            fromOutbox: fromOutbox,
-                            on: server,
-                            isBackgroundPoll: isBackgroundPoll
-                        )
-                        
-                    default: break // No custom handling needed
+                            
+                            OpenGroupManager.handleCapabilities(
+                                responseBody,
+                                on: server,
+                                using: transaction
+                            )
+                            
+                        case .roomMessagesRecent(let roomToken), .roomMessagesBefore(let roomToken, _), .roomMessagesSince(let roomToken, _):
+                            guard let responseData: BatchSubResponse<[Message]> = endpointResponse.data as? BatchSubResponse<[Message]>, let responseBody: [Message] = responseData.body else {
+                                SNLog("Open group polling failed due to invalid data.")
+                                return
+                            }
+                            
+                            OpenGroupManager.handleMessages(
+                                responseBody,
+                                for: roomToken,
+                                on: server,
+                                isBackgroundPoll: isBackgroundPoll,
+                                using: transaction
+                            )
+                            
+                        case .roomPollInfo(let roomToken, _):
+                            guard let responseData: BatchSubResponse<RoomPollInfo> = endpointResponse.data as? BatchSubResponse<RoomPollInfo>, let responseBody: RoomPollInfo = responseData.body else {
+                                SNLog("Open group polling failed due to invalid data.")
+                                return
+                            }
+                            
+                            OpenGroupManager.handlePollInfo(
+                                responseBody,
+                                publicKey: nil,
+                                for: roomToken,
+                                on: server,
+                                using: transaction
+                            )
+                            
+                        case .inbox, .inboxSince, .outbox, .outboxSince:
+                            guard let responseData: BatchSubResponse<[DirectMessage]?> = endpointResponse.data as? BatchSubResponse<[DirectMessage]?>, !responseData.failedToParseBody else {
+                                SNLog("Open group polling failed due to invalid data.")
+                                return
+                            }
+                            
+                            let fromOutbox: Bool = {
+                                switch endpoint {
+                                    case .outbox, .outboxSince: return true
+                                    default: return false
+                                }
+                            }()
+                            
+                            OpenGroupManager.handleDirectMessages(
+                                ((responseData.body ?? []) ?? []),  // Double optional because the server can return a `304` with an empty body
+                                fromOutbox: fromOutbox,
+                                on: server,
+                                isBackgroundPoll: isBackgroundPoll,
+                                using: transaction
+                            )
+                            
+                        default: break // No custom handling needed
+                    }
                 }
             }
         }

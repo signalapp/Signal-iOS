@@ -228,6 +228,11 @@ public final class OpenGroupAPI: NSObject {
     }
     
     /// Returns the details of a single room
+    ///
+    /// **Note:** This is the direct request to retrieve a room so should only be called from either the `poll()` or `joinRoom()` methods, in order to call
+    /// this directly remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handlePollInfo`
+    /// method to ensure things are processed correctly
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func room(for roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Room)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -246,7 +251,7 @@ public final class OpenGroupAPI: NSObject {
     /// **Note:** This is the direct request to retrieve room updates so should be retrieved automatically from the `poll()` method, in order to call
     /// this directly remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handlePollInfo`
     /// method to ensure things are processed correctly
-    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func roomPollInfo(lastUpdated: Int64, for roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, RoomPollInfo)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -255,6 +260,66 @@ public final class OpenGroupAPI: NSObject {
         
         return send(request, using: dependencies)
             .decoded(as: RoomPollInfo.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
+    }
+    
+    /// This is a convenience method which constructs a `/sequence` of the `capabilities` and `room`  requests, refer to those
+    /// methods for the documented behaviour of each method
+    public static func capabilitiesAndRoom(
+        for roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(capabilities: (OnionRequestResponseInfoType, Capabilities?), room: (OnionRequestResponseInfoType, Room?))> {
+        let requestResponseType: [BatchRequestInfoType] = [
+            // Get the latest capabilities for the server (in case it's a new server or the cached ones are stale)
+            BatchRequestInfo(
+                request: Request<NoBody>(
+                    server: server,
+                    endpoint: .capabilities
+                ),
+                responseType: Capabilities.self
+            ),
+            
+            // And the room info
+            BatchRequestInfo(
+                request: Request<NoBody>(
+                    server: server,
+                    endpoint: .room(roomToken)
+                ),
+                responseType: Room.self
+            )
+        ]
+        
+        return sequence(server, requests: requestResponseType, using: dependencies)
+            .map { response -> (capabilities: (OnionRequestResponseInfoType, Capabilities?), room: (OnionRequestResponseInfoType, Room?)) in
+                var capabilities: (OnionRequestResponseInfoType, Capabilities?)? = nil
+                var room: (OnionRequestResponseInfoType, Room?)? = nil
+                
+                try response.forEach { (endpoint: Endpoint, endpointResponse: (info: OnionRequestResponseInfoType, data: Codable?)) in
+                    switch endpoint {
+                        case .capabilities:
+                            guard let responseData: BatchSubResponse<Capabilities> = endpointResponse.data as? BatchSubResponse<Capabilities>, let responseBody: Capabilities = responseData.body else {
+                                throw Error.parsingFailed
+                            }
+                            
+                            capabilities = (endpointResponse.info, responseBody)
+                            
+                        case .room:
+                            guard let responseData: OpenGroupAPI.BatchSubResponse<OpenGroupAPI.Room> = endpointResponse.data as? OpenGroupAPI.BatchSubResponse<OpenGroupAPI.Room>, let responseBody: OpenGroupAPI.Room = responseData.body else {
+                                throw Error.parsingFailed
+                            }
+                            
+                            room = (endpointResponse.info, responseBody)
+                            
+                        default: break // No custom handling needed
+                    }
+                }
+                
+                guard let capabilities: (OnionRequestResponseInfoType, Capabilities?) = capabilities, let room: (OnionRequestResponseInfoType, Room?) = room else {
+                    throw Error.parsingFailed
+                }
+                
+                return (capabilities, room)
+            }
     }
     
     // MARK: - Messages
@@ -289,6 +354,15 @@ public final class OpenGroupAPI: NSObject {
         
         return send(request, using: dependencies)
             .decoded(as: Message.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
+            .map { response, message in
+                // Store the 'message.posted' timestamp to prevent the sent message getting duplicated when it is later retrieved
+                dependencies.storage.write { transaction in
+                    // The `posted` value is in seconds but we sent it in ms so need that for de-duping
+                    dependencies.storage.addReceivedMessageTimestamp(UInt64(floor(message.posted * 1000)), using: transaction)
+                }
+                
+                return (response, message)
+            }
     }
     
     /// Returns a single message by ID
@@ -334,7 +408,6 @@ public final class OpenGroupAPI: NSObject {
         return send(request, using: dependencies)
     }
     
-    // TODO: Need to test this once the API has been implemented
     public static func messageDelete(
         _ id: Int64,
         in roomToken: String,
@@ -347,19 +420,13 @@ public final class OpenGroupAPI: NSObject {
             endpoint: .roomMessageIndividual(roomToken, id: id)
         )
 
-        // TODO: Handle custom response info? Need to let the OpenGroupManager know to delete the message?
-        // TODO: !!!! This is currently broken - looks like there isn't currently a DELETE endpoint (but there should be)
         return send(request, using: dependencies)
-            .map { response in
-                print("RAWR")
-                return response
-            }
     }
     
     /// **Note:** This is the direct request to retrieve recent messages so should be retrieved automatically from the `poll()` method, in order to call
     /// this directly remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handleMessages`
     /// method to ensure things are processed correctly
-    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func recentMessages(in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -375,7 +442,7 @@ public final class OpenGroupAPI: NSObject {
     /// **Note:** This is the direct request to retrieve recent messages before a given message  and is currently unused, in order to call this directly
     /// remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handleMessages`
     /// method to ensure things are processed correctly
-    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func messagesBefore(messageId: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         // TODO: Do we need to be able to load old messages?
         let request: Request = Request<NoBody>(
@@ -392,7 +459,7 @@ public final class OpenGroupAPI: NSObject {
     /// **Note:** This is the direct request to retrieve messages since a given message `seqNo` so should be retrieved automatically from the
     /// `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response of this method to the
     /// `OpenGroupManager.handleMessages` method to ensure things are processed correctly
-    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func messagesSince(seqNo: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -463,7 +530,12 @@ public final class OpenGroupAPI: NSObject {
             method: .post,
             server: server,
             endpoint: .roomFile(roomToken),
-            headers: [ .fileName: fileName ].compactMapValues { $0 },
+            headers: [
+                .contentDisposition: [ "attachment", fileName.map { "filename=\"\($0)\"" } ]
+                    .compactMap{ $0 }
+                    .joined(separator: "; "),
+                .contentType: "application/octet-stream"
+            ],
             body: bytes
         )
         
@@ -478,7 +550,11 @@ public final class OpenGroupAPI: NSObject {
             method: .post,
             server: server,
             endpoint: .roomFileJson(roomToken),
-            headers: [ .fileName: fileName ].compactMapValues { $0 },
+            headers: [
+                .contentDisposition: [ "attachment", fileName.map { "filename=\"\($0)\"" } ]
+                    .compactMap{ $0 }
+                    .joined(separator: "; "),
+            ],
             body: base64EncodedString
         )
         
@@ -517,7 +593,7 @@ public final class OpenGroupAPI: NSObject {
     /// **Note:** This is the direct request to retrieve DMs for a specific Open Group so should be retrieved automatically from the `poll()`
     /// method, in order to call this directly remove the `@available` line and make sure to route the response of this method to the
     /// `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
-    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func inbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -533,7 +609,7 @@ public final class OpenGroupAPI: NSObject {
     /// **Note:** This is the direct request to retrieve messages requests for a specific Open Group since a given messages so should be retrieved
     /// automatically from the `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response
     /// of this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
-    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func inboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -547,7 +623,7 @@ public final class OpenGroupAPI: NSObject {
     /// Delivers a direct message to a user via their blinded Session ID
     ///
     /// The body of this request is a JSON object containing a message key with a value of the encrypted-then-base64-encoded message to deliver
-    public static func send(_ ciphertext: Data, toInboxFor blindedSessionId: String, on server: String/*, with serverPublicKey: String*/, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+    public static func send(_ ciphertext: Data, toInboxFor blindedSessionId: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, SendDirectMessageResponse)> {
         let requestBody: SendDirectMessageRequest = SendDirectMessageRequest(
             message: ciphertext
         )
@@ -560,6 +636,16 @@ public final class OpenGroupAPI: NSObject {
         )
         
         return send(request, using: dependencies)
+            .decoded(as: SendDirectMessageResponse.self, on: OpenGroupAPI.workQueue, error: Error.parsingFailed, using: dependencies)
+            .map { response, message in
+                // Store the 'message.posted' timestamp to prevent the sent message getting duplicated when it is later retrieved
+                dependencies.storage.write { transaction in
+                    // The `posted` value is in seconds but we sent it in ms so need that for de-duping
+                    dependencies.storage.addReceivedMessageTimestamp(UInt64(floor(message.posted * 1000)), using: transaction)
+                }
+                
+                return (response, message)
+            }
     }
     
     /// Retrieves all of the user's sent DMs (up to limit)
@@ -567,7 +653,7 @@ public final class OpenGroupAPI: NSObject {
     /// **Note:** This is the direct request to retrieve DMs sent by the user for a specific Open Group so should be retrieved automatically
     /// from the `poll()` method, in order to call this directly remove the `@available` line and make sure to route the response of
     /// this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
-    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func outbox(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         let request: Request = Request<NoBody>(
             server: server,
@@ -583,7 +669,7 @@ public final class OpenGroupAPI: NSObject {
     /// **Note:** This is the direct request to retrieve messages requests sent by the user for a specific Open Group since a given messages so
     /// should be retrieved automatically from the `poll()` method, in order to call this directly remove the `@available` line and make sure
     /// to route the response of this method to the `OpenGroupManager.handleDirectMessages` method to ensure things are processed correctly
-    @available(*, unavailable, message: "Avoid using this directly, use the pre-build `poll()` method instead")
+    @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
     public static func outboxSince(id: Int64, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [DirectMessage]?)> {
         let request: Request = Request<NoBody>(
             server: server,

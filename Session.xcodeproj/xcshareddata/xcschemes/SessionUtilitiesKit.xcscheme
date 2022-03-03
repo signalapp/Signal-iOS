@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C3C2A6EF25539DE700C340D1"
-               BuildableName = "SessionMessagingKit.framework"
-               BlueprintName = "SessionMessagingKit"
+               BlueprintIdentifier = "C3C2A678255388CC00C340D1"
+               BuildableName = "SessionUtilitiesKit.framework"
+               BlueprintName = "SessionUtilitiesKit"
                ReferencedContainer = "container:Session.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C3C2A6EF25539DE700C340D1"
-            BuildableName = "SessionMessagingKit.framework"
-            BlueprintName = "SessionMessagingKit"
+            BlueprintIdentifier = "C3C2A678255388CC00C340D1"
+            BuildableName = "SessionUtilitiesKit.framework"
+            BlueprintName = "SessionUtilitiesKit"
             ReferencedContainer = "container:Session.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
@@ -45,9 +45,9 @@
             testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FDC4388D27B9FFC700C60D73"
-               BuildableName = "SessionMessagingKitTests.xctest"
-               BlueprintName = "SessionMessagingKitTests"
+               BlueprintIdentifier = "FD83B9AE27CF200A005E1583"
+               BuildableName = "SessionUtilitiesKitTests.xctest"
+               BlueprintName = "SessionUtilitiesKitTests"
                ReferencedContainer = "container:Session.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -73,9 +73,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C3C2A6EF25539DE700C340D1"
-            BuildableName = "SessionMessagingKit.framework"
-            BlueprintName = "SessionMessagingKit"
+            BlueprintIdentifier = "C3C2A678255388CC00C340D1"
+            BuildableName = "SessionUtilitiesKit.framework"
+            BlueprintName = "SessionUtilitiesKit"
             ReferencedContainer = "container:Session.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
