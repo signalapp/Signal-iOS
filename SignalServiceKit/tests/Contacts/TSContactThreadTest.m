@@ -6,6 +6,7 @@
 #import "OWSIdentityManager.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
+#import "TSAccountManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp
 {
     [super setUp];
+    [self.tsAccountManager registerForTestsWithLocalNumber:@"+13235551234" uuid:[NSUUID UUID]];
 
     self.contactThread = [TSContactThread
         getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]];

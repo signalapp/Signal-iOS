@@ -369,10 +369,12 @@ public class SDSDatabaseStorage: SDSTransactable {
         #endif
 
         let benchTitle = "Slow Write Transaction \(Self.owsFormatLogMessage(file: file, function: function, line: line))"
+        let timeoutThreshold = DebugFlags.internalLogging ? 0.1 : 0.5
+
         InstrumentsMonitor.measure(category: "db", parent: "write", name: Self.owsFormatLogMessage(file: file, function: function, line: line)) {
             do {
                 try grdbStorage.write { transaction in
-                    Bench(title: benchTitle, logIfLongerThan: 0.1, logInProduction: DebugFlags.internalLogging) {
+                    Bench(title: benchTitle, logIfLongerThan: timeoutThreshold, logInProduction: true) {
                         block(transaction.asAnyWrite)
                     }
                 }

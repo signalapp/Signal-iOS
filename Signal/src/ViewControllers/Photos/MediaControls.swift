@@ -384,8 +384,7 @@ class CameraCaptureControl: UIView {
                     }
                 }()
 
-                let distanceForFullZoom = referenceDistance / 4
-                let ratio = currentDistance / distanceForFullZoom
+                let ratio = currentDistance / referenceDistance
                 zoomLevel = ratio.clamp(0, 1)
                 delegate?.cameraCaptureControl(self, didUpdateZoomLevel: zoomLevel)
             } else {
@@ -617,12 +616,13 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         }
     }
 
-    private let backgroundView: CircleBlurView = {
-        let view = CircleBlurView(effect: UIBlurEffect(style: .regular))
-        view.isUserInteractionEnabled = false
-        return view
-    }()
+    enum BackgroundStyle {
+        case solid
+        case blur
+    }
 
+    let backgroundStyle: BackgroundStyle
+    let backgroundView: UIView
     private static let visibleButtonSize: CGFloat = 36  // both height and width
     private static let defaultInset: CGFloat = 4
 
@@ -632,7 +632,18 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         }
     }
 
-    required init(image: UIImage?, userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified) {
+    required init(image: UIImage?, backgroundStyle: BackgroundStyle = .blur, userInterfaceStyleOverride: UIUserInterfaceStyle = .unspecified) {
+        self.backgroundStyle = backgroundStyle
+        self.backgroundView = {
+            switch backgroundStyle {
+            case .solid:
+                return CircleView()
+
+            case .blur:
+                return CircleBlurView(effect: UIBlurEffect(style: .regular))
+            }
+        }()
+
         super.init(frame: CGRect(origin: .zero, size: .square(Self.visibleButtonSize + 2*Self.defaultInset)))
 
         self.userInterfaceStyleOverride = userInterfaceStyleOverride
@@ -640,6 +651,7 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         layoutMargins = contentInsets
 
         addSubview(backgroundView)
+        backgroundView.isUserInteractionEnabled = false
         backgroundView.autoPinEdgesToSuperviewMargins()
 
         setImage(image, for: .normal)
@@ -673,8 +685,26 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         }
     }
 
+    private static func backgroundColor(for userInterfaceStyle: UIUserInterfaceStyle) -> UIColor {
+        switch userInterfaceStyle {
+        case .dark:
+            return .ows_gray80
+        case .light:
+            return .ows_gray20
+        default:
+            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+        }
+    }
+
     private func updateStyle() {
-        backgroundView.effect = UIBlurEffect(style: CameraOverlayButton.blurEffectStyle(for: effectiveUserInterfaceStyle))
+        switch backgroundStyle {
+        case .solid:
+            backgroundView.backgroundColor = CameraOverlayButton.backgroundColor(for: effectiveUserInterfaceStyle)
+        case .blur:
+            if let circleBlurView = backgroundView as? CircleBlurView {
+                circleBlurView.effect = UIBlurEffect(style: CameraOverlayButton.blurEffectStyle(for: effectiveUserInterfaceStyle))
+            }
+        }
         tintColor = CameraOverlayButton.tintColor(for: effectiveUserInterfaceStyle)
     }
 }
