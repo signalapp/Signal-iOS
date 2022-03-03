@@ -245,7 +245,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
         case is AttachmentApprovalViewController:
             showNavbar(.alwaysDarkAndClear)
         case is ImagePickerGridController:
-            showNavbar(.alwaysDarkAndClear)
+            showNavbar(.alwaysDark)
         case is ConversationPickerViewController:
             showNavbar(.default)
         default:
@@ -282,9 +282,9 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController) {
-        if !photoCaptureViewController.isInBatchMode, attachmentCount == 1, case .camera(_) = attachmentDraftCollection.attachmentDrafts.last {
+        if !photoCaptureViewController.isInBatchMode, attachmentCount == 1, case .camera = attachmentDraftCollection.attachmentDrafts.last {
             // User is navigating back to the camera screen, indicating they want to discard the previously captured item.
-           discardDraft()
+            discardDraft()
         }
     }
 
@@ -311,8 +311,9 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
             let presentedViewController = OWSNavigationController(rootViewController: self.mediaLibraryViewController)
             if let owsNavBar = presentedViewController.navigationBar as? OWSNavigationBar {
-                owsNavBar.switchToStyle(.alwaysDarkAndClear)
+                owsNavBar.switchToStyle(.alwaysDark)
             }
+            presentedViewController.ows_prefersStatusBarHidden = true
             self.presentFullScreen(presentedViewController, animated: true)
         }
     }
