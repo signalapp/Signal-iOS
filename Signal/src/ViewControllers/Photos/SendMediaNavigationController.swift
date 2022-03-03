@@ -355,14 +355,15 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController) {
+        // Image picker was presented from the in-app camera.
         if let navigationController = presentedViewController as? OWSNavigationController,
            navigationController.viewControllers.contains(imagePicker) {
             dismiss(animated: true)
             return
         }
 
-        let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY", comment: "alert action when the user decides not to cancel the media flow after all.")
-        didRequestExit(dontAbandonText: dontAbandonText)
+        // Image picker presented initially doesn't need confirmation when canceling.
+        sendMediaNavDelegate?.sendMediaNavDidCancel(self)
     }
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
