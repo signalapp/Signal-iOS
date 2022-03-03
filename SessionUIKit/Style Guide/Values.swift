@@ -47,4 +47,6 @@ public final class Values : NSObject {
     @objc public static let iPadModalWidth = UIScreen.main.bounds.width / 2
     @objc public static let iPadButtonWidth = CGFloat(196)
     @objc public static let iPadButtonSpacing = CGFloat(32)
+    @objc public static let iPadUserSessionIdContainerWidth = CGFloat(424) // iPadButtonWidth * 2 + iPadButtonSpacing
+    @objc public static let iPadButtonContainerMargin = UIScreen.main.bounds.width / 2 - 236 // ScreenWidth / 2 - iPadButtonSpacing / 2 - iPadButtonWidth - largeSpacing
 }

@@ -196,7 +196,7 @@ private final class RecoveryPhraseVC : UIViewController {
         continueButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         continueButton.addTarget(self, action: #selector(handleContinueButtonTapped), for: UIControl.Event.touchUpInside)
         // Continue button container
-        let continueButtonContainer = UIView(wrapping: continueButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing), shouldAdaptForIPad: true)
+        let continueButtonContainer = UIView(wrapping: continueButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextView ])
         topStackView.axis = .vertical

@@ -216,8 +216,7 @@ private final class EnterPublicKeyVC : UIViewController {
         result.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         result.distribution = .fillEqually
         if (UIDevice.current.isIPad) {
-            let margin = (UIScreen.main.bounds.width - result.spacing - Values.iPadButtonWidth * 2) / 2
-            result.layoutMargins = UIEdgeInsets(top: 0, left: margin, bottom: 0, right: margin)
+            result.layoutMargins = UIEdgeInsets(top: 0, left: Values.iPadButtonContainerMargin, bottom: 0, right: Values.iPadButtonContainerMargin)
             result.isLayoutMarginsRelativeArrangement = true
         }
         return result
@@ -227,6 +226,8 @@ private final class EnterPublicKeyVC : UIViewController {
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
+        // User session id container
+        let userPublicKeyContainer = UIView(wrapping: userPublicKeyLabel, withInsets: .zero, shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth)
         // Explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
@@ -246,9 +247,9 @@ private final class EnterPublicKeyVC : UIViewController {
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(startNewDMIfPossible), for: UIControl.Event.touchUpInside)
-        let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPad: true)
+        let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyLabel, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyContainer, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
         mainStackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)

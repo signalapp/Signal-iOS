@@ -203,7 +203,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
-        let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPad: true)
+        let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
             UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
