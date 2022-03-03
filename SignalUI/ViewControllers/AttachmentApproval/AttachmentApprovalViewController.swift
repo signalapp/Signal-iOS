@@ -237,6 +237,13 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapTouchInterceptorView(gesture:)))
         touchInterceptorView.addGestureRecognizer(tapGesture)
 
+        let bottomToolViewWidth = view.bounds.width
+        let bottomToolViewHeight = bottomToolView.systemLayoutSizeFitting(view.bounds.size, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
+        bottomToolView.frame = CGRect(x: 0, y: view.bounds.maxY - bottomToolViewHeight, width: bottomToolViewWidth, height: bottomToolViewHeight)
+        UIView.performWithoutAnimation {
+            bottomToolView.setNeedsLayout()
+            bottomToolView.layoutIfNeeded()
+        }
         view.addSubview(bottomToolView)
         bottomToolView.autoPinWidthToSuperview()
         bottomToolViewBottomConstraint =  bottomToolView.autoPinEdge(toSuperviewEdge: .bottom)

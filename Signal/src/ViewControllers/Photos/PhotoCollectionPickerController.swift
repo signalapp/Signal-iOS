@@ -62,7 +62,11 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         self.contents = contents
     }
 
-    private let numberFormatter: NumberFormatter = NumberFormatter()
+    private lazy var numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
 
     private func buildTableCell(collection: PhotoCollection) -> UITableViewCell {
         let cell = OWSTableItem.newCell()

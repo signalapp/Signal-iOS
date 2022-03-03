@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -43,11 +43,55 @@ public class CircleView: UIView {
     }
 }
 
+@objc (OWSCircleBlurView)
+public class CircleBlurView: UIVisualEffectView {
+
+    @available(*, unavailable, message: "use other constructor instead.")
+    required public init?(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    @objc
+    public override init(effect: UIVisualEffect?) {
+        super.init(effect: effect)
+        frame = .zero
+    }
+
+    @objc
+    public required init(effect: UIVisualEffect, diameter: CGFloat) {
+        super.init(effect: effect)
+        frame = .zero
+
+        autoSetDimensions(to: CGSize(square: diameter))
+    }
+
+    @objc
+    override public var frame: CGRect {
+        didSet {
+            updateRadius()
+        }
+    }
+
+    @objc
+    override public var bounds: CGRect {
+        didSet {
+            updateRadius()
+        }
+    }
+
+    private func updateRadius() {
+        layer.cornerRadius = bounds.size.height / 2
+        clipsToBounds = true
+    }
+}
+
 @objc (OWSPillView)
-public class PillView: UIView {
+open class PillView: UIView {
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
+
+        layer.masksToBounds = true
 
         // Constrain to be a pill that is at least a circle, and maybe wider.
         autoPin(toAspectRatio: 1.0, relation: .greaterThanOrEqual)
@@ -59,7 +103,7 @@ public class PillView: UIView {
         }
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

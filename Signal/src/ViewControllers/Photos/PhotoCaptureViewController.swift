@@ -1,17 +1,27 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import Foundation
 import AVFoundation
+import Foundation
 import Lottie
+import Photos
+import UIKit
+import SignalMessaging
 
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
-    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment)
+    func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController)
+    func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
-    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, isRecordingMovie: Bool)
+    func photoCaptureViewControllerDidRequestPresentPhotoLibrary(_ photoCaptureViewController: PhotoCaptureViewController)
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didRequestSwitchBatchMode batchMode: Bool) -> Bool
+}
+
+protocol PhotoCaptureViewControllerDataSource: AnyObject {
+    var numberOfMediaItems: Int { get }
+    func addMedia(attachment: SignalAttachment)
 }
 
 enum PhotoCaptureError: Error {
@@ -34,25 +44,13 @@ extension PhotoCaptureError: LocalizedError, UserErrorDescriptionProvider {
     }
 }
 
-// MARK: -
-
-@objc
 class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate {
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
-    var interactiveDismiss: PhotoCaptureInteractiveDismiss!
+    weak var dataSource: PhotoCaptureViewControllerDataSource?
+    private var interactiveDismiss: PhotoCaptureInteractiveDismiss?
 
-    @objc public lazy var photoCapture = PhotoCapture()
-
-    lazy var tapToFocusView: AnimationView = {
-        let view = AnimationView(name: "tap_to_focus")
-        view.animationSpeed = 1
-        view.backgroundBehavior = .forceFinish
-        view.contentMode = .scaleAspectFit
-        view.autoSetDimensions(to: CGSize(square: 150))
-        view.setContentHuggingHigh()
-        return view
-    }()
+    public lazy var photoCapture = PhotoCapture()
 
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
@@ -64,28 +62,19 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     // MARK: - Overrides
 
     override func loadView() {
-        self.view = UIView()
-        self.view.backgroundColor = Theme.darkThemeBackgroundColor
+        view = UIView()
+        view.backgroundColor = Theme.darkThemeBackgroundColor
+        view.preservesSuperviewLayoutMargins = true
+
         definesPresentationContext = true
 
-        view.addSubview(previewView)
+        initializeUI()
+    }
 
-        previewView.autoPinEdgesToSuperviewEdges()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
-        view.addSubview(captureButton)
-        if UIDevice.current.isIPad {
-            captureButton.autoVCenterInSuperview()
-            captureButton.centerXAnchor.constraint(equalTo: view.trailingAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
-            captureButton.movieLockView.autoSetDimension(.width, toSize: 120)
-        } else {
-            captureButton.autoHCenterInSuperview()
-            // we pin to edges rather than margin, because on notched devices the margin changes
-            // as the device rotates *EVEN THOUGH* the interface is locked to portrait.
-            captureButton.centerYAnchor.constraint(equalTo: view.bottomAnchor,
-                                                   constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
-            captureButton.movieLockView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -16)
-        }
-
+        setupPhotoCapture()
         // If the view is already visible, setup the volume button listener
         // now that the capture UI is ready. Otherwise, we'll wait until
         // we're visible.
@@ -93,27 +82,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             VolumeButtons.shared?.addObserver(observer: photoCapture)
         }
 
-        view.addSubview(tapToFocusView)
-        tapToFocusView.isUserInteractionEnabled = false
-        tapToFocusLeftConstraint = tapToFocusView.centerXAnchor.constraint(equalTo: view.leftAnchor)
-        tapToFocusLeftConstraint.isActive = true
-        tapToFocusTopConstraint = tapToFocusView.centerYAnchor.constraint(equalTo: view.topAnchor)
-        tapToFocusTopConstraint.isActive = true
-
-        view.addSubview(topBar)
-        topBar.autoPinWidthToSuperview()
-        topBarOffset = topBar.autoPinEdge(toSuperviewEdge: .top)
-        topBar.autoSetDimension(.height, toSize: 44)
-    }
-
-    var topBarOffset: NSLayoutConstraint!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setupPhotoCapture()
-
-        updateNavigationItems()
         updateFlashModeControl()
 
         view.addGestureRecognizer(pinchZoomGesture)
@@ -121,17 +89,27 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
 
         if let navController = self.navigationController {
-            interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: navController)
+            let interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: navController)
             interactiveDismiss.interactiveDismissDelegate = self
             interactiveDismiss.addGestureRecognizer(to: view)
+            self.interactiveDismiss = interactiveDismiss
         }
 
         tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
+
+        bottomBar.photoLibraryButton.configure()
+        if let sideBar = sideBar {
+            sideBar.photoLibraryButton.configure()
+        }
     }
 
     private var isVisible = false
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        delegate?.photoCaptureViewControllerViewWillAppear(self)
+
         isVisible = true
         let previewOrientation: AVCaptureVideoOrientation
         if UIDevice.current.isIPad {
@@ -143,10 +121,16 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         photoCapture.updateVideoPreviewConnection(toOrientation: previewOrientation)
         updateIconOrientations(isAnimated: false, captureOrientation: previewOrientation)
         resumePhotoCapture()
+
+        if let dataSource = dataSource, dataSource.numberOfMediaItems > 0 {
+            isInBatchMode = true
+        }
+        updateDoneButtonAppearance()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
         if hasCaptureStarted {
             BenchEventComplete(eventId: "Show-Camera")
             VolumeButtons.shared?.addObserver(observer: photoCapture)
@@ -156,6 +140,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
         isVisible = false
         VolumeButtons.shared?.removeObserver(photoCapture)
         pausePhotoCapture()
@@ -166,12 +151,11 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         guard !CurrentAppContext().hasActiveCall else {
             return false
         }
-
         return true
     }
 
-    override var prefersHomeIndicatorAutoHidden: Bool {
-        return true
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -182,151 +166,273 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             // Rotating the preview layer is really distracting, so we fade out the preview layer
             // while the rotation occurs.
             self.previewView.alpha = 0
-            coordinator.animate(alongsideTransition: { _ in }) { _ in
+            coordinator.animate(alongsideTransition: { _ in },
+                                completion: { _ in
                 UIView.animate(withDuration: 0.1) {
                     self.previewView.alpha = 1
                 }
-            }
+            })
         }
     }
 
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        if !UIDevice.current.isIPad {
-            // we pin to a constant rather than margin, because on notched devices the
-            // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
-            // is locked to portrait.
-            // Only grab this once -- otherwise when we swipe to dismiss this is updated and the top bar jumps to having zero offset
-            if topBarOffset.constant == 0 {
-                topBarOffset.constant = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
-            }
+
+        // we pin to a constant rather than margin, because on notched devices the
+        // safeAreaInsets/margins change as the device rotates *EVEN THOUGH* the interface
+        // is locked to portrait.
+        // Only grab this once -- otherwise when we swipe to dismiss this is updated and the top bar jumps to having zero offset
+        if topBarOffsetFromTop.constant == 0 {
+            let maxInsetDimension = max(view.safeAreaInsets.top, view.safeAreaInsets.left, view.safeAreaInsets.bottom)
+            topBarOffsetFromTop.constant = max(maxInsetDimension, previewView.frame.minY)
         }
     }
 
-    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-    }
-    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
-        dismiss(animated: true)
-    }
-    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        isIPadUIInRegularMode = traitCollection.horizontalSizeClass == .regular && traitCollection.verticalSizeClass == .regular
     }
 
-    // MARK: -
-    var isRecordingMovie: Bool = false
+    // MARK: - Layout Code
 
-    private class TopBar: UIView {
-        let recordingTimerView = RecordingTimerView()
-        let navStack: UIStackView
-
-        init(navbarItems: [UIView]) {
-            self.navStack = UIStackView(arrangedSubviews: navbarItems)
-            navStack.spacing = 16
-
-            super.init(frame: .zero)
-
-            addSubview(navStack)
-            navStack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 4, leading: 0, bottom: 0, trailing: 16))
-
-            addSubview(recordingTimerView)
-            recordingTimerView.isHidden = true
-            recordingTimerView.autoCenterInSuperview()
+    private var isIPadUIInRegularMode = false {
+        didSet {
+            guard oldValue != isIPadUIInRegularMode else { return }
+            updateIPadInterfaceLayout()
         }
+    }
 
-        required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
+    private var isRecordingVideo: Bool = false {
+        didSet {
+            if isRecordingVideo {
+                topBar.mode = .videoRecording
+                topBar.recordingTimerView.startCounting()
 
-        enum Mode {
-            case navigation, recordingMovie
-        }
+                bottomBar.captureControl.setState(.recording, animationDuration: 0.4)
+                if let sideBar = sideBar {
+                    sideBar.cameraCaptureControl.setState(.recording, animationDuration: 0.4)
+                }
+            } else {
+                topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
+                topBar.recordingTimerView.stopCounting()
 
-        var mode: Mode = .navigation {
-            didSet {
-                switch mode {
-                case .recordingMovie:
-                    navStack.isHidden = true
-                    recordingTimerView.sizeToFit()
-                    recordingTimerView.isHidden = false
-                case .navigation:
-                    navStack.isHidden = false
-                    recordingTimerView.isHidden = true
+                bottomBar.captureControl.setState(.initial, animationDuration: 0.2)
+                if let sideBar = sideBar {
+                    sideBar.cameraCaptureControl.setState(.initial, animationDuration: 0.2)
                 }
             }
+
+            bottomBar.isRecordingVideo = isRecordingVideo
+            if let sideBar = sideBar {
+                sideBar.isRecordingVideo = isRecordingVideo
+            }
+
+            doneButton.isHidden = isRecordingVideo || doneButton.badgeNumber == 0
         }
     }
 
-    private lazy var topBar: TopBar = {
-        let dismissButton: UIButton
-        if UIDevice.current.isIPad {
-            dismissButton = OWSButton.shadowedCancelButton { [weak self] in
-                self?.didTapClose()
-            }
-            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 7, leading: 20, bottom: 6, trailing: 20)
-        } else {
-            dismissButton = dismissControl.button
-            dismissButton.contentEdgeInsets = UIEdgeInsets(top: 1, leading: 16, bottom: 6, trailing: 20)
-        }
+    func switchToBatchMode() {
+        isInBatchMode = true
+    }
 
-        return TopBar(navbarItems: [dismissButton,
-                                    UIView.hStretchingSpacer(),
-                                    switchCameraControl.button,
-                                    flashModeControl.button])
+    private(set) var isInBatchMode: Bool = false {
+        didSet {
+            let buttonImage = isInBatchMode ? ButtonImages.batchModeOn : ButtonImages.batchModeOff
+            topBar.batchModeButton.setImage(buttonImage, for: .normal)
+            if let sideBar = sideBar {
+                sideBar.batchModeButton.setImage(buttonImage, for: .normal)
+            }
+        }
+    }
+
+    private let topBar = TopBar(frame: .zero)
+    private var topBarOffsetFromTop: NSLayoutConstraint!
+
+    private let bottomBar = BottomBar(frame: .zero)
+    private var bottomBarVerticalPositionConstraint: NSLayoutConstraint!
+
+    private var sideBar: SideBar? // Optional because most devices are iPhones and will never need this.
+
+    private lazy var tapToFocusView: AnimationView = {
+        let view = AnimationView(name: "tap_to_focus")
+        view.animationSpeed = 1
+        view.backgroundBehavior = .forceFinish
+        view.contentMode = .scaleAspectFit
+        view.autoSetDimensions(to: CGSize(square: 150))
+        view.setContentHuggingHigh()
+        return view
     }()
 
-    func updateNavigationItems() {
-        if isRecordingMovie {
-            topBar.mode = .recordingMovie
-        } else {
-            topBar.mode = .navigation
-        }
-    }
-
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-
-    // MARK: - Views
-
-    let captureButton = CaptureButton()
-
-    var previewView: CapturePreviewView {
+    private var previewView: CapturePreviewView {
         return photoCapture.previewView
     }
 
-    class PhotoControl {
-        let button: OWSButton
+    private lazy var doneButton: MediaDoneButton = {
+        let button = MediaDoneButton(type: .custom)
+        button.badgeNumber = 0
+        button.userInterfaceStyleOverride = .dark
+        return button
+    }()
+    private var doneButtonIPhoneConstraints: [NSLayoutConstraint]!
+    private var doneButtonIPadConstraints: [NSLayoutConstraint]!
 
-        init(imageName: String, block: @escaping () -> Void) {
-            self.button = OWSButton(imageName: imageName, tintColor: .ows_white, block: block)
-            button.setCompressionResistanceHigh()
-            button.layer.shadowOffset = CGSize.zero
-            button.layer.shadowOpacity = 0.35
-            button.layer.shadowRadius = 4
-            button.contentEdgeInsets = UIEdgeInsets(top: 6, leading: 4, bottom: 0, trailing: 4)
+    private func initializeUI() {
+        // Step 1. Initialize all UI elements for iPhone layout (which can also be used on an iPad).
+
+        view.addSubview(previewView)
+
+        view.addSubview(topBar)
+        topBar.mode = .cameraControls
+        topBar.closeButton.addTarget(self, action: #selector(didTapClose), for: .touchUpInside)
+        topBar.batchModeButton.addTarget(self, action: #selector(didTapBatchMode), for: .touchUpInside)
+        topBar.flashModeButton.addTarget(self, action: #selector(didTapFlashMode), for: .touchUpInside)
+        topBar.autoPinWidthToSuperview()
+        topBarOffsetFromTop = topBar.autoPinEdge(toSuperviewEdge: .top)
+
+        view.addSubview(bottomBar)
+        bottomBar.isCompactHeightLayout = !UIDevice.current.hasIPhoneXNotch
+        bottomBar.switchCameraButton.addTarget(self, action: #selector(didTapSwitchCamera), for: .touchUpInside)
+        bottomBar.photoLibraryButton.addTarget(self, action: #selector(didTapPhotoLibrary), for: .touchUpInside)
+        bottomBar.autoPinWidthToSuperview()
+        if bottomBar.isCompactHeightLayout {
+            // On devices with home button bar is simply pinned to the bottom of the screen
+            // with a margin that defines space under the shutter button.
+            view.bottomAnchor.constraint(equalTo: bottomBar.bottomAnchor, constant: 32).isActive = true
+        } else {
+            // On `notch` devices:
+            //  i. Shutter button is placed 16 pts above the bottom edge of the preview view.
+            previewView.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.bottomAnchor, constant: 16).isActive = true
+
+            //  ii. Other buttons are centered vertically in the black box between
+            //      bottom of the preview view and top of bottom safe area.
+            bottomBarVerticalPositionConstraint = bottomBar.controlButtonsLayoutGuide.centerYAnchor.constraint(equalTo: previewView.bottomAnchor)
+            view.addConstraint(bottomBarVerticalPositionConstraint)
         }
 
-        func setImage(imageName: String) {
-            button.setImage(imageName: imageName)
+        view.addSubview(doneButton)
+        doneButton.isHidden = true
+        doneButton.translatesAutoresizingMaskIntoConstraints = false
+        doneButtonIPhoneConstraints = [ doneButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                                        doneButton.centerYAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerYAnchor) ]
+        view.addConstraints(doneButtonIPhoneConstraints)
+        doneButton.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
+
+        view.addSubview(tapToFocusView)
+        tapToFocusView.isUserInteractionEnabled = false
+        tapToFocusLeftConstraint = tapToFocusView.centerXAnchor.constraint(equalTo: view.leftAnchor)
+        tapToFocusLeftConstraint.isActive = true
+        tapToFocusTopConstraint = tapToFocusView.centerYAnchor.constraint(equalTo: view.topAnchor)
+        tapToFocusTopConstraint.isActive = true
+
+        // Step 2. Check if we're running on an iPad and update UI accordingly.
+        // Note that `traitCollectionDidChange` won't be called during initial view loading process.
+        isIPadUIInRegularMode = traitCollection.horizontalSizeClass == .regular && traitCollection.verticalSizeClass == .regular
+
+        // This background footer doesn't let view controller underneath current VC
+        // to be visible at the bottom of the screen during interactive dismiss.
+        if UIDevice.current.hasIPhoneXNotch {
+            let blackFooter = UIView()
+            blackFooter.backgroundColor = view.backgroundColor
+            view.insertSubview(blackFooter, at: 0)
+            blackFooter.autoPinWidthToSuperview()
+            blackFooter.autoPinEdge(toSuperviewEdge: .bottom)
+            blackFooter.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5).isActive = true
         }
     }
 
-    private lazy var dismissControl: PhotoControl = {
-        return PhotoControl(imageName: "ic_x_with_shadow") { [weak self] in
-            self?.didTapClose()
-        }
-    }()
+    private func initializeIPadSpecificUIIfNecessary() {
+        guard sideBar == nil else { return }
 
-    private lazy var switchCameraControl: PhotoControl = {
-        return PhotoControl(imageName: "ic_switch_camera") { [weak self] in
-            self?.didTapSwitchCamera()
-        }
-    }()
+        let sideBar = SideBar(frame: .zero)
+        sideBar.cameraCaptureControl.delegate = photoCapture
+        sideBar.batchModeButton.addTarget(self, action: #selector(didTapBatchMode), for: .touchUpInside)
+        sideBar.flashModeButton.addTarget(self, action: #selector(didTapFlashMode), for: .touchUpInside)
+        sideBar.switchCameraButton.addTarget(self, action: #selector(didTapSwitchCamera), for: .touchUpInside)
+        sideBar.photoLibraryButton.addTarget(self, action: #selector(didTapPhotoLibrary), for: .touchUpInside)
+        view.addSubview(sideBar)
+        sideBar.autoPinTrailingToSuperviewMargin()
+        sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        self.sideBar = sideBar
 
-    private lazy var flashModeControl: PhotoControl = {
-        return PhotoControl(imageName: "ic_flash_mode_auto") { [weak self] in
-            self?.didTapFlashMode()
+        sideBar.batchModeButton.setImage(isInBatchMode ? ButtonImages.batchModeOn : ButtonImages.batchModeOff, for: .normal)
+        updateFlashModeControl()
+
+        doneButtonIPadConstraints = [ doneButton.centerXAnchor.constraint(equalTo: sideBar.centerXAnchor),
+                                      doneButton.bottomAnchor.constraint(equalTo: sideBar.topAnchor, constant: -16)]
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard !(interactiveDismiss?.interactionInProgress ?? false) else { return }
+
+        // Clamp capture view to 16:9 on iPhones.
+        var previewFrame = view.bounds
+        var cornerRadius: CGFloat = 0
+        if !UIDevice.current.isIPad {
+            let targetAspectRatio: CGFloat = 16/9
+            let currentAspectRatio: CGFloat = previewFrame.height / previewFrame.width
+
+            if abs(currentAspectRatio - targetAspectRatio) > 0.001 {
+                previewFrame.y = view.safeAreaInsets.top
+                previewFrame.height = previewFrame.width * targetAspectRatio
+                cornerRadius = 18
+            }
         }
-    }()
+        previewView.frame = previewFrame
+        previewView.previewLayer.cornerRadius = cornerRadius
+
+        // See comment in `initializeUI`.
+        if !bottomBar.isCompactHeightLayout {
+            let blackBarHeight = view.bounds.maxY - previewFrame.maxY - view.safeAreaInsets.bottom
+            bottomBarVerticalPositionConstraint.constant = 0.5 * blackBarHeight
+        }
+    }
+
+    private func updateIPadInterfaceLayout() {
+        owsAssertDebug(UIDevice.current.isIPad)
+
+        if isIPadUIInRegularMode {
+            initializeIPadSpecificUIIfNecessary()
+
+            view.removeConstraints(doneButtonIPhoneConstraints)
+            view.addConstraints(doneButtonIPadConstraints)
+        } else {
+            view.removeConstraints(doneButtonIPadConstraints)
+            view.addConstraints(doneButtonIPhoneConstraints)
+        }
+
+        if !isRecordingVideo {
+            topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
+        }
+        bottomBar.isHidden = isIPadUIInRegularMode
+        sideBar?.isHidden = !isIPadUIInRegularMode
+    }
+
+    func updateDoneButtonAppearance () {
+        if isInBatchMode, let badgeNumber = dataSource?.numberOfMediaItems {
+            doneButton.badgeNumber = badgeNumber
+            doneButton.isHidden = false
+        } else {
+            doneButton.isHidden = true
+        }
+    }
+
+    // MARK: - Interactive Dismiss
+
+    func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        view.backgroundColor = .clear
+    }
+
+    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        dismiss(animated: true)
+    }
+
+    func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
+        view.backgroundColor = Theme.darkThemeBackgroundColor
+    }
+
+    // MARK: - Gestures
 
     lazy var pinchZoomGesture: UIPinchGestureRecognizer = {
         return UIPinchGestureRecognizer(target: self, action: #selector(didPinchZoom(pinchGesture:)))
@@ -346,19 +452,17 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     @objc
     func didTapClose() {
-        self.delegate?.photoCaptureViewControllerDidCancel(self)
+        delegate?.photoCaptureViewControllerDidCancel(self)
     }
 
     @objc
     func didTapSwitchCamera() {
-        Logger.debug("")
         switchCamera()
     }
 
     @objc
     func didDoubleTapToSwitchCamera(tapGesture: UITapGestureRecognizer) {
-        Logger.debug("")
-        guard !isRecordingMovie else {
+        guard !isRecordingVideo else {
             // - Orientation gets out of sync when switching cameras mid movie.
             // - Audio gets out of sync when switching cameras mid movie
             // https://stackoverflow.com/questions/13951182/audio-video-out-of-sync-after-switch-camera
@@ -368,9 +472,11 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     private func switchCamera() {
-        UIView.animate(withDuration: 0.2) {
-            let epsilonToForceCounterClockwiseRotation: CGFloat = 0.00001
-            self.switchCameraControl.button.transform = self.switchCameraControl.button.transform.rotate(.pi + epsilonToForceCounterClockwiseRotation)
+        if let switchCameraButton = isIPadUIInRegularMode ? sideBar?.switchCameraButton : bottomBar.switchCameraButton {
+            UIView.animate(withDuration: 0.2) {
+                let epsilonToForceCounterClockwiseRotation: CGFloat = 0.00001
+                switchCameraButton.transform = switchCameraButton.transform.rotate(.pi + epsilonToForceCounterClockwiseRotation)
+            }
         }
         photoCapture.switchCamera().catch { error in
             self.showFailureUI(error: error)
@@ -379,7 +485,6 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     @objc
     func didTapFlashMode() {
-        Logger.debug("")
         firstly {
             photoCapture.switchFlashMode()
         }.done {
@@ -390,10 +495,27 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     @objc
+    func didTapBatchMode() {
+        guard let delegate = delegate else {
+            return
+        }
+        isInBatchMode = delegate.photoCaptureViewController(self, didRequestSwitchBatchMode: !isInBatchMode)
+    }
+
+    @objc
+    func didTapPhotoLibrary() {
+        delegate?.photoCaptureViewControllerDidRequestPresentPhotoLibrary(self)
+    }
+
+    @objc
+    func didTapDoneButton() {
+        delegate?.photoCaptureViewControllerDidFinish(self)
+    }
+
+    @objc
     func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
         switch pinchGesture.state {
-        case .began: fallthrough
-        case .changed:
+        case .began, .changed:
             photoCapture.updateZoom(scaleFromPreviousZoomFactor: pinchGesture.scale)
         case .ended:
             photoCapture.completeZoom(scaleFromPreviousZoomFactor: pinchGesture.scale)
@@ -404,66 +526,41 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     @objc
     func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
-        let viewLocation = tapGesture.location(in: view)
-        let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
-
-        photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
-
-        // If the user taps near the capture button, it's more likely a mis-tap than intentional.
-        // Skip the focus animation in that case, since it looks bad.
-        let captureButtonOrigin = captureButton.superview!.convert(captureButton.frame.origin, to: view)
-        if UIDevice.current.isIPad {
-            guard viewLocation.x < captureButtonOrigin.x else {
-                Logger.verbose("Skipping animation for right edge on iPad")
-
-                // Finish any outstanding focus animation, otherwise it will remain in an
-                // uncompleted state.
-                if let lastUserFocusTapPoint = lastUserFocusTapPoint {
-                    completeFocusAnimation(forFocusPoint: lastUserFocusTapPoint)
-                }
-                return
-            }
-        } else {
-            guard viewLocation.y < captureButtonOrigin.y else {
-                Logger.verbose("Skipping animation for bottom row on iPhone")
-
-                // Finish any outstanding focus animation, otherwise it will remain in an
-                // uncompleted state.
-                if let lastUserFocusTapPoint = lastUserFocusTapPoint {
-                    completeFocusAnimation(forFocusPoint: lastUserFocusTapPoint)
-                }
-                return
-            }
+        guard previewView.bounds.contains(tapGesture.location(in: previewView)) else {
+            return
         }
+
+        let viewLocation = tapGesture.location(in: previewView)
+        let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
+        photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
 
         lastUserFocusTapPoint = devicePoint
         do {
-            let convertedPoint = tapToFocusView.superview!.convert(viewLocation, from: view)
-            positionTapToFocusView(center: convertedPoint)
-            tapToFocusView.superview?.layoutIfNeeded()
+            let focusFrameSuperview = tapToFocusView.superview!
+            positionTapToFocusView(center: tapGesture.location(in: focusFrameSuperview))
+            focusFrameSuperview.layoutIfNeeded()
             startFocusAnimation()
         }
     }
 
     // MARK: - Focus Animations
 
-    var tapToFocusLeftConstraint: NSLayoutConstraint!
-    var tapToFocusTopConstraint: NSLayoutConstraint!
-    func positionTapToFocusView(center: CGPoint) {
+    private var tapToFocusLeftConstraint: NSLayoutConstraint!
+    private var tapToFocusTopConstraint: NSLayoutConstraint!
+    private var lastUserFocusTapPoint: CGPoint?
+
+    private func positionTapToFocusView(center: CGPoint) {
         tapToFocusLeftConstraint.constant = center.x
         tapToFocusTopConstraint.constant = center.y
     }
 
-    func startFocusAnimation() {
+    private func startFocusAnimation() {
         tapToFocusView.stop()
         tapToFocusView.play(fromProgress: 0.0, toProgress: 0.9)
     }
 
-    var lastUserFocusTapPoint: CGPoint?
-    func completeFocusAnimation(forFocusPoint focusPoint: CGPoint) {
-        guard let lastUserFocusTapPoint = lastUserFocusTapPoint else {
-            return
-        }
+    private func completeFocusAnimation(forFocusPoint focusPoint: CGPoint) {
+        guard let lastUserFocusTapPoint = lastUserFocusTapPoint else { return }
 
         guard lastUserFocusTapPoint.within(0.005, of: focusPoint) else {
             Logger.verbose("focus completed for obsolete focus point. User has refocused.")
@@ -475,12 +572,8 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     // MARK: - Orientation
 
-    // MARK: -
-
     private func updateIconOrientations(isAnimated: Bool, captureOrientation: AVCaptureVideoOrientation) {
-        guard !UIDevice.current.isIPad else {
-            return
-        }
+        guard !UIDevice.current.isIPad else { return }
 
         Logger.verbose("captureOrientation: \(captureOrientation)")
 
@@ -490,9 +583,9 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             transformFromOrientation = .identity
         case .portraitUpsideDown:
             transformFromOrientation = CGAffineTransform(rotationAngle: .pi)
-        case .landscapeLeft:
-            transformFromOrientation = CGAffineTransform(rotationAngle: .halfPi)
         case .landscapeRight:
+            transformFromOrientation = CGAffineTransform(rotationAngle: .halfPi)
+        case .landscapeLeft:
             transformFromOrientation = CGAffineTransform(rotationAngle: -1 * .halfPi)
         @unknown default:
             owsFailDebug("unexpected captureOrientation: \(captureOrientation.rawValue)")
@@ -502,9 +595,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         // Don't "unrotate" the switch camera icon if the front facing camera had been selected.
         let tranformFromCameraType: CGAffineTransform = photoCapture.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
 
+        let buttonsToUpdate: [UIView] = [ topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton ]
         let updateOrientation = {
-            self.flashModeControl.button.transform = transformFromOrientation
-            self.switchCameraControl.button.transform = transformFromOrientation.concatenating(tranformFromCameraType)
+            buttonsToUpdate.forEach { $0.transform = transformFromOrientation }
+            self.bottomBar.switchCameraButton.transform = transformFromOrientation.concatenating(tranformFromCameraType)
         }
 
         if isAnimated {
@@ -514,16 +608,24 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         }
     }
 
+    // MARK: - Photo Capture
+
     var hasCaptureStarted = false
 
     private func captureReady() {
-      self.hasCaptureStarted = true
-      BenchEventComplete(eventId: "Show-Camera")
+        self.hasCaptureStarted = true
+        BenchEventComplete(eventId: "Show-Camera")
+        if isVisible {
+            VolumeButtons.shared?.addObserver(observer: photoCapture)
+        }
     }
 
     private func setupPhotoCapture() {
         photoCapture.delegate = self
-        captureButton.delegate = photoCapture
+        bottomBar.captureControl.delegate = photoCapture
+        if let sideBar = sideBar {
+            sideBar.cameraCaptureControl.delegate = photoCapture
+        }
 
         // If the session is already running, we're good to go.
         guard !photoCapture.session.isRunning else {
@@ -570,21 +672,225 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     private func updateFlashModeControl() {
-        let imageName: String
+        let image: UIImage?
         switch photoCapture.flashMode {
         case .auto:
-            imageName = "ic_flash_mode_auto"
+            image = ButtonImages.flashAuto
+
         case .on:
-            imageName = "ic_flash_mode_on"
+            image = ButtonImages.flashOn
+
         case .off:
-            imageName = "ic_flash_mode_off"
+            image = ButtonImages.flashOff
+
         @unknown default:
             owsFailDebug("unexpected photoCapture.flashMode: \(photoCapture.flashMode.rawValue)")
-
-            imageName = "ic_flash_mode_auto"
+            image = ButtonImages.flashAuto
         }
+        topBar.flashModeButton.setImage(image, for: .normal)
+        if let sideBar = sideBar {
+            sideBar.flashModeButton.setImage(image, for: .normal)
+        }
+    }
+}
 
-        self.flashModeControl.setImage(imageName: imageName)
+private struct ButtonImages {
+    static let close = UIImage(named: "media-composer-close")
+    static let switchCamera = UIImage(named: "media-composer-switch-camera-24")
+
+    static let batchModeOn = UIImage(named: "media-composer-create-album-solid-24")
+    static let batchModeOff = UIImage(named: "media-composer-create-album-outline-24")
+
+    static let flashOn = UIImage(named: "media-composer-flash-filled-24")
+    static let flashOff = UIImage(named: "media-composer-flash-outline-24")
+    static let flashAuto = UIImage(named: "media-composer-flash-auto-24")
+}
+
+private class TopBar: UIView {
+    let closeButton = CameraOverlayButton(image: ButtonImages.close, userInterfaceStyleOverride: .dark)
+
+    private let cameraControlsContainerView: UIStackView
+    let flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
+    let batchModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
+
+    let recordingTimerView = RecordingTimerView(frame: .zero)
+
+    override init(frame: CGRect) {
+        cameraControlsContainerView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton ])
+
+        super.init(frame: frame)
+
+        layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 4)
+
+        addSubview(closeButton)
+        closeButton.autoPinHeightToSuperviewMargins()
+        closeButton.autoPinLeadingToSuperviewMargin()
+
+        addSubview(recordingTimerView)
+        recordingTimerView.autoPinHeightToSuperview(withMargin: 8)
+        recordingTimerView.autoHCenterInSuperview()
+
+        cameraControlsContainerView.spacing = 16
+        addSubview(cameraControlsContainerView)
+        cameraControlsContainerView.autoPinHeightToSuperviewMargins()
+        cameraControlsContainerView.autoPinTrailingToSuperviewMargin()
+    }
+
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
+    }
+
+    // MARK: - Mode
+
+    enum Mode {
+        case cameraControls, closeButton, videoRecording
+    }
+
+    var mode: Mode = .cameraControls {
+        didSet {
+            switch mode {
+            case .cameraControls:
+                closeButton.isHidden = false
+                cameraControlsContainerView.isHidden = false
+                recordingTimerView.isHidden = true
+
+            case .closeButton:
+                closeButton.isHidden = false
+                cameraControlsContainerView.isHidden = true
+                recordingTimerView.isHidden = true
+
+            case .videoRecording:
+                closeButton.isHidden = true
+                cameraControlsContainerView.isHidden = true
+                recordingTimerView.isHidden = false
+            }
+        }
+    }
+}
+
+private class BottomBar: UIView {
+    private var compactHeightLayoutConstraints = [NSLayoutConstraint]()
+    private var regularHeightLayoutConstraints = [NSLayoutConstraint]()
+    var isCompactHeightLayout = false {
+        didSet {
+            guard oldValue != isCompactHeightLayout else { return }
+            updateCompactHeightLayoutConstraints()
+        }
+    }
+
+    var isRecordingVideo = false {
+        didSet {
+            photoLibraryButton.isHidden = isRecordingVideo
+            switchCameraButton.isHidden = isRecordingVideo
+        }
+    }
+
+    let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
+    let switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
+    let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
+
+    let captureControl = CameraCaptureControl(axis: .horizontal)
+    var shutterButtonLayoutGuide: UILayoutGuide {
+        captureControl.shutterButtonLayoutGuide
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 14)
+
+        addLayoutGuide(controlButtonsLayoutGuide)
+        addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                         controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor) ])
+
+        photoLibraryButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(photoLibraryButton)
+        addConstraints([ photoLibraryButton.leadingAnchor.constraint(equalTo: controlButtonsLayoutGuide.leadingAnchor),
+                         photoLibraryButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
+                         photoLibraryButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor) ])
+
+        switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(switchCameraButton)
+        addConstraints([ switchCameraButton.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
+                         switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
+                         switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
+
+        captureControl.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(captureControl)
+        captureControl.autoPinTopToSuperviewMargin()
+        captureControl.autoPinTrailingToSuperviewMargin()
+        addConstraint(captureControl.shutterButtonLayoutGuide.centerXAnchor.constraint(equalTo: centerXAnchor))
+
+        compactHeightLayoutConstraints.append(contentsOf: [ controlButtonsLayoutGuide.centerYAnchor.constraint(equalTo: captureControl.shutterButtonLayoutGuide.centerYAnchor),
+                                                            captureControl.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor) ])
+
+        regularHeightLayoutConstraints.append(contentsOf: [ controlButtonsLayoutGuide.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+                                                            captureControl.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor) ])
+
+        updateCompactHeightLayoutConstraints()
+    }
+
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
+    }
+
+    private func updateCompactHeightLayoutConstraints() {
+        if isCompactHeightLayout {
+            removeConstraints(regularHeightLayoutConstraints)
+            addConstraints(compactHeightLayoutConstraints)
+        } else {
+            removeConstraints(compactHeightLayoutConstraints)
+            addConstraints(regularHeightLayoutConstraints)
+        }
+    }
+
+}
+
+private class SideBar: UIView {
+    var isRecordingVideo = false {
+        didSet {
+            cameraControlsContainerView.isHidden = isRecordingVideo
+            photoLibraryButton.isHidden = isRecordingVideo
+        }
+    }
+
+    private let cameraControlsContainerView: UIStackView
+    let flashModeButton = CameraOverlayButton(image: ButtonImages.flashAuto, userInterfaceStyleOverride: .dark)
+    let batchModeButton = CameraOverlayButton(image: ButtonImages.batchModeOff, userInterfaceStyleOverride: .dark)
+    let switchCameraButton = CameraOverlayButton(image: ButtonImages.switchCamera, userInterfaceStyleOverride: .dark)
+
+    let photoLibraryButton = MediaPickerThumbnailButton(frame: .zero)
+
+    private(set) var cameraCaptureControl = CameraCaptureControl(axis: .vertical)
+
+    override init(frame: CGRect) {
+        cameraControlsContainerView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton, switchCameraButton ])
+
+        super.init(frame: frame)
+
+        layoutMargins = UIEdgeInsets(margin: 8)
+
+        cameraControlsContainerView.spacing = 16
+        cameraControlsContainerView.axis = .vertical
+        addSubview(cameraControlsContainerView)
+        cameraControlsContainerView.autoPinWidthToSuperviewMargins()
+        cameraControlsContainerView.autoPinTopToSuperviewMargin()
+
+        addSubview(cameraCaptureControl)
+        cameraCaptureControl.autoHCenterInSuperview()
+        cameraCaptureControl.shutterButtonLayoutGuide.topAnchor.constraint(equalTo: cameraControlsContainerView.bottomAnchor, constant: 36).isActive = true
+
+        addSubview(photoLibraryButton)
+        photoLibraryButton.autoHCenterInSuperview()
+        photoLibraryButton.topAnchor.constraint(equalTo: cameraCaptureControl.shutterButtonLayoutGuide.bottomAnchor, constant: 36).isActive = true
+        photoLibraryButton.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor).isActive = true
+    }
+
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 }
 
@@ -592,7 +898,7 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     // MARK: - Photo
 
-    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture) {
+    func photoCaptureDidStart(_ photoCapture: PhotoCapture) {
         let captureFeedbackView = UIView()
         captureFeedbackView.backgroundColor = .black
         view.insertSubview(captureFeedbackView, aboveSubview: previewView)
@@ -609,15 +915,18 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         }
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment) {
-        delegate?.photoCaptureViewController(self, didFinishProcessingAttachment: attachment)
+    func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessing attachment: SignalAttachment) {
+        dataSource?.addMedia(attachment: attachment)
+
+        updateDoneButtonAppearance()
+
+        if !isInBatchMode {
+            delegate?.photoCaptureViewControllerDidFinish(self)
+        }
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error) {
-        isRecordingMovie = false
-        topBar.recordingTimerView.stopCounting()
-        updateNavigationItems()
-        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
+    func photoCapture(_ photoCapture: PhotoCapture, didFailProcessing error: Error) {
+        isRecordingVideo = false
 
         if case PhotoCaptureError.invalidVideo = error {
             // Don't show an error if the user aborts recording before video
@@ -628,49 +937,52 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool {
-        guard let delegate = delegate else { return false }
-        return delegate.photoCaptureViewControllerCanCaptureMoreItems(self)
+        return delegate?.photoCaptureViewControllerCanCaptureMoreItems(self) ?? false
     }
 
     func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture) {
         delegate?.photoCaptureViewControllerDidTryToCaptureTooMany(self)
     }
 
-    // MARK: - Movie
+    // MARK: - Video
 
-    func photoCaptureDidBeginMovie(_ photoCapture: PhotoCapture) {
-        isRecordingMovie = true
-        updateNavigationItems()
-        topBar.recordingTimerView.startCounting()
-        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
+    func photoCaptureWillBeginRecording(_ photoCapture: PhotoCapture) {
+        isRecordingVideo = true
     }
 
-    func photoCaptureDidCompleteMovie(_ photoCapture: PhotoCapture) {
-        isRecordingMovie = false
-        topBar.recordingTimerView.stopCounting()
-        updateNavigationItems()
-        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
+    func photoCaptureDidBeginRecording(_ photoCapture: PhotoCapture) {
+        isRecordingVideo = true
     }
 
-    func photoCaptureDidCancelMovie(_ photoCapture: PhotoCapture) {
-        isRecordingMovie = false
-        topBar.recordingTimerView.stopCounting()
-        updateNavigationItems()
-        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
+    func photoCaptureDidFinishRecording(_ photoCapture: PhotoCapture) {
+        isRecordingVideo = false
+    }
+
+    func photoCaptureDidCancelRecording(_ photoCapture: PhotoCapture) {
+        isRecordingVideo = false
     }
 
     // MARK: -
 
-    var zoomScaleReferenceHeight: CGFloat? {
+    var zoomScaleReferenceDistance: CGFloat? {
+        if isIPadUIInRegularMode {
+            return view.bounds.width
+        }
         return view.bounds.height
     }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
-        captureButton.beginRecordingAnimation(duration: duration)
+        bottomBar.captureControl.setState(.recording, animationDuration: duration)
+        if let sideBar = sideBar {
+            sideBar.cameraCaptureControl.setState(.recording, animationDuration: duration)
+        }
     }
 
     func endCaptureButtonAnimation(_ duration: TimeInterval) {
-        captureButton.endRecordingAnimation(duration: duration)
+        bottomBar.captureControl.setState(.initial, animationDuration: duration)
+        if let sideBar = sideBar {
+            sideBar.cameraCaptureControl.setState(.initial, animationDuration: duration)
+        }
     }
 
     func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation orientation: AVCaptureVideoOrientation) {
@@ -680,234 +992,56 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         }
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusingAtPoint focusPoint: CGPoint) {
+    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusing focusPoint: CGPoint) {
         completeFocusAnimation(forFocusPoint: focusPoint)
     }
 }
 
 // MARK: - Views
 
-protocol CaptureButtonDelegate: AnyObject {
-    // MARK: Photo
-    func didTapCaptureButton(_ captureButton: CaptureButton)
+private class MediaPickerThumbnailButton: UIButton {
 
-    // MARK: Video
-    func didBeginLongPressCaptureButton(_ captureButton: CaptureButton)
-    func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton)
-    func didCancelLongPressCaptureButton(_ captureButton: CaptureButton)
-    func didPressStopCaptureButton(_ captureButton: CaptureButton)
+    private static let visibleSize = CGSize(square: 36)
 
-    var zoomScaleReferenceHeight: CGFloat? { get }
-    func longPressCaptureButton(_ captureButton: CaptureButton, didUpdateZoomAlpha zoomAlpha: CGFloat)
-}
+    func configure() {
+        layer.cornerRadius = 10
+        layer.borderWidth = 1.5
+        layer.borderColor = UIColor.ows_whiteAlpha80.cgColor
+        clipsToBounds = true
 
-extension CaptureButton: MovieLockViewDelegate {
-    func videoLockViewDidTapStop(_ videoLockView: MovieLockView) {
-        assert(movieLockView.isLocked)
-        movieLockView.unlock(isAnimated: true)
-        UIView.animate(withDuration: 0.2) {
-            self.movieLockView.alpha = 0
+        let placeholderView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        insertSubview(placeholderView, at: 0)
+        placeholderView.autoPinEdgesToSuperviewEdges()
+
+        var authorizationStatus: PHAuthorizationStatus
+        if #available(iOS 14, *) {
+            authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        } else {
+            authorizationStatus = PHPhotoLibrary.authorizationStatus()
         }
-        delegate?.didPressStopCaptureButton(self)
-    }
-}
+        guard authorizationStatus == .authorized else { return }
 
-class CaptureButton: UIView {
+        // Async Fetch last image
+        DispatchQueue.global(qos: .userInteractive).async {
+            let fetchOptions = PHFetchOptions()
+            fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+            fetchOptions.fetchLimit = 1
 
-    let innerButton = CircleView()
-    let movieLockView = MovieLockView(swipeDirectionToLock: UIDevice.current.isIPad ? .leading : .trailing)
-
-    var longPressGesture: UILongPressGestureRecognizer!
-    let longPressDuration = 0.5
-
-    let zoomIndicator = CircleView()
-
-    weak var delegate: CaptureButtonDelegate?
-
-    let defaultDiameter: CGFloat = min(ScaleFromIPhone5To7Plus(60, 80), 80)
-    static let recordingDiameter: CGFloat = min(ScaleFromIPhone5To7Plus(68, 120), 120)
-    var innerButtonSizeConstraints: [NSLayoutConstraint]!
-    var zoomIndicatorSizeConstraints: [NSLayoutConstraint]!
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        // The long press handles both the tap and the hold interaction, as well as the animation
-        // the presents as the user begins to hold (and the button begins to grow prior to recording)
-        longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress))
-        longPressGesture.minimumPressDuration = 0
-        innerButton.addGestureRecognizer(longPressGesture)
-
-        addSubview(innerButton)
-        innerButtonSizeConstraints = autoSetDimensions(to: CGSize(square: defaultDiameter))
-        innerButton.backgroundColor = UIColor.ows_white.withAlphaComponent(0.33)
-        innerButton.layer.shadowOffset = .zero
-        innerButton.layer.shadowOpacity = 0.33
-        innerButton.layer.shadowRadius = 2
-        innerButton.autoPinEdgesToSuperviewEdges()
-
-        addSubview(zoomIndicator)
-        zoomIndicatorSizeConstraints = zoomIndicator.autoSetDimensions(to: CGSize(square: defaultDiameter))
-        zoomIndicator.isUserInteractionEnabled = false
-        zoomIndicator.layer.borderColor = UIColor.ows_white.cgColor
-        zoomIndicator.layer.borderWidth = 1.5
-        zoomIndicator.autoAlignAxis(.horizontal, toSameAxisOf: innerButton)
-        zoomIndicator.autoAlignAxis(.vertical, toSameAxisOf: innerButton)
-
-        addSubview(movieLockView)
-        movieLockView.autoSetDimension(.height, toSize: 50)
-        movieLockView.stopButton.autoAlignAxis(.horizontal, toSameAxisOf: self)
-        movieLockView.stopButton.autoAlignAxis(.vertical, toSameAxisOf: self)
-        movieLockView.alpha = 0
-        movieLockView.delegate = self
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func beginRecordingAnimation(duration: TimeInterval, delay: TimeInterval = 0) {
-        UIView.animate(
-            withDuration: duration,
-            delay: delay,
-            options: [.beginFromCurrentState, .curveLinear],
-            animations: {
-                self.innerButtonSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
-                self.zoomIndicatorSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
-                self.superview?.layoutIfNeeded()
-        },
-            completion: nil
-        )
-    }
-
-    func endRecordingAnimation(duration: TimeInterval, delay: TimeInterval = 0) {
-        UIView.animate(
-            withDuration: duration,
-            delay: delay,
-            options: [.beginFromCurrentState, .curveEaseIn],
-            animations: {
-                self.innerButtonSizeConstraints.forEach { $0.constant = self.defaultDiameter }
-                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.defaultDiameter }
-                self.superview?.layoutIfNeeded()
-        },
-            completion: nil
-        )
-    }
-
-    // MARK: - Gestures
-
-    var initialTouchLocation: CGPoint?
-    var touchTimer: Timer?
-    var isLongPressing = false
-
-    @objc
-    func didLongPress(_ gesture: UILongPressGestureRecognizer) {
-        guard let gestureView = gesture.view else {
-            owsFailDebug("gestureView was unexpectedly nil")
-            return
+            let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
+            if fetchResult.count > 0, let asset = fetchResult.firstObject {
+                let targetImageSize = MediaPickerThumbnailButton.visibleSize
+                PHImageManager.default().requestImage(for: asset, targetSize: targetImageSize, contentMode: .aspectFill, options: nil) { (image, _) in
+                    DispatchQueue.main.async {
+                        self.setImage(image, for: .normal)
+                        placeholderView.alpha = 0
+                    }
+                }
+            }
         }
+    }
 
-        switch gesture.state {
-        case .possible: break
-        case .began:
-            guard !movieLockView.isLocked else {
-                return
-            }
-
-            initialTouchLocation = gesture.location(in: gesture.view)
-            beginRecordingAnimation(duration: 0.4, delay: 0.1)
-
-            isLongPressing = false
-
-            touchTimer?.invalidate()
-            touchTimer = WeakTimer.scheduledTimer(
-                timeInterval: longPressDuration,
-                target: self,
-                userInfo: nil,
-                repeats: false
-            ) { [weak self] _ in
-                guard let `self` = self else { return }
-                self.isLongPressing = true
-
-                self.movieLockView.unlock(isAnimated: false)
-                UIView.animate(withDuration: 0.2) {
-                    self.movieLockView.alpha = 1
-                }
-                self.delegate?.didBeginLongPressCaptureButton(self)
-            }
-        case .changed:
-            guard isLongPressing else { break }
-
-            guard let referenceHeight = delegate?.zoomScaleReferenceHeight else {
-                owsFailDebug("referenceHeight was unexpectedly nil")
-                return
-            }
-
-            guard referenceHeight > 0 else {
-                owsFailDebug("referenceHeight was unexpectedly <= 0")
-                return
-            }
-
-            guard let initialTouchLocation = initialTouchLocation else {
-                owsFailDebug("initialTouchLocation was unexpectedly nil")
-                return
-            }
-
-            let currentLocation = gesture.location(in: gestureView)
-
-            // Zoom
-            let minDistanceBeforeActivatingZoom: CGFloat = 30
-            let yDistance = initialTouchLocation.y - currentLocation.y - minDistanceBeforeActivatingZoom
-            let distanceForFullZoom = referenceHeight / 4
-            let yRatio = yDistance / distanceForFullZoom
-            let yAlpha = yRatio.clamp(0, 1)
-
-            let zoomIndicatorDiameter = CGFloatLerp(type(of: self).recordingDiameter, 3, yAlpha)
-            self.zoomIndicatorSizeConstraints.forEach { $0.constant = zoomIndicatorDiameter }
-            zoomIndicator.superview?.layoutIfNeeded()
-
-            delegate?.longPressCaptureButton(self, didUpdateZoomAlpha: yAlpha)
-
-            // Lock
-
-            guard !movieLockView.isLocked else {
-                return
-            }
-            let xOffset = currentLocation.x - initialTouchLocation.x
-            movieLockView.update(xOffset: xOffset)
-        case .ended:
-            endRecordingAnimation(duration: 0.2)
-            touchTimer?.invalidate()
-            touchTimer = nil
-
-            guard !movieLockView.isLocked else {
-                return
-            }
-
-            if isLongPressing {
-                UIView.animate(withDuration: 0.2) {
-                    self.movieLockView.alpha = 0
-                }
-                delegate?.didCompleteLongPressCaptureButton(self)
-            } else {
-                delegate?.didTapCaptureButton(self)
-            }
-        case .cancelled, .failed:
-            endRecordingAnimation(duration: 0.2)
-
-            if isLongPressing {
-                self.movieLockView.unlock(isAnimated: true)
-                UIView.animate(withDuration: 0.2) {
-                    self.movieLockView.alpha = 0
-                }
-                delegate?.didCancelLongPressCaptureButton(self)
-            }
-
-            touchTimer?.invalidate()
-            touchTimer = nil
-        @unknown default:
-            owsFailDebug("unexpected gesture state: \(gesture.state.rawValue)")
-        }
+    override var intrinsicContentSize: CGSize {
+        return Self.visibleSize
     }
 }
 
@@ -921,19 +1055,13 @@ class CapturePreviewView: UIView {
         }
     }
 
-    override var contentMode: UIView.ContentMode {
-        set {
-            switch newValue {
-            case .scaleAspectFill:
-                previewLayer.videoGravity = .resizeAspectFill
-            case .scaleAspectFit:
-                previewLayer.videoGravity = .resizeAspect
-            case .scaleToFill:
-                previewLayer.videoGravity = .resize
-            default:
-                owsFailDebug("Unexpected contentMode")
-            }
+    override var frame: CGRect {
+        didSet {
+            previewLayer.frame = bounds
         }
+    }
+
+    override var contentMode: UIView.ContentMode {
         get {
             switch previewLayer.videoGravity {
             case .resizeAspectFill:
@@ -945,6 +1073,18 @@ class CapturePreviewView: UIView {
             default:
                 owsFailDebug("Unexpected contentMode")
                 return .scaleToFill
+            }
+        }
+        set {
+            switch newValue {
+            case .scaleAspectFill:
+                previewLayer.videoGravity = .resizeAspectFill
+            case .scaleAspectFit:
+                previewLayer.videoGravity = .resizeAspect
+            case .scaleToFill:
+                previewLayer.videoGravity = .resize
+            default:
+                owsFailDebug("Unexpected contentMode")
             }
         }
     }
@@ -961,63 +1101,58 @@ class CapturePreviewView: UIView {
         layer.addSublayer(previewLayer)
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    @available(*, unavailable, message: "Use init(session:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 }
 
-class RecordingTimerView: UIView {
-
-    let stackViewSpacing: CGFloat = 4
+private class RecordingTimerView: PillView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 0)
+
+        let backgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        addSubview(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewEdges()
+
         let stackView = UIStackView(arrangedSubviews: [icon, label])
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = stackViewSpacing
-
+        stackView.spacing = 5
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewMargins()
 
         updateView()
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    @available(*, unavailable, message: "Use init(frame:) instead")
+    required init?(coder: NSCoder) {
+        notImplemented()
     }
 
     // MARK: - Subviews
 
-    private lazy var label: UILabel = {
+    private let label: UILabel = {
         let label = UILabel()
         label.font = UIFont.ows_monospacedDigitFont(withSize: 20)
         label.textAlignment = .center
         label.textColor = UIColor.white
-        label.layer.shadowOffset = CGSize.zero
-        label.layer.shadowOpacity = 0.35
-        label.layer.shadowRadius = 4
-
         return label
     }()
 
-    static let iconWidth: CGFloat = 6
-
     private let icon: UIView = {
         let icon = CircleView()
-        icon.layer.shadowOffset = CGSize.zero
-        icon.layer.shadowOpacity = 0.35
-        icon.layer.shadowRadius = 4
-
         icon.backgroundColor = .red
-        icon.autoSetDimensions(to: CGSize(square: iconWidth))
+        icon.autoSetDimensions(to: CGSize(square: 6))
         icon.alpha = 0
-
         return icon
     }()
 
     // MARK: -
+
     var recordingStartTime: TimeInterval?
 
     func startCounting() {
@@ -1068,164 +1203,16 @@ class RecordingTimerView: UIView {
     }
 }
 
-// MARK: Movie Lock
+private extension UIView {
 
-protocol MovieLockViewDelegate: AnyObject {
-    func videoLockViewDidTapStop(_ videoLockView: MovieLockView)
-}
-
-@objc
-public class MovieLockView: UIView {
-
-    weak var delegate: MovieLockViewDelegate?
-
-    public enum SwipeDirection {
-        case trailing
-        case leading
+    func embeddedInContainerView(layoutMargins: UIEdgeInsets = .zero) -> UIView {
+        var containerViewFrame = bounds
+        containerViewFrame.width += layoutMargins.leading + layoutMargins.trailing
+        containerViewFrame.height += layoutMargins.top + layoutMargins.bottom
+        let containerView = UIView(frame: containerViewFrame)
+        containerView.layoutMargins = layoutMargins
+        containerView.addSubview(self)
+        autoPinEdgesToSuperviewMargins()
+        return containerView
     }
-
-    public let swipeDirectionToLock: SwipeDirection
-
-    public init(swipeDirectionToLock: SwipeDirection) {
-        self.swipeDirectionToLock = swipeDirectionToLock
-        super.init(frame: .zero)
-
-        addSubview(stopButton)
-        stopButton.autoVCenterInSuperview()
-        stopButton.alpha = 0
-
-        addSubview(highlightView)
-        highlightView.autoVCenterInSuperview()
-        highlightView.alpha = 0
-
-        addSubview(lockIconView)
-        lockIconView.autoVCenterInSuperview()
-
-        let trailingView: UIView
-        let leadingView: UIView
-        switch swipeDirectionToLock {
-        case .trailing:
-            trailingView = lockIconView
-            leadingView = stopButton
-            highlightEdgeConstraint = highlightView.autoPinEdge(toSuperviewEdge: .leading)
-        case .leading:
-            trailingView = stopButton
-            leadingView = lockIconView
-            highlightEdgeConstraint = highlightView.autoPinEdge(toSuperviewEdge: .trailing)
-        }
-
-        trailingView.centerXAnchor.constraint(equalTo: trailingAnchor,
-                                              constant: -highlightViewWidth/2).isActive = true
-        leadingView.centerXAnchor.constraint(equalTo: leadingAnchor,
-                                             constant: highlightViewWidth/2).isActive = true
-
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    public func update(xOffset: CGFloat) {
-        let effectiveDistance: CGFloat
-        let distanceToLock: CGFloat
-        let highlightOffset: CGFloat
-        switch swipeDirectionToLock {
-        case .trailing:
-            let minDistanceBeforeActivatingLockSlider: CGFloat = 30
-            effectiveDistance = xOffset - minDistanceBeforeActivatingLockSlider
-            distanceToLock = frame.width - highlightView.frame.width
-            highlightOffset = effectiveDistance.clamp(0, distanceToLock)
-        case .leading:
-            // On iPad, the gesture already feels right, without applying the additional
-            // minDistanceBeforeActivatingLockSlider padding.
-            effectiveDistance = xOffset
-            distanceToLock = -1 * (frame.width - highlightView.frame.width)
-            highlightOffset = effectiveDistance.clamp(distanceToLock, 0)
-        }
-        highlightEdgeConstraint.constant = highlightOffset
-
-        let alpha = (effectiveDistance/distanceToLock).clamp(0, 1)
-        highlightView.alpha = alpha
-
-        if alpha == 1.0 {
-            lock(isAnimated: true)
-        }
-        Logger.verbose("xOffset: \(xOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), highlightOffset: \(highlightOffset), alpha: \(alpha)")
-    }
-
-    // MARK: -
-
-    private(set) var isLocked = false
-
-    public func unlock(isAnimated: Bool) {
-        Logger.debug("")
-        guard isLocked else {
-            Logger.debug("ignoring redundant request")
-            return
-        }
-        Logger.debug("unlocking")
-
-        isLocked = false
-        let changes = {
-            self.lockIconView.tintColor = .white
-            self.stopButton.alpha = 0
-            self.highlightView.alpha = 0
-        }
-
-        if isAnimated {
-            UIView.animate(withDuration: 0.2, animations: changes)
-        } else {
-            changes()
-        }
-    }
-
-    private func lock(isAnimated: Bool) {
-        guard !isLocked else {
-            Logger.debug("ignoring redundant request")
-            return
-        }
-        Logger.debug("locking")
-
-        isLocked = true
-        let changes = {
-            self.lockIconView.tintColor = .black
-            self.stopButton.alpha = 1.0
-        }
-
-        if isAnimated {
-            UIView.animate(withDuration: 0.2, animations: changes)
-        } else {
-            changes()
-        }
-    }
-
-    // MARK: - Subviews
-
-    let lockIconWidth: CGFloat = 24
-    private lazy var lockIconView: UIImageView = {
-        let imageView = UIImageView.withTemplateImage(#imageLiteral(resourceName: "ic_lock_outline"), tintColor: .white)
-        imageView.autoSetDimensions(to: CGSize(square: lockIconWidth))
-        return imageView
-    }()
-
-    let highlightViewWidth = SendMediaNavigationController.bottomButtonWidth
-    private var highlightEdgeConstraint: NSLayoutConstraint!
-    private lazy var highlightView: UIView = {
-        let view = CircleView(diameter: highlightViewWidth)
-        view.backgroundColor = .white
-        return view
-    }()
-
-    let stopButtonWidth: CGFloat = 30
-    public lazy var stopButton: UIButton = {
-        let view = OWSButton { [weak self] in
-            guard let self = self else { return }
-            self.delegate?.videoLockViewDidTapStop(self)
-        }
-
-        view.backgroundColor = .white
-        view.autoSetDimensions(to: CGSize(square: stopButtonWidth))
-
-        return view
-    }()
 }

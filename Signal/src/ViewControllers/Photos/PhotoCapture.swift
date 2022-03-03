@@ -1,35 +1,36 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import Foundation
 import CoreServices
+import Foundation
 
 protocol PhotoCaptureDelegate: AnyObject {
 
     // MARK: Still Photo
 
-    func photoCaptureDidStartPhotoCapture(_ photoCapture: PhotoCapture)
-    func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessingAttachment attachment: SignalAttachment)
-    func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error)
+    func photoCaptureDidStart(_ photoCapture: PhotoCapture)
+    func photoCapture(_ photoCapture: PhotoCapture, didFinishProcessing attachment: SignalAttachment)
+    func photoCapture(_ photoCapture: PhotoCapture, didFailProcessing error: Error)
 
-    // MARK: Movie
+    // MARK: Video
 
-    func photoCaptureDidBeginMovie(_ photoCapture: PhotoCapture)
-    func photoCaptureDidCompleteMovie(_ photoCapture: PhotoCapture)
-    func photoCaptureDidCancelMovie(_ photoCapture: PhotoCapture)
+    func photoCaptureWillBeginRecording(_ photoCapture: PhotoCapture)
+    func photoCaptureDidBeginRecording(_ photoCapture: PhotoCapture)
+    func photoCaptureDidFinishRecording(_ photoCapture: PhotoCapture)
+    func photoCaptureDidCancelRecording(_ photoCapture: PhotoCapture)
 
     // MARK: Utility
 
     func photoCapture(_ photoCapture: PhotoCapture, didChangeOrientation: AVCaptureVideoOrientation)
     func photoCaptureCanCaptureMoreItems(_ photoCapture: PhotoCapture) -> Bool
     func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
-    var zoomScaleReferenceHeight: CGFloat? { get }
+    var zoomScaleReferenceDistance: CGFloat? { get }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval)
     func endCaptureButtonAnimation(_ duration: TimeInterval)
 
-    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusingAtPoint focusPoint: CGPoint)
+    func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusing focusPoint: CGPoint)
 
 }
 
@@ -82,7 +83,7 @@ class PhotoCapture: NSObject {
         let focusPoint = currentCaptureInput.device.focusPointOfInterest
 
         DispatchQueue.main.async {
-            self.delegate?.photoCapture(self, didCompleteFocusingAtPoint: focusPoint)
+            self.delegate?.photoCapture(self, didCompleteFocusing: focusPoint)
         }
     }
 
@@ -292,20 +293,20 @@ class PhotoCapture: NSObject {
             focusObservation.invalidate()
         }
         self.focusObservation = newInput.observe(\.device.isAdjustingFocus,
-                                                 options: [.old, .new]) { [weak self] _, change in
-                                                    guard let self = self else { return }
+                                                  options: [.old, .new]) { [weak self] _, change in
+            guard let self = self else { return }
 
-                                                    guard let oldValue = change.oldValue else {
-                                                        return
-                                                    }
+            guard let oldValue = change.oldValue else {
+                return
+            }
 
-                                                    guard let newValue = change.newValue else {
-                                                        return
-                                                    }
+            guard let newValue = change.newValue else {
+                return
+            }
 
-                                                    if oldValue == true && newValue == false {
-                                                        self.didCompleteFocusing()
-                                                    }
+            if oldValue == true && newValue == false {
+                self.didCompleteFocusing()
+            }
         }
 
         currentCaptureInput = newInput
@@ -333,9 +334,9 @@ class PhotoCapture: NSObject {
     }
 
     public func focus(with focusMode: AVCaptureDevice.FocusMode,
-               exposureMode: AVCaptureDevice.ExposureMode,
-               at devicePoint: CGPoint,
-               monitorSubjectAreaChange: Bool) {
+                      exposureMode: AVCaptureDevice.ExposureMode,
+                      at devicePoint: CGPoint,
+                      monitorSubjectAreaChange: Bool) {
         sessionQueue.async {
             Logger.debug("focusMode: \(focusMode), exposureMode: \(exposureMode), devicePoint: \(devicePoint), monitorSubjectAreaChange:\(monitorSubjectAreaChange)")
             guard let device = self.captureDevice else {
@@ -460,7 +461,7 @@ class PhotoCapture: NSObject {
         }
 
         let captureRect = captureOutputPhotoRect
-        delegate.photoCaptureDidStartPhotoCapture(self)
+        delegate.photoCaptureDidStart(self)
         sessionQueue.async {
             self.captureOutput.takePhoto(delegate: self, captureRect: captureRect)
         }
@@ -516,11 +517,13 @@ class PhotoCapture: NSObject {
                     throw PhotoCaptureError.invalidVideo
                 }
 
-                self.delegate?.photoCaptureDidBeginMovie(self)
+                self.delegate?.photoCaptureDidBeginRecording(self)
             }
         }.catch { error in
             self.handleMovieCaptureError(error)
         }
+
+        delegate.photoCaptureWillBeginRecording(self)
     }
 
     private func completeMovieCapture() {
@@ -555,7 +558,7 @@ class PhotoCapture: NSObject {
 
             // Inform UI that capture is stopping.
             self.lastMovieRecordingEndDate = movieRecordingStartDate
-            self.delegate?.photoCaptureDidCompleteMovie(self)
+            self.delegate?.photoCaptureDidFinishRecording(self)
         }.catch { error in
             self.handleMovieCaptureError(error)
         }
@@ -573,7 +576,7 @@ class PhotoCapture: NSObject {
             self.shouldHaveAudioCapture = false
         }
         self.lastMovieRecordingEndDate = Date()
-        self.delegate?.photoCapture(self, processingDidError: error)
+        self.delegate?.photoCapture(self, didFailProcessing: error)
     }
 
     private func cancelMovieCapture() {
@@ -592,7 +595,7 @@ class PhotoCapture: NSObject {
 
             // Inform UI that capture is stopping.
             self.lastMovieRecordingEndDate = Date()
-            self.delegate?.photoCaptureDidCancelMovie(self)
+            self.delegate?.photoCaptureDidCancelRecording(self)
         }.catch { error in
             self.handleMovieCaptureError(error)
         }
@@ -668,33 +671,34 @@ extension PhotoCapture: VolumeButtonObserver {
 
 // MARK: -
 
-extension PhotoCapture: CaptureButtonDelegate {
-    func didTapCaptureButton(_ captureButton: CaptureButton) {
+extension PhotoCapture: CameraCaptureControlDelegate {
+
+    func cameraCaptureControlDidRequestCapturePhoto(_ control: CameraCaptureControl) {
         takePhoto()
     }
 
-    func didBeginLongPressCaptureButton(_ captureButton: CaptureButton) {
+    func cameraCaptureControlDidRequestStartVideoRecording(_ control: CameraCaptureControl) {
         beginMovieCapture()
     }
 
-    func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton) {
+    func cameraCaptureControlDidRequestFinishVideoRecording(_ control: CameraCaptureControl) {
         completeMovieCapture()
     }
 
-    func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
+    func cameraCaptureControlDidRequestCancelVideoRecording(_ control: CameraCaptureControl) {
         cancelMovieCapture()
     }
 
-    func didPressStopCaptureButton(_ captureButton: CaptureButton) {
+    func didPressStopCaptureButton(_ control: CameraCaptureControl) {
         completeMovieCapture()
     }
 
-    var zoomScaleReferenceHeight: CGFloat? {
-        return delegate?.zoomScaleReferenceHeight
+    var zoomScaleReferenceDistance: CGFloat? {
+        return delegate?.zoomScaleReferenceDistance
     }
 
-    func longPressCaptureButton(_ captureButton: CaptureButton, didUpdateZoomAlpha zoomAlpha: CGFloat) {
-        updateZoom(alpha: zoomAlpha)
+    func cameraCaptureControl(_ control: CameraCaptureControl, didUpdateZoomLevel zoomLevel: CGFloat) {
+        updateZoom(alpha: zoomLevel)
     }
 }
 
@@ -730,12 +734,12 @@ extension PhotoCapture: CaptureOutputDelegate {
 
         switch photoData {
         case .failure(let error):
-            delegate.photoCapture(self, processingDidError: error)
+            delegate.photoCapture(self, didFailProcessing: error)
         case .success(let photoData):
             let dataSource = DataSourceValue.dataSource(with: photoData, utiType: kUTTypeJPEG as String)
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
-            delegate.photoCapture(self, didFinishProcessingAttachment: attachment)
+            delegate.photoCapture(self, didFinishProcessing: attachment)
         }
     }
 
@@ -761,7 +765,7 @@ extension PhotoCapture: CaptureOutputDelegate {
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
 
             BenchEventComplete(eventId: "Movie Processing")
-            delegate.photoCapture(self, didFinishProcessingAttachment: attachment)
+            delegate.photoCapture(self, didFinishProcessing: attachment)
         }
     }
 
@@ -1165,7 +1169,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
         photoSettings.isHighResolutionPhotoEnabled = true
 
         photoSettings.isAutoStillImageStabilizationEnabled =
-            photoOutput.isStillImageStabilizationSupported
+        photoOutput.isStillImageStabilizationSupported
 
         return photoSettings
     }
