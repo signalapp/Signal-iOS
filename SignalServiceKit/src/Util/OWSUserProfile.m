@@ -214,13 +214,14 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 {
     if ([address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
         return YES;
+    } else {
+        OWSAssertDebug(self.tsAccountManager.localAddress);
+        return address.isLocalAddress;
     }
-    return address.isLocalAddress;
 }
 
 + (SignalServiceAddress *)resolveUserProfileAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(self.tsAccountManager.localAddress != nil);
     return ([self isLocalProfileAddress:address] ? self.localProfileAddress : address);
 }
 
