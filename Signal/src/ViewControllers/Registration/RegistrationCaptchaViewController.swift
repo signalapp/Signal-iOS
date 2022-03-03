@@ -28,7 +28,7 @@ class RegistrationCaptchaViewModel: NSObject {
         AssertIsOnMainThread()
 
         let primaryView = vc.primaryView
-        primaryView.backgroundColor = UIColor.ows_white
+        primaryView.backgroundColor = Theme.backgroundColor
 
         let titleLabel = vc.createTitleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE",
                                                                      comment: "Title of the 'onboarding Captcha' view."))
