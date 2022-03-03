@@ -115,7 +115,7 @@ NSString *const OWSPreferencesKeyDeviceScale = @"OWSPreferencesKeyDeviceScale";
     __block BOOL result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         result = [self.keyValueStore getBool:key defaultValue:defaultValue transaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
     return result;
 }
 

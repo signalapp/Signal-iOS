@@ -357,7 +357,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         @synchronized(self) {
             accountState = [self loadAccountStateWithTransaction:transaction];
         }
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
     OWSAssertDebug(accountState != nil);
     return accountState;

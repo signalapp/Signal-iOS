@@ -624,7 +624,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                 @([OWSReceiptManager.keyValueStore getBool:OWSReceiptManagerAreReadReceiptsEnabled
                                               defaultValue:NO
                                                transaction:transaction]);
-        }];
+        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
     }
 
     return [self.areReadReceiptsEnabledCached boolValue];

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesJob.h"
@@ -142,7 +142,7 @@ void AssertIsOnDisappearingMessagesQueue()
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         nextExpirationTimestampNumber =
             [self.disappearingMessagesFinder nextExpirationTimestampWithTransaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
     if (!nextExpirationTimestampNumber) {
         OWSLogDebug(@"No more expiring messages.");

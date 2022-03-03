@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageUtils.h"
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSUInteger numberOfItems;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         numberOfItems = [InteractionFinder unreadCountInAllThreadsWithTransaction:transaction.unwrapGrdbRead];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
     return numberOfItems;
 }

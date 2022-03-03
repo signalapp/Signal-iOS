@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -349,6 +349,11 @@ public class SDSDatabaseStorage: SDSTransactable {
     @objc(readWithBlock:)
     public func readObjC(block: (SDSAnyReadTransaction) -> Void) {
         read(file: "objc", function: "block", line: 0, block: block)
+    }
+
+    @objc(readWithBlock:file:function:line:)
+    public func readObjC(block: (SDSAnyReadTransaction) -> Void, file: UnsafePointer<CChar>, function: UnsafePointer<CChar>, line: Int) {
+        read(file: String(cString: file), function: String(cString: function), line: line, block: block)
     }
 
     // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.

@@ -167,7 +167,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
                                           defaultValue:ThemeMode_System
                                            transaction:transaction];
         }
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
     self.cachedCurrentThemeNumber = @(currentMode);
     return currentMode;

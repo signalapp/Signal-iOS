@@ -650,7 +650,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             [self.keyValueStore getString:OWSOrphanDataCleaner_LastCleaningVersionKey transaction:transaction];
         lastCleaningDate =
             [self.keyValueStore getDate:OWSOrphanDataCleaner_LastCleaningDateKey transaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
     // Clean up once per app version.
     NSString *currentAppReleaseVersion = self.appVersion.currentAppReleaseVersion;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsManager.h"
@@ -77,7 +77,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         OWSLogInfo(@"Loaded %lu contacts, %lu signal accounts from cache.",
                    (unsigned long)contactsManagerCacheSummary.contactCount,
                    (unsigned long)contactsManagerCacheSummary.signalAccountCount);
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
     
     self.isSetup = YES;
 }
@@ -279,7 +279,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                     isFullIntersection = YES;
                 }
             }
-        }];
+        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
         OWSAssertDebug(phoneNumbersForIntersection);
         
         if (phoneNumbersForIntersection.count < 1) {
@@ -495,7 +495,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         oldSortedSignalAccounts = [self sortedSignalAccountsWithTransaction:transaction];
         newSortedSignalAccounts = [self sortSignalAccounts:newSignalAccounts transaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
     
     if ([oldSortedSignalAccounts isEqual:newSortedSignalAccounts]) {
         OWSLogDebug(@"SignalAccounts unchanged.");

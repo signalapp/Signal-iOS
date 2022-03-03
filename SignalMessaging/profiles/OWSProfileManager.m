@@ -245,7 +245,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     __block OWSUserProfile *_Nullable localUserProfile;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         localUserProfile = [self getLocalUserProfileWithTransaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
     if (localUserProfile != nil) {
         return [localUserProfile shallowCopy];
     }
