@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -585,16 +585,6 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         if address.uuid == nil {
             // This is internal-only; we don't need to localize.
             items.append("No UUID")
-        }
-        let hasProfileKey = nil != Self.profileManager.profileKeyData(for: address,
-                                                                      transaction: transaction)
-        // Only show the "missing gv2 capability" warning if we have the
-        // user's profile key.
-        if !GroupManager.doesUserHaveGroupsV2Capability(address: address,
-                                                        transaction: transaction),
-           hasProfileKey {
-            // This is internal-only; we don't need to localize.
-            items.append("No capability")
         }
 
         func defaultSubtitle() -> NSAttributedString? {

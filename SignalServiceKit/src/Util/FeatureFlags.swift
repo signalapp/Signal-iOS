@@ -243,9 +243,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let logSQLQueries = build.includes(.dev) && !reduceLogChatter
 
-    @objc
-    public static let groupsV2IgnoreCapability = false
-
     // We can use this to test recovery from "missed updates".
     @objc
     public static let groupsV2dontSendUpdates = TestableFlag(false,

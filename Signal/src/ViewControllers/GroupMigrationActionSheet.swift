@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -660,7 +660,7 @@ public extension GroupMigrationActionSheet {
                 guard address.uuid != nil else {
                     continue
                 }
-                guard GroupsV2Migration.doesUserHaveBothCapabilities(address: address, transaction: transaction) else {
+                guard GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address, transaction: transaction) else {
                     continue
                 }
                 addableMembers.insert(address)

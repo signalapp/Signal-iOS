@@ -612,7 +612,7 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
 
     public func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
                                              transaction: SDSAnyReadTransaction) -> Bool {
-        owsFail("Not implemented.")
+        return true
     }
 
     public func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction) {

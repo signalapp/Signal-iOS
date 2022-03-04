@@ -597,14 +597,8 @@ public class ProfileFetcherJob: NSObject {
                                       verifier: profile.unidentifiedAccessVerifier,
                                       hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess)
 
-        if address.isLocalAddress,
-           DebugFlags.groupsV2memberStatusIndicators {
-            Logger.info("supportsGroupsV2: \(profile.supportsGroupsV2)")
-        }
-
         return databaseStorage.write(.promise) { transaction in
             GroupManager.setUserCapabilities(address: address,
-                                             hasGroupsV2Capability: profile.supportsGroupsV2,
                                              hasGroupsV2MigrationCapability: profile.supportsGroupsV2Migration,
                                              hasAnnouncementOnlyGroupsCapability: profile.supportsAnnouncementOnlyGroups,
                                              hasSenderKeyCapability: profile.supportsSenderKey,
@@ -646,7 +640,6 @@ public class ProfileFetcherJob: NSObject {
         )
 
         GroupManager.setUserCapabilities(address: address,
-                                         hasGroupsV2Capability: false,
                                          hasGroupsV2MigrationCapability: false,
                                          hasAnnouncementOnlyGroupsCapability: false,
                                          hasSenderKeyCapability: false,

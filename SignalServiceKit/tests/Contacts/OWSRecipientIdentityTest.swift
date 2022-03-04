@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -47,26 +47,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         }
 
         // Create a group with our recipients plus us.
-        let expectation = expectation(description: "Create group thread")
-        firstly {
-            GroupManager.localCreateNewGroup(members: recipients,
-                                             groupId: nil,
-                                             name: "Test Group",
-                                             avatarImage: nil,
-                                             disappearingMessageToken: DisappearingMessageToken.disabledToken,
-                                             newGroupSeed: nil,
-                                             shouldSendMessage: true)
-        }.done { thread in
-            expectation.fulfill()
-            self.groupThread = thread
-        }.catch { error in
-            XCTFail("Failed to create group: \(error)")
-        }
-        waitForExpectations(timeout: IsDebuggerAttached() ? Double.infinity : 5) { error in
-            if let error = error {
-                XCTFail("Expectation failed with error: \(error)")
-            }
-        }
+        self.groupThread = try! GroupManager.createGroupForTests(members: recipients,
+                                                                 name: "Test Group")
     }
 
     override func setUp() {
