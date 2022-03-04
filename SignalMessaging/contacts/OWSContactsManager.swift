@@ -979,4 +979,50 @@ extension OWSContactsManager {
             self.displayName(forSignalAccount: signalAccount, transaction: transaction)
         }
     }
+
+    // This is based on -[OWSContactsManager displayNameForAddress:transaction:].
+    // Rather than being called once for each address, we call it once with all the
+    // addresses and it will use a single database query per step to assign
+    // display names to addresses using different techniques.
+    @objc(objc_displayNamesForAddresses:transaction:)
+    func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
+        return Refinery(addresses).refine { addresses in
+            // Prefer a saved name from system contacts, if available.
+            return addresses.lazy.map {
+                self.cachedContactName(for: $0, transaction: transaction)?.nilIfEmpty
+            }
+        }.refine { addresses in
+            profileManager.fullNames(forAddresses: Array(addresses),
+                                     transaction: transaction).sequenceWithNils
+        }.refine { addresses in
+            // TODO: Combine these db queries into one.
+            return addresses.lazy.map { address in
+                guard let number = self.phoneNumber(for: address, transaction: transaction) else {
+                    return nil
+                }
+                let formatted = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: number)
+                if formatted.isEmpty {
+                    return nil
+                }
+                return formatted
+            }
+        }.refine { addresses in
+            // TODO: Combine these db queries into one.
+            return addresses.lazy.map { address in
+                guard let username = self.profileManagerImpl.username(for: address, transaction: transaction)?.nilIfEmpty else {
+                    return nil
+                }
+                return CommonFormats.formatUsername(username)
+            }
+        }.refine { addresses in
+            // TODO: Combine these db queries into one.
+            return addresses.lazy.map {
+                self.fetchProfile(forUnknownAddress: $0)
+                return self.unknownUserLabel
+            }
+        }.values.map {
+            $0!
+        }
+    }
+
 }

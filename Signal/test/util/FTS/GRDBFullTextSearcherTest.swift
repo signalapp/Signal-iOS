@@ -42,6 +42,10 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         self.displayName(for: address)
     }
 
+    func displayNames(forAddresses addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
+        return addresses.map { displayName(for: $0) }
+    }
+
     func shortDisplayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         self.displayName(for: address)
     }

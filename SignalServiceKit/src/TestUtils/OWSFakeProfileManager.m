@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFakeProfileManager.h"
@@ -354,6 +354,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURL *)writeAvatarDataToFile:(nonnull NSData *)avatarData {
     return nil;
 }
+
+- (nonnull NSArray *)fullNamesForAddresses:(nonnull NSArray<SignalServiceAddress *> *)addresses transaction:(nonnull SDSAnyReadTransaction *)transaction {
+    NSMutableArray<NSString *> *result = [NSMutableArray array];
+    for (NSUInteger i = 0; i < addresses.count; i++) {
+        [result addObject:@"some fake profile name"];
+    }
+    return result;
+}
+
 
 
 - (void)migrateWhitelistedGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction

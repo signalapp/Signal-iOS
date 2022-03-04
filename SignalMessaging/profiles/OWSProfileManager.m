@@ -1496,6 +1496,12 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return userProfile.fullName;
 }
 
+- (NSArray<id<SSKMaybeString>> *)fullNamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                           transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self objc_fullNamesForAddresses:addresses transaction:transaction];
+}
+
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction
 {

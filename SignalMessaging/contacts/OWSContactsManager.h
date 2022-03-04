@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/Contact.h>
@@ -43,6 +43,9 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 // This will always return an instance of SignalAccount.
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
+
+- (nullable NSString *)cachedContactNameForAddress:(SignalServiceAddress *)address
+                                       transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - System Contact Fetching
 

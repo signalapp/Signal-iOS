@@ -1,10 +1,14 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSString (SSK)
+@protocol SSKMaybeString<NSObject>
+@property (nonatomic, nullable, readonly) NSString *stringOrNil;
+@end
+
+@interface NSString (SSK)<SSKMaybeString>
 
 @property (nonatomic, nullable, readonly) NSString *dominantLanguageWithLegacyLinguisticTagger;
 
@@ -22,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAttributes:(NSDictionary<NSAttributedStringKey, id> *)attributes forSubstring:(NSString *)substring;
 
+@end
+
+@interface NSNull(NSStringSSK)<SSKMaybeString>
 @end
 
 NS_ASSUME_NONNULL_END
