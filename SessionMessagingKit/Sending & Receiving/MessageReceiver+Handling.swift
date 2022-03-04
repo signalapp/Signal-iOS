@@ -296,7 +296,7 @@ extension MessageReceiver {
             }
             if let messageToDelete = localMessage {
                 if let incomingMessage = messageToDelete as? TSIncomingMessage {
-                    incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                    incomingMessage.markAsReadNow(withTrySendReadReceipt: false, transaction: transaction)
                     if let notificationIdentifier = incomingMessage.notificationIdentifier, !notificationIdentifier.isEmpty {
                         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notificationIdentifier])
                         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
