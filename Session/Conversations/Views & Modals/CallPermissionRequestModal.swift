@@ -53,7 +53,7 @@ final class CallPermissionRequestModal : Modal {
         buttonStackView.axis = .horizontal
         buttonStackView.distribution = .fillEqually
         // Main stack view
-        let spacing = Values.largeSpacing - (Values.mediumButtonHeight - Values.smallFontSize)/2
+        let spacing = Values.largeSpacing - Values.smallFontSize / 2
         let mainStackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         mainStackView.axis = .vertical
         mainStackView.spacing = spacing
