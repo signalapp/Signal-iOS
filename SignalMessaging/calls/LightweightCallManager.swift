@@ -152,6 +152,9 @@ open class LightweightCallManager: NSObject, Dependencies {
         // The message must have at least one participant
         guard (groupCallMessage.joinedMemberUuids?.count ?? 0) > 0 else { return }
 
+        // The creator of the call must be known, and it can't be the local user
+        guard let creator = groupCallMessage.creatorUuid, !SignalServiceAddress(uuidString: creator).isLocalAddress else { return }
+
         guard let thread = TSGroupThread.anyFetch(uniqueId: groupCallMessage.uniqueThreadId, transaction: transaction) else {
             owsFailDebug("Unknown thread")
             return

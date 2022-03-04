@@ -753,8 +753,6 @@ extension CallService {
 
         // The message can't be for the current call
         guard self.currentCall?.thread.uniqueId != groupCallMessage.uniqueThreadId else { return }
-        // The creator of the call must be known, and it can't be the local user
-        guard let creator = groupCallMessage.creatorUuid, !SignalServiceAddress(uuidString: creator).isLocalAddress else { return }
 
         super.postUserNotificationIfNecessary(groupCallMessage: groupCallMessage, transaction: transaction)
     }
