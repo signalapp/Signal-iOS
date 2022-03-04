@@ -370,7 +370,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         sideBar.switchCameraButton.addTarget(self, action: #selector(didTapSwitchCamera), for: .touchUpInside)
         sideBar.photoLibraryButton.addTarget(self, action: #selector(didTapPhotoLibrary), for: .touchUpInside)
         view.addSubview(sideBar)
-        sideBar.autoPinTrailingToSuperviewMargin()
+        sideBar.autoPinTrailingToSuperviewMargin(withInset: 12)
         sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         self.sideBar = sideBar
 
@@ -378,7 +378,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         updateFlashModeControl()
 
         doneButtonIPadConstraints = [ doneButton.centerXAnchor.constraint(equalTo: sideBar.centerXAnchor),
-                                      doneButton.bottomAnchor.constraint(equalTo: sideBar.topAnchor, constant: -16)]
+                                      doneButton.bottomAnchor.constraint(equalTo: sideBar.topAnchor, constant: -8)]
 
         if let cameraZoomControl = cameraZoomControl {
             let constraints = [ cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
@@ -446,6 +446,8 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         if !isRecordingVideo {
             topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
         }
+        topBar.layoutMargins.leading = isIPadUIInRegularMode ? 24 : 4
+        topBar.layoutMargins.top = isIPadUIInRegularMode ? 10 : 0
         bottomBar.isHidden = isIPadUIInRegularMode
         sideBar?.isHidden = !isIPadUIInRegularMode
     }
@@ -775,17 +777,18 @@ private class TopBar: UIView {
 
         super.init(frame: frame)
 
-        layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 4)
+        layoutMargins = UIEdgeInsets(hMargin: 4, vMargin: 0)
 
         addSubview(closeButton)
         closeButton.autoPinHeightToSuperviewMargins()
         closeButton.autoPinLeadingToSuperviewMargin()
 
         addSubview(recordingTimerView)
-        recordingTimerView.autoPinHeightToSuperview(withMargin: 8)
+        recordingTimerView.autoPinTopToSuperviewMargin(withInset: 8)
+        recordingTimerView.autoPinBottomToSuperviewMargin(withInset: 8)
         recordingTimerView.autoHCenterInSuperview()
 
-        cameraControlsContainerView.spacing = 16
+        cameraControlsContainerView.spacing = 0
         addSubview(cameraControlsContainerView)
         cameraControlsContainerView.autoPinHeightToSuperviewMargins()
         cameraControlsContainerView.autoPinTrailingToSuperviewMargin()
@@ -853,7 +856,7 @@ private class BottomBar: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 14)
+        layoutMargins = UIEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 10)
 
         addLayoutGuide(controlButtonsLayoutGuide)
         addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
@@ -927,7 +930,7 @@ private class SideBar: UIView {
 
         layoutMargins = UIEdgeInsets(margin: 8)
 
-        cameraControlsContainerView.spacing = 16
+        cameraControlsContainerView.spacing = 8
         cameraControlsContainerView.axis = .vertical
         addSubview(cameraControlsContainerView)
         cameraControlsContainerView.autoPinWidthToSuperviewMargins()
@@ -935,11 +938,11 @@ private class SideBar: UIView {
 
         addSubview(cameraCaptureControl)
         cameraCaptureControl.autoHCenterInSuperview()
-        cameraCaptureControl.shutterButtonLayoutGuide.topAnchor.constraint(equalTo: cameraControlsContainerView.bottomAnchor, constant: 36).isActive = true
+        cameraCaptureControl.shutterButtonLayoutGuide.topAnchor.constraint(equalTo: cameraControlsContainerView.bottomAnchor, constant: 24).isActive = true
 
         addSubview(photoLibraryButton)
         photoLibraryButton.autoHCenterInSuperview()
-        photoLibraryButton.topAnchor.constraint(equalTo: cameraCaptureControl.shutterButtonLayoutGuide.bottomAnchor, constant: 36).isActive = true
+        photoLibraryButton.topAnchor.constraint(equalTo: cameraCaptureControl.shutterButtonLayoutGuide.bottomAnchor, constant: 24).isActive = true
         photoLibraryButton.bottomAnchor.constraint(lessThanOrEqualTo: layoutMarginsGuide.bottomAnchor).isActive = true
     }
 
@@ -1061,17 +1064,18 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
 private class MediaPickerThumbnailButton: UIButton {
 
-    private static let visibleSize = CGSize(square: 36)
+    private static let visibleSize: CGFloat = 36
 
     func configure() {
-        layer.cornerRadius = 10
-        layer.borderWidth = 1.5
-        layer.borderColor = UIColor.ows_whiteAlpha80.cgColor
-        clipsToBounds = true
+        contentEdgeInsets = UIEdgeInsets(margin: 8)
 
         let placeholderView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        placeholderView.layer.cornerRadius = 10
+        placeholderView.layer.borderWidth = 1.5
+        placeholderView.layer.borderColor = UIColor.ows_whiteAlpha80.cgColor
+        placeholderView.clipsToBounds = true
         insertSubview(placeholderView, at: 0)
-        placeholderView.autoPinEdgesToSuperviewEdges()
+        placeholderView.autoPinEdgesToSuperviewEdges(withInsets: contentEdgeInsets)
 
         var authorizationStatus: PHAuthorizationStatus
         if #available(iOS 14, *) {
@@ -1089,19 +1093,32 @@ private class MediaPickerThumbnailButton: UIButton {
 
             let fetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
             if fetchResult.count > 0, let asset = fetchResult.firstObject {
-                let targetImageSize = MediaPickerThumbnailButton.visibleSize
+                let targetImageSize = CGSize(square: MediaPickerThumbnailButton.visibleSize)
                 PHImageManager.default().requestImage(for: asset, targetSize: targetImageSize, contentMode: .aspectFill, options: nil) { (image, _) in
-                    DispatchQueue.main.async {
-                        self.setImage(image, for: .normal)
-                        placeholderView.alpha = 0
+                    if let image = image {
+                        DispatchQueue.main.async {
+                            self.updateWith(image: image)
+                            placeholderView.alpha = 0
+                        }
                     }
                 }
             }
         }
     }
 
+    private func updateWith(image: UIImage) {
+        setImage(image, for: .normal)
+        if let imageView = imageView {
+            imageView.layer.cornerRadius = 10
+            imageView.layer.borderWidth = 1.5
+            imageView.layer.borderColor = UIColor.ows_whiteAlpha80.cgColor
+            imageView.clipsToBounds = true
+        }
+    }
+
     override var intrinsicContentSize: CGSize {
-        return Self.visibleSize
+        return CGSize(width: contentEdgeInsets.leading + Self.visibleSize + contentEdgeInsets.trailing,
+                      height: contentEdgeInsets.top + Self.visibleSize + contentEdgeInsets.bottom)
     }
 }
 
