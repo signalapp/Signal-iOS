@@ -1,6 +1,6 @@
 #!/usr/bin/env xcrun --sdk macosx swift
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -171,6 +171,7 @@ struct EmojiModel {
             case "womanHeartMan": return "[.woman, .man]"
             case "manHeartMan": return "[.man, .man]"
             case "womanHeartWoman": return "[.woman, .woman]"
+            case "handshake": return "[.rightwardsHand, .leftwardsHand]"
             default:
                 return nil
             }
