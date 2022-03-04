@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -118,6 +118,14 @@ public extension NSObject {
 
     static var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
+    }
+
+    var lightweightCallManager: LightweightCallManager? {
+        Environment.shared.lightweightCallManagerRef
+    }
+
+    static var lightweightCallManager: LightweightCallManager? {
+        Environment.shared.lightweightCallManagerRef
     }
 }
 

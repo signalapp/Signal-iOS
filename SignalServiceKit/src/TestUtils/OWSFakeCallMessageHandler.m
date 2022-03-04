@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFakeCallMessageHandler.h"
@@ -68,9 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"");
 }
 
-- (void)receivedGroupCallUpdateMessage:(SSKProtoDataMessageGroupCallUpdate *)update
+- (void)receivedGroupCallUpdateMessage:(SSKProtoDataMessageGroupCallUpdate *)updateMessage
                              forThread:(TSGroupThread *)groupThread
                serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
+                            completion:(dispatch_block_t)completionHandler
 {
     OWSLogInfo(@"");
 }

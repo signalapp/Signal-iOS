@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -149,6 +149,7 @@ class NSEEnvironment: Dependencies {
             appSpecificSingletonBlock: {
                 SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
                 SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()
+                Environment.shared.lightweightCallManagerRef = LightweightCallManager()
             },
             migrationCompletion: { [weak self] error in
                 if let error = error {

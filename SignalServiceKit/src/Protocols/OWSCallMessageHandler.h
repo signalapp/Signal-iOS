@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -69,10 +69,11 @@ typedef NS_ENUM(NSUInteger, OWSCallMessageAction) {
                 transaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(receivedOpaque(_:from:sourceDevice:serverReceivedTimestamp:serverDeliveryTimestamp:transaction:));
 
-- (void)receivedGroupCallUpdateMessage:(SSKProtoDataMessageGroupCallUpdate *)update
+- (void)receivedGroupCallUpdateMessage:(SSKProtoDataMessageGroupCallUpdate *)updateMessage
                              forThread:(TSGroupThread *)groupThread
                serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
-        NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:serverReceivedTimestamp:));
+                            completion:(dispatch_block_t)completionHandler
+    NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:serverReceivedTimestamp:completion:));
 
 - (void)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                   plaintextData:(NSData *)plaintextData

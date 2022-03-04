@@ -1638,9 +1638,11 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             if (groupThread) {
+                PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"GroupCallUpdate"];
                 [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
                                                               forThread:groupThread
-                                                serverReceivedTimestamp:envelope.timestamp];
+                                                serverReceivedTimestamp:envelope.timestamp
+                                                             completion:^{ [pendingTask complete]; }];
             } else {
                 OWSLogWarn(@"Received GroupCallUpdate for unknown groupId: %@", groupId);
             }
@@ -1970,9 +1972,11 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         TSGroupThread *groupThread = (TSGroupThread *)thread;
+        PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"GroupCallUpdate"];
         [self.callMessageHandler receivedGroupCallUpdateMessage:dataMessage.groupCallUpdate
                                                       forThread:groupThread
-                                        serverReceivedTimestamp:envelope.timestamp];
+                                        serverReceivedTimestamp:envelope.timestamp
+                                                     completion:^{ [pendingTask complete]; }];
         return nil;
     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,19 +37,6 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver, Dependen
         let messagePreparer = updateMessage.asPreparer
         SDSDatabaseStorage.shared.asyncWrite { writeTx in
             Self.messageSenderJobQueue.add(message: messagePreparer, transaction: writeTx)
-        }
-    }
-
-    func handleUpdateMessage(_ message: SSKProtoDataMessageGroupCallUpdate, for thread: TSGroupThread, serverReceivedTimestamp: UInt64) {
-        Logger.info("Received group call update message for thread: \(thread.uniqueId) eraId: \(String(describing: message.eraID))")
-        DispatchQueue.main.async {
-            Self.databaseStorage.read { transaction in
-                Self.callService.peekCallAndUpdateThread(
-                    thread,
-                    expectedEraId: message.eraID,
-                    triggerEventTimestamp: serverReceivedTimestamp,
-                    transaction: transaction)
-            }
         }
     }
 

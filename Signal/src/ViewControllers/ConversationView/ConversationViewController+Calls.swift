@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import Foundation
+import SignalUI
 
 public extension ConversationViewController {
 
@@ -102,17 +102,8 @@ public extension ConversationViewController {
     }
 
     func refreshCallState() {
-        guard thread.isGroupV2Thread,
-              let groupThread = thread as? TSGroupThread else {
-            return
-        }
-        // We dispatch async in an effort to avoid "bad food" crashes when
-        // presenting the view. peekCallAndUpdateThread() uses a write
-        // transaction.
-        DispatchQueue.main.async {
-            Self.databaseStorage.read { transaction in
-                Self.callService.peekCallAndUpdateThread(groupThread, transaction: transaction)
-            }
+        if let groupThread = thread as? TSGroupThread {
+            callService.peekCallAndUpdateThread(groupThread)
         }
     }
 

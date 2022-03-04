@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -166,12 +166,17 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     public func receivedGroupCallUpdateMessage(
-        _ update: SSKProtoDataMessageGroupCallUpdate,
+        _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
         for groupThread: TSGroupThread,
-        serverReceivedTimestamp: UInt64) {
-
-        Logger.info("Received group call update for thread \(groupThread.uniqueId)")
-        callService.groupCallMessageHandler.handleUpdateMessage(update, for: groupThread, serverReceivedTimestamp: serverReceivedTimestamp)
+        serverReceivedTimestamp: UInt64,
+        completion: @escaping () -> Void
+    ) {
+        Logger.info("Received group call update message for thread: \(groupThread.uniqueId) eraId: \(String(describing: updateMessage.eraID))")
+        callService.peekCallAndUpdateThread(
+            groupThread,
+            expectedEraId: updateMessage.eraID,
+            triggerEventTimestamp: serverReceivedTimestamp,
+            completion: completion)
     }
 
     public func externallyHandleCallMessage(envelope: SSKProtoEnvelope, plaintextData: Data, wasReceivedByUD: Bool, serverDeliveryTimestamp: UInt64, transaction: SDSAnyWriteTransaction) {
