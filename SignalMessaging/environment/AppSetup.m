@@ -235,6 +235,11 @@ NS_ASSUME_NONNULL_BEGIN
                         backgroundTask = nil;
                     }];
                 });
+
+                // Do this after we've let the main thread know that storage setup is complete.
+                if (SSKDebugFlags.internalLogging) {
+                    [SDSKeyValueStore logCollectionStatistics];
+                }
             });
         };
 
