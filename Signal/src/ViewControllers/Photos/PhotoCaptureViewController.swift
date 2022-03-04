@@ -511,6 +511,12 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             // https://stackoverflow.com/questions/13951182/audio-video-out-of-sync-after-switch-camera
             return
         }
+
+        let tapLocation = tapGesture.location(in: view)
+        guard let tapView = view.hitTest(tapLocation, with: nil), tapView == previewView else {
+            return
+        }
+
         switchCamera()
     }
 
