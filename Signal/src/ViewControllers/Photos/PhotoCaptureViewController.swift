@@ -1080,6 +1080,7 @@ private class MediaPickerThumbnailButton: UIButton {
         placeholderView.layer.borderWidth = 1.5
         placeholderView.layer.borderColor = UIColor.ows_whiteAlpha80.cgColor
         placeholderView.clipsToBounds = true
+        placeholderView.isUserInteractionEnabled = false
         insertSubview(placeholderView, at: 0)
         placeholderView.autoPinEdgesToSuperviewEdges(withInsets: contentEdgeInsets)
 
