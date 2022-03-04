@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ protocol RegistrationCaptchaViewController: AnyObject {
 class RegistrationCaptchaViewModel: NSObject {
     weak var viewController: RegistrationCaptchaViewController?
 
-    let captchaView = CaptchaView()
+    let captchaView = CaptchaView(context: .registration)
 
     // MARK: - Methods
 
@@ -28,7 +28,7 @@ class RegistrationCaptchaViewModel: NSObject {
         AssertIsOnMainThread()
 
         let primaryView = vc.primaryView
-        primaryView.backgroundColor = UIColor.ows_white
+        primaryView.backgroundColor = Theme.backgroundColor
 
         let titleLabel = vc.createTitleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE",
                                                                      comment: "Title of the 'onboarding Captcha' view."))
