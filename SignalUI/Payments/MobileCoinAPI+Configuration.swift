@@ -488,28 +488,14 @@ extension MobileCoinAPI {
             ]
         }
 
-        static func pinConfig(_ config: MobileCoinClient.Config,
-                              environment: Environment) throws -> MobileCoinClient.Config {
+        static func pinPolicy(environment: Environment) -> Result<OWSHTTPSecurityPolicy, Error> {
             let trustRootCertDatas: [Data] = anchorCertificates_mobileCoin()
             guard !trustRootCertDatas.isEmpty else {
-                return config
+                return .failure(OWSAssertionError("No certificate data"))
             }
 
-            var config = config
-            switch config.setFogTrustRoots(trustRootCertDatas) {
-            case .success:
-                switch config.setConsensusTrustRoots(trustRootCertDatas) {
-                case .success:
-                    return config
-
-                case .failure(let error):
-                    owsFailDebug("Error: \(error)")
-                    throw error
-                }
-            case .failure(let error):
-                owsFailDebug("Error: \(error)")
-                throw error
-            }
+            let securityPolicy =  OWSHTTPSecurityPolicy(pinnedCertificates: Set(trustRootCertDatas))
+            return .success(securityPolicy)
         }
     }
 
@@ -543,11 +529,20 @@ extension MobileCoinAPI {
                                                             fogViewAttestation: attestationConfig.fogView,
                                                             fogKeyImageAttestation: attestationConfig.fogKeyImage,
                                                             fogMerkleProofAttestation: attestationConfig.fogMerkleProof,
-                                                            fogReportAttestation: attestationConfig.fogReport)
-            switch configResult {
-            case .success(let config):
-                let config = try TrustRootCerts.pinConfig(config, environment: environment)
+                                                            fogReportAttestation: attestationConfig.fogReport,
+                                                            transportProtocol: .http)
 
+            let securityPolicy: OWSHTTPSecurityPolicy
+            do {
+                securityPolicy = try TrustRootCerts.pinPolicy(environment: environment).get()
+            } catch {
+                owsFailDebug("Error: \(error)")
+                throw error
+            }
+
+            switch configResult {
+            case .success(var config):
+                config.httpRequester = MobileCoinHttpRequester(securityPolicy: securityPolicy)
                 let clientResult = MobileCoinClient.make(accountKey: accountKey, config: config)
                 switch clientResult {
                 case .success(let client):
@@ -630,6 +625,82 @@ extension MobileCoinAPI {
         case .failure(let error):
             owsFailDebug("Error: \(error)")
             throw error
+        }
+    }
+}
+
+final class MobileCoinHttpRequester: NSObject, HttpRequester {
+    static let defaultConfiguration: URLSessionConfiguration = {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30
+        config.timeoutIntervalForResource = 30
+        return config
+    }()
+
+    private let securityPolicy: OWSHTTPSecurityPolicy
+
+    init(securityPolicy: OWSHTTPSecurityPolicy) {
+        self.securityPolicy = securityPolicy
+    }
+
+    func request(
+        url: URL,
+        method: MobileCoin.HTTPMethod,
+        headers: [String: String]?,
+        body: Data?,
+        completion: @escaping (Result<MobileCoin.HTTPResponse, Error>) -> Void
+    ) {
+        var request = URLRequest(url: url.absoluteURL)
+        request.httpMethod = method.rawValue
+        request.httpBody = body
+
+        if let headers = headers {
+            var owsHeaders = OWSHttpHeaders(httpHeaders: headers)
+            owsHeaders.addHeaderMap(headers, overwriteOnConflict: true)
+            owsAssertDebug(owsHeaders.headers.count == headers.count)
+            headers.forEach({ key, value in
+                request.setValue(value, forHTTPHeaderField: key)
+            })
+        }
+
+        let owsUrlSession = OWSURLSession(securityPolicy: securityPolicy, configuration: Self.defaultConfiguration)
+
+        firstly(on: .sharedUtility) {
+            owsUrlSession.dataTaskPromise(url.absoluteString, method: method.sskHTTPMethod, headers: headers, body: body)
+        }.done { response in
+            let headerFields = response.responseHeaders
+            let statusCode = response.responseStatusCode
+            let responseData = response.responseBodyData
+            let url = response.requestUrl
+            let httpResponse = MobileCoin.HTTPResponse(statusCode: statusCode, url: url, allHeaderFields: headerFields, responseData: responseData)
+            completion(.success(httpResponse))
+        }.catch { error in
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("MobileCoin http request failed \(error)")
+                completion(.failure(ConnectionError.invalidServerResponse("No Response")))
+            } else {
+                owsFailDebug("MobileCoin http request failed \(error)")
+                completion(.failure(ConnectionError.invalidServerResponse("No Response")))
+            }
+        }
+    }
+}
+
+extension MobileCoin.HTTPMethod {
+    var sskHTTPMethod: SignalServiceKit.HTTPMethod {
+        switch self {
+        case .GET:
+            return .get
+        case .POST:
+            return .post
+        case .PUT:
+            return .put
+        case .HEAD:
+            return .head
+        case .PATCH:
+            return .patch
+        case .DELETE:
+            return .delete
         }
     }
 }

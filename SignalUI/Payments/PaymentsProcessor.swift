@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -483,7 +483,8 @@ private class PaymentProcessingOperation: OWSOperation {
                      .invalidPassphrase,
                      .invalidEntropy,
                      .killSwitch,
-                     .outgoingVerificationTakingTooLong:
+                     .outgoingVerificationTakingTooLong,
+                     .missingMemo:
                     owsFailDebugUnlessMCNetworkFailure(error)
                 case .authorizationFailure:
                     owsFailDebugUnlessMCNetworkFailure(error)
@@ -538,7 +539,8 @@ private class PaymentProcessingOperation: OWSOperation {
                  .invalidPassphrase,
                  .invalidEntropy,
                  .killSwitch,
-                 .outgoingVerificationTakingTooLong:
+                 .outgoingVerificationTakingTooLong,
+                 .missingMemo:
                 // Do not retry these errors.
                 delegate?.endProcessing(paymentId: self.paymentId)
             case .serverRateLimited:

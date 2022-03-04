@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -102,7 +102,7 @@ public class MobileCoinAPI: Dependencies {
         guard !CurrentAppContext().isNSE else {
             return Promise(error: OWSAssertionError("Payments disabled in NSE."))
         }
-        return firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        return firstly(on: .global()) { () -> Promise<SignalServiceKit.HTTPResponse> in
             let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
             return Self.networkManager.makePromise(request: request)
         }.map(on: .global()) { response -> OWSAuthorization in
@@ -604,6 +604,10 @@ struct MCOutgoingTransactionStatus {
 extension MobileCoinAPI {
     public static func convertMCError(error: Error) -> PaymentsError {
         switch error {
+        case let error as MobileCoin.SecurityError:
+            // Wraps errors from Apple Security framework used in SecSSLCertificate init.
+            owsFailDebug("Error: \(error)")
+            return PaymentsError.invalidInput
         case let error as MobileCoin.InvalidInputError:
             owsFailDebug("Error: \(error)")
             return PaymentsError.invalidInput
@@ -668,6 +672,9 @@ extension MobileCoinAPI {
             case .inputsAlreadySpent:
                 Logger.warn("Error: \(error)")
                 return PaymentsError.inputsAlreadySpent
+            case .missingMemo:
+                Logger.warn("Error: \(error)")
+                return PaymentsError.missingMemo
             }
         case let error as MobileCoin.DefragTransactionPreparationError:
             switch error {
@@ -747,6 +754,7 @@ public extension PaymentsError {
              .defragmentationFailed,
              .invalidPassphrase,
              .invalidEntropy,
+             .missingMemo,
              .killSwitch:
             return false
         case .connectionFailure,
@@ -787,7 +795,8 @@ public extension PaymentsError {
              .killSwitch,
              .connectionFailure,
              .timeout,
-             .outgoingVerificationTakingTooLong:
+             .outgoingVerificationTakingTooLong,
+             .missingMemo:
             return false
         case .tooOldToSubmit,
              .insufficientFunds:
