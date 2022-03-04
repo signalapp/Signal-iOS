@@ -62,7 +62,7 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func cacheBlindedIdMapping(_ mapping: BlindedIdMapping) {}
     func cacheBlindedIdMapping(_ mapping: BlindedIdMapping, using transaction: YapDatabaseReadWriteTransaction) {}
     func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> ()) {}
-    func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> (), transaction: YapDatabaseReadTransaction) {
+    func enumerateBlindedIdMapping(using transaction: YapDatabaseReadTransaction, with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> ()) {
     }
 
     // MARK: - Closed Groups

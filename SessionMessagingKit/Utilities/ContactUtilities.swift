@@ -39,39 +39,46 @@ public enum ContactUtilities {
             .map { $0.sessionID }
     }
     
-    public static func enumerateApprovedContactThreads(with block: @escaping (TSContactThread, Contact, UnsafeMutablePointer<ObjCBool>) -> ()) {
-        Storage.read { transaction in
-            TSContactThread.enumerateCollectionObjects(with: transaction) { object, stop in
-                guard let contactThread: TSContactThread = object as? TSContactThread else { return }
-                guard let contact: Contact = approvedContact(in: object, using: transaction) else { return }
-                
-                block(contactThread, contact, stop)
-            }
+    public static func enumerateApprovedContactThreads(using transaction: YapDatabaseReadTransaction, with block: @escaping (TSContactThread, Contact, UnsafeMutablePointer<ObjCBool>) -> ()) {
+        TSContactThread.enumerateCollectionObjects(with: transaction) { object, stop in
+            guard let contactThread: TSContactThread = object as? TSContactThread else { return }
+            guard let contact: Contact = approvedContact(in: object, using: transaction) else { return }
+            
+            block(contactThread, contact, stop)
         }
     }
     
     public static func mapping(for blindedId: String, serverPublicKey: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> BlindedIdMapping? {
-        // TODO: Ensure the above case isn't going to be an issue due to legacy messages?.
+        var result: BlindedIdMapping?
+        
+        Storage.write { transaction in
+            result = ContactUtilities.mapping(for: blindedId, serverPublicKey: serverPublicKey, using: transaction, dependencies: dependencies)
+        }
+        
+        return result
+    }
+    
+    public static func mapping(for blindedId: String, serverPublicKey: String, using transaction: YapDatabaseReadWriteTransaction, dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> BlindedIdMapping? {
         // Unfortunately the whole point of id-blinding is to make it hard to reverse-engineer a standard
         // sessionId, as a result in order to see if there is an unblinded contact for this blindedId we
         // can only really generate blinded ids for each contact and check if any match
         //
         // Due to this we have made a few optimisations to try and early-out as often as possible, first
         // we try to retrieve a direct cached mapping
-        var mappingResult: BlindedIdMapping? = dependencies.storage.getBlindedIdMapping(with: blindedId)
+        var mappingResult: BlindedIdMapping? = dependencies.storage.getBlindedIdMapping(with: blindedId, using: transaction)
         
         // No need to continue if we already have a result
         if let mapping: BlindedIdMapping = mappingResult { return mapping }
         
         // Then we try loop through all approved contact threads to see if one of those contacts can be blinded to match
-        ContactUtilities.enumerateApprovedContactThreads { contactThread, contact, stop in
+        ContactUtilities.enumerateApprovedContactThreads(using: transaction) { contactThread, contact, stop in
             guard dependencies.sodium.sessionId(contact.sessionID, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey) else {
                 return
             }
             
             // Cache the mapping
             let newMapping: BlindedIdMapping = BlindedIdMapping(blindedId: blindedId, sessionId: contact.sessionID, serverPublicKey: serverPublicKey)
-            dependencies.storage.cacheBlindedIdMapping(newMapping)
+            dependencies.storage.cacheBlindedIdMapping(newMapping, using: transaction)
             mappingResult = newMapping
             stop.pointee = true
         }
@@ -81,7 +88,7 @@ public enum ContactUtilities {
         
         // Lastly loop through existing id mappings (in case the user is looking at a different SOGS but once had
         // a thread with this contact in a different SOGS and had cached the mapping)
-        dependencies.storage.enumerateBlindedIdMapping { mapping, stop in
+        dependencies.storage.enumerateBlindedIdMapping(using: transaction) { mapping, stop in
             guard mapping.serverPublicKey != serverPublicKey else { return }
             guard dependencies.sodium.sessionId(mapping.sessionId, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey) else {
                 return
@@ -89,7 +96,7 @@ public enum ContactUtilities {
             
             // Cache the new mapping
             let newMapping: BlindedIdMapping = BlindedIdMapping(blindedId: blindedId, sessionId: mapping.sessionId, serverPublicKey: serverPublicKey)
-            dependencies.storage.cacheBlindedIdMapping(newMapping)
+            dependencies.storage.cacheBlindedIdMapping(newMapping, using: transaction)
             mappingResult = newMapping
             stop.pointee = true
         }

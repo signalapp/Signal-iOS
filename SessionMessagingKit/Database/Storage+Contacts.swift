@@ -97,11 +97,11 @@ extension Storage {
     
     public func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> ()) {
         Storage.read { transaction in
-            self.enumerateBlindedIdMapping(with: block, transaction: transaction)
+            self.enumerateBlindedIdMapping(using: transaction, with: block)
         }
     }
     
-    public func enumerateBlindedIdMapping(with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> (), transaction: YapDatabaseReadTransaction) {
+    public func enumerateBlindedIdMapping(using transaction: YapDatabaseReadTransaction, with block: @escaping (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> ()) {
         transaction.enumerateRows(inCollection: Storage.blindedIdCacheCollection) { _, object, _, stop in
             guard let mapping = object as? BlindedIdMapping else { return }
             

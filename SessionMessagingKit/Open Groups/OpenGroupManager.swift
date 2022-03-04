@@ -14,8 +14,12 @@ public final class OpenGroupManager: NSObject {
     
     public static var defaultRoomsPromise: Promise<[OpenGroupAPI.Room]>?
     private static var groupImagePromises: [String: Promise<Data>] = [:]
-    private static var moderators: [String: [String: Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
-    private static var admins: [String: [String: Set<String>]] = [:] // Server URL to room ID to set of admin IDs
+    
+    /// Server URL to room ID to set of moderator IDs
+    private static var moderators: Atomic<[String: [String: Set<String>]]> = Atomic([:])
+    
+    /// Server URL to room ID to set of admin IDs
+    private static var admins: Atomic<[String: [String: Set<String>]]> = Atomic([:])
 
     // MARK: - Polling
     
@@ -243,14 +247,16 @@ public final class OpenGroupManager: NSObject {
             
             // - Moderators
             if let moderators: [String] = (pollInfo.details?.moderators ?? maybeUpdatedModel?.groupModeratorIds) {
-                OpenGroupManager.moderators[server] = (OpenGroupManager.moderators[server] ?? [:])
-                    .setting(roomToken, Set(moderators))
+                OpenGroupManager.moderators.mutate {
+                    $0[server] = ($0[server] ?? [:]).setting(roomToken, Set(moderators))
+                }
             }
             
             // - Admins
             if let admins: [String] = (pollInfo.details?.admins ?? maybeUpdatedModel?.groupAdminIds) {
-                OpenGroupManager.admins[server] = (OpenGroupManager.admins[server] ?? [:])
-                    .setting(roomToken, Set(admins))
+                OpenGroupManager.admins.mutate {
+                    $0[server] = ($0[server] ?? [:]).setting(roomToken, Set(admins))
+                }
             }
 
             // - Room image (if there is one)
@@ -357,7 +363,7 @@ public final class OpenGroupManager: NSObject {
         let sortedMessages: [OpenGroupAPI.DirectMessage] = messages
             .sorted { lhs, rhs in lhs.id < rhs.id }
         let latestMessageId: Int64 = (sortedMessages.last?.id ?? 0)
-        var mappingCache: [String: BlindedIdMapping] = [:]
+        var mappingCache: [String: BlindedIdMapping] = [:]  // Only want this cache to exist for the current loop
         
         // Update the 'latestMessageId' value
         if fromOutbox {
@@ -377,7 +383,7 @@ public final class OpenGroupManager: NSObject {
             // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
             let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
             envelope.setContent(messageData)
-            envelope.setSource(message.sender) // TODO: Need to un-blind/intercept outbox messages? (their sender will be the blinded id)
+            envelope.setSource(message.sender)
 
             do {
                 let data = try envelope.buildSerializedData()
@@ -391,7 +397,6 @@ public final class OpenGroupManager: NSObject {
                     using: transaction
                 )
                 
-                // TODO: Need to test and validate this unblinding logic.
                 // If the message was an outgoing message then attempt to unblind the recipient (this will help put
                 // messages in the correct thread in case of message request approval race conditions as well as
                 // during device sync'ing and restoration)
@@ -399,11 +404,13 @@ public final class OpenGroupManager: NSObject {
                     // Attempt to un-blind the 'message.recipient'
                     let mapping: BlindedIdMapping
                     
-                    // Minor optimisation to avoid processing the same sender multiple times
+                    // Minor optimisation to avoid processing the same sender multiple times in the same
+                    // 'handleMessages' call (since the 'mapping' call is done within a transaction we
+                    // will never have a mapping come through part-way through processing these messages)
                     if let result: BlindedIdMapping = mappingCache[message.recipient] {
                         mapping = result
                     }
-                    else if let result: BlindedIdMapping = ContactUtilities.mapping(for: message.recipient, serverPublicKey: serverPublicKey) {
+                    else if let result: BlindedIdMapping = ContactUtilities.mapping(for: message.recipient, serverPublicKey: serverPublicKey, using: transaction) {
                         mapping = result
                     }
                     else {
@@ -426,6 +433,15 @@ public final class OpenGroupManager: NSObject {
                 }
                 
                 try MessageReceiver.handle(receivedMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: isBackgroundPoll, using: transaction)
+                
+                // If this message is from the outbox then we should add the open group details back to the
+                // thread just in case this is from a restore (otherwise the user won't be able to send a new
+                // message to the target inbox if they are still blinded)
+                if fromOutbox, let contactThread: TSContactThread = TSContactThread.fetch(uniqueId: TSContactThread.threadID(fromContactSessionID: message.recipient), transaction: transaction) {
+                    contactThread.originalOpenGroupServer = server
+                    contactThread.originalOpenGroupPublicKey = serverPublicKey
+                    contactThread.save(with: transaction)
+                }
             }
             catch let error {
                 SNLog("Couldn't receive inbox message due to error: \(error).")
@@ -442,35 +458,51 @@ public final class OpenGroupManager: NSObject {
     }
     
     public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Bool {
-        var targetKeys: [String] = [publicKey]
+        let modAndAdminKeys: Set<String> = (OpenGroupManager.moderators.wrappedValue[server]?[room] ?? Set())
+            .union(OpenGroupManager.admins.wrappedValue[server]?[room] ?? Set())
+
+        // If the publicKey is in the set then return immediately, otherwise only continue if it's the
+        // current user
+        guard !modAndAdminKeys.contains(publicKey) else { return true }
+        guard let sessionId: SessionId = SessionId(from: publicKey) else { return false }
         
-        // If we are checking for the current users public key then check for the blinded one as well
-        if publicKey == getUserHexEncodedPublicKey() {
-            guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return false }
-            guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: server) else {
-                return false
-            }
-            
-            // Add the unblinded key as an option
-            targetKeys.append(SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString)
-            
-            let server: OpenGroupAPI.Server? = dependencies.storage.getOpenGroupServer(name: server)
-            
-            // Check if the server supports blinded keys, if so then sign using the blinded key
-            if server?.capabilities.capabilities.contains(.blind) == true {
+        // Conveniently the logic for these different cases works in order so we can fallthrough each
+        // case with only minor efficiency losses
+        switch sessionId.prefix {
+            case .standard:
+                guard publicKey == getUserHexEncodedPublicKey() else { return false }
+                fallthrough
+                
+            case .unblinded:
+                guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return false }
+                guard sessionId.prefix != .unblinded || publicKey == SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString else {
+                    return false
+                }
+                fallthrough
+                
+            case .blinded:
+                guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return false }
+                guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: server) else {
+                    return false
+                }
                 guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: serverPublicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
                     return false
                 }
-    
-                // Add the blinded key as an option
-                targetKeys.append(SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString)
-            }
+                guard sessionId.prefix != .blinded || publicKey == SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString else {
+                    return false
+                }
+                
+                // If we got to here that means that the 'publicKey' value matches one of the current
+                // users 'standard', 'unblinded' or 'blinded' keys and as such we should check if any
+                // of them exist in the `modsAndAminKeys` Set
+                let possibleKeys: Set<String> = Set([
+                    getUserHexEncodedPublicKey(),
+                    SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString,
+                    SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
+                ])
+                
+                return !modAndAdminKeys.intersection(possibleKeys).isEmpty
         }
-        
-        return (
-            (OpenGroupManager.moderators[server]?[room]?.contains(where: { key in targetKeys.contains(key) }) ?? false) ||
-            (OpenGroupManager.admins[server]?[room]?.contains(where: { key in targetKeys.contains(key) }) ?? false)
-        )
     }
     
     public static func getDefaultRoomsIfNeeded(using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) {

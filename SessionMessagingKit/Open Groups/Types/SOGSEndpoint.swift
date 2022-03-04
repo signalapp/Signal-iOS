@@ -53,31 +53,6 @@ extension OpenGroupAPI {
         case userModerator(String)
         case userDeleteMessages(String)
         
-        // Legacy endpoints (to be deprecated and removed)
-        
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyFiles
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyFile(UInt64)
-        
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyMessages
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyMessagesForServer(Int64)
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyDeletedMessages
-        
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyModerators
-        
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyBlockList
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyBlockListIndividual(String)
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyBanAndDeleteAll
-        
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyCompactPoll(legacyAuth: Bool)
-        @available(*, deprecated, message: "Use request signing") case legacyAuthToken(legacyAuth: Bool)
-        @available(*, deprecated, message: "Use request signing") case legacyAuthTokenChallenge(legacyAuth: Bool)
-        @available(*, deprecated, message: "Use request signing") case legacyAuthTokenClaim(legacyAuth: Bool)
-        
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyRooms
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyRoomInfo(String)
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyRoomImage(String)
-        @available(*, deprecated, message: "Use v4 endpoint") case legacyMemberCount(legacyAuth: Bool)
-        
         var path: String {
             switch self {
                 // Utility
@@ -142,65 +117,6 @@ extension OpenGroupAPI {
                 case .userPermission(let sessionId): return "user/\(sessionId)/permission"
                 case .userModerator(let sessionId): return "user/\(sessionId)/moderator"
                 case .userDeleteMessages(let sessionId): return "user/\(sessionId)/deleteMessages"
-                
-                // Legacy endpoints (to be deprecated and removed)
-                // TODO: Look for a nicer way to prepend 'legacy'? (OnionRequestAPI messes with this but the new auth needs it to be correct...)
-                    
-                    
-                case .legacyFiles: return "legacy/files"
-                case .legacyFile(let fileId): return "legacy/files/\(fileId)"
-                
-                case .legacyMessages: return "legacy/messages"
-                case .legacyMessagesForServer(let serverId): return "legacy/messages/\(serverId)"
-                case .legacyDeletedMessages: return "legacy/deleted_messages"
-                    
-                case .legacyModerators: return "legacy/moderators"
-                    
-                case .legacyBlockList: return "legacy/block_list"
-                case .legacyBlockListIndividual(let publicKey): return "legacy/block_list/\(publicKey)"
-                case .legacyBanAndDeleteAll: return "legacy/ban_and_delete_all"
-                
-                case .legacyCompactPoll(let useLegacyAuth):
-                    return "\(useLegacyAuth ? "" : "legacy/")compact_poll"
-                    
-                case .legacyAuthToken(let useLegacyAuth):
-                    return "\(useLegacyAuth ? "" : "legacy/")auth_token"
-                    
-                case .legacyAuthTokenChallenge(let useLegacyAuth):
-                    return "\(useLegacyAuth ? "" : "legacy/")auth_token_challenge"
-                    
-                case .legacyAuthTokenClaim(let useLegacyAuth):
-                    return "\(useLegacyAuth ? "" : "legacy/")claim_auth_token"
-                    
-                case .legacyRooms: return "legacy/rooms"
-                case .legacyRoomInfo(let roomName): return "legacy/rooms/\(roomName)"
-                case .legacyRoomImage(let roomName): return "legacy/rooms/\(roomName)/image"
-                    
-                case .legacyMemberCount(let useLegacyAuth):
-                    return "\(useLegacyAuth ? "" : "legacy/")member_count"
-            }
-        }
-        
-        var useLegacyAuth: Bool {
-            switch self {
-                // File upload/download should use legacy auth
-                case .legacyFiles, .legacyFile, .legacyMessages,
-                    .legacyMessagesForServer, .legacyDeletedMessages,
-                    .legacyModerators, .legacyBlockList,
-                    .legacyBlockListIndividual, .legacyBanAndDeleteAll:
-                    return true
-                    
-                case .legacyCompactPoll(let useLegacyAuth),
-                    .legacyAuthToken(let useLegacyAuth),
-                    .legacyAuthTokenChallenge(let useLegacyAuth),
-                    .legacyAuthTokenClaim(let useLegacyAuth),
-                    .legacyMemberCount(let useLegacyAuth):
-                    return useLegacyAuth
-                    
-                case .legacyRooms, .legacyRoomInfo, .legacyRoomImage:
-                    return true
-                
-                default: return false
             }
         }
     }
