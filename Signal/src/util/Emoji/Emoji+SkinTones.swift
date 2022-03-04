@@ -18,7 +18,7 @@ extension Emoji {
 
     var skinToneComponentEmoji: [Emoji]? {
         switch self {
-        case .handshake: return [.leftwardsHand, .rightwardsHand]
+        case .handshake: return [.rightwardsHand, .leftwardsHand]
         case .peopleHoldingHands: return [.standingPerson, .standingPerson]
         case .twoWomenHoldingHands: return [.womanStanding, .womanStanding]
         case .manAndWomanHoldingHands: return [.womanStanding, .manStanding]

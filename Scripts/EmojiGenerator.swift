@@ -171,7 +171,7 @@ struct EmojiModel {
             case "womanHeartMan": return "[.woman, .man]"
             case "manHeartMan": return "[.man, .man]"
             case "womanHeartWoman": return "[.woman, .woman]"
-            case "handshake": return "[.leftwardsHand, .rightwardsHand]"
+            case "handshake": return "[.rightwardsHand, .leftwardsHand]"
             default:
                 return nil
             }
