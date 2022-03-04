@@ -1,11 +1,11 @@
 
 extension UIView {
 
-    convenience init(wrapping view: UIView, withInsets insets: UIEdgeInsets, shouldAdaptForIPad: Bool = false) {
+    convenience init(wrapping view: UIView, withInsets insets: UIEdgeInsets, shouldAdaptForIPadWithWidth width: CGFloat? = nil) {
         self.init()
         addSubview(view)
-        if UIDevice.current.isIPad && shouldAdaptForIPad {
-            view.set(.width, to: Values.iPadButtonWidth)
+        if UIDevice.current.isIPad, let width = width {
+            view.set(.width, to: width)
             view.center(in: self)
         } else {
             view.pin(.leading, to: .leading, of: self, withInset: insets.left)

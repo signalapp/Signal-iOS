@@ -71,7 +71,7 @@ final class RestoreVC : BaseVC {
         restoreButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         restoreButton.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
         // Set up restore button container
-        let restoreButtonContainer = UIView(wrapping: restoreButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing), shouldAdaptForIPad: true)
+        let restoreButtonContainer = UIView(wrapping: restoreButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextView, spacer3, legalLabel ])
         topStackView.axis = .vertical

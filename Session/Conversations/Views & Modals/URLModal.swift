@@ -20,7 +20,7 @@ final class URLModal : Modal {
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = NSLocalizedString("modal_open_url_title", comment: "")
         titleLabel.textAlignment = .center
         // Message
@@ -48,15 +48,20 @@ final class URLModal : Modal {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        // Content stack view
+        let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel ])
+        contentStackView.axis = .vertical
+        contentStackView.spacing = Values.largeSpacing
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel, buttonStackView ])
+        let spacing = Values.largeSpacing - Values.smallFontSize / 2
+        let mainStackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = Values.largeSpacing
+        mainStackView.spacing = spacing
         contentView.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: spacing)
     }
     
     // MARK: Interaction
