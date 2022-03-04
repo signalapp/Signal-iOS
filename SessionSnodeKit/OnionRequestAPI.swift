@@ -249,7 +249,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     }
 
     /// Builds an onion around `payload` and returns the result.
-    private static func buildOnion(around payload: String, targetedAt destination: Destination, version: Version) -> Promise<OnionBuildingResult> {
+    private static func buildOnion(around payload: Data, targetedAt destination: Destination, version: Version) -> Promise<OnionBuildingResult> {
         var guardSnode: Snode!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the destination
         var encryptionResult: AESGCM.EncryptionResult!
@@ -287,7 +287,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, using version: Version, associatedWith publicKey: String?) -> Promise<Data> {
         let payloadJson: JSON = [ "method": method.rawValue, "params": parameters ]
         
-        guard let jsonData: Data = try? JSONSerialization.data(withJSONObject: payloadJson, options: []), let payload: String = String(data: jsonData, encoding: .utf8) else {
+        guard let payload: Data = try? JSONSerialization.data(withJSONObject: payloadJson, options: []) else {
             return Promise(error: HTTP.Error.invalidJSON)
         }
         
@@ -316,7 +316,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         let scheme: String? = url.scheme
         let port: UInt16? = url.port.map { UInt16($0) }
         
-        guard let payload: String = generatePayload(for: request, with: version) else {
+        guard let payload: Data = generatePayload(for: request, with: version) else {
             return Promise(error: Error.invalidRequestInfo)
         }
         
@@ -328,7 +328,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         return promise
     }
 
-    public static func sendOnionRequest(with payload: String, to destination: Destination, version: Version) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+    public static func sendOnionRequest(with payload: Data, to destination: Destination, version: Version) -> Promise<(OnionRequestResponseInfoType, Data?)> {
         let (promise, seal) = Promise<(OnionRequestResponseInfoType, Data?)>.pending()
         var guardSnode: Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
@@ -451,7 +451,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
     
     // MARK: - Version Handling
     
-    private static func generatePayload(for request: URLRequest, with version: Version) -> String? {
+    private static func generatePayload(for request: URLRequest, with version: Version) -> Data? {
         guard let url = request.url else { return nil }
         
         switch version {
@@ -475,10 +475,6 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     headers["Content-Type"] = "application/json"    // Assume data is JSON
                     bodyAsString = (String(data: body, encoding: .utf8) ?? "null")
                 }
-                else if let inputStream: InputStream = request.httpBodyStream, let body: Data = try? Data(from: inputStream) {
-                    headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
-                    bodyAsString = "{ \"fileUpload\" : \"\(String(data: body.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
-                }
                 else {
                     bodyAsString = "null"
                 }
@@ -492,7 +488,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                 
                 guard let jsonData: Data = try? JSONSerialization.data(withJSONObject: payload, options: []) else { return nil }
                 
-                return String(data: jsonData, encoding: .utf8)
+                return jsonData
                 
             // V4 Onion Requests have a very different structure
             case .v4:
@@ -502,12 +498,12 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     .appending(url.query.map { value in "?\(value)" })
                 
                 let requestInfo: RequestInfo = RequestInfo(
-                    method: (request.httpMethod ?? "GET"),   // Default (if nil) is 'GET'
+                    method: (request.httpMethod ?? "GET"),   // The default (if nil) is 'GET'
                     endpoint: endpoint,
                     headers: (request.allHTTPHeaderFields ?? [:])
                         .setting(
                             "Content-Type",
-                            (request.httpBody == nil && request.httpBodyStream == nil ? nil :
+                            (request.httpBody == nil ? nil :
                                 // Default to JSON if not defined
                                 ((request.allHTTPHeaderFields ?? [:])["Content-Type"] ?? "application/json")
                             )
@@ -515,26 +511,17 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         .removingValue(forKey: "User-Agent")
                 )
                 
-                guard let requestInfoData: Data = try? JSONEncoder().encode(requestInfo), let requestInfoString: String = String(data: requestInfoData, encoding: .ascii) else {
+                /// Generate the Bencoded payload in the form `l{requestInfoLength}:{requestInfo}{bodyLength}:{body}e`
+                guard let requestInfoData: Data = try? JSONEncoder().encode(requestInfo) else { return nil }
+                guard let prefixData: Data = "l\(requestInfoData.count):".data(using: .ascii), let suffixData: Data = "e".data(using: .ascii) else {
                     return nil
                 }
                 
-                if let body: Data = request.httpBody {
-                    guard let bodyString: String = String(data: body, encoding: .ascii) else {
-                        return nil
-                    }
-                    
-                    return "l\(requestInfoString.count):\(requestInfoString)\(bodyString.count):\(bodyString)e"
+                if let body: Data = request.httpBody, let bodyCountData: Data = "\(body.count):".data(using: .ascii) {
+                    return (prefixData + requestInfoData + bodyCountData + body + suffixData)
                 }
-                else if let inputStream: InputStream = request.httpBodyStream, let body: Data = try? Data(from: inputStream), let bodyString: String = String(data: body, encoding: .ascii) {
-                    // TODO: Handle this properly
-        //            headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
-        //            bodyAsString = "{ \"fileUpload\" : \"\(String(data: body.base64EncodedData(), encoding: .utf8) ?? "null")\" }"
-                    return "l\(requestInfoString.count):\(requestInfoString)\(bodyString.count):\(bodyString)e"
-                }
-                else {
-                    return "l\(requestInfoString.count):\(requestInfoString)e"
-                }
+                
+                return (prefixData + requestInfoData + suffixData)
         }
     }
     
@@ -652,12 +639,6 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     guard responseString.count > "l\(infoLength)\(infoString)e".count else {
                         return seal.fulfill((responseInfo, nil))
                     }
-                    
-                    // TODO: Is this going to be done anymore...???
-//                            if let timestamp = body["t"] as? Int64 {
-//                                let offset = timestamp - Int64(NSDate.millisecondTimestamp())
-//                                SnodeAPI.clockOffset = offset
-//                            }
                     
                     // Extract the response data as well
                     let dataString: String = String(responseString.suffix(from: infoStringEndIndex))

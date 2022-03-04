@@ -8,4 +8,5 @@ enum QueryParam: String {
     
     case required = "required"
     case limit                      // For messages - number between 1 and 256 (default is 100)
+    case platform                   // For file server session version check
 }

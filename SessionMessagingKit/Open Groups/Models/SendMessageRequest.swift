@@ -40,7 +40,7 @@ extension OpenGroupAPI {
         ///
         /// When submitting a message edit this field must contain the IDs of any newly uploaded files that are part of the edit; existing
         /// attachment IDs may also be included, but are not required
-        let fileIds: [Int64]?
+        let fileIds: [UInt64]?
         
         // MARK: - Initialization
         
@@ -49,7 +49,7 @@ extension OpenGroupAPI {
             signature: Data,
             whisperTo: String? = nil,
             whisperMods: Bool? = nil,
-            fileIds: [Int64]? = nil
+            fileIds: [UInt64]? = nil
         ) {
             self.data = data
             self.signature = signature

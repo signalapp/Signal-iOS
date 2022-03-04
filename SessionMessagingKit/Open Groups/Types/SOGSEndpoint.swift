@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPI {
-    public enum Endpoint: Hashable {
+    public enum Endpoint: EndpointType {
         // Utility
         
         case onion
@@ -34,9 +34,8 @@ extension OpenGroupAPI {
         // Files
         
         case roomFile(String)
-        case roomFileJson(String)
-        case roomFileIndividual(String, Int64)
-        case roomFileIndividualJson(String, Int64)
+        case roomFileIndividual(String, UInt64)
+        case roomFileIndividualJson(String, UInt64)
         
         // Inbox/Outbox (Message Requests)
         
@@ -126,7 +125,6 @@ extension OpenGroupAPI {
                 // Files
                 
                 case .roomFile(let roomToken): return "room/\(roomToken)/file"
-                case .roomFileJson(let roomToken): return "room/\(roomToken)/fileJSON"
                 case .roomFileIndividual(let roomToken, let fileId):
                     // Note: The 'fileName' value is ignored by the server and is only used to distinguish
                     // this from the 'Json' variant

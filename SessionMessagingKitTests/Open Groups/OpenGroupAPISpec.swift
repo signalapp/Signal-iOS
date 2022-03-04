@@ -252,7 +252,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.parsingFailed.localizedDescription),
+                            equal(HTTP.Error.parsingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -272,7 +272,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.parsingFailed.localizedDescription),
+                            equal(HTTP.Error.parsingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -292,7 +292,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.parsingFailed.localizedDescription),
+                            equal(HTTP.Error.parsingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -312,7 +312,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.parsingFailed.localizedDescription),
+                            equal(HTTP.Error.parsingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -364,7 +364,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.parsingFailed.localizedDescription),
+                            equal(HTTP.Error.parsingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -413,7 +413,7 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     expect(error?.localizedDescription)
                         .toEventually(
-                            equal(OpenGroupAPI.Error.parsingFailed.localizedDescription),
+                            equal(HTTP.Error.parsingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
@@ -449,7 +449,8 @@ class OpenGroupAPISpec: QuickSpec {
                     expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
                     expect(requestData?.httpMethod).to(equal("POST"))
                     expect(requestData?.headers).to(haveCount(4))
-                    expect(requestData?.headers.keys).toNot(contain(Header.fileName.rawValue))
+                    expect(requestData?.headers[Header.contentDisposition.rawValue])
+                        .toNot(contain("filename"))
                 }
                 
                 it("adds a fileName header when provided") {
@@ -477,7 +478,7 @@ class OpenGroupAPISpec: QuickSpec {
                     expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
                     expect(requestData?.httpMethod).to(equal("POST"))
                     expect(requestData?.headers).to(haveCount(5))
-                    expect(requestData?.headers[Header.fileName.rawValue]).to(equal("TestFileName"))
+                    expect(requestData?.headers[Header.contentDisposition.rawValue]).to(contain("TestFileName"))
                 }
             }
             

@@ -379,7 +379,7 @@ public final class MessageSender : NSObject {
         
         // Send the result
         
-        guard case .openGroup(let room, let server, let whisperTo, let whisperMods, _) = destination else {
+        guard case .openGroup(let room, let server, let whisperTo, let whisperMods, let fileIds) = destination else {
             preconditionFailure()
         }
 
@@ -389,7 +389,8 @@ public final class MessageSender : NSObject {
                 to: room,
                 on: server,
                 whisperTo: whisperTo,
-                whisperMods: whisperMods
+                whisperMods: whisperMods,
+                fileIds: fileIds
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
                 message.openGroupServerMessageID = UInt64(data.id)

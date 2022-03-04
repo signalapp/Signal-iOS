@@ -4,7 +4,8 @@ import SessionSnodeKit
 @objc(SNFileServerAPIV2)
 public final class FileServerAPIV2 : NSObject {
     
-    // MARK: Settings
+    // MARK: - Settings
+    
     @objc public static let oldServer = "http://88.99.175.227"
     public static let oldServerPublicKey = "7cb31905b55cd5580c686911debf672577b3fb0bff81df4ce2d5c4cb3a7aaa69"
     @objc public static let server = "http://filev2.getsession.org"
@@ -18,92 +19,12 @@ public final class FileServerAPIV2 : NSObject {
     /// possible after proof of work has been calculated and the onion request encryption has happened, which takes several seconds.
     public static let fileSizeORMultiplier: Double = 2
     
-    // MARK: Initialization
+    // MARK: - Initialization
+    
     private override init() { }
     
-    // MARK: Error
-    public enum Error: LocalizedError {
-        case parsingFailed
-        case invalidURL
-        case maxFileSizeExceeded
-        
-        public var errorDescription: String? {
-            switch self {
-                case .parsingFailed: return "Invalid response."
-                case .invalidURL: return "Invalid URL."
-                case .maxFileSizeExceeded: return "Maximum file size exceeded."
-            }
-        }
-    }
+    // MARK: - File Storage
     
-    // MARK: Request
-    private struct Request {
-        let verb: HTTP.Verb
-        let endpoint: String
-        let queryParameters: [QueryParam: String]
-        let body: Data?
-        let headers: [Header: String]
-        /// Always `true` under normal circumstances. You might want to disable
-        /// this when running over Lokinet.
-        let useOnionRouting: Bool
-
-        init(verb: HTTP.Verb, endpoint: String, queryParameters: [QueryParam: String] = [:], body: Data? = nil,
-            headers: [Header: String] = [:], useOnionRouting: Bool = true) {
-            self.verb = verb
-            self.endpoint = endpoint
-            self.queryParameters = queryParameters
-            self.body = body
-            self.headers = headers
-            self.useOnionRouting = useOnionRouting
-        }
-    }
-    
-    // MARK: - Convenience
-    
-    private static func send(_ request: Request, useOldServer: Bool) -> Promise<Data> {
-        let server = useOldServer ? oldServer : server
-        let serverPublicKey = useOldServer ? oldServerPublicKey : serverPublicKey
-        var urlRequest: URLRequest
-        // TODO: Combine this 'Request' with the the pattern in OpenGroupServerV2?
-        switch request.verb {
-            case .get:
-                var rawURL = "\(server)/\(request.endpoint)"
-                
-                if !request.queryParameters.isEmpty {
-                    let queryString = request.queryParameters.map { key, value in "\(key)=\(value)" }.joined(separator: "&")
-                    rawURL += "?\(queryString)"
-                }
-                
-                guard let url = URL(string: rawURL) else { return Promise(error: Error.invalidURL) }
-                
-                urlRequest = URLRequest(url: url)
-                
-            case .post, .put, .delete:
-                let rawURL = "\(server)/\(request.endpoint)"
-                
-                guard let url = URL(string: rawURL) else { return Promise(error: Error.invalidURL) }
-                
-                urlRequest = URLRequest(url: url)
-                urlRequest.httpMethod = request.verb.rawValue
-                urlRequest.httpBody = request.body
-        }
-        
-        urlRequest.allHTTPHeaderFields = request.headers.toHTTPHeaders()
-        
-        guard request.useOnionRouting else {
-            preconditionFailure("It's currently not allowed to send non onion routed requests.")
-        }
-        
-        // TODO: Upgrade this to use the V4 onion requests once supported.
-        return OnionRequestAPI.sendOnionRequest(urlRequest, to: server, using: .v3, with: serverPublicKey)
-            .map2 { _, response in
-                guard let response: Data = response else { throw Error.parsingFailed }
-                
-                return response
-            }
-    }
-    
-    // MARK: File Storage
     @objc(upload:)
     public static func objc_upload(file: Data) -> AnyPromise {
         return AnyPromise.from(upload(file).map { String($0) })
@@ -112,41 +33,72 @@ public final class FileServerAPIV2 : NSObject {
     public static func upload(_ file: Data) -> Promise<UInt64> {
         let requestBody: FileUploadBody = FileUploadBody(file: file.base64EncodedString())
         
-        guard let body: Data = try? JSONEncoder().encode(requestBody) else {
-            return Promise(error: HTTP.Error.invalidJSON)
-        }
+        let request = Request(
+            method: .post,
+            server: server,
+            endpoint: Endpoint.files,
+            body: requestBody
+        )
         
-        let request = Request(verb: .post, endpoint: "files", body: body)
-        return send(request, useOldServer: false).map(on: DispatchQueue.global(qos: .userInitiated)) { data in
-            let response: LegacyFileUploadResponse = try data.decoded(as: LegacyFileUploadResponse.self, customError: Error.parsingFailed)
-            
-            return response.fileId
-        }
+        return send(request, serverPublicKey: serverPublicKey)
+            .decoded(as: LegacyFileUploadResponse.self, on: .global(qos: .userInitiated), error: HTTP.Error.parsingFailed)
+            .map { response in response.fileId }
     }
     
     @objc(download:useOldServer:)
     public static func objc_download(file: String, useOldServer: Bool) -> AnyPromise {
-        guard let id = UInt64(file) else { return AnyPromise.from(Promise<Data>(error: Error.invalidURL)) }
+        guard let id = UInt64(file) else { return AnyPromise.from(Promise<Data>(error: HTTP.Error.invalidURL)) }
         return AnyPromise.from(download(id, useOldServer: useOldServer))
     }
     
     public static func download(_ file: UInt64, useOldServer: Bool) -> Promise<Data> {
-        let request = Request(verb: .get, endpoint: "files/\(file)")
+        let serverPublicKey: String = (useOldServer ? oldServerPublicKey : serverPublicKey)
+        let request = Request<NoBody, Endpoint>(
+            server: (useOldServer ? oldServer : server),
+            endpoint: .file(fileId: file)
+        )
         
-        return send(request, useOldServer: useOldServer).map(on: DispatchQueue.global(qos: .userInitiated)) { data in
-            let response: LegacyFileDownloadResponse = try data.decoded(as: LegacyFileDownloadResponse.self, customError: Error.parsingFailed)
-            
-            return response.data
-        }
+        return send(request, serverPublicKey: serverPublicKey)
+            .decoded(as: LegacyFileDownloadResponse.self, on: .global(qos: .userInitiated), error: HTTP.Error.parsingFailed)
+            .map { response in response.data }
     }
 
     public static func getVersion(_ platform: String) -> Promise<String> {
-        let request = Request(verb: .get, endpoint: "session_version?platform=\(platform)")
+        let request = Request<NoBody, Endpoint>(
+            server: server,
+            endpoint: .sessionVersion,
+            queryParameters: [
+                .platform: platform
+            ]
+        )
         
-        return send(request, useOldServer: false).map(on: DispatchQueue.global(qos: .userInitiated)) { data in
-            let response: VersionResponse = try data.decoded(as: VersionResponse.self, customError: Error.parsingFailed)
-            
-            return response.version
+        return send(request, serverPublicKey: serverPublicKey)
+            .decoded(as: VersionResponse.self, on: .global(qos: .userInitiated), error: HTTP.Error.parsingFailed)
+            .map { response in response.version }
+    }
+    
+    // MARK: - Convenience
+    
+    private static func send<T: Encodable>(_ request: Request<T, Endpoint>, serverPublicKey: String) -> Promise<Data> {
+        guard request.useOnionRouting else {
+            preconditionFailure("It's currently not allowed to send non onion routed requests.")
         }
+        
+        let urlRequest: URLRequest
+        
+        do {
+            urlRequest = try request.generateUrlRequest()
+        }
+        catch {
+            return Promise(error: error)
+        }
+        
+        // TODO: Rename file to be 'FileServerAPI' (drop the 'V2')
+        return OnionRequestAPI.sendOnionRequest(urlRequest, to: request.server, with: serverPublicKey)
+            .map2 { _, response in
+                guard let response: Data = response else { throw HTTP.Error.parsingFailed }
+                
+                return response
+            }
     }
 }

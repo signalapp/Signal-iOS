@@ -1,4 +1,5 @@
 import UIKit
+import SessionUtilitiesKit
 
 final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     private var profilePictureToBeUploaded: UIImage?
@@ -382,7 +383,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss {
                         var isMaxFileSizeExceeded = false
-                        if let error = error as? FileServerAPIV2.Error {
+                        if let error = error as? HTTP.Error {
                             isMaxFileSizeExceeded = (error == .maxFileSizeExceeded)
                         }
                         let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : "Couldn't Update Profile"

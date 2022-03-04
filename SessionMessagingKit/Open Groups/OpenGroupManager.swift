@@ -46,7 +46,7 @@ public final class OpenGroupManager: NSObject {
         let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
         
         if OpenGroupManager.shared.pollers[server] != nil && TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupId), transaction: transaction) != nil {
-            SNLog("Ignoring join open group attempt, user initiated: \(!isConfigMessage)")
+            SNLog("Ignoring join open group attempt (already joined), user initiated: \(!isConfigMessage)")
             return Promise.value(())
         }
         
@@ -63,7 +63,7 @@ public final class OpenGroupManager: NSObject {
                 .done(on: DispatchQueue.global(qos: .userInitiated)) { (capabilitiesResponse: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Capabilities?), roomResponse: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Room?)) in
                     guard let capabilities: OpenGroupAPI.Capabilities = capabilitiesResponse.data, let room: OpenGroupAPI.Room = roomResponse.data else {
                         SNLog("Failed to join open group due to invalid data.")
-                        seal.reject(OpenGroupAPI.Error.generic)
+                        seal.reject(HTTP.Error.generic)
                         return
                     }
                     
@@ -254,7 +254,7 @@ public final class OpenGroupManager: NSObject {
             }
 
             // - Room image (if there is one)
-            if let imageId: Int64 = pollInfo.details?.imageId {
+            if let imageId: UInt64 = pollInfo.details?.imageId {
                 OpenGroupManager.roomImage(imageId, for: roomToken, on: server)
                     .done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                         dependencies.storage.write { transaction in
@@ -493,8 +493,8 @@ public final class OpenGroupManager: NSObject {
                 OpenGroupManager.defaultRoomsPromise?
                     .done(on: OpenGroupAPI.workQueue) { items in
                         items
-                            .compactMap { room -> (Int64, String)? in
-                                guard let imageId: Int64 = room.imageId else { return nil}
+                            .compactMap { room -> (UInt64, String)? in
+                                guard let imageId: UInt64 = room.imageId else { return nil}
                                 
                                 return (imageId, room.token)
                             }
@@ -511,7 +511,7 @@ public final class OpenGroupManager: NSObject {
     }
     
     public static func roomImage(
-        _ fileId: Int64,
+        _ fileId: UInt64,
         for roomToken: String,
         on server: String,
         using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()

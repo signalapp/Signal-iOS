@@ -70,7 +70,7 @@ extension OpenGroupAPI {
         /// File ID of an uploaded file containing the room's image
         ///
         /// Omitted if there is no image
-        public let imageId: Int64?
+        public let imageId: UInt64?
         
         /// Array of pinned message information (omitted entirely if there are no pinned messages)
         public let pinnedMessages: [PinnedMessage]?
@@ -160,7 +160,7 @@ extension OpenGroupAPI.Room {
             
             activeUsers: try container.decode(Int64.self, forKey: .activeUsers),
             activeUsersCutoff: try container.decode(Int64.self, forKey: .activeUsersCutoff),
-            imageId: try? container.decode(Int64.self, forKey: .imageId),
+            imageId: try? container.decode(UInt64.self, forKey: .imageId),
             pinnedMessages: try? container.decode([OpenGroupAPI.PinnedMessage].self, forKey: .pinnedMessages),
             
             admin: ((try? container.decode(Bool.self, forKey: .admin)) ?? false),

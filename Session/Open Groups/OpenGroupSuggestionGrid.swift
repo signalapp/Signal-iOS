@@ -182,7 +182,7 @@ extension OpenGroupSuggestionGrid {
             
             label.text = room.name
             
-            if let imageId: Int64 = room.imageId {
+            if let imageId: UInt64 = room.imageId {
                 let promise = OpenGroupManager.roomImage(imageId, for: room.token, on: OpenGroupAPI.defaultServer)
                 imageView.image = given(promise.value) { UIImage(data: $0)! }
                 imageView.isHidden = (imageView.image == nil)

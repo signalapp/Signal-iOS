@@ -49,7 +49,7 @@ extension LegacyOpenGroupMessageV2 {
         
         // Validate the message signature
         guard let data = Data(base64Encoded: base64EncodedData), let signature = Data(base64Encoded: base64EncodedSignature) else {
-            throw OpenGroupAPI.Error.parsingFailed
+            throw HTTP.Error.parsingFailed
         }
         
         let publicKey = Data(hex: sender.removingIdPrefixIfNeeded())
@@ -57,7 +57,7 @@ extension LegacyOpenGroupMessageV2 {
         
         guard isValid else {
             SNLog("Ignoring message with invalid signature.")
-            throw OpenGroupAPI.Error.parsingFailed
+            throw HTTP.Error.parsingFailed
         }
         
         self = LegacyOpenGroupMessageV2(

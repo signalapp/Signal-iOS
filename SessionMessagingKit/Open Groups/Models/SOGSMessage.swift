@@ -45,10 +45,10 @@ extension OpenGroupAPI.Message {
         // If we have data and a signature (ie. the message isn't a deletion) then validate the signature
         if let base64EncodedData: String = maybeBase64EncodedData, let base64EncodedSignature: String = maybeBase64EncodedSignature {
             guard let sender: String = maybeSender, let data = Data(base64Encoded: base64EncodedData), let signature = Data(base64Encoded: base64EncodedSignature) else {
-                throw OpenGroupAPI.Error.parsingFailed
+                throw HTTP.Error.parsingFailed
             }
             guard let dependencies: OpenGroupAPI.Dependencies = decoder.userInfo[OpenGroupAPI.Dependencies.userInfoKey] as? OpenGroupAPI.Dependencies else {
-                throw OpenGroupAPI.Error.parsingFailed
+                throw HTTP.Error.parsingFailed
             }
             
             // Verify the signature based on the SessionId.Prefix type
@@ -58,18 +58,18 @@ extension OpenGroupAPI.Message {
                 case .blinded:
                     guard dependencies.sign.verify(message: data.bytes, publicKey: publicKey.bytes, signature: signature.bytes) else {
                         SNLog("Ignoring message with invalid signature.")
-                        throw OpenGroupAPI.Error.parsingFailed
+                        throw HTTP.Error.parsingFailed
                     }
                     
                 case .standard, .unblinded:
                     guard (try? dependencies.ed25519.verifySignature(signature, publicKey: publicKey, data: data)) == true else {
                         SNLog("Ignoring message with invalid signature.")
-                        throw OpenGroupAPI.Error.parsingFailed
+                        throw HTTP.Error.parsingFailed
                     }
                     
                 case .none:
                     SNLog("Ignoring message with invalid sender.")
-                    throw OpenGroupAPI.Error.parsingFailed
+                    throw HTTP.Error.parsingFailed
             }
         }
         

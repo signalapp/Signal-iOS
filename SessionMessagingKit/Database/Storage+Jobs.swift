@@ -1,3 +1,4 @@
+import YapDatabase
 
 extension Storage {
     
@@ -96,9 +97,13 @@ extension Storage {
     public func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob? {
         var result: MessageSendJob?
         Storage.read { transaction in
-            result = transaction.object(forKey: messageSendJobID, inCollection: MessageSendJob.collection) as? MessageSendJob
+            result = self.getMessageSendJob(for: messageSendJobID, using: transaction)
         }
         return result
+    }
+    
+    public func getMessageSendJob(for messageSendJobID: String, using transaction: Any) -> MessageSendJob? {
+        return (transaction as! YapDatabaseReadTransaction).object(forKey: messageSendJobID, inCollection: MessageSendJob.collection) as? MessageSendJob
     }
 
     public func resumeMessageSendJobIfNeeded(_ messageSendJobID: String) {

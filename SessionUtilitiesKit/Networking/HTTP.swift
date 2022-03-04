@@ -78,18 +78,23 @@ public enum HTTP {
 
     // MARK: - Error
     
-    public enum Error : LocalizedError {
+    public enum Error: LocalizedError, Equatable {
         case generic
-        case httpRequestFailed(statusCode: UInt, data: Data?)
+        case invalidURL
         case invalidJSON
+        case parsingFailed
         case invalidResponse
-
+        case maxFileSizeExceeded
+        case httpRequestFailed(statusCode: UInt, data: Data?)
+        
         public var errorDescription: String? {
             switch self {
                 case .generic: return "An error occurred."
-                case .httpRequestFailed(let statusCode, _): return "HTTP request failed with status code: \(statusCode)."
+                case .invalidURL: return "Invalid URL."
                 case .invalidJSON: return "Invalid JSON."
-                case .invalidResponse: return "Invalid Response"
+                case .parsingFailed, .invalidResponse: return "Invalid response."
+                case .maxFileSizeExceeded: return "Maximum file size exceeded."
+                case .httpRequestFailed(let statusCode, _): return "HTTP request failed with status code: \(statusCode)."
             }
         }
     }

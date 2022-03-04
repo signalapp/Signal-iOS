@@ -66,25 +66,33 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         guard let stream = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentStream else {
             return handleFailure(error: Error.noAttachment)
         }
-        guard !stream.isUploaded else { return handleSuccess() } // Should never occur
+        guard !stream.isUploaded else { return handleSuccess(stream.serverId) } // Should never occur
+        
         let storage = SNMessagingKitConfiguration.shared.storage
         if let openGroup = storage.getOpenGroup(for: threadID) {
             AttachmentUploadJob.upload(
                 stream,
                 using: { data in
-                    // TODO: Upgrade this to use the non-legacy version
-                    return OpenGroupAPI.legacyUpload(data, to: openGroup.room, on: openGroup.server)
+                    OpenGroupAPI.uploadFile(data.bytes, to: openGroup.room, on: openGroup.server)
+                        .map { _, response -> UInt64 in response.id }
                 },
                 encrypt: false,
-                onSuccess: handleSuccess,
+                onSuccess: { [weak self] fileId in self?.handleSuccess(fileId) },
                 onFailure: handleFailure
             )
-        } else {
-            AttachmentUploadJob.upload(stream, using: FileServerAPIV2.upload, encrypt: true, onSuccess: handleSuccess, onFailure: handleFailure)
+        }
+        else {
+            AttachmentUploadJob.upload(
+                stream,
+                using: FileServerAPIV2.upload,
+                encrypt: true,
+                onSuccess: { [weak self] fileId in self?.handleSuccess(fileId) },
+                onFailure: handleFailure
+            )
         }
     }
     
-    public static func upload(_ stream: TSAttachmentStream, using upload: (Data) -> Promise<UInt64>, encrypt: Bool, onSuccess: (() -> Void)?, onFailure: ((Swift.Error) -> Void)?) {
+    public static func upload(_ stream: TSAttachmentStream, using upload: (Data) -> Promise<UInt64>, encrypt: Bool, onSuccess: ((UInt64) -> Void)?, onFailure: ((Swift.Error) -> Void)?) {
         // Get the attachment
         guard var data = try? stream.readDataFromFile() else {
             SNLog("Couldn't read attachment from disk.")
@@ -105,37 +113,74 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         // Check the file size
         SNLog("File size: \(data.count) bytes.")
         if Double(data.count) > Double(FileServerAPIV2.maxFileSize) / FileServerAPIV2.fileSizeORMultiplier {
-            onFailure?(FileServerAPIV2.Error.maxFileSizeExceeded); return
+            onFailure?(HTTP.Error.maxFileSizeExceeded)
+            return
         }
+        
         // Send the request
         stream.isUploaded = false
         stream.save()
-        upload(data).done(on: DispatchQueue.global(qos: .userInitiated)) { fileID in
-            let downloadURL = "\(FileServerAPIV2.server)/files/\(fileID)"
-            stream.serverId = fileID
+        upload(data).done(on: DispatchQueue.global(qos: .userInitiated)) { fileId in
+            let downloadURL = "\(FileServerAPIV2.server)/files/\(fileId)"
+            stream.serverId = fileId
             stream.isUploaded = true
             stream.downloadURL = downloadURL
             stream.save()
-            onSuccess?()
+            onSuccess?(fileId)
         }.catch { error in
             onFailure?(error)
         }
     }
 
-    private func handleSuccess() {
+    private func handleSuccess(_ fileId: UInt64) {
         SNLog("Attachment uploaded successfully.")
         delegate?.handleJobSucceeded(self)
-        SNMessagingKitConfiguration.shared.storage.resumeMessageSendJobIfNeeded(messageSendJobID)
-        Storage.shared.write(with: { transaction in
-            var message: TSMessage?
-            let transaction = transaction as! YapDatabaseReadWriteTransaction
-            TSDatabaseSecondaryIndexes.enumerateMessages(withTimestamp: self.message.sentTimestamp!, with: { _, key, _ in
-                message = TSMessage.fetch(uniqueId: key, transaction: transaction)
-            }, using: transaction)
-            if let message = message {
-                MessageInvalidator.invalidate(message, with: transaction)
+        
+        let messageSendJobId: String = messageSendJobID
+        
+        Storage.shared.write(
+            with: { transaction in
+                // Get the existing MessageSendJob and replace it with one that has it's destination updated
+                // to include the returned fileId
+                if let oldJob: MessageSendJob = SNMessagingKitConfiguration.shared.storage.getMessageSendJob(for: messageSendJobId, using: transaction) {
+                    switch oldJob.destination {
+                        case .openGroup(let roomToken, let server, let whisperTo, let whisperMods, let oldFileIds):
+                            let job: MessageSendJob = MessageSendJob(
+                                message: oldJob.message,
+                                destination: .openGroup(
+                                    roomToken: roomToken,
+                                    server: server,
+                                    whisperTo: whisperTo,
+                                    whisperMods: whisperMods,
+                                    fileIds: (oldFileIds ?? []) + [fileId]
+                                )
+                            )
+                            job.id = oldJob.id  // Use the existing id so it gets overwritten
+                            job.delegate = oldJob.delegate
+                            job.failureCount = oldJob.failureCount
+                            
+                            // This method just writes the job directly and doesn't generate a new id (as we want)
+                            SNMessagingKitConfiguration.shared.storage.persist(job, using: transaction)
+                            
+                        default: break
+                    }
+                }
+            },
+            completion: {
+                SNMessagingKitConfiguration.shared.storage.resumeMessageSendJobIfNeeded(messageSendJobId)
+                
+                Storage.shared.write(with: { transaction in
+                    var message: TSMessage?
+                    let transaction = transaction as! YapDatabaseReadWriteTransaction
+                    TSDatabaseSecondaryIndexes.enumerateMessages(withTimestamp: self.message.sentTimestamp!, with: { _, key, _ in
+                        message = TSMessage.fetch(uniqueId: key, transaction: transaction)
+                    }, using: transaction)
+                    if let message = message {
+                        MessageInvalidator.invalidate(message, with: transaction)
+                    }
+                }, completion: { })
             }
-        }, completion: { })
+        )
     }
     
     private func handlePermanentFailure(error: Swift.Error) {

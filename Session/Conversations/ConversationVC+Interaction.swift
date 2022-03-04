@@ -568,7 +568,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     let attachment = mediaView.attachment
                     if let pointer = attachment as? TSAttachmentPointer {
                         if pointer.state == .failed {
-                            // TODO: Tapped a failed incoming attachment
+                            // TODO: Tapped a failed incoming attachment (Note: This is generally a permanent failure - see `AttachmentDownloadJob`)
                         }
                     }
                     guard let stream = attachment as? TSAttachmentStream else { return }

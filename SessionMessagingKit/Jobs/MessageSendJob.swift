@@ -6,7 +6,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     public let message: Message
     public let destination: Message.Destination
     public var delegate: JobDelegate?
-    public var id: String?
+    public var id: String?  // This should only get set in either `JobQueue` or `AttachmentUploadJob`
     public var failureCount: UInt = 0
 
     // MARK: - Settings
@@ -100,7 +100,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                 .replacingOccurrences(of: "]", with: "")
                 .split(separator: "|")
                 .map { String($0) }
-            let fileIds: [Int64]? = (fileIdStrings.isEmpty ? nil : fileIdStrings.compactMap { Int64($0) })
+            let fileIds: [UInt64]? = (fileIdStrings.isEmpty ? nil : fileIdStrings.compactMap { UInt64($0) })
             
             destination = .openGroup(
                 roomToken: roomToken,

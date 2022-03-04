@@ -45,6 +45,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getAllPendingJobs(of type: Job.Type) -> [Job]
     func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob?
     func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob?
+    func getMessageSendJob(for messageSendJobID: String, using transaction: Any) -> MessageSendJob?
     func resumeMessageSendJobIfNeeded(_ messageSendJobID: String)
     func isJobCanceled(_ job: Job) -> Bool
 

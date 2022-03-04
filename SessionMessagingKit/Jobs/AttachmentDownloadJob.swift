@@ -98,7 +98,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             }
         }
         if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID), let openGroup = storage.getOpenGroup(for: tsMessage.uniqueThreadId) {
-            guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
+            guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let fileId = UInt64(fileAsString) else {
                 return handleFailure(Error.invalidURL)
             }
             // TODO: Upgrade this to use the non-legacy version

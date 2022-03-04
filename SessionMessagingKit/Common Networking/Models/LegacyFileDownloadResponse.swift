@@ -24,9 +24,7 @@ extension LegacyFileDownloadResponse {
 
         let base64EncodedData: String = try container.decode(String.self, forKey: .base64EncodedData)
         
-        guard let data = Data(base64Encoded: base64EncodedData) else {
-            throw FileServerAPIV2.Error.parsingFailed
-        }
+        guard let data = Data(base64Encoded: base64EncodedData) else { throw HTTP.Error.parsingFailed }
         
         self = LegacyFileDownloadResponse(
             data: data

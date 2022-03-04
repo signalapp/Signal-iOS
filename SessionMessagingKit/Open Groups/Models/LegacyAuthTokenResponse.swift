@@ -28,7 +28,7 @@ extension OpenGroupAPI.LegacyAuthTokenResponse.Challenge {
         let base64EncodedEphemeralPublicKey: String = try container.decode(String.self, forKey: .ephemeralPublicKey)
         
         guard let ciphertext = Data(base64Encoded: base64EncodedCiphertext), let ephemeralPublicKey = Data(base64Encoded: base64EncodedEphemeralPublicKey) else {
-            throw OpenGroupAPI.Error.parsingFailed
+            throw HTTP.Error.parsingFailed
         }
         
         self = OpenGroupAPI.LegacyAuthTokenResponse.Challenge(

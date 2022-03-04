@@ -28,7 +28,7 @@ extension OpenGroupAPI {
         private let b64: String?
         private let bytes: [UInt8]?
         
-        init<T: Encodable>(request: Request<T>) {
+        init<T: Encodable>(request: Request<T, Endpoint>) {
             self.method = request.method
             self.path = request.urlPathAndParamsString
             self.headers = (request.headers.isEmpty ? nil : request.headers.toHTTPHeaders())
@@ -86,17 +86,17 @@ extension OpenGroupAPI {
     // MARK: - BatchRequestInfo<T, R>
     
     struct BatchRequestInfo<T: Encodable>: BatchRequestInfoType {
-        let request: Request<T>
+        let request: Request<T, Endpoint>
         let responseType: Codable.Type
         
         var endpoint: Endpoint { request.endpoint }
         
-        init<R: Codable>(request: Request<T>, responseType: R.Type) {
+        init<R: Codable>(request: Request<T, Endpoint>, responseType: R.Type) {
             self.request = request
             self.responseType = BatchSubResponse<R>.self
         }
         
-        init(request: Request<T>) {
+        init(request: Request<T, Endpoint>) {
             self.init(
                 request: request,
                 responseType: NoResponse.self
@@ -124,7 +124,7 @@ extension OpenGroupAPI.BatchSubResponse {
             code: try container.decode(Int32.self, forKey: .code),
             headers: try container.decode([String: String].self, forKey: .headers),
             body: body,
-            failedToParseBody: (body == nil && T.self != OpenGroupAPI.NoResponse.self && !(T.self is ExpressibleByNilLiteral.Type))
+            failedToParseBody: (body == nil && T.self != NoResponse.self && !(T.self is ExpressibleByNilLiteral.Type))
         )
     }
 }
@@ -143,31 +143,31 @@ protocol BatchRequestInfoType {
 // MARK: - Convenience
 
 public extension Decodable {
-    static func decoded(from data: Data, customError: Error, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) throws -> Self {
-        return try data.decoded(as: Self.self, customError: customError, using: dependencies)
+    static func decoded(from data: Data, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) throws -> Self {
+        return try data.decoded(as: Self.self, using: dependencies)
     }
 }
 
 extension Promise where T == (OnionRequestResponseInfoType, Data?) {
-    func decoded(as types: OpenGroupAPI.BatchResponseTypes, on queue: DispatchQueue? = nil, error: Error, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<OpenGroupAPI.BatchResponse> {
+    func decoded(as types: OpenGroupAPI.BatchResponseTypes, on queue: DispatchQueue? = nil, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<OpenGroupAPI.BatchResponse> {
         self.map(on: queue) { responseInfo, maybeData -> OpenGroupAPI.BatchResponse in
             // Need to split the data into an array of data so each item can be Decoded correctly
-            guard let data: Data = maybeData else { throw OpenGroupAPI.Error.parsingFailed }
+            guard let data: Data = maybeData else { throw HTTP.Error.parsingFailed }
             guard let jsonObject: Any = try? JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed]) else {
-                throw OpenGroupAPI.Error.parsingFailed
+                throw HTTP.Error.parsingFailed
             }
-            guard let anyArray: [Any] = jsonObject as? [Any] else { throw OpenGroupAPI.Error.parsingFailed }
+            guard let anyArray: [Any] = jsonObject as? [Any] else { throw HTTP.Error.parsingFailed }
             
             let dataArray: [Data] = anyArray.compactMap { try? JSONSerialization.data(withJSONObject: $0) }
-            guard dataArray.count == types.count else { throw OpenGroupAPI.Error.parsingFailed }
+            guard dataArray.count == types.count else { throw HTTP.Error.parsingFailed }
             
             do {
                 return try zip(dataArray, types)
-                    .map { data, type in try type.decoded(from: data, customError: error, using: dependencies) }
+                    .map { data, type in try type.decoded(from: data, using: dependencies) }
                     .map { data in (responseInfo, data) }
             }
-            catch _ {
-                throw error
+            catch {
+                throw HTTP.Error.parsingFailed
             }
         }
     }

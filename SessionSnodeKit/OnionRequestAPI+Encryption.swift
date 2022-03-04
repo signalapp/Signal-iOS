@@ -14,24 +14,22 @@ internal extension OnionRequestAPI {
     }
 
     /// Encrypts `payload` for `destination` and returns the result. Use this to build the core of an onion request.
-    static func encrypt(_ payload: String, for destination: Destination, with version: Version) -> Promise<AESGCM.EncryptionResult> {
+    static func encrypt(_ payload: Data, for destination: Destination, with version: Version) -> Promise<AESGCM.EncryptionResult> {
         let (promise, seal) = Promise<AESGCM.EncryptionResult>.pending()
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                guard let payloadAsData: Data = payload.data(using: .utf8) else { throw Error.invalidRequestInfo }
-                
                 let data: Data
                 
                 switch version {
                     case .v2, .v3:
                         // Wrapping is only needed for snode requests
                         switch destination {
-                            case .snode: data = try encode(ciphertext: payloadAsData, json: [ "headers" : "" ])
-                            case .server: data = payloadAsData
+                            case .snode: data = try encode(ciphertext: payload, json: [ "headers" : "" ])
+                            case .server: data = payload
                         }
                         
                     case .v4:
-                        data = payloadAsData
+                        data = payload
                 }
                 
                 let result = try encrypt(data, for: destination)
