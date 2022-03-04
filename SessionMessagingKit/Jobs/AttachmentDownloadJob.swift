@@ -63,60 +63,78 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         if let id = id {
             JobQueue.currentlyExecutingJobs.insert(id)
         }
+        
         guard !isDeferred else { return }
+        
         if TSAttachment.fetch(uniqueId: attachmentID) is TSAttachmentStream {
             // FIXME: It's not clear * how * this happens, but apparently we can get to this point
             // from time to time with an already downloaded attachment.
             return handleSuccess()
         }
+        
         guard let pointer = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentPointer else {
             return handleFailure(error: Error.noAttachment)
         }
+        
         let storage = SNMessagingKitConfiguration.shared.storage
         storage.write(with: { transaction in
             storage.setAttachmentState(to: .downloading, for: pointer, associatedWith: self.tsMessageID, using: transaction)
         }, completion: { })
+        
         let temporaryFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth() + UUID().uuidString)
         let handleFailure: (Swift.Error) -> Void = { error in // Intentionally capture self
             OWSFileSystem.deleteFile(temporaryFilePath.absoluteString)
+            
             if let error = error as? Error, case .noAttachment = error {
-                storage.write(with: { transaction in
+                storage.write { transaction in
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
-                }, completion: { })
+                }
+                
                 self.handlePermanentFailure(error: error)
-            } else if let error = error as? OnionRequestAPI.Error, case .httpRequestFailedAtDestination(let statusCode, _, _) = error,
-                statusCode == 400 {
+            }
+            else if let error = error as? OnionRequestAPI.Error, case .httpRequestFailedAtDestination(let statusCode, _, _) = error, statusCode == 400 {
                 // Otherwise, the attachment will show a state of downloading forever,
                 // and the message won't be able to be marked as read.
-                storage.write(with: { transaction in
+                storage.write { transaction in
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
-                }, completion: { })
+                }
+                
                 // This usually indicates a file that has expired on the server, so there's no need to retry.
                 self.handlePermanentFailure(error: error)
-            } else {
+            }
+            else {
                 self.handleFailure(error: error)
             }
         }
+        
         if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID), let openGroup = storage.getOpenGroup(for: tsMessage.uniqueThreadId) {
             guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let fileId = UInt64(fileAsString) else {
                 return handleFailure(Error.invalidURL)
             }
-            // TODO: Upgrade this to use the non-legacy version
-            OpenGroupAPI.legacyDownload(file, from: openGroup.room, on: openGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
-                self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
-            }.catch(on: DispatchQueue.global()) { error in
-                handleFailure(error)
-            }
-        } else {
+            
+            OpenGroupAPI
+                .downloadFile(fileId, from: openGroup.room, on: openGroup.server)
+                .done(on: DispatchQueue.global(qos: .userInitiated)) { [weak self] _, data in
+                    self?.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
+                }
+                .catch(on: DispatchQueue.global()) { error in
+                    handleFailure(error)
+                }
+        }
+        else {
             guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
                 return handleFailure(Error.invalidURL)
             }
-            let useOldServer = pointer.downloadURL.contains(FileServerAPIV2.oldServer)
-            FileServerAPIV2.download(file, useOldServer: useOldServer).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
-                self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
-            }.catch(on: DispatchQueue.global()) { error in
-                handleFailure(error)
-            }
+            
+            let useOldServer = pointer.downloadURL.contains(FileServerAPI.oldServer)
+            FileServerAPI
+                .download(file, useOldServer: useOldServer)
+                .done(on: DispatchQueue.global(qos: .userInitiated)) { [weak self] data in
+                    self?.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
+                }
+                .catch(on: DispatchQueue.global()) { error in
+                    handleFailure(error)
+                }
         }
     }
     

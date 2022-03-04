@@ -2,7 +2,7 @@
 
 import Foundation
 
-extension FileServerAPIV2 {
+extension FileServerAPI {
     struct VersionResponse: Codable {
         enum CodingKeys: String, CodingKey {
             case version = "version"

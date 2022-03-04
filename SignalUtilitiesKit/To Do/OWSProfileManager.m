@@ -268,10 +268,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             NSData *encryptedAvatarData = [self encryptProfileData:avatarData profileKey:newProfileKey];
             OWSAssertDebug(encryptedAvatarData.length > 0);
             
-            AnyPromise *promise = [SNFileServerAPIV2 upload:encryptedAvatarData];
+            AnyPromise *promise = [SNFileServerAPI upload:encryptedAvatarData];
             
             [promise.thenOn(dispatch_get_main_queue(), ^(NSString *fileID) {
-                NSString *downloadURL = [NSString stringWithFormat:@"%@/files/%@", SNFileServerAPIV2.server, fileID];
+                NSString *downloadURL = [NSString stringWithFormat:@"%@/files/%@", SNFileServerAPI.server, fileID];
                 [NSUserDefaults.standardUserDefaults setObject:[NSDate new] forKey:@"lastProfilePictureUpload"];
                 
                 SNContact *user = [LKStorage.shared getUser];
@@ -502,8 +502,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         NSString *profilePictureURL = contact.profilePictureURL;
         
         NSString *file = [profilePictureURL lastPathComponent];
-        BOOL useOldServer = [profilePictureURL containsString:SNFileServerAPIV2.oldServer];
-        AnyPromise *promise = [SNFileServerAPIV2 download:file useOldServer:useOldServer];
+        BOOL useOldServer = [profilePictureURL containsString:SNFileServerAPI.oldServer];
+        AnyPromise *promise = [SNFileServerAPI download:file useOldServer:useOldServer];
         
         [promise.then(^(NSData *data) {
             @synchronized(self.currentAvatarDownloads)

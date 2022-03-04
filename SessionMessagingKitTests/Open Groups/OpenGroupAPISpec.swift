@@ -148,6 +148,7 @@ class OpenGroupAPISpec: QuickSpec {
                 testStorage = nil
                 response = nil
                 pollResponse = nil
+                error = nil
             }
             
             // MARK: - Batching & Polling
@@ -424,10 +425,10 @@ class OpenGroupAPISpec: QuickSpec {
             // MARK: - Files
             
             context("when uploading files") {
-                it("doesn't add a fileName header when not provided") {
+                it("doesn't add a fileName to the content-disposition header when not provided") {
                     class LocalTestApi: TestApi {
                         override class var mockResponse: Data? {
-                            return try! JSONEncoder().encode(FileUploadResponse(id: 1))
+                            return try! JSONEncoder().encode(FileUploadResponse(id: "1"))
                         }
                     }
                     dependencies = dependencies.with(api: LocalTestApi.self)
@@ -448,15 +449,15 @@ class OpenGroupAPISpec: QuickSpec {
                     let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
                     expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.headers).to(haveCount(4))
+                    expect(requestData?.headers).to(haveCount(6))
                     expect(requestData?.headers[Header.contentDisposition.rawValue])
                         .toNot(contain("filename"))
                 }
                 
-                it("adds a fileName header when provided") {
+                it("adds the fileName to the content-disposition header when provided") {
                     class LocalTestApi: TestApi {
                         override class var mockResponse: Data? {
-                            return try! JSONEncoder().encode(FileUploadResponse(id: 1))
+                            return try! JSONEncoder().encode(FileUploadResponse(id: "1"))
                         }
                     }
                     dependencies = dependencies.with(api: LocalTestApi.self)
@@ -477,7 +478,7 @@ class OpenGroupAPISpec: QuickSpec {
                     let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
                     expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
                     expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.headers).to(haveCount(5))
+                    expect(requestData?.headers).to(haveCount(6))
                     expect(requestData?.headers[Header.contentDisposition.rawValue]).to(contain("TestFileName"))
                 }
             }

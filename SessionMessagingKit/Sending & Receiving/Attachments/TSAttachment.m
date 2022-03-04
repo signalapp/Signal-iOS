@@ -27,7 +27,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
-- (instancetype)initWithServerId:(UInt64)serverId
+- (instancetype)initWithServerId:(NSString *)serverId
                    encryptionKey:(nullable NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType

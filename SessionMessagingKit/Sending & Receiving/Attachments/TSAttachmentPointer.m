@@ -169,10 +169,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Legacy instances of TSAttachmentPointer apparently used the serverId as their
     // uniqueId.
     if (attachmentSchemaVersion < 2 && self.serverId == 0) {
-        if ([self isDecimalNumberText:self.uniqueId]) {
-            // For legacy instances, try to parse the serverId from the uniqueId.
-            self.serverId = (UInt64)[self.uniqueId integerValue];
-        }
+        // For legacy instances, try to parse the serverId from the uniqueId.
+        self.serverId = self.uniqueId;
     }
 }
 

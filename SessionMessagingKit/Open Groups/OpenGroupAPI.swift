@@ -331,7 +331,7 @@ public final class OpenGroupAPI: NSObject {
         on server: String,
         whisperTo: String?,
         whisperMods: Bool,
-        fileIds: [UInt64]?,
+        fileIds: [String]?,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Message)> {
         guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, using: dependencies) else {
@@ -556,16 +556,6 @@ public final class OpenGroupAPI: NSObject {
                 
                 return (responseInfo, data)
             }
-    }
-    
-    public static func downloadFileJson(_ fileId: UInt64, from roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, FileDownloadResponse)> {
-        let request: Request = Request<NoBody, Endpoint>(
-            server: server,
-            endpoint: .roomFileIndividualJson(roomToken, fileId)
-        )
-        // TODO: This endpoint is getting rewritten to return just data (properties would come through as headers).
-        return send(request, using: dependencies)
-            .decoded(as: FileDownloadResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
     
     // MARK: - Inbox/Outbox (Message Requests)

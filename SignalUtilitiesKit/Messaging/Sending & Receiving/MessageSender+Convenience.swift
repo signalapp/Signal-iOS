@@ -43,11 +43,11 @@ extension MessageSender {
             TSAttachment.fetch(uniqueId: $0, transaction: transaction) as? TSAttachmentStream
         }
         let attachmentsToUpload = attachments.filter { !$0.isUploaded }
-        let attachmentUploadPromises: [Promise<UInt64>] = attachmentsToUpload.map { stream in
+        let attachmentUploadPromises: [Promise<String>] = attachmentsToUpload.map { stream in
             let storage = SNMessagingKitConfiguration.shared.storage
             
             if let threadId: String = thread.uniqueId, let openGroup = storage.getOpenGroup(for: threadId) {
-                let (promise, seal) = Promise<UInt64>.pending()
+                let (promise, seal) = Promise<String>.pending()
                 AttachmentUploadJob.upload(
                     stream,
                     using: { data in
@@ -57,7 +57,7 @@ extension MessageSender {
                                 to: openGroup.room,
                                 on: openGroup.server
                             )
-                            .map { _, response -> UInt64 in response.id }
+                            .map { _, response -> String in response.id }
                     },
                     encrypt: false,
                     onSuccess: { fileId in seal.fulfill(fileId) },
@@ -67,10 +67,13 @@ extension MessageSender {
                 return promise
             }
             
-            let (promise, seal) = Promise<UInt64>.pending()
+            let (promise, seal) = Promise<String>.pending()
             AttachmentUploadJob.upload(
                 stream,
-                using: FileServerAPIV2.upload,
+                using: { data in
+                    FileServerAPI.upload(data)
+                        .map { response -> String in response.id }
+                },
                 encrypt: true,
                 onSuccess: { fileId in seal.fulfill(fileId) },
                 onFailure: { seal.reject($0) }
@@ -84,7 +87,7 @@ extension MessageSender {
                     if case .rejected(let error) = result { return error } else { return nil }
                 }
                 if let error = errors.first { return Promise(error: error) }
-                let fileIds: [UInt64] = results.compactMap { result -> UInt64? in
+                let fileIds: [String] = results.compactMap { result -> String? in
                     switch result {
                         case .fulfilled(let fileId): return fileId
                         default: return nil
@@ -95,7 +98,7 @@ extension MessageSender {
             }
     }
 
-    public static func sendNonDurably(_ message: Message, in thread: TSThread, with fileIds: [UInt64]? = nil, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public static func sendNonDurably(_ message: Message, in thread: TSThread, with fileIds: [String]? = nil, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         message.threadID = thread.uniqueId!
         let destination = Message.Destination.from(thread, fileIds: fileIds)
         return MessageSender.send(message, to: destination, using: transaction)
@@ -107,11 +110,11 @@ extension MessageSender {
         }
         let attachments = message.attachmentIDs.compactMap { TSAttachment.fetch(uniqueId: $0) as? TSAttachmentStream }
         let attachmentsToUpload = attachments.filter { !$0.isUploaded }
-        let attachmentUploadPromises: [Promise<UInt64>] = attachmentsToUpload.map { stream in
+        let attachmentUploadPromises: [Promise<String>] = attachmentsToUpload.map { stream in
             let storage = SNMessagingKitConfiguration.shared.storage
             
             if let openGroup = storage.getOpenGroup(for: thread.uniqueId!) {
-                let (promise, seal) = Promise<UInt64>.pending()
+                let (promise, seal) = Promise<String>.pending()
                 
                 AttachmentUploadJob.upload(
                     stream,
@@ -122,7 +125,7 @@ extension MessageSender {
                                 to: openGroup.room,
                                 on: openGroup.server
                             )
-                            .map { _, response in response.id }
+                            .map { _, response -> String in response.id }
                     },
                     encrypt: false,
                     onSuccess: { fileId in seal.fulfill(fileId) },
@@ -131,10 +134,13 @@ extension MessageSender {
                 return promise
             }
             
-            let (promise, seal) = Promise<UInt64>.pending()
+            let (promise, seal) = Promise<String>.pending()
             AttachmentUploadJob.upload(
                 stream,
-                using: FileServerAPIV2.upload,
+                using: { data in
+                    FileServerAPI.upload(data)
+                        .map { response -> String in response.id }
+                },
                 encrypt: true,
                 onSuccess: { fileId in seal.fulfill(fileId) },
                 onFailure: { seal.reject($0) }
@@ -148,7 +154,7 @@ extension MessageSender {
             if case .rejected(let error) = result { return error } else { return nil }
         }
         if let error = errors.first { seal.reject(error) }
-        let fileIds: [UInt64] = results.compactMap { result -> UInt64? in
+        let fileIds: [String] = results.compactMap { result -> String? in
             switch result {
                 case .fulfilled(let fileId): return fileId
                 default: return nil

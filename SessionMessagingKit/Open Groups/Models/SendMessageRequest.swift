@@ -40,7 +40,12 @@ extension OpenGroupAPI {
         ///
         /// When submitting a message edit this field must contain the IDs of any newly uploaded files that are part of the edit; existing
         /// attachment IDs may also be included, but are not required
-        let fileIds: [UInt64]?
+        ///
+        /// **Note:** The SOGS API actually expects an array of Int64 (ie. what is returned when uploading a file to SOGS) but
+        /// when uploading direct to the FileServer we get a string id back. In order to avoid supporting both cases we convert
+        /// the id returned by SOGS to a string and send those through - luckily SOGS converts the values to ints so supports
+        /// receipving an array of String values
+        let fileIds: [String]?
         
         // MARK: - Initialization
         
@@ -49,7 +54,7 @@ extension OpenGroupAPI {
             signature: Data,
             whisperTo: String? = nil,
             whisperMods: Bool? = nil,
-            fileIds: [UInt64]? = nil
+            fileIds: [String]? = nil
         ) {
             self.data = data
             self.signature = signature

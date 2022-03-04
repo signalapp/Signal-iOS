@@ -203,7 +203,7 @@
 		B875885A264503A6000E60D0 /* JoinOpenGroupModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8758859264503A6000E60D0 /* JoinOpenGroupModal.swift */; };
 		B8783E9E23EB948D00404FB8 /* UILabel+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */; };
 		B879D449247E1BE300DB3608 /* PathVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B879D448247E1BE300DB3608 /* PathVC.swift */; };
-		B87EF17126367CF800124B3C /* FileServerAPIV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87EF17026367CF800124B3C /* FileServerAPIV2.swift */; };
+		B87EF17126367CF800124B3C /* FileServerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87EF17026367CF800124B3C /* FileServerAPI.swift */; };
 		B87EF18126377A1D00124B3C /* Features.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87EF18026377A1D00124B3C /* Features.swift */; };
 		B8856CA8256F0F42001CE70E /* OWSBackupFragment.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB07255A580700E217F9 /* OWSBackupFragment.m */; };
 		B8856CB1256F0F47001CE70E /* OWSBackupFragment.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDAEA255A580500E217F9 /* OWSBackupFragment.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -827,12 +827,8 @@
 		FDC4384C27B47F7700C60D73 /* OpenGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384B27B47F7700C60D73 /* OpenGroup.swift */; };
 		FDC4384F27B4804F00C60D73 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384E27B4804F00C60D73 /* Header.swift */; };
 		FDC4385127B4807400C60D73 /* QueryParam.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385027B4807400C60D73 /* QueryParam.swift */; };
-		FDC4385727B484B700C60D73 /* LegacyFileUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385627B484B700C60D73 /* LegacyFileUploadResponse.swift */; };
-		FDC4385927B484E800C60D73 /* FileUploadBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385827B484E800C60D73 /* FileUploadBody.swift */; };
-		FDC4385B27B485DE00C60D73 /* LegacyFileDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385A27B485DE00C60D73 /* LegacyFileDownloadResponse.swift */; };
 		FDC4385D27B4C18900C60D73 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385C27B4C18900C60D73 /* Room.swift */; };
 		FDC4385F27B4C4A200C60D73 /* PinnedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385E27B4C4A200C60D73 /* PinnedMessage.swift */; };
-		FDC4386127B4CDDF00C60D73 /* FileResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386027B4CDDF00C60D73 /* FileResponse.swift */; };
 		FDC4386327B4D94E00C60D73 /* SOGSMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386227B4D94E00C60D73 /* SOGSMessage.swift */; };
 		FDC4386527B4DE7600C60D73 /* RoomPollInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386427B4DE7600C60D73 /* RoomPollInfo.swift */; };
 		FDC4386727B4E10E00C60D73 /* Capabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4386627B4E10E00C60D73 /* Capabilities.swift */; };
@@ -841,7 +837,6 @@
 		FDC4386C27B4E90300C60D73 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		FDC4387227B5BB3B00C60D73 /* FileUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4387127B5BB3B00C60D73 /* FileUploadResponse.swift */; };
 		FDC4387427B5BB9B00C60D73 /* Promise+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4387327B5BB9B00C60D73 /* Promise+Utilities.swift */; };
-		FDC4387627B5BEF300C60D73 /* FileDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4387527B5BEF300C60D73 /* FileDownloadResponse.swift */; };
 		FDC4387827B5C35400C60D73 /* SendMessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4387727B5C35400C60D73 /* SendMessageRequest.swift */; };
 		FDC4389227B9FFC700C60D73 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; platformFilter = ios; };
 		FDC4389A27BA002500C60D73 /* OpenGroupAPISpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4389927BA002500C60D73 /* OpenGroupAPISpec.swift */; };
@@ -1341,7 +1336,7 @@
 		B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Interaction.swift"; sourceTree = "<group>"; };
 		B879D448247E1BE300DB3608 /* PathVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathVC.swift; sourceTree = "<group>"; };
 		B879D44A247E1D9200DB3608 /* PathStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathStatusView.swift; sourceTree = "<group>"; };
-		B87EF17026367CF800124B3C /* FileServerAPIV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileServerAPIV2.swift; sourceTree = "<group>"; };
+		B87EF17026367CF800124B3C /* FileServerAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileServerAPI.swift; sourceTree = "<group>"; };
 		B87EF18026377A1D00124B3C /* Features.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features.swift; sourceTree = "<group>"; };
 		B883F8C5D6D90C5077B2FD14 /* Pods_GlobalDependencies_Session.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GlobalDependencies_Session.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8856D5F256F129B001CE70E /* OWSAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAlerts.swift; sourceTree = "<group>"; };
@@ -1985,12 +1980,8 @@
 		FDC4384B27B47F7700C60D73 /* OpenGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroup.swift; sourceTree = "<group>"; };
 		FDC4384E27B4804F00C60D73 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
 		FDC4385027B4807400C60D73 /* QueryParam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryParam.swift; sourceTree = "<group>"; };
-		FDC4385627B484B700C60D73 /* LegacyFileUploadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyFileUploadResponse.swift; sourceTree = "<group>"; };
-		FDC4385827B484E800C60D73 /* FileUploadBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadBody.swift; sourceTree = "<group>"; };
-		FDC4385A27B485DE00C60D73 /* LegacyFileDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyFileDownloadResponse.swift; sourceTree = "<group>"; };
 		FDC4385C27B4C18900C60D73 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
 		FDC4385E27B4C4A200C60D73 /* PinnedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedMessage.swift; sourceTree = "<group>"; };
-		FDC4386027B4CDDF00C60D73 /* FileResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileResponse.swift; sourceTree = "<group>"; };
 		FDC4386227B4D94E00C60D73 /* SOGSMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSMessage.swift; sourceTree = "<group>"; };
 		FDC4386427B4DE7600C60D73 /* RoomPollInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomPollInfo.swift; sourceTree = "<group>"; };
 		FDC4386627B4E10E00C60D73 /* Capabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Capabilities.swift; sourceTree = "<group>"; };
@@ -1998,7 +1989,6 @@
 		FDC4386A27B4E88F00C60D73 /* BatchRequestInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRequestInfo.swift; sourceTree = "<group>"; };
 		FDC4387127B5BB3B00C60D73 /* FileUploadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadResponse.swift; sourceTree = "<group>"; };
 		FDC4387327B5BB9B00C60D73 /* Promise+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Promise+Utilities.swift"; sourceTree = "<group>"; };
-		FDC4387527B5BEF300C60D73 /* FileDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDownloadResponse.swift; sourceTree = "<group>"; };
 		FDC4387727B5C35400C60D73 /* SendMessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessageRequest.swift; sourceTree = "<group>"; };
 		FDC4388E27B9FFC700C60D73 /* SessionMessagingKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SessionMessagingKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDC4389927BA002500C60D73 /* OpenGroupAPISpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupAPISpec.swift; sourceTree = "<group>"; };
@@ -3423,7 +3413,7 @@
 			children = (
 				FDC4383227B385B200C60D73 /* Models */,
 				FD83B9CA27D179AF005E1583 /* Types */,
-				B87EF17026367CF800124B3C /* FileServerAPIV2.swift */,
+				B87EF17026367CF800124B3C /* FileServerAPI.swift */,
 			);
 			path = "File Server";
 			sourceTree = "<group>";
@@ -3947,7 +3937,6 @@
 				FDC4385C27B4C18900C60D73 /* Room.swift */,
 				FDC4386427B4DE7600C60D73 /* RoomPollInfo.swift */,
 				FDC4385E27B4C4A200C60D73 /* PinnedMessage.swift */,
-				FDC4386027B4CDDF00C60D73 /* FileResponse.swift */,
 				FDC4387727B5C35400C60D73 /* SendMessageRequest.swift */,
 				FDC438CA27BB7DB100C60D73 /* UpdateMessageRequest.swift */,
 				FDC4386227B4D94E00C60D73 /* SOGSMessage.swift */,
@@ -4006,11 +3995,7 @@
 		FDC4385527B484AE00C60D73 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				FDC4385827B484E800C60D73 /* FileUploadBody.swift */,
 				FDC4387127B5BB3B00C60D73 /* FileUploadResponse.swift */,
-				FDC4387527B5BEF300C60D73 /* FileDownloadResponse.swift */,
-				FDC4385627B484B700C60D73 /* LegacyFileUploadResponse.swift */,
-				FDC4385A27B485DE00C60D73 /* LegacyFileDownloadResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -5333,7 +5318,6 @@
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C32C5DC0256DD743003C73A2 /* Poller.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
-				FDC4386127B4CDDF00C60D73 /* FileResponse.swift in Sources */,
 				C3A3A171256E1D25004D228D /* SSKReachabilityManager.swift in Sources */,
 				C3A71D0B2558989C0043A11F /* MessageWrapper.swift in Sources */,
 				B8F5F60325EDE16F003BF8D4 /* DataExtractionNotification.swift in Sources */,
@@ -5354,7 +5338,6 @@
 				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
 				FD83B9CC27D179BC005E1583 /* FSEndpoint.swift in Sources */,
 				C32C5AB5256DBE8F003C73A2 /* TSOutgoingMessage+Conversion.swift in Sources */,
-				FDC4385927B484E800C60D73 /* FileUploadBody.swift in Sources */,
 				C32C5E5B256DDF45003C73A2 /* OWSStorage.m in Sources */,
 				C32C5E15256DDC78003C73A2 /* SSKPreferences.swift in Sources */,
 				FDC438C727BB6DF000C60D73 /* DirectMessage.swift in Sources */,
@@ -5371,7 +5354,6 @@
 				C32C5EDC256DF501003C73A2 /* YapDatabaseConnection+OWS.m in Sources */,
 				FDC4381527B329CE00C60D73 /* NonceGenerator.swift in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
-				FDC4387627B5BEF300C60D73 /* FileDownloadResponse.swift in Sources */,
 				C35D76DB26606304009AA5FB /* ThreadUpdateBatcher.swift in Sources */,
 				FDC4382C27B380E300C60D73 /* LegacyMemberCountResponse.swift in Sources */,
 				B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */,
@@ -5427,7 +5409,7 @@
 				C32C5FBB256E0206003C73A2 /* OWSBackgroundTask.m in Sources */,
 				B8856CA8256F0F42001CE70E /* OWSBackupFragment.m in Sources */,
 				C32C5C3D256DCBAF003C73A2 /* AppReadiness.m in Sources */,
-				B87EF17126367CF800124B3C /* FileServerAPIV2.swift in Sources */,
+				B87EF17126367CF800124B3C /* FileServerAPI.swift in Sources */,
 				C3A3A18A256E2092004D228D /* SignalRecipient.m in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
 				C32C5F11256DF79A003C73A2 /* SSKIncrementingIdFinder.swift in Sources */,
@@ -5452,8 +5434,6 @@
 				C32C5B62256DC333003C73A2 /* OWSDisappearingConfigurationUpdateInfoMessage.m in Sources */,
 				FD83B9C927D0487A005E1583 /* SendDirectMessageResponse.swift in Sources */,
 				C352A2F525574B4700338F3E /* Job.swift in Sources */,
-				FDC4385727B484B700C60D73 /* LegacyFileUploadResponse.swift in Sources */,
-				FDC4385B27B485DE00C60D73 /* LegacyFileDownloadResponse.swift in Sources */,
 				C32C5C01256DC9A0003C73A2 /* OWSIdentityManager.m in Sources */,
 				FDC438AA27BB12BB00C60D73 /* UserModeratorRequest.swift in Sources */,
 				C32C59C4256DB41F003C73A2 /* TSContactThread.m in Sources */,

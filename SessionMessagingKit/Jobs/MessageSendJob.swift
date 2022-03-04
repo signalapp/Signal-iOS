@@ -100,7 +100,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
                 .replacingOccurrences(of: "]", with: "")
                 .split(separator: "|")
                 .map { String($0) }
-            let fileIds: [UInt64]? = (fileIdStrings.isEmpty ? nil : fileIdStrings.compactMap { UInt64($0) })
+            let fileIds: [String]? = (fileIdStrings.isEmpty ? nil : fileIdStrings)
             
             destination = .openGroup(
                 roomToken: roomToken,

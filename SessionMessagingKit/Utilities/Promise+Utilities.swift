@@ -5,9 +5,9 @@ import PromiseKit
 import SessionSnodeKit
 
 extension Promise where T == Data {
-    func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, error: Error? = nil, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<R> {
+    func decoded<R: Decodable>(as type: R.Type, on queue: DispatchQueue? = nil, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<R> {
         self.map(on: queue) { data -> R in
-            try data.decoded(as: type, customError: error, using: dependencies)
+            try data.decoded(as: type, using: dependencies)
         }
     }
 }

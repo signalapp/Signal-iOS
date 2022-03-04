@@ -80,6 +80,7 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func getAllPendingJobs(of type: Job.Type) -> [Job] { return [] }
     func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob? { return nil }
     func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob? { return nil }
+    func getMessageSendJob(for messageSendJobID: String, using transaction: Any) -> MessageSendJob? { return nil }
     func resumeMessageSendJobIfNeeded(_ messageSendJobID: String) {}
     func isJobCanceled(_ job: Job) -> Bool { return true }
 

@@ -644,17 +644,15 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                     let dataString: String = String(responseString.suffix(from: infoStringEndIndex))
                     let dataStringParts: [String.SubSequence] = dataString.split(separator: ":")
                     
-                    guard dataStringParts.count > 1, let finalDataLength: Int = Int(dataStringParts[0]) else {
+                    guard dataStringParts.count > 1, let finalDataLength: Int = Int(dataStringParts[0]), let suffixData: Data = "e".data(using: .utf8) else {
                         return seal.reject(HTTP.Error.invalidResponse)
                     }
                     
-                    let finalDataStringStartIndex: String.Index = responseString.index(infoStringEndIndex, offsetBy: "\(finalDataLength):".count)
-                    let finalDataStringEndIndex: String.Index = responseString.index(finalDataStringStartIndex, offsetBy: finalDataLength)
-                    let finalDataString: String = String(responseString[finalDataStringStartIndex..<finalDataStringEndIndex])
-                    
-                    guard let finalData: Data = finalDataString.data(using: .ascii) else {
-                        return seal.reject(HTTP.Error.invalidResponse)
-                    }
+                    let dataBytes: Array<UInt8> = Array(data)
+                    let dataEndIndex: Int = (dataBytes.count - suffixData.count)
+                    let dataStartIndex: Int = (dataEndIndex - finalDataLength)
+                    let finalDataBytes: ArraySlice<UInt8> = dataBytes[dataStartIndex..<dataEndIndex]
+                    let finalData: Data = Data(finalDataBytes)
                     
                     return seal.fulfill((responseInfo, finalData))
                 }

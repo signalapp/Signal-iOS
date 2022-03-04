@@ -74,7 +74,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
                 stream,
                 using: { data in
                     OpenGroupAPI.uploadFile(data.bytes, to: openGroup.room, on: openGroup.server)
-                        .map { _, response -> UInt64 in response.id }
+                        .map { _, response -> String in response.id }
                 },
                 encrypt: false,
                 onSuccess: { [weak self] fileId in self?.handleSuccess(fileId) },
@@ -84,7 +84,10 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         else {
             AttachmentUploadJob.upload(
                 stream,
-                using: FileServerAPIV2.upload,
+                using: { data in
+                    FileServerAPI.upload(data)
+                        .map { response -> String in response.id }
+                },
                 encrypt: true,
                 onSuccess: { [weak self] fileId in self?.handleSuccess(fileId) },
                 onFailure: handleFailure
@@ -92,7 +95,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         }
     }
     
-    public static func upload(_ stream: TSAttachmentStream, using upload: (Data) -> Promise<UInt64>, encrypt: Bool, onSuccess: ((UInt64) -> Void)?, onFailure: ((Swift.Error) -> Void)?) {
+    public static func upload(_ stream: TSAttachmentStream, using upload: (Data) -> Promise<String>, encrypt: Bool, onSuccess: ((String) -> Void)?, onFailure: ((Swift.Error) -> Void)?) {
         // Get the attachment
         guard var data = try? stream.readDataFromFile() else {
             SNLog("Couldn't read attachment from disk.")
@@ -112,7 +115,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         }
         // Check the file size
         SNLog("File size: \(data.count) bytes.")
-        if Double(data.count) > Double(FileServerAPIV2.maxFileSize) / FileServerAPIV2.fileSizeORMultiplier {
+        if Double(data.count) > Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier {
             onFailure?(HTTP.Error.maxFileSizeExceeded)
             return
         }
@@ -121,7 +124,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         stream.isUploaded = false
         stream.save()
         upload(data).done(on: DispatchQueue.global(qos: .userInitiated)) { fileId in
-            let downloadURL = "\(FileServerAPIV2.server)/files/\(fileId)"
+            let downloadURL = "\(FileServerAPI.server)/files/\(fileId)"
             stream.serverId = fileId
             stream.isUploaded = true
             stream.downloadURL = downloadURL
@@ -132,7 +135,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         }
     }
 
-    private func handleSuccess(_ fileId: UInt64) {
+    private func handleSuccess(_ fileId: String) {
         SNLog("Attachment uploaded successfully.")
         delegate?.handleJobSucceeded(self)
         

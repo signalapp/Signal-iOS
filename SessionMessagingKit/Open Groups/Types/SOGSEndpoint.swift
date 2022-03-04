@@ -35,7 +35,6 @@ extension OpenGroupAPI {
         
         case roomFile(String)
         case roomFileIndividual(String, UInt64)
-        case roomFileIndividualJson(String, UInt64)
         
         // Inbox/Outbox (Message Requests)
         
@@ -125,14 +124,7 @@ extension OpenGroupAPI {
                 // Files
                 
                 case .roomFile(let roomToken): return "room/\(roomToken)/file"
-                case .roomFileIndividual(let roomToken, let fileId):
-                    // Note: The 'fileName' value is ignored by the server and is only used to distinguish
-                    // this from the 'Json' variant
-                    let fileName: String = ""
-                    return "room/\(roomToken)/file/\(fileId)/\(fileName)"
-                    
-                case .roomFileIndividualJson(let roomToken, let fileId):
-                    return "room/\(roomToken)/file/\(fileId)"
+                case .roomFileIndividual(let roomToken, let fileId): return "room/\(roomToken)/file/\(fileId)"
                     
                 // Inbox/Outbox (Message Requests)
     

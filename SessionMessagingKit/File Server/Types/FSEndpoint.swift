@@ -2,16 +2,16 @@
 
 import Foundation
 
-extension FileServerAPIV2 {
+extension FileServerAPI {
     public enum Endpoint: EndpointType {
-        case files
-        case file(fileId: UInt64)
+        case file
+        case fileIndividual(fileId: UInt64)
         case sessionVersion
         
         var path: String {
             switch self {
-                case .files: return "files"
-                case .file(let fileId): return "files/\(fileId)"
+                case .file: return "file"
+                case .fileIndividual(let fileId): return "file/\(fileId)"
                 case .sessionVersion: return "session_version"
             }
         }

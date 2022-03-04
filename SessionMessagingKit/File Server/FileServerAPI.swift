@@ -1,8 +1,8 @@
 import PromiseKit
 import SessionSnodeKit
 
-@objc(SNFileServerAPIV2)
-public final class FileServerAPIV2 : NSObject {
+@objc(SNFileServerAPI)
+public final class FileServerAPI: NSObject {
     
     // MARK: - Settings
     
@@ -19,30 +19,27 @@ public final class FileServerAPIV2 : NSObject {
     /// possible after proof of work has been calculated and the onion request encryption has happened, which takes several seconds.
     public static let fileSizeORMultiplier: Double = 2
     
-    // MARK: - Initialization
-    
-    private override init() { }
-    
     // MARK: - File Storage
     
     @objc(upload:)
     public static func objc_upload(file: Data) -> AnyPromise {
-        return AnyPromise.from(upload(file).map { String($0) })
+        return AnyPromise.from(upload(file).map { String($0.id) })
     }
     
-    public static func upload(_ file: Data) -> Promise<UInt64> {
-        let requestBody: FileUploadBody = FileUploadBody(file: file.base64EncodedString())
-        
+    public static func upload(_ file: Data) -> Promise<FileUploadResponse> {
         let request = Request(
             method: .post,
             server: server,
-            endpoint: Endpoint.files,
-            body: requestBody
+            endpoint: Endpoint.file,
+            headers: [
+                .contentDisposition: "attachment",
+                .contentType: "application/octet-stream"
+            ],
+            body: Array(file)
         )
-        
+
         return send(request, serverPublicKey: serverPublicKey)
-            .decoded(as: LegacyFileUploadResponse.self, on: .global(qos: .userInitiated), error: HTTP.Error.parsingFailed)
-            .map { response in response.fileId }
+            .decoded(as: FileUploadResponse.self, on: .global(qos: .userInitiated))
     }
     
     @objc(download:useOldServer:)
@@ -55,12 +52,10 @@ public final class FileServerAPIV2 : NSObject {
         let serverPublicKey: String = (useOldServer ? oldServerPublicKey : serverPublicKey)
         let request = Request<NoBody, Endpoint>(
             server: (useOldServer ? oldServer : server),
-            endpoint: .file(fileId: file)
+            endpoint: .fileIndividual(fileId: file)
         )
         
         return send(request, serverPublicKey: serverPublicKey)
-            .decoded(as: LegacyFileDownloadResponse.self, on: .global(qos: .userInitiated), error: HTTP.Error.parsingFailed)
-            .map { response in response.data }
     }
 
     public static func getVersion(_ platform: String) -> Promise<String> {
@@ -73,7 +68,7 @@ public final class FileServerAPIV2 : NSObject {
         )
         
         return send(request, serverPublicKey: serverPublicKey)
-            .decoded(as: VersionResponse.self, on: .global(qos: .userInitiated), error: HTTP.Error.parsingFailed)
+            .decoded(as: VersionResponse.self, on: .global(qos: .userInitiated))
             .map { response in response.version }
     }
     
@@ -93,7 +88,6 @@ public final class FileServerAPIV2 : NSObject {
             return Promise(error: error)
         }
         
-        // TODO: Rename file to be 'FileServerAPI' (drop the 'V2')
         return OnionRequestAPI.sendOnionRequest(urlRequest, to: request.server, with: serverPublicKey)
             .map2 { _, response in
                 guard let response: Data = response else { throw HTTP.Error.parsingFailed }
