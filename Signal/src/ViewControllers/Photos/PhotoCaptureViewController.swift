@@ -453,11 +453,14 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     func updateDoneButtonAppearance () {
-        if isInBatchMode, let badgeNumber = dataSource?.numberOfMediaItems {
+        if isInBatchMode, let badgeNumber = dataSource?.numberOfMediaItems, badgeNumber > 0 {
             doneButton.badgeNumber = badgeNumber
             doneButton.isHidden = false
         } else {
             doneButton.isHidden = true
+        }
+        if bottomBar.isCompactHeightLayout {
+            bottomBar.switchCameraButton.isHidden = !doneButton.isHidden
         }
     }
 
