@@ -1,2 +1,2 @@
-• The in-app camera has been given a fresh coat of paint so you can snap photos and videos in style
-• Notifications now let you know if someone has replied to your message or mentioned you
+• Die Signal-interne Kamera hat einen neuen Anstrich erhalten, so dass du nun Fotos und Videos mit Stil aufnehmen kannst.
+• Mitteilungen lassen dich wissen, ob jemand auf deine Nachricht geantwortet hat oder dich erwähnt hat.
