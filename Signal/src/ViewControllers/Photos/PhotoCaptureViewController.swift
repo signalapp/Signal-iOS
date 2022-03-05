@@ -654,7 +654,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         // Don't "unrotate" the switch camera icon if the front facing camera had been selected.
         let tranformFromCameraType: CGAffineTransform = photoCapture.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
 
-        let buttonsToUpdate: [UIView] = [ topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton ]
+        var buttonsToUpdate: [UIView] = [ topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton ]
+        if let cameraZoomControl = cameraZoomControl {
+            buttonsToUpdate.append(contentsOf: cameraZoomControl.cameraZoomLevelIndicators)
+        }
         let updateOrientation = {
             buttonsToUpdate.forEach { $0.transform = transformFromOrientation }
             self.bottomBar.switchCameraButton.transform = transformFromOrientation.concatenating(tranformFromCameraType)
@@ -1327,6 +1330,10 @@ private class CameraZoomSelectionControl: PillView {
         return stackView
     }()
     private let selectionViews: [CameraSelectionCircleView]
+
+    var cameraZoomLevelIndicators: [UIView] {
+        selectionViews
+    }
 
     var axis: NSLayoutConstraint.Axis {
         get {
