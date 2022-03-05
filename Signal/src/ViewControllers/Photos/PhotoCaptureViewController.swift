@@ -871,6 +871,12 @@ private class BottomBar: UIView {
         addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
                          controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor) ])
 
+        captureControl.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(captureControl)
+        captureControl.autoPinTopToSuperviewMargin()
+        captureControl.autoPinTrailingToSuperviewMargin()
+        addConstraint(captureControl.shutterButtonLayoutGuide.centerXAnchor.constraint(equalTo: centerXAnchor))
+
         photoLibraryButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(photoLibraryButton)
         addConstraints([ photoLibraryButton.leadingAnchor.constraint(equalTo: controlButtonsLayoutGuide.leadingAnchor),
@@ -882,12 +888,6 @@ private class BottomBar: UIView {
         addConstraints([ switchCameraButton.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
                          switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
                          switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
-
-        captureControl.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(captureControl)
-        captureControl.autoPinTopToSuperviewMargin()
-        captureControl.autoPinTrailingToSuperviewMargin()
-        addConstraint(captureControl.shutterButtonLayoutGuide.centerXAnchor.constraint(equalTo: centerXAnchor))
 
         compactHeightLayoutConstraints.append(contentsOf: [ controlButtonsLayoutGuide.centerYAnchor.constraint(equalTo: captureControl.shutterButtonLayoutGuide.centerYAnchor),
                                                             captureControl.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor) ])
