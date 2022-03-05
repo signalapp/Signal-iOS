@@ -987,7 +987,9 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
         updateDoneButtonAppearance()
 
-        if !isInBatchMode {
+        if isInBatchMode {
+            resumePhotoCapture()
+        } else {
             delegate?.photoCaptureViewControllerDidFinish(self)
         }
     }
