@@ -377,7 +377,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal ന് ഒരു ബൂസ്റ്റ് നല്‍കുക";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "നിങ്ങളുടെ ബൂസ്റ്റ് ബാഡ്‌ജ് കാലഹരണപ്പെട്ടു ഇനി അത് നിങ്ങളുടെ പ്രൊഫൈലിൽ ദൃശ്യമാകില്ല.\n\nനിങ്ങൾക്ക് Signal ഉപയോഗിക്കുന്നത് തുടരാം, എന്നാൽ നിങ്ങൾക്കായി നിർമ്മിച്ച സാങ്കേതികവിദ്യയെ പിന്തുണയ്‌ക്കാൻ, ദയവായി പ്രതിമാസ പരിപാലകര്‍ ആകുന്നത് പരിഗണിക്കുക.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
