@@ -203,6 +203,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
             delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+            updateDoneButtonAppearance()
+
         case .deselect:
             guard isSelected(indexPath: indexPath) else {
                 return
@@ -210,6 +212,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
             delegate.imagePicker(self, didDeselectAsset: asset)
             collectionView.deselectItem(at: indexPath, animated: true)
+            updateDoneButtonAppearance()
         }
     }
 
