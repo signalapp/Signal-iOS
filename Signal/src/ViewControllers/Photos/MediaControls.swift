@@ -624,7 +624,7 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
     let backgroundStyle: BackgroundStyle
     let backgroundView: UIView
     private static let visibleButtonSize: CGFloat = 36  // both height and width
-    private static let defaultInset: CGFloat = 4
+    private static let defaultInset: CGFloat = 8
 
     var contentInsets: UIEdgeInsets = UIEdgeInsets(margin: CameraOverlayButton.defaultInset) {
         didSet {
