@@ -839,6 +839,8 @@
 		8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */; };
 		8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */; };
 		8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */; };
+		884DB94527DD70F700C6A309 /* IncomingStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */; };
+		884DB94727DD754700C6A309 /* StoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94627DD754700C6A309 /* StoryCell.swift */; };
 		8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */; };
 		8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */; };
 		8852572927DD366D0032073C /* StoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8852572827DD366D0032073C /* StoriesViewController.swift */; };
@@ -2052,6 +2054,8 @@
 		8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDescriptionPreviewView.swift; sourceTree = "<group>"; };
 		8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarHistoryManager.swift; sourceTree = "<group>"; };
 		8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarEditViewController.swift; sourceTree = "<group>"; };
+		884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingStoryViewModel.swift; sourceTree = "<group>"; };
+		884DB94627DD754700C6A309 /* StoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCell.swift; sourceTree = "<group>"; };
 		8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputTextView.swift; sourceTree = "<group>"; };
 		8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Mentions.swift"; sourceTree = "<group>"; };
 		8852572827DD366D0032073C /* StoriesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewController.swift; sourceTree = "<group>"; };
@@ -4011,6 +4015,8 @@
 			isa = PBXGroup;
 			children = (
 				8852572827DD366D0032073C /* StoriesViewController.swift */,
+				884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */,
+				884DB94627DD754700C6A309 /* StoryCell.swift */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -6213,6 +6219,7 @@
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
 				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				3420CF6F2638A01A00E7DCB0 /* CVWallpaperBlurView.swift in Sources */,
+				884DB94727DD754700C6A309 /* StoryCell.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */,
@@ -6397,6 +6404,7 @@
 				34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */,
 				34ACA7D82733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift in Sources */,
 				88588D1D252D5D3D00405414 /* GroupCallMemberView.swift in Sources */,
+				884DB94527DD70F700C6A309 /* IncomingStoryViewModel.swift in Sources */,
 				88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */,
 				8814D9662564A33E00A472E3 /* GroupCallRemoteVideoManager.swift in Sources */,
 				3457811B23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift in Sources */,

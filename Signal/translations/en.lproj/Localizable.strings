@@ -2605,6 +2605,9 @@
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Requests & Invites";
 
+/* Name for a group story on the stories list. Embeds {author's name}, {group name} */
+"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Group updated.";
 

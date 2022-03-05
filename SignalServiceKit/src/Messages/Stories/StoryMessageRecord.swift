@@ -14,6 +14,7 @@ public struct StoryMessageRecord: Dependencies, Codable, Identifiable, Fetchable
 
     public let timestamp: UInt64
     public let authorUuid: UUID
+    public var authorAddress: SignalServiceAddress { SignalServiceAddress(uuid: authorUuid) }
     public let groupId: Data?
 
     public enum Direction: Int, Codable { case incoming = 0, outgoing = 1 }
