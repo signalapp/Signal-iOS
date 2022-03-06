@@ -238,12 +238,6 @@ extension MessageReceiver {
                         thread.remove(with: transaction)
                     }
                 }
-                else {
-                    // Otherwise create and save the thread
-                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
-                    thread.shouldBeVisible = true
-                    thread.save(with: transaction)
-                }
             }
             
             // FIXME: 'OWSBlockingManager' manages it's own dbConnection and transactions so we have to dispatch this to prevent deadlocks
