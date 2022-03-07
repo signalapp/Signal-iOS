@@ -61,7 +61,7 @@ public class ImageEditorBlurViewController: OWSViewController {
         faceBlurContainer.autoPinEdge(toSuperviewEdge: .top)
 
         let autoBlurLabel = UILabel()
-        autoBlurLabel.text = NSLocalizedString("IMAGE_EDITOR_BLUR_SETTING", comment: "The image editor setting to blur faces")
+        autoBlurLabel.text = NSLocalizedStringFromAppBundle("IMAGE_EDITOR_BLUR_SETTING", comment: "The image editor setting to blur faces")
         autoBlurLabel.font = .ows_dynamicTypeSubheadlineClamped
         autoBlurLabel.textColor = Theme.darkThemePrimaryColor
 
@@ -83,7 +83,7 @@ public class ImageEditorBlurViewController: OWSViewController {
         drawAnywhereHint.textAlignment = .center
         drawAnywhereHint.numberOfLines = 0
         drawAnywhereHint.lineBreakMode = .byWordWrapping
-        drawAnywhereHint.text = NSLocalizedString("IMAGE_EDITOR_BLUR_HINT",
+        drawAnywhereHint.text = NSLocalizedStringFromAppBundle("IMAGE_EDITOR_BLUR_HINT",
                                                   comment: "The image editor hint that you can draw blur")
         drawAnywhereHint.layer.shadowColor = UIColor.black.cgColor
         drawAnywhereHint.layer.shadowRadius = 2
@@ -207,7 +207,7 @@ public class ImageEditorBlurViewController: OWSViewController {
             presentationDelay: 0.5
         ) { modal in
             func showToast() {
-                let toastController = ToastController(text: NSLocalizedString(
+                let toastController = ToastController(text: NSLocalizedStringFromAppBundle(
                     "IMAGE_EDITOR_BLUR_TOAST",
                     comment: "A toast indicating that you can blur more faces after detection"
                 ))

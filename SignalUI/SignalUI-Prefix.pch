@@ -20,4 +20,7 @@
     #import <SignalServiceKit/OWSAnalytics.h>
     #import <SignalServiceKit/SSKAsserts.h>
     #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
+
+    #define NSLocalizedStringFromAppBundle(key, comment) \
+        [[NSBundle mainBundle].app localizedStringForKey:(key) value:@"" table:nil]
 #endif

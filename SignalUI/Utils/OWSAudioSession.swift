@@ -19,7 +19,7 @@ public class AudioActivity: NSObject {
     @objc public var backgroundPlaybackName: String? {
         switch behavior {
         case .audioMessagePlayback:
-            return NSLocalizedString("AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE",
+            return NSLocalizedStringFromAppBundle("AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE",
                                      comment: "A string indicating that an audio message is playing.")
         case .call:
             return nil

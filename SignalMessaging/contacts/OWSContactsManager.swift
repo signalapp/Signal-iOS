@@ -631,7 +631,7 @@ extension OWSContactsManager {
         owsAssertDebug(addressesWithTheSameName.contains(address))
         if addressesWithTheSameName.count > 1,
            let index = addressesWithTheSameName.firstIndex(of: address) {
-            let format = NSLocalizedString("PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
+            let format = NSLocalizedStringFromAppBundle("PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
                                            comment: "Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}.")
             return String(format: format,
                           addressLabel,

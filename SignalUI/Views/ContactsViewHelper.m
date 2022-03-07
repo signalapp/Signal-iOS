@@ -416,17 +416,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
     ActionSheetController *alert = [[ActionSheetController alloc]
-        initWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
+        initWithTitle:NSLocalizedStringFromAppBundle(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
                                         : @"Alert title for when the user has just tried to edit a "
                                           @"contacts after declining to give Signal contacts "
                                           @"permissions")
-              message:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
+              message:NSLocalizedStringFromAppBundle(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
                                         : @"Alert body for when the user has just tried to edit a "
                                           @"contacts after declining to give Signal contacts "
                                           @"permissions")];
 
     [alert addAction:[[ActionSheetAction alloc]
-                                   initWithTitle:NSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
+                                   initWithTitle:NSLocalizedStringFromAppBundle(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
                                                      @"Button text to dismiss missing contacts permission alert")
                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"not_now")
                                            style:ActionSheetActionStyleCancel

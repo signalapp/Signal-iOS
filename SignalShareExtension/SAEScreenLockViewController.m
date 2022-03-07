@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = Theme.launchScreenBackgroundColor;
 
-    self.title = NSLocalizedString(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
+    self.title = NSLocalizedStringFromAppBundle(@"SHARE_EXTENSION_VIEW_TITLE", @"Title for the 'share extension' view.");
 
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_FAILED",
+    [OWSActionSheets showActionSheetWithTitle:NSLocalizedStringFromAppBundle(@"SCREEN_LOCK_UNLOCK_FAILED",
                                                   @"Title for alert indicating that screen lock could not be unlocked.")
                                       message:message
                                   buttonTitle:nil

@@ -9,6 +9,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -442,11 +443,11 @@ NSString *const OWSPreferencesKeyDeviceScale = @"OWSPreferencesKeyDeviceScale";
 {
     switch (notificationType) {
         case NotificationNamePreview:
-            return NSLocalizedString(@"NOTIFICATIONS_SENDER_AND_MESSAGE", nil);
+            return NSLocalizedStringFromAppBundle(@"NOTIFICATIONS_SENDER_AND_MESSAGE", nil);
         case NotificationNameNoPreview:
-            return NSLocalizedString(@"NOTIFICATIONS_SENDER_ONLY", nil);
+            return NSLocalizedStringFromAppBundle(@"NOTIFICATIONS_SENDER_ONLY", nil);
         case NotificationNoNameNoPreview:
-            return NSLocalizedString(@"NOTIFICATIONS_NONE", nil);
+            return NSLocalizedStringFromAppBundle(@"NOTIFICATIONS_NONE", nil);
         default:
             OWSLogWarn(@"Undefined NotificationType in Settings");
             return @"";

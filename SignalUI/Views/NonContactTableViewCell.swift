@@ -65,7 +65,7 @@ public class NonContactTableViewCell: UITableViewCell {
 
     @objc public func configureWithUsername(_ username: String, hideHeaderLabel: Bool) {
         iconView.setTemplateImageName("username-search-48-black", tintColor: Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray75)
-        headerLabel.text = NSLocalizedString("NON_CONTACT_TABLE_CELL_NEW_MESSAGE",
+        headerLabel.text = NSLocalizedStringFromAppBundle("NON_CONTACT_TABLE_CELL_NEW_MESSAGE",
                                              comment: "A string prompting the user to send a new mesaage to a user")
         headerLabel.isHidden = hideHeaderLabel
         identifierLabel.text = CommonFormats.formatUsername(username)
@@ -80,11 +80,11 @@ public class NonContactTableViewCell: UITableViewCell {
                                                                              diameterPoints: 48,
                                                                              localUserDisplayMode: .asUser)
             iconView.image = avatar
-            headerLabel.text = NSLocalizedString("NON_CONTACT_TABLE_CELL_NEW_MESSAGE",
+            headerLabel.text = NSLocalizedStringFromAppBundle("NON_CONTACT_TABLE_CELL_NEW_MESSAGE",
                                                  comment: "A string prompting the user to send a new mesaage to a user")
         } else {
             iconView.image = UIImage(named: "invite-SMS-\(Theme.isDarkThemeEnabled ? "dark-" : "")48")
-            headerLabel.text = NSLocalizedString("NON_CONTACT_TABLE_CELL_SEND_SMS",
+            headerLabel.text = NSLocalizedStringFromAppBundle("NON_CONTACT_TABLE_CELL_SEND_SMS",
                                                  comment: "A string asking the user if they'd like to invite a number to signal via SMS.")
         }
 

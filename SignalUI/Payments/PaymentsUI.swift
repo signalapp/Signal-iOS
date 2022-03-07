@@ -26,14 +26,14 @@ public extension PaymentsUI {
 
         }
 
-        let title = NSLocalizedString("PAYMENTS_DECLINE_REQUEST_ALERT_TITLE",
+        let title = NSLocalizedStringFromAppBundle("PAYMENTS_DECLINE_REQUEST_ALERT_TITLE",
                                       comment: "Title for the 'decline a payment request' alert.")
-        let messageFormat = NSLocalizedString("PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT",
+        let messageFormat = NSLocalizedStringFromAppBundle("PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT",
                                       comment: "Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}.")
         let alertMessage = String(format: messageFormat, userName)
         let actionSheet = ActionSheetController(title: title, message: alertMessage)
         actionSheet.addAction(ActionSheetAction(
-                                title: NSLocalizedString("PAYMENTS_ACTION_DECLINE_REQUEST",
+                                title: NSLocalizedStringFromAppBundle("PAYMENTS_ACTION_DECLINE_REQUEST",
                                                          comment: "Button used to decline a payment request."),
             style: .default,
             handler: { [weak fromViewController] _ in
@@ -62,7 +62,7 @@ public extension PaymentsUI {
                 owsFailDebug("Error: \(error)")
 
                 modalActivityIndicator.dismiss {
-                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED",
+                    OWSActionSheets.showErrorAlert(message: NSLocalizedStringFromAppBundle("PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED",
                                                                               comment: "Error indicating that a payment request could not be declined."))
                 }
             }
@@ -111,7 +111,7 @@ public extension PaymentsUI {
                 owsFailDebug("Error: \(error)")
 
                 modalActivityIndicator.dismiss {
-                    OWSActionSheets.showErrorAlert(message: NSLocalizedString("PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED",
+                    OWSActionSheets.showErrorAlert(message: NSLocalizedStringFromAppBundle("PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED",
                                                                               comment: "Error indicating that a payment request could not be cancelled."))
                 }
             }

@@ -57,7 +57,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("NEW_NONCONTACT_CONVERSATION_VIEW_TITLE",
+        title = NSLocalizedStringFromAppBundle("NEW_NONCONTACT_CONVERSATION_VIEW_TITLE",
                                   comment: "Title for the 'new non-contact conversation' view.")
 
         let stackView = UIStackView()
@@ -75,7 +75,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         countryRow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCountryRow)))
         stackView.addArrangedSubview(countryRow)
 
-        countryRowTitleLabel.text = NSLocalizedString("REGISTRATION_DEFAULT_COUNTRY_NAME", comment: "Label for the country code field")
+        countryRowTitleLabel.text = NSLocalizedStringFromAppBundle("REGISTRATION_DEFAULT_COUNTRY_NAME", comment: "Label for the country code field")
         countryRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         countryRowTitleLabel.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "countryRowTitleLabel")
@@ -100,7 +100,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         let phoneNumberRow = UIView.container()
         stackView.addArrangedSubview(phoneNumberRow)
 
-        phoneNumberRowTitleLabel.text = NSLocalizedString("REGISTRATION_PHONENUMBER_BUTTON",
+        phoneNumberRowTitleLabel.text = NSLocalizedStringFromAppBundle("REGISTRATION_PHONENUMBER_BUTTON",
                                                           comment: "Label for the phone number textfield")
         phoneNumberRowTitleLabel.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         phoneNumberRowTitleLabel.accessibilityIdentifier =
@@ -114,7 +114,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         phoneNumberTextField.textColor = Theme.accentBlueColor
         phoneNumberTextField.autocorrectionType = .no
         phoneNumberTextField.autocapitalizationType = .none
-        phoneNumberTextField.placeholder = NSLocalizedString("REGISTRATION_ENTERNUMBER_DEFAULT_TEXT",
+        phoneNumberTextField.placeholder = NSLocalizedStringFromAppBundle("REGISTRATION_ENTERNUMBER_DEFAULT_TEXT",
                                                              comment: "Placeholder text for the phone number textfield")
         phoneNumberTextField.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "phoneNumberTextField")
@@ -142,7 +142,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         // Button row
 
         let buttonHeight: CGFloat = 47
-        let buttonTitle = buttonText ?? NSLocalizedString("NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON",
+        let buttonTitle = buttonText ?? NSLocalizedStringFromAppBundle("NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON",
                                                           comment: "A label for the 'add by phone number' button in the 'new non-contact conversation' view")
 
         stackView.addArrangedSubview(button)

@@ -374,7 +374,7 @@ extension LinkPreviewViewAdapter {
            displayDomain.count > 0 {
             labelText = displayDomain.lowercased()
         } else {
-            labelText = NSLocalizedString("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.").uppercased()
+            labelText = NSLocalizedStringFromAppBundle("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.").uppercased()
         }
         if let date = state.date() {
             labelText.append(" ⋅ \(LinkPreviewView.dateFormatter.string(from: date))")

@@ -739,7 +739,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)unknownContactName
 {
-    return NSLocalizedString(
+    return NSLocalizedStringFromAppBundle(
                              @"UNKNOWN_CONTACT_NAME", @"Displayed if for some reason we can't determine a contacts phone number *or* name");
 }
 
@@ -812,7 +812,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)unknownUserLabel
 {
-    return NSLocalizedString(@"UNKNOWN_USER", @"Label indicating an unknown user.");
+    return NSLocalizedStringFromAppBundle(@"UNKNOWN_USER", @"Label indicating an unknown user.");
 }
 
 - (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address

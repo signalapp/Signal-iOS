@@ -74,9 +74,9 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
         OWSAssertDebug(address.isValid);
 
         if (address.isLocalAddress) {
-            [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
+            [self showOkAlertWithTitle:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
                                            @"The title of the 'You can't block yourself' alert.")
-                               message:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
+                               message:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
                                            @"The message of the 'You can't block yourself' alert.")
                     fromViewController:fromViewController
                        completionBlock:^(ActionSheetAction *action) {
@@ -88,18 +88,18 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
         }
     }
 
-    NSString *title = [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT",
+    NSString *title = [NSString stringWithFormat:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT",
                                                      @"A format for the 'block user' action sheet title. Embeds {{the "
                                                      @"blocked user's name or phone number}}."),
                                 [self formatDisplayNameForAlertTitle:displayName]];
 
     ActionSheetController *actionSheet = [[ActionSheetController alloc]
         initWithTitle:title
-              message:NSLocalizedString(@"BLOCK_USER_BEHAVIOR_EXPLANATION",
+              message:NSLocalizedStringFromAppBundle(@"BLOCK_USER_BEHAVIOR_EXPLANATION",
                           @"An explanation of the consequences of blocking another user.")];
 
     ActionSheetAction *blockAction = [[ActionSheetAction alloc]
-                  initWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
+                  initWithTitle:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
                           style:ActionSheetActionStyleDestructive
                         handler:^(ActionSheetAction *_Nonnull action) {
@@ -135,17 +135,17 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     OWSAssertDebug(fromViewController);
 
     NSString *title = [NSString
-        stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT",
+        stringWithFormat:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT",
                              @"A format for the 'block group' action sheet title. Embeds the {{group name}}."),
         [self formatDisplayNameForAlertTitle:groupThread.groupNameOrDefault]];
 
     ActionSheetController *actionSheet =
         [[ActionSheetController alloc] initWithTitle:title
-                                             message:NSLocalizedString(@"BLOCK_GROUP_BEHAVIOR_EXPLANATION",
+                                             message:NSLocalizedStringFromAppBundle(@"BLOCK_GROUP_BEHAVIOR_EXPLANATION",
                                                          @"An explanation of the consequences of blocking a group.")];
 
     ActionSheetAction *blockAction = [[ActionSheetAction alloc]
-                  initWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
+                  initWithTitle:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_BLOCK_BUTTON", @"Button label for the 'block' button")
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
                           style:ActionSheetActionStyleDestructive
                         handler:^(ActionSheetAction *_Nonnull action) {
@@ -190,10 +190,10 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
         }
     });
 
-    [self showOkAlertWithTitle:NSLocalizedString(
+    [self showOkAlertWithTitle:NSLocalizedStringFromAppBundle(
                                    @"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE", @"The title of the 'user blocked' alert.")
                        message:[NSString
-                                   stringWithFormat:NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
+                                   stringWithFormat:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
                                                         @"The message format of the 'conversation blocked' alert. "
                                                         @"Embeds the {{conversation title}}."),
                                    [self formatDisplayNameForAlertMessage:displayName]]
@@ -239,8 +239,8 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     });
 
     NSString *alertTitle
-        = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE", @"The title of the 'group blocked' alert.");
-    NSString *alertBodyFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
+        = NSLocalizedStringFromAppBundle(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE", @"The title of the 'group blocked' alert.");
+    NSString *alertBodyFormat = NSLocalizedStringFromAppBundle(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
         @"The message format of the 'conversation blocked' alert. "
         @"Embeds the "
         @"{{conversation title}}.");
@@ -307,14 +307,14 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 
     NSString *title = [NSString
         stringWithFormat:
-            NSLocalizedString(@"BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
+                           NSLocalizedStringFromAppBundle(@"BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
                 @"A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}."),
         [self formatDisplayNameForAlertTitle:displayName]];
 
     ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title message:nil];
 
     ActionSheetAction *unblockAction =
-        [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+        [[ActionSheetAction alloc] initWithTitle:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                      @"Button label for the 'unblock' button")
                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
                                            style:ActionSheetActionStyleDestructive
@@ -359,7 +359,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
         }
     });
 
-    NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
+    NSString *titleFormat = NSLocalizedStringFromAppBundle(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
         @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");
     NSString *title = [NSString stringWithFormat:titleFormat, [self formatDisplayNameForAlertMessage:displayName]];
 
@@ -373,16 +373,16 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     OWSAssertDebug(fromViewController);
 
     NSString *title =
-        [NSString stringWithFormat:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_GROUP_TITLE",
+        [NSString stringWithFormat:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_UNBLOCK_GROUP_TITLE",
                                        @"Action sheet title when confirming you want to unblock a group.")];
 
-    NSString *message = NSLocalizedString(
+    NSString *message = NSLocalizedStringFromAppBundle(
         @"BLOCK_LIST_UNBLOCK_GROUP_BODY", @"Action sheet body when confirming you want to unblock a group");
 
     ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title message:message];
 
     ActionSheetAction *unblockAction =
-        [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+        [[ActionSheetAction alloc] initWithTitle:NSLocalizedStringFromAppBundle(@"BLOCK_LIST_UNBLOCK_BUTTON",
                                                      @"Button label for the 'unblock' button")
                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
                                            style:ActionSheetActionStyleDestructive
@@ -422,13 +422,13 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                                                 transaction:transaction];
     });
 
-    NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
+    NSString *titleFormat = NSLocalizedStringFromAppBundle(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
         @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");
     NSString *title =
         [NSString stringWithFormat:titleFormat, [self formatDisplayNameForAlertMessage:groupModel.groupNameOrDefault]];
 
     NSString *message
-        = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY", @"Alert body after unblocking a group.");
+        = NSLocalizedStringFromAppBundle(@"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY", @"Alert body after unblocking a group.");
     [self showOkAlertWithTitle:title
                        message:message
             fromViewController:fromViewController

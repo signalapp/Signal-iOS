@@ -255,7 +255,7 @@ const NSUInteger OWSCustomSoundShift = 16;
 
         // Other
         case OWSStandardSound_None:
-            return NSLocalizedString(@"SOUNDS_NONE",
+            return NSLocalizedStringFromAppBundle(@"SOUNDS_NONE",
                 @"Label for the 'no sound' option that allows users to disable sounds for notifications, "
                 @"etc.");
 
