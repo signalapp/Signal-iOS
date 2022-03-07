@@ -313,7 +313,7 @@ public extension KnownStickerPack {
 // MARK: - KnownStickerPackCursor
 
 @objc
-public class KnownStickerPackCursor: NSObject {
+public class KnownStickerPackCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<KnownStickerPackRecord>?
 

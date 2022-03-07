@@ -623,7 +623,7 @@ public extension TSThread {
 // MARK: - TSThreadCursor
 
 @objc
-public class TSThreadCursor: NSObject {
+public class TSThreadCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<ThreadRecord>?
 

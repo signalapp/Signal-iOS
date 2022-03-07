@@ -320,7 +320,7 @@ public extension OWSDevice {
 // MARK: - OWSDeviceCursor
 
 @objc
-public class OWSDeviceCursor: NSObject {
+public class OWSDeviceCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<DeviceRecord>?
 

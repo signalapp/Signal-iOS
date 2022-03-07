@@ -364,7 +364,7 @@ public extension TestModel {
 // MARK: - TestModelCursor
 
 @objc
-public class TestModelCursor: NSObject {
+public class TestModelCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<TestModelRecord>?
 

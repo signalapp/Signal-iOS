@@ -309,7 +309,7 @@ public extension ExperienceUpgrade {
 // MARK: - ExperienceUpgradeCursor
 
 @objc
-public class ExperienceUpgradeCursor: NSObject {
+public class ExperienceUpgradeCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<ExperienceUpgradeRecord>?
 

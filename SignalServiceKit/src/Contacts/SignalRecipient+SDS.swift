@@ -312,7 +312,7 @@ public extension SignalRecipient {
 // MARK: - SignalRecipientCursor
 
 @objc
-public class SignalRecipientCursor: NSObject {
+public class SignalRecipientCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<SignalRecipientRecord>?
 

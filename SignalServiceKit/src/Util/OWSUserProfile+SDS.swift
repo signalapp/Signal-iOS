@@ -436,7 +436,7 @@ public extension OWSUserProfile {
 // MARK: - OWSUserProfileCursor
 
 @objc
-public class OWSUserProfileCursor: NSObject {
+public class OWSUserProfileCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<UserProfileRecord>?
 

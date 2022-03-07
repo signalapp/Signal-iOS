@@ -336,7 +336,7 @@ public extension OWSBackupFragment {
 // MARK: - OWSBackupFragmentCursor
 
 @objc
-public class OWSBackupFragmentCursor: NSObject {
+public class OWSBackupFragmentCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<BackupFragmentRecord>?
 

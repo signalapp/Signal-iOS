@@ -345,7 +345,7 @@ public extension OWSReaction {
 // MARK: - OWSReactionCursor
 
 @objc
-public class OWSReactionCursor: NSObject {
+public class OWSReactionCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<ReactionRecord>?
 

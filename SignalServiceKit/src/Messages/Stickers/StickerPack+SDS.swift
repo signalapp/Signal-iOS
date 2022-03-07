@@ -355,7 +355,7 @@ public extension StickerPack {
 // MARK: - StickerPackCursor
 
 @objc
-public class StickerPackCursor: NSObject {
+public class StickerPackCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<StickerPackRecord>?
 

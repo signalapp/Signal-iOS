@@ -300,7 +300,7 @@ public extension OWSDisappearingMessagesConfiguration {
 // MARK: - OWSDisappearingMessagesConfigurationCursor
 
 @objc
-public class OWSDisappearingMessagesConfigurationCursor: NSObject {
+public class OWSDisappearingMessagesConfigurationCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?
 

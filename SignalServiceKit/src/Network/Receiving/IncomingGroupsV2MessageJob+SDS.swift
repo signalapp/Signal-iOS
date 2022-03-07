@@ -337,7 +337,7 @@ public extension IncomingGroupsV2MessageJob {
 // MARK: - IncomingGroupsV2MessageJobCursor
 
 @objc
-public class IncomingGroupsV2MessageJobCursor: NSObject {
+public class IncomingGroupsV2MessageJobCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<IncomingGroupsV2MessageJobRecord>?
 
