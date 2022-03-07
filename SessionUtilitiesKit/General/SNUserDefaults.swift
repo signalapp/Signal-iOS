@@ -1,5 +1,28 @@
 import Foundation
 
+public protocol UserDefaultsType: AnyObject {
+    func object(forKey defaultName: String) -> Any?
+    func string(forKey defaultName: String) -> String?
+    func array(forKey defaultName: String) -> [Any]?
+    func dictionary(forKey defaultName: String) -> [String : Any]?
+    func data(forKey defaultName: String) -> Data?
+    func stringArray(forKey defaultName: String) -> [String]?
+    func integer(forKey defaultName: String) -> Int
+    func float(forKey defaultName: String) -> Float
+    func double(forKey defaultName: String) -> Double
+    func bool(forKey defaultName: String) -> Bool
+    func url(forKey defaultName: String) -> URL?
+
+    func set(_ value: Any?, forKey defaultName: String)
+    func set(_ value: Int, forKey defaultName: String)
+    func set(_ value: Float, forKey defaultName: String)
+    func set(_ value: Double, forKey defaultName: String)
+    func set(_ value: Bool, forKey defaultName: String)
+    func set(_ url: URL?, forKey defaultName: String)
+}
+
+extension UserDefaults: UserDefaultsType {}
+
 public enum SNUserDefaults {
     
     public enum Bool : Swift.String {
@@ -31,7 +54,7 @@ public enum SNUserDefaults {
     }
 }
 
-public extension UserDefaults {
+public extension UserDefaultsType {
     
     subscript(bool: SNUserDefaults.Bool) -> Bool {
         get { return self.bool(forKey: bool.rawValue) }

@@ -308,9 +308,6 @@ public enum OnionRequestAPI: OnionRequestAPIType {
 
     /// Sends an onion request to `server`. Builds new paths as needed.
     public static func sendOnionRequest(_ request: URLRequest, to server: String, using version: Version = .v4, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        guard version != .v4 || server == "https://chat.lokinet.dev" else {  // TODO: Remove this
-            return sendOnionRequest(request, to: server, using: .v3, with: x25519PublicKey)
-        }
         guard let url = request.url, let host = request.url?.host else { return Promise(error: Error.invalidURL) }
         
         let scheme: String? = url.scheme

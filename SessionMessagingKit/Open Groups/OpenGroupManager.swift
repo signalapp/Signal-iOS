@@ -5,22 +5,44 @@ import SessionSnodeKit
 
 @objc(SNOpenGroupManager)
 public final class OpenGroupManager: NSObject {
-    @objc public static let shared = OpenGroupManager()
+    public class Cache {
+        public var defaultRoomsPromise: Promise<[OpenGroupAPI.Room]>?
+        fileprivate var groupImagePromises: [String: Promise<Data>] = [:]
+        
+        /// Server URL to room ID to set of user IDs
+        fileprivate var moderators: [String: [String: Set<String>]] = [:]
+        fileprivate var admins: [String: [String: Set<String>]] = [:]
+        
+        /// Server URL to value
+        public var hasPerformedInitialPoll: [String: Bool] = [:]
+        public var timeSinceLastPoll: [String: TimeInterval] = [:]
+
+        fileprivate var _timeSinceLastOpen: TimeInterval?
+        public func getTimeSinceLastOpen(using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> TimeInterval {
+            if let storedTimeSinceLastOpen: TimeInterval = _timeSinceLastOpen {
+                return storedTimeSinceLastOpen
+            }
+            
+            guard let lastOpen: Date = dependencies.standardUserDefaults[.lastOpen] else {
+                _timeSinceLastOpen = .greatestFiniteMagnitude
+                return .greatestFiniteMagnitude
+            }
+            
+            _timeSinceLastOpen = dependencies.date.timeIntervalSince(lastOpen)
+            return dependencies.date.timeIntervalSince(lastOpen)
+        }
+    }
+    
+    // MARK: - Variables
+    
+    @objc public static let shared: OpenGroupManager = OpenGroupManager()
+    
+    public let mutableCache: Atomic<Cache> = Atomic(Cache())
+    public var cache: Cache { return mutableCache.wrappedValue }
     
     private var pollers: [String: OpenGroupAPI.Poller] = [:] // One for each server
     private var isPolling = false
     
-    // MARK: - Cache
-    
-    public static var defaultRoomsPromise: Promise<[OpenGroupAPI.Room]>?
-    private static var groupImagePromises: [String: Promise<Data>] = [:]
-    
-    /// Server URL to room ID to set of moderator IDs
-    private static var moderators: Atomic<[String: [String: Set<String>]]> = Atomic([:])
-    
-    /// Server URL to room ID to set of admin IDs
-    private static var admins: Atomic<[String: [String: Set<String>]]> = Atomic([:])
-
     // MARK: - Polling
     
     @objc public func startPolling() {
@@ -247,15 +269,15 @@ public final class OpenGroupManager: NSObject {
             
             // - Moderators
             if let moderators: [String] = (pollInfo.details?.moderators ?? maybeUpdatedModel?.groupModeratorIds) {
-                OpenGroupManager.moderators.mutate {
-                    $0[server] = ($0[server] ?? [:]).setting(roomToken, Set(moderators))
+                OpenGroupManager.shared.mutableCache.mutate { cache in
+                    cache.moderators[server] = (cache.moderators[server] ?? [:]).setting(roomToken, Set(moderators))
                 }
             }
             
             // - Admins
             if let admins: [String] = (pollInfo.details?.admins ?? maybeUpdatedModel?.groupAdminIds) {
-                OpenGroupManager.admins.mutate {
-                    $0[server] = ($0[server] ?? [:]).setting(roomToken, Set(admins))
+                OpenGroupManager.shared.mutableCache.mutate { cache in
+                    cache.admins[server] = (cache.admins[server] ?? [:]).setting(roomToken, Set(admins))
                 }
             }
 
@@ -458,8 +480,8 @@ public final class OpenGroupManager: NSObject {
     }
     
     public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Bool {
-        let modAndAdminKeys: Set<String> = (OpenGroupManager.moderators.wrappedValue[server]?[room] ?? Set())
-            .union(OpenGroupManager.admins.wrappedValue[server]?[room] ?? Set())
+        let modAndAdminKeys: Set<String> = (OpenGroupManager.shared.cache.moderators[server]?[room] ?? Set())
+            .union(OpenGroupManager.shared.cache.admins[server]?[room] ?? Set())
 
         // If the publicKey is in the set then return immediately, otherwise only continue if it's the
         // current user
@@ -507,7 +529,7 @@ public final class OpenGroupManager: NSObject {
     
     public static func getDefaultRoomsIfNeeded(using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) {
         // Note: If we already have a 'defaultRoomsPromise' then there is no need to get it again
-        guard OpenGroupManager.defaultRoomsPromise == nil else { return }
+        guard OpenGroupManager.shared.cache.defaultRoomsPromise == nil else { return }
         
         dependencies.storage.write(
             with: { transaction in
@@ -518,11 +540,13 @@ public final class OpenGroupManager: NSObject {
                 )
             },
             completion: {
-                OpenGroupManager.defaultRoomsPromise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
-                    OpenGroupAPI.rooms(for: OpenGroupAPI.defaultServer, using: dependencies)
-                        .map { _, data in data }
+                OpenGroupManager.shared.mutableCache.mutate { cache in
+                    cache.defaultRoomsPromise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
+                        OpenGroupAPI.rooms(for: OpenGroupAPI.defaultServer, using: dependencies)
+                            .map { _, data in data }
+                    }
                 }
-                OpenGroupManager.defaultRoomsPromise?
+                OpenGroupManager.shared.cache.defaultRoomsPromise?
                     .done(on: OpenGroupAPI.workQueue) { items in
                         items
                             .compactMap { room -> (UInt64, String)? in
@@ -536,7 +560,9 @@ public final class OpenGroupManager: NSObject {
                             }
                     }
                     .catch(on: OpenGroupAPI.workQueue) { _ in
-                        OpenGroupManager.defaultRoomsPromise = nil
+                        OpenGroupManager.shared.mutableCache.mutate { cache in
+                            cache.defaultRoomsPromise = nil
+                        }
                     }
             }
         )
@@ -566,7 +592,7 @@ public final class OpenGroupManager: NSObject {
             return Promise.value(data)
         }
         
-        if let promise = OpenGroupManager.groupImagePromises["\(server).\(roomToken)"] {
+        if let promise = OpenGroupManager.shared.cache.groupImagePromises["\(server).\(roomToken)"] {
             return promise
         }
         
@@ -581,7 +607,9 @@ public final class OpenGroupManager: NSObject {
                 UserDefaults.standard[.lastOpenGroupImageUpdate] = now
             }
         }
-        OpenGroupManager.groupImagePromises["\(server).\(roomToken)"] = promise
+        OpenGroupManager.shared.mutableCache.mutate { cache in
+            cache.groupImagePromises["\(server).\(roomToken)"] = promise
+        }
         
         return promise
     }

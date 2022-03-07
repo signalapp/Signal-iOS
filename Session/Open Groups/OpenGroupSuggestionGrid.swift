@@ -1,5 +1,6 @@
 import PromiseKit
 import NVActivityIndicatorView
+import SessionMessagingKit
 
 final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let maxWidth: CGFloat
@@ -64,7 +65,7 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         widthAnchor.constraint(greaterThanOrEqualToConstant: OpenGroupSuggestionGrid.cellHeight).isActive = true
         
         OpenGroupManager.getDefaultRoomsIfNeeded()
-        _ = OpenGroupManager.defaultRoomsPromise?.done { [weak self] rooms in
+        _ = OpenGroupManager.shared.cache.defaultRoomsPromise?.done { [weak self] rooms in
             self?.rooms = rooms
         }
     }

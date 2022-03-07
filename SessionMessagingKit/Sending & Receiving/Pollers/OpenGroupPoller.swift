@@ -52,13 +52,28 @@ extension OpenGroupAPI {
             guard !self.isPolling else { return Promise.value(()) }
             
             self.isPolling = true
+            let server: String = self.server
             let (promise, seal) = Promise<Void>.pending()
             promise.retainUntilComplete()
             
-            OpenGroupAPI.poll(server)
+            OpenGroupAPI
+                .poll(
+                    server,
+                    hasPerformedInitialPoll: OpenGroupManager.shared.cache.hasPerformedInitialPoll[server] == true,
+                    timeSinceLastPoll: (
+                        OpenGroupManager.shared.cache.timeSinceLastPoll[server] ??
+                        OpenGroupManager.shared.cache.getTimeSinceLastOpen()
+                    )
+                )
                 .done(on: OpenGroupAPI.workQueue) { [weak self] response in
                     self?.isPolling = false
                     self?.handlePollResponse(response, isBackgroundPoll: isBackgroundPoll)
+                    
+                    OpenGroupManager.shared.mutableCache.mutate { cache in
+                        cache.hasPerformedInitialPoll[server] = true
+                        cache.timeSinceLastPoll[server] = Date().timeIntervalSince1970
+                        UserDefaults.standard[.lastOpen] = Date()
+                    }
                     seal.fulfill(())
                 }
                 .catch(on: OpenGroupAPI.workQueue) { [weak self] error in

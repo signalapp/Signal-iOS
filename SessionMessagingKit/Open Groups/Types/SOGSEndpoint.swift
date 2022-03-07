@@ -20,15 +20,15 @@ extension OpenGroupAPI {
         // Messages
         
         case roomMessage(String)
-        case roomMessageIndividual(String, id: Int64)
+        case roomMessageIndividual(String, id: UInt64)
         case roomMessagesRecent(String)
-        case roomMessagesBefore(String, id: Int64)
+        case roomMessagesBefore(String, id: UInt64)
         case roomMessagesSince(String, seqNo: Int64)
         
         // Pinning
         
-        case roomPinMessage(String, id: Int64)
-        case roomUnpinMessage(String, id: Int64)
+        case roomPinMessage(String, id: UInt64)
+        case roomUnpinMessage(String, id: UInt64)
         case roomUnpinAll(String)
         
         // Files

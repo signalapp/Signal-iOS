@@ -240,14 +240,6 @@ extension MessageReceiver {
                         thread.remove(with: transaction)
                     }
                 }
-                else if SessionId.Prefix(from: sessionID) != .blinded {
-                    // Otherwise create and save the thread (if the contact isn't a blinded contact - we don't want to
-                    // auto-create threads for blinded contacts if they have no messages)
-                    // TODO: See what this will do with blinded->unblinded conversations?
-                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
-                    thread.shouldBeVisible = true
-                    thread.save(with: transaction)
-                }
             }
             
             // FIXME: 'OWSBlockingManager' manages it's own dbConnection and transactions so we have to dispatch this to prevent deadlocks
@@ -891,7 +883,6 @@ extension MessageReceiver {
                 // Note: Pending `MessageSendJobs` _shouldn't_ be an issue as even if they are sent after the
                 // un-blinding of a thread, the logic when handling the sent messages should automatically
                 // assign them to the correct thread
-                // TODO: Validate the above note once `/outbox` has been implemented
                 view.enumerateRows(inGroup: blindedThreadId) { _, _, object, _, _, _ in
                     guard let interaction: TSInteraction = object as? TSInteraction else {
                         return

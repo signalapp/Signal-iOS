@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPI {
-    public struct Capabilities: Codable {
+    public struct Capabilities: Codable, Equatable {
         public enum Capability: Equatable, CaseIterable, Codable {
             public static var allCases: [Capability] {
                 [.sogs, .blind]
@@ -53,5 +53,11 @@ extension OpenGroupAPI.Capabilities.Capability {
         let valueString: String = try container.decode(String.self)
         
         self = OpenGroupAPI.Capabilities.Capability(from: valueString)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container: SingleValueEncodingContainer = encoder.singleValueContainer()
+        
+        try container.encode(rawValue)
     }
 }

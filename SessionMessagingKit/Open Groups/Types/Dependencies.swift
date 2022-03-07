@@ -3,6 +3,7 @@
 import Foundation
 import Sodium
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 // MARK: - Dependencies
 
@@ -62,6 +63,12 @@ extension OpenGroupAPI {
             set { _nonceGenerator24 = newValue }
         }
         
+        private var _standardUserDefaults: UserDefaultsType?
+        public var standardUserDefaults: UserDefaultsType {
+            get { getValueSettingIfNull(&_standardUserDefaults) { UserDefaults.standard } }
+            set { _standardUserDefaults = newValue }
+        }
+        
         private var _date: Date?
         public var date: Date {
             get { getValueSettingIfNull(&_date) { Date() } }
@@ -80,6 +87,7 @@ extension OpenGroupAPI {
             ed25519: Ed25519Type.Type? = nil,
             nonceGenerator16: NonceGenerator16ByteType? = nil,
             nonceGenerator24: NonceGenerator24ByteType? = nil,
+            standardUserDefaults: UserDefaultsType? = nil,
             date: Date? = nil
         ) {
             _api = api
@@ -91,6 +99,7 @@ extension OpenGroupAPI {
             _ed25519 = ed25519
             _nonceGenerator16 = nonceGenerator16
             _nonceGenerator24 = nonceGenerator24
+            _standardUserDefaults = standardUserDefaults
             _date = date
         }
         
@@ -106,6 +115,7 @@ extension OpenGroupAPI {
             ed25519: Ed25519Type.Type? = nil,
             nonceGenerator16: NonceGenerator16ByteType? = nil,
             nonceGenerator24: NonceGenerator24ByteType? = nil,
+            standardUserDefaults: UserDefaultsType? = nil,
             date: Date? = nil
         ) -> Dependencies {
             return Dependencies(
@@ -118,6 +128,7 @@ extension OpenGroupAPI {
                 ed25519: (ed25519 ?? self._ed25519),
                 nonceGenerator16: (nonceGenerator16 ?? self._nonceGenerator16),
                 nonceGenerator24: (nonceGenerator24 ?? self._nonceGenerator24),
+                standardUserDefaults: (standardUserDefaults ?? self._standardUserDefaults),
                 date: (date ?? self._date)
             )
         }

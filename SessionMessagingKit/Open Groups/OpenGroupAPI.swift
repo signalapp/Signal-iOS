@@ -3,34 +3,14 @@ import SessionSnodeKit
 import Sodium
 import Curve25519Kit
 
-@objc(SNOpenGroupAPI)
-public final class OpenGroupAPI: NSObject {
-    
+public enum OpenGroupAPI {
     // MARK: - Settings
     
     public static let defaultServer = "http://116.203.70.33"
     public static let defaultServerPublicKey = "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238"
     
     public static let workQueue = DispatchQueue(label: "OpenGroupAPI.workQueue", qos: .userInitiated) // It's important that this is a serial queue
-    
-    // MARK: - Polling State
-    
-    private static var hasPerformedInitialPoll: Atomic<[String: Bool]> = Atomic([:])
-    private static var timeSinceLastPoll: Atomic<[String: TimeInterval]> = Atomic([:])
-    private static var lastPollTime: Atomic<TimeInterval> = Atomic(.greatestFiniteMagnitude)
 
-    private static let timeSinceLastOpen: Atomic<TimeInterval> = {
-        guard let lastOpen = UserDefaults.standard[.lastOpen] else { return Atomic(.greatestFiniteMagnitude) }
-        
-        return Atomic(Date().timeIntervalSince(lastOpen))
-    }()
-    
-    
-    // TODO: Remove these
-    private static var legacyAuthTokenPromises: Atomic<[String: Promise<String>]> = Atomic([:])
-    private static var legacyHasUpdatedLastOpenDate = false
-    private static var legacyGroupImagePromises: [String: Promise<Data>] = [:]
-    
 
     // MARK: - Batching & Polling
     
@@ -42,19 +22,16 @@ public final class OpenGroupAPI: NSObject {
     ///    - Messages (includes additions and deletions)
     /// - Inbox for the server
     /// - Outbox for the server
-    public static func poll(_ server: String, using dependencies: Dependencies = Dependencies()) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
-        // Store a local copy of the cached state for this server
-        let hadPerformedInitialPoll: Bool = (hasPerformedInitialPoll.wrappedValue[server] == true)
-        let originalTimeSinceLastPoll: TimeInterval = (timeSinceLastPoll.wrappedValue[server] ?? min(lastPollTime.wrappedValue, timeSinceLastOpen.wrappedValue))
+    public static func poll(
+        _ server: String,
+        hasPerformedInitialPoll: Bool,
+        timeSinceLastPoll: TimeInterval,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<[Endpoint: (OnionRequestResponseInfoType, Codable?)]> {
         let maybeLastInboxMessageId: Int64? = dependencies.storage.getOpenGroupInboxLatestMessageId(for: server)
         let maybeLastOutboxMessageId: Int64? = dependencies.storage.getOpenGroupOutboxLatestMessageId(for: server)
         let lastInboxMessageId: Int64 = (maybeLastInboxMessageId ?? 0)
         let lastOutboxMessageId: Int64 = (maybeLastOutboxMessageId ?? 0)
-        
-        // Update the cached state for this server
-        hasPerformedInitialPoll.mutate { $0[server] = true }
-        lastPollTime.mutate { $0 = min($0, timeSinceLastOpen.wrappedValue)}
-        UserDefaults.standard[.lastOpen] = Date()
         
         // Generate the requests
         let requestResponseType: [BatchRequestInfoType] = [
@@ -78,8 +55,8 @@ public final class OpenGroupAPI: NSObject {
                             // If it's the first poll for this launch and it's been longer than
                             // 'maxInactivityPeriod' then just retrieve recent messages instead
                             // of trying to get all messages since the last one retrieved
-                            !hadPerformedInitialPoll &&
-                            originalTimeSinceLastPoll > OpenGroupAPI.Poller.maxInactivityPeriod
+                            !hasPerformedInitialPoll &&
+                            timeSinceLastPoll > OpenGroupAPI.Poller.maxInactivityPeriod
                         )
                     )
                     
@@ -180,7 +157,6 @@ public final class OpenGroupAPI: NSObject {
             body: requestBody
         )
         
-        // TODO: Handle a `412` response (ie. a required capability isn't supported)
         return send(request, using: dependencies)
             .decoded(as: responseTypes, on: OpenGroupAPI.workQueue, using: dependencies)
             .map { result in
@@ -203,11 +179,9 @@ public final class OpenGroupAPI: NSObject {
     public static func capabilities(on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Capabilities)> {
         let request: Request = Request<NoBody, Endpoint>(
             server: server,
-            endpoint: .capabilities,
-            queryParameters: [:] // TODO: Add any requirements '.required'.
+            endpoint: .capabilities
         )
         
-        // TODO: Handle a `412` response (ie. a required capability isn't supported)
         return send(request, using: dependencies)
             .decoded(as: Capabilities.self, on: OpenGroupAPI.workQueue, using: dependencies)
     }
@@ -290,31 +264,21 @@ public final class OpenGroupAPI: NSObject {
         ]
         
         return sequence(server, requests: requestResponseType, using: dependencies)
-            .map { response -> (capabilities: (OnionRequestResponseInfoType, Capabilities?), room: (OnionRequestResponseInfoType, Room?)) in
-                var capabilities: (OnionRequestResponseInfoType, Capabilities?)? = nil
-                var room: (OnionRequestResponseInfoType, Room?)? = nil
+            .map { (response: [Endpoint: (OnionRequestResponseInfoType, Codable?)]) -> (capabilities: (OnionRequestResponseInfoType, Capabilities?), room: (OnionRequestResponseInfoType, Room?)) in
+                let maybeCapabilities: (OnionRequestResponseInfoType, Capabilities?)? = response[.capabilities]
+                    .map { info, data in (info, (data as? BatchSubResponse<Capabilities>)?.body) }
+                let maybeRoomResponse: (OnionRequestResponseInfoType, Codable?)? = response
+                    .first(where: { key, _ in
+                        switch key {
+                            case .room: return true
+                            default: return false
+                        }
+                    })
+                    .map { _, value in value }
+                let maybeRoom: (OnionRequestResponseInfoType, Room?)? = maybeRoomResponse
+                    .map { info, data in (info, (data as? BatchSubResponse<Room>)?.body) }
                 
-                try response.forEach { (endpoint: Endpoint, endpointResponse: (info: OnionRequestResponseInfoType, data: Codable?)) in
-                    switch endpoint {
-                        case .capabilities:
-                            guard let responseData: BatchSubResponse<Capabilities> = endpointResponse.data as? BatchSubResponse<Capabilities>, let responseBody: Capabilities = responseData.body else {
-                                throw HTTP.Error.parsingFailed
-                            }
-                            
-                            capabilities = (endpointResponse.info, responseBody)
-                            
-                        case .room:
-                            guard let responseData: OpenGroupAPI.BatchSubResponse<OpenGroupAPI.Room> = endpointResponse.data as? OpenGroupAPI.BatchSubResponse<OpenGroupAPI.Room>, let responseBody: OpenGroupAPI.Room = responseData.body else {
-                                throw HTTP.Error.parsingFailed
-                            }
-                            
-                            room = (endpointResponse.info, responseBody)
-                            
-                        default: break // No custom handling needed
-                    }
-                }
-                
-                guard let capabilities: (OnionRequestResponseInfoType, Capabilities?) = capabilities, let room: (OnionRequestResponseInfoType, Room?) = room else {
+                guard let capabilities: (OnionRequestResponseInfoType, Capabilities?) = maybeCapabilities, let room: (OnionRequestResponseInfoType, Room?) = maybeRoom else {
                     throw HTTP.Error.parsingFailed
                 }
                 
@@ -367,7 +331,7 @@ public final class OpenGroupAPI: NSObject {
     }
     
     /// Returns a single message by ID
-    public static func message(_ id: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Message)> {
+    public static func message(_ id: UInt64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, Message)> {
         let request: Request = Request<NoBody, Endpoint>(
             server: server,
             endpoint: .roomMessageIndividual(roomToken, id: id)
@@ -381,7 +345,7 @@ public final class OpenGroupAPI: NSObject {
     ///
     /// **Note:** This edit may only be initiated by the creator of the post, and the poster must currently have write permissions in the room
     public static func messageUpdate(
-        _ id: Int64,
+        _ id: UInt64,
         plaintext: Data,
         fileIds: [Int64]?,
         in roomToken: String,
@@ -405,12 +369,11 @@ public final class OpenGroupAPI: NSObject {
             body: requestBody
         )
 
-        // TODO: Handle custom response info?
         return send(request, using: dependencies)
     }
     
     public static func messageDelete(
-        _ id: Int64,
+        _ id: UInt64,
         in roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
@@ -432,8 +395,6 @@ public final class OpenGroupAPI: NSObject {
         let request: Request = Request<NoBody, Endpoint>(
             server: server,
             endpoint: .roomMessagesRecent(roomToken)
-            // TODO: Limit?.
-//            queryParameters: [ .limit: 50 ]
         )
 
         return send(request, using: dependencies)
@@ -444,13 +405,10 @@ public final class OpenGroupAPI: NSObject {
     /// remove the `@available` line and make sure to route the response of this method to the `OpenGroupManager.handleMessages`
     /// method to ensure things are processed correctly
     @available(*, unavailable, message: "Avoid using this directly, use the pre-built `poll()` method instead")
-    public static func messagesBefore(messageId: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
-        // TODO: Do we need to be able to load old messages?
+    public static func messagesBefore(messageId: UInt64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<(OnionRequestResponseInfoType, [Message])> {
         let request: Request = Request<NoBody, Endpoint>(
             server: server,
             endpoint: .roomMessagesBefore(roomToken, id: messageId)
-            // TODO: Limit?.
-//            queryParameters: [ .limit: 50 ]
         )
 
         return send(request, using: dependencies)
@@ -465,8 +423,6 @@ public final class OpenGroupAPI: NSObject {
         let request: Request = Request<NoBody, Endpoint>(
             server: server,
             endpoint: .roomMessagesSince(roomToken, seqNo: seqNo)
-            // TODO: Limit?.
-//            queryParameters: [ .limit: 50 ]
         )
 
         return send(request, using: dependencies)
@@ -485,7 +441,7 @@ public final class OpenGroupAPI: NSObject {
     /// Pinned messages that are already pinned will be re-pinned (that is, their pin timestamp and pinning admin user will be updated) - because pinned
     /// messages are returned in pinning-order this allows admins to order multiple pinned messages in a room by re-pinning (via this endpoint) in the
     /// order in which pinned messages should be displayed
-    public static func pinMessage(id: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
+    public static func pinMessage(id: UInt64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
         let request: Request = Request<NoBody, Endpoint>(
             method: .post,
             server: server,
@@ -499,7 +455,7 @@ public final class OpenGroupAPI: NSObject {
     /// Remove a message from this room's pinned message list
     ///
     /// The user must have `admin` (not just `moderator`) permissions in the room
-    public static func unpinMessage(id: Int64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
+    public static func unpinMessage(id: UInt64, in roomToken: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Promise<OnionRequestResponseInfoType> {
         let request: Request = Request<NoBody, Endpoint>(
             method: .post,
             server: server,

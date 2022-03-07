@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPI {
-    public struct PinnedMessage: Codable {
+    public struct PinnedMessage: Codable, Equatable {
         enum CodingKeys: String, CodingKey {
             case id
             case pinnedAt = "pinned_at"
