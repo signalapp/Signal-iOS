@@ -1,3 +1,4 @@
+import SessionUtilitiesKit
 
 extension ConfigurationMessage {
 
@@ -10,8 +11,7 @@ extension ConfigurationMessage {
         let profileKey = user.profileEncryptionKey?.keyData
         var closedGroups: Set<ClosedGroup> = []
         var openGroups: Set<String> = []
-        var contacts: Set<Contact> = []
-        var contactCount = 0
+        var contacts: Set<ConfigurationMessage.Contact> = []
         
         let populateDataClosure: (YapDatabaseReadTransaction) -> () = { transaction in
             TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
@@ -48,47 +48,48 @@ extension ConfigurationMessage {
             }
             
             let currentUserPublicKey: String = getUserHexEncodedPublicKey()
-            var truncatedContacts = storage.getAllContacts(with: transaction)
             
-            if truncatedContacts.count > 200 {
-                truncatedContacts = Set(Array(truncatedContacts)[0..<200])
-            }
-            
-            truncatedContacts.forEach { contact in
-                let publicKey = contact.sessionID
-                let threadID = TSContactThread.threadID(fromContactSessionID: publicKey)
-                
-                // Want to sync contacts for visible threads and blocked contacts between devices
-                guard
-                    publicKey != currentUserPublicKey && (
-                        TSContactThread.fetch(uniqueId: threadID, transaction: transaction)?.shouldBeVisible == true ||
-                        SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
+            contacts = storage.getAllContacts(with: transaction)
+                .filter { contact -> Bool in
+                    let threadID = TSContactThread.threadID(fromContactSessionID: contact.sessionID)
+                    
+                    return (
+                        // Skip the current user
+                        contact.sessionID != currentUserPublicKey && (
+                            
+                            // Include already approved contacts
+                            contact.isApproved ||
+                            contact.didApproveMe ||
+                            
+                            // Sync blocked contacts
+                            SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID) ||
+                            
+                            // Contacts which have visible threads (sanity check - should be included as already approved)
+                            TSContactThread.fetch(uniqueId: threadID, transaction: transaction)?.shouldBeVisible == true
+                        )
                     )
-                else {
-                    return
                 }
-                
-                // Can just default the 'hasX' values to true as they will be set to this
-                // when converting to proto anyway
-                let profilePictureURL = contact.profilePictureURL
-                let profileKey = contact.profileEncryptionKey?.keyData
-                let contact = ConfigurationMessage.Contact(
-                    publicKey: publicKey,
-                    displayName: (contact.name ?? publicKey),
-                    profilePictureURL: profilePictureURL,
-                    profileKey: profileKey,
-                    hasIsApproved: true,
-                    isApproved: contact.isApproved,
-                    hasIsBlocked: true,
-                    isBlocked: contact.isBlocked,
-                    hasDidApproveMe: true,
-                    didApproveMe: contact.didApproveMe
-                )
-                
-                contacts.insert(contact)
-                contactCount += 1
+                .map { contact -> ConfigurationMessage.Contact in
+                    // Can just default the 'hasX' values to true as they will be set to this
+                    // when converting to proto anyway
+                    let profilePictureURL = contact.profilePictureURL
+                    let profileKey = contact.profileEncryptionKey?.keyData
+                    
+                    return ConfigurationMessage.Contact(
+                        publicKey: contact.sessionID,
+                        displayName: (contact.name ?? contact.sessionID),
+                        profilePictureURL: profilePictureURL,
+                        profileKey: profileKey,
+                        hasIsApproved: true,
+                        isApproved: contact.isApproved,
+                        hasIsBlocked: true,
+                        isBlocked: contact.isBlocked,
+                        hasDidApproveMe: true,
+                        didApproveMe: contact.didApproveMe
+                    )
+                }
+                .asSet()
             }
-        }
         
         // If we are provided with a transaction then read the data based on the state of the database
         // from within the transaction rather than the state in disk
