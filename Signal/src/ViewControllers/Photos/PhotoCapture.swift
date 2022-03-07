@@ -519,7 +519,12 @@ class PhotoCapture: NSObject {
             return
         }
 
-        let zoomFactor = visibleZoomFactor / rearCameraZoomFactorMultiplier
+        var zoomFactor = visibleZoomFactor / rearCameraZoomFactorMultiplier
+
+        // Tap on 1x changes zoom to 2x if there's only one rear camera available.
+        if availableRearCameras.count == 1, let currentZoomFactor = captureDevice?.videoZoomFactor, currentZoomFactor == zoomFactor {
+            zoomFactor *= 2
+        }
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
             guard let captureDevice = self.captureDevice else {
