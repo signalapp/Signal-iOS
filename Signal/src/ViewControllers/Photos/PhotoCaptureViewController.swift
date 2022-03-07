@@ -1357,7 +1357,7 @@ private class CameraZoomSelectionControl: PillView {
 
         super.init(frame: .zero)
 
-        backgroundColor = .ows_blackAlpha20
+        backgroundColor = selectionViews.count > 1 ? .ows_blackAlpha20 : .clear
         layoutMargins = UIEdgeInsets(margin: 2)
 
         selectionViews.forEach { view in
