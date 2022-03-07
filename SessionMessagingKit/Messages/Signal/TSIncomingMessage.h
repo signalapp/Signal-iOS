@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *authorId;
 
 // convenience method for expiring a message which was just read
-- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
+- (void)markAsReadNowWithTrySendReadReceipt:(BOOL)trySendReadReceipt
                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)setNotificationIdentifier:(NSString * _Nullable)notificationIdentifier

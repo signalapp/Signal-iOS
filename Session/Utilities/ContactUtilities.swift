@@ -5,6 +5,7 @@ enum ContactUtilities {
         // Collect all contacts
         var result: [String] = []
         Storage.read { transaction in
+            // FIXME: If a user deletes a contact thread they will no longer appear in this list (ie. won't be an option for closed group conversations)
             TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
                 guard
                     let thread: TSContactThread = object as? TSContactThread,
