@@ -382,7 +382,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
         if let cameraZoomControl = cameraZoomControl {
             let constraints = [ cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
-                                cameraZoomControl.trailingAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.leadingAnchor, constant: -32)]
+                                cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32)]
             cameraZoomControlIPadConstraints = constraints
         }
     }
