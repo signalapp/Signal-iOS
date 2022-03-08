@@ -105,7 +105,7 @@ public class VideoEditorView: UIView {
         timelineView.autoPinEdge(toSuperviewMargin: .top)
         timelineView.autoSetDimension(.height, toSize: timelineHeight)
 
-        playButton.accessibilityLabel = NSLocalizedStringFromAppBundle("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "Accessibility label for button to start media playback")
+        playButton.accessibilityLabel = OWSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "Accessibility label for button to start media playback")
         playButton.setBackgroundImage(#imageLiteral(resourceName: "play_button"), for: .normal)
         playButton.contentMode = .scaleAspectFit
 
@@ -322,7 +322,7 @@ public class VideoEditorView: UIView {
                     modalVC.dismiss {}
                 }.catch { _ in
                     modalVC.dismiss {
-                        OWSActionSheets.showErrorAlert(message: NSLocalizedStringFromAppBundle("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
+                        OWSActionSheets.showErrorAlert(message: OWSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
                     }
                 }
             }

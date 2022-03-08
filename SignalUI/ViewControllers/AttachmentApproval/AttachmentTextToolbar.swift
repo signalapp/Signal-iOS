@@ -95,7 +95,7 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
             guard let self = self else { return }
             self.didTapSend()
         }
-        sendButton.accessibilityLabel = NSLocalizedStringFromAppBundle("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
+        sendButton.accessibilityLabel = OWSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
 
         viewOnceButton.block = { [weak self] in
             self?.didTapViewOnceMessagesButton()
@@ -223,7 +223,7 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
         return textView
     }()
 
-    private let placeholderText = NSLocalizedStringFromAppBundle("MESSAGE_TEXT_FIELD_PLACEHOLDER", comment: "placeholder text for the editable message field")
+    private let placeholderText = OWSLocalizedString("MESSAGE_TEXT_FIELD_PLACEHOLDER", comment: "placeholder text for the editable message field")
 
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()
@@ -444,7 +444,7 @@ class AttachmentTextToolbar: UIView, MentionTextViewDelegate {
             placeholderTextView.text = placeholderText
         case 1:
             let messageToText = String(
-                format: NSLocalizedStringFromAppBundle(
+                format: OWSLocalizedString(
                     "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT",
                     comment: "Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}}"
                 ), recipientNames[0]

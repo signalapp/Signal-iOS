@@ -74,7 +74,7 @@ public class ContactCellConfiguration: NSObject {
         text.appendTemplatedImage(named: "check-12",
                                   font: ContactCellView.subtitleFont)
         text.append(" ", attributes: [:])
-        text.append(NSLocalizedStringFromAppBundle("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+        text.append(OWSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                       comment: "Badge indicating that the user is verified."),
                     attributes: [:])
         self.attributedSubtitle = text
@@ -258,7 +258,7 @@ public class ContactCellView: ManualStackView {
                     case .noteToSelf:
                         name = MessageStrings.noteToSelf
                     case .asLocalUser:
-                        name = NSLocalizedStringFromAppBundle("GROUP_MEMBER_LOCAL_USER",
+                        name = OWSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                  comment: "Label indicating the local user.")
                     case .asUser:
                         name = contactsManager.displayName(for: address,

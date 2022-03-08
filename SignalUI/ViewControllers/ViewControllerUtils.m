@@ -196,7 +196,7 @@ NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
         }
 
         if (includeExampleLabel) {
-            NSString* format = NSLocalizedStringFromAppBundle(@"PHONE_NUMBER_EXAMPLE_FORMAT",
+            NSString* format = OWSLocalizedString(@"PHONE_NUMBER_EXAMPLE_FORMAT",
                                                  @"A format for a label showing an example phone number. Embeds {{the example phone number}}.");
             return [NSString stringWithFormat: format, [examplePhoneNumber substringFromIndex:callingCode.length]];
         } else {

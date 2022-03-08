@@ -22,10 +22,10 @@ public enum MessageSenderError: Int, Error, IsRetryableProvider, UserErrorDescri
     public var localizedDescription: String {
         switch self {
         case .blockedContactRecipient:
-            return NSLocalizedString("ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST",
+            return OWSLocalizedString("ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST",
                                      comment: "Error message indicating that message send failed due to block list")
         case .prekeyRateLimit, .missingDevice, .threadMissing:
-            return NSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
+            return OWSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
                                      comment: "Label indicating that a message failed to send.")
         }
     }
@@ -151,7 +151,7 @@ public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, I
 
     @objc
     public var localizedDescription: String {
-        NSLocalizedString("ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT",
+        OWSLocalizedString("ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT",
                           comment: "Error message when attempting to send message")
     }
 
@@ -193,7 +193,7 @@ public class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRet
     }
 
     public var localizedDescription: String {
-        NSLocalizedString("ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
+        OWSLocalizedString("ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
                           comment: "Error indicating that an outgoing message had no valid recipients.")
     }
 
@@ -225,7 +225,7 @@ public class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSE
     public var localizedDescription: String {
         // These messages are never presented to the user, since these errors only
         // occur to transient messages. We only specify an error to avoid an assert.
-        return NSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR",
+        return OWSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR",
                                  comment: "Worst case generic error message")
     }
 
@@ -265,7 +265,7 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
     }
 
     public var localizedDescription: String {
-        let format = NSLocalizedString("FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
+        let format = OWSLocalizedString("FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
                                        comment: "action sheet header when re-sending message which failed because of untrusted identity keys")
         return String(format: format, contactsManager.displayName(for: address))
     }
@@ -306,7 +306,7 @@ public class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryable
     }
 
     public var localizedDescription: String {
-        NSLocalizedString("FAILED_SENDING_BECAUSE_RATE_LIMIT",
+        OWSLocalizedString("FAILED_SENDING_BECAUSE_RATE_LIMIT",
                           comment: "action sheet header when re-sending message which failed because of too many attempts")
     }
 
@@ -340,7 +340,7 @@ public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryablePro
     }
 
     public var localizedDescription: String {
-        NSLocalizedString("ERROR_DESCRIPTION_SUSPECTED_SPAM",
+        OWSLocalizedString("ERROR_DESCRIPTION_SUSPECTED_SPAM",
                           comment: "Description for errors returned from the server due to suspected spam.")
     }
 
@@ -378,7 +378,7 @@ public class SpamChallengeResolvedError: NSObject, CustomNSError, IsRetryablePro
     }
 
     public var localizedDescription: String {
-        NSLocalizedString("ERROR_DESCRIPTION_SUSPECTED_SPAM",
+        OWSLocalizedString("ERROR_DESCRIPTION_SUSPECTED_SPAM",
                           comment: "Description for errors returned from the server due to suspected spam.")
     }
 
@@ -445,7 +445,7 @@ public class AppExpiredError: NSObject, CustomNSError, IsRetryableProvider, User
     }
 
     public var localizedDescription: String {
-        NSLocalizedString("ERROR_SENDING_EXPIRED",
+        OWSLocalizedString("ERROR_SENDING_EXPIRED",
                           comment: "Error indicating a send failure due to an expired application.")
     }
 
@@ -479,9 +479,9 @@ public class AppDeregisteredError: NSObject, CustomNSError, IsRetryableProvider,
 
     public var localizedDescription: String {
         TSAccountManager.shared.isPrimaryDevice
-            ? NSLocalizedString("ERROR_SENDING_DEREGISTERED",
+            ? OWSLocalizedString("ERROR_SENDING_DEREGISTERED",
                                 comment: "Error indicating a send failure due to a deregistered application.")
-            : NSLocalizedString("ERROR_SENDING_DELINKED",
+            : OWSLocalizedString("ERROR_SENDING_DELINKED",
                                 comment: "Error indicating a send failure due to a delinked application.")
     }
 
@@ -533,7 +533,7 @@ public class InvalidMessageError: NSObject, CustomNSError, IsRetryableProvider {
     public var errorCode: Int { Self.errorCode }
 
     public var localizedDescription: String {
-        return NSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
+        return OWSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
                                  comment: "Label indicating that a message failed to send.")
     }
 
@@ -626,7 +626,7 @@ public class MessageSendUnauthorizedError: NSObject, CustomNSError, IsRetryableP
     }
 
     public var localizedDescription: String {
-        NSLocalizedString("ERROR_DESCRIPTION_SENDING_UNAUTHORIZED",
+        OWSLocalizedString("ERROR_DESCRIPTION_SENDING_UNAUTHORIZED",
                           comment: "Error message when attempting to send message")
     }
 

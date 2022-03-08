@@ -183,7 +183,7 @@ class NSEEnvironment: Dependencies {
         Logger.info("Database password is not accessible, posting generic notification.")
 
         let content = UNMutableNotificationContent()
-        let notificationFormat = NSLocalizedStringFromAppBundle(
+        let notificationFormat = OWSLocalizedString(
             "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
             comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')"
         )

@@ -17,9 +17,9 @@ extension GiphyError: LocalizedError, UserErrorDescriptionProvider {
     public var localizedDescription: String {
         switch self {
         case .assertionError:
-            return NSLocalizedString("GIF_PICKER_ERROR_GENERIC", comment: "Generic error displayed when picking a GIF")
+            return OWSLocalizedString("GIF_PICKER_ERROR_GENERIC", comment: "Generic error displayed when picking a GIF")
         case .fetchFailure:
-            return NSLocalizedString("GIF_PICKER_ERROR_FETCH_FAILURE", comment: "Error displayed when there is a failure fetching a GIF from the remote service.")
+            return OWSLocalizedString("GIF_PICKER_ERROR_FETCH_FAILURE", comment: "Error displayed when there is a failure fetching a GIF from the remote service.")
         }
     }
 }

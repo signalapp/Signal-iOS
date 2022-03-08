@@ -150,43 +150,43 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.hasEnded) {
-        return NSLocalizedString(
+        return OWSLocalizedString(
             @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
     } else if (self.creatorAddress.isLocalAddress) {
-        return NSLocalizedString(@"GROUP_CALL_STARTED_BY_YOU", @"Text explaining that you started a group call.");
+        return OWSLocalizedString(@"GROUP_CALL_STARTED_BY_YOU", @"Text explaining that you started a group call.");
     } else if (self.creatorAddress) {
         NSString *creatorDisplayName = [self participantNameForAddress:self.creatorAddress transaction:transaction];
-        NSString *formatString = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
+        NSString *formatString = OWSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
             @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
         return [NSString stringWithFormat:formatString, creatorDisplayName];
     } else {
-        return NSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
+        return OWSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
             @"Text in conversation view for a group call that someone started. We don't know who");
     }
 }
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *moreThanThreeFormat = NSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
+    NSString *moreThanThreeFormat = OWSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
         @"Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ "
         @"participant2, %3$@ participantCount-2 }}");
-    NSString *threeFormat = NSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
+    NSString *threeFormat = OWSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
         @"Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ "
         @"participant2 }}");
-    NSString *twoFormat = NSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
+    NSString *twoFormat = OWSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
         @"Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 "
         @"}}");
-    NSString *onlyCreatorFormat = NSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
+    NSString *onlyCreatorFormat = OWSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
         @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
     NSString *youCreatedString
-        = NSLocalizedString(@"GROUP_CALL_STARTED_BY_YOU", @"Text explaining that you started a group call.");
+        = OWSLocalizedString(@"GROUP_CALL_STARTED_BY_YOU", @"Text explaining that you started a group call.");
     NSString *onlyYouString
-        = NSLocalizedString(@"GROUP_CALL_YOU_ARE_HERE", @"Text explaining that you are in the group call.");
-    NSString *onlyOneFormat = NSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT",
+        = OWSLocalizedString(@"GROUP_CALL_YOU_ARE_HERE", @"Text explaining that you are in the group call.");
+    NSString *onlyOneFormat = OWSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT",
         @"Text explaining that there is one person in the group call. Embeds {member name}");
-    NSString *endedString = NSLocalizedString(
+    NSString *endedString = OWSLocalizedString(
         @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
-    NSString *someoneString = NSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
+    NSString *someoneString = OWSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
         @"Text in conversation view for a group call that someone started. We don't know who");
 
 
@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)participantNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     if (address.isLocalAddress) {
-        return NSLocalizedString(@"GROUP_CALL_YOU", "Text describing the local user as a participant in a group call.");
+        return OWSLocalizedString(@"GROUP_CALL_YOU", "Text describing the local user as a participant in a group call.");
     } else {
         return [self.contactsManager displayNameForAddress:address transaction:transaction];
     }

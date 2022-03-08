@@ -303,29 +303,29 @@ extension GroupUpdateCopy {
             if let name = newGroupName {
                 switch updater {
                 case .localUser:
-                    let format = NSLocalizedString("GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT",
                                                    comment: "Message indicating that the group's name was changed by the local user. Embeds {{new group name}}.")
                     addItem(.groupName, format: format, name)
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}.")
                     addItem(.groupName, format: format, updaterName, name)
                 case .unknown:
-                    let format = NSLocalizedString("GROUP_UPDATED_NAME_UPDATED_FORMAT",
+                    let format = OWSLocalizedString("GROUP_UPDATED_NAME_UPDATED_FORMAT",
                                                    comment: "Message indicating that the group's name was changed. Embeds {{new group name}}.")
                     addItem(.groupName, format: format, name)
                 }
             } else {
                 switch updater {
                 case .localUser:
-                    addItem(.groupName, copy: NSLocalizedString("GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER",
+                    addItem(.groupName, copy: OWSLocalizedString("GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER",
                                                                 comment: "Message indicating that the group's name was removed by the local user."))
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}.")
                     addItem(.groupName, format: format, updaterName)
                 case .unknown:
-                    addItem(.groupName, copy: NSLocalizedString("GROUP_UPDATED_NAME_REMOVED",
+                    addItem(.groupName, copy: OWSLocalizedString("GROUP_UPDATED_NAME_REMOVED",
                                                                 comment: "Message indicating that the group's name was removed."))
                 }
             }
@@ -335,27 +335,27 @@ extension GroupUpdateCopy {
             if !newGroupModel.avatarHash.isEmptyOrNil {
                 switch updater {
                 case .localUser:
-                    addItem(.groupAvatar, copy: NSLocalizedString("GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER",
+                    addItem(.groupAvatar, copy: OWSLocalizedString("GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER",
                                                                   comment: "Message indicating that the group's avatar was changed."))
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}.")
                     addItem(.groupAvatar, format: format, updaterName)
                 case .unknown:
-                    addItem(.groupAvatar, copy: NSLocalizedString("GROUP_UPDATED_AVATAR_UPDATED",
+                    addItem(.groupAvatar, copy: OWSLocalizedString("GROUP_UPDATED_AVATAR_UPDATED",
                                                                   comment: "Message indicating that the group's avatar was changed."))
                 }
             } else {
                 switch updater {
                 case .localUser:
-                    addItem(.groupAvatar, copy: NSLocalizedString("GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER",
+                    addItem(.groupAvatar, copy: OWSLocalizedString("GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER",
                                                                   comment: "Message indicating that the group's avatar was removed."))
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}.")
                     addItem(.groupAvatar, format: format, updaterName)
                 case .unknown:
-                    addItem(.groupAvatar, copy: NSLocalizedString("GROUP_UPDATED_AVATAR_REMOVED",
+                    addItem(.groupAvatar, copy: OWSLocalizedString("GROUP_UPDATED_AVATAR_REMOVED",
                                                                   comment: "Message indicating that the group's avatar was removed."))
                 }
             }
@@ -378,13 +378,13 @@ extension GroupUpdateCopy {
                 case .localUser:
                     addItem(
                         .groupDescriptionUpdated,
-                        copy: NSLocalizedString(
+                        copy: OWSLocalizedString(
                             "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER",
                             comment: "Message indicating that the group's description was changed by the local user.."
                         )
                     )
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString(
+                    let format = OWSLocalizedString(
                         "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT",
                         comment: "Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}."
                     )
@@ -392,7 +392,7 @@ extension GroupUpdateCopy {
                 case .unknown:
                     addItem(
                         .groupDescriptionUpdated,
-                        copy: NSLocalizedString(
+                        copy: OWSLocalizedString(
                             "GROUP_UPDATED_DESCRIPTION_UPDATED",
                             comment: "Message indicating that the group's description was changed."
                         )
@@ -403,13 +403,13 @@ extension GroupUpdateCopy {
                 case .localUser:
                     addItem(
                         .groupDescriptionRemoved,
-                        copy: NSLocalizedString(
+                        copy: OWSLocalizedString(
                             "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER",
                             comment: "Message indicating that the group's description was removed by the local user."
                         )
                     )
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString(
+                    let format = OWSLocalizedString(
                         "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT",
                         comment: "Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}."
                     )
@@ -417,7 +417,7 @@ extension GroupUpdateCopy {
                 case .unknown:
                     addItem(
                         .groupDescriptionRemoved,
-                        copy: NSLocalizedString(
+                        copy: OWSLocalizedString(
                             "GROUP_UPDATED_DESCRIPTION_REMOVED",
                             comment: "Message indicating that the group's description was removed."
                         )
@@ -437,20 +437,20 @@ extension GroupUpdateCopy {
             } else {
                 addItem(.debug, copy: "Error: Unknown access level.")
             }
-            return NSLocalizedString("GROUP_ACCESS_LEVEL_UNKNOWN",
+            return OWSLocalizedString("GROUP_ACCESS_LEVEL_UNKNOWN",
                                      comment: "Description of the 'unknown' access level.")
         case .any:
-            return NSLocalizedString("GROUP_ACCESS_LEVEL_ANY",
+            return OWSLocalizedString("GROUP_ACCESS_LEVEL_ANY",
                                      comment: "Description of the 'all users' access level.")
         case .member:
-            return NSLocalizedString("GROUP_ACCESS_LEVEL_MEMBER",
+            return OWSLocalizedString("GROUP_ACCESS_LEVEL_MEMBER",
                                      comment: "Description of the 'all members' access level.")
         case .administrator:
-            return NSLocalizedString("GROUP_ACCESS_LEVEL_ADMINISTRATORS",
+            return OWSLocalizedString("GROUP_ACCESS_LEVEL_ADMINISTRATORS",
                                      comment: "Description of the 'admins only' access level.")
         case .unsatisfiable:
             // TODO:
-            return NSLocalizedString("GROUP_ACCESS_LEVEL_UNSATISFIABLE",
+            return OWSLocalizedString("GROUP_ACCESS_LEVEL_UNSATISFIABLE",
                                      comment: "Description of the 'unsatisfiable' access level.")
         }
     }
@@ -472,15 +472,15 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}.")
                 addItem(.accessMembers, format: format, accessName)
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}.")
                 addItem(.accessMembers, format: format, updaterName, accessName)
             case .unknown:
-                let format = NSLocalizedString("GROUP_ACCESS_MEMBERS_UPDATED_FORMAT",
+                let format = OWSLocalizedString("GROUP_ACCESS_MEMBERS_UPDATED_FORMAT",
                                                comment: "Message indicating that the access to the group's members was changed. Embeds {{new access level}}.")
                 addItem(.accessMembers, format: format, accessName)
             }
@@ -491,15 +491,15 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}.")
                 addItem(.accessAttributes, format: format, accessName)
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}.")
                 addItem(.accessAttributes, format: format, updaterName, accessName)
             case .unknown:
-                let format = NSLocalizedString("GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT",
+                let format = OWSLocalizedString("GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT",
                                                comment: "Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}.")
                 addItem(.accessAttributes, format: format, accessName)
             }
@@ -640,20 +640,20 @@ extension GroupUpdateCopy {
             case .localUser:
                 let copy: String
                 if addedInvalidInviteCount > 1 {
-                    copy = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N",
+                    copy = OWSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N",
                                              comment: "Message indicating that multiple invalid invites were added by the local user.")
                 } else {
-                    copy = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1",
+                    copy = OWSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1",
                                              comment: "Message indicating that 1 invalid invite was added by the local user.")
                 }
                 addItem(.userMembershipState_invalidInvitesAdded, copy: copy)
             case .otherUser(let updaterName, _):
                 let format: String
                 if addedInvalidInviteCount > 1 {
-                    format = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N",
+                    format = OWSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N",
                                                comment: "Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}.")
                 } else {
-                    format = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1",
+                    format = OWSLocalizedString("GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1",
                                                comment: "Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}.")
                 }
                 addItem(.userMembershipState_invalidInvitesAdded,
@@ -661,10 +661,10 @@ extension GroupUpdateCopy {
             case .unknown:
                 let copy: String
                 if addedInvalidInviteCount > 1 {
-                    copy = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_N",
+                    copy = OWSLocalizedString("GROUP_INVALID_INVITES_ADDED_N",
                                              comment: "Message indicating that multiple invalid invites were added to the group.")
                 } else {
-                    copy = NSLocalizedString("GROUP_INVALID_INVITES_ADDED_1",
+                    copy = OWSLocalizedString("GROUP_INVALID_INVITES_ADDED_1",
                                              comment: "Message indicating that 1 invalid invite was added to the group.")
                 }
                 addItem(.userMembershipState_invalidInvitesAdded, copy: copy)
@@ -676,20 +676,20 @@ extension GroupUpdateCopy {
             case .localUser:
                 let copy: String
                 if removedInvalidInviteCount > 1 {
-                    copy = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N",
+                    copy = OWSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N",
                                              comment: "Message indicating that multiple invalid invites were revoked by the local user.")
                 } else {
-                    copy = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1",
+                    copy = OWSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1",
                                              comment: "Message indicating that 1 invalid invite was revoked by the local user.")
                 }
                 addItem(.userMembershipState_invalidInvitesRemoved, copy: copy)
             case .otherUser(let updaterName, _):
                 let format: String
                 if removedInvalidInviteCount > 1 {
-                    format = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N",
+                    format = OWSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N",
                                                comment: "Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}.")
                 } else {
-                    format = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1",
+                    format = OWSLocalizedString("GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1",
                                                comment: "Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}.")
                 }
                 addItem(.userMembershipState_invalidInvitesRemoved,
@@ -697,10 +697,10 @@ extension GroupUpdateCopy {
             case .unknown:
                 let copy: String
                 if removedInvalidInviteCount > 1 {
-                    copy = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_N",
+                    copy = OWSLocalizedString("GROUP_INVALID_INVITES_REMOVED_N",
                                              comment: "Message indicating that multiple invalid invites were revoked.")
                 } else {
-                    copy = NSLocalizedString("GROUP_INVALID_INVITES_REMOVED_1",
+                    copy = OWSLocalizedString("GROUP_INVALID_INVITES_REMOVED_1",
                                              comment: "Message indicating that 1 invalid invite was revoked.")
                 }
                 addItem(.userMembershipState_invalidInvitesRemoved, copy: copy)
@@ -747,7 +747,7 @@ extension GroupUpdateCopy {
                 }
                 addItem(.userRole,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR",
                                                 comment: "Message indicating that the local user was granted administrator role."))
             case .otherUser(let updaterName, let updaterAddress):
                 if updaterAddress == address {
@@ -758,10 +758,10 @@ extension GroupUpdateCopy {
                     }
                     addItem(.userRole,
                             address: address,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR",
                                                     comment: "Message indicating that the local user was granted administrator role."))
                 } else {
-                    let format = NSLocalizedString("GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}.")
                     addItem(.userRole,
                             address: address,
@@ -770,7 +770,7 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userRole,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR",
                                                 comment: "Message indicating that the local user was granted administrator role."))
             }
         } else {
@@ -778,7 +778,7 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER",
                                                comment: "Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}.")
                 addItem(.userRole,
                         address: address,
@@ -790,20 +790,20 @@ extension GroupUpdateCopy {
                     } else {
                         addItem(.debug, copy: "Error: Remote user made themself administrator.")
                     }
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR",
                                                    comment: "Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}.")
                     addItem(.userRole,
                             address: address,
                             format: format, userName)
                 } else {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}.")
                     addItem(.userRole,
                             address: address,
                             format: format, updaterName, userName)
                 }
             case .unknown:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR",
                                                comment: "Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}.")
                 addItem(.userRole,
                         address: address,
@@ -819,16 +819,16 @@ extension GroupUpdateCopy {
             case .localUser:
                 addItem(.userRole,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR",
                                                 comment: "Message indicating that the local user had their administrator role revoked."))
             case .otherUser(let updaterName, let updaterAddress):
                 if updaterAddress == address {
                     addItem(.userRole,
                             address: address,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR",
                                                     comment: "Message indicating that the local user had their administrator role revoked."))
                 } else {
-                    let format = NSLocalizedString("GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}.")
                     addItem(.userRole,
                             address: address,
@@ -837,7 +837,7 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userRole,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR",
                                                 comment: "Message indicating that the local user had their administrator role revoked."))
             }
         } else {
@@ -845,27 +845,27 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER",
                                                comment: "Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}.")
                 addItem(.userRole,
                         address: address,
                         format: format, userName)
             case .otherUser(let updaterName, let updaterAddress):
                 if updaterAddress == address {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR",
                                                    comment: "Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}.")
                     addItem(.userRole,
                             address: address,
                             format: format, userName)
                 } else {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}.")
                     addItem(.userRole,
                             address: address,
                             format: format, updaterName, userName)
                 }
             case .unknown:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR",
                                                comment: "Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}.")
                 addItem(.userRole,
                         address: address,
@@ -883,10 +883,10 @@ extension GroupUpdateCopy {
             case .localUser:
                 addItem(.userMembershipState_left,
                         address: address,
-                        copy: NSLocalizedString("GROUP_YOU_LEFT",
+                        copy: OWSLocalizedString("GROUP_YOU_LEFT",
                                                 comment: "Message indicating that the local user left the group."))
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_removed,
                         address: address,
@@ -894,7 +894,7 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userMembershipState_removed,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER",
                                                 comment: "Message indicating that the local user was removed from the group by an unknown user."))
             }
         } else {
@@ -902,27 +902,27 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_removed,
                         address: address,
                         format: format, userName)
             case .otherUser(let updaterName, let updaterAddress):
                 if updaterAddress == address {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_LEFT_GROUP_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_LEFT_GROUP_FORMAT",
                                                    comment: "Message indicating that a remote user has left the group. Embeds {{remote user name}}.")
                     addItem(.userMembershipState_left,
                             address: address,
                             format: format, userName)
                 } else {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}.")
                     addItem(.userMembershipState_removed,
                             address: address,
                             format: format, updaterName, userName)
                 }
             case .unknown:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_LEFT_GROUP_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_LEFT_GROUP_FORMAT",
                                                comment: "Message indicating that a remote user has left the group. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_left,
                         address: address,
@@ -937,23 +937,23 @@ extension GroupUpdateCopy {
         if isLocalUser {
             addItem(.userMembershipState_removed,
                     address: address,
-                    copy: NSLocalizedString("GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER",
+                    copy: OWSLocalizedString("GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER",
                                             comment: "Message indicating that the local user was removed from the group by an unknown user."))
             addItem(.userMembershipState_invited,
                     address: address,
-                    copy: NSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
+                    copy: OWSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
                                             comment: "Message indicating that the local user was invited to the group."))
         } else {
             let userName = contactsManager.displayName(for: address, transaction: transaction)
             do {
-                let format = NSLocalizedString("GROUP_REMOTE_USER_LEFT_GROUP_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_LEFT_GROUP_FORMAT",
                                                comment: "Message indicating that a remote user has left the group. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_left,
                         address: address,
                         format: format, userName)
             }
             do {
-                let format = NSLocalizedString("GROUP_REMOTE_USER_INVITED_1_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_1_FORMAT",
                                                comment: "Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_invited,
                         address: address,
@@ -978,7 +978,7 @@ extension GroupUpdateCopy {
             switch updater {
             case .localUser:
                 if let inviterName = inviterName {
-                    let format = NSLocalizedString("GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT",
+                    let format = OWSLocalizedString("GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT",
                                                    comment: "Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}.")
                     addItem(.userMembershipState_added,
                             address: address,
@@ -991,11 +991,11 @@ extension GroupUpdateCopy {
                     }
                     addItem(.userMembershipState_added,
                             address: address,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_INVITE_ACCEPTED",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_INVITE_ACCEPTED",
                                                     comment: "Message indicating that the local user accepted an invite to the group."))
                 }
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_added,
                         address: address,
@@ -1003,7 +1003,7 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
                                                 comment: "Message indicating that the local user has joined the group."))
             }
         } else {
@@ -1011,7 +1011,7 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_added,
                         address: address,
@@ -1019,13 +1019,13 @@ extension GroupUpdateCopy {
             case .otherUser(let updaterName, let updaterAddress):
                 if address == updaterAddress {
                     if inviterAddress == localAddress {
-                        let format = NSLocalizedString("GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT",
+                        let format = OWSLocalizedString("GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT",
                                                        comment: "Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}.")
                         addItem(.userMembershipState_added,
                                 address: address,
                                 format: format, updaterName)
                     } else if let inviterName = inviterName {
-                        let format = NSLocalizedString("GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT",
+                        let format = OWSLocalizedString("GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT",
                                                        comment: "Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}.")
                         addItem(.userMembershipState_added,
                                 address: address,
@@ -1036,21 +1036,21 @@ extension GroupUpdateCopy {
                         } else {
                             addItem(.debug, copy: "Error: Missing inviter name.")
                         }
-                        let format = NSLocalizedString("GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT",
+                        let format = OWSLocalizedString("GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT",
                                                        comment: "Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}.")
                         addItem(.userMembershipState_added,
                                 address: address,
                                 format: format, updaterName)
                     }
                 } else {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}.")
                     addItem(.userMembershipState_added,
                             address: address,
                             format: format, updaterName, userName)
                 }
             case .unknown:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_JOINED_GROUP_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_JOINED_GROUP_FORMAT",
                                                comment: "Message indicating that a remote user was added to the group. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_added,
                         address: address,
@@ -1076,7 +1076,7 @@ extension GroupUpdateCopy {
             switch updater {
             case .localUser:
                 if let inviterName = inviterName {
-                    let format = NSLocalizedString("GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT",
+                    let format = OWSLocalizedString("GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT",
                                                    comment: "Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}.")
                     addItem(.userMembershipState,
                             address: address,
@@ -1089,11 +1089,11 @@ extension GroupUpdateCopy {
                     }
                     addItem(.userMembershipState,
                             address: address,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER",
                                                     comment: "Message indicating that the local user declined an invite to the group."))
                 }
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState,
                         address: address,
@@ -1101,7 +1101,7 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userMembershipState,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER",
                                                 comment: "Message indicating that the local user's invite was revoked by an unknown user."))
             }
         } else {
@@ -1109,7 +1109,7 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState,
                         address: address,
@@ -1117,13 +1117,13 @@ extension GroupUpdateCopy {
             case .otherUser(let updaterName, let updaterAddress):
                 if address == updaterAddress {
                     if inviterAddress == localAddress {
-                        let format = NSLocalizedString("GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT",
+                        let format = OWSLocalizedString("GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT",
                                                        comment: "Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}.")
                         addItem(.userMembershipState,
                                 address: address,
                                 format: format, updaterName)
                     } else if let inviterName = inviterName {
-                        let format = NSLocalizedString("GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT",
+                        let format = OWSLocalizedString("GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT",
                                                        comment: "Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}.")
                         addItem(.userMembershipState,
                                 address: address,
@@ -1131,7 +1131,7 @@ extension GroupUpdateCopy {
                     } else {
                         addItem(.userMembershipState,
                                 address: address,
-                                copy: NSLocalizedString("GROUP_REMOTE_USER_DECLINED_INVITE",
+                                copy: OWSLocalizedString("GROUP_REMOTE_USER_DECLINED_INVITE",
                                                         comment: "Message indicating that a remote user has declined their invite."))
                     }
                 } else {
@@ -1158,12 +1158,12 @@ extension GroupUpdateCopy {
             }
         case .otherUser(let updaterName, _):
             if count == 1 {
-                let format = NSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT",
                                                comment: "Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}.")
                 addItem(.userMembershipState_invitesRevoked,
                         format: format, updaterName, countString)
             } else {
-                let format = NSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT",
                                                comment: "Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}.")
                 addItem(.userMembershipState_invitesRevoked,
                         format: format, updaterName, countString)
@@ -1171,10 +1171,10 @@ extension GroupUpdateCopy {
         case .unknown:
             if count == 1 {
                 addItem(.userMembershipState_invitesRevoked,
-                        copy: NSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_1",
+                        copy: OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_1",
                                                 comment: "Message indicating that a single remote user's invite was revoked."))
             } else {
-                let format = NSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT",
                                                comment: "Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}.")
                 addItem(.userMembershipState_invitesRevoked,
                         format: format, countString)
@@ -1195,10 +1195,10 @@ extension GroupUpdateCopy {
                 }
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
                                                 comment: "Message indicating that the local user was added to the group."))
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_added,
                         address: address,
@@ -1207,12 +1207,12 @@ extension GroupUpdateCopy {
                 if newGroupModel.didJustAddSelfViaGroupLinkV2 {
                     addItem(.userMembershipState_added,
                             address: localAddress,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
                                                     comment: "Message indicating that the local user has joined the group."))
                 } else {
                     addItem(.userMembershipState_added,
                             address: localAddress,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
                                                     comment: "Message indicating that the local user was added to the group."))
                 }
             }
@@ -1221,7 +1221,7 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_added,
                         address: address,
@@ -1235,20 +1235,20 @@ extension GroupUpdateCopy {
                             addItem(.debug, copy: "Error: Remote user added themself to the group.")
                         }
                     }
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT",
                                                    comment: "Message indicating that a remote user was added to the group. Embeds {{remote user name}}.")
                     addItem(.userMembershipState_added,
                             address: address,
                             format: format, userName)
                 } else {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}.")
                     addItem(.userMembershipState_added,
                             address: address,
                             format: format, updaterName, userName)
                 }
             case .unknown:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT",
                                                comment: "Message indicating that a remote user was added to the group. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_added,
                         address: address,
@@ -1265,18 +1265,18 @@ extension GroupUpdateCopy {
             case .localUser:
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK",
                                                 comment: "Message indicating that the local user has joined the group."))
             case .otherUser:
                 owsFailDebug("A user should never join the group via invite link unless they are the updater.")
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
                                                 comment: "Message indicating that the local user has joined the group."))
             case .unknown:
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
                                                 comment: "Message indicating that the local user has joined the group."))
             }
         } else {
@@ -1285,7 +1285,7 @@ extension GroupUpdateCopy {
             switch updater {
             case .otherUser(let updaterName, let updaterAddress):
                 if address == updaterAddress {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT",
                                                    comment: "Message indicating that another user has joined the group. Embeds {{remote user name}}.")
                     addItem(.userMembershipState_added,
                             address: address,
@@ -1298,7 +1298,7 @@ extension GroupUpdateCopy {
             }
 
             owsFailDebug("A user should not be able to join the group directly via group invite link unless they are the updater.")
-            let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT",
+            let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT",
                                            comment: "Message indicating that a remote user was added to the group. Embeds {{remote user name}}.")
             addItem(.userMembershipState_added,
                     address: address,
@@ -1320,10 +1320,10 @@ extension GroupUpdateCopy {
                 }
                 addItem(.userMembershipState_invited,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
                                                 comment: "Message indicating that the local user was invited to the group."))
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_invited,
                         address: address,
@@ -1331,7 +1331,7 @@ extension GroupUpdateCopy {
             case .unknown:
                 addItem(.userMembershipState_invited,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
                                                 comment: "Message indicating that the local user was invited to the group."))
             }
         } else {
@@ -1339,7 +1339,7 @@ extension GroupUpdateCopy {
 
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_invited,
                         address: address,
@@ -1366,12 +1366,12 @@ extension GroupUpdateCopy {
         case .otherUser(let updaterName, _):
             let countString = OWSFormat.formatUInt(count)
             if count == 1 {
-                let format = NSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT",
                                                comment: "Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}.")
                 addItem(.userMembershipState_invitesNew,
                         format: format, updaterName, countString)
             } else {
-                let format = NSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT",
                                                comment: "Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}.")
                 addItem(.userMembershipState_invitesNew,
                         format: format, updaterName, countString)
@@ -1385,10 +1385,10 @@ extension GroupUpdateCopy {
         let countString = OWSFormat.formatUInt(count)
         if count == 1 {
             self.addItem(.userMembershipState_invitesNew,
-                         copy: NSLocalizedString("GROUP_REMOTE_USER_INVITED_1",
+                         copy: OWSLocalizedString("GROUP_REMOTE_USER_INVITED_1",
                                                  comment: "Message indicating that a single remote user was invited to the group."))
         } else {
-            let format = NSLocalizedString("GROUP_REMOTE_USER_INVITED_N_FORMAT",
+            let format = OWSLocalizedString("GROUP_REMOTE_USER_INVITED_N_FORMAT",
                                            comment: "Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}.")
             self.addItem(.userMembershipState_invitesNew,
                          format: format, countString)
@@ -1402,11 +1402,11 @@ extension GroupUpdateCopy {
         if isLocalUser {
             addItem(.userMembershipState,
                     address: address,
-                    copy: NSLocalizedString("GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP",
+                    copy: OWSLocalizedString("GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP",
                                             comment: "Message indicating that the local user requested to join the group."))
         } else {
             let requesterName = contactsManager.displayName(for: address, transaction: transaction)
-            let format = NSLocalizedString("GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT",
+            let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT",
                                            comment: "Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}.")
             addItem(.userMembershipState, address: address, format: format, requesterName)
         }
@@ -1424,25 +1424,25 @@ extension GroupUpdateCopy {
                 // requiring approval in the interim.
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
                                                 comment: "Message indicating that the local user was added to the group."))
             case .otherUser(let updaterName, let updaterAddress):
                 // A user with a "pending request to join the group" can be "added" or "approved".
                 // If the adder was an admin, we treat this as "approved".
                 if oldGroupMembership.isFullMemberAndAdministrator(updaterAddress) {
-                    let format = NSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}.")
                     addItem(.userMembershipState, address: address, format: format, updaterName)
                 } else {
                     addItem(.userMembershipState_added,
                             address: address,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
                                                     comment: "Message indicating that the local user was added to the group."))
                 }
             case .unknown:
                 addItem(.userMembershipState_added,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
                                                 comment: "Message indicating that the local user was added to the group."))
             }
         } else {
@@ -1452,11 +1452,11 @@ extension GroupUpdateCopy {
                 // A user with a "pending request to join the group" can be "added" or "approved".
                 // If the adder was an admin, we treat this as "approved".
                 if oldGroupMembership.isFullMemberAndAdministrator(localAddress) {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT",
                                                    comment: "Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}.")
                     addItem(.userMembershipState, address: address, format: format, requesterName)
                 } else {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT",
                                                    comment: "Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}.")
                     addItem(.userMembershipState_added,
                             address: address,
@@ -1466,11 +1466,11 @@ extension GroupUpdateCopy {
                 // A user with a "pending request to join the group" can be "added" or "approved".
                 // If the adder was an admin, we treat this as "approved".
                 if oldGroupMembership.isFullMemberAndAdministrator(updaterAddress) {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}.")
                     addItem(.userMembershipState, address: address, format: format, requesterName, updaterName)
                 } else {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}.")
                     addItem(.userMembershipState_added,
                             address: address,
@@ -1479,7 +1479,7 @@ extension GroupUpdateCopy {
             case .unknown:
                 // If we don't know who added the user we can't infer whether
                 // they were "added" or "approved".
-                let format = NSLocalizedString("GROUP_REMOTE_USER_JOINED_GROUP_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_JOINED_GROUP_FORMAT",
                                                comment: "Message indicating that a remote user was added to the group. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_added,
                         address: address,
@@ -1493,34 +1493,34 @@ extension GroupUpdateCopy {
         if isLocalUser {
             switch updater {
             case .localUser:
-                let copy = NSLocalizedString("GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER",
+                let copy = OWSLocalizedString("GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER",
                                                comment: "Message indicating that the local user cancelled their request to join the group.")
                 addItem(.userMembershipState, address: address, copy: copy)
             case .otherUser, .unknown:
                 addItem(.userMembershipState,
                         address: address,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_REQUEST_REJECTED",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_REQUEST_REJECTED",
                                                 comment: "Message indicating that the local user's request to join the group was rejected."))
             }
         } else {
             let requesterName = contactsManager.displayName(for: address, transaction: transaction)
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT",
                                                comment: "Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}.")
                 addItem(.userMembershipState, address: address, format: format, requesterName)
             case .otherUser(let updaterName, let updaterAddress):
                 if address == updaterAddress {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}.")
                     addItem(.userMembershipState, address: address, format: format, updaterName)
                 } else {
-                    let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}.")
                     addItem(.userMembershipState, address: address, format: format, requesterName, updaterName)
                 }
             case .unknown:
-                let format = NSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT",
+                let format = OWSLocalizedString("GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT",
                                                comment: "Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}.")
                 addItem(.userMembershipState, address: address, format: format, requesterName)
             }
@@ -1544,12 +1544,12 @@ extension GroupUpdateCopy {
             if newToken.isEnabled {
                 let format: String
                 if updater == .localUser {
-                    format = NSLocalizedString(
+                    format = OWSLocalizedString(
                         "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                         comment: "Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context."
                     )
                 } else {
-                    format = NSLocalizedString(
+                    format = OWSLocalizedString(
                         "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",
                         comment: "Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context."
                     )
@@ -1568,33 +1568,33 @@ extension GroupUpdateCopy {
         case .localUser:
             // Changed by localNumber on this device or via synced transcript
             if newToken.isEnabled {
-                let format = NSLocalizedString("YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
+                let format = OWSLocalizedString("YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                                                comment: "Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.")
                 addItem(.disappearingMessagesState_enabled, format: format, durationString)
             } else {
                 addItem(.disappearingMessagesState_disabled,
-                        copy: NSLocalizedString("YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
+                        copy: OWSLocalizedString("YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
                                                 comment: "Info Message when you disabled disappearing messages."))
             }
         case .otherUser(let updaterName, _):
             if newToken.isEnabled {
-                let format = NSLocalizedString("OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
+                let format = OWSLocalizedString("OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                                                comment: "Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context.")
                 addItem(.disappearingMessagesState_enabled, format: format, updaterName, durationString)
             } else {
-                let format = NSLocalizedString("OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
+                let format = OWSLocalizedString("OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
                                                comment: "Info Message when another user disabled disappearing messages. Embeds {{name of other user}}.")
                 addItem(.disappearingMessagesState_disabled, format: format, updaterName)
             }
         case .unknown:
             // Changed by unknown user.
             if newToken.isEnabled {
-                let format = NSLocalizedString("UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
+                let format = OWSLocalizedString("UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                                                comment: "Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context.")
                 addItem(.disappearingMessagesState_enabled, format: format, durationString)
             } else {
                 addItem(.disappearingMessagesState_disabled,
-                        copy: NSLocalizedString("UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
+                        copy: OWSLocalizedString("UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
                                                 comment: "Info Message when an unknown user disabled disappearing messages."))
             }
         }
@@ -1619,15 +1619,15 @@ extension GroupUpdateCopy {
                oldInviteLinkPassword != newInviteLinkPassword {
                 switch updater {
                 case .localUser:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_RESET_BY_LOCAL_USER",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_RESET_BY_LOCAL_USER",
                                                    comment: "Message indicating that the group invite link was reset by the local user.")
                     addItem(.groupInviteLink, format: format)
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}.")
                     addItem(.groupInviteLink, format: format, updaterName)
                 case .unknown:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_RESET",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_RESET",
                                                    comment: "Message indicating that the group invite link was reset.")
                     addItem(.groupInviteLink, format: format)
                 }
@@ -1643,30 +1643,30 @@ extension GroupUpdateCopy {
             case .enabledWithoutApproval:
                 switch updater {
                 case .localUser:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER",
                                                    comment: "Message indicating that the group invite link was enabled by the local user.")
                     addItem(.groupInviteLink, format: format)
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}.")
                     addItem(.groupInviteLink, format: format, updaterName)
                 case .unknown:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL",
                                                    comment: "Message indicating that the group invite link was enabled.")
                     addItem(.groupInviteLink, format: format)
                 }
             case .enabledWithApproval:
                 switch updater {
                 case .localUser:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER",
                                                    comment: "Message indicating that the group invite link was enabled by the local user.")
                     addItem(.groupInviteLink, format: format)
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}.")
                     addItem(.groupInviteLink, format: format, updaterName)
                 case .unknown:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL",
                                                    comment: "Message indicating that the group invite link was enabled.")
                     addItem(.groupInviteLink, format: format)
                 }
@@ -1676,45 +1676,45 @@ extension GroupUpdateCopy {
             case .disabled:
                 switch updater {
                 case .localUser:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER",
                                                    comment: "Message indicating that the group invite link was disabled by the local user.")
                     addItem(.groupInviteLink, format: format)
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}.")
                     addItem(.groupInviteLink, format: format, updaterName)
                 case .unknown:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_DISABLED",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_DISABLED",
                                                    comment: "Message indicating that the group invite link was disabled.")
                     addItem(.groupInviteLink, format: format)
                 }
             case .enabledWithoutApproval:
                 switch updater {
                 case .localUser:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER",
                                                    comment: "Message indicating that the group invite link was set to not require approval by the local user.")
                     addItem(.groupInviteLink, format: format)
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}.")
                     addItem(.groupInviteLink, format: format, updaterName)
                 case .unknown:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL",
                                                    comment: "Message indicating that the group invite link was set to not require approval.")
                     addItem(.groupInviteLink, format: format)
                 }
             case .enabledWithApproval:
                 switch updater {
                 case .localUser:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER",
                                                    comment: "Message indicating that the group invite link was set to require approval by the local user.")
                     addItem(.groupInviteLink, format: format)
                 case .otherUser(let updaterName, _):
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT",
                                                    comment: "Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}.")
                     addItem(.groupInviteLink, format: format, updaterName)
                 case .unknown:
-                    let format = NSLocalizedString("GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL",
+                    let format = OWSLocalizedString("GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL",
                                                    comment: "Message indicating that the group invite link was set to require approval.")
                     addItem(.groupInviteLink, format: format)
                 }
@@ -1742,30 +1742,30 @@ extension GroupUpdateCopy {
         if newIsAnnouncementsOnly {
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER",
+                let format = OWSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER",
                                                comment: "Message indicating that 'announcement-only' mode was enabled by the local user.")
                 addItem(.isAnnouncementOnly, format: format)
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}.")
                 addItem(.isAnnouncementOnly, format: format, updaterName)
             case .unknown:
-                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED",
+                let format = OWSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED",
                                                comment: "Message indicating that 'announcement-only' mode was enabled.")
                 addItem(.isAnnouncementOnly, format: format)
             }
         } else {
             switch updater {
             case .localUser:
-                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER",
+                let format = OWSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER",
                                                comment: "Message indicating that 'announcement-only' mode was disabled by the local user.")
                 addItem(.isAnnouncementOnly, format: format)
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}.")
                 addItem(.isAnnouncementOnly, format: format, updaterName)
             case .unknown:
-                let format = NSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED",
+                let format = OWSLocalizedString("GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED",
                                                comment: "Message indicating that 'announcement-only' mode was disabled.")
                 addItem(.isAnnouncementOnly, format: format)
             }
@@ -1780,7 +1780,7 @@ extension GroupUpdateCopy {
             switch updater {
             case .localUser:
                 addItem(.groupCreated,
-                        copy: NSLocalizedString("GROUP_CREATED_BY_LOCAL_USER",
+                        copy: OWSLocalizedString("GROUP_CREATED_BY_LOCAL_USER",
                                                 comment: "Message indicating that group was created by the local user."))
             default:
                 // Unless we know we created the group,
@@ -1799,15 +1799,15 @@ extension GroupUpdateCopy {
             switch updater {
             case .localUser:
                 addItem(.groupCreated,
-                        copy: NSLocalizedString("GROUP_CREATED_BY_LOCAL_USER",
+                        copy: OWSLocalizedString("GROUP_CREATED_BY_LOCAL_USER",
                                                 comment: "Message indicating that group was created by the local user."))
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_CREATED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_CREATED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that group was created by another user. Embeds {{remote user name}}.")
                 addItem(.groupCreated, format: format, updaterName)
             case .unknown:
                 addItem(.groupCreated,
-                        copy: NSLocalizedString("GROUP_CREATED_BY_UNKNOWN_USER",
+                        copy: OWSLocalizedString("GROUP_CREATED_BY_UNKNOWN_USER",
                                                 comment: "Message indicating that group was created by an unknown user."))
             }
         }
@@ -1822,7 +1822,7 @@ extension GroupUpdateCopy {
             // TODO:
             switch updater {
             case .otherUser(let updaterName, _):
-                let format = NSLocalizedString("GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_added,
                         address: localAddress,
@@ -1831,12 +1831,12 @@ extension GroupUpdateCopy {
                 if newGroupModel.didJustAddSelfViaGroupLink {
                     addItem(.userMembershipState_added,
                             address: localAddress,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
                                                     comment: "Message indicating that the local user has joined the group."))
                 } else {
                     addItem(.userMembershipState_added,
                             address: localAddress,
-                            copy: NSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
+                            copy: OWSLocalizedString("GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP",
                                                     comment: "Message indicating that the local user was added to the group."))
                 }
             }
@@ -1845,7 +1845,7 @@ extension GroupUpdateCopy {
                let inviterUuid = newGroupMembership.addedByUuid(forInvitedMember: localAddress) {
                 let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
                 let inviterName = contactsManager.displayName(for: inviterAddress, transaction: transaction)
-                let format = NSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
+                let format = OWSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
                                                comment: "Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}.")
                 addItem(.userMembershipState_invited,
                         address: localAddress,
@@ -1853,7 +1853,7 @@ extension GroupUpdateCopy {
             } else {
                 addItem(.userMembershipState_invited,
                         address: localAddress,
-                        copy: NSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
+                        copy: OWSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
                                                 comment: "Message indicating that the local user was invited to the group."))
             }
         case .requesting:
@@ -1873,7 +1873,7 @@ extension GroupUpdateCopy {
 
     mutating func addWasJustCreatedByLocalUserUpdates() {
         addItem(.groupGroupLinkPromotion,
-                copy: NSLocalizedString("GROUP_LINK_PROMOTION_UPDATE",
+                copy: OWSLocalizedString("GROUP_LINK_PROMOTION_UPDATE",
                                         comment: "Suggestion to invite more group members via the group invite link."))
     }
 
@@ -1891,19 +1891,19 @@ extension GroupUpdateCopy {
         owsAssertDebug(wasJustMigrated)
 
         addItem(.groupMigrated,
-                copy: NSLocalizedString("GROUP_WAS_MIGRATED",
+                copy: OWSLocalizedString("GROUP_WAS_MIGRATED",
                                         comment: "Message indicating that the group was migrated."))
 
         let invitedMembers = oldGroupMembership.allMembersOfAnyKind.intersection(newGroupMembership.invitedMembers)
         let droppedMembers = oldGroupMembership.allMembersOfAnyKind.subtracting(newGroupMembership.allMembersOfAnyKind)
 
         if invitedMembers.contains(localAddress) {
-            let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER",
+            let copy = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER",
                                          comment: "Message indicating that the local user was invited while migrating the group.")
             addItem(.groupMigrated_usersInvited, copy: copy)
             return
         } else if droppedMembers.contains(localAddress) {
-            let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER",
+            let copy = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER",
                                          comment: "Message indicating that the local user was dropped while migrating the group.")
             addItem(.groupMigrated_usersDropped, copy: copy)
             return
@@ -1911,11 +1911,11 @@ extension GroupUpdateCopy {
 
         if !invitedMembers.isEmpty {
             if invitedMembers.count == 1 {
-                let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_1",
+                let copy = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_1",
                                              comment: "Message indicating that 1 user was invited while migrating the group.")
                 addItem(.groupMigrated_usersInvited, copy: copy)
             } else {
-                let format = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT",
+                let format = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT",
                                                comment: "Message indicating that N users were invited while migrating the group. Embeds {{ the number of invited users }}.")
                 let countString = OWSFormat.formatInt(invitedMembers.count)
                 addItem(.groupMigrated_usersInvited, format: format, countString)
@@ -1924,11 +1924,11 @@ extension GroupUpdateCopy {
 
         if !droppedMembers.isEmpty {
             if droppedMembers.count == 1 {
-                let copy = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_1",
+                let copy = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_1",
                                              comment: "Message indicating that 1 user was dropped while migrating the group.")
                 addItem(.groupMigrated_usersDropped, copy: copy)
             } else {
-                let format = NSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT",
+                let format = OWSLocalizedString("GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT",
                                                comment: "Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}.")
                 let countString = OWSFormat.formatInt(droppedMembers.count)
                 addItem(.groupMigrated_usersDropped, format: format, countString)
@@ -2000,14 +2000,14 @@ extension GroupUpdateCopy {
                                               transaction: transaction)
         switch updater {
         case .localUser:
-            return NSLocalizedString("GROUP_UPDATED_BY_LOCAL_USER",
+            return OWSLocalizedString("GROUP_UPDATED_BY_LOCAL_USER",
                                      comment: "Info message indicating that the group was updated by the local user.")
         case .otherUser(let updaterName, _):
-            let format = NSLocalizedString("GROUP_UPDATED_BY_REMOTE_USER_FORMAT",
+            let format = OWSLocalizedString("GROUP_UPDATED_BY_REMOTE_USER_FORMAT",
                                            comment: "Info message indicating that the group was updated by another user. Embeds {{remote user name}}.")
             return String(format: format, updaterName)
         case .unknown:
-            return NSLocalizedString("GROUP_UPDATED",
+            return OWSLocalizedString("GROUP_UPDATED",
                                      comment: "Info message indicating that the group was updated by an unknown user.")
         }
     }

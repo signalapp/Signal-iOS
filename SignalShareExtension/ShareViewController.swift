@@ -334,9 +334,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func showNotReadyView() {
         AssertIsOnMainThread()
 
-        let failureTitle = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE",
+        let failureTitle = OWSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE",
                                              comment: "Title indicating that the share extension cannot be used until the main app has been launched at least once.")
-        let failureMessage = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE",
+        let failureMessage = OWSLocalizedString("SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE",
                                                comment: "Message indicating that the share extension cannot be used until the main app has been launched at least once.")
         showErrorView(title: failureTitle, message: failureMessage)
     }
@@ -344,9 +344,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func showNotRegisteredView() {
         AssertIsOnMainThread()
 
-        let failureTitle = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_NOT_REGISTERED_TITLE",
+        let failureTitle = OWSLocalizedString("SHARE_EXTENSION_NOT_REGISTERED_TITLE",
                                              comment: "Title indicating that the share extension cannot be used until the user has registered in the main app.")
-        let failureMessage = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_NOT_REGISTERED_MESSAGE",
+        let failureMessage = OWSLocalizedString("SHARE_EXTENSION_NOT_REGISTERED_MESSAGE",
                                                comment: "Message indicating that the share extension cannot be used until the user has registered in the main app.")
         showErrorView(title: failureTitle, message: failureMessage)
     }
@@ -556,13 +556,13 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let alertMessage: String?
 
             if let error = error as? ShareViewControllerError, error == .tooManyAttachments {
-                let format = NSLocalizedStringFromAppBundle("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
+                let format = OWSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
                                                comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
 
                 alertTitle = String(format: format, OWSFormat.formatInt(SignalAttachment.maxAttachmentsAllowed))
                 alertMessage = nil
             } else {
-                alertTitle = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
+                alertTitle = OWSLocalizedString("SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE",
                                                comment: "Shown when trying to share content to a Signal user for the share extension. Followed by failure details.")
                 alertMessage = error.userErrorDescription
             }

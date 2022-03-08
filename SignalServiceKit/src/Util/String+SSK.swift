@@ -678,45 +678,45 @@ public extension NSString {
         let units: [Unit] = [
             // Years
             Unit(secondsPerUnit: secondsPerYear,
-                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_YEAR",
+                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_YEAR",
                                                      comment: "{{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_YEARS_FORMAT",
+                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_YEARS_FORMAT",
                                                         comment: "{{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings")),
 
             // Weeks
             Unit(secondsPerUnit: secondsPerWeek,
-                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_WEEK",
+                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_WEEK",
                                                      comment:
                     "{{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_WEEKS",
+                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_WEEKS",
                                                         comment: "{{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings")),
             // Days
             Unit(secondsPerUnit: secondsPerDay,
-                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_DAY",
+                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_DAY",
                                                      comment:
                     "{{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_DAYS",
+                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_DAYS",
                                                         comment: "{{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings")),
             // Hours
             Unit(secondsPerUnit: secondsPerHour,
-                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_HOUR",
+                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_HOUR",
                                                      comment:
                     "{{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_HOURS",
+                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_HOURS",
                                                         comment: "{{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings")),
             // Minutes
             Unit(secondsPerUnit: secondsPerMinute,
-                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_MINUTE",
+                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_MINUTE",
                                                      comment: "{{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_MINUTES",
+                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_MINUTES",
                                                         comment:
                     "{{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings")),
             // Seconds
             Unit(secondsPerUnit: 1,
-                 singleUnitFormat: NSLocalizedString("TIME_AMOUNT_SINGLE_SECOND",
+                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_SECOND",
                                                      comment:
                     "{{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: NSLocalizedString("TIME_AMOUNT_SECONDS",
+                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_SECONDS",
                                                         comment: "{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings"))
         ]
 
@@ -737,7 +737,7 @@ public extension NSString {
         }
 
         if components.isEmpty {
-            return NSLocalizedString("TIME_AMOUNT_ZERO_SECONDS",
+            return OWSLocalizedString("TIME_AMOUNT_ZERO_SECONDS",
                                      comment: "Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings")
         } else {
             // TODO: Can we localize this join?

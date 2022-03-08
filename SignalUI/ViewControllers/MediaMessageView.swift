@@ -353,7 +353,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             return nil
         }
 
-        return String(format: NSLocalizedStringFromAppBundle("ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT",
+        return String(format: OWSLocalizedString("ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT",
                                                comment: "Format string for file extension label in call interstitial view"),
                       fileExtension.uppercased())
     }
@@ -388,7 +388,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private func createFileSizeLabel() -> UIView {
         let label = UILabel()
         let fileSize = attachment.dataLength
-        label.text = String(format: NSLocalizedStringFromAppBundle("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
+        label.text = String(format: OWSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
                                                      comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
                             OWSFormat.formatFileSize(fileSize))
 

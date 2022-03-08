@@ -75,7 +75,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         if let title = delegate?.textApprovalCustomTitle(self) {
             self.navigationItem.title = title
         } else {
-            self.navigationItem.title = NSLocalizedStringFromAppBundle("MESSAGE_APPROVAL_DIALOG_TITLE",
+            self.navigationItem.title = OWSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE",
                                                           comment: "Title for the 'message approval' dialog.")
         }
 

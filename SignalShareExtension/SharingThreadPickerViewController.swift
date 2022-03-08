@@ -248,7 +248,7 @@ extension SharingThreadPickerViewController {
         progressLabel.lineBreakMode = .byWordWrapping
         progressLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
         progressLabel.textColor = Theme.primaryTextColor
-        progressLabel.text = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", comment: "Alert title")
+        progressLabel.text = OWSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE", comment: "Alert title")
 
         headerWithProgress.addSubview(progressLabel)
         progressLabel.autoPinWidthToSuperviewMargins()
@@ -269,7 +269,7 @@ extension SharingThreadPickerViewController {
 
         presentActionSheetOnNavigationController(actionSheet)
 
-        let progressFormat = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
+        let progressFormat = OWSLocalizedString("SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
                                                comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}")
 
         var progressPerAttachment = [String: Float]()
@@ -406,11 +406,11 @@ extension SharingThreadPickerViewController {
             self.shareViewDelegate?.shareViewWasCancelled()
         }
 
-        let failureTitle = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_SENDING_FAILURE_TITLE", comment: "Alert title")
+        let failureTitle = OWSLocalizedString("SHARE_EXTENSION_SENDING_FAILURE_TITLE", comment: "Alert title")
 
         if let untrustedIdentityError = error as? UntrustedIdentityError {
             let untrustedAddress = untrustedIdentityError.address
-            let failureFormat = NSLocalizedStringFromAppBundle("SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
+            let failureFormat = OWSLocalizedString("SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
                                                   comment: "alert body when sharing file failed because of untrusted/changed identity keys")
             let displayName = self.contactsManager.displayName(for: untrustedAddress)
             let failureMessage = String(format: failureFormat, displayName)
@@ -547,7 +547,7 @@ extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate 
     }
 
     func textApprovalCustomTitle(_ textApproval: TextApprovalViewController) -> String? {
-        return NSLocalizedStringFromAppBundle("FORWARD_MESSAGE", comment: "Label and title for 'message forwarding' views.")
+        return OWSLocalizedString("FORWARD_MESSAGE", comment: "Label and title for 'message forwarding' views.")
     }
 
     func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String? {
@@ -579,7 +579,7 @@ extension SharingThreadPickerViewController: ContactShareApprovalViewControllerD
     }
 
     func contactApprovalCustomTitle(_ contactApproval: ContactShareApprovalViewController) -> String? {
-        return NSLocalizedStringFromAppBundle("FORWARD_CONTACT", comment: "Label and title for 'contact forwarding' views.")
+        return OWSLocalizedString("FORWARD_CONTACT", comment: "Label and title for 'contact forwarding' views.")
     }
 
     func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {

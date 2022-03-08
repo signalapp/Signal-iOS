@@ -36,7 +36,7 @@ public class RegistrationCountryState: NSObject {
         let callingCodeNumber: NSNumber = phoneNumberUtil.getCountryCode(forRegion: countryCode)
         let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
 
-        var countryName = NSLocalizedStringFromAppBundle("UNKNOWN_COUNTRY_NAME", comment: "Label for unknown countries.")
+        var countryName = OWSLocalizedString("UNKNOWN_COUNTRY_NAME", comment: "Label for unknown countries.")
         if let countryNameDerived = PhoneNumberUtil.countryName(fromCountryCode: countryCode) {
             countryName = countryNameDerived
         }

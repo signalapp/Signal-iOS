@@ -70,7 +70,7 @@ extension MessageSender {
             case .recipientSKDMFailed(let error):
                 return error.localizedDescription
             default:
-                return NSLocalizedString("ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE",
+                return OWSLocalizedString("ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE",
                                          comment: "Generic notice when message failed to send.")
             }
         }

@@ -87,7 +87,7 @@ public class ContactFieldView: UIView {
     }
 
     public class func contactFieldView(forOrganizationName organizationName: String, layoutMargins: UIEdgeInsets) -> UIView {
-        return simpleFieldView(name: NSLocalizedStringFromAppBundle("CONTACT_FIELD_ORGANIZATION",
+        return simpleFieldView(name: OWSLocalizedString("CONTACT_FIELD_ORGANIZATION",
                                                        comment: "Label for the 'organization' field of a contact."),
                                value: organizationName,
                                layoutMargins: layoutMargins, actionBlock: nil)
@@ -185,19 +185,19 @@ public class ContactFieldView: UIView {
             stackView.addArrangedSubview(row)
         }
 
-        tryToAddNameValue(NSLocalizedStringFromAppBundle("CONTACT_FIELD_ADDRESS_STREET", comment: "Label for the 'street' field of a contact's address."),
+        tryToAddNameValue(OWSLocalizedString("CONTACT_FIELD_ADDRESS_STREET", comment: "Label for the 'street' field of a contact's address."),
                           address.street)
-        tryToAddNameValue(NSLocalizedStringFromAppBundle("CONTACT_FIELD_ADDRESS_POBOX", comment: "Label for the 'pobox' field of a contact's address."),
+        tryToAddNameValue(OWSLocalizedString("CONTACT_FIELD_ADDRESS_POBOX", comment: "Label for the 'pobox' field of a contact's address."),
                           address.pobox)
-        tryToAddNameValue(NSLocalizedStringFromAppBundle("CONTACT_FIELD_ADDRESS_NEIGHBORHOOD", comment: "Label for the 'neighborhood' field of a contact's address."),
+        tryToAddNameValue(OWSLocalizedString("CONTACT_FIELD_ADDRESS_NEIGHBORHOOD", comment: "Label for the 'neighborhood' field of a contact's address."),
                           address.neighborhood)
-        tryToAddNameValue(NSLocalizedStringFromAppBundle("CONTACT_FIELD_ADDRESS_CITY", comment: "Label for the 'city' field of a contact's address."),
+        tryToAddNameValue(OWSLocalizedString("CONTACT_FIELD_ADDRESS_CITY", comment: "Label for the 'city' field of a contact's address."),
                           address.city)
-        tryToAddNameValue(NSLocalizedStringFromAppBundle("CONTACT_FIELD_ADDRESS_REGION", comment: "Label for the 'region' field of a contact's address."),
+        tryToAddNameValue(OWSLocalizedString("CONTACT_FIELD_ADDRESS_REGION", comment: "Label for the 'region' field of a contact's address."),
                           address.region)
-        tryToAddNameValue(NSLocalizedStringFromAppBundle("CONTACT_FIELD_ADDRESS_POSTCODE", comment: "Label for the 'postcode' field of a contact's address."),
+        tryToAddNameValue(OWSLocalizedString("CONTACT_FIELD_ADDRESS_POSTCODE", comment: "Label for the 'postcode' field of a contact's address."),
                           address.postcode)
-        tryToAddNameValue(NSLocalizedStringFromAppBundle("CONTACT_FIELD_ADDRESS_COUNTRY", comment: "Label for the 'country' field of a contact's address."),
+        tryToAddNameValue(OWSLocalizedString("CONTACT_FIELD_ADDRESS_COUNTRY", comment: "Label for the 'country' field of a contact's address."),
                           address.country)
 
         return stackView

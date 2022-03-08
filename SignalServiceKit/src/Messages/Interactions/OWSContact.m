@@ -67,7 +67,7 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
             return [CNLabeledValue localizedStringForLabel:CNLabelWork];
         default:
             if (self.label.ows_stripped.length < 1) {
-                return NSLocalizedString(@"CONTACT_PHONE", @"Label for a contact's phone number.");
+                return OWSLocalizedString(@"CONTACT_PHONE", @"Label for a contact's phone number.");
             }
             return self.label.ows_stripped;
     }
@@ -153,7 +153,7 @@ NSString *NSStringForContactEmailType(OWSContactEmailType value)
             return [CNLabeledValue localizedStringForLabel:CNLabelWork];
         default:
             if (self.label.ows_stripped.length < 1) {
-                return NSLocalizedString(@"CONTACT_EMAIL", @"Label for a contact's email address.");
+                return OWSLocalizedString(@"CONTACT_EMAIL", @"Label for a contact's email address.");
             }
             return self.label.ows_stripped;
     }
@@ -230,7 +230,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             return [CNLabeledValue localizedStringForLabel:CNLabelWork];
         default:
             if (self.label.ows_stripped.length < 1) {
-                return NSLocalizedString(@"CONTACT_ADDRESS", @"Label for a contact's postal address.");
+                return OWSLocalizedString(@"CONTACT_ADDRESS", @"Label for a contact's postal address.");
             }
             return self.label.ows_stripped;
     }
@@ -313,7 +313,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     if (_displayName.length < 1) {
         OWSFailDebug(@"could not derive a valid display name.");
-        return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
+        return OWSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
     }
     return _displayName;
 }

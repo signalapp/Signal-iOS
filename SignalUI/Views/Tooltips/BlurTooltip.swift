@@ -29,7 +29,7 @@ public class BlurTooltip: TooltipView {
 
     public override func bubbleContentView() -> UIView {
         let label = UILabel()
-        label.text = NSLocalizedStringFromAppBundle("BLUR_TOOLTIP",
+        label.text = OWSLocalizedString("BLUR_TOOLTIP",
                                        comment: "Tooltip highlighting the blur image editing tool.")
         label.font = UIFont.ows_dynamicTypeSubheadline
         label.textColor = UIColor.ows_white

@@ -106,7 +106,7 @@ public class ContactDiscoveryError: NSError, UserErrorDescriptionProvider {
     }
 
     public override var localizedDescription: String {
-        NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: "Generic server error")
+        OWSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: "Generic server error")
     }
 }
 

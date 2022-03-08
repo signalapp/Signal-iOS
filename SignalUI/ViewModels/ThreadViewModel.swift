@@ -172,7 +172,7 @@ public class HomeViewInfo: Dependencies {
                     transaction: transaction
                 )
             } else if lastMessageForInbox is TSOutgoingMessage {
-                return NSLocalizedStringFromAppBundle("GROUP_MEMBER_LOCAL_USER",
+                return OWSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                          comment: "Label indicating the local user.")
             } else {
                 return nil

@@ -527,7 +527,7 @@ class AnySearchIndexer: Dependencies {
         var result = recipientIndexer.index(recipientAddress, transaction: transaction)
 
         if contactThread.isNoteToSelf {
-            let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
+            let noteToSelfLabel = OWSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
             result += " \(noteToSelfLabel)"
         }
 

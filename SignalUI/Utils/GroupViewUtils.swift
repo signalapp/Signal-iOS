@@ -11,14 +11,14 @@ public class GroupViewUtils {
 
     public static func formatGroupMembersLabel(memberCount: Int) -> String {
         guard memberCount > 0 else {
-            return NSLocalizedStringFromAppBundle("GROUP_MEMBER_COUNT_LABEL_0",
+            return OWSLocalizedString("GROUP_MEMBER_COUNT_LABEL_0",
                                      comment: "The 'group member count' indicator when there are no members in the group.")
         }
         guard memberCount != 1 else {
-            return NSLocalizedStringFromAppBundle("GROUP_MEMBER_COUNT_LABEL_1",
+            return OWSLocalizedString("GROUP_MEMBER_COUNT_LABEL_1",
                                      comment: "The 'group member count' indicator when there is 1 member in the group.")
         }
-        let format = NSLocalizedStringFromAppBundle("GROUP_MEMBER_COUNT_LABEL_FORMAT",
+        let format = OWSLocalizedString("GROUP_MEMBER_COUNT_LABEL_FORMAT",
                                        comment: "Format for the 'group member count' indicator. Embeds {the number of group members}.")
         return String(format: format, OWSFormat.formatInt(memberCount))
     }
@@ -57,9 +57,9 @@ public class GroupViewUtils {
         AssertIsOnMainThread()
 
         let showUpdateNetworkErrorUI = {
-            OWSActionSheets.showActionSheet(title: NSLocalizedStringFromAppBundle("ERROR_NETWORK_FAILURE",
+            OWSActionSheets.showActionSheet(title: OWSLocalizedString("ERROR_NETWORK_FAILURE",
                                                                      comment: "Error indicating network connectivity problems."),
-                                            message: NSLocalizedStringFromAppBundle("UPDATE_GROUP_FAILED_DUE_TO_NETWORK",
+                                            message: OWSLocalizedString("UPDATE_GROUP_FAILED_DUE_TO_NETWORK",
                                                                      comment: "Error indicating that a group could not be updated due to network connectivity problems."))
         }
 
@@ -67,13 +67,13 @@ public class GroupViewUtils {
             return showUpdateNetworkErrorUI()
         }
 
-        OWSActionSheets.showActionSheet(title: NSLocalizedStringFromAppBundle("UPDATE_GROUP_FAILED",
+        OWSActionSheets.showActionSheet(title: OWSLocalizedString("UPDATE_GROUP_FAILED",
                                                                  comment: "Error indicating that a group could not be updated."))
     }
 
     public static func showInvalidGroupMemberAlert(fromViewController: UIViewController) {
         let actionSheet = ActionSheetController(title: CommonStrings.errorAlertTitle,
-                                                message: NSLocalizedStringFromAppBundle("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER",
+                                                message: OWSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER",
                                                                            comment: "Error message indicating the a user can't be added to a group."))
 
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.learnMore,

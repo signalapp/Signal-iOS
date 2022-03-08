@@ -350,7 +350,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         if let title = delegate?.contactApprovalCustomTitle(self) {
             self.navigationItem.title = title
         } else {
-            self.navigationItem.title = NSLocalizedStringFromAppBundle("CONTACT_SHARE_APPROVAL_VIEW_TITLE",
+            self.navigationItem.title = OWSLocalizedString("CONTACT_SHARE_APPROVAL_VIEW_TITLE",
                                                           comment: "Title for the 'Approve contact share' view.")
         }
 
@@ -461,7 +461,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         stackView.addArrangedSubview(nameLabel)
 
         let editNameLabel = UILabel()
-        editNameLabel.text = NSLocalizedStringFromAppBundle("CONTACT_EDIT_NAME_BUTTON", comment: "Label for the 'edit name' button in the contact share approval view.")
+        editNameLabel.text = OWSLocalizedString("CONTACT_EDIT_NAME_BUTTON", comment: "Label for the 'edit name' button in the contact share approval view.")
         editNameLabel.font = UIFont.ows_dynamicTypeBody
         editNameLabel.textColor = Theme.accentBlueColor
         stackView.addArrangedSubview(editNameLabel)
@@ -492,12 +492,12 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         AssertIsOnMainThread()
 
         guard isAtLeastOneFieldSelected() else {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedStringFromAppBundle("CONTACT_SHARE_NO_FIELDS_SELECTED",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("CONTACT_SHARE_NO_FIELDS_SELECTED",
                                                                 comment: "Error indicating that at least one contact field must be selected before sharing a contact."))
             return
         }
         guard contactShare.ows_isValid else {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedStringFromAppBundle("CONTACT_SHARE_INVALID_CONTACT",
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("CONTACT_SHARE_INVALID_CONTACT",
                                                                 comment: "Error indicating that an invalid contact cannot be shared."))
             return
         }

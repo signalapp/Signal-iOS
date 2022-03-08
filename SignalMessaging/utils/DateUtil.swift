@@ -72,16 +72,16 @@ extension DateUtil {
         let calendar = Calendar.current
         let minutesDiff = calendar.dateComponents([.minute], from: date, to: Date()).minute ?? 0
         if minutesDiff < 1 {
-            return NSLocalizedStringFromAppBundle("DATE_NOW",
+            return OWSLocalizedString("DATE_NOW",
                                      comment: "The present; the current time.")
         } else if shouldUseLongFormat && minutesDiff == 1 {
             // Long format has a distinction between singular and plural
-            return NSLocalizedStringFromAppBundle("DATE_ONE_MINUTE_AGO_LONG",
+            return OWSLocalizedString("DATE_ONE_MINUTE_AGO_LONG",
                                      comment: "Full string for a relative time of one minute ago.")
         } else if minutesDiff <= 60 {
-            let shortFormat = NSLocalizedStringFromAppBundle("DATE_MINUTES_AGO_FORMAT",
+            let shortFormat = OWSLocalizedString("DATE_MINUTES_AGO_FORMAT",
                                                 comment: "Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}.")
-            let longFormat = NSLocalizedStringFromAppBundle("DATE_MINUTES_AGO_LONG_FORMAT",
+            let longFormat = OWSLocalizedString("DATE_MINUTES_AGO_LONG_FORMAT",
                                                comment: "Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}.")
             let format = shouldUseLongFormat ? longFormat : shortFormat
             let minutesString = OWSFormat.formatInt(minutesDiff)

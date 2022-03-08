@@ -36,8 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
     AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (status == AVAuthorizationStatusDenied) {
         ActionSheetController *alert = [[ActionSheetController alloc]
-            initWithTitle:NSLocalizedStringFromAppBundle(@"MISSING_CAMERA_PERMISSION_TITLE", @"Alert title")
-                  message:NSLocalizedStringFromAppBundle(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")];
+            initWithTitle:OWSLocalizedString(@"MISSING_CAMERA_PERMISSION_TITLE", @"Alert title")
+                  message:OWSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")];
 
         ActionSheetAction *_Nullable openSettingsAction =
             [AppContextUtils openSystemSettingsActionWithCompletion:^{ callback(NO); }];
@@ -72,9 +72,9 @@ NS_ASSUME_NONNULL_BEGIN
     void (^presentSettingsDialog)(void) = ^(void) {
         DispatchMainThreadSafe(^{
             ActionSheetController *alert = [[ActionSheetController alloc]
-                initWithTitle:NSLocalizedStringFromAppBundle(@"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
+                initWithTitle:OWSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
                                   @"Alert title when user has previously denied media library access")
-                      message:NSLocalizedStringFromAppBundle(@"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
+                      message:OWSLocalizedString(@"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
                                   @"Alert body when user has previously denied media library access")];
 
             ActionSheetAction *_Nullable openSettingsAction =
@@ -163,9 +163,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DispatchMainThreadSafe(^{
         ActionSheetController *alert = [[ActionSheetController alloc]
-            initWithTitle:NSLocalizedStringFromAppBundle(@"CALL_AUDIO_PERMISSION_TITLE",
+            initWithTitle:OWSLocalizedString(@"CALL_AUDIO_PERMISSION_TITLE",
                               @"Alert title when calling and permissions for microphone are missing")
-                  message:NSLocalizedStringFromAppBundle(@"CALL_AUDIO_PERMISSION_MESSAGE",
+                  message:OWSLocalizedString(@"CALL_AUDIO_PERMISSION_MESSAGE",
                               @"Alert message when calling and permissions for microphone are missing")];
 
         ActionSheetAction *_Nullable openSettingsAction = [AppContextUtils openSystemSettingsActionWithCompletion:nil];

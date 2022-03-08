@@ -443,11 +443,11 @@ NSString *const OWSPreferencesKeyDeviceScale = @"OWSPreferencesKeyDeviceScale";
 {
     switch (notificationType) {
         case NotificationNamePreview:
-            return NSLocalizedStringFromAppBundle(@"NOTIFICATIONS_SENDER_AND_MESSAGE", nil);
+            return OWSLocalizedString(@"NOTIFICATIONS_SENDER_AND_MESSAGE", nil);
         case NotificationNameNoPreview:
-            return NSLocalizedStringFromAppBundle(@"NOTIFICATIONS_SENDER_ONLY", nil);
+            return OWSLocalizedString(@"NOTIFICATIONS_SENDER_ONLY", nil);
         case NotificationNoNameNoPreview:
-            return NSLocalizedStringFromAppBundle(@"NOTIFICATIONS_NONE", nil);
+            return OWSLocalizedString(@"NOTIFICATIONS_NONE", nil);
         default:
             OWSLogWarn(@"Undefined NotificationType in Settings");
             return @"";

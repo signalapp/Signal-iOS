@@ -374,7 +374,7 @@ public extension OWSTableItem {
         // Otherwise just default to using the displayValue.
         let pasteboardValue = pasteboardValue ?? displayValue
         let accessibilityIdentifier = accessibilityIdentifier ?? label
-        let displayValue = displayValue ?? NSLocalizedStringFromAppBundle("MISSING_VALUE",
+        let displayValue = displayValue ?? OWSLocalizedString("MISSING_VALUE",
                                                              comment: "Generic indicator that no value is available for display")
         return .item(
             name: label,
@@ -389,7 +389,7 @@ public extension OWSTableItem {
                     owsFailDebug("could not identify frontmostViewController")
                     return
                 }
-                let toast = NSLocalizedStringFromAppBundle("COPIED_TO_CLIPBOARD",
+                let toast = OWSLocalizedString("COPIED_TO_CLIPBOARD",
                                               comment: "Indicator that a value has been copied to the clipboard.")
                 fromVC.presentToast(text: toast)
 

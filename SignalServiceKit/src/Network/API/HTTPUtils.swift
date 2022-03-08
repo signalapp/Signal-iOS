@@ -97,25 +97,25 @@ extension HTTPUtils {
             return buildServiceResponseError()
         case 411:
             Logger.info("Multi-device pairing: \(responseStatus), \(errorDescription)")
-            let description = NSLocalizedString("MULTIDEVICE_PAIRING_MAX_DESC",
+            let description = OWSLocalizedString("MULTIDEVICE_PAIRING_MAX_DESC",
                                                 comment: "alert title: cannot link - reached max linked devices")
-            let recoverySuggestion = NSLocalizedString("MULTIDEVICE_PAIRING_MAX_RECOVERY",
+            let recoverySuggestion = OWSLocalizedString("MULTIDEVICE_PAIRING_MAX_RECOVERY",
                                                        comment: "alert body: cannot link - reached max linked devices")
             let error = buildServiceResponseError(description: description,
                                                   recoverySuggestion: recoverySuggestion)
             return error
         case 413:
             Logger.warn("Rate limit exceeded: \(request.httpMethod) \(requestUrl.absoluteString)")
-            let description = NSLocalizedString("REGISTER_RATE_LIMITING_ERROR", comment: "")
-            let recoverySuggestion = NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
+            let description = OWSLocalizedString("REGISTER_RATE_LIMITING_ERROR", comment: "")
+            let recoverySuggestion = OWSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
             let error = buildServiceResponseError(description: description,
                                                   recoverySuggestion: recoverySuggestion)
             return error
         case 417:
             // TODO: Is this response code obsolete?
             Logger.warn("The number is already registered on a relay. Please unregister there first: \(request.httpMethod) \(requestUrl.absoluteString)")
-            let description = NSLocalizedString("REGISTRATION_ERROR", comment: "")
-            let recoverySuggestion = NSLocalizedString("RELAY_REGISTERED_ERROR_RECOVERY", comment: "")
+            let description = OWSLocalizedString("REGISTRATION_ERROR", comment: "")
+            let recoverySuggestion = OWSLocalizedString("RELAY_REGISTERED_ERROR_RECOVERY", comment: "")
             let error = buildServiceResponseError(description: description,
                                                   recoverySuggestion: recoverySuggestion)
             return error

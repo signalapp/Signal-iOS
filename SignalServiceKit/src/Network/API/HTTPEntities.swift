@@ -109,10 +109,10 @@ public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvid
         }
         switch self {
         case .missingRequest, .invalidAppState, .invalidRequest, .networkFailure:
-            return NSLocalizedString("ERROR_DESCRIPTION_REQUEST_FAILED",
+            return OWSLocalizedString("ERROR_DESCRIPTION_REQUEST_FAILED",
                                      comment: "Error indicating that a socket request failed.")
         case .invalidResponse, .serviceResponse:
-            return NSLocalizedString("ERROR_DESCRIPTION_RESPONSE_FAILED",
+            return OWSLocalizedString("ERROR_DESCRIPTION_RESPONSE_FAILED",
                                      comment: "Error indicating that a socket response failed.")
         }
     }
@@ -394,9 +394,9 @@ public class OWSHTTPErrorWrapper: NSObject {
                                                        responseError: error.responseError,
                                                        responseData: error.responseBodyData,
                                                        customRetryAfterDate: error.customRetryAfterDate,
-                                                       customLocalizedDescription: NSLocalizedString("ERROR_DESCRIPTION_NO_INTERNET",
+                                                       customLocalizedDescription: OWSLocalizedString("ERROR_DESCRIPTION_NO_INTERNET",
                                                                                                      comment: "Generic error used whenever Signal can't contact the server"),
-                                                       customLocalizedRecoverySuggestion: NSLocalizedString("NETWORK_ERROR_RECOVERY",
+                                                       customLocalizedRecoverySuggestion: OWSLocalizedString("NETWORK_ERROR_RECOVERY",
                                                                                                             comment: ""))
         return OWSHTTPErrorWrapper(error: newError)
     }

@@ -45,10 +45,10 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 {
     switch (_errorType) {
         case TSErrorMessageInvalidMessage:
-            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @"");
+            return OWSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @"");
         default:
             OWSFailDebug(@"Unknown error type.");
-            return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
+            return OWSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
     }
 }
 
@@ -196,20 +196,20 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 {
     switch (_errorType) {
         case TSErrorMessageNoSession:
-            return NSLocalizedString(@"ERROR_MESSAGE_NO_SESSION", @"");
+            return OWSLocalizedString(@"ERROR_MESSAGE_NO_SESSION", @"");
         case TSErrorMessageInvalidMessage:
-            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @"");
+            return OWSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @"");
         case TSErrorMessageInvalidVersion:
-            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_VERSION", @"");
+            return OWSLocalizedString(@"ERROR_MESSAGE_INVALID_VERSION", @"");
         case TSErrorMessageDuplicateMessage:
-            return NSLocalizedString(@"ERROR_MESSAGE_DUPLICATE_MESSAGE", @"");
+            return OWSLocalizedString(@"ERROR_MESSAGE_DUPLICATE_MESSAGE", @"");
         case TSErrorMessageInvalidKeyException:
-            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_KEY_EXCEPTION", @"");
+            return OWSLocalizedString(@"ERROR_MESSAGE_INVALID_KEY_EXCEPTION", @"");
         case TSErrorMessageWrongTrustedIdentityKey:
-            return NSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
+            return OWSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
         case TSErrorMessageNonBlockingIdentityChange: {
             if (self.recipientAddress) {
-                NSString *messageFormat = NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
+                NSString *messageFormat = OWSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
                     @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
                 NSString *recipientDisplayName =
@@ -218,28 +218,28 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                 return [NSString stringWithFormat:messageFormat, recipientDisplayName];
             } else {
                 // address will be nil for legacy errors
-                return NSLocalizedString(
+                return OWSLocalizedString(
                     @"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE", @"Shown when signal users safety numbers changed");
             }
         }
         case TSErrorMessageUnknownContactBlockOffer:
-            return NSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER",
+            return OWSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER",
                 @"Message shown in conversation view that offers to block an unknown user.");
         case TSErrorMessageGroupCreationFailed:
-            return NSLocalizedString(@"GROUP_CREATION_FAILED",
+            return OWSLocalizedString(@"GROUP_CREATION_FAILED",
                 @"Message shown in conversation view that indicates there were issues with group creation.");
         case TSErrorMessageSessionRefresh:
-            return NSLocalizedString(
+            return OWSLocalizedString(
                 @"ERROR_MESSAGE_SESSION_REFRESH", @"Text notifying the user that their secure session has been reset");
         case TSErrorMessageDecryptionFailure: {
             if (self.sender) {
-                NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
+                NSString *formatString = OWSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
                     @"Error message for a decryption failure. Embeds {{sender short name}}.");
                 NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender
                                                                             transaction:transaction];
                 return [[NSString alloc] initWithFormat:formatString, senderName];
             } else {
-                return NSLocalizedString(
+                return OWSLocalizedString(
                     @"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");
             }
         }
@@ -247,7 +247,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
             OWSFailDebug(@"failure: unknown error type");
             break;
     }
-    return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
+    return OWSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
 }
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope

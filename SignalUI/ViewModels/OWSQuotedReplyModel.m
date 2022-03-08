@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (message.isViewOnceMessage) {
         // We construct a quote that does not include any of the
         // quoted message's renderable content.
-        NSString *body = NSLocalizedStringFromAppBundle(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
+        NSString *body = OWSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
             @"inbox cell and notification text for an already viewed view-once media message.");
         return [[self alloc] initWithTimestamp:timestamp
                                  authorAddress:authorAddress
