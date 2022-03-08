@@ -12,6 +12,8 @@ enum Onboarding {
             TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519PublicKey
             Storage.writeSync { transaction in
                 let user = Contact(sessionID: x25519PublicKey)
+                user.isApproved = true
+                user.didApproveMe = true
                 Storage.shared.setContact(user, using: transaction)
             }
             switch self {

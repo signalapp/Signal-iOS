@@ -692,11 +692,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     func delete(_ viewItem: ConversationViewItem) {
-        if (!self.isUnsendRequestsEnabled) {
-            viewItem.deleteAction()
-            return
-        }
-        
         guard let message = viewItem.interaction as? TSMessage else { return self.deleteLocally(viewItem) }
         
         // Handle open group messages the old way
@@ -1117,22 +1112,6 @@ extension ConversationVC: UIDocumentInteractionControllerDelegate {
 // MARK: - Message Request Actions
 
 extension ConversationVC {
-    @objc func handleBackPressed() {
-        // If this thread started as a message request but isn't one anymore then we want to skip the
-        // `MessageRequestsViewController` when going back
-        guard
-            threadStartedAsMessageRequest,
-            !thread.isMessageRequest(),
-            let viewControllers: [UIViewController] = navigationController?.viewControllers,
-            let messageRequestsIndex = viewControllers.firstIndex(where: { $0 is MessageRequestsViewController }),
-            messageRequestsIndex > 0
-        else {
-            navigationController?.popViewController(animated: true)
-            return
-        }
-        
-        navigationController?.popToViewController(viewControllers[messageRequestsIndex - 1], animated: true)
-    }
     
     fileprivate func approveMessageRequestIfNeeded(for thread: TSThread?, with transaction: YapDatabaseReadWriteTransaction, isNewThread: Bool, timestamp: UInt64) -> Promise<Void> {
         guard let contactThread: TSContactThread = thread as? TSContactThread else { return Promise.value(()) }
@@ -1204,6 +1183,13 @@ extension ConversationVC {
                     
                     // Update UI
                     self?.updateNavBarButtons()
+                    if let viewControllers: [UIViewController] = self?.navigationController?.viewControllers,
+                       let messageRequestsIndex = viewControllers.firstIndex(where: { $0 is MessageRequestsViewController }),
+                       messageRequestsIndex > 0 {
+                        var newViewControllers = viewControllers
+                        newViewControllers.remove(at: messageRequestsIndex)
+                        self?.navigationController?.setViewControllers(newViewControllers, animated: false)
+                    }
                 
                     // Send a sync message with the details of the contact
                     if let appDelegate = UIApplication.shared.delegate as? AppDelegate {

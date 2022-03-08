@@ -1,6 +1,7 @@
 
 final class QuoteView : UIView {
     private let mode: Mode
+    private let thread: TSThread
     private let direction: Direction
     private let hInset: CGFloat
     private let maxWidth: CGFloat
@@ -31,25 +32,6 @@ final class QuoteView : UIView {
         switch mode {
         case .regular(let viewItem): return (viewItem.interaction as? TSMessage)?.quotedMessage!.body
         case .draft(let model): return model.body
-        }
-    }
-
-    private var threadID: String {
-        switch mode {
-        case .regular(let viewItem): return viewItem.interaction.uniqueThreadId
-        case .draft(let model): return model.threadId
-        }
-    }
-
-    private var isGroupThread: Bool {
-        switch mode {
-        case .regular(let viewItem): return viewItem.isGroupThread
-        case .draft(let model):
-            var result = false
-            Storage.read { transaction in
-                result = TSThread.fetch(uniqueId: model.threadId, transaction: transaction)?.isGroupThread() ?? false
-            }
-            return result
         }
     }
 
@@ -93,8 +75,9 @@ final class QuoteView : UIView {
     static let cancelButtonSize: CGFloat = 33
 
     // MARK: Lifecycle
-    init(for viewItem: ConversationViewItem, direction: Direction, hInset: CGFloat, maxWidth: CGFloat) {
+    init(for viewItem: ConversationViewItem, in thread: TSThread?, direction: Direction, hInset: CGFloat, maxWidth: CGFloat) {
         self.mode = .regular(viewItem)
+        self.thread = thread ?? TSThread.fetch(uniqueId: viewItem.interaction.uniqueThreadId)!
         self.maxWidth = maxWidth
         self.direction = direction
         self.hInset = hInset
@@ -105,6 +88,7 @@ final class QuoteView : UIView {
 
     init(for model: OWSQuotedReplyModel, direction: Direction, hInset: CGFloat, maxWidth: CGFloat, delegate: QuoteViewDelegate) {
         self.mode = .draft(model)
+        self.thread = TSThread.fetch(uniqueId: model.threadId)!
         self.maxWidth = maxWidth
         self.direction = direction
         self.hInset = hInset
@@ -188,16 +172,15 @@ final class QuoteView : UIView {
         bodyLabel.lineBreakMode = .byTruncatingTail
         let isOutgoing = (direction == .outgoing)
         bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        bodyLabel.attributedText = given(body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: threadID, attributes: [:]) }
-            ?? given(attachments.first?.contentType) { NSAttributedString(string: MIMETypeUtil.isAudio($0) ? "Audio" : "Document") } ?? NSAttributedString(string: "Document")
+        bodyLabel.attributedText = given(body) { MentionUtilities.highlightMentions(in: $0, isOutgoingMessage: isOutgoing, threadID: thread.uniqueId!, attributes: [:]) } ?? given(attachments.first?.contentType) { NSAttributedString(string: MIMETypeUtil.isAudio($0) ? "Audio" : "Document") } ?? NSAttributedString(string: "Document")
         bodyLabel.textColor = textColor
         let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
         // Label stack view
         var authorLabelHeight: CGFloat?
-        if isGroupThread {
+        if let groupThread = thread as? TSGroupThread {
             let authorLabel = UILabel()
             authorLabel.lineBreakMode = .byTruncatingTail
-            let context: Contact.Context = (TSGroupThread.fetch(uniqueId: threadID)?.isOpenGroup == true) ? .openGroup : .regular
+            let context: Contact.Context = groupThread.isOpenGroup ? .openGroup : .regular
             authorLabel.text = Storage.shared.getContact(with: authorID)?.displayName(for: context) ?? authorID
             authorLabel.textColor = textColor
             authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
@@ -225,7 +208,7 @@ final class QuoteView : UIView {
         // Constraints
         contentView.addSubview(mainStackView)
         mainStackView.pin(to: contentView)
-        if !isGroupThread {
+        if !thread.isGroupThread() {
             bodyLabel.set(.width, to: bodyLabelSize.width)
         }
         let bodyLabelHeight = bodyLabelSize.height.clamp(0, maxBodyLabelHeight)
