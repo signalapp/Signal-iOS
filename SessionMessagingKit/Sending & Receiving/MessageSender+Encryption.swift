@@ -24,7 +24,7 @@ extension MessageSender {
         return Data(ciphertext)
     }
     
-    internal static func encryptWithSessionBlindingProtocol(_ plaintext: Data, for recipientBlindedId: String, openGroupPublicKey: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) throws -> Data {
+    internal static func encryptWithSessionBlindingProtocol(_ plaintext: Data, for recipientBlindedId: String, openGroupPublicKey: String, using dependencies: Dependencies = Dependencies()) throws -> Data {
         guard SessionId.Prefix(from: recipientBlindedId) == .blinded else { throw Error.signingFailed }
         guard let userEd25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserED25519KeyPair() else {
             throw Error.noUserED25519KeyPair

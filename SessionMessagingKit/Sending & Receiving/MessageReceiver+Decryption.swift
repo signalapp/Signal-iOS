@@ -27,7 +27,7 @@ extension MessageReceiver {
         return (Data(plaintext), SessionId(.standard, publicKey: senderX25519PublicKey).hexString)
     }
     
-    internal static func decryptWithSessionBlindingProtocol(data: Data, isOutgoing: Bool, otherBlindedPublicKey: String, with openGroupPublicKey: String, userEd25519KeyPair: Box.KeyPair, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
+    internal static func decryptWithSessionBlindingProtocol(data: Data, isOutgoing: Bool, otherBlindedPublicKey: String, with openGroupPublicKey: String, userEd25519KeyPair: Box.KeyPair, using dependencies: Dependencies = Dependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
         guard let blindedKeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroupPublicKey, edKeyPair: userEd25519KeyPair, genericHash: dependencies.genericHash) else {
             throw Error.decryptionFailed
         }

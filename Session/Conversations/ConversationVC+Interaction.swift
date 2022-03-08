@@ -813,7 +813,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
             let publicKey = message.authorId
             guard let openGroup = Storage.shared.getOpenGroup(for: threadID) else { return }
-            let promise = OpenGroupAPI.userBanAndDeleteAllMessage(publicKey, for: [openGroup.room], on: openGroup.server)
+            
+            let promise = OpenGroupAPI.userBanAndDeleteAllMessage(publicKey, from: [openGroup.room], on: openGroup.server)
             promise.catch(on: DispatchQueue.main) { _ in
                 OWSAlerts.showErrorAlert(message: NSLocalizedString("context_menu_ban_user_error_alert_message", comment: ""))
             }

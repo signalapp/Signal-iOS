@@ -812,7 +812,7 @@ public enum OpenGroupAPI {
     ///   - dependencies: Injected dependencies (used for unit testing)
     public static func userDeleteMessages(
         _ sessionId: String,
-        for roomTokens: [String]?,
+        from roomTokens: [String]?,
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, UserDeleteMessagesResponse)> {
@@ -837,7 +837,7 @@ public enum OpenGroupAPI {
     /// methods for the documented behaviour of each method
     public static func userBanAndDeleteAllMessage(
         _ sessionId: String,
-        for roomTokens: [String]?,
+        from roomTokens: [String]?,
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<[OnionRequestResponseInfoType]> {

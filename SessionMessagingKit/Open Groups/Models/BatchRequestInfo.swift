@@ -143,13 +143,13 @@ protocol BatchRequestInfoType {
 // MARK: - Convenience
 
 public extension Decodable {
-    static func decoded(from data: Data, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) throws -> Self {
+    static func decoded(from data: Data, using dependencies: Dependencies = Dependencies()) throws -> Self {
         return try data.decoded(as: Self.self, using: dependencies)
     }
 }
 
 extension Promise where T == (OnionRequestResponseInfoType, Data?) {
-    func decoded(as types: OpenGroupAPI.BatchResponseTypes, on queue: DispatchQueue? = nil, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<OpenGroupAPI.BatchResponse> {
+    func decoded(as types: OpenGroupAPI.BatchResponseTypes, on queue: DispatchQueue? = nil, using dependencies: Dependencies = Dependencies()) -> Promise<OpenGroupAPI.BatchResponse> {
         self.map(on: queue) { responseInfo, maybeData -> OpenGroupAPI.BatchResponse in
             // Need to split the data into an array of data so each item can be Decoded correctly
             guard let data: Data = maybeData else { throw HTTP.Error.parsingFailed }

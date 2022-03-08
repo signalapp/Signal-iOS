@@ -281,7 +281,7 @@ public final class MessageSender : NSObject {
 
     // MARK: - Open Groups
     
-    internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any, dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<Void> {
+    internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any, dependencies: Dependencies = Dependencies()) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         
@@ -410,7 +410,7 @@ public final class MessageSender : NSObject {
         return promise
     }
     
-    internal static func sendToOpenGroupInboxDestination(_ destination: Message.Destination, message: Message, using transaction: Any, dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<Void> {
+    internal static func sendToOpenGroupInboxDestination(_ destination: Message.Destination, message: Message, using transaction: Any, dependencies: Dependencies = Dependencies()) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction

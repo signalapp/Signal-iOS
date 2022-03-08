@@ -49,7 +49,6 @@ extension OpenGroupAPI {
         
         case userBan(String)
         case userUnban(String)
-        case userPermission(String)
         case userModerator(String)
         case userDeleteMessages(String)
         
@@ -114,7 +113,6 @@ extension OpenGroupAPI {
                 
                 case .userBan(let sessionId): return "user/\(sessionId)/ban"
                 case .userUnban(let sessionId): return "user/\(sessionId)/unban"
-                case .userPermission(let sessionId): return "user/\(sessionId)/permission"
                 case .userModerator(let sessionId): return "user/\(sessionId)/moderator"
                 case .userDeleteMessages(let sessionId): return "user/\(sessionId)/deleteMessages"
             }

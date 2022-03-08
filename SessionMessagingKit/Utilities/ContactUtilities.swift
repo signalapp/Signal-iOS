@@ -49,7 +49,7 @@ public enum ContactUtilities {
         }
     }
     
-    public static func mapping(for blindedId: String, serverPublicKey: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> BlindedIdMapping? {
+    public static func mapping(for blindedId: String, serverPublicKey: String, using dependencies: Dependencies = Dependencies()) -> BlindedIdMapping? {
         var result: BlindedIdMapping?
         
         Storage.write { transaction in
@@ -59,7 +59,7 @@ public enum ContactUtilities {
         return result
     }
     
-    public static func mapping(for blindedId: String, serverPublicKey: String, using transaction: YapDatabaseReadWriteTransaction, dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> BlindedIdMapping? {
+    public static func mapping(for blindedId: String, serverPublicKey: String, using transaction: YapDatabaseReadWriteTransaction, dependencies: Dependencies = Dependencies()) -> BlindedIdMapping? {
         // Unfortunately the whole point of id-blinding is to make it hard to reverse-engineer a standard
         // sessionId, as a result in order to see if there is an unblinded contact for this blindedId we
         // can only really generate blinded ids for each contact and check if any match

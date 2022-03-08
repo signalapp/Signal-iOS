@@ -18,7 +18,7 @@ public final class OpenGroupManager: NSObject {
         public var timeSinceLastPoll: [String: TimeInterval] = [:]
 
         fileprivate var _timeSinceLastOpen: TimeInterval?
-        public func getTimeSinceLastOpen(using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> TimeInterval {
+        public func getTimeSinceLastOpen(using dependencies: Dependencies = Dependencies()) -> TimeInterval {
             if let storedTimeSinceLastOpen: TimeInterval = _timeSinceLastOpen {
                 return storedTimeSinceLastOpen
             }
@@ -67,7 +67,7 @@ public final class OpenGroupManager: NSObject {
 
     // MARK: - Adding & Removing
     
-    public func add(roomToken: String, server: String, publicKey: String, isConfigMessage: Bool, using transaction: YapDatabaseReadWriteTransaction, dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Promise<Void> {
+    public func add(roomToken: String, server: String, publicKey: String, isConfigMessage: Bool, using transaction: YapDatabaseReadWriteTransaction, dependencies: Dependencies = Dependencies()) -> Promise<Void> {
         // If we are currently polling for this server and already have a TSGroupThread for this room the do nothing
         let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
         
@@ -163,7 +163,7 @@ public final class OpenGroupManager: NSObject {
         _ capabilities: OpenGroupAPI.Capabilities,
         on server: String,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
+        dependencies: Dependencies = Dependencies()
     ) {
         let updatedServer: OpenGroupAPI.Server = OpenGroupAPI.Server(
             name: server,
@@ -179,7 +179,7 @@ public final class OpenGroupManager: NSObject {
         for roomToken: String,
         on server: String,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies(),
+        dependencies: Dependencies = Dependencies(),
         completion: (() -> ())? = nil
     ) {
         OpenGroupManager.handlePollInfo(
@@ -199,7 +199,7 @@ public final class OpenGroupManager: NSObject {
         for roomToken: String,
         on server: String,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies(),
+        dependencies: Dependencies = Dependencies(),
         completion: (() -> ())? = nil
     ) {
         // Create the open group model and get or create the thread
@@ -307,7 +307,7 @@ public final class OpenGroupManager: NSObject {
         on server: String,
         isBackgroundPoll: Bool,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
+        dependencies: Dependencies = Dependencies()
     ) {
         // Sorting the messages by server ID before importing them fixes an issue where messages
         // that quote older messages can't find those older messages
@@ -371,7 +371,7 @@ public final class OpenGroupManager: NSObject {
         on server: String,
         isBackgroundPoll: Bool,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
+        dependencies: Dependencies = Dependencies()
     ) {
         // Don't need to do anything if we have no messages (it's a valid case)
         guard !messages.isEmpty else { return }
@@ -476,10 +476,10 @@ public final class OpenGroupManager: NSObject {
     /// This method specifies if the given publicKey is a moderator or an admin within a specified Open Group
     @objc(isUserModeratorOrAdmin:forRoom:onServer:)
     public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String) -> Bool {
-        return isUserModeratorOrAdmin(publicKey, for: room, on: server, using: OpenGroupAPI.Dependencies())
+        return isUserModeratorOrAdmin(publicKey, for: room, on: server)
     }
     
-    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) -> Bool {
+    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Bool {
         let modAndAdminKeys: Set<String> = (OpenGroupManager.shared.cache.moderators[server]?[room] ?? Set())
             .union(OpenGroupManager.shared.cache.admins[server]?[room] ?? Set())
 
@@ -527,7 +527,7 @@ public final class OpenGroupManager: NSObject {
         }
     }
     
-    public static func getDefaultRoomsIfNeeded(using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()) {
+    public static func getDefaultRoomsIfNeeded(using dependencies: Dependencies = Dependencies()) {
         // Note: If we already have a 'defaultRoomsPromise' then there is no need to get it again
         guard OpenGroupManager.shared.cache.defaultRoomsPromise == nil else { return }
         
@@ -572,7 +572,7 @@ public final class OpenGroupManager: NSObject {
         _ fileId: UInt64,
         for roomToken: String,
         on server: String,
-        using dependencies: OpenGroupAPI.Dependencies = OpenGroupAPI.Dependencies()
+        using dependencies: Dependencies = Dependencies()
     ) -> Promise<Data> {
         // Normally the image for a given group is stored with the group thread, so it's only
         // fetched once. However, on the join open group screen we show images for groups the

@@ -21,6 +21,7 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
         case openGroupSequenceNumber
         case openGroupInboxLatestMessageId
         case openGroupOutboxLatestMessageId
+        case receivedMessageTimestamp
     }
     
     typealias Key = DataKey
@@ -176,8 +177,14 @@ class TestStorage: SessionMessagingKitStorageProtocol, Mockable {
     func getAllMessageRequestThreads() -> [String: TSContactThread] { return [:] }
     func getAllMessageRequestThreads(using transaction: YapDatabaseReadTransaction) -> [String: TSContactThread] { return [:] }
 
-    func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64] { return [] }
-    func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any) {}
+    func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64] {
+        return ((mockData[.receivedMessageTimestamp] as? UInt64).map { [$0] } ?? [])
+    }
+    
+    func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any) {
+        mockData[.receivedMessageTimestamp] = timestamp
+    }
+    
     func getOrCreateThread(for publicKey: String, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String? { return nil }
     func persist(_ message: VisibleMessage, quotedMessage: TSQuotedMessage?, linkPreview: OWSLinkPreview?, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String? { return nil }
     func persist(_ attachments: [VisibleMessage.Attachment], using transaction: Any) -> [String] { return [] }

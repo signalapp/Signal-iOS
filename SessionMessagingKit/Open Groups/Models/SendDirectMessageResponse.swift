@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPI {
-    public struct SendDirectMessageResponse: Codable {
+    public struct SendDirectMessageResponse: Codable, Equatable {
         enum CodingKeys: String, CodingKey {
             case id
             case sender

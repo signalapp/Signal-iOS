@@ -108,7 +108,7 @@ extension OpenGroupAPI.RoomPollInfo {
             defaultWrite: room.defaultWrite,
             upload: room.upload,
             defaultUpload: room.defaultUpload,
-            details: nil
+            details: room
         )
     }
 }

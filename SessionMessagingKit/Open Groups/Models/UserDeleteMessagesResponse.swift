@@ -3,7 +3,7 @@
 import Foundation
 
 extension OpenGroupAPI {
-    public struct UserDeleteMessagesResponse: Codable {
+    public struct UserDeleteMessagesResponse: Codable, Equatable {
         enum CodingKeys: String, CodingKey {
             case id
             case messagesDeleted = "messages_deleted"

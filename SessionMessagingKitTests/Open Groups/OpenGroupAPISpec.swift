@@ -84,7 +84,7 @@ class OpenGroupAPISpec: QuickSpec {
         var testGenericHash: TestGenericHash!
         var testSign: TestSign!
         var testUserDefaults: TestUserDefaults!
-        var dependencies: OpenGroupAPI.Dependencies!
+        var dependencies: Dependencies!
         
         var response: (OnionRequestResponseInfoType, Codable)? = nil
         var pollResponse: [OpenGroupAPI.Endpoint: (OnionRequestResponseInfoType, Codable?)]?
@@ -100,7 +100,7 @@ class OpenGroupAPISpec: QuickSpec {
                 testGenericHash = TestGenericHash()
                 testSign = TestSign()
                 testUserDefaults = TestUserDefaults()
-                dependencies = OpenGroupAPI.Dependencies(
+                dependencies = Dependencies(
                     api: TestApi.self,
                     storage: testStorage,
                     sodium: testSodium,
@@ -1003,9 +1003,605 @@ class OpenGroupAPISpec: QuickSpec {
                 }
             }
             
+            // MARK: - Messages
+            
+            context("when sending messages") {
+                var messageData: OpenGroupAPI.Message!
+                
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        static let data: OpenGroupAPI.Message = OpenGroupAPI.Message(
+                            id: 126,
+                            sender: "testSender",
+                            posted: 321,
+                            edited: nil,
+                            seqNo: 10,
+                            whisper: false,
+                            whisperMods: false,
+                            whisperTo: nil,
+                            base64EncodedData: nil,
+                            base64EncodedSignature: nil
+                        )
+                        
+                        override class var mockResponse: Data? { return try! JSONEncoder().encode(data) }
+                    }
+                    messageData = LocalTestApi.data
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    testStorage.mockData[.userEdKeyPair] = Box.KeyPair(publicKey: [], secretKey: [])
+                }
+                
+                afterEach {
+                    messageData = nil
+                }
+                
+                it("correctly sends the message") {
+                    var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
+                    
+                    OpenGroupAPI
+                        .send(
+                            "test".data(using: .utf8)!,
+                            to: "testRoom",
+                            on: "testServer",
+                            whisperTo: nil,
+                            whisperMods: false,
+                            fileIds: nil,
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate the response data
+                    expect(response?.data).to(equal(messageData))
+                    
+                    // Validate signature headers
+                    let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/message"))
+                }
+                
+                it("saves the received message timestamp to the database in milliseconds") {
+                    var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
+                    
+                    OpenGroupAPI
+                        .send(
+                            "test".data(using: .utf8)!,
+                            to: "testRoom",
+                            on: "testServer",
+                            whisperTo: nil,
+                            whisperMods: false,
+                            fileIds: nil,
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    expect(testStorage.mockData[.receivedMessageTimestamp] as? UInt64).to(equal(321000))
+                }
+                
+                context("when unblinded") {
+                    beforeEach {
+                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+                            name: "testServer",
+                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
+                        )
+                    }
+                    
+                    it("signs the message correctly") {
+                        var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
+                        
+                        OpenGroupAPI
+                            .send(
+                                "test".data(using: .utf8)!,
+                                to: "testRoom",
+                                on: "testServer",
+                                whisperTo: nil,
+                                whisperMods: false,
+                                fileIds: nil,
+                                using: dependencies
+                            )
+                            .get { result in response = result }
+                            .catch { requestError in error = requestError }
+                            .retainUntilComplete()
+                        
+                        expect(response)
+                            .toEventuallyNot(
+                                beNil(),
+                                timeout: .milliseconds(100)
+                            )
+                        expect(error?.localizedDescription).to(beNil())
+                        
+                        // Validate request body
+                        let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                        let requestBody: OpenGroupAPI.SendMessageRequest = try! JSONDecoder().decode(OpenGroupAPI.SendMessageRequest.self, from: requestData!.body!)
+                        
+                        expect(requestBody.data).to(equal("test".data(using: .utf8)))
+                        expect(requestBody.signature).to(equal("TestSignature".data(using: .utf8)))
+                    }
+                    
+                    it("fails to sign if there is no public key") {
+                        testStorage.mockData[.openGroupPublicKeys] = [:]
+                        
+                        var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
+                        
+                        OpenGroupAPI
+                            .send(
+                                "test".data(using: .utf8)!,
+                                to: "testRoom",
+                                on: "testServer",
+                                whisperTo: nil,
+                                whisperMods: false,
+                                fileIds: nil,
+                                using: dependencies
+                            )
+                            .get { result in response = result }
+                            .catch { requestError in error = requestError }
+                            .retainUntilComplete()
+                        
+                        expect(error?.localizedDescription)
+                            .toEventually(
+                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                timeout: .milliseconds(100)
+                            )
+                        
+                        expect(response).to(beNil())
+                    }
+                }
+                
+                context("when blinded") {
+                    beforeEach {
+                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+                            name: "testServer",
+                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
+                        )
+                    }
+                    
+                    it("signs the message correctly") {
+                        var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
+                        
+                        OpenGroupAPI
+                            .send(
+                                "test".data(using: .utf8)!,
+                                to: "testRoom",
+                                on: "testServer",
+                                whisperTo: nil,
+                                whisperMods: false,
+                                fileIds: nil,
+                                using: dependencies
+                            )
+                            .get { result in response = result }
+                            .catch { requestError in error = requestError }
+                            .retainUntilComplete()
+                        
+                        expect(response)
+                            .toEventuallyNot(
+                                beNil(),
+                                timeout: .milliseconds(100)
+                            )
+                        expect(error?.localizedDescription).to(beNil())
+                        
+                        // Validate request body
+                        let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                        let requestBody: OpenGroupAPI.SendMessageRequest = try! JSONDecoder().decode(OpenGroupAPI.SendMessageRequest.self, from: requestData!.body!)
+                        
+                        expect(requestBody.data).to(equal("test".data(using: .utf8)))
+                        expect(requestBody.signature).to(equal("TestSogsSignature".data(using: .utf8)))
+                    }
+                    
+                    it("fails to sign if there is no public key") {
+                        testStorage.mockData[.openGroupPublicKeys] = [:]
+                        
+                        var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
+                        
+                        OpenGroupAPI
+                            .send(
+                                "test".data(using: .utf8)!,
+                                to: "testRoom",
+                                on: "testServer",
+                                whisperTo: nil,
+                                whisperMods: false,
+                                fileIds: nil,
+                                using: dependencies
+                            )
+                            .get { result in response = result }
+                            .catch { requestError in error = requestError }
+                            .retainUntilComplete()
+                        
+                        expect(error?.localizedDescription)
+                            .toEventually(
+                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                timeout: .milliseconds(100)
+                            )
+                        
+                        expect(response).to(beNil())
+                    }
+                }
+            }
+            
+            context("when getting an individual message") {
+                it("generates the request and handles the response correctly") {
+                    class LocalTestApi: TestApi {
+                        static let data: OpenGroupAPI.Message = OpenGroupAPI.Message(
+                            id: 126,
+                            sender: "testSender",
+                            posted: 321,
+                            edited: nil,
+                            seqNo: 10,
+                            whisper: false,
+                            whisperMods: false,
+                            whisperTo: nil,
+                            base64EncodedData: nil,
+                            base64EncodedSignature: nil
+                        )
+                        
+                        override class var mockResponse: Data? { return try! JSONEncoder().encode(data) }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
+                    
+                    OpenGroupAPI.message(123, in: "testRoom", on: "testServer", using: dependencies)
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate the response data
+                    expect(response?.data).to(equal(LocalTestApi.data))
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("GET"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/message/123"))
+                }
+            }
+            
+            context("when updating a message") {
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    testStorage.mockData[.userEdKeyPair] = Box.KeyPair(publicKey: [], secretKey: [])
+                }
+                
+                it("correctly sends the update") {
+                    var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                    
+                    OpenGroupAPI
+                        .messageUpdate(
+                            123,
+                            plaintext: "test".data(using: .utf8)!,
+                            fileIds: nil,
+                            in: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate signature headers
+                    let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("PUT"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/message/123"))
+                }
+                
+                context("when unblinded") {
+                    beforeEach {
+                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+                            name: "testServer",
+                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
+                        )
+                    }
+                    
+                    it("signs the message correctly") {
+                        var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                        
+                        OpenGroupAPI
+                            .messageUpdate(
+                                123,
+                                plaintext: "test".data(using: .utf8)!,
+                                fileIds: nil,
+                                in: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                            .get { result in response = result }
+                            .catch { requestError in error = requestError }
+                            .retainUntilComplete()
+                        
+                        expect(response)
+                            .toEventuallyNot(
+                                beNil(),
+                                timeout: .milliseconds(100)
+                            )
+                        expect(error?.localizedDescription).to(beNil())
+                        
+                        // Validate request body
+                        let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                        let requestBody: OpenGroupAPI.UpdateMessageRequest = try! JSONDecoder().decode(OpenGroupAPI.UpdateMessageRequest.self, from: requestData!.body!)
+                        
+                        expect(requestBody.data).to(equal("test".data(using: .utf8)))
+                        expect(requestBody.signature).to(equal("TestSignature".data(using: .utf8)))
+                    }
+                    
+                    it("fails to sign if there is no public key") {
+                        testStorage.mockData[.openGroupPublicKeys] = [:]
+                        
+                        var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                        
+                        OpenGroupAPI
+                            .messageUpdate(
+                                123,
+                                plaintext: "test".data(using: .utf8)!,
+                                fileIds: nil,
+                                in: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                            .get { result in response = result }
+                            .catch { requestError in error = requestError }
+                            .retainUntilComplete()
+                        
+                        expect(error?.localizedDescription)
+                            .toEventually(
+                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                timeout: .milliseconds(100)
+                            )
+                        
+                        expect(response).to(beNil())
+                    }
+                }
+                
+                context("when blinded") {
+                    beforeEach {
+                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
+                            name: "testServer",
+                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
+                        )
+                    }
+                    
+                    it("signs the message correctly") {
+                        var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                        
+                        OpenGroupAPI
+                            .messageUpdate(
+                                123,
+                                plaintext: "test".data(using: .utf8)!,
+                                fileIds: nil,
+                                in: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                            .get { result in response = result }
+                            .catch { requestError in error = requestError }
+                            .retainUntilComplete()
+                        
+                        expect(response)
+                            .toEventuallyNot(
+                                beNil(),
+                                timeout: .milliseconds(100)
+                            )
+                        expect(error?.localizedDescription).to(beNil())
+                        
+                        // Validate request body
+                        let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                        let requestBody: OpenGroupAPI.UpdateMessageRequest = try! JSONDecoder().decode(OpenGroupAPI.UpdateMessageRequest.self, from: requestData!.body!)
+                        
+                        expect(requestBody.data).to(equal("test".data(using: .utf8)))
+                        expect(requestBody.signature).to(equal("TestSogsSignature".data(using: .utf8)))
+                    }
+                    
+                    it("fails to sign if there is no public key") {
+                        testStorage.mockData[.openGroupPublicKeys] = [:]
+                        
+                        var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                        
+                        OpenGroupAPI
+                            .messageUpdate(
+                                123,
+                                plaintext: "test".data(using: .utf8)!,
+                                fileIds: nil,
+                                in: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                            .get { result in response = result }
+                            .catch { requestError in error = requestError }
+                            .retainUntilComplete()
+                        
+                        expect(error?.localizedDescription)
+                            .toEventually(
+                                equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
+                                timeout: .milliseconds(100)
+                            )
+                        
+                        expect(response).to(beNil())
+                    }
+                }
+            }
+            
+            context("when deleting a message") {
+                it("generates the request and handles the response correctly") {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                    
+                    OpenGroupAPI.messageDelete(123, in: "testRoom", on: "testServer", using: dependencies)
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("DELETE"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/message/123"))
+                }
+            }
+            
+            // MARK: - Pinning
+            
+            context("when pinning a message") {
+                it("generates the request and handles the response correctly") {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    var response: OnionRequestResponseInfoType?
+                    
+                    OpenGroupAPI.pinMessage(id: 123, in: "testRoom", on: "testServer", using: dependencies)
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/pin/123"))
+                }
+            }
+            
+            context("when unpinning a message") {
+                it("generates the request and handles the response correctly") {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    var response: OnionRequestResponseInfoType?
+                    
+                    OpenGroupAPI.unpinMessage(id: 123, in: "testRoom", on: "testServer", using: dependencies)
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/unpin/123"))
+                }
+            }
+            
+            context("when unpinning all messages") {
+                it("generates the request and handles the response correctly") {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    var response: OnionRequestResponseInfoType?
+                    
+                    OpenGroupAPI.unpinAll(in: "testRoom", on: "testServer", using: dependencies)
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/unpin/all"))
+                }
+            }
+            
             // MARK: - Files
             
             context("when uploading files") {
+                it("generates the request and handles the response correctly") {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? {
+                            return try! JSONEncoder().encode(FileUploadResponse(id: "1"))
+                        }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    OpenGroupAPI.uploadFile([], to: "testRoom", on: "testServer", using: dependencies)
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate signature headers
+                    let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
+                }
+                
                 it("doesn't add a fileName to the content-disposition header when not provided") {
                     class LocalTestApi: TestApi {
                         override class var mockResponse: Data? {
@@ -1028,9 +1624,6 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     // Validate signature headers
                     let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
-                    expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.headers).to(haveCount(6))
                     expect(requestData?.headers[Header.contentDisposition.rawValue])
                         .toNot(contain("filename"))
                 }
@@ -1057,10 +1650,691 @@ class OpenGroupAPISpec: QuickSpec {
                     
                     // Validate signature headers
                     let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
-                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/file"))
-                    expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.headers).to(haveCount(6))
                     expect(requestData?.headers[Header.contentDisposition.rawValue]).to(contain("TestFileName"))
+                }
+            }
+            
+            context("when downloading files") {
+                it("generates the request and handles the response correctly") {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? {
+                            return Data()
+                        }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                    
+                    OpenGroupAPI.downloadFile(1, from: "testRoom", on: "testServer", using: dependencies)
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate signature headers
+                    let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("GET"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/file/1"))
+                }
+            }
+            
+            // MARK: - Inbox/Outbox (Message Requests)
+            
+            context("when sending message requests") {
+                var messageData: OpenGroupAPI.SendDirectMessageResponse!
+                
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        static let data: OpenGroupAPI.SendDirectMessageResponse = OpenGroupAPI.SendDirectMessageResponse(
+                            id: 126,
+                            sender: "testSender",
+                            recipient: "testRecipient",
+                            posted: 321,
+                            expires: 456
+                        )
+                        
+                        override class var mockResponse: Data? { return try! JSONEncoder().encode(data) }
+                    }
+                    messageData = LocalTestApi.data
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                }
+                
+                afterEach {
+                    messageData = nil
+                }
+                
+                it("correctly sends the message request") {
+                    var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.SendDirectMessageResponse)?
+                    
+                    OpenGroupAPI
+                        .send(
+                            "test".data(using: .utf8)!,
+                            toInboxFor: "testUserId",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate the response data
+                    expect(response?.data).to(equal(messageData))
+                    
+                    // Validate signature headers
+                    let requestData: TestApi.RequestData? = (response?.0 as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/inbox/testUserId"))
+                }
+                
+                it("saves the received message timestamp to the database in milliseconds") {
+                    var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.SendDirectMessageResponse)?
+                    
+                    OpenGroupAPI
+                        .send(
+                            "test".data(using: .utf8)!,
+                            toInboxFor: "testUserId",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    expect(testStorage.mockData[.receivedMessageTimestamp] as? UInt64).to(equal(321000))
+                }
+            }
+            
+            // MARK: - Users
+            
+            context("when banning a user") {
+                var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                }
+                
+                afterEach {
+                    response = nil
+                }
+                
+                it("generates the request and handles the response correctly") {
+                    OpenGroupAPI
+                        .userBan(
+                            "testUserId",
+                            for: nil,
+                            from: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/user/testUserId/ban"))
+                }
+                
+                it("does a global ban if no room tokens are provided") {
+                    OpenGroupAPI
+                        .userBan(
+                            "testUserId",
+                            for: nil,
+                            from: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    let requestBody: OpenGroupAPI.UserBanRequest = try! JSONDecoder().decode(OpenGroupAPI.UserBanRequest.self, from: requestData!.body!)
+                    
+                    expect(requestBody.global).to(beTrue())
+                    expect(requestBody.rooms).to(beNil())
+                }
+                
+                it("does room specific bans if room tokens are provided") {
+                    OpenGroupAPI
+                        .userBan(
+                            "testUserId",
+                            for: nil,
+                            from: ["testRoom"],
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    let requestBody: OpenGroupAPI.UserBanRequest = try! JSONDecoder().decode(OpenGroupAPI.UserBanRequest.self, from: requestData!.body!)
+                    
+                    expect(requestBody.global).to(beNil())
+                    expect(requestBody.rooms).to(equal(["testRoom"]))
+                }
+            }
+            
+            context("when unbanning a user") {
+                var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                }
+                
+                afterEach {
+                    response = nil
+                }
+                
+                it("generates the request and handles the response correctly") {
+                    OpenGroupAPI
+                        .userUnban(
+                            "testUserId",
+                            from: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/user/testUserId/unban"))
+                }
+                
+                it("does a global ban if no room tokens are provided") {
+                    OpenGroupAPI
+                        .userUnban(
+                            "testUserId",
+                            from: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    let requestBody: OpenGroupAPI.UserUnbanRequest = try! JSONDecoder().decode(OpenGroupAPI.UserUnbanRequest.self, from: requestData!.body!)
+                    
+                    expect(requestBody.global).to(beTrue())
+                    expect(requestBody.rooms).to(beNil())
+                }
+                
+                it("does room specific bans if room tokens are provided") {
+                    OpenGroupAPI
+                        .userUnban(
+                            "testUserId",
+                            from: ["testRoom"],
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    let requestBody: OpenGroupAPI.UserUnbanRequest = try! JSONDecoder().decode(OpenGroupAPI.UserUnbanRequest.self, from: requestData!.body!)
+                    
+                    expect(requestBody.global).to(beNil())
+                    expect(requestBody.rooms).to(equal(["testRoom"]))
+                }
+            }
+            
+            context("when updating a users permissions") {
+                var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                }
+                
+                afterEach {
+                    response = nil
+                }
+                
+                it("generates the request and handles the response correctly") {
+                    OpenGroupAPI
+                        .userModeratorUpdate(
+                            "testUserId",
+                            moderator: true,
+                            admin: nil,
+                            visible: true,
+                            for: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/user/testUserId/moderator"))
+                }
+                
+                it("does a global update if no room tokens are provided") {
+                    OpenGroupAPI
+                        .userModeratorUpdate(
+                            "testUserId",
+                            moderator: true,
+                            admin: nil,
+                            visible: true,
+                            for: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    let requestBody: OpenGroupAPI.UserModeratorRequest = try! JSONDecoder().decode(OpenGroupAPI.UserModeratorRequest.self, from: requestData!.body!)
+                    
+                    expect(requestBody.global).to(beTrue())
+                    expect(requestBody.rooms).to(beNil())
+                }
+                
+                it("does room specific updates if room tokens are provided") {
+                    OpenGroupAPI
+                        .userModeratorUpdate(
+                            "testUserId",
+                            moderator: true,
+                            admin: nil,
+                            visible: true,
+                            for: ["testRoom"],
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    let requestBody: OpenGroupAPI.UserModeratorRequest = try! JSONDecoder().decode(OpenGroupAPI.UserModeratorRequest.self, from: requestData!.body!)
+                    
+                    expect(requestBody.global).to(beNil())
+                    expect(requestBody.rooms).to(equal(["testRoom"]))
+                }
+                
+                it("fails if neither moderator or admin are set") {
+                    OpenGroupAPI
+                        .userModeratorUpdate(
+                            "testUserId",
+                            moderator: nil,
+                            admin: nil,
+                            visible: true,
+                            for: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(error?.localizedDescription)
+                        .toEventually(
+                            equal(HTTP.Error.generic.localizedDescription),
+                            timeout: .milliseconds(100)
+                        )
+                    
+                    expect(response).to(beNil())
+                }
+            }
+            
+            context("when deleting a users messages") {
+                var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.UserDeleteMessagesResponse)?
+                var messageData: OpenGroupAPI.UserDeleteMessagesResponse!
+                
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        static let data: OpenGroupAPI.UserDeleteMessagesResponse = OpenGroupAPI.UserDeleteMessagesResponse(
+                            id: "testId",
+                            messagesDeleted: 10
+                        )
+                        
+                        override class var mockResponse: Data? { return try! JSONEncoder().encode(data) }
+                    }
+                    messageData = LocalTestApi.data
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                }
+                
+                afterEach {
+                    response = nil
+                }
+                
+                it("generates the request and handles the response correctly") {
+                    OpenGroupAPI
+                        .userDeleteMessages(
+                            "testUserId",
+                            from: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate the response data
+                    expect(response?.data).to(equal(messageData))
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/user/testUserId/deleteMessages"))
+                }
+                
+                it("does a global delete if no room tokens are provided") {
+                    OpenGroupAPI
+                        .userDeleteMessages(
+                            "testUserId",
+                            from: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    let requestBody: OpenGroupAPI.UserDeleteMessagesRequest = try! JSONDecoder().decode(OpenGroupAPI.UserDeleteMessagesRequest.self, from: requestData!.body!)
+                    
+                    expect(requestBody.global).to(beTrue())
+                    expect(requestBody.rooms).to(beNil())
+                }
+                
+                it("does room specific bans if room tokens are provided") {
+                    OpenGroupAPI
+                        .userDeleteMessages(
+                            "testUserId",
+                            from: ["testRoom"],
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    let requestBody: OpenGroupAPI.UserDeleteMessagesRequest = try! JSONDecoder().decode(OpenGroupAPI.UserDeleteMessagesRequest.self, from: requestData!.body!)
+                    
+                    expect(requestBody.global).to(beNil())
+                    expect(requestBody.rooms).to(equal(["testRoom"]))
+                }
+            }
+            
+            context("when banning and deleting all messages for a user") {
+                var response: [OnionRequestResponseInfoType]?
+                
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        static let deleteMessagesData: OpenGroupAPI.UserDeleteMessagesResponse = OpenGroupAPI.UserDeleteMessagesResponse(
+                            id: "123",
+                            messagesDeleted: 10
+                        )
+                        
+                        override class var mockResponse: Data? {
+                            let responses: [Data] = [
+                                try! JSONEncoder().encode(
+                                    OpenGroupAPI.BatchSubResponse<NoResponse>(
+                                        code: 200,
+                                        headers: [:],
+                                        body: nil,
+                                        failedToParseBody: false
+                                    )
+                                ),
+                                try! JSONEncoder().encode(
+                                    OpenGroupAPI.BatchSubResponse(
+                                        code: 200,
+                                        headers: [:],
+                                        body: deleteMessagesData,
+                                        failedToParseBody: false
+                                    )
+                                )
+                            ]
+                            
+                            return "[\(responses.map { String(data: $0, encoding: .utf8)! }.joined(separator: ","))]".data(using: .utf8)
+                        }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                }
+                
+                afterEach {
+                    response = nil
+                }
+                
+                it("generates the request and handles the response correctly") {
+                    OpenGroupAPI
+                        .userBanAndDeleteAllMessage(
+                            "testUserId",
+                            from: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.first as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("POST"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/sequence"))
+                }
+                
+                it("does a global ban and delete if no room tokens are provided") {
+                    OpenGroupAPI
+                        .userBanAndDeleteAllMessage(
+                            "testUserId",
+                            from: nil,
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.first as? TestResponseInfo)?.requestData
+                    let jsonObject: Any = try! JSONSerialization.jsonObject(
+                        with: requestData!.body!,
+                        options: [.fragmentsAllowed]
+                    )
+                    let anyArray: [Any] = jsonObject as! [Any]
+                    let dataArray: [Data] = anyArray.compactMap {
+                        try! JSONSerialization.data(withJSONObject: ($0 as! [String: Any])["json"]!)
+                    }
+                    let firstRequestBody: OpenGroupAPI.UserBanRequest = try! JSONDecoder()
+                        .decode(OpenGroupAPI.UserBanRequest.self, from: dataArray.first!)
+                    let lastRequestBody: OpenGroupAPI.UserDeleteMessagesRequest = try! JSONDecoder()
+                        .decode(OpenGroupAPI.UserDeleteMessagesRequest.self, from: dataArray.last!)
+                    
+                    expect(firstRequestBody.global).to(beTrue())
+                    expect(firstRequestBody.rooms).to(beNil())
+                    expect(lastRequestBody.global).to(beTrue())
+                    expect(lastRequestBody.rooms).to(beNil())
+                }
+                
+                it("does room specific bans and deletes if room tokens are provided") {
+                    OpenGroupAPI
+                        .userBanAndDeleteAllMessage(
+                            "testUserId",
+                            from: ["testRoom"],
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.first as? TestResponseInfo)?.requestData
+                    let jsonObject: Any = try! JSONSerialization.jsonObject(
+                        with: requestData!.body!,
+                        options: [.fragmentsAllowed]
+                    )
+                    let anyArray: [Any] = jsonObject as! [Any]
+                    let dataArray: [Data] = anyArray.compactMap {
+                        try! JSONSerialization.data(withJSONObject: ($0 as! [String: Any])["json"]!)
+                    }
+                    let firstRequestBody: OpenGroupAPI.UserBanRequest = try! JSONDecoder()
+                        .decode(OpenGroupAPI.UserBanRequest.self, from: dataArray.first!)
+                    let lastRequestBody: OpenGroupAPI.UserDeleteMessagesRequest = try! JSONDecoder()
+                        .decode(OpenGroupAPI.UserDeleteMessagesRequest.self, from: dataArray.last!)
+                    
+                    expect(firstRequestBody.global).to(beNil())
+                    expect(firstRequestBody.rooms).to(equal(["testRoom"]))
+                    expect(lastRequestBody.global).to(beNil())
+                    expect(lastRequestBody.rooms).to(equal(["testRoom"]))
                 }
             }
             
@@ -1105,6 +2379,23 @@ class OpenGroupAPISpec: QuickSpec {
                     expect(error?.localizedDescription)
                         .toEventually(
                             equal(OpenGroupAPI.Error.noPublicKey.localizedDescription),
+                            timeout: .milliseconds(100)
+                        )
+                    
+                    expect(response).to(beNil())
+                }
+                
+                it("fails when the serverPublicKey is not a hex string") {
+                    testStorage.mockData[.openGroupPublicKeys] = ["testServer": "TestString!!!"]
+                    
+                    OpenGroupAPI.rooms(for: "testServer", using: dependencies)
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(error?.localizedDescription)
+                        .toEventually(
+                            equal(OpenGroupAPI.Error.signingFailed.localizedDescription),
                             timeout: .milliseconds(100)
                         )
                     
