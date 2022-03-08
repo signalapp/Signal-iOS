@@ -1038,9 +1038,9 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     var zoomScaleReferenceDistance: CGFloat? {
         if isIPadUIInRegularMode {
-            return view.bounds.width
+            return previewView.bounds.width / 2
         }
-        return view.bounds.height
+        return previewView.bounds.height / 2
     }
 
     func photoCapture(_ photoCapture: PhotoCapture, didChangeVideoZoomFactor zoomFactor: CGFloat) {
