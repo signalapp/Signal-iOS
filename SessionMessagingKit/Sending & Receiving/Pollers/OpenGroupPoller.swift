@@ -10,8 +10,8 @@ extension OpenGroupAPI {
 
         // MARK: - Settings
         
-        internal static let maxInactivityPeriod: Double = (14 * 24 * 60 * 60)
         private static let pollInterval: TimeInterval = 4
+        internal static let maxInactivityPeriod: Double = (14 * 24 * 60 * 60)
         
         // MARK: - Lifecycle
         
@@ -22,17 +22,11 @@ extension OpenGroupAPI {
         @objc public func startIfNeeded() {
             guard !hasStarted else { return }
             
-            DispatchQueue.main.async { [weak self] in // Timers don't do well on background queues
-                self?.hasStarted = true
-                self?.timer = Timer.scheduledTimer(withTimeInterval: Poller.pollInterval, repeats: true) { _ in
-                    DispatchQueue.global().async {
-                        self?.poll().retainUntilComplete()
-                    }
-                }
-                DispatchQueue.global().async {
-                    self?.poll().retainUntilComplete()
-                }
+            hasStarted = true
+            timer = Timer.scheduledTimerOnMainThread(withTimeInterval: Poller.pollInterval, repeats: true) { _ in
+                self.poll().retainUntilComplete()
             }
+            poll().retainUntilComplete()
         }
 
         @objc public func stop() {
@@ -56,31 +50,33 @@ extension OpenGroupAPI {
             let (promise, seal) = Promise<Void>.pending()
             promise.retainUntilComplete()
             
-            OpenGroupAPI
-                .poll(
-                    server,
-                    hasPerformedInitialPoll: OpenGroupManager.shared.cache.hasPerformedInitialPoll[server] == true,
-                    timeSinceLastPoll: (
-                        OpenGroupManager.shared.cache.timeSinceLastPoll[server] ??
-                        OpenGroupManager.shared.cache.getTimeSinceLastOpen()
+            Threading.pollerQueue.async {
+                OpenGroupAPI
+                    .poll(
+                        server,
+                        hasPerformedInitialPoll: OpenGroupManager.shared.cache.hasPerformedInitialPoll[server] == true,
+                        timeSinceLastPoll: (
+                            OpenGroupManager.shared.cache.timeSinceLastPoll[server] ??
+                            OpenGroupManager.shared.cache.getTimeSinceLastOpen()
+                        )
                     )
-                )
-                .done(on: OpenGroupAPI.workQueue) { [weak self] response in
-                    self?.isPolling = false
-                    self?.handlePollResponse(response, isBackgroundPoll: isBackgroundPoll)
-                    
-                    OpenGroupManager.shared.mutableCache.mutate { cache in
-                        cache.hasPerformedInitialPoll[server] = true
-                        cache.timeSinceLastPoll[server] = Date().timeIntervalSince1970
-                        UserDefaults.standard[.lastOpen] = Date()
+                    .done(on: OpenGroupAPI.workQueue) { [weak self] response in
+                        self?.isPolling = false
+                        self?.handlePollResponse(response, isBackgroundPoll: isBackgroundPoll)
+                        
+                        OpenGroupManager.shared.mutableCache.mutate { cache in
+                            cache.hasPerformedInitialPoll[server] = true
+                            cache.timeSinceLastPoll[server] = Date().timeIntervalSince1970
+                            UserDefaults.standard[.lastOpen] = Date()
+                        }
+                        seal.fulfill(())
                     }
-                    seal.fulfill(())
-                }
-                .catch(on: OpenGroupAPI.workQueue) { [weak self] error in
-                    SNLog("Open group polling failed due to error: \(error).")
-                    self?.isPolling = false
-                    seal.fulfill(()) // The promise is just used to keep track of when we're done
-                }
+                    .catch(on: OpenGroupAPI.workQueue) { [weak self] error in
+                        SNLog("Open group polling failed due to error: \(error).")
+                        self?.isPolling = false
+                        seal.fulfill(()) // The promise is just used to keep track of when we're done
+                    }
+            }
             
             return promise
         }

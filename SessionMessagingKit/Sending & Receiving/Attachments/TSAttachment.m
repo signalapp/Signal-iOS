@@ -185,7 +185,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
         if (self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0) {
             attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
-            return [NSString stringWithFormat:@"🎤 %@", attachmentString];
+            return [NSString stringWithFormat:@"🎙️ %@", attachmentString];
         }
     }
 

@@ -13,6 +13,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         }
     }
     var recentSearchResults: [String] = Array(Storage.shared.getRecentSearchResults().reversed())
+    var defaultSearchResults: HomeScreenSearchResultSet = HomeScreenSearchResultSet.noteToSelfOnly
     var searchResultSet: HomeScreenSearchResultSet = HomeScreenSearchResultSet.empty
     private var lastSearchText: String?
     var searcher: FullTextSearcher {
@@ -106,30 +107,10 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     var refreshTimer: Timer?
     
     private func refreshSearchResults() {
-
-        guard !searchResultSet.isEmpty else {
-            // To avoid incorrectly showing the "no results" state,
-            // always search immediately if the current result set is empty.
-            refreshTimer?.invalidate()
-            refreshTimer = nil
-
-            updateSearchResults(searchText: searchText)
-            return
-        }
-
-        if refreshTimer != nil {
-            // Don't start a new refresh timer if there's already one active.
-            return
-        }
-
         refreshTimer?.invalidate()
         refreshTimer = WeakTimer.scheduledTimer(timeInterval: 0.1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
-            guard let self = self else {
-                return
-            }
-
+            guard let self = self else { return }
             self.updateSearchResults(searchText: self.searchText)
-            self.refreshTimer = nil
         }
     }
     
@@ -137,7 +118,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
         let searchText = rawSearchText.stripped
         guard searchText.count > 0 else {
-            searchResultSet = HomeScreenSearchResultSet.noteToSelfOnly
+            searchResultSet = defaultSearchResults
             lastSearchText = nil
             reloadTableData()
             return
@@ -152,13 +133,14 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
             self.isLoading = true
             // The max search result count is set according to the keyword length. This is just a workaround for performance issue.
             // The longer and more accurate the keyword is, the less search results should there be.
-            searchResults = self.searcher.searchForHomeScreen(searchText: searchText, maxSearchResults: min(searchText.count * 50, 500),  transaction: transaction)
+            searchResults = self.searcher.searchForHomeScreen(searchText: searchText, maxSearchResults: 500,  transaction: transaction)
         }, completionBlock: { [weak self] in
             AssertIsOnMainThread()
             guard let self = self, let results = searchResults, self.lastSearchText == searchText else { return }
             self.searchResultSet = results
             self.isLoading = false
             self.reloadTableData()
+            self.refreshTimer = nil
         })
     }
     
@@ -210,12 +192,12 @@ extension GlobalSearchViewController {
             SNLog("shouldn't be able to tap 'no results' section")
         case .contacts:
             let sectionResults = searchResultSet.conversations
-            guard let searchResult = sectionResults[safe: indexPath.row], let threadId = searchResult.thread.threadRecord.uniqueId, let thread = TSThread.fetch(uniqueId: threadId) else { return }
-            show(thread, highlightedMessageID: nil, animated: true)
+            guard let searchResult = sectionResults[safe: indexPath.row] else { return }
+            show(searchResult.thread.threadRecord, highlightedMessageID: nil, animated: true)
         case .messages:
             let sectionResults = searchResultSet.messages
-            guard let searchResult = sectionResults[safe: indexPath.row], let threadId = searchResult.thread.threadRecord.uniqueId, let thread = TSThread.fetch(uniqueId: threadId) else { return }
-            show(thread, highlightedMessageID: searchResult.messageId, animated: true)
+            guard let searchResult = sectionResults[safe: indexPath.row] else { return }
+            show(searchResult.thread.threadRecord, highlightedMessageID: searchResult.message?.uniqueId, animated: true)
         case .recent:
             guard let threadId = recentSearchResults[safe: indexPath.row], let thread = TSThread.fetch(uniqueId: threadId) else { return }
             show(thread, highlightedMessageID: nil, animated: true, isFromRecent: true)
@@ -354,7 +336,7 @@ extension GlobalSearchViewController {
             cell.isShowingGlobalSearchResult = true
             let searchResult = sectionResults[safe: indexPath.row]
             cell.threadViewModel = searchResult?.thread
-            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
+            cell.configure(snippet: searchResult?.snippet, searchText: searchResultSet.searchText)
             return cell
         case .messages:
             let sectionResults = searchResultSet.messages
@@ -362,9 +344,7 @@ extension GlobalSearchViewController {
             cell.isShowingGlobalSearchResult = true
             let searchResult = sectionResults[safe: indexPath.row]
             cell.threadViewModel = searchResult?.thread
-            var message: TSMessage? = nil
-            if let messageId = searchResult?.messageId { message = TSMessage.fetch(uniqueId: messageId) }
-            cell.configure(messageDate: searchResult?.messageDate, snippet: searchResult?.snippet, searchText: searchResultSet.searchText, message: message)
+            cell.configure(snippet: searchResult?.snippet, searchText: searchResultSet.searchText, message: searchResult?.message)
             return cell
         case .recent:
             let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell

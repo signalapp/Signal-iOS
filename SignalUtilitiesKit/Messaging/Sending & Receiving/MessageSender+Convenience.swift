@@ -153,22 +153,27 @@ extension MessageSender {
         let errors = results.compactMap { result -> Swift.Error? in
             if case .rejected(let error) = result { return error } else { return nil }
         }
-        if let error = errors.first { seal.reject(error) }
-        let fileIds: [String] = results.compactMap { result -> String? in
-            switch result {
-                case .fulfilled(let fileId): return fileId
-                default: return nil
-            }
+
+        if let error = errors.first {
+            seal.reject(error)
         }
+        else {
+            let fileIds: [String] = results.compactMap { result -> String? in
+                switch result {
+                    case .fulfilled(let fileId): return fileId
+                    default: return nil
+                }
+            }
         
-        Storage.write { transaction in
-            sendNonDurably(message, in: thread, with: fileIds, using: transaction)
-                .done {
-                    seal.fulfill(())
-                }
-                .catch { error in
-                    seal.reject(error)
-                }
+            Storage.write { transaction in
+                sendNonDurably(message, in: thread, with: fileIds, using: transaction)
+                    .done {
+                        seal.fulfill(())
+                    }
+                    .catch { error in
+                        seal.reject(error)
+                    }
+            }
         }
         
         return promise

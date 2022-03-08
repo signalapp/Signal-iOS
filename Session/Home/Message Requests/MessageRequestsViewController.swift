@@ -6,7 +6,11 @@ import SessionMessagingKit
 
 @objc
 class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
-    private var threads: YapDatabaseViewMappings!
+    private var threads: YapDatabaseViewMappings! =  {
+        let result = YapDatabaseViewMappings(groups: [ TSMessageRequestGroup ], view: TSThreadDatabaseViewExtensionName)
+        result.setIsReversed(true, forGroup: TSMessageRequestGroup)
+        return result
+    }()
     private var threadViewModelCache: [String: ThreadViewModel] = [:] // Thread ID to ThreadViewModel
     private var tableViewTopConstraint: NSLayoutConstraint!
     
@@ -85,16 +89,13 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         ViewControllerUtilities.setUpDefaultSessionStyle(for: self, title: NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: ""), hasCustomBackButton: false)
         
-        // Threads (part 1)
-        // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
-        dbConnection.beginLongLivedReadTransaction()
-        
         // Add the UI (MUST be done after the thread freeze so the 'tableView' creation and setting
         // the dataSource has the correct data)
         view.addSubview(tableView)
         view.addSubview(emptyStateLabel)
         view.addSubview(fadeView)
         view.addSubview(clearAllButton)
+        setupLayout()
         
         // Notifications
         NotificationCenter.default.addObserver(
@@ -116,18 +117,11 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             object: nil
         )
         
-        // Threads (part 2)
-        threads = YapDatabaseViewMappings(groups: [ TSMessageRequestGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
-        dbConnection.read { transaction in
-            self.threads.update(with: transaction) // Perform the initial update
-        }
-
-        setupLayout()
+        reload()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         reload()
     }
     
@@ -188,7 +182,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         threadViewModelCache.removeAll()
         tableView.reloadData()
         clearAllButton.isHidden = (messageRequestCount == 0)
-        emptyStateLabel.isHidden = (messageRequestCount != 0)
         emptyStateLabel.isHidden = (messageRequestCount != 0)
     }
     

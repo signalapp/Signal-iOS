@@ -45,19 +45,22 @@ public final class Poller : NSObject {
     // MARK: Private API
     private func setUpPolling() {
         guard isPolling else { return }
-        let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey()).then2 { [weak self] _ -> Promise<Void> in
-            guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
-            strongSelf.usedSnodes.removeAll()
-            let (promise, seal) = Promise<Void>.pending()
-            strongSelf.pollNextSnode(seal: seal)
-            return promise
-        }.ensure(on: DispatchQueue.main) { [weak self] in // Timers don't do well on background queues
-            guard let strongSelf = self, strongSelf.isPolling else { return }
-            Timer.scheduledTimer(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
-                guard let strongSelf = self else { return }
-                strongSelf.setUpPolling()
+        Threading.pollerQueue.async {
+            let _ = SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey()).then(on: Threading.pollerQueue) { [weak self] _ -> Promise<Void> in
+                guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
+                strongSelf.usedSnodes.removeAll()
+                let (promise, seal) = Promise<Void>.pending()
+                strongSelf.pollNextSnode(seal: seal)
+                return promise
+            }.ensure(on: Threading.pollerQueue) { [weak self] in // Timers don't do well on background queues
+                guard let strongSelf = self, strongSelf.isPolling else { return }
+                Timer.scheduledTimerOnMainThread(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
+                    guard let strongSelf = self else { return }
+                    strongSelf.setUpPolling()
+                }
             }
         }
+        
     }
 
     private func pollNextSnode(seal: Resolver<Void>) {
@@ -77,7 +80,9 @@ public final class Poller : NSObject {
                     SNLog("Polling \(nextSnode) failed; dropping it and switching to next snode.")
                     SnodeAPI.dropSnodeFromSwarmIfNeeded(nextSnode, publicKey: userPublicKey)
                 }
-                self?.pollNextSnode(seal: seal)
+                Threading.pollerQueue.async {
+                    self?.pollNextSnode(seal: seal)
+                }
             }
         } else {
             seal.fulfill(())
@@ -87,7 +92,7 @@ public final class Poller : NSObject {
     private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard isPolling else { return Promise { $0.fulfill(()) } }
         let userPublicKey = getUserHexEncodedPublicKey()
-        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: DispatchQueue.main) { [weak self] responseData -> Promise<Void> in
+        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: Threading.pollerQueue) { [weak self] responseData -> Promise<Void> in
             guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
             let messages = SnodeAPI.parseRawMessagesResponse(responseData, from: snode, associatedWith: userPublicKey)
             if !messages.isEmpty {
@@ -109,7 +114,7 @@ public final class Poller : NSObject {
             if strongSelf.pollCount == Poller.maxPollCount {
                 throw Error.pollLimitReached
             } else {
-                return withDelay(Poller.pollInterval, completionQueue: DispatchQueue.main) {
+                return withDelay(Poller.pollInterval, completionQueue: Threading.pollerQueue) {
                     guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
                     return strongSelf.poll(snode, seal: longTermSeal)
                 }
