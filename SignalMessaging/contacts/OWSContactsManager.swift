@@ -995,21 +995,14 @@ extension OWSContactsManager {
             profileManager.fullNames(forAddresses: Array(addresses),
                                      transaction: transaction).sequenceWithNils
         }.refine { addresses in
-            // TODO: Combine these db queries into one.
-            return addresses.lazy.map { address in
-                guard let number = self.phoneNumber(for: address, transaction: transaction) else {
-                    return nil
-                }
-                let formatted = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: number)
-                if formatted.isEmpty {
-                    return nil
-                }
-                return formatted
+            return self.phoneNumbers(for: Array(addresses),
+                                     transaction: transaction).lazy.map {
+                return $0?.nilIfEmpty
             }
         }.refine { addresses in
             // TODO: Combine these db queries into one.
             return addresses.lazy.map { address in
-                guard let username = self.profileManagerImpl.username(for: address, transaction: transaction)?.nilIfEmpty else {
+                guard let username = self.profileManager.username(for: address, transaction: transaction)?.nilIfEmpty else {
                     return nil
                 }
                 return CommonFormats.formatUsername(username)
@@ -1023,6 +1016,23 @@ extension OWSContactsManager {
         }.values.map {
             $0!
         }
+    }
+
+    func phoneNumbers(for addresses: [SignalServiceAddress],
+                      transaction: SDSAnyReadTransaction) -> [String?] {
+        return Refinery<SignalServiceAddress, String>(addresses).refine {
+            return $0.map { $0.phoneNumber?.filterStringForDisplay() }
+        }.refine { (addresses: AnySequence<SignalServiceAddress>) -> [String?] in
+            let accounts = fetchSignalAccounts(for: addresses, transaction: transaction)
+            return accounts.map { maybeAccount in
+                return maybeAccount?.recipientPhoneNumber?.filterStringForDisplay()
+            }
+        }.values
+    }
+
+    func fetchSignalAccounts(for addresses: AnySequence<SignalServiceAddress>,
+                             transaction: SDSAnyReadTransaction) -> [SignalAccount?] {
+        return modelReadCaches.signalAccountReadCache.getSignalAccounts(addresses: addresses, transaction: transaction)
     }
 
 }

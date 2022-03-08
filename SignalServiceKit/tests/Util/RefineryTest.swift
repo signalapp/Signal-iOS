@@ -103,4 +103,31 @@ class RefineryTest: SSKBaseTestSwift {
         let expected = ["one", "two", "three"]
         XCTAssertEqual(actual, expected)
     }
+
+    func testSkipCallWithoutKeys() {
+        let keys = [1, 2, 3]
+        var thenCalls = 0
+        var otherwiseCalls = 0
+        _ = Refinery<Int, String>(keys).refine { _ in
+            return true
+        } then: { values -> [String?] in
+            thenCalls += 1
+            return values.map { "\($0)"}
+        } otherwise: { values -> [String?] in
+            otherwiseCalls += 1
+            return values.map { _ in "fail" }
+        }
+        XCTAssertEqual(1, thenCalls)
+        XCTAssertEqual(0, otherwiseCalls)
+    }
+
+    func testRefineNonnilKeys() {
+        let keys = [1, nil, 3]
+        let actual = Refinery<Int?, String>(keys).refineNonnilKeys { (keys: AnySequence<Int>) -> [String?] in
+            XCTAssertEqual(Array(keys), [1, 3])
+            return keys.map { String($0) }
+        }.values
+        let expected = ["1", nil, "3"]
+        XCTAssertEqual(actual, expected)
+    }
 }

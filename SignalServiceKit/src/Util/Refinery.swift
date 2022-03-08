@@ -56,17 +56,44 @@ public class Refinery<Key, Value> {
         return self
     }
 
+    // When the key type is optional, use this to operate on only the nonnil keys.
+    public func refineNonnilKeys<Result, NonNilKey>(_ closure: (AnySequence<NonNilKey>) -> Result) -> Self where Key == NonNilKey?, Result: Sequence, Result.Element == Value? {
+        var nonNilKeys = [NonNilKey]()
+        var nonNilIndexes = IndexSet()
+        for index in indexes {
+            guard let key = keys[index] else {
+                continue
+            }
+            nonNilKeys.append(key)
+            nonNilIndexes.insert(index)
+        }
+        guard !nonNilIndexes.isEmpty else {
+            return self
+        }
+        let refinedValues = closure(AnySequence(nonNilKeys))
+        handleResult(indexes: nonNilIndexes, values: refinedValues)
+        return self
+    }
+
     // `indexes` gives the indexes of `self.keys` to try to get values for from `closure`.
     // As a side-effect, it assigns to self.values and removes from self.indexes when a value is assigned.
     private func internalRefine<Result>(_ indexes: IndexSet,
                                         closure: (AnySequence<Key>) -> Result) where Result: Sequence, Result.Element == Value? {
+        guard !indexes.isEmpty else {
+            return
+        }
         let refinedValues = closure(keys(at: indexes))
-        for (i, maybeValue) in zip(indexes, refinedValues) {
+        handleResult(indexes: indexes, values: refinedValues)
+    }
+
+    private func handleResult<Result>(indexes: IndexSet,
+                                      values refinedValues: Result) where Result: Sequence, Result.Element == Value? {
+        for (index, maybeValue) in zip(indexes, refinedValues) {
             guard let value = maybeValue else {
                 continue
             }
-            self.indexes.remove(i)
-            values[i] = value
+            self.indexes.remove(index)
+            values[index] = value
         }
     }
 

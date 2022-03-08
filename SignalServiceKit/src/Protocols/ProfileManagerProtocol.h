@@ -177,6 +177,9 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size;
 
+- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

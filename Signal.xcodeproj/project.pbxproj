@@ -695,6 +695,7 @@
 		45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BD60811DE9547E00A8F436 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
 		45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CD81EE1DC030E7004C9430 /* SyncPushTokensJob.swift */; };
+		45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */; };
 		45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
 		45D308AD2049A439000189E4 /* PinEntryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D308AC2049A439000189E4 /* PinEntryView.m */; };
 		45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */; };
@@ -1906,6 +1907,7 @@
 		45BD60811DE9547E00A8F436 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
 		45CD81EE1DC030E7004C9430 /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SyncPushTokensJob.swift; sourceTree = "<group>"; };
+		45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactsManagerTest.swift; sourceTree = "<group>"; };
 		45D231761DC7E8F10034FA89 /* SessionResetJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionResetJob.swift; sourceTree = "<group>"; };
 		45D308AB2049A439000189E4 /* PinEntryView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PinEntryView.h; sourceTree = "<group>"; };
 		45D308AC2049A439000189E4 /* PinEntryView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PinEntryView.m; sourceTree = "<group>"; };
@@ -4463,6 +4465,7 @@
 			isa = PBXGroup;
 			children = (
 				954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */,
+				45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */,
 			);
 			path = contact;
 			sourceTree = "<group>";
@@ -6484,6 +6487,7 @@
 			files = (
 				34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */,
 				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
+				45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */,
 				3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */,
 				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,

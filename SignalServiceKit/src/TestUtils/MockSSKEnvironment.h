@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/SSKEnvironment.h>
@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MockSSKEnvironment : SSKEnvironment
 
 + (void)activate;
+
+- (void)setContactsManagerForMockEnvironment:(id<ContactsManagerProtocol>)contactsManager;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

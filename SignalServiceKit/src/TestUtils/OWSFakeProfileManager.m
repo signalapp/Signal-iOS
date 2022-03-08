@@ -3,6 +3,7 @@
 //
 
 #import "OWSFakeProfileManager.h"
+#import "NSString+SSK.h"
 #import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
@@ -355,20 +356,33 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (nonnull NSArray *)fullNamesForAddresses:(nonnull NSArray<SignalServiceAddress *> *)addresses transaction:(nonnull SDSAnyReadTransaction *)transaction {
-    NSMutableArray<NSString *> *result = [NSMutableArray array];
+- (nonnull NSArray<id<SSKMaybeString>> *)fullNamesForAddresses:(nonnull NSArray<SignalServiceAddress *> *)addresses
+                                                   transaction:(nonnull SDSAnyReadTransaction *)transaction
+{
+    NSMutableArray<id<SSKMaybeString>> *result = [NSMutableArray array];
     for (NSUInteger i = 0; i < addresses.count; i++) {
-        [result addObject:@"some fake profile name"];
+        if (self.fakeDisplayNames == nil) {
+            [result addObject:@"some fake profile name"];
+        } else {
+            NSString *fakeName = self.fakeDisplayNames[addresses[i]];
+            [result addObject:fakeName ?: [NSNull null]];
+        }
     }
     return result;
 }
-
 
 
 - (void)migrateWhitelistedGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
 }
+
+- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction
+{
+    return self.fakeUsernames[address];
+}
+
 
 @end
 
