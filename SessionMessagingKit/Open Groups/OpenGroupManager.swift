@@ -476,7 +476,7 @@ public final class OpenGroupManager: NSObject {
     /// This method specifies if the given publicKey is a moderator or an admin within a specified Open Group
     @objc(isUserModeratorOrAdmin:forRoom:onServer:)
     public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String) -> Bool {
-        return isUserModeratorOrAdmin(publicKey, for: room, on: server)
+        return isUserModeratorOrAdmin(publicKey, for: room, on: server, using: Dependencies())
     }
     
     public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Bool {

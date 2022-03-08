@@ -981,26 +981,12 @@
 			remoteGlobalIDString = C3C2A678255388CC00C340D1;
 			remoteInfo = SessionUtilitiesKit;
 		};
-		FDC4386E27B4E90300C60D73 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C3C2A678255388CC00C340D1;
-			remoteInfo = SessionUtilitiesKit;
-		};
 		FDC4389327B9FFC700C60D73 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = C3C2A6EF25539DE700C340D1;
 			remoteInfo = SessionMessagingKit;
-		};
-		FDC438A027BA2B8A00C60D73 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D221A080169C9E5E00537ABF /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C3C2A678255388CC00C340D1;
-			remoteInfo = SessionUtilitiesKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -4343,8 +4329,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				FDC4386F27B4E90300C60D73 /* PBXTargetDependency */,
-				FDC438A127BA2B8A00C60D73 /* PBXTargetDependency */,
 			);
 			name = SessionMessagingKit;
 			productName = SessionMessagingKit;
@@ -5734,22 +5718,11 @@
 			target = C3C2A678255388CC00C340D1 /* SessionUtilitiesKit */;
 			targetProxy = FD83B9B427CF200A005E1583 /* PBXContainerItemProxy */;
 		};
-		FDC4386F27B4E90300C60D73 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C3C2A678255388CC00C340D1 /* SessionUtilitiesKit */;
-			targetProxy = FDC4386E27B4E90300C60D73 /* PBXContainerItemProxy */;
-		};
 		FDC4389427B9FFC700C60D73 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			platformFilter = ios;
 			target = C3C2A6EF25539DE700C340D1 /* SessionMessagingKit */;
 			targetProxy = FDC4389327B9FFC700C60D73 /* PBXContainerItemProxy */;
-		};
-		FDC438A127BA2B8A00C60D73 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			platformFilter = ios;
-			target = C3C2A678255388CC00C340D1 /* SessionUtilitiesKit */;
-			targetProxy = FDC438A027BA2B8A00C60D73 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
