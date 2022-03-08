@@ -82,7 +82,6 @@ public final class ProfilePictureView : UIView {
             update()
         } else { // A one-to-one chat
             let thread = thread as! TSContactThread
-            hasTappableProfilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: thread.contactSessionID()) != nil
             update(for: thread.contactSessionID())
         }
     }
@@ -92,8 +91,10 @@ public final class ProfilePictureView : UIView {
         func getProfilePicture(of size: CGFloat, for publicKey: String) -> UIImage? {
             guard !publicKey.isEmpty else { return nil }
             if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: publicKey) {
+                hasTappableProfilePicture = true
                 return profilePicture
             } else {
+                hasTappableProfilePicture = false
                 // TODO: Pass in context?
                 let displayName = Storage.shared.getContact(with: publicKey)?.name ?? publicKey
                 return Identicon.generatePlaceholderIcon(seed: publicKey, text: displayName, size: size)

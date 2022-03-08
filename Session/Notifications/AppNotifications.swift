@@ -167,16 +167,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // so just ignore those and if the user has hidden message requests then we want to show the
         // notification regardless of how many message requests there are)
         if !thread.isGroupThread() && thread.isMessageRequest() && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
-            let dbConnection: YapDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-            dbConnection.objectCacheLimit = 2
-            dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
-            let threads: YapDatabaseViewMappings = YapDatabaseViewMappings(groups: [ TSMessageRequestGroup ], view: TSThreadDatabaseViewExtensionName)
-            dbConnection.read { transaction in
-                threads.update(with: transaction) // Perform the initial update
-            }
-            
+            let threads = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
             let numMessageRequests = threads.numberOfItems(inGroup: TSMessageRequestGroup)
-            dbConnection.endLongLivedReadTransaction()
             
             // Allow this to show a notification if there are no message requests (ie. this is the first one)
             guard numMessageRequests == 0 else { return }
@@ -225,7 +217,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                         notificationTitle = (thread.isMessageRequest() ? "Session" : senderName)
                         
                     case is TSGroupThread:
-                        var groupName = thread.name()
+                        var groupName = thread.name(with: transaction)
                         if groupName.count < 1 {
                             groupName = MessageStrings.newGroupDefaultTitle
                         }
