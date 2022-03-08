@@ -41,6 +41,13 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
             threads.append(thread)
         }
         
+        if let user = Storage.shared.getUser() {
+            user.isApproved = true
+            user.didApproveMe = true
+            contacts.insert(user)
+        }
+        
+        
         Storage.write(with: { transaction in
             contacts.forEach { contact in
                 Storage.shared.setContact(contact, using: transaction)
