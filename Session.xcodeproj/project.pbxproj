@@ -790,8 +790,7 @@
 		FD859F0027C4691300510D0C /* MockDataGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD859EFF27C4691300510D0C /* MockDataGenerator.swift */; };
 		FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */; };
 		FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */; };
-		FDC4389E27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; platformFilter = ios; };
-		FDC4389F27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		FDC4389E27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -940,17 +939,6 @@
 				C3C2A5A7255385C100C340D1 /* SessionSnodeKit.framework in Embed Frameworks */,
 				C331FF232558F9D300070591 /* SessionUIKit.framework in Embed Frameworks */,
 				C3C2A6F825539DE700C340D1 /* SessionMessagingKit.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FDC438A227BA2B8A00C60D73 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				FDC4389F27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3961,7 +3949,6 @@
 				C3C2A6EC25539DE700C340D1 /* Sources */,
 				C3C2A6ED25539DE700C340D1 /* Frameworks */,
 				C3C2A6EE25539DE700C340D1 /* Resources */,
-				FDC438A227BA2B8A00C60D73 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -5134,7 +5121,6 @@
 		};
 		FDC438A127BA2B8A00C60D73 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			platformFilter = ios;
 			target = C3C2A678255388CC00C340D1 /* SessionUtilitiesKit */;
 			targetProxy = FDC438A027BA2B8A00C60D73 /* PBXContainerItemProxy */;
 		};
