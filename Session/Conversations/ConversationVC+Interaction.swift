@@ -495,14 +495,20 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         // interacted with old UI which had cached the old value)
         //
         // By using an equality check on the interaction we avoid this odd behaviour
-        guard let index = viewItems.firstIndex(where: { $0.interaction == viewItem.interaction }),
+        guard
+            let index = viewItems.firstIndex(where: { $0.interaction == viewItem.interaction }),
             let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell,
-            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false), contextMenuWindow == nil,
-            !ContextMenuVC.actions(for: viewItem, delegate: self).isEmpty else { return }
+            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
+            contextMenuWindow == nil,
+            !ContextMenuVC.actions(for: viewItem, delegate: self).isEmpty,
+            let keyWindow: UIWindow = UIApplication.shared.keyWindow
+        else {
+            return
+        }
         
         // Show the context menu if applicable
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-        let frame = cell.convert(cell.bubbleView.frame, to: UIApplication.shared.keyWindow!)
+        let frame = cell.convert(cell.bubbleView.frame, to: keyWindow)
         let window = ContextMenuWindow()
         let contextMenuVC = ContextMenuVC(snapshot: snapshot, viewItem: viewItem, frame: frame, delegate: self) { [weak self] in
             window.isHidden = true

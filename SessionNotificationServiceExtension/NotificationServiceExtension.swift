@@ -175,9 +175,9 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     // MARK: Poll for open groups
     private func pollForOpenGroups() -> [Promise<Void>] {
         var promises: [Promise<Void>] = []
-        let servers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
+        let servers = Set(Storage.shared.getAllOpenGroups().values.map { $0.server })
         servers.forEach { server in
-            let poller = OpenGroupPollerV2(for: server)
+            let poller = OpenGroupAPI.Poller(for: server)
             let promise = poller.poll().timeout(seconds: 20, timeoutError: NotificationServiceError.timeout)
             promises.append(promise)
         }
