@@ -251,7 +251,8 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     private let bottomBar = BottomBar(frame: .zero)
     private var bottomBarVerticalPositionConstraint: NSLayoutConstraint!
 
-    private var cameraZoomControl: CameraZoomSelectionControl?
+    private var frontCameraZoomControl: CameraZoomSelectionControl?
+    private var rearCameraZoomControl: CameraZoomSelectionControl?
     private var cameraZoomControlIPhoneConstraints: [NSLayoutConstraint]?
     private var cameraZoomControlIPadConstraints: [NSLayoutConstraint]?
 
@@ -313,21 +314,40 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             view.addConstraint(bottomBarVerticalPositionConstraint)
         }
 
-        let availableRearCameras = photoCapture.rearCameraZoomFactorMap
+        cameraZoomControlIPhoneConstraints = []
+
+        let availableFrontCameras = photoCapture.cameraZoomFactorMap(forPosition: .front)
+        if availableFrontCameras.count > 0 {
+            let cameras = availableFrontCameras.sorted { $0.0 < $1.0 }.map { ($0.0, $0.1) }
+
+            let cameraZoomControl = CameraZoomSelectionControl(availableCameras: cameras)
+            cameraZoomControl.delegate = self
+            view.addSubview(cameraZoomControl)
+            self.frontCameraZoomControl = cameraZoomControl
+
+            let cameraZoomControlConstraints =
+            [ cameraZoomControl.centerXAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerXAnchor),
+              cameraZoomControl.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.topAnchor, constant: -32) ]
+            view.addConstraints(cameraZoomControlConstraints)
+            cameraZoomControlIPhoneConstraints?.append(contentsOf: cameraZoomControlConstraints)
+        }
+
+        let availableRearCameras = photoCapture.cameraZoomFactorMap(forPosition: .back)
         if availableRearCameras.count > 0 {
             let cameras = availableRearCameras.sorted { $0.0 < $1.0 }.map { ($0.0, $0.1) }
 
             let cameraZoomControl = CameraZoomSelectionControl(availableCameras: cameras)
             cameraZoomControl.delegate = self
             view.addSubview(cameraZoomControl)
-            self.cameraZoomControl = cameraZoomControl
+            self.rearCameraZoomControl = cameraZoomControl
 
             let cameraZoomControlConstraints =
             [ cameraZoomControl.centerXAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerXAnchor),
               cameraZoomControl.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.topAnchor, constant: -32) ]
             view.addConstraints(cameraZoomControlConstraints)
-            self.cameraZoomControlIPhoneConstraints = cameraZoomControlConstraints
+            cameraZoomControlIPhoneConstraints?.append(contentsOf: cameraZoomControlConstraints)
         }
+        updateCameraZoomControlVisibility()
 
         view.addSubview(doneButton)
         doneButton.isHidden = true
@@ -380,10 +400,16 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         doneButtonIPadConstraints = [ doneButton.centerXAnchor.constraint(equalTo: sideBar.centerXAnchor),
                                       doneButton.bottomAnchor.constraint(equalTo: sideBar.topAnchor, constant: -8)]
 
-        if let cameraZoomControl = cameraZoomControl {
+        cameraZoomControlIPadConstraints = []
+        if let cameraZoomControl = frontCameraZoomControl {
             let constraints = [ cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
                                 cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32)]
-            cameraZoomControlIPadConstraints = constraints
+            cameraZoomControlIPadConstraints?.append(contentsOf: constraints)
+        }
+        if let cameraZoomControl = rearCameraZoomControl {
+            let constraints = [ cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
+                                cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32)]
+            cameraZoomControlIPadConstraints?.append(contentsOf: constraints)
         }
     }
 
@@ -428,18 +454,20 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             view.addConstraints(doneButtonIPhoneConstraints)
         }
 
-        if let cameraZoomControl = cameraZoomControl {
+        if let cameraZoomControl = frontCameraZoomControl {
             cameraZoomControl.axis = isIPadUIInRegularMode ? .vertical : .horizontal
-
-            if let iPhoneConstraints = cameraZoomControlIPhoneConstraints,
-               let iPadConstraints = cameraZoomControlIPadConstraints {
-                if isIPadUIInRegularMode {
-                    view.removeConstraints(iPhoneConstraints)
-                    view.addConstraints(iPadConstraints)
-                } else {
-                    view.removeConstraints(iPadConstraints)
-                    view.addConstraints(iPhoneConstraints)
-                }
+        }
+        if let cameraZoomControl = rearCameraZoomControl {
+            cameraZoomControl.axis = isIPadUIInRegularMode ? .vertical : .horizontal
+        }
+        if let iPhoneConstraints = cameraZoomControlIPhoneConstraints,
+           let iPadConstraints = cameraZoomControlIPadConstraints {
+            if isIPadUIInRegularMode {
+                view.removeConstraints(iPhoneConstraints)
+                view.addConstraints(iPadConstraints)
+            } else {
+                view.removeConstraints(iPadConstraints)
+                view.addConstraints(iPhoneConstraints)
             }
         }
 
@@ -452,7 +480,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         sideBar?.isHidden = !isIPadUIInRegularMode
     }
 
-    func updateDoneButtonAppearance () {
+    func updateDoneButtonAppearance() {
         if isInBatchMode, let badgeNumber = dataSource?.numberOfMediaItems, badgeNumber > 0 {
             doneButton.badgeNumber = badgeNumber
             doneButton.isHidden = false
@@ -461,6 +489,19 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         }
         if bottomBar.isCompactHeightLayout {
             bottomBar.switchCameraButton.isHidden = !doneButton.isHidden
+        }
+    }
+
+    private func updateCameraZoomControlVisibility(animated: Bool = false) {
+        let isFrontCamera = photoCapture.desiredPosition == .front
+        let changes = {
+            self.frontCameraZoomControl?.alpha = isFrontCamera ? 1 : 0
+            self.rearCameraZoomControl?.alpha = isFrontCamera ? 0 : 1
+        }
+        if animated {
+            UIView.animate(withDuration: 0.2, animations: changes)
+        } else {
+            changes()
         }
     }
 
@@ -503,7 +544,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
     @objc
     func didTapSwitchCamera() {
-        switchCamera()
+        switchCameraPosition()
     }
 
     @objc
@@ -520,23 +561,21 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
             return
         }
 
-        switchCamera()
+        switchCameraPosition()
     }
 
-    private func switchCamera() {
+    private func switchCameraPosition() {
         if let switchCameraButton = isIPadUIInRegularMode ? sideBar?.switchCameraButton : bottomBar.switchCameraButton {
             UIView.animate(withDuration: 0.2) {
                 let epsilonToForceCounterClockwiseRotation: CGFloat = 0.00001
                 switchCameraButton.transform = switchCameraButton.transform.rotate(.pi + epsilonToForceCounterClockwiseRotation)
             }
         }
-        photoCapture.switchCamera().catch { error in
+        photoCapture.switchCameraPosition().catch { error in
             self.showFailureUI(error: error)
         }
 
-        if let cameraZoomControl = cameraZoomControl {
-            cameraZoomControl.isHidden = photoCapture.desiredPosition != .back
-        }
+        updateCameraZoomControlVisibility(animated: true)
     }
 
     @objc
@@ -655,7 +694,10 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         let tranformFromCameraType: CGAffineTransform = photoCapture.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
 
         var buttonsToUpdate: [UIView] = [ topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton ]
-        if let cameraZoomControl = cameraZoomControl {
+        if let cameraZoomControl = frontCameraZoomControl {
+            buttonsToUpdate.append(contentsOf: cameraZoomControl.cameraZoomLevelIndicators)
+        }
+        if let cameraZoomControl = rearCameraZoomControl {
             buttonsToUpdate.append(contentsOf: cameraZoomControl.cameraZoomLevelIndicators)
         }
         let updateOrientation = {
@@ -759,7 +801,8 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 extension PhotoCaptureViewController: CameraZoomSelectionControlDelegate {
 
     fileprivate func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didSelect camera: PhotoCapture.CameraType) {
-        photoCapture.switchRearCamera(to: camera, animated: true)
+        let position: AVCaptureDevice.Position = cameraZoomControl == frontCameraZoomControl ? .front : .back
+        photoCapture.switchCamera(to: camera, at: position, animated: true)
     }
 }
 
@@ -1043,8 +1086,8 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         return previewView.bounds.height / 2
     }
 
-    func photoCapture(_ photoCapture: PhotoCapture, didChangeVideoZoomFactor zoomFactor: CGFloat) {
-        guard let cameraZoomControl = cameraZoomControl else { return }
+    func photoCapture(_ photoCapture: PhotoCapture, didChangeVideoZoomFactor zoomFactor: CGFloat, forCameraPosition position: AVCaptureDevice.Position) {
+        guard let cameraZoomControl = position == .front ? frontCameraZoomControl : rearCameraZoomControl else { return }
         cameraZoomControl.currentZoomFactor = zoomFactor
     }
 
