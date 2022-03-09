@@ -57,7 +57,7 @@ public class GroupInviteLinksUI: UIView {
 
 // MARK: -
 
-class GroupInviteLinksActionSheet: ActionSheetController {
+private class GroupInviteLinksActionSheet: ActionSheetController {
 
     private let groupInviteLinkInfo: GroupInviteLinkInfo
     private let groupV2ContextInfo: GroupV2ContextInfo
@@ -225,9 +225,17 @@ class GroupInviteLinksActionSheet: ActionSheetController {
             case GroupsV2Error.expiredGroupInviteLink:
                 self?.applyExpiredGroupInviteLink()
             case GroupsV2Error.localUserBlockedFromJoining:
-                // TODO: Do we expect this error here? How should this appear?
                 Logger.warn("User blocked: \(error)")
-                fallthrough
+                self?.dismiss(animated: true, completion: {
+                    OWSActionSheets.showActionSheet(
+                        title: NSLocalizedString(
+                            "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE",
+                            comment: "Title indicating that the group invite link has expired in the 'group invite link' action sheet."),
+                        message: NSLocalizedString(
+                            "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
+                            comment: "Subtitle indicating that the local user has been blocked from joining the group"))
+                })
+
             default:
                 // TODO: Retry errors?
                 owsFailDebugUnlessNetworkFailure(error)

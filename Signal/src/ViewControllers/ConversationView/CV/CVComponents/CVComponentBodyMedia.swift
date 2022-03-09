@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalUI
 
 public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 

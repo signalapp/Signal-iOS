@@ -964,10 +964,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     case .reportInvalidOrBlockedGroupLink:
                         owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
 
-                        // TODO: Fix this check once server API is finalized
-                        if let responseHeaders = error.httpResponseHeaders,
-                           responseHeaders.hasValueForHeader("X-Signal-Forbidden-Reason"),
-                           false /* Disabled until finalized */ {
+                        if FeatureFlags.groupAbuse, let responseHeaders = error.httpResponseHeaders,
+                           responseHeaders.value(forHeader: "X-Signal-Forbidden-Reason") == "banned" {
                             throw GroupsV2Error.localUserBlockedFromJoining
                         } else {
                             throw GroupsV2Error.expiredGroupInviteLink
