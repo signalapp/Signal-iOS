@@ -382,7 +382,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
 
         if let cameraZoomControl = cameraZoomControl {
             let constraints = [ cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
-                                cameraZoomControl.trailingAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.leadingAnchor, constant: -32)]
+                                cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32)]
             cameraZoomControlIPadConstraints = constraints
         }
     }
@@ -1038,9 +1038,9 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     var zoomScaleReferenceDistance: CGFloat? {
         if isIPadUIInRegularMode {
-            return view.bounds.width
+            return previewView.bounds.width / 2
         }
-        return view.bounds.height
+        return previewView.bounds.height / 2
     }
 
     func photoCapture(_ photoCapture: PhotoCapture, didChangeVideoZoomFactor zoomFactor: CGFloat) {
@@ -1357,7 +1357,7 @@ private class CameraZoomSelectionControl: PillView {
 
         super.init(frame: .zero)
 
-        backgroundColor = .ows_blackAlpha20
+        backgroundColor = selectionViews.count > 1 ? .ows_blackAlpha20 : .clear
         layoutMargins = UIEdgeInsets(margin: 2)
 
         selectionViews.forEach { view in

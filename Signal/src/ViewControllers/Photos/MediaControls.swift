@@ -42,13 +42,11 @@ class CameraCaptureControl: UIView {
 
     private let outerCircleSizeConstraint: NSLayoutConstraint
     private let innerCircleSizeConstraint: NSLayoutConstraint
-    private var slidingCircleHPositionConstraint: NSLayoutConstraint?
-    private var slidingCircleVPositionConstraint: NSLayoutConstraint?
 
     private lazy var slidingCircleView: CircleView = {
-        let view = CircleView(diameter: CameraCaptureControl.recordingLockControlSize)
+        let view = CircleView()
+        view.bounds = CGRect(origin: .zero, size: .square(CameraCaptureControl.recordingLockControlSize))
         view.backgroundColor = .ows_white
-        view.isHidden = true
         return view
     }()
     private lazy var lockIconView = LockView(frame: CGRect(origin: .zero, size: .square(CameraCaptureControl.recordingLockControlSize)))
@@ -61,7 +59,6 @@ class CameraCaptureControl: UIView {
         button.dimsWhenHighlighted = true
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 4
-        button.isHidden = true
         return button
     }()
 
@@ -139,84 +136,76 @@ class CameraCaptureControl: UIView {
 
     private var sliderTrackingProgress: CGFloat = 0 {
         didSet {
-            if sliderTrackingProgress == 1 && state == .recording {
-                setState(.recordingLocked) // this will call updateUIForCurrentState()
-            } else {
-                updateUIForCurrentState()
-            }
+            guard isRecordingWithLongPress else { return }
+
+            // Update size of the inner circle, that contracts with `sliderTrackingProgress` increasing.
+            // Fully reveal stop button when sliderTrackingProgress == 0.5.
+            let circleSizeOffset = 2 * min(0.5, sliderTrackingProgress) * (CameraCaptureControl.shutterButtonDefaultSize - CameraCaptureControl.recordingLockControlSize)
+            innerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonDefaultSize - circleSizeOffset
+            // Hide the inner circle so that it is not visible when stop button is pressed.
+            shutterButtonInnerCircle.alpha = sliderTrackingProgress > 0.5 ? 0 : 1
         }
     }
 
     func setState(_ state: State, isRecordingWithLongPress: Bool = false, animationDuration: TimeInterval = 0) {
         guard _internalState != state else { return }
 
-        Logger.debug("New state: \(_internalState) -> \(state)")
-
         _internalState = state
         self.isRecordingWithLongPress = isRecordingWithLongPress
+
+        if state == .initial {
+            // Hide "slide to lock" controls momentarily before animating the rest of the UI to "not recording" state.
+            hideLongPressVideoRecordingControls()
+        }
+
         if animationDuration > 0 {
             UIView.animate(withDuration: animationDuration,
                            delay: 0,
                            options: [ .beginFromCurrentState ],
                            animations: {
-                self.updateUIForCurrentState()
+                self.updateShutterButtonAppearanceForCurrentState()
+                self.setNeedsLayout()
+                self.layoutIfNeeded()
+            },
+                           completion: { _ in
+                // When switching to "recording" state we want to prepare "slide to lock" UI elements
+                // in the completion handler because none of those elements are needed yet a this point.
+                // Adding the controls to the view hierarchy outside of the animation block
+                // also fixes an issue where stop button would be visible briefly during shutter button animations.
+                if state == .recording && isRecordingWithLongPress {
+                    self.prepareLongPressVideoRecordingControls()
+                }
             })
         } else {
-            updateUIForCurrentState()
+            updateShutterButtonAppearanceForCurrentState()
+            if state == .recording && isRecordingWithLongPress {
+                prepareLongPressVideoRecordingControls()
+            }
         }
     }
 
-    private func updateUIForCurrentState() {
+    private func updateShutterButtonAppearanceForCurrentState() {
         switch state {
         case .initial:
-            // element visibility
-            if slidingCircleHPositionConstraint != nil {
-                stopButton.isHidden = true
-                slidingCircleView.isHidden = true
-                lockIconView.isHidden = true
-                lockIconView.state = .unlocked
-            }
             shutterButtonInnerCircle.alpha = 1
             shutterButtonInnerCircle.backgroundColor = .clear
-            // element sizes
+
             outerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonDefaultSize
             innerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonDefaultSize
 
         case .recording:
-            prepareRecordingControlsIfNecessary()
-            let sliderProgress = isRecordingWithLongPress ? sliderTrackingProgress : 0
-            // element visibility
-            stopButton.isHidden = sliderProgress == 0
-            slidingCircleView.isHidden = sliderProgress == 0
-            lockIconView.isHidden = !isRecordingWithLongPress
-            lockIconView.setState(sliderProgress > 0.5 ? .locking : .unlocked, animated: true)
             shutterButtonInnerCircle.backgroundColor = .ows_white
-            // element sizes
             outerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonRecordingSize
-            // Inner (white) circle gets smaller as user drags the slider and reveals stop button when the slider is halfway to the lock icon.
-            let circleSizeOffset = 2 * sliderProgress * (CameraCaptureControl.shutterButtonDefaultSize - CameraCaptureControl.recordingLockControlSize)
-            innerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonDefaultSize - circleSizeOffset
+            // Inner circle stays the same size initially and might get smaller as user moves the slider.
 
         case .recordingLocked:
-            prepareRecordingControlsIfNecessary()
-            // element visibility
-            stopButton.isHidden = false
-            slidingCircleView.isHidden = false
-            lockIconView.isHidden = false
-            lockIconView.setState(.locked, animated: true)
-            shutterButtonInnerCircle.alpha = 0
-            shutterButtonInnerCircle.backgroundColor = .ows_white
-            // element sizes
-            outerCircleSizeConstraint.constant = CameraCaptureControl.shutterButtonRecordingSize
+            // This should already by at the correct size so this assignment is "just in case".
             innerCircleSizeConstraint.constant = CameraCaptureControl.recordingLockControlSize
         }
-
-        setNeedsLayout()
-        layoutIfNeeded()
     }
 
-    private func prepareRecordingControlsIfNecessary() {
-        guard slidingCircleHPositionConstraint == nil else { return }
+    private func initializeVideoRecordingControlsIfNecessary() {
+        guard stopButton.superview == nil else { return }
 
         // 1. Stop button.
         addSubview(stopButton)
@@ -227,26 +216,16 @@ class CameraCaptureControl: UIView {
 
         // 2. Slider.
         insertSubview(slidingCircleView, belowSubview: shutterButtonInnerCircle)
-        slidingCircleView.translatesAutoresizingMaskIntoConstraints = false
-        let circleHPositionConstraint = slidingCircleView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor)
-        var horizontalConstraints: [NSLayoutConstraint] = [ circleHPositionConstraint ]
-        horizontalConstraints.append(slidingCircleView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor))
-        slidingCircleHPositionConstraint = circleHPositionConstraint
-
-        let circleVPositionConstraint = slidingCircleView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor)
-        var verticalConstraints: [NSLayoutConstraint] = [ circleVPositionConstraint ]
-        verticalConstraints.append(slidingCircleView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor))
-        slidingCircleVPositionConstraint = circleVPositionConstraint
 
         // 3. Lock Icon
         addSubview(lockIconView)
         lockIconView.translatesAutoresizingMaskIntoConstraints = false
         // Centered vertically, pinned to trailing edge.
-        horizontalConstraints.append(contentsOf: [ lockIconView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor),
-                                                   lockIconView.trailingAnchor.constraint(equalTo: trailingAnchor) ])
+        let horizontalConstraints = [ lockIconView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor),
+                                      lockIconView.trailingAnchor.constraint(equalTo: trailingAnchor) ]
         // Centered horizontally, pinned to bottom edge.
-        verticalConstraints.append(contentsOf: [ lockIconView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor),
-                                                 lockIconView.bottomAnchor.constraint(equalTo: bottomAnchor) ])
+        let verticalConstraints = [ lockIconView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor),
+                                    lockIconView.bottomAnchor.constraint(equalTo: bottomAnchor) ]
 
         // 4. Activate current constraints.
         horizontalAxisConstraints.append(contentsOf: horizontalConstraints)
@@ -302,19 +281,24 @@ class CameraCaptureControl: UIView {
 
     // MARK: - Gestures
 
+    private let animationDuration: TimeInterval = 0.2
     private var isRecordingWithLongPress = false
     private static let longPressDurationThreshold = 0.5
-    private static let minDistanceBeforeActivatingLockSlider: CGFloat = 30
     private var initialTouchLocation: CGPoint?
     private var initialZoomPosition: CGFloat?
     private var touchTimer: Timer?
 
+    private var initialSlidingCircleViewCenter: CGPoint {
+        shutterButtonInnerCircle.center
+    }
+    private var finalSlidingCircleViewCenter: CGPoint {
+        lockIconView.center
+    }
+
     @objc
     private func handleLongPress(gesture: UILongPressGestureRecognizer) {
-        guard let gestureView = gesture.view else {
-            owsFailDebug("gestureView was unexpectedly nil")
-            return
-        }
+
+        let currentLocation = gesture.location(in: self)
 
         switch gesture.state {
         case .possible:
@@ -323,7 +307,7 @@ class CameraCaptureControl: UIView {
         case .began:
             guard state == .initial else { break }
 
-            initialTouchLocation = gesture.location(in: gesture.view)
+            initialTouchLocation = currentLocation
             initialZoomPosition = nil
 
             touchTimer?.invalidate()
@@ -335,8 +319,7 @@ class CameraCaptureControl: UIView {
             ) { [weak self] _ in
                 guard let self = self else { return }
 
-                self.setState(.recording, isRecordingWithLongPress: true, animationDuration: 0.4)
-
+                self.setState(.recording, isRecordingWithLongPress: true, animationDuration: 2*self.animationDuration)
                 self.delegate?.cameraCaptureControlDidRequestStartVideoRecording(self)
             }
 
@@ -358,25 +341,30 @@ class CameraCaptureControl: UIView {
                 return
             }
 
-            let currentLocation = gesture.location(in: gestureView)
-
             // Zoom - only use if slide to lock hasn't been activated.
             var zoomLevel: CGFloat = 0
             if sliderTrackingProgress == 0 {
-                let minDistanceBeforeActivatingZoom: CGFloat = 30
-                let currentDistance: CGFloat = {
+                let currentSlideOffset: CGFloat = {
                     switch axis {
                     case .horizontal:
-                        if initialZoomPosition == nil {
+                        if let initialZoomPosition = initialZoomPosition {
+                            return initialZoomPosition - currentLocation.y
+                        } else {
                             initialZoomPosition = currentLocation.y
+                            return 0
                         }
-                        return initialZoomPosition! - currentLocation.y - minDistanceBeforeActivatingZoom
 
                     case .vertical:
-                        if initialZoomPosition == nil {
+                        if let initialZoomPosition = initialZoomPosition {
+                            if CurrentAppContext().isRTL {
+                                return currentLocation.x - initialZoomPosition
+                            } else {
+                                return initialZoomPosition - currentLocation.x
+                            }
+                        } else {
                             initialZoomPosition = currentLocation.x
+                            return 0
                         }
-                        return initialZoomPosition! - currentLocation.x - minDistanceBeforeActivatingZoom
 
                     @unknown default:
                         owsFailDebug("Unsupported `axis` value: \(axis.rawValue)")
@@ -384,8 +372,10 @@ class CameraCaptureControl: UIView {
                     }
                 }()
 
-                let ratio = currentDistance / referenceDistance
+                let minDistanceBeforeActivatingZoom: CGFloat = 30
+                let ratio = max(0, currentSlideOffset - minDistanceBeforeActivatingZoom) / (referenceDistance - minDistanceBeforeActivatingZoom)
                 zoomLevel = ratio.clamp(0, 1)
+
                 delegate?.cameraCaptureControl(self, didUpdateZoomLevel: zoomLevel)
             } else {
                 initialZoomPosition = nil
@@ -411,20 +401,46 @@ class CameraCaptureControl: UIView {
             touchTimer?.invalidate()
             touchTimer = nil
 
-            guard state != .recordingLocked else { return }
-
             if state == .recording {
-                setState(.initial, animationDuration: 0.2)
+                let shouldLockRecording = sliderTrackingProgress > 0.5
 
-                delegate?.cameraCaptureControlDidRequestFinishVideoRecording(self)
+                // 1. Snap slider to one of the endpoints with the spring animation.
+                let finalCenter = shouldLockRecording ? finalSlidingCircleViewCenter : initialSlidingCircleViewCenter
+                UIView.animate(withDuration: animationDuration,
+                               delay: 0,
+                               usingSpringWithDamping: 1,
+                               initialSpringVelocity: 0,
+                               options: [ .beginFromCurrentState ]) {
+                    self.slidingCircleView.center = finalCenter
+                }
+
+                // 2. Simultaneously with animating the slider animate the rest of the UI.
+                if shouldLockRecording {
+                    sliderTrackingProgress = 1
+                    lockIconView.setState(.locked, animated: true)
+                    setState(.recordingLocked, animationDuration: animationDuration)
+                } else {
+                    // Animate change of inner (white) circle back to normal...
+                    sliderTrackingProgress = 0
+                    UIView.animate(withDuration: animationDuration,
+                                   animations: {
+                        self.layoutIfNeeded()
+                    },
+                                   completion: { _ in
+                        // ...and only then animate the rest of the shutter button to its initial state.
+                        self.setState(.initial, animationDuration: self.animationDuration)
+                    })
+
+                    delegate?.cameraCaptureControlDidRequestFinishVideoRecording(self)
+                }
             } else {
                 delegate?.cameraCaptureControlDidRequestCapturePhoto(self)
             }
 
         case .cancelled, .failed:
             if state == .recording {
-                setState(.initial, animationDuration: 0.2)
-
+                sliderTrackingProgress = 0
+                setState(.initial, animationDuration: animationDuration)
                 delegate?.cameraCaptureControlDidRequestCancelVideoRecording(self)
             }
 
@@ -436,28 +452,60 @@ class CameraCaptureControl: UIView {
         }
     }
 
-    private func updateHorizontalTracking(xOffset: CGFloat) {
-        let effectiveDistance = xOffset - Self.minDistanceBeforeActivatingLockSlider
-        let distanceToLock = abs(lockIconView.center.x - stopButton.center.x)
-        if let positionConstraint = slidingCircleHPositionConstraint {
-            let trackingPosition = effectiveDistance.clamp(0, distanceToLock)
-            positionConstraint.constant = trackingPosition
-        }
-        sliderTrackingProgress = (effectiveDistance / distanceToLock).clamp(0, 1)
+    private static let minDistanceBeforeActivatingLockSlider: CGFloat = 30
 
-        Logger.debug("xOffset: \(xOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), progress: \(sliderTrackingProgress)")
+    private func updateHorizontalTracking(xOffset: CGFloat) {
+        // RTL: Slider should be moved to the left and xOffset would be negative.
+        let effectiveOffset = CurrentAppContext().isRTL ? min(0, xOffset + Self.minDistanceBeforeActivatingLockSlider) : max(0, xOffset - Self.minDistanceBeforeActivatingLockSlider)
+        slidingCircleView.center = initialSlidingCircleViewCenter.plusX(effectiveOffset)
+
+        let distanceToLock = abs(lockIconView.center.x - initialSlidingCircleViewCenter.x)
+        sliderTrackingProgress = abs(effectiveOffset / distanceToLock).clamp(0, 1)
+        updateLockStateAndPlayHapticFeedbackIfNecessary()
+
+        Logger.debug("xOffset: \(xOffset), effectiveOffset: \(effectiveOffset),  distanceToLock: \(distanceToLock), progress: \(sliderTrackingProgress)")
     }
 
     private func updateVerticalTracking(yOffset: CGFloat) {
-        let effectiveDistance = yOffset - Self.minDistanceBeforeActivatingLockSlider
-        let distanceToLock = abs(lockIconView.center.y - stopButton.center.y)
-        if let positionConstraint = slidingCircleVPositionConstraint {
-            let trackingPosition = effectiveDistance.clamp(0, distanceToLock)
-            positionConstraint.constant = trackingPosition
-        }
-        sliderTrackingProgress = (effectiveDistance / distanceToLock).clamp(0, 1)
+        let effectiveOffset = max(0, yOffset - Self.minDistanceBeforeActivatingLockSlider)
+        slidingCircleView.center = initialSlidingCircleViewCenter.plusY(effectiveOffset)
 
-        Logger.debug("yOffset: \(yOffset), effectiveDistance: \(effectiveDistance),  distanceToLock: \(distanceToLock), progress: \(sliderTrackingProgress)")
+        let distanceToLock = abs(lockIconView.center.y - initialSlidingCircleViewCenter.y)
+        sliderTrackingProgress = (effectiveOffset / distanceToLock).clamp(0, 1)
+        updateLockStateAndPlayHapticFeedbackIfNecessary()
+
+        Logger.debug("yOffset: \(yOffset), effectiveOffset: \(effectiveOffset),  distanceToLock: \(distanceToLock), progress: \(sliderTrackingProgress)")
+    }
+
+    private func updateLockStateAndPlayHapticFeedbackIfNecessary() {
+        let newLockState: LockView.State = sliderTrackingProgress > 0.5 ? .locking : .unlocked
+        if lockIconView.state != newLockState {
+            lockIconView.setState(newLockState, animated: true)
+        }
+    }
+
+    private func prepareLongPressVideoRecordingControls() {
+        initializeVideoRecordingControlsIfNecessary()
+
+        stopButton.alpha = 1
+
+        slidingCircleView.alpha = 1
+        slidingCircleView.center = initialSlidingCircleViewCenter
+
+        lockIconView.alpha = 1
+        lockIconView.state = .unlocked
+    }
+
+    private func hideLongPressVideoRecordingControls() {
+        // Hide these two without animation because they're in the shutter button
+        // and will interfere with circles animating.
+        stopButton.alpha = 0
+        slidingCircleView.alpha = 0
+
+        // Fade out the lock icon because it is separated visually from the rest of the UI.
+        UIView.animate(withDuration: animationDuration) {
+            self.lockIconView.alpha = 0
+        }
     }
 
     // MARK: - Button Actions
