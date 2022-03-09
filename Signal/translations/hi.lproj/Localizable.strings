@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "वापस कैमरा खोलें";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "वापस मीडिया संग्रह पर चलें";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "दोस्तो को असुरक्षित SMS के ज़रिये आमंत्रित करें?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ग्रुप को अपडेट नहीं किया जा सका। अपना इंटरनेट कनेक्शन चेक करें और फिर से प्रयास करें।";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal को जल्द ही iOS 11 या बाद के संस्करण की ज़रूरत होगी। कृपया सेटिंग्ज़ ऐप >> सामान्य >> सॉफ़्टवेर अपडेट में जा कर अपग्रेड करें।";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS अप्ग्रेड करें ";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "उपयोगकर्ता नाम Signal में वैकल्पिक हैं। अगर आप अपना उपयोगकर्ता नाम बनाते हैं तो अन्य Signal उपयोगकर्ता आपको आपके उपयोगकर्ता नाम से खोज ा तथा बिना आपके फोन नंबर के आपसे संपर्क कर पाएंगे।";

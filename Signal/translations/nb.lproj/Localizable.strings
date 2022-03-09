@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Tilbake til kameraet";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Tilbake til mediebiblioteket";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Inviter en venn via usikker SMS?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Gruppen kunne ikke oppdateres. Sjekk internetforbindelsen din og forsøk igjen.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal vil snart kreve iOS 11 eller nyere. Oppgrader i Innstillinger-appen >> Generelt >> Programvareoppdatering.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Oppgrader iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Brukernavn på Signal er valgfri. Hvis du velger å opprette et brukernavn, vil andre Signal-brukere kunne finne deg ved dette brukernavnet og kontakte deg uten å vite telefonnummeret ditt.";

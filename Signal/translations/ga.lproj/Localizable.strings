@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Fill ar an gCeamara";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Fill ar Leabharlann na Meán";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "An bhfuil fonn ort cuireadh a thabhairt do chara trí SMS neamhshlán?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Níorbh fhéidir an grúpa a nuashonrú. Deimhnigh go bhfuil tú ceangailte leis an Idirlíon agus bain triail eile as.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Beidh iOS 11 nó leagan níos déanaí ag teastáil go luath chun Signal a úsáid. Ba chóir duit nuashonrú a dhéanamh i Socruithe iOS >> General >> Software Update.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Nuashonraigh iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Is féidir leat ainm úsáideora Signal a chruthú más mian leat. Má chruthaíonn tú ainm úsáideora, beidh daoine eile ar Signal in ann thú a aimsiú tríd an ainm seo agus dul i dteagmháil leat gan d'uimhir ghutháin a bheith ar eolas acu.";

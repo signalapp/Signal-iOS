@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Dzokera ku Kamera";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Dzokera ku Dura reMedia";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Koka shamwari kupfurikidza netsamba isina kukwedekerwa?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Boka ratadza kushandurwa.Tarisa kuti wakabatana ne Dandadzi woedzazve.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ichange yave kuda iOS 11 kana mberi.Tapota wedzera ku Seting >> General >> Software Update.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Wedzera iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Mazita pa Signal isarudzo.Kana wasarudza kuita zita vamwe vashandisi pa Signal vanozogona kukuwana ne zita iri ne kukubata vasingazive nhamba dzenhare dzako.";

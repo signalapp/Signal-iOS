@@ -308,7 +308,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Maak een gecomprimeerd archief van dit bestand of deze map en probeer dat te verzenden.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Bestand niet ondersteund";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Bestand wordt niet ondersteund";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Audio";
@@ -488,7 +488,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Bestaande leden kunnen je nu opnieuw aan de groep toevoegen.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde personen kunnen jou nog steeds bellen of berichten sturen en weten dus niet dat ze geblokkeerd zijn, maar je zult die oproepen en berichten niet zien.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde personen kunnen niet zien dat ze geblokkeerd zijn: het lijkt voor hen alsof je telefoon over gaat, en alsof berichten worden afgeleverd.\nJe huidige profielnaam en -foto blijven voor geblokkeerde personen zichtbaar maar worden niet bijgewerkt als je een nieuwe foto of naam instelt.\nIn groepen zullen jouw berichten niet zichtbaar zijn voor personen die je hebt geblokkeerd.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Nieuw: Vervaag gezichten of teken om andere dingen te vervagen.";
@@ -2297,7 +2297,7 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Vereis voor iedere persoon die via de groepsverwijzing lid wil worden eerst toestemming van een beheerder.";
 
 /* Label for the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Nieuwe groepsleden toelaten";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Beheerderstoestemming vereisen";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Groepsverwijzing inschakelen en delen";
@@ -2324,7 +2324,7 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "QR-code";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Nieuwe groepsleden toelaten";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Beheerderstoestemming vereisen";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "Verwijzing kopiëren";
@@ -3359,7 +3359,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Spam melden en blokkeren";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Geblokkeerde personen kunnen niet zien dat ze geblokkeerd zijn: het lijkt voor hen alsof je telefoon over gaat, en alsof berichten worden afgeleverd. Je huidige profielnaam en -foto blijven voor geblokkeerde personen zichtbaar maar worden ze niet bijgewerkt als je een nieuwe foto of naam instelt.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Geblokkeerde personen kunnen niet zien dat ze geblokkeerd zijn: het lijkt voor hen alsof je telefoon over gaat en alsof berichten worden afgeleverd.\nJe huidige profielnaam en -foto blijven voor geblokkeerde personen zichtbaar maar worden ze niet bijgewerkt als je een nieuwe foto of naam instelt.\nIn groepen zullen jouw berichten niet zichtbaar zijn voor personen die je hebt geblokkeerd.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ blokkeren?";
@@ -4490,10 +4490,10 @@
 "PROCEED_BUTTON" = "Doorgaan";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Schijf een paar woorden over jezelf …";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Schrijf iets over jezelf";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Wees aardig";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Wees lief voor me";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Koffieliefhebber";
@@ -4502,13 +4502,13 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Versleuteld";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Beschikbaar om te spreken";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Beschikbaar om te praten";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Spreek vrijuit";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Voel je vrij om een berichtje te sturen";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Ik neem even een pauze";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Ik wil even offline zijn";
 
 /* The 'Working on something new' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Ik werk aan iets nieuws";
@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Terug naar camera";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Terug naar mediabibliotheek";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Kennis uitnodigen via onbeveiligde sms?";
 
@@ -5435,7 +5432,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Krediet toevoegen";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Maak een account bij een beurs die MobileCoin ondersteund. Stuur vervolgens vanaf je beurs-account MobileCoin naar je Signal portemonnee-adres door de QR-code te scannen of door het adres te kopiëren om op Signal krediet toe te voegen.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Maak een account bij een beurs die MobileCoin ondersteunt. Stuur vervolgens vanaf je beurs-account MobileCoin naar je Signal portemonnee-adres door de QR-code te scannen of door het adres te kopiëren om op Signal krediet toe te voegen.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Portemonnee-adres gekopieerd";
@@ -5519,7 +5516,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Krediet toevoegen";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Je kunt op elk moment je MobileCoin laten uitbetalen via een beurs die MobileCoin ondersteund. Je hoeft slechts over te schrijven naar jouw account bij die beurs.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Je kunt op elk moment je MobileCoin laten uitbetalen via een beurs die MobileCoin ondersteunt. Je hoeft slechts over te schrijven naar jouw account bij die beurs.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Uitbetalen";
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "De groep kon niet aangepast worden. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Binnenkort vereist Signal dat je iOS 11 of een nieuwere versie gebruikt. Werk je besturingssysteem bij via de Instellingen-app >> Algemeen >> Software-update.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Werk iOS bij";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Gebruikersnamen zijn optioneel op Signal. Als je er voor kiest om een gebruikersnaam aan te maken, dan kunnen andere Signal-gebruikers je vinden via die gebruikersnaam en kunnen ze contact met je opnemen zonder je telefoonnummer te kennen.";

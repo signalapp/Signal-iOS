@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Koma Kyamara";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Koma laburaren midiya";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Ka/kina son gayyatar daya daga abokanka/ki da sakon SMS mara tsaro? ";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal zai bukaci iOS 11 anjima kadan ko nan gaba. Dan sabunta ta Settings app >> General >> Software Update. ";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Sabunta iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Sakawar sunan mai amfanin Signal ba dole bane. Idan ka/kika zabi kirkirowar sunan mai amfani, wasu masu amfani da Signal zasu iya ganinka/ki ta wannan sunan kuma su tuntube ka/ki ba tareda sunsan lambar wayarka/ki ba. ";

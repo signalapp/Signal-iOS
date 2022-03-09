@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Întoarce-te la cameră";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Întoarce-te la librăria media";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Inviți un prieten prin SMS nesecurizat?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupul nu a putut fi actualizat. Verifică-ți conexiunea la internet și încearcă din nou.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal va necesita în curând iOS 11 sau o versiune mai nouă. Te rugăm să actualizezi din aplicația Setări >> General >> Actualizări Software.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Actualizează-ți iOS-ul";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Numele de utilizator pe Signal este opțional. Dacă alegi să creezi un nume de utilizator, alți utilizatori de Signal te vor putea găsi prin acest nume și te vor putea contacta fără să îți știe numărul de telefon.";

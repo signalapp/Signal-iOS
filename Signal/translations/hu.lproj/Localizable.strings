@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Vissza a kamerához";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Vissza a galériához";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Szeretnéd meghívni egy barátodat nem-biztonságos SMS-en keresztül?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "A csoport frissítése sikertelen. Ellenőrizd a hálózati kapcsolatot és próbáld újra!";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "A Signal hamarosan iOS 11-et vagy későbbit igényel. Kérjük frissítsen a Beállítások app >> Általános >> Szoftver frissítés menüpont alatt.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS frissítése";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signalban a felhasználónév nem kötelező. Ha mégis beállítod, más felhasználók a jövőben név alapján is megtalálhatnak, a telefonszámod ismerete nélkül.";

@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Dosažen limit znaků.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Přidat titulek...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Přidat titulek…";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Titulek";
@@ -497,7 +497,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Nastavit měnu";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Řekněte \"Díky!\" a získejte Boost odznak na 30 dnů.";
+"BOOST_VIEW_BODY" = "Řekněte „Díky!“ a získejte Boost odznak na 30 dnů.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Váš Boost odznak vyprší %@.";
@@ -1007,7 +1007,7 @@
 "CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Odstranit %@ konverzací?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Ztišit tuto konverzaci na...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Ztišit tuto konverzaci na…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 den";
@@ -1151,7 +1151,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "zpráva";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Ztišit konverzaci na...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Ztišit konverzaci na…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Vždy";
@@ -1889,10 +1889,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Nemáte žádná média v tomto chatu.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Načítání novějších médií...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Načítání novějších médií…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Načítání starších médií...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Načítání starších médií…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Příloha";
@@ -2273,7 +2273,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Připojit";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Načítání...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Načítání…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Připojit se k této skupině a sdílet vaše jméno a fotografii s jejími členy?";
@@ -2987,16 +2987,16 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Odmítnuto na jiném zařízení.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Opětovné připojování...";
+"IN_CALL_RECONNECTING" = "Opětovné připojování…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Vyzvánění…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Hlasový hovor...";
+"IN_CALL_RINGING_AUDIO" = "Hlasový hovor…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Videohovor...";
+"IN_CALL_RINGING_VIDEO" = "Videohovor…";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Odpovězeno. Zabezpečování…";
@@ -3491,7 +3491,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Odesílání selhalo";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Odesílaní...";
+"MESSAGE_STATUS_SENDING" = "Odesílání…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Odesláno";
@@ -3701,7 +3701,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Zvuky při spuštěné aplikaci";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Přidat vlastní zvuk...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Přidat vlastní zvuk…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Jméno, obsah a akce";
@@ -4025,7 +4025,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Platba dokončena";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Odesílaní...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Odesílání…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Odesláno";
@@ -4055,7 +4055,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Dokončeno";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Odesílaní...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Odesílání…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Odesláno";
@@ -4340,7 +4340,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Zadejte PIN znovu";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Vytvářím PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "Vytváření PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Můžete změnit váš PIN, dokud je toto zařízení registrováno.";
@@ -4490,7 +4490,7 @@
 "PROCEED_BUTTON" = "Pokračovat";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Napište o sobě několik slov...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Napište o sobě pár slov…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Buďte milí";
@@ -4694,7 +4694,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Nesprávný PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Ověřujeme PIN...";
+"REGISTER_2FA_PIN_PROGRESS" = "Ověřování PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Potvrdit";
@@ -5060,7 +5060,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Pro připojení tohoto iPad k vašemu účtu spusťte Signal na vašem telefonu.";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Na mém telefonu nemám Signal...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Na mém telefonu nemám Signal…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Jděte do App Store na vašem telefonu, nainstalujte Signal, dokončete registraci a poté můžete připojit Váš iPad ke stejnému účtu.";
@@ -5106,9 +5106,6 @@
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Zpět k fotoaparátu";
-
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Zpět k mediální knihovně";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Pozvat kamaráda přes zabezpečenou SMS?";
@@ -5414,7 +5411,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt se připojil k Signalu";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Upozornit, když...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Upozornit, když…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Oznámení";
@@ -5963,7 +5960,7 @@
 "SETTINGS_VERSION" = "Verze";
 
 /* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Kdo může...";
+"SETTINGS_WHO_CAN" = "Kdo může…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "E-mail";
@@ -5978,7 +5975,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Vaše bezpečnostní číslo s %@ se nedávno změnilo. Před novým odesláním zvažte jeho ověření.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Načítání...";
+"SHARE_EXTENSION_LOADING" = "Načítání…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Otevřete Signal pro registraci.";
@@ -5999,7 +5996,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Nahrávání %1$@ z %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Nahrávání...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Nahrávání…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Přílohu nelze připravit";
@@ -6065,7 +6062,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Instalované nálepky";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Načítání...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Načítání…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Nejsou instalovány žádné nálepky";
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Skupinu nebylo možné aktualizovat. Zkontrolujte své připojení a zkuste to znovu.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal bude brzy vyžadovat iOS 11 nebo novější. Proveďte prosím aktualizaci v aplikaci Nastavení >> Obecné >> Aktualizace softwaru.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Upgradujte iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Uživatelská jména na Signal jsou nepovinná. Pokud se rozhodnete vytvořit uživatelské jméno, ostatní uživatelé Signal vás budou moci najít podle tohoto uživatelského jména a kontaktovat vás, aniž by znali vaše telefonní číslo.";

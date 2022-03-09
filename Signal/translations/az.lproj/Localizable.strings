@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Kameraya qayıt";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Media kitabxanasına qayıt";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Dostunuzu güvənli olmayan SMS ilə dəvət edirsiniz?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Qrup yenilənə bilmədi. İnternet bağlantınızı yoxlayıb yenidən sınayın.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal tezliklə iOS 11 və ya daha yuxarı versiya tələb edəcək. Zəhmət olmasa Tənzimləmələr >> Ümumi >> Proqram təminatı yeniləməsi bölməsindən yüksəldin.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS-u yüksəlt";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal-dakı istifadəçi adları ixtiyaridir. Əgər bir istifadəçi adı yaratmağı seçsəniz, digər Signal istifadəçiləri bu istifadəçi adı ilə sizi tapa biləcək və telefon nömrənizi bilmədən sizinlə əlaqə saxlaya biləcək.";

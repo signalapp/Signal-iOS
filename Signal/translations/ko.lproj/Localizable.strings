@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "카메라로 돌아가기";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "미디어 라이브러리로 돌아가기";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "불안전한 SMS를 통해 친구를 초대하겠습니까?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "그룹을 업데이트할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "향후 Signal은 iOS 11 혹은 이상 버전에서만 작동합니다. 설정 앱 >> 일반 >> 소프트웨어 업데이트에서 업그레이드할 수 있습니다.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS 업그레이드";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal 사용자 이름은 선택 사항입니다. 사용자 이름을 만든다면 다른 Signal 사용자들이 사용자 이름으로 나를 찾을 수 있으며, 전화번호를 몰라도 연락할 수 있습니다.";

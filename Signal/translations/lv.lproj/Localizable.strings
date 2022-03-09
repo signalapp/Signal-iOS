@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Atgriezties uz kameru";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Atgriezties multivides bibliotēkā";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Vai uzaicināt draugu, izmantojot nedrošu SMS?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupu nevarēja atjaunināt. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Lietotnei Signal drīz būs nepieciešama OS iOS 11 vai jaunāka. Jauniniet sadaļā Settings >> General >> Software Update (Iestatījumi > Vispārīgi > Programmatūras atjaunināšana).";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Jauniniet iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Lietotājvārdi lietotnē Signal nav obligāti. Ja izvēlaties izveidot lietotājvārdu, citi Signal lietotāji jūs varēs atrast ar šo lietotājvārdu un sazināties ar jums, nezinot jūsu tālruņa numuru.";

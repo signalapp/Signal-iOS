@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Nazaj na kamero";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Nazaj v zbirko posnetkov";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Povabim prijatelja preko nezaščitenega sporočila SMS?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Aplikacija Signal bo za svoje delovanje v kratkem potrebovala operacijski sistem iOS 11 ali več. Sistem lahko nadgradite v aplikaciji Nastavitve >> Splošno >> Nadgradnja programske opreme.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Nadrgradnja iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Uporabniška imena Signal so neobvezna. Če si boste ustvarili uporabniško ime Signal, vas bodo drugi/e uporabniki/ce lahko našli/e po njem in vam pošiljali/e sporočila, ne da bi poznali/e vašo telefonsko številko.";

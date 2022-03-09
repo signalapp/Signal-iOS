@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "العودة إلى الكاميرا";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "العودة إلى مكتبة الوسائط";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "دعوة صديق عبر رسالة SMS غير الآمنة؟";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لا يُمكن تحديث المجموعة. تحقق من اتصالك بالإنترنت ثمَّ حاول مرة أُخرى.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "قريبًا سيطلب تطبيق Signal نظام iOS 11 أو أحدث. يُرجى الترقية من تطبيق الإعدادات >> عام >> تحديث البرامج.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "ترقية iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "اسماء المُستخدمين على Signal اختيارية. إذا اخترت إنشاء اسم مُستخدم، سيتمكن مُستخدمو Signal الآخرون من العُثور عليك بواسطة اسم المُستخدم هذا والاتصال بك دون معرفة رقم الهاتف الخاص بك.";

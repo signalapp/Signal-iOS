@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "كامېراغا قايت";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "ۋاسىتە ئامبىرىغا قايت";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "شىفىرلانمىغان تېكىست ئۇچۇر ئارقىلىق دوستىڭىزنى تەكلىپ قىلامسىز؟";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "گۇرۇپپىنى يۇقىرىلاتقىلى بولمىدى. ئىنتېرنېت ئۇلىنىشڭىزنى تەكشۈرۈپ قايتا سىناڭ.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "‫iOS پات ئارىدا iOS 11 ياكى ئۇنىڭدىن يۇقىرى نەشرىنى تەلەپ قىلىدۇ. تەڭشەك >> ئادەتتىكى >> يۇمشاق دېتال يېڭىلاشدىن يۇقىرىلىتىڭ.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS نى يۇقىرىلىتىڭ";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "ئىشلەتكۈچى ئىسمى Signal دىكى تاللانما ئىقتىدار. ئەگەر ئىشلەتكۈچى ئىسمى قۇرۇشنى تاللىسىڭىز، باشقا Signal ئىشلەتكۈچىلىرى مۇشۇ ئىسىم بىلەن سىزنى ئىزدەپ ئالاقە قىلالايدۇ ھەمدە تېلېفون نومۇرىڭىزنى بىلىش ھاجەتسىز.";

@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Tagasi kaamerasse";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Tagasi meediafailidesse";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Kas kutsuda sõber ebaturvalise SMS abil?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupi uuendamine ei õnnestunud. Kontrolli internetiühendust ja proovi uuesti.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal nõuab varsti iOS 11 või uuemat. Palun uuenda operatsioonisüsteemi, avades Settings rakendus >> General >> Software Update.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Uuenda iOSi";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Kasutajanimed on Signalis vabatahtlikud. Kui otsustad endale Signalis kasutajanime luua, siis saavad teised Signali kasutajad leida sind kasutajanime järgi ja võtta ühendust sinu telefoninumbrit teadmata.";

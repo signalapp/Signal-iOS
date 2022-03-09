@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "返回相機";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "返回媒體庫";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "用唔安全嘅SMS去邀請人？";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "無法升級群組。請檢查您的網絡連線，然後重試。";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal 很快將要求 iOS 11 或更新版本。請前往「設定 >> 一般 >> 軟件更新」進行更新。";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "升級 iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal 上的使用者名稱為選用。若您選擇建立使用者名稱，其他 Signal 使用者將可使用此使用者名稱找到您並與您聯絡，而不需知道您的電話號碼。";

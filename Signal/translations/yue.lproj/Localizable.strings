@@ -980,7 +980,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "刪除";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "資訊";
+"CONTEXT_MENU_DETAILS" = "詳細";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "轉寄";
@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "返返去相機";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "返返去媒體庫";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Invite a friend via insecure SMS?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "個谷更新唔到。請檢查您嘅連線，然後再試下啦。";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal 即將需要 iOS 11 或以上才能運作。請到「設定」app >> [一般] >> [軟件升級] 度進行升級。";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "升級 iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "喺 Signal 唔係事必要整個使用者名稱嘅。若果您揀去整個使用者名稱嘅話，咁其他 Signal 使用者就唔使知您個電話冧把，都可以用您呢個使用者名稱去搵到您、同您聯絡囉。";

@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "ကင်မရာသို့ ပြန်သွားမယ်";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "မီဒီယာစာကြည့်တိုက်သို့ ပြန်သွားမယ်";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "သူငယ်ချင်းကို မလုံခြုံသည့် SMS မှ ဖိတ်မလား?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "အဖွဲ့ကို အပ်ဒိတ် မလုပ်နိုင်ပါ။ သင်၏ အင်တာနက်လိုင်းကို စစ်၍ ပြန်စမ်းကြည့်ပေးပါ။";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "မကြာမီ Signal သည် iOS ၁၁ သို့မဟုတ် နောက်ထွက်ဗားရှင်းတစ်ခု လိုအပ်ပါမည်။ အပြင်အဆင်အပ္ပလီကေးရှင်း (Settings) >> ယေဘူယျ (General)  >> ဆော့ဝဲအပ်ဒိတ် (Software Update) သို့သွား၍ အဆင့်မြှင့်ပေးပါ။";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS ကို မြှင့်ပါ";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal ပေါ်တွင် သုံးသူအမည်များ ဖြည့်စရာမလိုပါ။ သုံးသူအမည် သင်ဖြည့်ခဲ့လျှင် အခြား Signal သုံးသူများသည် သင့်အား ၎င်းအမည်သုံး၍ ရှာဖွေနိုင်ပါသည် သို့မဟုတ် သင့် ဖုန်းနံပါတ် မသိရှိဘဲ သင့်ကို ဆက်သွယ်နိုင်ပါသည်။";

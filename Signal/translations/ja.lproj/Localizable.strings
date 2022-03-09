@@ -1298,7 +1298,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "彩度";
 
 /* Label for the 'solid color' mode in the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "無地";
+"CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "単色";
 
 /* Title for the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "カスタム色";
@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "カメラに戻る";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "メディアライブラリに戻る";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "安全ではないSMSで友達を招待しますか？";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "グループを更新できませんでした。インターネット接続を確認して再度試してください。";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "SignalはもうすぐiOS 11以上のみの対応になります。設定 >> 一般 >> ソフトウェアアップデートからアップグレードしてください。";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOSのアップグレード";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signalのユーザ名作成は任意です。ユーザ名を作成すると、他のSignalユーザはあなたの電話番号を知らなくても、あなたにこのユーザ名で連絡できるようになります。";

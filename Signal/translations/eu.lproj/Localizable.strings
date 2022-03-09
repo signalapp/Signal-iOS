@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Bueltatu Kamerara";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Medioen Liburutegira Bueltatu";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Lagunak gonbidatu SMS ez-seguruaren bidez?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Taldea ezin izan da eguneratu. Egiaztatu zure interneterako konexioa eta saia zaitez berriro.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal-ek laster iOS 11 edo gehiago beharko du. Mesedez ezarpenak aplikazioan eguneratu  >>  Orokorra  >> Software Eguneratu.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Eguneratu iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Erabiltzaile izenak aukerazkoak dira Signal-en. Erabiltzaile bat sortzea erabakitzen baduzu, beste erabiltzaile batzuek topatu ahal izango zaituzte izen hau erabiliz eta zurekin harremanetan jarri ahal izango dira zure telefono zenbakia jakin gabe.";

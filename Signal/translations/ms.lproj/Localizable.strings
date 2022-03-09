@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Kembali ke Kamera";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Kembali ke Perpustakaan Media";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Jemput rakan melalui SMS tidak selamat?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Kumpulan tidak dapat dikemas kini. Periksa sambungan Internet anda dan cuba lagi.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal tidak lama lagi akan memerlukan iOS 11 atau lebih baru. Sila naik taraf falam aplikasi Tetapan >> Umum >> Naik Taraf Perisian.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Naik taraf iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Nama pengguna pada Signal adalah pilihan. Sekiranya anda memilih untuk mencipta pengguna nama , pengguna lain di Signal akan dapat mencari nama pengguna ini dan menghubungi anda tanpa mengetahui nombor telefon anda.";

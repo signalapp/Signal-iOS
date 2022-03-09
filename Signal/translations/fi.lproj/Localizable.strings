@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Palaa kameraan";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Palaa mediakirjastoon";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Kutsutaanko kaveri suojaamattomalla tekstiviestillä?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Ryhmän päivitys ei onnistunut. Tarkista verkkoyhteytesi ja yritä uudelleen.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Pian Signal vaatii vähintään iOS 11 -versiota. Päivitä käyttöjärjestelmäsi valitsemalla kotinäkymästä Asetukset >> Yleiset >> Ohjelmistopäivitys.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Päivitä iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signalin käyttäjätunnukset ovat valinnaisia. Jos päätät luoda käyttäjätunnuksen, muut Signalin käyttäjät voivat löytää sinut tällä käyttäjätunnuksella ja ottaa sinuun yhteyttä tietämättään puhelinnumeroasi.";

@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "بازگشت به دوربین";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "بازگشت به کتابخانهٔ رسانه‌ها";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "دعوت یک دوست با پیامک غیر امن؟";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "گروه نتوانست به‌روزرسانی شود. اتصال اینترنت خود را بررسی و دوباره تلاش کنید.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "سیگنال به زودی به iOS11 یا بالاتر نیاز خواهد داشت. لطفا در قسمت Settings app >> General >> Software Update اقدام به بروز رسانی کنید.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "به‌روزرسانی iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "نامهای کاربری در سیگنال اختیاری هستند. اگر تصمیم به ایجاد یک نام کاربری دارید ، سایر کاربران سیگنال قادر خواهند بود شما را با این نام کاربری پیدا کنند و بدون دانستن شماره تلفن شما با شما تماس بگیرند.";

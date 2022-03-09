@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Bumalik sa Camera";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Bumalik sa Media Library";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Imbitahan ang kaibigan sa pamamagitan ng hindi ligtas na SMS?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Malapit nang kakailanganin ng Signal ang iOS 11 o mas huli pa. Paki-upgrade sa Settings app >> General >> Software Update.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "I-upgrade ang iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Ang mga username sa Signal ay opsyonal. Kung piliin mong lumikha ng username ang ibang gumagamit ng Signal ay magagawang hanapin ka gamit ang username na ito at kontakin ka kahit hindi alam ang numero ng iyong telepono.";

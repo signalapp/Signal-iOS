@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Voltar para a Câmera";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Voltar para a Midiateca";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Convidar via SMS, que não é seguro?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "O grupo não pôde ser atualizado. Verifique sua conexão com a internet e tente novamente.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "O Signal em breve vai requerer iOS 11 ou versão mais recente. Por favor, faça a atualização no app Ajustes >> Geral >> Atualizar Software.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Atualize o iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Nomes de usuário são opcionais no Signal. Se você decidir criar um nome de usuário, outros usuários poderão usá-lo para encontrar você e entrar em contato, mesmo que não saibam o seu número de telefone.";
