@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeDisappearingMessagesUpdate,
     TSInfoMessageTypeScreenshotNotification,
     TSInfoMessageTypeMediaSavedNotification,
-    TSInfoMessageTypeMessageRequestAccepted
+    TSInfoMessageTypeMessageRequestAccepted = 99
 };
 
 @property (atomic, readonly) TSInfoMessageType messageType;
