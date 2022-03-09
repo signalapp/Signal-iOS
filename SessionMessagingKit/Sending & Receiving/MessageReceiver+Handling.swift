@@ -213,7 +213,7 @@ extension MessageReceiver {
             // Contacts
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
-                let contact = Contact(sessionID: sessionID)
+                let contact = (Storage.shared.getContact(with: sessionID, using: transaction) ?? Contact(sessionID: sessionID))
                 if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
