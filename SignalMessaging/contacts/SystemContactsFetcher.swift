@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -31,15 +31,26 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
 
     let supportsContactEditing = true
 
-    public static let allowedContactKeys: [CNKeyDescriptor] = [
+    private static let minimalContactKeys: [CNKeyDescriptor] = [
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-        CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
         CNContactPhoneNumbersKey as CNKeyDescriptor,
         CNContactEmailAddressesKey as CNKeyDescriptor,
-        CNContactPostalAddressesKey as CNKeyDescriptor,
+        CNContactPostalAddressesKey as CNKeyDescriptor
+    ]
+
+    private static let fullContactKeys: [CNKeyDescriptor] = ContactsFrameworkContactStoreAdaptee.minimalContactKeys + [
+        CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
         CNContactViewController.descriptorForRequiredKeys(),
         CNContactVCardSerialization.descriptorForRequiredKeys()
     ]
+
+    public static var allowedContactKeys: [CNKeyDescriptor] {
+        if CurrentAppContext().isNSE {
+            return minimalContactKeys
+        } else {
+            return fullContactKeys
+        }
+    }
 
     var authorizationStatus: ContactStoreAuthorizationStatus {
         let authorizationStatus = CNContactStore.authorizationStatus(for: CNEntityType.contacts)
