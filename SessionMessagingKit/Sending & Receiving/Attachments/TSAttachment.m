@@ -3,6 +3,14 @@
 #import "TSAttachmentPointer.h"
 #import <SignalCoreKit/NSString+OWS.h>
 
+#if TARGET_OS_IPHONE
+#import <MobileCoreServices/MobileCoreServices.h>
+
+#else
+#import <CoreServices/CoreServices.h>
+
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 NSUInteger const TSAttachmentSchemaVersion = 4;
@@ -177,7 +185,7 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
         if (self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0) {
             attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
-            return [NSString stringWithFormat:@"🎤 %@", attachmentString];
+            return [NSString stringWithFormat:@"🎙️ %@", attachmentString];
         }
     }
 
@@ -227,6 +235,14 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (BOOL)isVisualMedia
 {
     return [MIMETypeUtil isVisualMedia:self.contentType];
+}
+
+- (BOOL)isText {
+    return [MIMETypeUtil isText:self.contentType];
+}
+
+- (BOOL)isMicrosoftDoc {
+    return [MIMETypeUtil isMicrosoftDoc:self.contentType];
 }
 
 - (BOOL)isOversizeText

@@ -4,18 +4,21 @@ public final class SearchBar : UISearchBar {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        setUpStyle()
+        setUpSessionStyle()
     }
     
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setUpStyle()
+        setUpSessionStyle()
     }
-    
-    private func setUpStyle() {
+}
+
+public extension UISearchBar {
+
+    func setUpSessionStyle() {
         searchBarStyle = .minimal // Hide the border around the search bar
         barStyle = .black // Use Apple's black design as a base
-        tintColor = Colors.accent // The cursor color
+        tintColor = Colors.text // The cursor color
         let searchImage = #imageLiteral(resourceName: "searchbar_search").withTint(Colors.searchBarPlaceholder)!
         setImage(searchImage, for: .search, state: .normal)
         let clearImage = #imageLiteral(resourceName: "searchbar_clear").withTint(Colors.searchBarPlaceholder)!

@@ -112,6 +112,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
             return NSLocalizedString(@"GROUP_YOU_LEFT", @"");
         case TSInfoMessageTypeGroupUpdated:
             return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", @"");
+        case TSInfoMessageTypeMessageRequestAccepted:
+            return NSLocalizedString(@"MESSAGE_REQUESTS_ACCEPTED", @"");
         default:
             break;
     }
@@ -132,7 +134,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
+           trySendReadReceipt:(BOOL)trySendReadReceipt
                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (_read) {
@@ -142,7 +144,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     _read = YES;
     [self saveWithTransaction:transaction];
 
-    // Ignore sendReadReceipt, it doesn't apply to info messages.
+    // Ignore trySendReadReceipt, it doesn't apply to info messages.
 }
 
 @end

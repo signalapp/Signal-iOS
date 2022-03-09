@@ -295,13 +295,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 }
 
-- (void)signalAccountsDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:YES];
-}
-
 - (void)profileWhitelistDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
@@ -334,7 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary];
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
 
     [self createNewMessageMapping];
@@ -490,7 +483,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.collapseCutoffDate = [NSDate new];
 }
 
-- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
+- (void)ensureDynamicInteractionsAndUpdateIfNecessary
 {
     OWSAssertIsOnMainThread();
 
@@ -508,43 +501,12 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL didChange = ![NSObject isNullableObject:self.dynamicInteractions equalTo:dynamicInteractions];
     self.dynamicInteractions = dynamicInteractions;
 
-    if (didChange && updateIfNecessary) {
+    if (didChange) {
         if (![self reloadViewItems]) {
             OWSFailDebug(@"Failed to reload view items.");
         }
 
         [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate];
-    }
-}
-
-- (void)clearUnreadMessagesIndicator
-{
-    OWSAssertIsOnMainThread();
-
-    // TODO: Remove by making unread indicator a view model concern.
-    id<ConversationViewItem> _Nullable oldIndicatorItem = [self.viewState unreadIndicatorViewItem];
-    if (oldIndicatorItem) {
-        // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
-        // to be cleared.
-        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [oldIndicatorItem.interaction touchWithTransaction:transaction];
-        }];
-    }
-
-    if (self.hasClearedUnreadMessagesIndicator) {
-        // ensureDynamicInteractionsForThread is somewhat expensive
-        // so we don't want to call it unnecessarily.
-        return;
-    }
-
-    // Once we've cleared the unread messages indicator,
-    // make sure we don't show it again.
-    self.hasClearedUnreadMessagesIndicator = YES;
-
-    if (self.dynamicInteractions.unreadIndicator) {
-        // If we've just cleared the "unread messages" indicator,
-        // update the dynamic interactions.
-        [self ensureDynamicInteractionsAndUpdateIfNecessary:YES];
     }
 }
 
@@ -984,7 +946,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary];
 
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1423,7 +1385,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary];
 
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");
@@ -1447,7 +1409,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.collapseCutoffDate = [NSDate new];
 
-    [self ensureDynamicInteractionsAndUpdateIfNecessary:NO];
+    [self ensureDynamicInteractionsAndUpdateIfNecessary];
 
     if (![self reloadViewItems]) {
         OWSFailDebug(@"failed to reload view items in resetMapping.");

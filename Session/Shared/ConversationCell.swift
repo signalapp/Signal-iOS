@@ -118,7 +118,8 @@ final class ConversationCell : UITableViewCell {
     }()
     
     // MARK: Settings
-    private static let unreadCountViewSize: CGFloat = 20
+    
+    public static let unreadCountViewSize: CGFloat = 20
     private static let statusIndicatorSize: CGFloat = 14
     
     // MARK: Initialization
@@ -172,6 +173,7 @@ final class ConversationCell : UITableViewCell {
         labelContainerView.axis = .vertical
         labelContainerView.alignment = .leading
         labelContainerView.spacing = 6
+        labelContainerView.isUserInteractionEnabled = false
         // Main stack view
         let stackView = UIStackView(arrangedSubviews: [ accentLineView, profilePictureView, labelContainerView ])
         stackView.axis = .horizontal
@@ -219,10 +221,11 @@ final class ConversationCell : UITableViewCell {
         timestampLabel.isHidden = true
     }
     
-    public func configure(messageDate: Date?, snippet: String?, searchText: String, message: TSMessage? = nil) {
+    public func configure(snippet: String?, searchText: String, message: TSMessage? = nil) {
         let normalizedSearchText = searchText.lowercased()
-        if let messageDate = messageDate, let snippet = snippet {
+        if let messageTimestamp = message?.timestamp, let snippet = snippet {
             // Message
+            let messageDate = NSDate.ows_date(withMillisecondsSince1970: messageTimestamp)
             displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
             timestampLabel.isHidden = false
             timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
@@ -356,15 +359,20 @@ final class ConversationCell : UITableViewCell {
         if threadViewModel.isGroupThread {
             if threadViewModel.name.isEmpty {
                 return "Unknown Group"
-            } else {
+            }
+            else {
                 return threadViewModel.name
             }
-        } else {
+        }
+        else {
             if threadViewModel.threadRecord.isNoteToSelf() {
                 return NSLocalizedString("NOTE_TO_SELF", comment: "")
-            } else {
-                let hexEncodedPublicKey = threadViewModel.contactSessionID!
-                return Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ?? hexEncodedPublicKey
+            }
+            else {
+                let hexEncodedPublicKey: String = threadViewModel.contactSessionID!
+                let displayName: String = (Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ?? hexEncodedPublicKey)
+                let middleTruncatedHexKey: String = "\(hexEncodedPublicKey.prefix(4))...\(hexEncodedPublicKey.suffix(4))"
+                return (displayName == hexEncodedPublicKey ? middleTruncatedHexKey : displayName)
             }
         }
     }

@@ -277,7 +277,7 @@ CGFloat kIconViewLength = 24;
     contents.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
     BOOL isNoteToSelf = self.thread.isNoteToSelf;
-
+    
     __weak OWSConversationSettingsViewController *weakSelf = self;
 
     OWSTableSection *section = [OWSTableSection new];
@@ -332,7 +332,7 @@ CGFloat kIconViewLength = 24;
     } actionBlock:^{
         [weakSelf tappedConversationSearch];
     }]];
-
+    
     // Disappearing messages
     if (![self isOpenGroup]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -430,7 +430,7 @@ CGFloat kIconViewLength = 24;
                 [slider autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
                 [slider autoPinTrailingToSuperviewMargin];
                 [slider autoPinBottomToSuperviewMargin];
-
+                
                 cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
                 cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(

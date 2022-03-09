@@ -139,9 +139,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         setUpNavBarStyle()
         setNavBarTitle(NSLocalizedString("vc_settings_title", comment: ""))
         // Navigation bar buttons
-        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
-        backButton.tintColor = Colors.text
-        navigationItem.backBarButtonItem = backButton
         updateNavigationBarButtons()
         // Profile picture view
         let profilePictureTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditProfilePictureUI))
@@ -254,8 +251,6 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         pathStatusView.pin(.leading, to: .trailing, of: pathButton.titleLabel!, withInset: Values.smallSpacing)
         pathStatusView.autoVCenterInSuperview()
         
-        pathButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: Values.smallSpacing)
-        
         return [
             getSeparator(),
             pathButton,
@@ -263,6 +258,8 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
             getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
+            getSeparator(),
+            getSettingButton(withTitle: NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: ""), color: Colors.text, action: #selector(showMessageRequests)),
             getSeparator(),
             getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)),
             getSeparator(),
@@ -507,6 +504,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func showNotificationSettings() {
         let notificationSettingsVC = NotificationSettingsViewController()
         navigationController!.pushViewController(notificationSettingsVC, animated: true)
+    }
+    
+    @objc private func showMessageRequests() {
+        let viewController: MessageRequestsViewController = MessageRequestsViewController()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     @objc private func showSeed() {

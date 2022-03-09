@@ -226,6 +226,9 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 - (void)setMainAppBadgeNumber:(NSInteger)value
 {
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:value];
+    NSUserDefaults *sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.loki-project.loki-messenger"];
+    [sharedUserDefaults setInteger:value forKey:@"currentBadgeNumber"];
+    [sharedUserDefaults synchronize];
 }
 
 - (nullable UIViewController *)frontmostViewController

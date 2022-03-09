@@ -46,6 +46,7 @@ class BaseVC : UIViewController {
 
     internal func setUpNavBarStyle() {
         guard let navigationBar = navigationController?.navigationBar else { return }
+        
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
@@ -59,6 +60,11 @@ class BaseVC : UIViewController {
             navigationBar.isTranslucent = false
             navigationBar.barTintColor = Colors.navigationBarBackground
         }
+        
+        // Back button (to appear on pushed screen)
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        backButton.tintColor = Colors.text
+        navigationItem.backBarButtonItem = backButton
     }
 
     internal func setNavBarTitle(_ title: String, customFontSize: CGFloat? = nil) {
@@ -78,7 +84,7 @@ class BaseVC : UIViewController {
     
     internal func setUpNavBarSessionHeading() {
         let headingImageView = UIImageView()
-        headingImageView.tintColor = Colors.sessionHeading
+        headingImageView.tintColor = Colors.text
         headingImageView.image = UIImage(named: "SessionHeading")?.withRenderingMode(.alwaysTemplate)
         headingImageView.contentMode = .scaleAspectFit
         headingImageView.set(.width, to: 150)

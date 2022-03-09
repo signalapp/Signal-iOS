@@ -3,6 +3,16 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
     private weak var delegate: ExpandingAttachmentsButtonDelegate?
     private var isExpanded = false { didSet { expandOrCollapse() } }
     
+    override var isUserInteractionEnabled: Bool {
+        didSet {
+            gifButton.isUserInteractionEnabled = isUserInteractionEnabled
+            documentButton.isUserInteractionEnabled = isUserInteractionEnabled
+            libraryButton.isUserInteractionEnabled = isUserInteractionEnabled
+            cameraButton.isUserInteractionEnabled = isUserInteractionEnabled
+            mainButton.isUserInteractionEnabled = isUserInteractionEnabled
+        }
+    }
+    
     // MARK: Constraints
     private lazy var gifButtonContainerBottomConstraint = gifButtonContainer.pin(.bottom, to: .bottom, of: self)
     private lazy var documentButtonContainerBottomConstraint = documentButtonContainer.pin(.bottom, to: .bottom, of: self)
@@ -134,7 +144,8 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
 }
 
 // MARK: Delegate
-protocol ExpandingAttachmentsButtonDelegate : class {
+
+protocol ExpandingAttachmentsButtonDelegate: AnyObject {
 
     func handleGIFButtonTapped()
     func handleDocumentButtonTapped()

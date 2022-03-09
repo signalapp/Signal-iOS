@@ -194,7 +194,7 @@ static NSTimeInterval launchStartedAt;
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
 
-    LKAppMode appMode = [self getCurrentAppMode];
+    LKAppMode appMode = [LKAppModeManager getAppModeOrSystemDefault];
     [self adaptAppMode:appMode];
 
     if (@available(iOS 11, *)) {
@@ -245,7 +245,7 @@ static NSTimeInterval launchStartedAt;
 
     [self ensureRootViewController];
 
-    LKAppMode appMode = [self getCurrentAppMode];
+    LKAppMode appMode = [LKAppModeManager getAppModeOrSystemDefault];
     [self adaptAppMode:appMode];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -584,12 +584,6 @@ static NSTimeInterval launchStartedAt;
     [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 
     OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
-    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
-    if (isUsingFullAPNs) {
-        __unused AnyPromise *promise = [LKPushNotificationAPI registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
-    } else {
-        __unused AnyPromise *promise = [LKPushNotificationAPI unregisterToken:deviceToken];
-    }
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -734,12 +728,6 @@ static NSTimeInterval launchStartedAt;
     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.appModeChanged object:nil];
 }
 
-- (LKAppMode)getCurrentAppMode
-{
-    LKAppMode appMode = [self getAppModeOrSystemDefault];
-    return appMode;
-}
-
 - (void)setCurrentAppMode:(LKAppMode)appMode
 {
     [NSUserDefaults.standardUserDefaults setInteger:appMode forKey:@"appMode"];
@@ -749,7 +737,7 @@ static NSTimeInterval launchStartedAt;
 - (void)setAppModeToSystemDefault
 {
     [NSUserDefaults.standardUserDefaults removeObjectForKey:@"appMode"];
-    LKAppMode appMode = [self getCurrentAppMode];
+    LKAppMode appMode = [LKAppModeManager getAppModeOrSystemDefault];
     [self adaptAppMode:appMode];
 }
 

@@ -16,9 +16,11 @@ extension MessageReceiver {
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
         case let message as UnsendRequest: handleUnsendRequest(message, using: transaction)
+        case let message as MessageRequestResponse: handleMessageRequestResponse(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
+        
         var isMainAppAndActive = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
             isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
@@ -188,15 +190,24 @@ extension MessageReceiver {
         SNLog("Configuration message received.")
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let isInitialSync: Bool = (!UserDefaults.standard[.hasSyncedInitialConfiguration])
+        let messageSentTimestamp: TimeInterval = TimeInterval((message.sentTimestamp ?? 0) / 1000)   // `sentTimestamp` is in ms
+        let lastConfigTimestamp: TimeInterval = (UserDefaults.standard[.lastConfigurationSync]?.timeIntervalSince1970 ?? Date(timeIntervalSince1970: 0).timeIntervalSince1970)
+        
         // Profile
         var userProfileKey: OWSAES256Key? = nil
         if let profileKey = message.profileKey { userProfileKey = OWSAES256Key(data: profileKey) }
         updateProfileIfNeeded(publicKey: userPublicKey, name: message.displayName, profilePictureURL: message.profilePictureURL,
             profileKey: userProfileKey, sentTimestamp: message.sentTimestamp!, transaction: transaction)
-        // Initial configuration sync
-        if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
-            UserDefaults.standard[.hasSyncedInitialConfiguration] = true
-            NotificationCenter.default.post(name: .initialConfigurationMessageReceived, object: nil)
+        
+        if isInitialSync || messageSentTimestamp > lastConfigTimestamp {
+            if isInitialSync {
+                UserDefaults.standard[.hasSyncedInitialConfiguration] = true
+                NotificationCenter.default.post(name: .initialConfigurationMessageReceived, object: nil)
+            }
+            
+            UserDefaults.standard[.lastConfigurationSync] = Date(timeIntervalSince1970: messageSentTimestamp)
+            
             // Contacts
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
@@ -204,19 +215,64 @@ extension MessageReceiver {
                 if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
+                
+                // Note: We only update these values if the proto actually has values for them (this is to
+                // prevent an edge case where an old client could override the values with default values
+                // since they aren't included)
+                if contactInfo.hasIsApproved { contact.isApproved = contactInfo.isApproved }
+                if contactInfo.hasIsBlocked { contact.isBlocked = contactInfo.isBlocked }
+                if contactInfo.hasDidApproveMe { contact.didApproveMe = contactInfo.didApproveMe }
+                
                 Storage.shared.setContact(contact, using: transaction)
-                let thread = TSContactThread.getOrCreateThread(withContactSessionID: sessionID, transaction: transaction)
-                thread.shouldBeVisible = true
-                thread.save(with: transaction)
+                
+                // If the contact is blocked
+                if contactInfo.hasIsBlocked && contactInfo.isBlocked {
+                    // If this message changed them to the blocked state and there is an existing thread
+                    // associated with them that is a message request thread then delete it (assume
+                    // that the current user had deleted that message request)
+                    if
+                        contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID),
+                        let thread: TSContactThread = TSContactThread.getWithContactSessionID(sessionID, transaction: transaction),
+                        thread.isMessageRequest(using: transaction)
+                    {
+                        thread.removeAllThreadInteractions(with: transaction)
+                        thread.remove(with: transaction)
+                    }
+                }
             }
+            
+            // FIXME: 'OWSBlockingManager' manages it's own dbConnection and transactions so we have to dispatch this to prevent deadlocks
+            DispatchQueue.global().async {
+                for contactInfo in message.contacts {
+                    let sessionID = contactInfo.publicKey!
+                    
+                    if contactInfo.hasIsBlocked && contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID) {
+                        if contactInfo.isBlocked {
+                            OWSBlockingManager.shared().addBlockedPhoneNumber(sessionID)
+                        }
+                        else {
+                            OWSBlockingManager.shared().removeBlockedPhoneNumber(sessionID)
+                        }
+                    }
+                }
+            }
+            
             // Closed groups
-            let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
-            for closedGroup in message.closedGroups {
-                guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
-                handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
-                    members: [String](closedGroup.members), admins: [String](closedGroup.admins), expirationTimer: closedGroup.expirationTimer,
-                    messageSentTimestamp: message.sentTimestamp!, using: transaction)
+            //
+            // Note: Only want to add these for initial sync to avoid re-adding closed groups the user
+            // intentionally left (any closed groups joined since the first processed sync message should
+            // get added via the 'handleNewClosedGroup' method anyway as they will have come through in the
+            // past two weeks)
+            if isInitialSync {
+                let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
+                for closedGroup in message.closedGroups {
+                    guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
+                    handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
+                        members: [String](closedGroup.members), admins: [String](closedGroup.admins), expirationTimer: closedGroup.expirationTimer,
+                        messageSentTimestamp: message.sentTimestamp!, using: transaction)
+                }
             }
+            
             // Open groups
             for openGroupURL in message.openGroups {
                 if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: openGroupURL) {
@@ -243,7 +299,7 @@ extension MessageReceiver {
             }
             if let messageToDelete = localMessage {
                 if let incomingMessage = messageToDelete as? TSIncomingMessage {
-                    incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                    incomingMessage.markAsReadNow(withTrySendReadReceipt: false, transaction: transaction)
                     if let notificationIdentifier = incomingMessage.notificationIdentifier, !notificationIdentifier.isEmpty {
                         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notificationIdentifier])
                         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
@@ -337,10 +393,26 @@ extension MessageReceiver {
         if let tsOutgoingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSOutgoingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
             // Mark previous messages as read if there is a sync message
-            OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: tsOutgoingMessage.sortId, thread: thread)
+            OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: tsOutgoingMessage.sortId, thread: thread, trySendReadReceipt: true)
         }
+        
+        // Update the contact's approval status of the current user if needed (if we are getting messages from
+        // them outside of a group then we can assume they have approved the current user)
+        //
+        // Note: This is to resolve a rare edge-case where a conversation was started with a user on an old
+        // version of the app and their message request approval state was set via a migration rather than
+        // by using the approval process
+        if !isGroup, let senderSessionId: String = message.sender {
+            updateContactApprovalStatusIfNeeded(
+                senderSessionId: senderSessionId,
+                threadId: message.threadID,
+                forceConfigSync: false,
+                using: transaction
+            )
+        }
+        
         // Notify the user if needed
-        guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
+        guard let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
         // Use the same identifier for notifications when in backgroud polling to prevent spam
         let notificationIdentifier = isBackgroundPoll ? thread.uniqueId : UUID().uuidString
@@ -404,7 +476,7 @@ extension MessageReceiver {
     
     
     // MARK: - Closed Groups
-    private static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
+    public static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
         switch message.kind! {
         case .new: handleNewClosedGroup(message, using: transaction)
         case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)
@@ -427,10 +499,26 @@ extension MessageReceiver {
 
     private static func handleNewClosedGroup(groupPublicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: [String], admins: [String], expirationTimer: UInt32, messageSentTimestamp: UInt64, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        
+        // With new closed groups we only want to create them if the admin creating the closed group is an
+        // approved contact (to prevent spam via closed groups getting around message requests if users are
+        // on old or modified clients)
+        var hasApprovedAdmin: Bool = false
+        
+        for adminId in admins {
+            if let contact: Contact = Storage.shared.getContact(with: adminId), contact.isApproved {
+                hasApprovedAdmin = true
+                break
+            }
+        }
+        
+        guard hasApprovedAdmin else { return }
+        
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
         let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread: TSGroupThread
+        
         if let t = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) {
             thread = t
             thread.setGroupModel(group, with: transaction)
@@ -439,18 +527,24 @@ extension MessageReceiver {
             if !storage.isClosedGroup(groupPublicKey) {
                 storage.setZombieMembers(for: groupPublicKey, to: [], using: transaction)
             }
-        } else {
+        }
+        else {
             thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
             thread.save(with: transaction)
             // Notify the user
             let infoMessage = TSInfoMessage(timestamp: messageSentTimestamp, in: thread, messageType: .groupCreated)
             infoMessage.save(with: transaction)
         }
+        
         let isExpirationTimerEnabled = (expirationTimer > 0)
         let expirationTimerDuration = (isExpirationTimerEnabled ? expirationTimer : 24 * 60 * 60)
-        let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: isExpirationTimerEnabled,
-            durationSeconds: expirationTimerDuration)
+        let configuration = OWSDisappearingMessagesConfiguration(
+            threadId: thread.uniqueId!,
+            enabled: isExpirationTimerEnabled,
+            durationSeconds: expirationTimerDuration
+        )
         configuration.save(with: transaction)
+        
         // Add the group to the user's set of public keys to poll for
         Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
         // Store the key pair
@@ -693,5 +787,81 @@ extension MessageReceiver {
         }
         // Perform the update
         update(groupID, thread, group)
+    }
+    
+    // MARK: - Message Requests
+    
+    private static func updateContactApprovalStatusIfNeeded(
+        senderSessionId: String,
+        threadId: String?,
+        forceConfigSync: Bool,
+        using transaction: Any
+    ) {
+        guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else { return }
+        
+        let userPublicKey: String = getUserHexEncodedPublicKey()
+        
+        // If the sender of the message was the current user
+        if senderSessionId == userPublicKey {
+            // Retrieve the contact for the thread the message was sent to (excluding 'NoteToSelf' threads) and if
+            // the contact isn't flagged as approved then do so
+            guard let threadId: String = threadId else { return }
+            guard let thread: TSContactThread = TSContactThread.fetch(uniqueId: threadId, transaction: transaction), !thread.isNoteToSelf() else { return }
+            guard let contact: Contact = Storage.shared.getContact(with: thread.contactSessionID(), using: transaction) else { return }
+            guard !contact.isApproved else { return }
+            
+            contact.isApproved = true
+            Storage.shared.setContact(contact, using: transaction)
+        }
+        else {
+            // The message was sent to the current user so flag their 'didApproveMe' as true (can't send a message to
+            // someone without approving them)
+            guard let contact: Contact = Storage.shared.getContact(with: senderSessionId, using: transaction) else { return }
+            guard !contact.didApproveMe else { return }
+            
+            contact.didApproveMe = true
+            Storage.shared.setContact(contact, using: transaction)
+        }
+        
+        // Force a config sync to ensure all devices know the contact approval state if desired (Note: This logic
+        // should match the behaviour in AppDelegate.forceSyncConfigurationNowIfNeeded())
+        guard forceConfigSync else { return }
+        
+        // Note: We MUST run this async as we need to ensure the database `transaction` has finished before we generate
+        // a new configuration message (otherwise the `contact` will be loaded direct from the database and the
+        // `didApproveMe` value won't have been updated)
+        DispatchQueue.global(qos: .background).async {
+            guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
+                return
+            }
+            
+            let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
+            MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
+        }
+    }
+    
+    public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {
+        let userPublicKey = getUserHexEncodedPublicKey()
+        
+        // Ignore messages which were sent from the current user
+        guard message.sender != userPublicKey else { return }
+        guard let senderId: String = message.sender else { return }
+        
+        // Get the existing thead and notify the user
+        if let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction, let thread: TSContactThread = TSContactThread.getWithContactSessionID(senderId, transaction: transaction) {
+            let infoMessage = TSInfoMessage(
+                timestamp: (message.sentTimestamp ?? NSDate.ows_millisecondTimeStamp()),
+                in: thread,
+                messageType: .messageRequestAccepted
+            )
+            infoMessage.save(with: transaction)
+        }
+        
+        updateContactApprovalStatusIfNeeded(
+            senderSessionId: senderId,
+            threadId: nil,
+            forceConfigSync: true,
+            using: transaction
+        )
     }
 }

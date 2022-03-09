@@ -16,6 +16,7 @@ BOOL IsNoteToSelfEnabled(void);
  */
 @interface TSThread : TSYapDatabaseObject
 
+@property (nonatomic) BOOL hasUnreadMentionMessage;
 @property (nonatomic) BOOL isPinned;
 @property (nonatomic) BOOL shouldBeVisible;
 @property (nonatomic, readonly) NSDate *creationDate;
@@ -47,6 +48,14 @@ BOOL IsNoteToSelfEnabled(void);
 
 - (BOOL)isNoteToSelf;
 
+/**
+ *  Whether the thread is a message request.
+ *
+ *  @return YES if the combination of thread and contact approval means this thread should appear in the message requests section, NO otherwise.
+ */
+- (BOOL)isMessageRequest;
+- (BOOL)isMessageRequestUsingTransaction:(YapDatabaseReadTransaction *)transaction;
+
 #pragma mark Interactions
 
 - (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction usingBlock:(void (^)(TSInteraction *interaction, BOOL *stop))block;
@@ -60,9 +69,6 @@ BOOL IsNoteToSelfEnabled(void);
 
 - (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(unreadMessageCount(transaction:));
-
-- (BOOL)hasUnreadMentionMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
-    NS_SWIFT_NAME(hasUnreadMentionMessage(transaction:));
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
