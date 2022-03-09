@@ -399,6 +399,7 @@ class PhotoCapture: NSObject {
     enum CameraSystem {
         case wide       // Single-camera devices.
         case dual       // W + T
+        case dualWide   // UW + W
         case triple     // UW + W + T
     }
 
@@ -426,8 +427,13 @@ class PhotoCapture: NSObject {
         let avTypes = captureOutput.imageOutput.availableRearDeviceTypes
 
         // No iOS 12 device can have a triple camera system.
-        if #available(iOS 13, *), avTypes.contains(.builtInTripleCamera) {
-            return .triple
+        if #available(iOS 13, *) {
+            if avTypes.contains(.builtInTripleCamera) {
+                return .triple
+            }
+            if avTypes.contains(.builtInUltraWideCamera) {
+                return .dualWide
+            }
         }
         if avTypes.contains(.builtInDualCamera) {
             return .dual
@@ -442,6 +448,12 @@ class PhotoCapture: NSObject {
 
         case .dual:
             return .builtInDualCamera
+
+        case .dualWide:
+            if #available(iOS 13, *) {
+                return .builtInDualWideCamera
+            }
+            fallthrough
 
         case .triple:
             if #available(iOS 13, *) {
@@ -1330,7 +1342,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
             return []
         }
 
-        if let multiCameraDevice = deviceMap[.builtInTripleCamera] ?? deviceMap[.builtInDualCamera] {
+        if let multiCameraDevice = deviceMap[.builtInTripleCamera] ?? deviceMap[.builtInDualWideCamera] ?? deviceMap[.builtInDualCamera] {
             return multiCameraDevice.virtualDeviceSwitchOverVideoZoomFactors.map { CGFloat(truncating: $0) }
         }
         return []
@@ -1385,7 +1397,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
     private func availableDevices(forPosition position: AVCaptureDevice.Position) -> [AVCaptureDevice.DeviceType: AVCaptureDevice] {
         var queryDeviceTypes: [AVCaptureDevice.DeviceType] = [ .builtInWideAngleCamera, .builtInTelephotoCamera, .builtInDualCamera ]
         if #available(iOS 13, *) {
-            queryDeviceTypes.append(contentsOf: [ .builtInUltraWideCamera, .builtInTripleCamera ])
+            queryDeviceTypes.append(contentsOf: [ .builtInUltraWideCamera, .builtInDualWideCamera, .builtInTripleCamera ])
         }
         let session = AVCaptureDevice.DiscoverySession(deviceTypes: queryDeviceTypes, mediaType: .video, position: position)
         let deviceMap = session.devices.reduce(into: [AVCaptureDevice.DeviceType: AVCaptureDevice]()) { deviceMap, device in
