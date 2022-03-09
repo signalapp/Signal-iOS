@@ -526,56 +526,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
      object:nil];
 }
 
-- (nullable NSString *)cachedContactNameForAddress:(SignalServiceAddress *)address
-                                       transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(address);
-    OWSAssertDebug(transaction);
-    
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    NSString *_Nullable phoneNumber = nil;
-    if (signalAccount == nil) {
-        // cachedContactNameForAddress only needs the phone number
-        // if signalAccount is nil.
-        phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
-    }
-    return [self cachedContactNameForAddress:address
-                               signalAccount:signalAccount
-                                 phoneNumber:phoneNumber
-                                 transaction:transaction];
-}
-
-- (nullable NSString *)cachedContactNameForAddress:(SignalServiceAddress *)address
-                                     signalAccount:(nullable SignalAccount *)signalAccount
-                                       phoneNumber:(nullable NSString *)phoneNumber
-                                       transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(address);
-    
-    if (!signalAccount) {
-        // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
-        Contact *_Nullable nonSignalContact = [self contactForPhoneNumber:phoneNumber
-                                                              transaction:transaction];
-        if (!nonSignalContact) {
-            return nil;
-        }
-        return nonSignalContact.fullName;
-    }
-    
-    // Name may be either the nickname or the full name of the contact
-    NSString *fullName = signalAccount.contactPreferredDisplayName;
-    if (fullName.length == 0) {
-        return nil;
-    }
-    
-    NSString *multipleAccountLabelText = signalAccount.multipleAccountLabelText;
-    if (multipleAccountLabelText.length == 0) {
-        return fullName;
-    }
-    
-    return [NSString stringWithFormat:@"%@ (%@)", fullName, multipleAccountLabelText];
-}
-
 - (nullable NSPersonNameComponents *)cachedContactNameComponentsForAddress:(SignalServiceAddress *)address
                                                                transaction:(SDSAnyReadTransaction *)transaction
 {

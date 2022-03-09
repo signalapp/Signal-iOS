@@ -253,4 +253,91 @@ class OWSContactsManagerTest: SignalBaseTest {
             XCTAssertEqual(actual, expected)
         }
     }
+
+    // MARK: - Cached Contact Names
+
+    func testCachedContactNamesWithAccounts() {
+        let addresses = [SignalServiceAddress(uuid: UUID()),
+                         SignalServiceAddress(uuid: UUID())]
+        let accounts = [makeAccount(address: addresses[0], phoneNumber: nil, name: "Alice Aliceson"),
+                        makeAccount(address: addresses[1], phoneNumber: nil, name: "Bob Bobson")]
+        let contactsManager = OWSContactsManager()
+        createRecipientsAndAccounts(Array(zip(addresses, accounts)))
+        read { transaction in
+            let actual = contactsManager.cachedContactNames(for: AnySequence(addresses), transaction: transaction)
+            let expected = ["Alice Aliceson (home)", "Bob Bobson (home)"]
+            XCTAssertEqual(actual, expected)
+        }
+    }
+
+    private func contact(name: String, phoneNumber: String?) -> Contact {
+        Contact(uniqueId: String(name.data(using: .utf8)!.hashValue),
+                cnContactId: nil,
+                firstName: nil,
+                lastName: nil,
+                nickname: nil,
+                fullName: name,
+                userTextPhoneNumbers: [phoneNumber].compactMap { $0 },
+                phoneNumberNameMap: [:],
+                parsedPhoneNumbers: [phoneNumber.map { PhoneNumber(fromE164: $0)! }].compactMap { $0 },
+                emails: [])
+    }
+
+    private func saveContacts(_ contacts: [Contact]) {
+        let phoneNumberStore = SDSKeyValueStore(collection: "ContactsManagerCache.phoneNumberStore")
+        write { transaction in
+            for contact in contacts {
+                let data = try! NSKeyedArchiver.archivedData(withRootObject: contact, requiringSecureCoding: false)
+                phoneNumberStore.setData(data, key: contact.parsedPhoneNumbers[0].toE164(), transaction: transaction)
+            }
+        }
+    }
+
+    func testCachedContactNamesWithNonSignalContacts() {
+        let alicePhoneNumber = "+17035550000"
+        let bobPhoneNumber = "+17035550001"
+        let addresses = [SignalServiceAddress(phoneNumber: alicePhoneNumber),
+                         SignalServiceAddress(phoneNumber: bobPhoneNumber)]
+        saveContacts([contact(name: "Alice Aliceson", phoneNumber: alicePhoneNumber),
+                      contact(name: "Bob Bobson", phoneNumber: bobPhoneNumber)])
+        read { transaction in
+            let contactsManager = OWSContactsManager()
+            let actual = contactsManager.cachedContactNames(for: AnySequence(addresses), transaction: transaction)
+            let expected = ["Alice Aliceson", "Bob Bobson"]
+            XCTAssertEqual(actual, expected)
+        }
+    }
+
+    func testCachedContactNameWithNonSignalContactsLackingPhoneNumbers() {
+        let addresses = [SignalServiceAddress(uuid: UUID()),
+                         SignalServiceAddress(uuid: UUID())]
+        let contactsManager = OWSContactsManager()
+        read { transaction in
+            let actual = contactsManager.cachedContactNames(for: AnySequence(addresses), transaction: transaction)
+            XCTAssertEqual(actual, [nil, nil])
+        }
+    }
+
+    func testCachedContactNameMixed() {
+        // Register alice with an account that has a full name.
+        let aliceAddress = SignalServiceAddress(uuid: UUID())
+        let aliceAccount = makeAccount(address: aliceAddress, phoneNumber: nil, name: "Alice Aliceson")
+        createRecipientsAndAccounts(Array(zip([aliceAddress], [aliceAccount])))
+
+        // Register bob as a non-Signal contact.
+        let bobPhoneNumber = "+17035550001"
+        let bobAddress = SignalServiceAddress(phoneNumber: bobPhoneNumber)
+        saveContacts([contact(name: "Bob Bobson", phoneNumber: bobPhoneNumber)])
+
+        // Who the heck is Chuck?
+        let chuckAddress = SignalServiceAddress(uuid: UUID())
+
+        read { transaction in
+            let addresses = [aliceAddress, bobAddress, chuckAddress]
+            let contactsManager = OWSContactsManager()
+            let actual = contactsManager.cachedContactNames(for: AnySequence(addresses), transaction: transaction)
+            let expected = ["Alice Aliceson (home)", "Bob Bobson", nil]
+            XCTAssertEqual(actual, expected)
+        }
+    }
 }

@@ -988,9 +988,7 @@ extension OWSContactsManager {
     func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
         return Refinery(addresses).refine { addresses in
             // Prefer a saved name from system contacts, if available.
-            return addresses.lazy.map {
-                self.cachedContactName(for: $0, transaction: transaction)?.nilIfEmpty
-            }
+            return cachedContactNames(for: addresses, transaction: transaction)
         }.refine { addresses in
             profileManager.fullNames(forAddresses: Array(addresses),
                                      transaction: transaction).sequenceWithNils
@@ -1035,4 +1033,57 @@ extension OWSContactsManager {
         return modelReadCaches.signalAccountReadCache.getSignalAccounts(addresses: addresses, transaction: transaction)
     }
 
+    @objc(cachedContactNameForAddress:transaction:)
+    func cachedContactName(for address: SignalServiceAddress, trasnaction: SDSAnyReadTransaction) -> String? {
+        return cachedContactNames(for: AnySequence([address]), transaction: trasnaction)[0]
+    }
+
+    func cachedContactNames(for addresses: AnySequence<SignalServiceAddress>,
+                            transaction: SDSAnyReadTransaction) -> [String?] {
+        // First, get full names from accounts where possible.
+        let accounts = fetchSignalAccounts(for: addresses, transaction: transaction)
+        let accountFullNames = accounts.lazy.map { $0?.fullName }
+
+        // Build a list of addreses that don't have accounts. Leave nil placeholders for those
+        // addresses that don't need to be queried so that we can keep all our arrays parallel.
+        let addressesToQuery = zip(addresses, accounts).map { tuple -> SignalServiceAddress? in
+            let (address, account) = tuple
+            if account != nil {
+                return nil
+            }
+            return address
+        }
+
+        // Do a batch lookup of phone numbers for addresses that don't have accounts and use the cache of Contacts
+        // to get their names.
+        let phoneNumberFullNames = Refinery<SignalServiceAddress?, String>(addressesToQuery).refineNonnilKeys { (addresses: AnySequence<SignalServiceAddress>) -> [String?] in
+            let phoneNumbers = phoneNumbers(for: Array(addresses), transaction: transaction)
+            return phoneNumbers.map { (maybePhoneNumber: String?) -> String? in
+                guard let phoneNumber = maybePhoneNumber else {
+                    return nil
+                }
+                // Fast (in-memory) lookup of a non-Signal contact. For example, no-longer-registered Signal users.
+                return contact(forPhoneNumber: phoneNumber, transaction: transaction)?.fullName
+            }
+        }.values
+
+        // At this point each address will either have a full name from its account, from its phone number, or neither.
+        // Return the nonnil value for each if one exists.
+        return zip(accountFullNames, phoneNumberFullNames).map { tuple in
+            return tuple.0 ?? tuple.1
+        }
+    }
+}
+
+private extension SignalAccount {
+    var fullName: String? {
+        // Name may be either the nickname or the full name of the contact
+        guard let fullName = contactPreferredDisplayName()?.nilIfEmpty else {
+            return nil
+        }
+        guard let label = multipleAccountLabelText.nilIfEmpty else {
+            return fullName
+        }
+        return "\(fullName) (\(label))"
+    }
 }
