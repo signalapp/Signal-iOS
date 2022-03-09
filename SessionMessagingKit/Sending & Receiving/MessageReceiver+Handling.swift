@@ -321,7 +321,7 @@ extension MessageReceiver {
             print("[Calls] Received pre-offer message.")
             // It is enough just ignoring the pre offers, other call messages
             // for this call would be dropped because of no Session call instance
-            guard let sender = message.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), thread.hasOutgoingInteraction(with: transaction) else { return }
+            guard let sender = message.sender, let contact = Storage.shared.getContact(with: sender), contact.isApproved else { return }
             handleNewCallOfferMessageIfNeeded?(message, transaction)
         case .offer:
             print("[Calls] Received offer message.")
@@ -445,7 +445,7 @@ extension MessageReceiver {
         }
         
         // Notify the user if needed
-        guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
+        guard let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
         // Use the same identifier for notifications when in backgroud polling to prevent spam
         let notificationIdentifier = isBackgroundPoll ? thread.uniqueId : UUID().uuidString
@@ -509,7 +509,7 @@ extension MessageReceiver {
     
     
     // MARK: - Closed Groups
-    private static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
+    public static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
         switch message.kind! {
         case .new: handleNewClosedGroup(message, using: transaction)
         case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)

@@ -59,6 +59,7 @@ public final class MessageSender : NSObject {
         signalAttachments.forEach {
             let attachment = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
                 caption: $0.captionText, albumMessageId: tsMessage.uniqueId!)
+            attachment.attachmentType = $0.isVoiceMessage ? .voiceMessage : .default
             attachments.append(attachment)
             attachment.write($0.dataSource)
             attachment.save(with: transaction)

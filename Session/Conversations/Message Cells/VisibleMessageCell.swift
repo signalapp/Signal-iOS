@@ -66,6 +66,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     lazy var bubbleView: UIView = {
         let result = UIView()
         result.layer.cornerRadius = VisibleMessageCell.largeCornerRadius
+        result.set(.width, greaterThanOrEqualTo: VisibleMessageCell.largeCornerRadius * 2)
         return result
     }()
     
@@ -263,7 +264,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         messageStatusImageView.image = image
         messageStatusImageView.backgroundColor = backgroundColor
         if let message = message as? TSOutgoingMessage {
-            messageStatusImageView.isHidden = (message.isCallMessage || message.messageState == .sent && message.thread.lastInteraction != message)
+            messageStatusImageView.isHidden = (message.isCallMessage || message.messageState == .sent && thread?.lastInteraction != message)
         } else {
             messageStatusImageView.isHidden = true
         }
@@ -329,11 +330,13 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 linkPreviewView.linkPreviewState = LinkPreviewSent(linkPreview: linkPreview, imageAttachment: viewItem.linkPreviewAttachment)
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
+                linkPreviewView.layer.mask = bubbleViewMaskLayer
             } else if let openGroupInvitationName = message.openGroupInvitationName, let openGroupInvitationURL = message.openGroupInvitationURL {
                 let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor, isOutgoing: isOutgoing)
                 openGroupInvitationView.layer.mask = bubbleViewMaskLayer
                 snContentView.addSubview(openGroupInvitationView)
                 openGroupInvitationView.pin(to: snContentView)
+                openGroupInvitationView.layer.mask = bubbleViewMaskLayer
             } else {
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])
@@ -343,7 +346,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 if viewItem.quotedReply != nil {
                     let direction: QuoteView.Direction = isOutgoing ? .outgoing : .incoming
                     let hInset: CGFloat = 2
-                    let quoteView = QuoteView(for: viewItem, direction: direction, hInset: hInset, maxWidth: maxWidth)
+                    let quoteView = QuoteView(for: viewItem, in: thread, direction: direction, hInset: hInset, maxWidth: maxWidth)
                     let quoteViewContainer = UIView(wrapping: quoteView, withInsets: UIEdgeInsets(top: 0, leading: hInset, bottom: 0, trailing: hInset))
                     stackView.addArrangedSubview(quoteViewContainer)
                 }
@@ -357,7 +360,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             }
         case .mediaMessage:
             if viewItem.interaction is TSIncomingMessage,
-                let thread = viewItem.interaction.thread as? TSContactThread,
+                let thread = thread as? TSContactThread,
                 Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
@@ -390,18 +393,19 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             }
         case .audio:
             if viewItem.interaction is TSIncomingMessage,
-                let thread = viewItem.interaction.thread as? TSContactThread,
+                let thread = thread as? TSContactThread,
                 Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
                 let voiceMessageView = VoiceMessageView(viewItem: viewItem)
                 snContentView.addSubview(voiceMessageView)
                 voiceMessageView.pin(to: snContentView)
+                voiceMessageView.layer.mask = bubbleViewMaskLayer
                 viewItem.lastAudioMessageView = voiceMessageView
             }
         case .genericAttachment:
             if viewItem.interaction is TSIncomingMessage,
-                let thread = viewItem.interaction.thread as? TSContactThread,
+                let thread = thread as? TSContactThread,
                 Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
@@ -681,7 +685,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
 
     private static func shouldShowProfilePicture(for viewItem: ConversationViewItem) -> Bool {
         guard let message = viewItem.interaction as? TSMessage else { preconditionFailure() }
-        let isGroupThread = message.thread.isGroupThread()
+        let isGroupThread = viewItem.isGroupThread
         let senderSessionID = (message as? TSIncomingMessage)?.authorId
         return isGroupThread && viewItem.shouldShowSenderProfilePicture && senderSessionID != nil
     }

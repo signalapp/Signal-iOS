@@ -1,4 +1,5 @@
 import UIKit
+import SessionMessagingKit
 
 public enum SwipeState {
     case began
@@ -8,7 +9,16 @@ public enum SwipeState {
 
 class MessageCell : UITableViewCell {
     weak var delegate: MessageCellDelegate?
-    var viewItem: ConversationViewItem? { didSet { update() } }
+    var thread: TSThread? {
+        didSet {
+            if viewItem != nil { update() }
+        }
+    }
+    var viewItem: ConversationViewItem? {
+        didSet {
+            if thread != nil { update() }
+        }
+    }
     
     // MARK: Settings
     class var identifier: String { preconditionFailure("Must be overridden by subclasses.") }

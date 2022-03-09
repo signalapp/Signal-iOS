@@ -8,11 +8,11 @@ import UIKit
 // • Remaining search glitchiness
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
-    let isUnsendRequestsEnabled = true // Set to true once unsend requests are done on all platforms
     let thread: TSThread
     let threadStartedAsMessageRequest: Bool
     let focusedMessageID: String? // This is used for global search
     var focusedMessageIndexPath: IndexPath?
+    var initialUnreadCount: UInt = 0
     var unreadViewItems: [ConversationViewItem] = []
     var scrollButtonBottomConstraint: NSLayoutConstraint?
     var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
@@ -78,7 +78,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
     }()
     
-    lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: focusedMessageID, delegate: self)
+    lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: nil, delegate: self)
     
     lazy var mediaCache: NSCache<NSString, AnyObject> = {
         let result = NSCache<NSString, AnyObject>()
@@ -278,11 +278,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         self.threadStartedAsMessageRequest = thread.isMessageRequest()
         self.focusedMessageID = focusedMessageID
         super.init(nibName: nil, bundle: nil)
-        var unreadCount: UInt = 0
         Storage.read { transaction in
-            unreadCount = self.thread.unreadMessageCount(transaction: transaction)
+            self.initialUnreadCount = self.thread.unreadMessageCount(transaction: transaction)
         }
-        let clampedUnreadCount = min(unreadCount, UInt(kConversationInitialMaxRangeSize), UInt(viewItems.endIndex))
+        let clampedUnreadCount = min(self.initialUnreadCount, UInt(kConversationInitialMaxRangeSize), UInt(viewItems.endIndex))
         unreadViewItems = clampedUnreadCount != 0 ? [ConversationViewItem](viewItems[viewItems.endIndex - Int(clampedUnreadCount) ..< viewItems.endIndex]) : []
     }
     
@@ -394,10 +393,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         super.viewDidLayoutSubviews()
         if !didFinishInitialLayout {
             // Scroll to the last unread message if possible; otherwise scroll to the bottom.
-            var unreadCount: UInt = 0
-            Storage.read { transaction in
-                unreadCount = self.thread.unreadMessageCount(transaction: transaction)
-            }
             // When the unread message count is more than the number of view items of a page,
             // the screen will scroll to the bottom instead of the first unread message.
             // unreadIndicatorIndex is calculated during loading of the viewItems, so it's
@@ -408,7 +403,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 } else {
                     let firstUnreadMessageIndex = self.viewModel.viewState.unreadIndicatorIndex?.intValue
                         ?? (self.viewItems.count - self.unreadViewItems.count)
-                    if unreadCount > 0, let viewItem = self.viewItems[ifValid: firstUnreadMessageIndex], let interactionID = viewItem.interaction.uniqueId {
+                    if self.initialUnreadCount > 0, let viewItem = self.viewItems[ifValid: firstUnreadMessageIndex], let interactionID = viewItem.interaction.uniqueId {
                         self.scrollToInteraction(with: interactionID, position: .top, isAnimated: false)
                         self.unreadCountView.alpha = self.scrollButton.alpha
                     } else {
@@ -455,6 +450,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let viewItem = viewItems[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: MessageCell.getCellType(for: viewItem).identifier) as! MessageCell
         cell.delegate = self
+        cell.thread = thread
         cell.viewItem = viewItem
         return cell
     }
@@ -469,7 +465,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             navigationItem.rightBarButtonItems = []
         }
         else {
-            navigationItem.leftBarButtonItem = UIViewController.createOWSBackButton(withTarget: self, selector: #selector(handleBackPressed))
             var rightBarButtonItems: [UIBarButtonItem] = []
             if let contactThread: TSContactThread = thread as? TSContactThread {
                 // Don't show the settings button for message requests
@@ -647,9 +642,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 }
                 self.markAllAsRead()
             }
-            if shouldScrollToBottom {
-                self.scrollToBottom(isAnimated: false)
-            }
         }
         
         // Update the input state if this is a contact thread
@@ -752,17 +744,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     func scrollToBottom(isAnimated: Bool) {
-        guard !isUserScrolling else { return }
-        if let interactionID = viewItems.last?.interaction.uniqueId {
-            self.scrollToInteraction(with: interactionID, position: .top, isAnimated: isAnimated)
-            return
-        }
-        // Ensure the view is fully up to date before we try to scroll to the bottom, since
-        // we use the table view's bounds to determine where the bottom is.
-        view.layoutIfNeeded()
-        let firstContentPageTop: CGFloat = 0
-        let contentOffsetY = max(firstContentPageTop, lastPageTop)
-        messagesTableView.setContentOffset(CGPoint(x: 0, y: contentOffsetY), animated: isAnimated)
+        guard !isUserScrolling && !viewItems.isEmpty else { return }
+        messagesTableView.scrollToRow(at: IndexPath(row: viewItems.count - 1, section: 0), at: .bottom, animated: isAnimated)
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -795,7 +778,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func autoLoadMoreIfNeeded() {
         let isMainAppAndActive = CurrentAppContext().isMainAppAndActive
-        guard isMainAppAndActive && viewModel.canLoadMoreItems() && !isLoadingMore
+        guard isMainAppAndActive && didFinishInitialLayout && viewModel.canLoadMoreItems() && !isLoadingMore
             && messagesTableView.contentOffset.y < ConversationVC.loadMoreThreshold else { return }
         isLoadingMore = true
         viewModel.loadAnotherPageOfMessages()

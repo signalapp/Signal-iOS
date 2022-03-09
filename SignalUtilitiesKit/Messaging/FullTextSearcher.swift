@@ -22,18 +22,16 @@ public struct ConversationSortKey: Comparable {
 public class ConversationSearchResult<SortKey>: Comparable where SortKey: Comparable {
     public let thread: ThreadViewModel
 
-    public let messageId: String?
-    public let messageDate: Date?
+    public let message: TSMessage?
 
     public let snippet: String?
 
     private let sortKey: SortKey
 
-    init(thread: ThreadViewModel, sortKey: SortKey, messageId: String? = nil, messageDate: Date? = nil, snippet: String? = nil) {
+    init(thread: ThreadViewModel, sortKey: SortKey, message: TSMessage? = nil, snippet: String? = nil) {
         self.thread = thread
         self.sortKey = sortKey
-        self.messageId = messageId
-        self.messageDate = messageDate
+        self.message = message
         self.snippet = snippet
     }
 
@@ -47,7 +45,7 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 
     public static func == (lhs: ConversationSearchResult, rhs: ConversationSearchResult) -> Bool {
         return lhs.thread.threadRecord.uniqueId == rhs.thread.threadRecord.uniqueId &&
-            lhs.messageId == rhs.messageId
+        lhs.message?.uniqueId == rhs.message?.uniqueId
     }
 }
 
@@ -270,8 +268,7 @@ public class FullTextSearcher: NSObject {
                 let sortKey = message.sortId
                 let searchResult = ConversationSearchResult(thread: threadViewModel,
                                                             sortKey: sortKey,
-                                                            messageId: message.uniqueId,
-                                                            messageDate: NSDate.ows_date(withMillisecondsSince1970: message.timestamp),
+                                                            message: message,
                                                             snippet: snippet)
 
                 messages.append(searchResult)

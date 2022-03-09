@@ -91,12 +91,15 @@ extension MessageSender {
         let errors = results.compactMap { result -> Swift.Error? in
             if case .rejected(let error) = result { return error } else { return nil }
         }
-        if let error = errors.first { seal.reject(error) }
-        Storage.write{ transaction in
-            sendNonDurably(message, in: thread, using: transaction).done {
-                seal.fulfill(())
-            }.catch { error in
-                seal.reject(error)
+        if let error = errors.first {
+            seal.reject(error)
+        } else {
+            Storage.write{ transaction in
+                sendNonDurably(message, in: thread, using: transaction).done {
+                    seal.fulfill(())
+                }.catch { error in
+                    seal.reject(error)
+                }
             }
         }
         return promise

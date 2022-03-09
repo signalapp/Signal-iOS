@@ -584,12 +584,6 @@ static NSTimeInterval launchStartedAt;
     [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 
     OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
-    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
-    if (isUsingFullAPNs) {
-        __unused AnyPromise *promise = [LKPushNotificationAPI registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber isForcedUpdate:NO];
-    } else {
-        __unused AnyPromise *promise = [LKPushNotificationAPI unregisterToken:deviceToken];
-    }
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
