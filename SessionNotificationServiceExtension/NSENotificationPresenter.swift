@@ -86,6 +86,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         // If it's a message request then overwrite the body to be something generic (only show a notification
         // when receiving a new message request if there aren't any others or the user had hidden them)
         if thread.isMessageRequest() {
+            notificationContent.title = "Session"
             notificationContent.body = "MESSAGE_REQUESTS_NOTIFICATION".localized()
         }
         
