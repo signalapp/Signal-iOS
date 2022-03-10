@@ -245,10 +245,15 @@ BOOL IsNoteToSelfEnabled(void)
 {
     __block NSUInteger count;
     [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-        count = [interactionsByThread numberOfItemsInGroup:self.uniqueId];
+        count = [self numberOfInteractionsWithTransaction:transaction];
     }];
     return count;
+}
+
+- (NSUInteger)numberOfInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
+    return [interactionsByThread numberOfItemsInGroup:self.uniqueId];
 }
 
 - (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
