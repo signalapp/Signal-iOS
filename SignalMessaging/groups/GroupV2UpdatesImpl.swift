@@ -1101,6 +1101,8 @@ extension GroupsV2Error: IsRetryableProvider {
             return false
         case .newMemberMissingAnnouncementOnlyCapability:
             return true
+        case .localUserBlockedFromJoining:
+            return false
         }
     }
 }

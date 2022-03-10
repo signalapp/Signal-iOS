@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalUI
 
 fileprivate extension CVComponentState {
 
@@ -11,13 +12,17 @@ fileprivate extension CVComponentState {
     private static var groupInviteLinkAvatarsInFlight = Set<String>()
     private static var expiredGroupInviteLinks = Set<URL>()
 
-    static func markGroupInviteLinkAsExpired(url: URL, isExpired: Bool) {
+    static func updateExpirationList(url: URL, isExpired: Bool) -> Bool {
         unfairLock.withLock {
+            let alreadyExpired = expiredGroupInviteLinks.contains(url)
+            guard alreadyExpired != isExpired else { return false }
+
             if isExpired {
                 expiredGroupInviteLinks.insert(url)
             } else {
                 expiredGroupInviteLinks.remove(url)
             }
+            return true
         }
     }
 
@@ -107,15 +112,18 @@ extension CVComponentState {
                                                                      groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                                                                      allowCached: false)
             }.done(on: .global()) { (_: GroupInviteLinkPreview) in
-                Self.markGroupInviteLinkAsExpired(url: url, isExpired: false)
-                touchMessage()
-            }.catch(on: .global()) { (error: Error) in
-                // TODO: Add retry?
-                if case GroupsV2Error.expiredGroupInviteLink = error {
-                    Logger.warn("Error: \(error)")
-                    Self.markGroupInviteLinkAsExpired(url: url, isExpired: true)
+                if Self.updateExpirationList(url: url, isExpired: false) {
                     touchMessage()
-                } else {
+                }
+            }.catch(on: .global()) { (error: Error) in
+                switch error {
+                case GroupsV2Error.expiredGroupInviteLink, GroupsV2Error.localUserBlockedFromJoining:
+                    Logger.warn("Failed to fetch group link content: \(error)")
+                    if Self.updateExpirationList(url: url, isExpired: true) {
+                        touchMessage()
+                    }
+                default:
+                    // TODO: Add retry?
                     owsFailDebugUnlessNetworkFailure(error)
                 }
             }
