@@ -67,6 +67,8 @@ BOOL IsNoteToSelfEnabled(void);
  */
 - (NSUInteger)numberOfInteractions;
 
+- (NSUInteger)numberOfInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
 - (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(unreadMessageCount(transaction:));
 
