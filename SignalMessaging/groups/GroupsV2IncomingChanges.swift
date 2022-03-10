@@ -386,10 +386,6 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
 
         for action in changeActionsProto.addRequestingMembers {
-            if !canAddMembers {
-                owsFailDebug("Cannot add members.")
-            }
-
             guard let requestingMember = action.added else {
                 throw OWSAssertionError("Missing requestingMember.")
             }

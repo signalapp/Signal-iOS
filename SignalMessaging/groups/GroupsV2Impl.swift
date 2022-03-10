@@ -1966,7 +1966,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         return firstly(on: .global()) { () -> Promise<UInt32> in
-            self.cancelMemberRequestsUsingPatch(groupId: groupModel.groupId, groupV2Params: groupV2Params)
+            self.cancelMemberRequestsUsingPatch(
+                groupId: groupModel.groupId,
+                groupV2Params: groupV2Params,
+                inviteLinkPassword: groupModel.inviteLinkPassword)
         }.map(on: .global()) { (newRevision: UInt32) -> TSGroupThread in
             try self.updateGroupRemovingMemberRequest(groupId: groupModel.groupId, newRevision: newRevision)
         }.recover(on: .global()) { (error: Error) -> Promise<TSGroupThread> in
@@ -2036,7 +2039,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    private func cancelMemberRequestsUsingPatch(groupId: Data, groupV2Params: GroupV2Params) -> Promise<UInt32> {
+    private func cancelMemberRequestsUsingPatch(
+        groupId: Data,
+        groupV2Params: GroupV2Params,
+        inviteLinkPassword: Data?
+    ) -> Promise<UInt32> {
 
         let revisionForPlaceholderModel = AtomicOptional<UInt32>(nil)
 
@@ -2046,7 +2053,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         // * addFromInviteLinkAccess
         // * local user's request status.
         return firstly {
-            self.fetchGroupInviteLinkPreview(inviteLinkPassword: nil,
+            self.fetchGroupInviteLinkPreview(inviteLinkPassword: inviteLinkPassword,
                                              groupSecretParamsData: groupV2Params.groupSecretParamsData,
                                              allowCached: false)
         }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<HTTPResponse> in
@@ -2059,7 +2066,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
                                                                groupV2Params: groupV2Params,
                                                                authCredential: authCredential,
-                                                               groupInviteLinkPassword: nil)
+                                                               groupInviteLinkPassword: inviteLinkPassword)
                 }
             }
 
@@ -2107,7 +2114,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         firstly { () -> Promise<GroupInviteLinkPreview> in
             let groupV2Params = try groupModel.groupV2Params()
-            return self.fetchGroupInviteLinkPreview(inviteLinkPassword: nil,
+            return self.fetchGroupInviteLinkPreview(inviteLinkPassword: groupModel.inviteLinkPassword,
                                                     groupSecretParamsData: groupV2Params.groupSecretParamsData,
                                                     allowCached: false)
         }.catch { (error: Error) -> Void in
