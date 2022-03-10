@@ -256,7 +256,7 @@ public class ProfileFetcherJob: NSObject {
             if error.httpStatusCode == 404 {
                 return future.reject(ProfileFetchError.missing)
             }
-            if error.httpStatusCode == 413 {
+            if error.httpStatusCode == 413 || error.httpStatusCode == 429 {
                 return future.reject(ProfileFetchError.rateLimit)
             }
 

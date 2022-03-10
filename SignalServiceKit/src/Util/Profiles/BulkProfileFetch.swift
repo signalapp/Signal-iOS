@@ -228,7 +228,7 @@ public class BulkProfileFetch: NSObject {
                     if error.isNetworkConnectivityFailure {
                         Logger.warn("Error: \(error)")
                         self.lastOutcomeMap[uuid] = UpdateOutcome(.networkFailure)
-                    } else if error.httpStatusCode == 413 {
+                    } else if error.httpStatusCode == 413 || error.httpStatusCode == 429 {
                         Logger.error("Error: \(error)")
                         self.lastOutcomeMap[uuid] = UpdateOutcome(.retryLimit)
                         self.lastRateLimitErrorDate = Date()
