@@ -4763,9 +4763,9 @@
 			buildConfigurationList = 4535189E1FC63DBF00210559 /* Build configuration list for PBXNativeTarget "SignalMessaging" */;
 			buildPhases = (
 				F4C416F20E3CB0B25DC10C56 /* [CP] Check Pods Manifest.lock */,
+				4535188F1FC63DBF00210559 /* Headers */,
 				4535188D1FC63DBF00210559 /* Sources */,
 				4535188E1FC63DBF00210559 /* Frameworks */,
-				4535188F1FC63DBF00210559 /* Headers */,
 				453518901FC63DBF00210559 /* Resources */,
 			);
 			buildRules = (

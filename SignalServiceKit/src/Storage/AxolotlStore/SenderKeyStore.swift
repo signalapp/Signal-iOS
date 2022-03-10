@@ -156,9 +156,7 @@ public class SenderKeyStore: NSObject {
     @objc
     public func skdmBytesForGroupThread(_ groupThread: TSGroupThread, writeTx: SDSAnyWriteTransaction) -> Data? {
         do {
-            guard let localAddress = ProtocolAddress.localAddress, localAddress.uuid != nil else {
-                throw OWSAssertionError("No local address")
-            }
+            let localAddress = try ProtocolAddress.localAddress
             let distributionId = distributionIdForSendingToThread(groupThread, writeTx: writeTx)
             let skdm = try SenderKeyDistributionMessage(from: localAddress,
                                                         distributionId: distributionId,
@@ -602,20 +600,13 @@ fileprivate extension TSGroupThread {
 }
 
 extension ProtocolAddress {
-
-    // TODO: Replace implementation for Swift 5.5 with throwable computed properties
-    //    static var localAddress: ProtocolAddress {
-    //        get throws {
-    //            ...
-    //            guard let address = address else { throw OWSAssertionError("No recipient address") }
-    //            return try ProtocolAddress(from: address, deviceId: deviceId)
-    @available(swift, obsoleted: 5.6, message: "Please swap out commented implementation in SenderKeyStore.swift")
-    static var localAddress: ProtocolAddress? {
-        get {
-            let tsAccountManager = SSKEnvironment.shared.tsAccountManager
-            let address = tsAccountManager.localAddress
+    static var localAddress: ProtocolAddress {
+        get throws {
+            guard let address = SSKEnvironment.shared.tsAccountManager.localAddress else {
+                throw OWSAssertionError("No address for the local account")
+            }
             let deviceId = SSKEnvironment.shared.tsAccountManager.storedDeviceId()
-            return try? address.map { try ProtocolAddress(from: $0, deviceId: deviceId) }
+            return try ProtocolAddress(from: address, deviceId: deviceId)
         }
     }
 
