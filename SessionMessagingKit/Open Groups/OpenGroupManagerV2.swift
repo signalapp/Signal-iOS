@@ -30,6 +30,15 @@ public final class OpenGroupManagerV2 : NSObject {
 
     // MARK: Adding & Removing
     public func add(room: String, server: String, publicKey: String, using transaction: Any) -> Promise<Void> {
+        // If we are currently polling for this server and already have a TSGroupThread for this room the do nothing
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(room)")
+        
+        if OpenGroupManagerV2.shared.pollers[server] != nil && TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupId), transaction: transaction) != nil {
+            SNLog("Ignoring join open group attempt (already joined)")
+            return Promise.value(())
+        }
+        
         let storage = Storage.shared
         // Clear any existing data if needed
         storage.removeLastMessageServerID(for: room, on: server, using: transaction)
@@ -38,7 +47,7 @@ public final class OpenGroupManagerV2 : NSObject {
         // Store the public key
         storage.setOpenGroupPublicKey(for: server, to: publicKey, using: transaction)
         let (promise, seal) = Promise<Void>.pending()
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        
         transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             // Get the group info
             OpenGroupAPIV2.getInfo(for: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { info in

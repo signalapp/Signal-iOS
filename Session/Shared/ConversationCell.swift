@@ -221,10 +221,11 @@ final class ConversationCell : UITableViewCell {
         timestampLabel.isHidden = true
     }
     
-    public func configure(messageDate: Date?, snippet: String?, searchText: String, message: TSMessage? = nil) {
+    public func configure(snippet: String?, searchText: String, message: TSMessage? = nil) {
         let normalizedSearchText = searchText.lowercased()
-        if let messageDate = messageDate, let snippet = snippet {
+        if let messageTimestamp = message?.timestamp, let snippet = snippet {
             // Message
+            let messageDate = NSDate.ows_date(withMillisecondsSince1970: messageTimestamp)
             displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
             timestampLabel.isHidden = false
             timestampLabel.text = DateUtil.formatDate(forDisplay: messageDate)
@@ -238,7 +239,6 @@ final class ConversationCell : UITableViewCell {
             // Contact
             if threadViewModel.isGroupThread, let thread = threadViewModel.threadRecord as? TSGroupThread {
                 displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
-                bottomLabelStackView.isHidden = false
                 let context: Contact.Context = thread.isOpenGroup ? .openGroup : .regular
                 var rawSnippet: String = ""
                 thread.groupModel.groupMemberIds.forEach{ id in
@@ -251,7 +251,12 @@ final class ConversationCell : UITableViewCell {
                         }
                     }
                 }
-                snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
+                if rawSnippet.isEmpty {
+                    bottomLabelStackView.isHidden = true
+                } else {
+                    bottomLabelStackView.isHidden = false
+                    snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
+                }
             } else {
                 displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayNameForSearch(threadViewModel.contactSessionID!), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
                 bottomLabelStackView.isHidden = true

@@ -91,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
                     NSLog(@"Found an already read message in the * unread * messages list.");
                     return;
                 }
+                // We have to filter those unread messages for groups that only notifiy for mentions
                 if ([object isKindOfClass:TSIncomingMessage.class] && isGroupThread) {
                     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
                     if (((TSGroupThread *)thread).isOnlyNotifyingForMentions && !incomingMessage.isUserMentioned) {
@@ -103,13 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return count;
-
-    __block NSUInteger numberOfItems;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
-    }];
-
-    return numberOfItems;
 }
 
 - (NSUInteger)unreadMessageRequestCount {
@@ -124,20 +118,9 @@ NS_ASSUME_NONNULL_BEGIN
             
             // Only increase the count for message requests
             if (![thread isMessageRequestUsingTransaction:transaction]) { continue; }
-            
-            [unreadMessages enumerateKeysAndObjectsInGroup:groupID
-                usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                    return;
-                }
-                id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
-                if (unread.read) {
-                    NSLog(@"Found an already read message in the * unread * messages list.");
-                    return;
-                }
+            if ([unreadMessages numberOfItemsInGroup:groupID] > 0) {
                 count += 1;
-                *stop = YES;
-            }];
+            }
         }
     }];
 

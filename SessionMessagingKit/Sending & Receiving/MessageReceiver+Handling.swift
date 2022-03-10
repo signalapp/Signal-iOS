@@ -190,6 +190,7 @@ extension MessageReceiver {
         SNLog("Configuration message received.")
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let isInitialSync: Bool = (!UserDefaults.standard[.hasSyncedInitialConfiguration])
         let messageSentTimestamp: TimeInterval = TimeInterval((message.sentTimestamp ?? 0) / 1000)   // `sentTimestamp` is in ms
         let lastConfigTimestamp: TimeInterval = (UserDefaults.standard[.lastConfigurationSync]?.timeIntervalSince1970 ?? Date(timeIntervalSince1970: 0).timeIntervalSince1970)
         
@@ -199,8 +200,8 @@ extension MessageReceiver {
         updateProfileIfNeeded(publicKey: userPublicKey, name: message.displayName, profilePictureURL: message.profilePictureURL,
             profileKey: userProfileKey, sentTimestamp: message.sentTimestamp!, transaction: transaction)
         
-        if !UserDefaults.standard[.hasSyncedInitialConfiguration] || messageSentTimestamp > lastConfigTimestamp {
-            if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
+        if isInitialSync || messageSentTimestamp > lastConfigTimestamp {
+            if isInitialSync {
                 UserDefaults.standard[.hasSyncedInitialConfiguration] = true
                 NotificationCenter.default.post(name: .initialConfigurationMessageReceived, object: nil)
             }
@@ -210,7 +211,7 @@ extension MessageReceiver {
             // Contacts
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
-                let contact = Contact(sessionID: sessionID)
+                let contact = (Storage.shared.getContact(with: sessionID, using: transaction) ?? Contact(sessionID: sessionID))
                 if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
@@ -257,13 +258,21 @@ extension MessageReceiver {
             }
             
             // Closed groups
-            let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
-            for closedGroup in message.closedGroups {
-                guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
-                handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
-                    members: [String](closedGroup.members), admins: [String](closedGroup.admins), expirationTimer: closedGroup.expirationTimer,
-                    messageSentTimestamp: message.sentTimestamp!, using: transaction)
+            //
+            // Note: Only want to add these for initial sync to avoid re-adding closed groups the user
+            // intentionally left (any closed groups joined since the first processed sync message should
+            // get added via the 'handleNewClosedGroup' method anyway as they will have come through in the
+            // past two weeks)
+            if isInitialSync {
+                let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
+                for closedGroup in message.closedGroups {
+                    guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
+                    handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
+                        members: [String](closedGroup.members), admins: [String](closedGroup.admins), expirationTimer: closedGroup.expirationTimer,
+                        messageSentTimestamp: message.sentTimestamp!, using: transaction)
+                }
             }
+            
             // Open groups
             for openGroupURL in message.openGroups {
                 if let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: openGroupURL) {
@@ -403,16 +412,12 @@ extension MessageReceiver {
         }
         
         // Notify the user if needed
-        guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
+        guard let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
         // Use the same identifier for notifications when in backgroud polling to prevent spam
         let notificationIdentifier = isBackgroundPoll ? thread.uniqueId : UUID().uuidString
         tsIncomingMessage.setNotificationIdentifier(notificationIdentifier, transaction: transaction)
-        DispatchQueue.main.async {
-            Storage.read { transaction in
-                SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
-            }
-        }
+        SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
         return tsMessageID
     }
     
@@ -467,7 +472,7 @@ extension MessageReceiver {
     
     
     // MARK: - Closed Groups
-    private static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
+    public static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
         switch message.kind! {
         case .new: handleNewClosedGroup(message, using: transaction)
         case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)

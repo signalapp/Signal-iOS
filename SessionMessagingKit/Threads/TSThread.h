@@ -16,6 +16,7 @@ BOOL IsNoteToSelfEnabled(void);
  */
 @interface TSThread : TSYapDatabaseObject
 
+@property (nonatomic) BOOL hasUnreadMentionMessage;
 @property (nonatomic) BOOL isPinned;
 @property (nonatomic) BOOL shouldBeVisible;
 @property (nonatomic, readonly) NSDate *creationDate;
@@ -66,11 +67,10 @@ BOOL IsNoteToSelfEnabled(void);
  */
 - (NSUInteger)numberOfInteractions;
 
+- (NSUInteger)numberOfInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
 - (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(unreadMessageCount(transaction:));
-
-- (BOOL)hasUnreadMentionMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
-    NS_SWIFT_NAME(hasUnreadMentionMessage(transaction:));
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

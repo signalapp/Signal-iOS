@@ -84,7 +84,7 @@ class BaseVC : UIViewController {
     
     internal func setUpNavBarSessionHeading() {
         let headingImageView = UIImageView()
-        headingImageView.tintColor = Colors.sessionHeading
+        headingImageView.tintColor = Colors.text
         headingImageView.image = UIImage(named: "SessionHeading")?.withRenderingMode(.alwaysTemplate)
         headingImageView.contentMode = .scaleAspectFit
         headingImageView.set(.width, to: 150)

@@ -422,21 +422,37 @@ public final class OpenGroupAPIV2 : NSObject {
     }
     
     // MARK: General
-    public static func getDefaultRoomsIfNeeded() {
+    
+    @discardableResult public static func getDefaultRoomsIfNeeded() -> Promise<[OpenGroupAPIV2.Info]> {
+        if let existingPromise: Promise<[OpenGroupAPIV2.Info]> = defaultRoomsPromise {
+            return existingPromise
+        }
+        
+        let (promise, seal) = Promise<[OpenGroupAPIV2.Info]>.pending()
+        
         Storage.shared.write(with: { transaction in
             Storage.shared.setOpenGroupPublicKey(for: defaultServer, to: defaultServerPublicKey, using: transaction)
         }, completion: {
-            let promise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
+            let internalPromise: Promise<[OpenGroupAPIV2.Info]> = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
                 OpenGroupAPIV2.getAllRooms(from: defaultServer)
             }
-            let _ = promise.done(on: OpenGroupAPIV2.workQueue) { items in
-                items.forEach { getGroupImage(for: $0.id, on: defaultServer).retainUntilComplete() }
-            }
-            promise.catch(on: OpenGroupAPIV2.workQueue) { _ in
-                OpenGroupAPIV2.defaultRoomsPromise = nil
-            }
-            defaultRoomsPromise = promise
+            
+            internalPromise
+                .done(on: OpenGroupAPIV2.workQueue) { items in
+                    items.forEach { getGroupImage(for: $0.id, on: defaultServer).retainUntilComplete() }
+                    seal.fulfill(items)
+                }
+                .retainUntilComplete()
+            
+            internalPromise
+                .catch(on: OpenGroupAPIV2.workQueue) { error in
+                    OpenGroupAPIV2.defaultRoomsPromise = nil
+                    seal.reject(error)
+                }
         })
+        
+        defaultRoomsPromise = promise
+        return promise
     }
     
     public static func getInfo(for room: String, on server: String) -> Promise<Info> {
