@@ -603,7 +603,7 @@ extension ProtocolAddress {
     static var localAddress: ProtocolAddress {
         get throws {
             guard let address = SSKEnvironment.shared.tsAccountManager.localAddress else {
-                throw OWSAssertionError("No recipient address")
+                throw OWSAssertionError("No address for the local account")
             }
             let deviceId = SSKEnvironment.shared.tsAccountManager.storedDeviceId()
             return try ProtocolAddress(from: address, deviceId: deviceId)
