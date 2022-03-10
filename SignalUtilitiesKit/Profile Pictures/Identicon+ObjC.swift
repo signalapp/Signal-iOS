@@ -16,7 +16,7 @@ public final class Identicon : NSObject {
             with: size,
             text: (initials.count >= 2 ?
                 initials.substring(to: 2).uppercased() :
-                content.substring(to: 2).capitalized
+                content.substring(to: 2).uppercased()
             )
         )
         let rect = CGRect(origin: CGPoint.zero, size: layer.frame.size)
