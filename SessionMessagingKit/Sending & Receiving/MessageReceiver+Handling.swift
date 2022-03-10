@@ -417,11 +417,7 @@ extension MessageReceiver {
         // Use the same identifier for notifications when in backgroud polling to prevent spam
         let notificationIdentifier = isBackgroundPoll ? thread.uniqueId : UUID().uuidString
         tsIncomingMessage.setNotificationIdentifier(notificationIdentifier, transaction: transaction)
-        DispatchQueue.main.async {
-            Storage.read { transaction in
-                SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
-            }
-        }
+        SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
         return tsMessageID
     }
     
