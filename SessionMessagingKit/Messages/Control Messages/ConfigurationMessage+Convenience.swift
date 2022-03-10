@@ -55,17 +55,16 @@ extension ConfigurationMessage {
                     
                     return (
                         // Skip the current user
-                        contact.sessionID != currentUserPublicKey && (
+                        contact.sessionID != currentUserPublicKey &&
+                        // Contacts which have visible threads
+                        TSContactThread.fetch(uniqueId: threadID, transaction: transaction)?.shouldBeVisible == true && (
                             
                             // Include already approved contacts
                             contact.isApproved ||
                             contact.didApproveMe ||
                             
                             // Sync blocked contacts
-                            SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID) ||
-                            
-                            // Contacts which have visible threads (sanity check - should be included as already approved)
-                            TSContactThread.fetch(uniqueId: threadID, transaction: transaction)?.shouldBeVisible == true
+                            SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID)
                         )
                     )
                 }
