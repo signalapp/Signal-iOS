@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,13 +13,7 @@ public class AnyUserProfileFinder: NSObject {
 public extension AnyUserProfileFinder {
     @objc(userProfileForAddress:transaction:)
     func userProfile(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
-        let profile: OWSUserProfile?
-        switch transaction.readTransaction {
-        case .grdbRead(let transaction):
-            profile = grdbAdapter.userProfile(for: address, transaction: transaction)
-        }
-        profile?.loadBadgeContent(with: transaction)
-        return profile
+        return userProfiles(for: [address], transaction: transaction)[0]
     }
 
     @objc(userProfileForUUID:transaction:)
@@ -62,6 +56,18 @@ public extension AnyUserProfileFinder {
             grdbAdapter.enumerateMissingAndStaleUserProfiles(transaction: transaction, block: block)
         }
     }
+
+    func userProfiles(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        let profiles: [OWSUserProfile?]
+        switch transaction.readTransaction {
+        case .grdbRead(let transaction):
+            profiles = grdbAdapter.userProfiles(for: addresses, transaction: transaction)
+        }
+        for profile in profiles {
+            profile?.loadBadgeContent(with: transaction)
+        }
+        return profiles
+    }
 }
 
 // MARK: -
@@ -78,16 +84,59 @@ class GRDBUserProfileFinder: NSObject {
         }
     }
 
+    func userProfiles(for addresses: [SignalServiceAddress], transaction: GRDBReadTransaction) -> [OWSUserProfile?] {
+        return Refinery<SignalServiceAddress, OWSUserProfile>(addresses).refine { addresses in
+            return userProfilesForUUIDs(addresses.map { $0.uuid }, transaction: transaction)
+        }.refine { addresses in
+            return userProfilesForPhoneNumbers(addresses.map { $0.phoneNumber }, transaction: transaction)
+        }.values
+    }
+
     fileprivate func userProfileForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> OWSUserProfile? {
-        guard let uuidString = uuid?.uuidString else { return nil }
-        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .recipientUUID) = ?"
-        return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [uuidString], transaction: transaction)
+        return userProfilesForUUIDs([uuid], transaction: transaction)[0]
     }
 
     fileprivate func userProfileForPhoneNumber(_ phoneNumber: String?, transaction: GRDBReadTransaction) -> OWSUserProfile? {
-        guard let phoneNumber = phoneNumber else { return nil }
-        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .recipientPhoneNumber) = ?"
-        return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [phoneNumber], transaction: transaction)
+        return userProfilesForPhoneNumbers([phoneNumber], transaction: transaction)[0]
+    }
+
+    private func userProfilesWhere(column: String, anyValueIn values: [String], transaction: GRDBReadTransaction) -> [OWSUserProfile?] {
+        let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
+        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(column) in (\(qms))"
+        do {
+            return try OWSUserProfile.grdbFetchCursor(sql: sql,
+                                                      arguments: StatementArguments(values),
+                                                      transaction: transaction).all()
+        } catch {
+            owsFailDebug("Error fetching profiles where \(column) in \(values): \(error)")
+            return []
+        }
+    }
+
+    fileprivate func userProfilesForUUIDs(_ optionalUUIDs: [UUID?], transaction: GRDBReadTransaction) -> [OWSUserProfile?] {
+        return Refinery<UUID?, OWSUserProfile>(optionalUUIDs).refineNonnilKeys { (uuidSequence: AnySequence<UUID>) -> [OWSUserProfile?] in
+            let profiles = userProfilesWhere(column: "\(userProfileColumn: .recipientUUID)",
+                                             anyValueIn: Array(uuidSequence.map { $0.uuidString }),
+                                             transaction: transaction)
+            let index = Dictionary(grouping: profiles) { $0?.recipientUUID }
+            return uuidSequence.map { uuid in
+                let maybeArray = index[uuid.uuidString]
+                return maybeArray?[0]
+            }
+        }.values
+    }
+
+    fileprivate func userProfilesForPhoneNumbers(_ phoneNumbers: [String?], transaction: GRDBReadTransaction) -> [OWSUserProfile?] {
+        return Refinery<String?, OWSUserProfile>(phoneNumbers).refineNonnilKeys { (phoneNumberSequence: AnySequence<String>) -> [OWSUserProfile?] in
+            let profiles = userProfilesWhere(column: "\(userProfileColumn: .recipientPhoneNumber)",
+                                             anyValueIn: Array(phoneNumberSequence),
+                                             transaction: transaction)
+            let index = Dictionary(grouping: profiles) { $0?.recipientPhoneNumber }
+            return phoneNumberSequence.map { phoneNumber in
+                let maybeArray = index[phoneNumber]
+                return maybeArray?[0]
+            }
+        }.values
     }
 
     func userProfile(forUsername username: String, transaction: GRDBReadTransaction) -> OWSUserProfile? {
