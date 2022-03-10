@@ -638,7 +638,8 @@ private extension UserInterfaceStyleOverride {
         case .light:
             return .extraLight
         default:
-            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            return .regular
         }
     }
 
@@ -649,7 +650,8 @@ private extension UserInterfaceStyleOverride {
         case .light:
             return .ows_gray60
         default:
-            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            return .ows_accentBlue
         }
     }
 }
@@ -740,7 +742,8 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         case .light:
             return .ows_gray20
         default:
-            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            return .ows_gray80
         }
     }
 
@@ -873,7 +876,10 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
     }
 
     private func updateStyle() {
-        blurBackgroundView.effect = UIBlurEffect(style: MediaDoneButton.blurEffectStyle(for: effectiveUserInterfaceStyle))
-        chevronImageView.tintColor = MediaDoneButton.tintColor(for: effectiveUserInterfaceStyle)
+        let userInterfaceStyle = effectiveUserInterfaceStyle
+        // ".unspecified" is present during initialization on iOS 12.
+        guard userInterfaceStyle != .unspecified else { return }
+        blurBackgroundView.effect = UIBlurEffect(style: MediaDoneButton.blurEffectStyle(for: userInterfaceStyle))
+        chevronImageView.tintColor = MediaDoneButton.tintColor(for: userInterfaceStyle)
     }
 }
