@@ -239,7 +239,6 @@ final class ConversationCell : UITableViewCell {
             // Contact
             if threadViewModel.isGroupThread, let thread = threadViewModel.threadRecord as? TSGroupThread {
                 displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
-                bottomLabelStackView.isHidden = false
                 let context: Contact.Context = thread.isOpenGroup ? .openGroup : .regular
                 var rawSnippet: String = ""
                 thread.groupModel.groupMemberIds.forEach{ id in
@@ -252,7 +251,12 @@ final class ConversationCell : UITableViewCell {
                         }
                     }
                 }
-                snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
+                if rawSnippet.isEmpty {
+                    bottomLabelStackView.isHidden = true
+                } else {
+                    bottomLabelStackView.isHidden = false
+                    snippetLabel.attributedText = getHighlightedSnippet(snippet: rawSnippet, searchText: normalizedSearchText, fontSize: Values.smallFontSize)
+                }
             } else {
                 displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayNameForSearch(threadViewModel.contactSessionID!), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
                 bottomLabelStackView.isHidden = true
