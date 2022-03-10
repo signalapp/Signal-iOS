@@ -1,5 +1,6 @@
 import PromiseKit
 import NVActivityIndicatorView
+import SessionUIKit
 
 final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let maxWidth: CGFloat
@@ -32,6 +33,42 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         return result
     }()
     
+    private lazy var errorView: UIView = {
+        let result: UIView = UIView()
+        result.isHidden = true
+        
+        return result
+    }()
+    
+    private lazy var errorImageView: UIImageView = {
+        let result: UIImageView = UIImageView(image: #imageLiteral(resourceName: "warning").withRenderingMode(.alwaysTemplate))
+        result.tintColor = Colors.destructive
+        
+        return result
+    }()
+    
+    private lazy var errorTitleLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = UIFont.systemFont(ofSize: Values.mediumFontSize, weight: .medium)
+        result.text = "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE".localized()
+        result.textColor = Colors.text
+        result.textAlignment = .center
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
+    private lazy var errorSubtitleLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = UIFont.systemFont(ofSize: Values.smallFontSize, weight: .medium)
+        result.text = "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE".localized()
+        result.textColor = Colors.text
+        result.textAlignment = .center
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
     // MARK: Settings
     private static let cellHeight: CGFloat = 40
     private static let separatorWidth = 1 / UIScreen.main.scale
@@ -54,17 +91,40 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
     private func initialize() {
         addSubview(collectionView)
         collectionView.pin(to: self)
+        
         addSubview(spinner)
-        spinner.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top ], to: self)
+        spinner.pin(.top, to: .top, of: self)
+        spinner.center(.horizontal, in: self)
         spinner.startAnimating()
+        
+        addSubview(errorView)
+        errorView.pin(.top, to: .top, of: self, withInset: 10)
+        errorView.pin( [HorizontalEdge.leading, HorizontalEdge.trailing], to: self)
+        
+        errorView.addSubview(errorImageView)
+        errorImageView.pin(.top, to: .top, of: errorView)
+        errorImageView.center(.horizontal, in: errorView)
+        errorImageView.set(.width, to: 60)
+        errorImageView.set(.height, to: 60)
+        
+        errorView.addSubview(errorTitleLabel)
+        errorTitleLabel.pin(.top, to: .bottom, of: errorImageView, withInset: 10)
+        errorTitleLabel.center(.horizontal, in: errorView)
+        
+        errorView.addSubview(errorSubtitleLabel)
+        errorSubtitleLabel.pin(.top, to: .bottom, of: errorTitleLabel, withInset: 20)
+        errorSubtitleLabel.center(.horizontal, in: errorView)
+        
         heightConstraint = set(.height, to: OpenGroupSuggestionGrid.cellHeight)
         widthAnchor.constraint(greaterThanOrEqualToConstant: OpenGroupSuggestionGrid.cellHeight).isActive = true
-        if OpenGroupAPIV2.defaultRoomsPromise == nil {
-            OpenGroupAPIV2.getDefaultRoomsIfNeeded()
-        }
-        let _ = OpenGroupAPIV2.defaultRoomsPromise?.done { [weak self] rooms in
-            self?.rooms = rooms
-        }
+        
+        OpenGroupAPIV2.getDefaultRoomsIfNeeded()
+            .done { [weak self] rooms in
+                self?.rooms = rooms
+            }
+            .catch { [weak self] _ in
+                self?.update()
+            }
     }
     
     // MARK: Updating
@@ -75,6 +135,7 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         let height = OpenGroupSuggestionGrid.cellHeight * ceil(CGFloat(roomCount) / 2)
         heightConstraint.constant = height
         collectionView.reloadData()
+        errorView.isHidden = (roomCount > 0)
     }
     
     // MARK: Layout
@@ -173,8 +234,22 @@ extension OpenGroupSuggestionGrid {
         private func update() {
             guard let room = room else { return }
             let promise = OpenGroupAPIV2.getGroupImage(for: room.id, on: OpenGroupAPIV2.defaultServer)
-            imageView.image = given(promise.value) { UIImage(data: $0)! }
-            imageView.isHidden = (imageView.image == nil)
+            
+            if let imageData: Data = promise.value {
+                imageView.image = UIImage(data: imageData)
+                imageView.isHidden = (imageView.image == nil)
+            }
+            else {
+                imageView.isHidden = true
+                
+                _ = promise.done { [weak self] imageData in
+                    DispatchQueue.main.async {
+                        self?.imageView.image = UIImage(data: imageData)
+                        self?.imageView.isHidden = (self?.imageView.image == nil)
+                    }
+                }
+            }
+            
             label.text = room.name
         }
     }
