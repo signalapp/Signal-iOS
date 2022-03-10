@@ -161,19 +161,20 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
         guard !thread.isMuted else { return }
         guard let threadId = thread.uniqueId else { return }
+        let isMessageRequest = thread.isMessageRequest(using: transaction)
         
         // If the thread is a message request and the user hasn't hidden message requests then we need
         // to check if this is the only message request thread (group threads can't be message requests
         // so just ignore those and if the user has hidden message requests then we want to show the
         // notification regardless of how many message requests there are)
-        if !thread.isGroupThread() && thread.isMessageRequest() && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+        if !thread.isGroupThread() && isMessageRequest && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
             let threads = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
             let numMessageRequests = threads.numberOfItems(inGroup: TSMessageRequestGroup)
             
             // Allow this to show a notification if there are no message requests (ie. this is the first one)
             guard numMessageRequests == 0 else { return }
         }
-        else if thread.isMessageRequest() && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+        else if isMessageRequest && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
             // If there are other interactions on this thread already then don't show the notification
             if thread.numberOfInteractions() > 1 { return }
             
@@ -214,7 +215,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             case .nameNoPreview, .namePreview:
                 switch thread {
                     case is TSContactThread:
-                        notificationTitle = (thread.isMessageRequest() ? "Session" : senderName)
+                        notificationTitle = (isMessageRequest ? "Session" : senderName)
                         
                     case is TSGroupThread:
                         var groupName = thread.name(with: transaction)
@@ -240,7 +241,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         
         // If it's a message request then overwrite the body to be something generic (only show a notification
         // when receiving a new message request if there aren't any others or the user had hidden them)
-        if thread.isMessageRequest() {
+        if isMessageRequest {
             notificationBody = NSLocalizedString("MESSAGE_REQUESTS_NOTIFICATION", comment: "")
         }
 
