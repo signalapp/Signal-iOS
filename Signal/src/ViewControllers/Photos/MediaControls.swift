@@ -638,7 +638,8 @@ private extension UserInterfaceStyleOverride {
         case .light:
             return .extraLight
         default:
-            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            return .regular
         }
     }
 
@@ -649,7 +650,8 @@ private extension UserInterfaceStyleOverride {
         case .light:
             return .ows_gray60
         default:
-            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            return .ows_accentBlue
         }
     }
 }
@@ -740,7 +742,8 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
         case .light:
             return .ows_gray20
         default:
-            fatalError("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            owsFailDebug("It is an error to pass UIUserInterfaceStyleUnspecified.")
+            return .ows_gray80
         }
     }
 
