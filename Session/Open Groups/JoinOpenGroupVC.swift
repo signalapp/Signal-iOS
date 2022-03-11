@@ -275,6 +275,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
             self.suggestionGridStackView.isHidden = true
+            self.suggestionGridStackView.alpha = 0
         }
     }
     
@@ -285,6 +286,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
             self.suggestionGridStackView.isHidden = false
+            self.suggestionGridStackView.alpha = 1
         }
     }
 }
