@@ -36,6 +36,28 @@ class StoriesViewController: OWSViewController {
         reloadStories()
     }
 
+    private var timestampUpdateTimer: Timer?
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        timestampUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            AssertIsOnMainThread()
+
+            for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {
+                guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
+                guard let model = self.models[safe: indexPath.row] else { continue }
+                cell.configureTimestamp(with: model)
+            }
+        })
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        timestampUpdateTimer?.invalidate()
+        timestampUpdateTimer = nil
+    }
+
     @objc
     func showCameraView() {
         // Dismiss any message actions if they're presented
@@ -129,7 +151,17 @@ class StoriesViewController: OWSViewController {
                         self.tableView.deleteRows(at: [IndexPath(row: oldIndex, section: 0)], with: .automatic)
                         self.tableView.insertRows(at: [IndexPath(row: newIndex, section: 0)], with: .automatic)
                     case .update(_, let newIndex):
-                        self.tableView.reloadRows(at: [IndexPath(row: newIndex, section: 0)], with: .automatic)
+                        // If the cell is visible, reconfigure it directly without reloading.
+                        let path = IndexPath(row: newIndex, section: 0)
+                        if (self.tableView.indexPathsForVisibleRows ?? []).contains(path),
+                            let visibleCell = self.tableView.cellForRow(at: path) as? StoryCell {
+                            guard let model = self.models[safe: newIndex] else {
+                                return owsFailDebug("Missing model for story")
+                            }
+                            visibleCell.configure(with: model)
+                        } else {
+                            self.tableView.reloadRows(at: [path], with: .none)
+                        }
                     }
                 }
                 self.tableView.endUpdates()

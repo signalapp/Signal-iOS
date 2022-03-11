@@ -38,14 +38,11 @@ class StoryCell: UITableViewCell {
     }
 
     func configure(with model: IncomingStoryViewModel) {
+        configureTimestamp(with: model)
+
         nameLabel.font = .ows_dynamicTypeHeadline
         nameLabel.textColor = Theme.primaryTextColor
         nameLabel.text = model.latestRecordName
-
-        timestampLabel.font = .ows_dynamicTypeSubheadline
-        timestampLabel.textColor = Theme.secondaryTextAndIconColor
-        timestampLabel.text = DateUtil.formatTimestampShort(model.latestRecordTimestamp)
-        // TODO: Live update timestamp
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = model.latestRecordAvatarDataSource
@@ -75,5 +72,11 @@ class StoryCell: UITableViewCell {
             // TODO: error state
             break
         }
+    }
+
+    func configureTimestamp(with model: IncomingStoryViewModel) {
+        timestampLabel.font = .ows_dynamicTypeSubheadline
+        timestampLabel.textColor = Theme.secondaryTextAndIconColor
+        timestampLabel.text = DateUtil.formatTimestampShort(model.latestRecordTimestamp)
     }
 }
