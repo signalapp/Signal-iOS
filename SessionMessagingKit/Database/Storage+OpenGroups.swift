@@ -58,6 +58,10 @@ extension Storage {
     public func setOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any) {
         (transaction as! YapDatabaseReadWriteTransaction).setObject(server, forKey: "SOGS.\(server.name)", inCollection: Storage.openGroupCollection)
     }
+    
+    public func removeOpenGroupServer(name: String, using transaction: Any) {
+        (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: "SOGS.\(name)", inCollection: Storage.openGroupCollection)
+    }
 
 
 

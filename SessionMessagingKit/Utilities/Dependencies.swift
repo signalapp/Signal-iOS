@@ -44,9 +44,9 @@ public class Dependencies {
         set { _genericHash = newValue }
     }
     
-    private var _ed25519: Ed25519Type.Type?
-    public var ed25519: Ed25519Type.Type {
-        get { getValueSettingIfNull(&_ed25519) { Ed25519.self } }
+    private var _ed25519: Ed25519Type?
+    public var ed25519: Ed25519Type {
+        get { getValueSettingIfNull(&_ed25519) { Ed25519Wrapper() } }
         set { _ed25519 = newValue }
     }
     
@@ -83,7 +83,7 @@ public class Dependencies {
         aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
         sign: SignType? = nil,
         genericHash: GenericHashType? = nil,
-        ed25519: Ed25519Type.Type? = nil,
+        ed25519: Ed25519Type? = nil,
         nonceGenerator16: NonceGenerator16ByteType? = nil,
         nonceGenerator24: NonceGenerator24ByteType? = nil,
         standardUserDefaults: UserDefaultsType? = nil,
@@ -111,7 +111,7 @@ public class Dependencies {
         aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
         sign: SignType? = nil,
         genericHash: GenericHashType? = nil,
-        ed25519: Ed25519Type.Type? = nil,
+        ed25519: Ed25519Type? = nil,
         nonceGenerator16: NonceGenerator16ByteType? = nil,
         nonceGenerator24: NonceGenerator24ByteType? = nil,
         standardUserDefaults: UserDefaultsType? = nil,

@@ -78,11 +78,11 @@ class OpenGroupAPISpec: QuickSpec {
     // MARK: - Spec
 
     override func spec() {
-        var testStorage: TestStorage!
-        var testSodium: TestSodium!
-        var testAeadXChaCha20Poly1305Ietf: TestAeadXChaCha20Poly1305Ietf!
-        var testGenericHash: TestGenericHash!
-        var testSign: TestSign!
+        var mockStorage: MockStorage!
+        var mockSodium: MockSodium!
+        var mockAeadXChaCha20Poly1305Ietf: MockAeadXChaCha20Poly1305Ietf!
+        var mockGenericHash: MockGenericHash!
+        var mockSign: MockSign!
         var testUserDefaults: TestUserDefaults!
         var dependencies: Dependencies!
         
@@ -94,64 +94,110 @@ class OpenGroupAPISpec: QuickSpec {
             // MARK: - Configuration
             
             beforeEach {
-                testStorage = TestStorage()
-                testSodium = TestSodium()
-                testAeadXChaCha20Poly1305Ietf = TestAeadXChaCha20Poly1305Ietf()
-                testGenericHash = TestGenericHash()
-                testSign = TestSign()
+                mockStorage = MockStorage()
+                mockSodium = MockSodium()
+                mockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
+                mockGenericHash = MockGenericHash()
+                mockSign = MockSign()
                 testUserDefaults = TestUserDefaults()
                 dependencies = Dependencies(
                     api: TestApi.self,
-                    storage: testStorage,
-                    sodium: testSodium,
-                    aeadXChaCha20Poly1305Ietf: testAeadXChaCha20Poly1305Ietf,
-                    sign: testSign,
-                    genericHash: testGenericHash,
-                    ed25519: TestEd25519.self,
+                    storage: mockStorage,
+                    sodium: mockSodium,
+                    aeadXChaCha20Poly1305Ietf: mockAeadXChaCha20Poly1305Ietf,
+                    sign: mockSign,
+                    genericHash: mockGenericHash,
+                    ed25519: MockEd25519(),
                     nonceGenerator16: TestNonce16Generator(),
                     nonceGenerator24: TestNonce24Generator(),
                     standardUserDefaults: testUserDefaults,
                     date: Date(timeIntervalSince1970: 1234567890)
                 )
                 
-                testStorage.mockData[.allOpenGroups] = [
-                    "0": OpenGroup(
-                        server: "testServer",
-                        room: "testRoom",
-                        publicKey: TestConstants.publicKey,
-                        name: "Test",
-                        groupDescription: nil,
-                        imageID: nil,
-                        infoUpdates: 0
+                mockStorage
+                    .when { $0.write(with: { _ in }) }
+                    .then { args in (args.first as? ((Any) -> Void))?(any()) }
+                    .thenReturn(Promise.value(()))
+                mockStorage
+                    .when { $0.write(with: { _ in }, completion: { }) }
+                    .then { args in
+                        (args.first as? ((Any) -> Void))?(any())
+                        (args.last as? (() -> Void))?()
+                    }
+                    .thenReturn(Promise.value(()))
+                mockStorage
+                    .when { $0.getUserKeyPair() }
+                    .thenReturn(
+                        try! ECKeyPair(
+                            publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
+                            privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                        )
                     )
-                ]
-                testStorage.mockData[.openGroupPublicKeys] = [
-                    "testServer": TestConstants.publicKey
-                ]
-                testStorage.mockData[.userKeyPair] = try! ECKeyPair(
-                    publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-                    privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
-                )
-                testStorage.mockData[.userEdKeyPair] = Box.KeyPair(
-                    publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
-                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
-                )
+                mockStorage
+                    .when { $0.getUserED25519KeyPair() }
+                    .thenReturn(
+                        Box.KeyPair(
+                            publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                            secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                        )
+                    )
+                mockStorage
+                    .when { $0.getAllOpenGroups() }
+                    .thenReturn([
+                        "0": OpenGroup(
+                            server: "testServer",
+                            room: "testRoom",
+                            publicKey: TestConstants.publicKey,
+                            name: "Test",
+                            groupDescription: nil,
+                            imageID: nil,
+                            infoUpdates: 0
+                        )
+                    ])
+                mockStorage
+                    .when { $0.getOpenGroupServer(name: any()) }
+                    .thenReturn(
+                        OpenGroupAPI.Server(
+                            name: "testServer",
+                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
+                        )
+                    )
+                mockStorage
+                    .when { $0.getOpenGroupPublicKey(for: any()) }
+                    .thenReturn(TestConstants.publicKey)
+                mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(nil)
+                mockStorage.when { $0.getOpenGroupInboxLatestMessageId(for: any()) }.thenReturn(nil)
+                mockStorage.when { $0.getOpenGroupOutboxLatestMessageId(for: any()) }.thenReturn(nil)
+                mockStorage.when { $0.addReceivedMessageTimestamp(any(), using: any()) }.thenReturn(())
                 
-                testGenericHash.mockData[.hashOutputLength] = []
-                testSodium.mockData[.blindedKeyPair] = Box.KeyPair(
-                    publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
-                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
-                )
-                testSodium.mockData[.sogsSignature] = "TestSogsSignature".bytes
-                testSign.mockData[.signature] = "TestSignature".bytes
+                mockGenericHash.when { $0.hash(message: any(), outputLength: any()) }.thenReturn([])
+                mockSodium
+                    .when { $0.blindedKeyPair(serverPublicKey: any(), edKeyPair: any(), genericHash: mockGenericHash) }
+                    .thenReturn(
+                        Box.KeyPair(
+                            publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                            secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                        )
+                    )
+                mockSodium
+                    .when {
+                        $0.sogsSignature(
+                            message: any(),
+                            secretKey: any(),
+                            blindedSecretKey: any(),
+                            blindedPublicKey: any()
+                        )
+                    }
+                    .thenReturn("TestSogsSignature".bytes)
+                mockSign.when { $0.signature(message: any(), secretKey: any()) }.thenReturn("TestSignature".bytes)
             }
 
             afterEach {
-                testStorage = nil
-                testSodium = nil
-                testAeadXChaCha20Poly1305Ietf = nil
-                testGenericHash = nil
-                testSign = nil
+                mockStorage = nil
+                mockSodium = nil
+                mockAeadXChaCha20Poly1305Ietf = nil
+                mockGenericHash = nil
+                mockSign = nil
                 testUserDefaults = nil
                 dependencies = nil
                 
@@ -280,7 +326,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves recent messages if there was a last message and it has not performed the initial poll and the last message was too long ago") {
-                        testStorage.mockData[.openGroupSequenceNumber] = ["testServer.testRoom": Int64(123)]
+                        mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(123)
                         
                         OpenGroupAPI
                             .poll(
@@ -303,7 +349,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves recent messages if there was a last message and it has performed an initial poll but it was not too long ago") {
-                        testStorage.mockData[.openGroupSequenceNumber] = ["testServer.testRoom": Int64(123)]
+                        mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(123)
                         
                         OpenGroupAPI
                             .poll(
@@ -326,7 +372,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves recent messages if there was a last message and there has already been a poll this session") {
-                        testStorage.mockData[.openGroupSequenceNumber] = ["testServer.testRoom": Int64(123)]
+                        mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(123)
 
                         OpenGroupAPI
                             .poll(
@@ -370,7 +416,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves inbox messages since the last message if there was one") {
-                        testStorage.mockData[.openGroupInboxLatestMessageId] = ["testServer": Int64(124)]
+                        mockStorage.when { $0.getOpenGroupInboxLatestMessageId(for: any()) }.thenReturn(124)
                         
                         OpenGroupAPI
                             .poll(
@@ -414,7 +460,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("retrieves outbox messages since the last message if there was one") {
-                        testStorage.mockData[.openGroupOutboxLatestMessageId] = ["testServer": Int64(125)]
+                        mockStorage.when { $0.getOpenGroupOutboxLatestMessageId(for: any()) }.thenReturn(125)
                         
                         OpenGroupAPI
                             .poll(
@@ -439,7 +485,7 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("and given an invalid response") {
                     it("does not update the poll state") {
-                        testStorage.mockData[.openGroupSequenceNumber] = ["testServer.testRoom": Int64(123)]
+                        mockStorage.when { $0.getOpenGroupSequenceNumber(for: any(), on: any()) }.thenReturn(123)
                         
                         OpenGroupAPI.poll("testServer", hasPerformedInitialPoll: false, timeSinceLastPoll: 0, using: dependencies)
                             .get { result in pollResponse = result }
@@ -1028,7 +1074,7 @@ class OpenGroupAPISpec: QuickSpec {
                     messageData = LocalTestApi.data
                     dependencies = dependencies.with(api: LocalTestApi.self)
                     
-                    testStorage.mockData[.userEdKeyPair] = Box.KeyPair(publicKey: [], secretKey: [])
+                    mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(Box.KeyPair(publicKey: [], secretKey: []))
                 }
                 
                 afterEach {
@@ -1092,15 +1138,22 @@ class OpenGroupAPISpec: QuickSpec {
                             timeout: .milliseconds(100)
                         )
                     expect(error?.localizedDescription).to(beNil())
-                    expect(testStorage.mockData[.receivedMessageTimestamp] as? UInt64).to(equal(321000))
+                    expect(mockStorage)
+                        .to(call(matchingParameters: true) {
+                            $0.addReceivedMessageTimestamp(321000, using: any())
+                        })
                 }
                 
                 context("when unblinded") {
                     beforeEach {
-                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
-                            name: "testServer",
-                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                        )
+                        mockStorage
+                            .when { $0.getOpenGroupServer(name: any()) }
+                            .thenReturn(
+                                OpenGroupAPI.Server(
+                                    name: "testServer",
+                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
+                                )
+                            )
                     }
                     
                     it("signs the message correctly") {
@@ -1136,7 +1189,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails to sign if there is no public key") {
-                        testStorage.mockData[.openGroupPublicKeys] = [:]
+                        mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
                         
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
@@ -1166,10 +1219,14 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when blinded") {
                     beforeEach {
-                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
-                            name: "testServer",
-                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
-                        )
+                        mockStorage
+                            .when { $0.getOpenGroupServer(name: any()) }
+                            .thenReturn(
+                                OpenGroupAPI.Server(
+                                    name: "testServer",
+                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
+                                )
+                            )
                     }
                     
                     it("signs the message correctly") {
@@ -1205,7 +1262,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails to sign if there is no public key") {
-                        testStorage.mockData[.openGroupPublicKeys] = [:]
+                        mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
                         
                         var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Message)?
                         
@@ -1286,7 +1343,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     dependencies = dependencies.with(api: LocalTestApi.self)
                     
-                    testStorage.mockData[.userEdKeyPair] = Box.KeyPair(publicKey: [], secretKey: [])
+                    mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(Box.KeyPair(publicKey: [], secretKey: []))
                 }
                 
                 it("correctly sends the update") {
@@ -1321,10 +1378,14 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when unblinded") {
                     beforeEach {
-                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
-                            name: "testServer",
-                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                        )
+                        mockStorage
+                            .when { $0.getOpenGroupServer(name: any()) }
+                            .thenReturn(
+                                OpenGroupAPI.Server(
+                                    name: "testServer",
+                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
+                                )
+                            )
                     }
                     
                     it("signs the message correctly") {
@@ -1359,7 +1420,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails to sign if there is no public key") {
-                        testStorage.mockData[.openGroupPublicKeys] = [:]
+                        mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
                         
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
@@ -1388,10 +1449,14 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when blinded") {
                     beforeEach {
-                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
-                            name: "testServer",
-                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
-                        )
+                        mockStorage
+                            .when { $0.getOpenGroupServer(name: any()) }
+                            .thenReturn(
+                                OpenGroupAPI.Server(
+                                    name: "testServer",
+                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
+                                )
+                            )
                     }
                     
                     it("signs the message correctly") {
@@ -1426,7 +1491,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails to sign if there is no public key") {
-                        testStorage.mockData[.openGroupPublicKeys] = [:]
+                        mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
                         
                         var response: (info: OnionRequestResponseInfoType, data: Data?)?
                         
@@ -1480,6 +1545,47 @@ class OpenGroupAPISpec: QuickSpec {
                     expect(requestData?.httpMethod).to(equal("DELETE"))
                     expect(requestData?.server).to(equal("testServer"))
                     expect(requestData?.urlString).to(equal("testServer/room/testRoom/message/123"))
+                }
+            }
+            
+            context("when deleting all messages for a user") {
+                var response: (info: OnionRequestResponseInfoType, data: Data?)?
+                
+                beforeEach {
+                    class LocalTestApi: TestApi {
+                        override class var mockResponse: Data? { return Data() }
+                    }
+                    dependencies = dependencies.with(api: LocalTestApi.self)
+                }
+                
+                afterEach {
+                    response = nil
+                }
+                
+                it("generates the request and handles the response correctly") {
+                    OpenGroupAPI
+                        .messagesDeleteAll(
+                            "testUserId",
+                            in: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                        .get { result in response = result }
+                        .catch { requestError in error = requestError }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventuallyNot(
+                            beNil(),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(error?.localizedDescription).to(beNil())
+                    
+                    // Validate request data
+                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
+                    expect(requestData?.httpMethod).to(equal("DELETE"))
+                    expect(requestData?.server).to(equal("testServer"))
+                    expect(requestData?.urlString).to(equal("testServer/room/testRoom/all/testUserId"))
                 }
             }
             
@@ -1759,7 +1865,10 @@ class OpenGroupAPISpec: QuickSpec {
                             timeout: .milliseconds(100)
                         )
                     expect(error?.localizedDescription).to(beNil())
-                    expect(testStorage.mockData[.receivedMessageTimestamp] as? UInt64).to(equal(321000))
+                    expect(mockStorage)
+                        .to(call(matchingParameters: true) {
+                            $0.addReceivedMessageTimestamp(321000, using: any())
+                        })
                 }
             }
             
@@ -2086,121 +2195,11 @@ class OpenGroupAPISpec: QuickSpec {
                 }
             }
             
-            context("when deleting a users messages") {
-                var response: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.UserDeleteMessagesResponse)?
-                var messageData: OpenGroupAPI.UserDeleteMessagesResponse!
-                
-                beforeEach {
-                    class LocalTestApi: TestApi {
-                        static let data: OpenGroupAPI.UserDeleteMessagesResponse = OpenGroupAPI.UserDeleteMessagesResponse(
-                            id: "testId",
-                            messagesDeleted: 10
-                        )
-                        
-                        override class var mockResponse: Data? { return try! JSONEncoder().encode(data) }
-                    }
-                    messageData = LocalTestApi.data
-                    dependencies = dependencies.with(api: LocalTestApi.self)
-                }
-                
-                afterEach {
-                    response = nil
-                }
-                
-                it("generates the request and handles the response correctly") {
-                    OpenGroupAPI
-                        .userDeleteMessages(
-                            "testUserId",
-                            from: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
-                        .get { result in response = result }
-                        .catch { requestError in error = requestError }
-                        .retainUntilComplete()
-                    
-                    expect(response)
-                        .toEventuallyNot(
-                            beNil(),
-                            timeout: .milliseconds(100)
-                        )
-                    expect(error?.localizedDescription).to(beNil())
-                    
-                    // Validate the response data
-                    expect(response?.data).to(equal(messageData))
-                    
-                    // Validate request data
-                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
-                    expect(requestData?.httpMethod).to(equal("POST"))
-                    expect(requestData?.server).to(equal("testServer"))
-                    expect(requestData?.urlString).to(equal("testServer/user/testUserId/deleteMessages"))
-                }
-                
-                it("does a global delete if no room tokens are provided") {
-                    OpenGroupAPI
-                        .userDeleteMessages(
-                            "testUserId",
-                            from: nil,
-                            on: "testServer",
-                            using: dependencies
-                        )
-                        .get { result in response = result }
-                        .catch { requestError in error = requestError }
-                        .retainUntilComplete()
-                    
-                    expect(response)
-                        .toEventuallyNot(
-                            beNil(),
-                            timeout: .milliseconds(100)
-                        )
-                    expect(error?.localizedDescription).to(beNil())
-                    
-                    // Validate request data
-                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
-                    let requestBody: OpenGroupAPI.UserDeleteMessagesRequest = try! JSONDecoder().decode(OpenGroupAPI.UserDeleteMessagesRequest.self, from: requestData!.body!)
-                    
-                    expect(requestBody.global).to(beTrue())
-                    expect(requestBody.rooms).to(beNil())
-                }
-                
-                it("does room specific bans if room tokens are provided") {
-                    OpenGroupAPI
-                        .userDeleteMessages(
-                            "testUserId",
-                            from: ["testRoom"],
-                            on: "testServer",
-                            using: dependencies
-                        )
-                        .get { result in response = result }
-                        .catch { requestError in error = requestError }
-                        .retainUntilComplete()
-                    
-                    expect(response)
-                        .toEventuallyNot(
-                            beNil(),
-                            timeout: .milliseconds(100)
-                        )
-                    expect(error?.localizedDescription).to(beNil())
-                    
-                    // Validate request data
-                    let requestData: TestApi.RequestData? = (response?.info as? TestResponseInfo)?.requestData
-                    let requestBody: OpenGroupAPI.UserDeleteMessagesRequest = try! JSONDecoder().decode(OpenGroupAPI.UserDeleteMessagesRequest.self, from: requestData!.body!)
-                    
-                    expect(requestBody.global).to(beNil())
-                    expect(requestBody.rooms).to(equal(["testRoom"]))
-                }
-            }
-            
             context("when banning and deleting all messages for a user") {
                 var response: [OnionRequestResponseInfoType]?
                 
                 beforeEach {
                     class LocalTestApi: TestApi {
-                        static let deleteMessagesData: OpenGroupAPI.UserDeleteMessagesResponse = OpenGroupAPI.UserDeleteMessagesResponse(
-                            id: "123",
-                            messagesDeleted: 10
-                        )
-                        
                         override class var mockResponse: Data? {
                             let responses: [Data] = [
                                 try! JSONEncoder().encode(
@@ -2212,10 +2211,10 @@ class OpenGroupAPISpec: QuickSpec {
                                     )
                                 ),
                                 try! JSONEncoder().encode(
-                                    OpenGroupAPI.BatchSubResponse(
+                                    OpenGroupAPI.BatchSubResponse<NoResponse>(
                                         code: 200,
                                         headers: [:],
-                                        body: deleteMessagesData,
+                                        body: nil,
                                         failedToParseBody: false
                                     )
                                 )
@@ -2233,9 +2232,9 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 it("generates the request and handles the response correctly") {
                     OpenGroupAPI
-                        .userBanAndDeleteAllMessage(
+                        .userBanAndDeleteAllMessages(
                             "testUserId",
-                            from: nil,
+                            in: "testRoom",
                             on: "testServer",
                             using: dependencies
                         )
@@ -2257,11 +2256,11 @@ class OpenGroupAPISpec: QuickSpec {
                     expect(requestData?.urlString).to(equal("testServer/sequence"))
                 }
                 
-                it("does a global ban and delete if no room tokens are provided") {
+                it("bans the user from the specified room rather than globally") {
                     OpenGroupAPI
-                        .userBanAndDeleteAllMessage(
+                        .userBanAndDeleteAllMessages(
                             "testUserId",
-                            from: nil,
+                            in: "testRoom",
                             on: "testServer",
                             using: dependencies
                         )
@@ -2282,59 +2281,13 @@ class OpenGroupAPISpec: QuickSpec {
                         with: requestData!.body!,
                         options: [.fragmentsAllowed]
                     )
-                    let anyArray: [Any] = jsonObject as! [Any]
-                    let dataArray: [Data] = anyArray.compactMap {
-                        try! JSONSerialization.data(withJSONObject: ($0 as! [String: Any])["json"]!)
-                    }
+                    let firstJsonObject: Any = ((jsonObject as! [Any]).first as! [String: Any])["json"]!
+                    let firstJsonData: Data = try! JSONSerialization.data(withJSONObject: firstJsonObject)
                     let firstRequestBody: OpenGroupAPI.UserBanRequest = try! JSONDecoder()
-                        .decode(OpenGroupAPI.UserBanRequest.self, from: dataArray.first!)
-                    let lastRequestBody: OpenGroupAPI.UserDeleteMessagesRequest = try! JSONDecoder()
-                        .decode(OpenGroupAPI.UserDeleteMessagesRequest.self, from: dataArray.last!)
-                    
-                    expect(firstRequestBody.global).to(beTrue())
-                    expect(firstRequestBody.rooms).to(beNil())
-                    expect(lastRequestBody.global).to(beTrue())
-                    expect(lastRequestBody.rooms).to(beNil())
-                }
-                
-                it("does room specific bans and deletes if room tokens are provided") {
-                    OpenGroupAPI
-                        .userBanAndDeleteAllMessage(
-                            "testUserId",
-                            from: ["testRoom"],
-                            on: "testServer",
-                            using: dependencies
-                        )
-                        .get { result in response = result }
-                        .catch { requestError in error = requestError }
-                        .retainUntilComplete()
-                    
-                    expect(response)
-                        .toEventuallyNot(
-                            beNil(),
-                            timeout: .milliseconds(100)
-                        )
-                    expect(error?.localizedDescription).to(beNil())
-                    
-                    // Validate request data
-                    let requestData: TestApi.RequestData? = (response?.first as? TestResponseInfo)?.requestData
-                    let jsonObject: Any = try! JSONSerialization.jsonObject(
-                        with: requestData!.body!,
-                        options: [.fragmentsAllowed]
-                    )
-                    let anyArray: [Any] = jsonObject as! [Any]
-                    let dataArray: [Data] = anyArray.compactMap {
-                        try! JSONSerialization.data(withJSONObject: ($0 as! [String: Any])["json"]!)
-                    }
-                    let firstRequestBody: OpenGroupAPI.UserBanRequest = try! JSONDecoder()
-                        .decode(OpenGroupAPI.UserBanRequest.self, from: dataArray.first!)
-                    let lastRequestBody: OpenGroupAPI.UserDeleteMessagesRequest = try! JSONDecoder()
-                        .decode(OpenGroupAPI.UserDeleteMessagesRequest.self, from: dataArray.last!)
+                        .decode(OpenGroupAPI.UserBanRequest.self, from: firstJsonData)
                     
                     expect(firstRequestBody.global).to(beNil())
                     expect(firstRequestBody.rooms).to(equal(["testRoom"]))
-                    expect(lastRequestBody.global).to(beNil())
-                    expect(lastRequestBody.rooms).to(equal(["testRoom"]))
                 }
             }
             
@@ -2352,7 +2305,7 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("fails when there is no userEdKeyPair") {
-                    testStorage.mockData[.userEdKeyPair] = nil
+                    mockStorage.when { $0.getUserED25519KeyPair() }.thenReturn(nil)
                     
                     OpenGroupAPI.rooms(for: "testServer", using: dependencies)
                         .get { result in response = result }
@@ -2369,7 +2322,7 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("fails when there is no serverPublicKey") {
-                    testStorage.mockData[.openGroupPublicKeys] = [:]
+                    mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn(nil)
                     
                     OpenGroupAPI.rooms(for: "testServer", using: dependencies)
                         .get { result in response = result }
@@ -2386,7 +2339,7 @@ class OpenGroupAPISpec: QuickSpec {
                 }
                 
                 it("fails when the serverPublicKey is not a hex string") {
-                    testStorage.mockData[.openGroupPublicKeys] = ["testServer": "TestString!!!"]
+                    mockStorage.when { $0.getOpenGroupPublicKey(for: any()) }.thenReturn("TestString!!!")
                     
                     OpenGroupAPI.rooms(for: "testServer", using: dependencies)
                         .get { result in response = result }
@@ -2404,10 +2357,14 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when unblinded") {
                     beforeEach {
-                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
-                            name: "testServer",
-                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
-                        )
+                        mockStorage
+                            .when { $0.getOpenGroupServer(name: any()) }
+                            .thenReturn(
+                                OpenGroupAPI.Server(
+                                    name: "testServer",
+                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: [])
+                                )
+                            )
                     }
                     
                     it("signs correctly") {
@@ -2438,7 +2395,7 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails when the signature is not generated") {
-                        testSign.mockData[.signature] = nil
+                        mockSign.when { $0.signature(message: any(), secretKey: any()) }.thenReturn(nil)
                         
                         OpenGroupAPI.rooms(for: "testServer", using: dependencies)
                             .get { result in response = result }
@@ -2457,10 +2414,14 @@ class OpenGroupAPISpec: QuickSpec {
                 
                 context("when blinded") {
                     beforeEach {
-                        testStorage.mockData[.openGroupServer] = OpenGroupAPI.Server(
-                            name: "testServer",
-                            capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
-                        )
+                        mockStorage
+                            .when { $0.getOpenGroupServer(name: any()) }
+                            .thenReturn(
+                                OpenGroupAPI.Server(
+                                    name: "testServer",
+                                    capabilities: OpenGroupAPI.Capabilities(capabilities: [.sogs, .blind], missing: [])
+                                )
+                            )
                     }
                     
                     it("signs correctly") {
@@ -2490,7 +2451,9 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails when the blindedKeyPair is not generated") {
-                        testSodium.mockData[.blindedKeyPair] = nil
+                        mockSodium
+                            .when { $0.blindedKeyPair(serverPublicKey: any(), edKeyPair: any(), genericHash: mockGenericHash) }
+                            .thenReturn(nil)
                         
                         OpenGroupAPI.rooms(for: "testServer", using: dependencies)
                             .get { result in response = result }
@@ -2507,7 +2470,9 @@ class OpenGroupAPISpec: QuickSpec {
                     }
                     
                     it("fails when the sogsSignature is not generated") {
-                        testSodium.mockData[.sogsSignature] = nil
+                        mockSodium
+                            .when { $0.blindedKeyPair(serverPublicKey: any(), edKeyPair: any(), genericHash: mockGenericHash) }
+                            .thenReturn(nil)
                         
                         OpenGroupAPI.rooms(for: "testServer", using: dependencies)
                             .get { result in response = result }

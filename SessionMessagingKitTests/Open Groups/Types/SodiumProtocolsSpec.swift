@@ -15,15 +15,24 @@ class SodiumProtocolsSpec: QuickSpec {
             let testValue: [UInt8] = [1, 2, 3]
             
             it("provides the default values in it's extensions") {
-                let testAead: TestAeadXChaCha20Poly1305Ietf = TestAeadXChaCha20Poly1305Ietf()
-                testAead.mockData[.encrypt] = testValue
-                testAead.mockData[.decrypt] = testValue
+                let mockAead: MockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
+                mockAead
+                    .when { $0.encrypt(message: any(), secretKey: any(), nonce: any(), additionalData: any()) }
+                    .thenReturn(testValue)
+                mockAead
+                    .when { $0.decrypt(authenticatedCipherText: any(), secretKey: any(), nonce: any(), additionalData: any()) }
+                    .thenReturn(testValue)
                 
-                expect(testAead.encrypt(message: [], secretKey: [], nonce: [])).to(equal(testValue))
-                expect(testAead.encrypt(message: [], secretKey: [], nonce: [], additionalData: nil)).to(equal(testValue))
-                expect(testAead.decrypt(authenticatedCipherText: [], secretKey: [], nonce: [])).to(equal(testValue))
-                expect(testAead.decrypt(authenticatedCipherText: [], secretKey: [], nonce: [], additionalData: nil))
-                    .to(equal(testValue))
+                _ = mockAead.encrypt(message: [], secretKey: [], nonce: [])
+                _ = mockAead.decrypt(authenticatedCipherText: [], secretKey: [], nonce: [])
+                
+                expect(mockAead)
+                    .to(call { $0.encrypt(message: any(), secretKey: any(), nonce: any(), additionalData: any()) })
+                
+                expect(mockAead)
+                    .to(call {
+                        $0.decrypt(authenticatedCipherText: any(), secretKey: any(), nonce: any(), additionalData: any())
+                    })
             }
         }
         
@@ -31,16 +40,21 @@ class SodiumProtocolsSpec: QuickSpec {
             let testValue: [UInt8] = [1, 2, 3]
             
             it("provides the default values in it's extensions") {
-                let testGenericHash: TestGenericHash = TestGenericHash()
-                testGenericHash.mockData[.hash] = testValue
-                testGenericHash.mockData[.hashSaltPersonal] = testValue
+                let mockGenericHash: MockGenericHash = MockGenericHash()
+                mockGenericHash.when { $0.hash(message: any(), key: any()) }.thenReturn(testValue)
+                mockGenericHash
+                    .when { $0.hashSaltPersonal(message: any(), outputLength: any(), key: any(), salt: any(), personal: any()) }
+                    .thenReturn(testValue)
                 
-                expect(testGenericHash.hash(message: [])).to(equal(testValue))
-                expect(testGenericHash.hash(message: [], key: nil)).to(equal(testValue))
-                expect(testGenericHash.hashSaltPersonal(message: [], outputLength: 0, salt: [], personal: []))
-                    .to(equal(testValue))
-                expect(testGenericHash.hashSaltPersonal(message: [], outputLength: 0, key: nil, salt: [], personal: []))
-                    .to(equal(testValue))
+                _ = mockGenericHash.hash(message: [])
+                _ = mockGenericHash.hashSaltPersonal(message: [], outputLength: 0, salt: [], personal: [])
+                
+                expect(mockGenericHash)
+                    .to(call { $0.hash(message: any(), key: any()) })
+                expect(mockGenericHash)
+                    .to(call {
+                        $0.hashSaltPersonal(message: any(), outputLength: any(), key: any(), salt: any(), personal: any())
+                    })
             }
         }
     }

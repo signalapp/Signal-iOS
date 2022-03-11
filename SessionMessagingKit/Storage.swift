@@ -60,17 +60,20 @@ public protocol SessionMessagingKitStorageProtocol {
     
     func getOpenGroup(for threadID: String) -> OpenGroup?
     func setOpenGroup(_ openGroup: OpenGroup, for threadID: String, using transaction: Any)
+    func removeOpenGroup(for threadID: String, using transaction: Any)
     
     func getUserCount(forOpenGroupWithID openGroupID: String) -> UInt64?
     func setUserCount(to newValue: UInt64, forOpenGroupWithID openGroupID: String, using transaction: Any)
     
     func getOpenGroupServer(name: String) -> OpenGroupAPI.Server?
     func setOpenGroupServer(_ server: OpenGroupAPI.Server, using transaction: Any)
+    func removeOpenGroupServer(name: String, using transaction: Any)
     
     // MARK: - -- Open Group Public Keys
 
     func getOpenGroupPublicKey(for server: String) -> String?
     func setOpenGroupPublicKey(for server: String, to newValue: String, using transaction: Any)
+    func removeOpenGroupPublicKey(for server: String, using transaction: Any)
 
     // MARK: - -- Open Group Sequence Number
 
@@ -96,6 +99,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getAllMessageRequestThreads(using transaction: YapDatabaseReadTransaction) -> [String: TSContactThread]
     
     func getReceivedMessageTimestamps(using transaction: Any) -> [UInt64]
+    func removeReceivedMessageTimestamps(_ timestamps: Set<UInt64>, using transaction: Any)
     func addReceivedMessageTimestamp(_ timestamp: UInt64, using transaction: Any)
     /// Returns the ID of the thread.
     func getOrCreateThread(for publicKey: String, groupPublicKey: String?, openGroupID: String?, using transaction: Any) -> String?

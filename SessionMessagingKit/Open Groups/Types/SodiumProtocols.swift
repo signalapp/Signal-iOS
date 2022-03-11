@@ -28,7 +28,7 @@ public protocol AeadXChaCha20Poly1305IetfType {
 }
 
 public protocol Ed25519Type {
-    static func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool
+    func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool
 }
 
 public protocol SignType {
@@ -80,4 +80,9 @@ extension Sodium: SodiumType {
 extension Aead.XChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {}
 extension Sign: SignType {}
 extension GenericHash: GenericHashType {}
-extension Ed25519: Ed25519Type {}
+
+struct Ed25519Wrapper: Ed25519Type {
+    func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool {
+        return try Ed25519.verifySignature(signature, publicKey: publicKey, data: data)
+    }
+}

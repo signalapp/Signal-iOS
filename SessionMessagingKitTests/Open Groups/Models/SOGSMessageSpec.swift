@@ -15,7 +15,8 @@ class SOGSMessageSpec: QuickSpec {
             var messageJson: String!
             var messageData: Data!
             var decoder: JSONDecoder!
-            var testSign: TestSign!
+            var mockSign: MockSign!
+            var mockEd25519: MockEd25519!
             var dependencies: Dependencies!
             
             beforeEach {
@@ -29,17 +30,22 @@ class SOGSMessageSpec: QuickSpec {
                     "whisper_mods": false,
                             
                     "data": "VGVzdERhdGE=",
-                    "signature": "VGVzdERhdGE="
+                    "signature": "VGVzdFNpZ25hdHVyZQ=="
                 }
                 """
                 messageData = messageJson.data(using: .utf8)!
-                testSign = TestSign()
+                mockSign = MockSign()
+                mockEd25519 = MockEd25519()
                 dependencies = Dependencies(
-                    sign: testSign,
-                    ed25519: TestEd25519.self
+                    sign: mockSign,
+                    ed25519: mockEd25519
                 )
                 decoder = JSONDecoder()
                 decoder.userInfo = [ Dependencies.userInfoKey: dependencies as Any ]
+            }
+            
+            afterEach {
+                mockSign = nil
             }
             
             context("when decoding") {
@@ -91,7 +97,7 @@ class SOGSMessageSpec: QuickSpec {
                             "whisper_mods": false,
                         
                             "data": "VGVzdERhdGE=",
-                            "signature": "VGVzdERhdGE="
+                            "signature": "VGVzdFNpZ25hdHVyZQ=="
                         }
                         """
                         messageData = messageJson.data(using: .utf8)!
@@ -113,7 +119,7 @@ class SOGSMessageSpec: QuickSpec {
                             "whisper_mods": false,
                         
                             "data": "Test!!!",
-                            "signature": "VGVzdERhdGE="
+                            "signature": "VGVzdFNpZ25hdHVyZQ=="
                         }
                         """
                         messageData = messageJson.data(using: .utf8)!
@@ -166,7 +172,7 @@ class SOGSMessageSpec: QuickSpec {
                             "whisper_mods": false,
                         
                             "data": "VGVzdERhdGE=",
-                            "signature": "VGVzdERhdGE="
+                            "signature": "VGVzdFNpZ25hdHVyZQ=="
                         }
                         """
                         messageData = messageJson.data(using: .utf8)!
@@ -190,14 +196,14 @@ class SOGSMessageSpec: QuickSpec {
                                 "whisper_mods": false,
                                         
                                 "data": "VGVzdERhdGE=",
-                                "signature": "VGVzdERhdGE="
+                                "signature": "VGVzdFNpZ25hdHVyZQ=="
                             }
                             """
                             messageData = messageJson.data(using: .utf8)!
                         }
                         
                         it("succeeds if it succeeds verification") {
-                            testSign.mockData[.verify] = true
+                            mockSign.when { $0.verify(message: any(), publicKey: any(), signature: any()) }.thenReturn(true)
                             
                             expect {
                                 try decoder.decode(OpenGroupAPI.Message.self, from: messageData)
@@ -205,8 +211,23 @@ class SOGSMessageSpec: QuickSpec {
                             .toNot(beNil())
                         }
                         
+                        it("provides the correct values as parameters") {
+                            mockSign.when { $0.verify(message: any(), publicKey: any(), signature: any()) }.thenReturn(true)
+                            
+                            _ = try? decoder.decode(OpenGroupAPI.Message.self, from: messageData)
+                            
+                            expect(mockSign)
+                                .to(call(matchingParameters: true) {
+                                    $0.verify(
+                                        message: Data(base64Encoded: "VGVzdERhdGE=")!.bytes,
+                                        publicKey: Data(hex: TestConstants.publicKey).bytes,
+                                        signature: Data(base64Encoded: "VGVzdFNpZ25hdHVyZQ==")!.bytes
+                                    )
+                                })
+                        }
+                        
                         it("throws if it fails verification") {
-                            testSign.mockData[.verify] = false
+                            mockSign.when { $0.verify(message: any(), publicKey: any(), signature: any()) }.thenReturn(false)
                             
                             expect {
                                 try decoder.decode(OpenGroupAPI.Message.self, from: messageData)
@@ -217,13 +238,7 @@ class SOGSMessageSpec: QuickSpec {
                     
                     context("that is unblinded") {
                         it("succeeds if it succeeds verification") {
-                            TestEd25519.mockData[
-                                .verifySignature(
-                                    signature: Data(base64Encoded: "VGVzdERhdGE=")!,
-                                    publicKey: Data(hex: TestConstants.publicKey),
-                                    data: Data(base64Encoded: "VGVzdERhdGE=")!
-                                )
-                            ] = true
+                            mockEd25519.when { try $0.verifySignature(any(), publicKey: any(), data: any()) }.thenReturn(true)
                             
                             expect {
                                 try decoder.decode(OpenGroupAPI.Message.self, from: messageData)
@@ -231,14 +246,23 @@ class SOGSMessageSpec: QuickSpec {
                             .toNot(beNil())
                         }
                         
+                        it("provides the correct values as parameters") {
+                            mockEd25519.when { try $0.verifySignature(any(), publicKey: any(), data: any()) }.thenReturn(true)
+                            
+                            _ = try? decoder.decode(OpenGroupAPI.Message.self, from: messageData)
+                            
+                            expect(mockEd25519)
+                                .to(call(matchingParameters: true) {
+                                    try $0.verifySignature(
+                                        Data(base64Encoded: "VGVzdFNpZ25hdHVyZQ==")!,
+                                        publicKey: Data(hex: TestConstants.publicKey),
+                                        data: Data(base64Encoded: "VGVzdERhdGE=")!
+                                    )
+                                })
+                        }
+                        
                         it("throws if it fails verification") {
-                            TestEd25519.mockData[
-                                .verifySignature(
-                                    signature: Data(base64Encoded: "VGVzdERhdGE=")!,
-                                    publicKey: Data(hex: TestConstants.publicKey),
-                                    data: Data(base64Encoded: "VGVzdERhdGE=")!
-                                )
-                            ] = false
+                            mockEd25519.when { try $0.verifySignature(any(), publicKey: any(), data: any()) }.thenReturn(false)
                             
                             expect {
                                 try decoder.decode(OpenGroupAPI.Message.self, from: messageData)
