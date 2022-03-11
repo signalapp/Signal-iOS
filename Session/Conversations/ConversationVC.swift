@@ -613,6 +613,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         let updateType = conversationUpdate.conversationUpdateType
         guard updateType != .minor else { return } // No view items were affected
         if updateType == .reload {
+            if threadStartedAsMessageRequest {
+                updateNavBarButtons()   // In case the message request was approved
+            }
+            
             return messagesTableView.reloadData()
         }
         var shouldScrollToBottom = false
@@ -632,6 +636,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 case .update:
                     self.messagesTableView.reloadRows(at: [ IndexPath(row: Int(update.oldIndex), section: 0) ], with: .none)
                 default: preconditionFailure()
+                }
+                
+                // Update the nav items if the message request was approved
+                if (update.viewItem?.interaction as? TSInfoMessage)?.messageType == .messageRequestAccepted {
+                    self.updateNavBarButtons()
                 }
             }
         }

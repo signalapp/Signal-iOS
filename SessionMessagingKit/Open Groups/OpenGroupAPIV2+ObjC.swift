@@ -14,6 +14,6 @@ extension OpenGroupAPIV2 {
     
     @objc(getDefaultRoomsIfNeeded)
     public static func objc_getDefaultRoomsIfNeeded() {
-        return getDefaultRoomsIfNeeded()
+        getDefaultRoomsIfNeeded()
     }
 }

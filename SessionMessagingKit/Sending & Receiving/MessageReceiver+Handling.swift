@@ -211,7 +211,7 @@ extension MessageReceiver {
             // Contacts
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
-                let contact = Contact(sessionID: sessionID)
+                let contact = (Storage.shared.getContact(with: sessionID, using: transaction) ?? Contact(sessionID: sessionID))
                 if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
@@ -417,11 +417,7 @@ extension MessageReceiver {
         // Use the same identifier for notifications when in backgroud polling to prevent spam
         let notificationIdentifier = isBackgroundPoll ? thread.uniqueId : UUID().uuidString
         tsIncomingMessage.setNotificationIdentifier(notificationIdentifier, transaction: transaction)
-        DispatchQueue.main.async {
-            Storage.read { transaction in
-                SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
-            }
-        }
+        SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
         return tsMessageID
     }
     

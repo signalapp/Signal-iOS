@@ -37,7 +37,6 @@ public class PlaceholderIcon {
     }
     
     private func getTextLayer(with diameter: CGFloat, colour: CGColor? = nil, text: String) -> CALayer {
-        let text = text.capitalized
         let font = UIFont.boldSystemFont(ofSize: diameter / 2)
         let height = NSString(string: text).boundingRect(with: CGSize(width: diameter, height: CGFloat.greatestFiniteMagnitude),
             options: .usesLineFragmentOrigin, attributes: [ NSAttributedString.Key.font : font ], context: nil).height
