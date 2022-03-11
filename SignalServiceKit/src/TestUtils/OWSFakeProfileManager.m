@@ -3,6 +3,7 @@
 //
 
 #import "OWSFakeProfileManager.h"
+#import "FunctionalUtil.h"
 #import "NSString+SSK.h"
 #import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
@@ -381,6 +382,12 @@ NS_ASSUME_NONNULL_BEGIN
                               transaction:(SDSAnyReadTransaction *)transaction
 {
     return self.fakeUsernames[address];
+}
+
+- (nonnull NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(nonnull NSArray<SignalServiceAddress *> *)addresses
+                                                   transaction:(nonnull SDSAnyReadTransaction *)transaction
+{
+    return [addresses map:^(SignalServiceAddress *address) { return self.fakeUsernames[address] ?: [NSNull null]; }];
 }
 
 

@@ -1568,13 +1568,21 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
+    NSArray<id<SSKMaybeString>> *array = [self usernamesForAddresses:@[ address ] transaction:transaction];
+    return [array[0] stringOrNil];
+}
 
-    if (userProfile.username.length > 0) {
-        return userProfile.username;
-    }
-
-    return nil;
+- (NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                           transaction:(SDSAnyReadTransaction *)transaction
+{
+    NSArray<id<OWSMaybeUserProfile>> *profiles = [self userProfilesForAddresses:addresses transaction:transaction];
+    return [profiles map:^id<SSKMaybeString> _Nonnull(id<OWSMaybeUserProfile> _Nonnull item) {
+        NSString *username = [[item userProfileOrNil] username];
+        if (username.length == 0) {
+            return [NSNull null];
+        }
+        return username;
+    }];
 }
 
 - (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address

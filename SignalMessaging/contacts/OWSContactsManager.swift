@@ -998,9 +998,8 @@ extension OWSContactsManager {
                 return $0?.nilIfEmpty
             }
         }.refine { addresses in
-            // TODO: Combine these db queries into one.
-            return addresses.lazy.map { address in
-                guard let username = self.profileManager.username(for: address, transaction: transaction)?.nilIfEmpty else {
+            return self.profileManager.usernames(forAddresses: Array(addresses), transaction: transaction).map { maybeUsername in
+                guard let username = maybeUsername.stringOrNil else {
                     return nil
                 }
                 return CommonFormats.formatUsername(username)
