@@ -188,25 +188,35 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         return result
     }()
     
+    private lazy var suggestionGridTitleLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        result.text = NSLocalizedString("vc_join_open_group_suggestions_title", comment: "")
+        result.numberOfLines = 0
+        result.lineBreakMode = .byWordWrapping
+        return result
+    }()
+    
+    private lazy var suggestionGridStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ suggestionGridTitleLabel, suggestionGrid ])
+        result.axis = .vertical
+        result.alignment = .fill
+        result.spacing = Values.mediumSpacing
+        return result
+    }()
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
-        // Suggestion grid title label
-        let suggestionGridTitleLabel = UILabel()
-        suggestionGridTitleLabel.textColor = Colors.text
-        suggestionGridTitleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
-        suggestionGridTitleLabel.text = NSLocalizedString("vc_join_open_group_suggestions_title", comment: "")
-        suggestionGridTitleLabel.numberOfLines = 0
-        suggestionGridTitleLabel.lineBreakMode = .byWordWrapping
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
-            UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridStackView, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)
@@ -264,6 +274,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         bottomConstraint.constant = newHeight + bottomMargin
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
+            self.suggestionGridStackView.isHidden = true
         }
     }
     
@@ -273,6 +284,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         bottomConstraint.constant = bottomMargin
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
+            self.suggestionGridStackView.isHidden = false
         }
     }
 }
