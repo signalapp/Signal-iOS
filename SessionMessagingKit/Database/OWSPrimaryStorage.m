@@ -174,6 +174,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                         withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
 
     [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
+    [TSDatabaseView asyncRegisterUnreadMentionDatabaseView:self];
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
 
     [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
