@@ -58,6 +58,16 @@ class StoriesViewController: OWSViewController {
         timestampUpdateTimer = nil
     }
 
+    override func applyTheme() {
+        super.applyTheme()
+
+        for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {
+            guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
+            guard let model = self.models[safe: indexPath.row] else { continue }
+            cell.configure(with: model)
+        }
+    }
+
     @objc
     func showCameraView() {
         // Dismiss any message actions if they're presented
