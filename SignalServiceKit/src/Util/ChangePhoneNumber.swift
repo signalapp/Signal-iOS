@@ -144,45 +144,48 @@ public class ChangePhoneNumber: NSObject {
         firstly { () -> Promise<WhoAmIResponse> in
             Self.accountServiceClient.getAccountWhoAmI()
         }.map(on: .global()) { whoAmIResponse in
-            guard let localUuid = tsAccountManager.localUuid else {
-                throw OWSAssertionError("Missing localUuid.")
-            }
-            guard let localPhoneNumber = tsAccountManager.localNumber else {
-                throw OWSAssertionError("Missing localPhoneNumber.")
-            }
-            let localPni = tsAccountManager.localPni
+            try Self.updateLocalPhoneNumber(from: whoAmIResponse)
+        }
+    }
 
-            let serviceUuid = whoAmIResponse.aci
-            guard let servicePhoneNumber = whoAmIResponse.e164 else {
-                throw OWSAssertionError("Missing servicePhoneNumber.")
-            }
-            guard serviceUuid == localUuid else {
-                throw OWSAssertionError("Unexpected uuid: \(serviceUuid) != \(localUuid)")
-            }
-            let servicePni = whoAmIResponse.pni
+    public static func updateLocalPhoneNumber(from whoAmIResponse: WhoAmIResponse) throws -> LocalPhoneNumber {
+        guard let localUuid = tsAccountManager.localUuid else {
+            throw OWSAssertionError("Missing localUuid.")
+        }
+        guard let localPhoneNumber = tsAccountManager.localNumber else {
+            throw OWSAssertionError("Missing localPhoneNumber.")
+        }
+        let localPni = tsAccountManager.localPni
 
-            Logger.info("localUuid: \(localUuid), localPhoneNumber: \(localPhoneNumber), serviceUuid: \(serviceUuid), servicePhoneNumber: \(servicePhoneNumber)")
+        let serviceUuid = whoAmIResponse.aci
+        guard let servicePhoneNumber = whoAmIResponse.e164 else {
+            throw OWSAssertionError("Missing servicePhoneNumber.")
+        }
+        guard serviceUuid == localUuid else {
+            throw OWSAssertionError("Unexpected uuid: \(serviceUuid) != \(localUuid)")
+        }
+        let servicePni = whoAmIResponse.pni
 
-            databaseStorage.write { transaction in
-                let address = SignalServiceAddress(uuid: serviceUuid, phoneNumber: servicePhoneNumber)
-                SignalRecipient.mark(asRegisteredAndGet: address,
-                                     trustLevel: .high,
-                                     transaction: transaction)
-            }
+        Logger.info("localUuid: \(localUuid), localPhoneNumber: \(localPhoneNumber), serviceUuid: \(serviceUuid), servicePhoneNumber: \(servicePhoneNumber)")
+
+        databaseStorage.write { transaction in
+            let address = SignalServiceAddress(uuid: serviceUuid, phoneNumber: servicePhoneNumber)
+            SignalRecipient.mark(asRegisteredAndGet: address,
+                                 trustLevel: .high,
+                                 transaction: transaction)
 
             if servicePhoneNumber != localPhoneNumber || servicePni != localPni {
                 Logger.info("Recording new phone number: \(servicePhoneNumber), pni: \(servicePni)")
 
-                Self.databaseStorage.write { transaction in
-                    Self.tsAccountManager.updateLocalPhoneNumber(servicePhoneNumber,
-                                                                 aci: localUuid,
-                                                                 pni: servicePni,
-                                                                 shouldUpdateStorageService: true,
-                                                                 transaction: transaction)
-                }
+                Self.tsAccountManager.updateLocalPhoneNumber(servicePhoneNumber,
+                                                             aci: localUuid,
+                                                             pni: servicePni,
+                                                             shouldUpdateStorageService: true,
+                                                             transaction: transaction)
             }
-            return LocalPhoneNumber(localPhoneNumber: servicePhoneNumber)
         }
+
+        return LocalPhoneNumber(localPhoneNumber: servicePhoneNumber)
     }
 
     private static let keyValueStore = SDSKeyValueStore(collection: "ChangePhoneNumber")

@@ -130,15 +130,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Missing or invalid response.")
-            }
-
-            let aci: UUID = try parser.required(key: "uuid")
-            let pni: UUID = try parser.required(key: "pni")
-            let e164: String? = try parser.optional(key: "number")
-
-            return WhoAmIResponse(aci: aci, pni: pni, e164: e164)
+            return try WhoAmIResponse.parse(json)
         }
     }
 
@@ -249,6 +241,18 @@ public struct WhoAmIResponse {
     public let aci: UUID
     public let pni: UUID
     public let e164: String?
+
+    public static func parse(_ json: Any?) throws -> Self {
+        guard let parser = ParamParser(responseObject: json) else {
+            throw OWSAssertionError("Missing or invalid response.")
+        }
+
+        let aci: UUID = try parser.required(key: "uuid")
+        let pni: UUID = try parser.required(key: "pni")
+        let e164: String? = try parser.optional(key: "number")
+
+        return WhoAmIResponse(aci: aci, pni: pni, e164: e164)
+    }
 }
 
 public struct VerifySecondaryDeviceResponse {

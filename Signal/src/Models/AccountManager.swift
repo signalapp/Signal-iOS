@@ -205,10 +205,10 @@ public class AccountManager: NSObject {
             self.changePhoneNumberRequest(newPhoneNumber: newPhoneNumber,
                                           verificationCode: verificationCode,
                                           registrationLock: registrationLock)
-        }.then(on: .global()) {
+        }.map(on: .global()) { response in
             // Try to take the change from the service.
-            ChangePhoneNumber.updateLocalPhoneNumberPromise()
-        }.done { localPhoneNumber in
+            try ChangePhoneNumber.updateLocalPhoneNumber(from: response)
+        }.done(on: .global()) { localPhoneNumber in
             owsAssertDebug(localPhoneNumber.localPhoneNumber == newPhoneNumber)
 
             // Mark change as complete.
@@ -220,14 +220,18 @@ public class AccountManager: NSObject {
         }
     }
 
-    private func changePhoneNumberRequest(newPhoneNumber: String, verificationCode: String, registrationLock: String?) -> Promise<Void> {
-        return Promise<Void> { future in
+    private func changePhoneNumberRequest(newPhoneNumber: String,
+                                          verificationCode: String,
+                                          registrationLock: String?) -> Promise<WhoAmIResponse> {
+        return Promise { future in
             let request = OWSRequestFactory.changePhoneNumberRequest(newPhoneNumberE164: newPhoneNumber,
                                                                      verificationCode: verificationCode,
                                                                      registrationLock: registrationLock)
             tsAccountManager.verifyChangePhoneNumber(request: request,
                                                      success: future.resolve,
                                                      failure: future.reject)
+        }.map(on: .global()) { json in
+            return try WhoAmIResponse.parse(json)
         }
     }
 

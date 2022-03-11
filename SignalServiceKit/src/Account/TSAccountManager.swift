@@ -281,7 +281,7 @@ extension TSAccountManager {
 
     @objc
     open func verifyChangePhoneNumber(request: TSRequest,
-                                      success: @escaping () -> Void,
+                                      success: @escaping (Any?) -> Void,
                                       failure: @escaping (Error) -> Void) {
         firstly {
             networkManager.makePromise(request: request)
@@ -290,8 +290,11 @@ extension TSAccountManager {
 
             switch statusCode {
             case 200, 204:
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing or invalid JSON")
+                }
                 Logger.info("Verification code accepted.")
-                success()
+                success(json)
             default:
                 Logger.warn("Unexpected status while verifying code: \(statusCode)")
                 failure(OWSGenericError("Unexpected status while verifying code: \(statusCode)"))
