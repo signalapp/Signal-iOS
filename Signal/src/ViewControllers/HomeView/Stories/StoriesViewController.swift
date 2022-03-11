@@ -120,7 +120,7 @@ class StoriesViewController: OWSViewController {
             var changedIdentifiers = [UUID]()
 
             let newModels = Self.databaseStorage.read { transaction in
-                self.models.map { model in
+                self.models.compactMap { model in
                     guard let latestRecord = model.records.first else { return model }
 
                     let modelDeletedRowIds = model.recordIds.filter { deletedRowIds.contains($0) }

@@ -91,4 +91,44 @@ public enum StoryFinder {
             return nil
         }
     }
+
+    // The stories should be enumerated in order from "next to expire" to "last to expire".
+    public static func enumerateExpiredStories(transaction: GRDBReadTransaction, block: @escaping (StoryMessageRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
+
+        let sql = """
+            SELECT *
+            FROM \(StoryMessageRecord.databaseTableName)
+            WHERE timestamp <= \(Date().ows_millisecondsSince1970 - StoryManager.storyLifetime)
+            ORDER BY timestamp ASC
+        """
+
+        do {
+            let cursor = try StoryMessageRecord.fetchCursor(transaction.database, sql: sql)
+            while let record = try cursor.next() {
+                var stop: ObjCBool = false
+                block(record, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    public static func oldestTimestamp(transaction: GRDBReadTransaction) -> UInt64? {
+        let sql = """
+            SELECT timestamp
+            FROM \(StoryMessageRecord.databaseTableName)
+            ORDER BY timestamp ASC
+            LIMIT 1
+        """
+
+        do {
+            return try UInt64.fetchOne(transaction.database, sql: sql)
+        } catch {
+            owsFailDebug("failed to lookup next story expiration \(error)")
+            return nil
+        }
+    }
 }

@@ -116,6 +116,12 @@ public struct StoryMessageRecord: Dependencies, Codable, Identifiable, Fetchable
     mutating public func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
     }
+
+    @discardableResult
+    public func delete(_ db: Database) throws -> Bool {
+        // TODO: Cleanup associated records
+        return try performDelete(db)
+    }
 }
 
 public enum StoryManifest: Codable {

@@ -80,10 +80,10 @@ struct IncomingStoryViewModel: Dependencies {
         latestRecordTimestamp = latestRecord.timestamp
     }
 
-    func copy(updatedRecords: [StoryMessageRecord], deletedRecordIds: [Int64], transaction: SDSAnyReadTransaction) throws -> Self {
+    func copy(updatedRecords: [StoryMessageRecord], deletedRecordIds: [Int64], transaction: SDSAnyReadTransaction) throws -> Self? {
         var updatedRecords = updatedRecords
         let records = self.records.lazy
-            .filter { deletedRecordIds.contains($0.id ?? 0) }
+            .filter { !deletedRecordIds.contains($0.id ?? 0) }
             .map { oldRecord in
                 if let idx = updatedRecords.firstIndex(where: { $0.id == oldRecord.id }) {
                     return updatedRecords.remove(at: idx)
@@ -91,6 +91,7 @@ struct IncomingStoryViewModel: Dependencies {
                     return oldRecord
                 }
             } + updatedRecords
+        guard !records.isEmpty else { return nil }
         return try .init(records: records, identifier: identifier, transaction: transaction)
     }
 }

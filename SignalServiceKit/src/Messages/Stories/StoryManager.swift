@@ -6,6 +6,8 @@ import Foundation
 
 @objc
 public class StoryManager: NSObject {
+    public static let storyLifetime = kDayInMs
+
     @objc
     public class func processIncomingStoryMessage(
         _ storyMessage: SSKProtoStoryMessage,
@@ -22,5 +24,28 @@ public class StoryManager: NSObject {
 
         // TODO: Optimistic downloading of story attachments.
         attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(record, transaction: transaction)
+
+        OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: record.timestamp + storyLifetime)
+    }
+
+    @objc
+    public class func deleteExpiredStories(transaction: SDSAnyWriteTransaction) -> UInt {
+        var removedCount: UInt = 0
+        StoryFinder.enumerateExpiredStories(transaction: transaction.unwrapGrdbRead) { record, _ in
+            Logger.info("Removing StoryMessage \(record.timestamp) which expired at: \(record.timestamp + storyLifetime)")
+            do {
+                try record.delete(transaction.unwrapGrdbWrite.database)
+                removedCount += 1
+            } catch {
+                owsFailDebug("Failed to remove expired story with timestamp \(record.timestamp) \(error)")
+            }
+        }
+        return removedCount
+    }
+
+    @objc
+    public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> NSNumber? {
+        guard let timestamp = StoryFinder.oldestTimestamp(transaction: transaction.unwrapGrdbRead) else { return nil }
+        return NSNumber(value: timestamp + storyLifetime)
     }
 }

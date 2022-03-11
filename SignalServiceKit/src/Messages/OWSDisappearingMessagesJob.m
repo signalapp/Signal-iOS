@@ -130,26 +130,52 @@ void AssertIsOnDisappearingMessagesQueue()
     return expirationCount;
 }
 
+- (NSUInteger)deleteExpiredStories
+{
+    AssertIsOnDisappearingMessagesQueue();
+
+    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
+    __block NSUInteger expirationCount = 0;
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        expirationCount = [StoryManager deleteExpiredStoriesWithTransaction:transaction];
+    });
+
+    OWSLogDebug(@"Removed %lu expired stories", (unsigned long)expirationCount);
+
+    OWSAssertDebug(backgroundTask);
+    backgroundTask = nil;
+    return expirationCount;
+}
+
 // deletes any expired messages and schedules the next run.
 - (NSUInteger)runLoop
 {
     OWSLogVerbose(@"in runLoop");
     AssertIsOnDisappearingMessagesQueue();
 
-    NSUInteger deletedCount = [self deleteExpiredMessages];
+    NSUInteger deletedCount = [self deleteExpiredMessages] + [self deleteExpiredStories];
 
-    __block NSNumber *nextExpirationTimestampNumber;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        nextExpirationTimestampNumber =
-            [self.disappearingMessagesFinder nextExpirationTimestampWithTransaction:transaction];
-    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+    __block NSNumber *nextMessageExpirationTimestampNumber;
+    __block NSNumber *nextStoryExpirationTimestampNumber;
+    [self.databaseStorage
+        readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            nextMessageExpirationTimestampNumber =
+                [self.disappearingMessagesFinder nextExpirationTimestampWithTransaction:transaction];
+            nextStoryExpirationTimestampNumber = [StoryManager nextExpirationTimestampWithTransaction:transaction];
+        }
+                 file:__FILE__
+             function:__FUNCTION__
+                 line:__LINE__];
 
-    if (!nextExpirationTimestampNumber) {
+    if (!nextMessageExpirationTimestampNumber && !nextStoryExpirationTimestampNumber) {
         OWSLogDebug(@"No more expiring messages.");
         return deletedCount;
     }
 
-    uint64_t nextExpirationAt = nextExpirationTimestampNumber.unsignedLongLongValue;
+    uint64_t nextMessageExpirationAt = nextMessageExpirationTimestampNumber.unsignedLongLongValue;
+    uint64_t nextStoryExpirationAt = nextStoryExpirationTimestampNumber.unsignedLongLongValue;
+    uint64_t nextExpirationAt = MIN(nextMessageExpirationAt, nextStoryExpirationAt);
     NSDate *nextEpirationDate = [NSDate ows_dateWithMillisecondsSince1970:nextExpirationAt];
     [self scheduleRunByDate:nextEpirationDate];
 
@@ -179,6 +205,11 @@ void AssertIsOnDisappearingMessagesQueue()
         // expiration configuration.
         [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];
     }];
+}
+
+- (void)scheduleRunByTimestamp:(uint64_t)timestamp
+{
+    [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:timestamp]];
 }
 
 #pragma mark -
