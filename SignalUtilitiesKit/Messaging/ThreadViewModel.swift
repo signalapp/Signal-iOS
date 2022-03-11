@@ -52,7 +52,7 @@ public class ThreadViewModel: NSObject {
 
         self.unreadCount = thread.unreadMessageCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
-        self.hasUnreadMentions = thread.hasUnreadMentionMessage
+        self.hasUnreadMentions = thread.unreadMentionMessageCount(with: transaction) > 0
     }
 
     @objc
