@@ -19,6 +19,5 @@
     #import <SignalServiceKit/OWSAnalytics.h>
     #import <SignalCoreKit/NSObject+OWS.h>
     #import <SignalCoreKit/SignalCoreKit-Swift.h>
-    #define OWSLocalizedString(key, comment) \
-        [[NSBundle mainBundle].app localizedStringForKey:(key) value:@"" table:nil]
+    #import <SignalCoreKit/SignalCoreKit.h>
 #endif
