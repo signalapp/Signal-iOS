@@ -22,6 +22,7 @@ extern NSString *const TSMessageDatabaseViewExtensionName_Legacy;
 
 extern NSString *const TSUnreadDatabaseViewExtensionName;
 extern NSString *const TSUnseenDatabaseViewExtensionName;
+extern NSString *const TSUnreadMentionDatabaseViewExtensionName;
 extern NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName;
 extern NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName;
 
@@ -65,6 +66,11 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 //
 // Instances of OWSReadTracking for wasRead is NO.
 + (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage;
+
+// Should be used for "mention indicator".
+//
+// Instances of OWSReadTracking for wasRead is NO and isUserMentioned is YES.
++ (void)asyncRegisterUnreadMentionDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage;
 

@@ -287,10 +287,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     for (id<OWSReadTracking> readItem in newlyReadList) {
         [readItem markAsReadAtTimestamp:readTimestamp trySendReadReceipt:trySendReadReceipt transaction:transaction];
     }
-    
-    // Update unread mention.
-    thread.hasUnreadMentionMessage = false;
-    [thread saveWithTransaction:transaction];
 }
 
 #pragma mark - Settings

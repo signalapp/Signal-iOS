@@ -47,6 +47,7 @@ NSString *const TSMessageDatabaseViewExtensionName_Legacy = @"TSMessageDatabaseV
 NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
 NSString *const TSUnreadDatabaseViewExtensionName = @"TSUnreadDatabaseViewExtensionName";
 NSString *const TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
+NSString *const TSUnreadMentionDatabaseViewExtensionName = @"TSUnreadMentionDatabaseViewExtensionName";
 NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName = @"TSThreadSpecialMessagesDatabaseViewExtensionName";
 NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName
@@ -129,6 +130,25 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     }];
 
     [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
+                                 viewGrouping:viewGrouping
+                                      version:@"2"
+                                      storage:storage];
+}
+
++ (void)asyncRegisterUnreadMentionDatabaseView:(OWSStorage *)storage
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if ([object isKindOfClass:[TSIncomingMessage class]]) {
+            TSIncomingMessage *message = (TSIncomingMessage *)object;
+            if (!message.wasRead && message.isUserMentioned) {
+                return message.uniqueThreadId;
+            }
+        }
+        return nil;
+    }];
+    
+    [self registerMessageDatabaseViewWithName:TSUnreadMentionDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"2"
                                       storage:storage];
