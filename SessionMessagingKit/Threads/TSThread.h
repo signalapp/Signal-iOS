@@ -74,9 +74,9 @@ BOOL IsNoteToSelfEnabled(void);
 /**
  *  @return If there is any message mentioning current user in this thread.
  */
-- (BOOL)hasUnreadMentionMessage;
+- (NSUInteger)unreadMentionMessageCount;
 
-- (BOOL)hasUnreadMentionMessageWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSUInteger)unreadMentionMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

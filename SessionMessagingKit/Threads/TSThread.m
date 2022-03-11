@@ -290,19 +290,19 @@ BOOL IsNoteToSelfEnabled(void)
 //    return count;
 }
 
-- (BOOL)hasUnreadMentionMessage
+- (NSUInteger)unreadMentionMessageCount
 {
-    __block BOOL hasUnreadMentionMessage;
+    __block NSUInteger unreadMentionMessageCount;
     [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        hasUnreadMentionMessage = [self hasUnreadMentionMessageWithTransaction:transaction];
+        unreadMentionMessageCount = [self unreadMentionMessageCountWithTransaction:transaction];
     }];
-    return hasUnreadMentionMessage;
+    return unreadMentionMessageCount;
 }
 
-- (BOOL)hasUnreadMentionMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSUInteger)unreadMentionMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     YapDatabaseViewTransaction *unreadMentions = [transaction ext:TSUnreadMentionDatabaseViewExtensionName];
-    return [unreadMentions numberOfItemsInGroup:self.uniqueId] > 0;
+    return [unreadMentions numberOfItemsInGroup:self.uniqueId];
 }
 
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
