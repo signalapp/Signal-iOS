@@ -81,25 +81,12 @@ NS_ASSUME_NONNULL_BEGIN
             
             BOOL isGroupThread = thread.isGroupThread;
             
-            [unreadMessages enumerateKeysAndObjectsInGroup:groupID
-                usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                    return;
-                }
-                id<OWSReadTracking> unread = (id<OWSReadTracking>)object;
-                if (unread.read) {
-                    NSLog(@"Found an already read message in the * unread * messages list.");
-                    return;
-                }
-                // We have to filter those unread messages for groups that only notifiy for mentions
-                if ([object isKindOfClass:TSIncomingMessage.class] && isGroupThread) {
-                    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
-                    if (((TSGroupThread *)thread).isOnlyNotifyingForMentions && !incomingMessage.isUserMentioned) {
-                        return;
-                    }
-                }
-                count += 1;
-            }];
+            // For groups that only notifiy for mentions
+            if (isGroupThread  && ((TSGroupThread *)thread).isOnlyNotifyingForMentions) {
+                count += [thread unreadMentionMessageCountWithTransaction:transaction];
+            } else {
+                count += [thread unreadMessageCountWithTransaction:transaction];
+            }
         }
     }];
 

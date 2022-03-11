@@ -527,10 +527,14 @@ public final class OpenGroupManager: NSObject {
         }
     }
     
-    public static func getDefaultRoomsIfNeeded(using dependencies: Dependencies = Dependencies()) {
+    @discardableResult public static func getDefaultRoomsIfNeeded(using dependencies: Dependencies = Dependencies()) -> Promise<[OpenGroupAPI.Room]> {
         // Note: If we already have a 'defaultRoomsPromise' then there is no need to get it again
-        guard OpenGroupManager.shared.cache.defaultRoomsPromise == nil else { return }
+        if let existingPromise: Promise<[OpenGroupAPI.Room]> = OpenGroupManager.shared.cache.defaultRoomsPromise {
+            return existingPromise
+        }
         
+        let (promise, seal) = Promise<[OpenGroupAPI.Room]>.pending()
+
         dependencies.storage.write(
             with: { transaction in
                 dependencies.storage.setOpenGroupPublicKey(
@@ -540,13 +544,11 @@ public final class OpenGroupManager: NSObject {
                 )
             },
             completion: {
-                OpenGroupManager.shared.mutableCache.mutate { cache in
-                    cache.defaultRoomsPromise = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
-                        OpenGroupAPI.rooms(for: OpenGroupAPI.defaultServer, using: dependencies)
-                            .map { _, data in data }
-                    }
+                let internalPromise: Promise<[OpenGroupAPI.Room]> = attempt(maxRetryCount: 8, recoveringOn: DispatchQueue.main) {
+                    OpenGroupAPI.rooms(for: OpenGroupAPI.defaultServer, using: dependencies)
+                        .map { _, data in data }
                 }
-                OpenGroupManager.shared.cache.defaultRoomsPromise?
+                internalPromise
                     .done(on: OpenGroupAPI.workQueue) { items in
                         items
                             .compactMap { room -> (UInt64, String)? in
@@ -558,14 +560,25 @@ public final class OpenGroupManager: NSObject {
                                 roomImage(imageId, for: roomToken, on: OpenGroupAPI.defaultServer, using: dependencies)
                                     .retainUntilComplete()
                             }
+                        seal.fulfill(items)
                     }
-                    .catch(on: OpenGroupAPI.workQueue) { _ in
+                    .retainUntilComplete()
+                
+                internalPromise
+                    .catch(on: OpenGroupAPI.workQueue) { error in
                         OpenGroupManager.shared.mutableCache.mutate { cache in
                             cache.defaultRoomsPromise = nil
                         }
+                        seal.reject(error)
                     }
             }
         )
+        
+        OpenGroupManager.shared.mutableCache.mutate { cache in
+            cache.defaultRoomsPromise = promise
+        }
+        
+        return promise
     }
     
     public static func roomImage(
@@ -638,6 +651,6 @@ public final class OpenGroupManager: NSObject {
 extension OpenGroupManager {
     @objc(getDefaultRoomsIfNeeded)
     public static func objc_getDefaultRoomsIfNeeded() {
-        return getDefaultRoomsIfNeeded()
+        getDefaultRoomsIfNeeded()
     }
 }

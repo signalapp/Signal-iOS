@@ -8,7 +8,17 @@ public final class Identicon : NSObject {
         if content.count > 2 && SessionId.Prefix(from: content) != nil {
             content.removeFirst(2)
         }
-        let layer = icon.generateLayer(with: size, text: content.substring(to: 1))
+        let initials: String = content
+            .split(separator: " ")
+            .compactMap { word in word.first.map { String($0) } }
+            .joined()
+        let layer = icon.generateLayer(
+            with: size,
+            text: (initials.count >= 2 ?
+                initials.substring(to: 2).uppercased() :
+                content.substring(to: 2).uppercased()
+            )
+        )
         let rect = CGRect(origin: CGPoint.zero, size: layer.frame.size)
         let renderer = UIGraphicsImageRenderer(size: rect.size)
         return renderer.image { layer.render(in: $0.cgContext) }

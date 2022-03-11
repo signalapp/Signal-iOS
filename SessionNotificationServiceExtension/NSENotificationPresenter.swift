@@ -22,7 +22,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         }
         else if thread.isMessageRequest() && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
             // If there are other interactions on this thread already then don't show the notification
-            if thread.numberOfInteractions() > 1 { return }
+            if thread.numberOfInteractions(with: transaction) > 1 { return }
             
             CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
         }
@@ -86,6 +86,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         // If it's a message request then overwrite the body to be something generic (only show a notification
         // when receiving a new message request if there aren't any others or the user had hidden them)
         if thread.isMessageRequest() {
+            notificationContent.title = "Session"
             notificationContent.body = "MESSAGE_REQUESTS_NOTIFICATION".localized()
         }
         
