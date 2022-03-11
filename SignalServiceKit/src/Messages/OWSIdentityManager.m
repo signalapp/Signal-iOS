@@ -102,11 +102,14 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                object:nil];
 }
 
-- (void)generateNewIdentityKey
+- (ECKeyPair *)generateNewIdentityKey
 {
+    __block ECKeyPair *newKeyPair;
     [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
-        [self storeIdentityKeyPair:[Curve25519 generateKeyPair] transaction:transaction];
+        newKeyPair = [Curve25519 generateKeyPair];
+        [self storeIdentityKeyPair:newKeyPair transaction:transaction];
     }];
+    return newKeyPair;
 }
 
 - (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction

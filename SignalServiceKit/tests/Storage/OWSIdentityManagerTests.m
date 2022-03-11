@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -106,9 +106,11 @@
 
 - (void)testIdentityKey
 {
-    [self.identityManager generateNewIdentityKey];
+    ECKeyPair *newKey = [self.identityManager generateNewIdentityKey];
+    XCTAssert([newKey.publicKey length] == 32);
 
-    XCTAssert([[self.identityManager identityKeyPair].publicKey length] == 32);
+    ECKeyPair *fetchedKey = [self.identityManager identityKeyPair];
+    XCTAssert([newKey.privateKey isEqual:fetchedKey.privateKey]);
 }
 
 @end

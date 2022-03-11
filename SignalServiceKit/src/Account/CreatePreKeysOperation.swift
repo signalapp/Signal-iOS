@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,10 +10,8 @@ public class CreatePreKeysOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        if self.identityManager.identityKeyPair() == nil {
-            self.identityManager.generateNewIdentityKey()
-        }
-        let identityKey: Data = self.identityManager.identityKeyPair()!.publicKey
+        let identityKeyPair = self.identityManager.identityKeyPair() ?? self.identityManager.generateNewIdentityKey()
+        let identityKey: Data = identityKeyPair.publicKey
         let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()
 
