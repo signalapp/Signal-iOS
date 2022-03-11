@@ -60,6 +60,7 @@ public class LocalDevice: NSObject {
                 mallocAllocations: Int64(statistics.size_allocated)
             )
 
+#if !DEBUG
             if CurrentAppContext().isNSE {
                 if result.bytesRemaining > 0 {
                     // If we're running out of free memory, let's start aggressively flushing
@@ -73,6 +74,8 @@ public class LocalDevice: NSObject {
                     OWSLogger.aggressiveFlushing = result.footprint > (20 * 1024 * 1024)
                 }
             }
+#endif
+
             return result
         }
     }
