@@ -46,6 +46,7 @@ class StoryCell: UITableViewCell {
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = model.latestRecordAvatarDataSource
+            config.storyState = model.hasUnviewedRecords ? .unviewed : .viewed
             config.usePlaceholderImages()
         }
 

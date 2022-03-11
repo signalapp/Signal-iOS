@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -648,7 +648,7 @@ fileprivate extension CVComponentState.Builder {
                     forAddress: typingIndicatorInteraction.address,
                     includingBadge: true,
                     localUserDisplayMode: .asUser,
-                    diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter))
+                    diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.diameter))
             }()
             self.typingIndicator = TypingIndicator(address: typingIndicatorInteraction.address,
                                                    avatarDataSource: avatarDataSource)
@@ -690,7 +690,7 @@ fileprivate extension CVComponentState.Builder {
             forAddress: incomingMessage.authorAddress,
             includingBadge: true,
             localUserDisplayMode: .asUser,
-            diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter)
+            diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.diameter)
         ) else {
             owsFailDebug("Could build avatar image")
             return nil

@@ -60,4 +60,35 @@ public enum StoryFinder {
             return []
         }
     }
+
+    public static func latestStoryForThread(_ thread: TSThread, transaction: GRDBReadTransaction) -> StoryMessageRecord? {
+        let threadQuery: String
+        if let groupThread = thread as? TSGroupThread {
+            threadQuery = "groupId = x'\(groupThread.groupId.hexadecimalString)'"
+        } else if let contactThread = thread as? TSContactThread {
+            guard let uuid = contactThread.contactAddress.uuid else {
+                // No stories for contacts without UUIDs
+                return nil
+            }
+            threadQuery = "authorUuid = '\(uuid.uuidString)' AND groupId is NULL"
+        } else {
+            owsFailDebug("Unexpected thread")
+            return nil
+        }
+
+        let sql = """
+            SELECT *
+            FROM \(StoryMessageRecord.databaseTableName)
+            WHERE \(threadQuery)
+            ORDER BY timestamp DESC
+            LIMIT 1
+        """
+
+        do {
+            return try StoryMessageRecord.fetchOne(transaction.database, sql: sql)
+        } catch {
+            owsFailDebug("Failed to fetch incoming stories \(error)")
+            return nil
+        }
+    }
 }

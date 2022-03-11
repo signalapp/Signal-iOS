@@ -20,6 +20,8 @@ public class ThreadViewModel: NSObject {
     @objc public let hasWallpaper: Bool
     @objc public let isWallpaperPhoto: Bool
 
+    public let storyState: ConversationAvatarView.Configuration.StoryState
+
     @objc
     public var isArchived: Bool { associatedData.isArchived }
 
@@ -101,6 +103,17 @@ public class ThreadViewModel: NSObject {
         } else {
             self.hasWallpaper = false
             self.isWallpaperPhoto = false
+        }
+
+        if let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction.unwrapGrdbRead) {
+            switch latestStory.manifest {
+            case .incoming(_, let viewed):
+                storyState = viewed ? .viewed : .unviewed
+            case .outgoing:
+                storyState = .viewed
+            }
+        } else {
+            self.storyState = .none
         }
     }
 

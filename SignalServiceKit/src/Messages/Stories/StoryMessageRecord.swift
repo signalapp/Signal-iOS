@@ -124,11 +124,11 @@ public enum StoryManifest: Codable {
 }
 
 public struct StoryRecipientState: Codable {
-    typealias DistributionListId = String
+    public typealias DistributionListId = String
 
-    let allowsReplies: Bool
-    let contexts: [DistributionListId]
-    let hasViewed: Bool
+    public let allowsReplies: Bool
+    public let contexts: [DistributionListId]
+    public let hasViewed: Bool
 }
 
 public enum StoryMessageAttachment: Codable {

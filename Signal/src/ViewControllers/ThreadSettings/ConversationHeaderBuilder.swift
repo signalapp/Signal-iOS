@@ -437,6 +437,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
         avatarView.update(transaction) {
             $0.dataSource = .thread(delegate.thread)
+            $0.storyState = delegate.threadViewModel.storyState
         }
         avatarView.interactionDelegate = delegate
 

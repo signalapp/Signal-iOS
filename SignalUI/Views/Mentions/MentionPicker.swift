@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -282,7 +282,7 @@ private class MentionableUserCell: UITableViewCell {
         let cell = MentionableUserCell()
         cell.displayNameLabel.text = LocalizationNotNeeded("size")
         cell.displayNameLabel.sizeToFit()
-        return max(CGFloat(avatarSizeClass.avatarSize.height), ceil(cell.displayNameLabel.height)) + vSpacing * 2
+        return max(CGFloat(avatarSizeClass.size.height), ceil(cell.displayNameLabel.height)) + vSpacing * 2
     }
 
     let displayNameLabel = UILabel()
