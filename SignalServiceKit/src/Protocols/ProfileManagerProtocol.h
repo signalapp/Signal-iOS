@@ -179,6 +179,9 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                           transaction:(SDSAnyReadTransaction *)transaction;
+
 
 @end
 

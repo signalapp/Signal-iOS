@@ -1146,6 +1146,22 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     return (OWSUserProfile *)[self copyWithZone:nil];
 }
 
+#pragma mark - OWSMaybeUserProfile
+
+- (OWSUserProfile *_Nullable)userProfileOrNil
+{
+    return self;
+}
+
+@end
+
+@implementation NSNull (OWSMaybeUserProfile)
+
+- (OWSUserProfile *_Nullable)userProfileOrNil
+{
+    return nil;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
