@@ -16,9 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
-typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) { TSThreadMentionNotificationMode_Default = 0,
+typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) {
+    TSThreadMentionNotificationMode_Default = 0,
     TSThreadMentionNotificationMode_Always,
-    TSThreadMentionNotificationMode_Never };
+    TSThreadMentionNotificationMode_Never
+};
 
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread

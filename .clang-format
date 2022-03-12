@@ -1,5 +1,6 @@
 ---
 BasedOnStyle: WebKit
+AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: false
 BinPackArguments: false
 BinPackParameters: false

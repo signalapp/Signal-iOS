@@ -4,7 +4,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, OWSSearchBarStyle) { OWSSearchBarStyle_Default, OWSSearchBarStyle_SecondaryBar };
+typedef NS_ENUM(NSUInteger, OWSSearchBarStyle) {
+    OWSSearchBarStyle_Default,
+    OWSSearchBarStyle_SecondaryBar
+};
 
 @interface OWSSearchBar : UISearchBar
 

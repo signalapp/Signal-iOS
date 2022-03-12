@@ -13,7 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignedPreKeyRecord;
 @class TSRequest;
 
-typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVoice = 1, TSVerificationTransportSMS };
+typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
+    TSVerificationTransportVoice = 1,
+    TSVerificationTransportSMS
+};
 
 @interface OWSRequestFactory : NSObject
 

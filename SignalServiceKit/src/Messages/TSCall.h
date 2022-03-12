@@ -24,7 +24,10 @@ typedef NS_ENUM(NSUInteger, RPRecentCallType) {
     RPRecentCallTypeIncomingBusyElsewhere
 };
 
-typedef NS_CLOSED_ENUM(NSUInteger, TSRecentCallOfferType) { TSRecentCallOfferTypeAudio, TSRecentCallOfferTypeVideo };
+typedef NS_CLOSED_ENUM(NSUInteger, TSRecentCallOfferType) {
+    TSRecentCallOfferTypeAudio,
+    TSRecentCallOfferTypeVideo
+};
 
 NSString *NSStringFromCallType(RPRecentCallType callType);
 
