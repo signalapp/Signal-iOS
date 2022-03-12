@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFingerprintBuilder.h"
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *theirName = [self.contactsManager displayNameForAddress:theirSignalAddress];
 
     SignalServiceAddress *mySignalAddress = [self.accountManager localAddress];
-    NSData *myIdentityKey = [[OWSIdentityManager shared] identityKeyPair].publicKey;
+    NSData *myIdentityKey = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityACI].publicKey;
 
     return [OWSFingerprint fingerprintWithMyStableAddress:mySignalAddress
                                             myIdentityKey:myIdentityKey

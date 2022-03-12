@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -94,7 +94,7 @@ extension TSPaymentAddress: TSPaymentBaseModel {
         }
 
         // Sign the MC public address.
-        guard let identityKeyPair: ECKeyPair = identityManager.identityKeyPair() else {
+        guard let identityKeyPair: ECKeyPair = identityManager.identityKeyPair(for: .aci) else {
             throw OWSAssertionError("Missing identityKeyPair")
         }
         let signatureData = try Self.sign(identityKeyPair: identityKeyPair,

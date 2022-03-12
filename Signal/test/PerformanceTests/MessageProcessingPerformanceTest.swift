@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -68,7 +68,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
     func processIncomingMessages() {
         // ensure local client has necessary "registered" state
-        identityManager.generateNewIdentityKey()
+        identityManager.generateNewIdentityKey(for: .aci)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         bobClient = FakeSignalClient.generate(uuid: bobUUID)

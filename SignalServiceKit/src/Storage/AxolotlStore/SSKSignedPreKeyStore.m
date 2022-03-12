@@ -93,7 +93,7 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
     // Signed prekey ids must be > 0.
     int preKeyId = 1 + arc4random_uniform(INT32_MAX - 1);
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPair];
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityACI];
     OWSAssert(identityKeyPair);
 
     @try {

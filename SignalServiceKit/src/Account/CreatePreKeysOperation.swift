@@ -10,7 +10,7 @@ public class CreatePreKeysOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        let identityKeyPair = self.identityManager.identityKeyPair() ?? self.identityManager.generateNewIdentityKey()
+        let identityKeyPair = self.identityManager.identityKeyPair(for: .aci) ?? self.identityManager.generateNewIdentityKey(for: .aci)
         let identityKey: Data = identityKeyPair.publicKey
         let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()

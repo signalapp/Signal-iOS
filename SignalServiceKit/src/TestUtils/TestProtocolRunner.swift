@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -192,7 +192,7 @@ public struct LocalSignalClient: TestSignalClient {
     public init() { }
 
     public var identityKeyPair: ECKeyPair {
-        return SSKEnvironment.shared.identityManager.identityKeyPair()!
+        return SSKEnvironment.shared.identityManager.identityKeyPair(for: .aci)!
     }
 
     public var e164Identifier: SignalE164Identifier? {

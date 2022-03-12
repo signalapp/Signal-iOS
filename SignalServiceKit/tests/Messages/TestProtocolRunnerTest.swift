@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -114,7 +114,7 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
     }
 
     func test_localClient_receives() {
-        Self.identityManager.generateNewIdentityKey()
+        Self.identityManager.generateNewIdentityKey(for: .aci)
         Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
                                                                 uuid: UUID())
         let localClient = LocalSignalClient()
@@ -141,7 +141,7 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
     }
 
     func test_localClient_sends() {
-        Self.identityManager.generateNewIdentityKey()
+        Self.identityManager.generateNewIdentityKey(for: .aci)
         Self.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
                                                                 uuid: UUID())
         let localClient = LocalSignalClient()

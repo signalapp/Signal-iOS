@@ -31,7 +31,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         try! databaseStorage.grdbStorage.setupDatabaseChangeObserver()
 
         // ensure local client has necessary "registered" state
-        identityManager.generateNewIdentityKey()
+        identityManager.generateNewIdentityKey(for: .aci)
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
@@ -111,7 +111,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             switch error {
             case MessageProcessingError.duplicatePendingEnvelope?:
                 XCTFail("duplicatePendingEnvelope")
-            case .some(_):
+            case .some:
                 XCTFail("failure")
             case nil:
                 break
@@ -186,7 +186,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             switch error {
             case MessageProcessingError.duplicatePendingEnvelope?:
                 XCTFail("duplicatePendingEnvelope")
-            case .some(_):
+            case .some:
                 XCTFail("failure")
             case nil:
                 break

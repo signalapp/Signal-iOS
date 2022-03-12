@@ -315,6 +315,7 @@ public class AccountManager: NSObject {
 
             self.databaseStorage.write { transaction in
                 self.identityManager.storeIdentityKeyPair(provisionMessage.identityKeyPair,
+                                                          for: .aci,
                                                           transaction: transaction)
 
                 self.profileManagerImpl.setLocalProfileKey(provisionMessage.profileKey,
@@ -464,6 +465,7 @@ public class AccountManager: NSObject {
 
         databaseStorage.write { transaction in
             self.identityManager.storeIdentityKeyPair(identityKeyPair,
+                                                      for: .aci,
                                                       transaction: transaction)
             self.profileManagerImpl.setLocalProfileKey(profileKey,
                                                        userProfileWriter: .debugging,
