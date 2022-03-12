@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -435,6 +435,76 @@ public class EarlyMessageManager: NSObject {
         // Re-process any early envelopes associated with this message
         for earlyEnvelope in earlyEnvelopes ?? [] {
             Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for message \(identifier)")
+
+            Self.messageManager.processEnvelope(
+                earlyEnvelope.envelope,
+                plaintextData: earlyEnvelope.plainTextData,
+                wasReceivedByUD: earlyEnvelope.wasReceivedByUD,
+                serverDeliveryTimestamp: earlyEnvelope.serverDeliveryTimestamp,
+                shouldDiscardVisibleMessages: false,
+                transaction: transaction
+            )
+        }
+    }
+
+    public func applyPendingMessages(for storyMessage: StoryMessageRecord, transaction: SDSAnyWriteTransaction) {
+        let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAddress)
+
+        let earlyReceipts: [EarlyReceipt]?
+        do {
+            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to decode early receipts for message \(identifier) with error \(error)")
+            earlyReceipts = nil
+        }
+
+        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction)
+
+        // Apply any early receipts for this message
+        for earlyReceipt in earlyReceipts ?? [] {
+            switch earlyReceipt {
+            case .outgoingMessageRead(let sender, let deviceId, _):
+                owsFailDebug("Unexpectedly received early read receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
+            case .outgoingMessageViewed(let sender, let deviceId, _):
+                Logger.info("Applying early viewed receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
+
+                guard storyMessage.direction == .outgoing else {
+                    owsFailDebug("Unexpected message type for early read receipt for StoryMessage.")
+                    continue
+                }
+
+                storyMessage.markAsViewed(for: sender, transaction: transaction.unwrapGrdbWrite)
+            case .outgoingMessageDelivered(let sender, let deviceId, _):
+                Logger.info("Applying early delivery receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
+
+                guard storyMessage.direction == .outgoing else {
+                    owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
+                    continue
+                }
+
+                // TODO: Mark Delivered
+            case .messageReadOnLinkedDevice:
+                owsFailDebug("Unexpectexly received early read receipt from linked device for StoryMessage \(identifier)")
+            case .messageViewedOnLinkedDevice:
+                Logger.info("Applying early viewed receipt from linked device for StoryMessage \(identifier)")
+
+                storyMessage.markAsViewed(transaction: transaction.unwrapGrdbWrite)
+            }
+        }
+
+        let earlyEnvelopes: [EarlyEnvelope]?
+        do {
+            earlyEnvelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to decode early envelopes for StoryMessage \(identifier) with error \(error)")
+            earlyEnvelopes = nil
+        }
+
+        pendingEnvelopeStore.removeValue(forKey: identifier.key, transaction: transaction)
+
+        // Re-process any early envelopes associated with this message
+        for earlyEnvelope in earlyEnvelopes ?? [] {
+            Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for StoryMessage \(identifier)")
 
             Self.messageManager.processEnvelope(
                 earlyEnvelope.envelope,

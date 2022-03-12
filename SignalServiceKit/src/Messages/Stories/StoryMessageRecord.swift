@@ -7,7 +7,8 @@ import GRDB
 import SignalClient
 import UIKit
 
-public struct StoryMessageRecord: Dependencies, Codable, Identifiable, FetchableRecord, MutablePersistableRecord {
+@objc
+public final class StoryMessageRecord: NSObject, Codable, Identifiable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "story_messages"
 
     public var id: Int64?
@@ -20,7 +21,7 @@ public struct StoryMessageRecord: Dependencies, Codable, Identifiable, Fetchable
     public enum Direction: Int, Codable { case incoming = 0, outgoing = 1 }
     public let direction: Direction
 
-    public let manifest: StoryManifest
+    public private(set) var manifest: StoryManifest
 
     public let attachment: StoryMessageAttachment
 
@@ -101,7 +102,7 @@ public struct StoryMessageRecord: Dependencies, Codable, Identifiable, Fetchable
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
 
-        var record = StoryMessageRecord(
+        let record = StoryMessageRecord(
             timestamp: timestamp,
             authorUuid: authorUuid,
             groupId: groupId,
@@ -113,7 +114,7 @@ public struct StoryMessageRecord: Dependencies, Codable, Identifiable, Fetchable
         return record
     }
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
     }
 
@@ -121,6 +122,48 @@ public struct StoryMessageRecord: Dependencies, Codable, Identifiable, Fetchable
     public func delete(_ db: Database) throws -> Bool {
         // TODO: Cleanup associated records
         return try performDelete(db)
+    }
+
+    public func markAsViewed(for recipient: SignalServiceAddress? = nil, transaction: GRDBWriteTransaction) {
+        updateWith(transaction: transaction) { record in
+            switch record.manifest {
+            case .incoming(let allowsReplies, _):
+                owsAssertDebug(recipient == nil)
+                record.manifest = .incoming(allowsReplies: allowsReplies, viewed: true)
+            case .outgoing(let manifest):
+                var manifest = manifest
+
+                guard let recipientUuid = recipient?.uuid, var recipientState = manifest[recipientUuid] else {
+                    return owsFailDebug("missing recipient for viewed update")
+                }
+
+                recipientState.hasViewed = true
+                manifest[recipientUuid] = recipientState
+
+                record.manifest = .outgoing(manifest: manifest)
+            }
+        }
+    }
+
+    private func updateWith(transaction: GRDBWriteTransaction, block: (StoryMessageRecord) -> Void) {
+        block(self)
+
+        if let id = id, let storedCopy = try? Self.fetchOne(transaction.database, key: id), storedCopy !== self {
+            block(storedCopy)
+
+            do {
+                try storedCopy.update(transaction.database)
+            } catch {
+                owsFail("Unexpectedly failed to update \(error)")
+            }
+        } else {
+            do {
+                owsFailDebug("Could not update missing record, inserting instead.")
+                try insert(transaction.database)
+            } catch {
+                owsFail("Unexpectedly failed to insert \(error)")
+            }
+        }
     }
 }
 
@@ -133,8 +176,8 @@ public struct StoryRecipientState: Codable {
     public typealias DistributionListId = String
 
     public let allowsReplies: Bool
-    public let contexts: [DistributionListId]
-    public let hasViewed: Bool
+    public var contexts: [DistributionListId]
+    public var hasViewed: Bool
 }
 
 public enum StoryMessageAttachment: Codable {

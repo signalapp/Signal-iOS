@@ -26,6 +26,8 @@ public class StoryManager: NSObject {
         attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(record, transaction: transaction)
 
         OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: record.timestamp + storyLifetime)
+
+        earlyMessageManager.applyPendingMessages(for: record, transaction: transaction)
     }
 
     @objc

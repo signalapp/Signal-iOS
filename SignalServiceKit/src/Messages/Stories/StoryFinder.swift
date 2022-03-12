@@ -131,4 +131,27 @@ public enum StoryFinder {
             return nil
         }
     }
+
+    public static func story(timestamp: UInt64, author: SignalServiceAddress, transaction: GRDBReadTransaction) -> StoryMessageRecord? {
+        guard let authorUuid = author.uuid else {
+            owsFailDebug("Cannot query story for author without UUID")
+            return nil
+        }
+
+        let sql = """
+            SELECT *
+            FROM \(StoryMessageRecord.databaseTableName)
+            WHERE authorUuid = '\(authorUuid.uuidString)'
+            AND timestamp = \(timestamp)
+            ORDER BY timestamp DESC
+            LIMIT 1
+        """
+
+        do {
+            return try StoryMessageRecord.fetchOne(transaction.database, sql: sql)
+        } catch {
+            owsFailDebug("Failed to fetch story \(error)")
+            return nil
+        }
+    }
 }
