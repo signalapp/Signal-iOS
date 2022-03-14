@@ -53,8 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
     BlockingManager *blockingManager = [BlockingManager new];
     OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
     id<RemoteConfigManager> remoteConfigManager = [StubbableRemoteConfigManager new];
-    SignalProtocolStore *aciSignalProtocolStore = [SignalProtocolStore new];
-    SignalProtocolStore *pniSignalProtocolStore = [SignalProtocolStore new];
+    SignalProtocolStore *aciSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityACI];
+    SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
     id<OWSUDManager> udManager = [OWSUDManagerImpl new];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
     GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];

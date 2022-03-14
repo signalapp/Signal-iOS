@@ -6,9 +6,16 @@
 @objc
 public class SignalProtocolStore: NSObject {
     @objc
-    public let sessionStore: SSKSessionStore = .init()
+    public let sessionStore: SSKSessionStore
     @objc
-    public let preKeyStore: SSKPreKeyStore = .init()
+    public let preKeyStore: SSKPreKeyStore
     @objc
-    public let signedPreKeyStore: SSKSignedPreKeyStore = .init()
+    public let signedPreKeyStore: SSKSignedPreKeyStore
+
+    @objc(initForIdentity:)
+    init(for identity: OWSIdentity) {
+        sessionStore = SSKSessionStore(for: identity)
+        preKeyStore = SSKPreKeyStore(for: identity)
+        signedPreKeyStore = SSKSignedPreKeyStore(for: identity)
+    }
 }

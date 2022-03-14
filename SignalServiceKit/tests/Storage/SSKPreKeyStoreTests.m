@@ -38,18 +38,6 @@
 
 @implementation SSKPreKeyStoreTests
 
-- (void)setUp
-{
-    [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-}
-
-- (void)tearDown
-{
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
-}
-
 - (SSKPreKeyStore *)preKeyStore
 {
     return [self signalProtocolStoreForIdentity:OWSIdentityACI].preKeyStore;
@@ -71,6 +59,9 @@
 
     XCTAssert([[self.preKeyStore loadPreKey:firstPreKeyRecord.Id].keyPair.publicKey
         isEqualToData:firstPreKeyRecord.keyPair.publicKey]);
+
+    SSKPreKeyStore *pniStore = [self signalProtocolStoreForIdentity:OWSIdentityPNI].preKeyStore;
+    XCTAssertNil([pniStore loadPreKey:firstPreKeyRecord.Id]);
 }
 
 - (void)testRemovingPreKeys
@@ -84,12 +75,17 @@
     PreKeyRecord *lastPreKeyRecord = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
 
+    SSKPreKeyStore *pniStore = [self signalProtocolStoreForIdentity:OWSIdentityPNI].preKeyStore;
+    [pniStore storePreKeyRecords:generatedKeys];
+
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.preKeyStore removePreKey:lastPreKeyRecord.Id transaction:transaction];
     }];
 
     XCTAssertNil([self.preKeyStore loadPreKey:lastPreKeyRecord.Id]);
     XCTAssertNotNil([self.preKeyStore loadPreKey:firstPreKeyRecord.Id]);
+    XCTAssertNotNil([pniStore loadPreKey:firstPreKeyRecord.Id]);
+    XCTAssertNotNil([pniStore loadPreKey:firstPreKeyRecord.Id]);
 }
 
 @end

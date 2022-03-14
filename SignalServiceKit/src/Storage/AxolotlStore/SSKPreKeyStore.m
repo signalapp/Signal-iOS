@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKPreKeyStore.h"
@@ -16,7 +16,6 @@ static const int kPreKeyOfLastResortId = 0xFFFFFF;
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSStorageInternalSettingsCollection = @"TSStorageInternalSettingsCollection";
 NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 #pragma mark - Private Extension
@@ -54,15 +53,24 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 @implementation SSKPreKeyStore
 
-- (instancetype)init
+- (instancetype)initForIdentity:(OWSIdentity)identity;
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _keyStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerPreKeyStoreCollection"];
-    _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:TSStorageInternalSettingsCollection];
+    switch (identity) {
+        case OWSIdentityACI:
+            _keyStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerPreKeyStoreCollection"];
+            _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageInternalSettingsCollection"];
+            break;
+        case OWSIdentityPNI:
+            _keyStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerPNIPreKeyStoreCollection"];
+            _metadataStore =
+                [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerPNIPreKeyMetadataCollection"];
+            break;
+    }
 
     return self;
 }

@@ -70,17 +70,31 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 @end
 
-@implementation SSKSignedPreKeyStore
+@implementation SSKSignedPreKeyStore {
+    OWSIdentity _identity;
+}
 
-- (instancetype)init
+- (instancetype)initForIdentity:(OWSIdentity)identity
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _keyStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerSignedPreKeyStoreCollection"];
-    _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerSignedPreKeyMetadataCollection"];
+    _identity = identity;
+
+    switch (identity) {
+        case OWSIdentityACI:
+            _keyStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerSignedPreKeyStoreCollection"];
+            _metadataStore =
+                [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerSignedPreKeyMetadataCollection"];
+            break;
+        case OWSIdentityPNI:
+            _keyStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerPNISignedPreKeyStoreCollection"];
+            _metadataStore =
+                [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerPNISignedPreKeyMetadataCollection"];
+            break;
+    }
 
     return self;
 }
@@ -93,7 +107,7 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
     // Signed prekey ids must be > 0.
     int preKeyId = 1 + arc4random_uniform(INT32_MAX - 1);
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityACI];
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:_identity];
     OWSAssert(identityKeyPair);
 
     @try {

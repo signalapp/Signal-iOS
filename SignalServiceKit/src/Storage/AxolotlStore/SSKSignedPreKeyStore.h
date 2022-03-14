@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -10,7 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SignedPreKeyRecord;
 
+typedef NS_ENUM(uint8_t, OWSIdentity);
+
 @interface SSKSignedPreKeyStore : NSObject
+
+- (instancetype)initForIdentity:(OWSIdentity)identity;
 
 #pragma mark - SignedPreKeyStore transactions
 

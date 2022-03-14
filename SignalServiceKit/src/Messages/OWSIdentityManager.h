@@ -30,7 +30,7 @@ typedef NS_ENUM(NSInteger, TSMessageDirection) {
 ///
 /// And yes, that means the full enumerator names mean "account identifier identity" and
 /// "phone number identifier identity".
-typedef NS_ENUM(uint8_t, OWSIdentity) {
+typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
     OWSIdentityACI NS_SWIFT_NAME(aci),
     OWSIdentityPNI NS_SWIFT_NAME(pni)
 };
