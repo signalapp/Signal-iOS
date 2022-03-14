@@ -137,7 +137,6 @@ class StoryItemViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        mediaViewContainer.backgroundColor = .black
         mediaViewContainer.autoPin(toAspectRatio: 9/16)
         view.addSubview(mediaViewContainer)
 
@@ -311,7 +310,7 @@ class StoryItemViewController: OWSViewController {
     private func buildMediaView() -> UIView {
         // TODO: Talk to design about how we handle things that are not 9:16.
         // Do we letter box? What does the letterboxing look like?
-        let contentMode: UIView.ContentMode = .scaleAspectFill
+        let contentMode: UIView.ContentMode = .scaleAspectFit
 
         switch item.attachment {
         case .stream(let stream):
