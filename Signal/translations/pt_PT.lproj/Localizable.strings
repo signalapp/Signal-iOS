@@ -6446,7 +6446,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "O seu dispositivo não suporta esta funcionalidade.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "O seu número de segurança  com %@ foi alterado, provavelmente porque ele reinstalou o Signal ou alterou os dispositivos. Toque em 'Verificar' para confirmar o novo número de segurança. Isso é opcional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "O seu número de segurança  com %@ foi alterado, provavelmente porque essa pessoa reinstalou o Signal ou alterou os dispositivos. Toque em 'Verificar' para confirmar o novo número de segurança. Isso é opcional.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Verificar";

@@ -3785,7 +3785,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Activar permisos";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Al permitir notificaciones y acceso a tus contactos te permite saber cuándo recibes un mensaje de una amistad y encontrar a personas que conoces. Tu lista de contactos está cifrada y solo tú tienes acceso. Nadie más, ni siquiera la gente de Signal tiene acceso a ella.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Permitir notificaciones y acceso a tus contactos te permite saber cuándo recibes un mensaje y te ayuda a encontrar a personas que conoces. Tu lista de contactos está cifrada y solo tú tienes acceso. Nadie más, ni siquiera Signal, tiene acceso a ella.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Activar permisos";
@@ -4763,7 +4763,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Falta núm. de teléfono";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Hemos enviado un código de verificación a este número. ¿Es el número de arriba el correcto?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Enviaremos un código de verificación a este número. ¿Es el número de arriba correcto?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Número a confirmar: %@";

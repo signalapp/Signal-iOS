@@ -680,16 +680,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "تحرير الصورة";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "رقمك الجديد لا يمكن أن يكون كالقديم, لتغيير رقمك فضلًا أدخل رقم هاتف جديد.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "إنَّ رَقم الهَاتِف الَّذِي أدخَلتَه لَا يَتَطَابَقُ مَعَ الرَّقم الخاصّ بِحِسَابك.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Invalid new phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "الرقم الجديد غير صالح, فضلًا أدخل رقم هاتف صالح.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Invalid old phone number. Please enter a valid phone number to change your number.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "الرقم القديم غير صالح, فضلًا أدخل رقم هاتف صالح.";
 
 /* Title of the 'change phone number PIN' view. */
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
@@ -998,16 +998,16 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ستُحذَف هذه المحادثة من هذا الجهاز.";
 
 /* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "ستُحذَف هذه المحادثات من هذا الجهاز.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "حذف المحادثة ؟";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "حذف %@ محادثات؟";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "كتم المحادثة لمدّة...";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "يوم واحد";
@@ -1352,7 +1352,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "بَريد الدَّعم";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Export Logs";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "تصدير السّجلات";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "إرسال لِنَفسِك";
@@ -1697,7 +1697,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "مشغول";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "فشل الاتصال.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "فَشِل الاتصال.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "يتعذّر الوصول إلى جهات الاتصال.";
@@ -2945,10 +2945,10 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Title for the 'Select Chats' option in the HomeView. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "تحديد المحادثات";
 
 /* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "قراءة الكل";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "ارسم في أي مكان للتضبيب";
@@ -2975,7 +2975,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "فشل في تحديد المُرفق.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "يَجري الاتصال…";
+"IN_CALL_CONNECTING" = "جارِ الربط…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "تمت الإجابة عليه من جهاز آخر.";
@@ -2990,7 +2990,7 @@
 "IN_CALL_RECONNECTING" = "يَجري إعادة الاِتصال..";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "رنين…";
+"IN_CALL_RINGING" = "هاتف المُتَلَقِّي يَرِنّ…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "مُكالمة صوتية...";
@@ -2999,7 +2999,7 @@
 "IN_CALL_RINGING_VIDEO" = "مُكالمة فيديو...";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "تمّت الإجابة. جار التأمين...";
+"IN_CALL_SECURING" = "تم الرّد. جارِ التأمين...";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "انتهت المكالمة.";
@@ -3017,7 +3017,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "يُمكنك إرسال أو استقبال رسائل متزامنة من هاتفك أو من iPad.\nحفاظًا على أمانك ، لا يتم نقل محفوظات المُحادثة إلى الأجهزة المُرتبطة الجديدة.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ غيَّرَ رقم هاتفِه.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "إنَّ %@ مُتواجدٌ على Signal!";
@@ -3581,7 +3581,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "إيجاد عن طريق رقم الهاتف";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "عضو واحد";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "مجموعة جديدة";
@@ -4328,10 +4328,10 @@
 "PIN_CREATION_MISMATCH_ERROR" = "الـPIN غير مُطابق. حاول مرة أُخرى.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Check your connection and try again.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "تحقق من اتصالك بالشبكة ثم حاول مجددًا.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "No Network Connection";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "لا يوجد اتصال بالشبكة";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "الـPIN يجب أن يحوي اربعة ارقام على الأقل";
@@ -4427,7 +4427,7 @@
 "PINS_MEGAPHONE_ACTION" = "إنشاء PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
+"PINS_MEGAPHONE_BODY" = "أتمِم إنشاء رقم التعريف لـ Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "سنُذكرك لاحقًا. سيُصبح إنشاء PIN إلزاميًا في غُضون عدد %ld يوم.";
@@ -5216,19 +5216,19 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "إعادة توجيه جميع المُكالمات عبر خوادم Signal لتفادي الكشف عن عنوان الـIP  الخاص بك لجهة اتصالك. تفعيل هذه الميزة سوف يُقلل من جودة المُكالمة.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "تعديل الرقم";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "تغيير رقم الهاتف";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "رقم هاتفك أصبح %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "تغيير الرقم";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "تُوشِك على تغيير رقم هاتفك من %1$@ إلى %2$@.\n\nقبل الإستمرار, يُرجى التحقق من صحّة الرقم أدناه.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "رمز البلد";
@@ -5240,22 +5240,22 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "مِثال: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "رقمك الجديد";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "رقمك القديم";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "رقم الهاتف";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "جاري التحقق من %@";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "يمكنك تغيير رقم هاتفك الحالي برقم جديد. لا يمكن التراجع عن هذا الإجراء.\n\nقبل الاستمرار, تأكد أن رقمك الجديد يمكنه تلقي الرسائل القصيرة أو المكالمات.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "تغيير رقم الهاتف";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "تغيير الرقم";
