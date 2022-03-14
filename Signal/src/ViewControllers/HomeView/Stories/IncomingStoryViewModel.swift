@@ -29,8 +29,8 @@ struct IncomingStoryViewModel: Dependencies {
         self.recordIds = sortedFilteredRecords.compactMap { $0.id }
         self.hasUnviewedRecords = sortedFilteredRecords.reduce(false, { partialResult, record in
             switch record.manifest {
-            case .incoming(_, let viewed):
-                return partialResult || !viewed
+            case .incoming(_, let viewedTimestamp):
+                return partialResult || (viewedTimestamp == nil)
             case .outgoing:
                 owsFailDebug("Unexpected record type")
                 return partialResult

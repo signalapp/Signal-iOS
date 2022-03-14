@@ -97,7 +97,7 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
             throw OWSGenericError("Ignoring StoryMessage from blocked author.")
         }
 
-        let manifest = StoryManifest.incoming(allowsReplies: storyMessage.allowsReplies, viewed: false)
+        let manifest = StoryManifest.incoming(allowsReplies: storyMessage.allowsReplies, viewedTimestamp: nil)
 
         let attachment: StoryMessageAttachment
         if let fileAttachment = storyMessage.fileAttachment {
@@ -135,19 +135,19 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
     }
 
     @objc
-    public func markAsViewed(circumstance: OWSReceiptCircumstance, transaction: GRDBWriteTransaction) {
+    public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: GRDBWriteTransaction) {
         updateWith(transaction: transaction) { record in
             guard case .incoming(let allowsReplies, _) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark outgoing message as viewed with wrong method.")
             }
-            record.manifest = .incoming(allowsReplies: allowsReplies, viewed: true)
+            record.manifest = .incoming(allowsReplies: allowsReplies, viewedTimestamp: timestamp)
         }
 
         receiptManager.storyWasViewed(self, circumstance: circumstance, transaction: transaction.asAnyWrite)
     }
 
     @objc
-    public func markAsViewed(by recipient: SignalServiceAddress, transaction: GRDBWriteTransaction) {
+    public func markAsViewed(at timestamp: UInt64, by recipient: SignalServiceAddress, transaction: GRDBWriteTransaction) {
         updateWith(transaction: transaction) { record in
             guard case .outgoing(var manifest) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
@@ -157,7 +157,7 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
                 return owsFailDebug("missing recipient for viewed update")
             }
 
-            recipientState.hasViewed = true
+            recipientState.viewedTimestamp = timestamp
             manifest[recipientUuid] = recipientState
 
             record.manifest = .outgoing(manifest: manifest)
@@ -187,7 +187,7 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
 }
 
 public enum StoryManifest: Codable {
-    case incoming(allowsReplies: Bool, viewed: Bool)
+    case incoming(allowsReplies: Bool, viewedTimestamp: UInt64?)
     case outgoing(manifest: [UUID: StoryRecipientState])
 }
 
@@ -196,7 +196,7 @@ public struct StoryRecipientState: Codable {
 
     public let allowsReplies: Bool
     public var contexts: [DistributionListId]
-    public var hasViewed: Bool
+    public var viewedTimestamp: UInt64?
 }
 
 public enum StoryMessageAttachment: Codable {

@@ -319,7 +319,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                                                                   author:address
                                                                              transaction:transaction.unwrapGrdbRead];
             if (storyMessage) {
-                [storyMessage markAsViewedBy:address transaction:transaction.unwrapGrdbWrite];
+                [storyMessage markAsViewedAt:viewedTimestamp by:address transaction:transaction.unwrapGrdbWrite];
             } else {
                 [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
             }
@@ -482,8 +482,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                                                                   author:senderAddress
                                                                              transaction:transaction.unwrapGrdbRead];
             if (storyMessage) {
-                [storyMessage markAsViewedWithCircumstance:OWSReceiptCircumstanceOnLinkedDevice
-                                               transaction:transaction.unwrapGrdbWrite];
+                [storyMessage markAsViewedAt:viewedTimestamp
+                                circumstance:OWSReceiptCircumstanceOnLinkedDevice
+                                 transaction:transaction.unwrapGrdbWrite];
             } else {
                 [receiptsMissingMessage addObject:viewedReceiptProto];
             }

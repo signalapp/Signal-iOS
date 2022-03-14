@@ -11,8 +11,7 @@ public class StoryFinder: NSObject {
         let sql = """
             SELECT COUNT(*) OVER ()
             FROM \(StoryMessageRecord.databaseTableName)
-            WHERE direction = \(StoryMessageRecord.Direction.incoming.rawValue)
-            AND json_extract(manifest, '$.incoming.viewed') = 0
+            WHERE json_extract(manifest, '$.incoming.viewedTimestamp') is NULL
             GROUP BY (
                 CASE
                     WHEN groupId is NULL THEN authorUuid

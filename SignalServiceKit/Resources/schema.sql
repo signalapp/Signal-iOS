@@ -1282,11 +1282,11 @@ CREATE
 ;
 
 CREATE
-    INDEX index_story_messages_on_incoming_viewed
+    INDEX index_story_messages_on_incoming_viewedTimestamp
         ON story_messages (
         json_extract (
             manifest
-            ,'$.incoming.viewed'
+            ,'$.incoming.viewedTimestamp'
         )
     )
 ;

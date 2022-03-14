@@ -465,7 +465,7 @@ public class EarlyMessageManager: NSObject {
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, _):
                 owsFailDebug("Unexpectedly received early read receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
-            case .outgoingMessageViewed(let sender, let deviceId, _):
+            case .outgoingMessageViewed(let sender, let deviceId, let timestamp):
                 Logger.info("Applying early viewed receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
 
                 guard storyMessage.direction == .outgoing else {
@@ -473,7 +473,7 @@ public class EarlyMessageManager: NSObject {
                     continue
                 }
 
-                storyMessage.markAsViewed(by: sender, transaction: transaction.unwrapGrdbWrite)
+                storyMessage.markAsViewed(at: timestamp, by: sender, transaction: transaction.unwrapGrdbWrite)
             case .outgoingMessageDelivered(let sender, let deviceId, _):
                 Logger.info("Applying early delivery receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
 
@@ -485,10 +485,10 @@ public class EarlyMessageManager: NSObject {
                 // TODO: Mark Delivered
             case .messageReadOnLinkedDevice:
                 owsFailDebug("Unexpectexly received early read receipt from linked device for StoryMessage \(identifier)")
-            case .messageViewedOnLinkedDevice:
+            case .messageViewedOnLinkedDevice(let timestamp):
                 Logger.info("Applying early viewed receipt from linked device for StoryMessage \(identifier)")
 
-                storyMessage.markAsViewed(circumstance: .onLinkedDevice, transaction: transaction.unwrapGrdbWrite)
+                storyMessage.markAsViewed(at: timestamp, circumstance: .onLinkedDevice, transaction: transaction.unwrapGrdbWrite)
             }
         }
 
