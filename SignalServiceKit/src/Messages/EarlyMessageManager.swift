@@ -473,7 +473,7 @@ public class EarlyMessageManager: NSObject {
                     continue
                 }
 
-                storyMessage.markAsViewed(for: sender, transaction: transaction.unwrapGrdbWrite)
+                storyMessage.markAsViewed(by: sender, transaction: transaction.unwrapGrdbWrite)
             case .outgoingMessageDelivered(let sender, let deviceId, _):
                 Logger.info("Applying early delivery receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
 
@@ -488,7 +488,7 @@ public class EarlyMessageManager: NSObject {
             case .messageViewedOnLinkedDevice:
                 Logger.info("Applying early viewed receipt from linked device for StoryMessage \(identifier)")
 
-                storyMessage.markAsViewed(transaction: transaction.unwrapGrdbWrite)
+                storyMessage.markAsViewed(circumstance: .onLinkedDevice, transaction: transaction.unwrapGrdbWrite)
             }
         }
 

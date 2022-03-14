@@ -15,9 +15,17 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
 
     public var id: Int64?
 
+    @objc
+    public var idNumber: NSNumber? { id.map { .init(value: $0) } }
+
+    @objc
     public let timestamp: UInt64
+
     public let authorUuid: UUID
+
+    @objc
     public var authorAddress: SignalServiceAddress { SignalServiceAddress(uuid: authorUuid) }
+
     public let groupId: Data?
 
     public enum Direction: Int, Codable { case incoming = 0, outgoing = 1 }
@@ -126,24 +134,33 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
         return try performDelete(db)
     }
 
-    public func markAsViewed(for recipient: SignalServiceAddress? = nil, transaction: GRDBWriteTransaction) {
+    @objc
+    public func markAsViewed(circumstance: OWSReceiptCircumstance, transaction: GRDBWriteTransaction) {
         updateWith(transaction: transaction) { record in
-            switch record.manifest {
-            case .incoming(let allowsReplies, _):
-                owsAssertDebug(recipient == nil)
-                record.manifest = .incoming(allowsReplies: allowsReplies, viewed: true)
-            case .outgoing(let manifest):
-                var manifest = manifest
-
-                guard let recipientUuid = recipient?.uuid, var recipientState = manifest[recipientUuid] else {
-                    return owsFailDebug("missing recipient for viewed update")
-                }
-
-                recipientState.hasViewed = true
-                manifest[recipientUuid] = recipientState
-
-                record.manifest = .outgoing(manifest: manifest)
+            guard case .incoming(let allowsReplies, _) = record.manifest else {
+                return owsFailDebug("Unexpectedly tried to mark outgoing message as viewed with wrong method.")
             }
+            record.manifest = .incoming(allowsReplies: allowsReplies, viewed: true)
+        }
+
+        receiptManager.storyWasViewed(self, circumstance: circumstance, transaction: transaction.asAnyWrite)
+    }
+
+    @objc
+    public func markAsViewed(by recipient: SignalServiceAddress, transaction: GRDBWriteTransaction) {
+        updateWith(transaction: transaction) { record in
+            guard case .outgoing(var manifest) = record.manifest else {
+                return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
+            }
+
+            guard let recipientUuid = recipient.uuid, var recipientState = manifest[recipientUuid] else {
+                return owsFailDebug("missing recipient for viewed update")
+            }
+
+            recipientState.hasViewed = true
+            manifest[recipientUuid] = recipientState
+
+            record.manifest = .outgoing(manifest: manifest)
         }
     }
 

@@ -221,6 +221,13 @@ class StoryHorizontalPageViewController: OWSViewController {
         AssertIsOnMainThread()
         playbackProgressView.numberOfItems = items.count
         if let currentItemVC = currentItemViewController, let idx = items.firstIndex(of: currentItemVC.item) {
+            // When we present a story, mark it as viewed if it's not already.
+            if !currentItemVC.isDownloading, case .incoming(_, let viewed) = currentItemVC.item.record.manifest, !viewed {
+                databaseStorage.write { transaction in
+                    currentItemVC.item.record.markAsViewed(circumstance: .onThisDevice, transaction: transaction.unwrapGrdbWrite)
+                }
+            }
+
             currentItemVC.updateTimestampText()
             if currentItemVC.isDownloading {
                 lastTransitionTime = CACurrentMediaTime()

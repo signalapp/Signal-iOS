@@ -181,6 +181,43 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     }
 }
 
+- (void)storyWasViewed:(StoryMessageRecord *)storyMessage
+          circumstance:(OWSReceiptCircumstance)circumstance
+           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    switch (circumstance) {
+        case OWSReceiptCircumstanceOnLinkedDevice:
+            // nothing further to do
+            break;
+        case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
+            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            break;
+        case OWSReceiptCircumstanceOnThisDevice: {
+            [self enqueueLinkedDeviceViewedReceiptForStoryMessage:storyMessage transaction:transaction];
+            [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
+
+            if (storyMessage.authorAddress.isLocalAddress) {
+                OWSFailDebug(@"We don't support incoming messages from self.");
+                return;
+            }
+
+            if ([self areReadReceiptsEnabled]) {
+                OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
+                // This just needs to be a) consistent and b) not overlap with TSMessage ids
+                NSString *storyMessageUniqueId = [NSString stringWithFormat:@"story-%@", storyMessage.idNumber];
+                [self.outgoingReceiptManager enqueueViewedReceiptForAddress:storyMessage.authorAddress
+                                                                  timestamp:storyMessage.timestamp
+                                                            messageUniqueId:storyMessageUniqueId
+                                                                transaction:transaction];
+            }
+            break;
+        }
+        case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
+            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            break;
+    }
+}
+
 #pragma mark - Read Receipts From Recipient
 
 - (NSArray<NSNumber *> *)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
@@ -278,7 +315,14 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                        transaction:transaction];
             }
         } else {
-            [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
+            StoryMessageRecord *_Nullable storyMessage = [StoryFinder storyWithTimestamp:sentTimestamp
+                                                                                  author:address
+                                                                             transaction:transaction.unwrapGrdbRead];
+            if (storyMessage) {
+                [storyMessage markAsViewedBy:address transaction:transaction.unwrapGrdbWrite];
+            } else {
+                [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
+            }
         }
     }
 
@@ -434,7 +478,15 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                      transaction:transaction];
             }
         } else {
-            [receiptsMissingMessage addObject:viewedReceiptProto];
+            StoryMessageRecord *_Nullable storyMessage = [StoryFinder storyWithTimestamp:messageIdTimestamp
+                                                                                  author:senderAddress
+                                                                             transaction:transaction.unwrapGrdbRead];
+            if (storyMessage) {
+                [storyMessage markAsViewedWithCircumstance:OWSReceiptCircumstanceOnLinkedDevice
+                                               transaction:transaction.unwrapGrdbWrite];
+            } else {
+                [receiptsMissingMessage addObject:viewedReceiptProto];
+            }
         }
     }
 

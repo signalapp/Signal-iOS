@@ -5,7 +5,8 @@
 import Foundation
 import GRDB
 
-public enum StoryFinder {
+@objc
+public class StoryFinder: NSObject {
     public static func unviewedSenderCount(transaction: GRDBReadTransaction) -> Int {
         let sql = """
             SELECT COUNT(*) OVER ()
@@ -150,6 +151,7 @@ public enum StoryFinder {
         }
     }
 
+    @objc
     public static func story(timestamp: UInt64, author: SignalServiceAddress, transaction: GRDBReadTransaction) -> StoryMessageRecord? {
         guard let authorUuid = author.uuid else {
             owsFailDebug("Cannot query story for author without UUID")

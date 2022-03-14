@@ -174,6 +174,36 @@ public extension OWSReceiptManager {
         }
     }
 
+    func enqueueLinkedDeviceViewedReceipt(forStoryMessage message: StoryMessageRecord,
+                                          transaction: SDSAnyWriteTransaction) {
+        // Unlike TSMessage, we need to send a viewed receipt for *every* StoryMessage
+        let uniqueId = "story-\(message.timestamp)"
+
+        let messageAuthorAddress = message.authorAddress
+        assert(messageAuthorAddress.isValid)
+
+        let newViewedReceipt = ReceiptForLinkedDevice(
+            senderAddress: messageAuthorAddress,
+            messageUniqueId: uniqueId,
+            messageIdTimestamp: message.timestamp,
+            timestamp: Date.ows_millisecondTimestamp()
+        )
+
+        do {
+            if let oldViewedReceipt: ReceiptForLinkedDevice = try toLinkedDevicesViewedReceiptMapStore.getCodableValue(forKey: uniqueId, transaction: transaction),
+                oldViewedReceipt.messageIdTimestamp > newViewedReceipt.messageIdTimestamp {
+                // If there's an existing "linked device" viewed receipt for the same thread with
+                // a newer timestamp, discard this "linked device" read receipt.
+                Logger.verbose("Ignoring redundant viewed receipt for linked devices.")
+            } else {
+                Logger.verbose("Enqueuing viewed receipt for linked devices.")
+                try toLinkedDevicesViewedReceiptMapStore.setCodable(newViewedReceipt, key: uniqueId, transaction: transaction)
+            }
+        } catch {
+            owsFailDebug("Error: \(error).")
+        }
+    }
+
     func markAsReadLocally(beforeSortId sortId: UInt64,
                            thread: TSThread,
                            hasPendingMessageRequest: Bool,
