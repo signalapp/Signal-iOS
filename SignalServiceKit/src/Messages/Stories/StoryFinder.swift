@@ -62,24 +62,17 @@ public enum StoryFinder {
     }
 
     public static func latestStoryForThread(_ thread: TSThread, transaction: GRDBReadTransaction) -> StoryMessageRecord? {
-        let threadQuery: String
-        if let groupThread = thread as? TSGroupThread {
-            threadQuery = "groupId = x'\(groupThread.groupId.hexadecimalString)'"
-        } else if let contactThread = thread as? TSContactThread {
-            guard let uuid = contactThread.contactAddress.uuid else {
-                // No stories for contacts without UUIDs
-                return nil
-            }
-            threadQuery = "authorUuid = '\(uuid.uuidString)' AND groupId is NULL"
-        } else {
-            owsFailDebug("Unexpected thread")
-            return nil
-        }
+        latestStoryForContext(thread.storyContext, transaction: transaction)
+    }
+
+    public static func latestStoryForContext(_ context: StoryContext, transaction: GRDBReadTransaction) -> StoryMessageRecord? {
+
+        guard let contextQuery = context.query else { return nil }
 
         let sql = """
             SELECT *
             FROM \(StoryMessageRecord.databaseTableName)
-            WHERE \(threadQuery)
+            WHERE \(contextQuery)
             ORDER BY timestamp DESC
             LIMIT 1
         """
@@ -89,6 +82,31 @@ public enum StoryFinder {
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return nil
+        }
+    }
+
+    public static func enumerateStoriesForContext(_ context: StoryContext, transaction: GRDBReadTransaction, block: @escaping (StoryMessageRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
+
+        guard let contextQuery = context.query else { return }
+
+        let sql = """
+            SELECT *
+            FROM \(StoryMessageRecord.databaseTableName)
+            WHERE \(contextQuery)
+            ORDER BY timestamp DESC
+        """
+
+        do {
+            let cursor = try StoryMessageRecord.fetchCursor(transaction.database, sql: sql)
+            while let record = try cursor.next() {
+                var stop: ObjCBool = false
+                block(record, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
         }
     }
 
@@ -151,6 +169,19 @@ public enum StoryFinder {
             return try StoryMessageRecord.fetchOne(transaction.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch story \(error)")
+            return nil
+        }
+    }
+}
+
+private extension StoryContext {
+    var query: String? {
+        switch self {
+        case .groupId(let data):
+            return "groupId = x'\(data.hexadecimalString)'"
+        case .authorUuid(let uuid):
+            return "authorUuid = '\(uuid.uuidString)' AND groupId is NULL"
+        case .none:
             return nil
         }
     }

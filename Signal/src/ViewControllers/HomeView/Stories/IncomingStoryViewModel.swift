@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 struct IncomingStoryViewModel: Dependencies {
-    let identifier: UUID
+    let context: StoryContext
 
     let records: [StoryMessageRecord]
     let recordIds: [Int64]
@@ -23,9 +23,7 @@ struct IncomingStoryViewModel: Dependencies {
 
     let latestRecordAvatarDataSource: ConversationAvatarDataSource
 
-    init(records: [StoryMessageRecord], identifier: UUID = UUID(), transaction: SDSAnyReadTransaction) throws {
-        self.identifier = identifier
-
+    init(records: [StoryMessageRecord], transaction: SDSAnyReadTransaction) throws {
         let sortedFilteredRecords = records.lazy.filter { $0.direction == .incoming }.sorted { $0.timestamp > $1.timestamp }
         self.records = sortedFilteredRecords
         self.recordIds = sortedFilteredRecords.compactMap { $0.id }
@@ -42,6 +40,8 @@ struct IncomingStoryViewModel: Dependencies {
         guard let latestRecord = sortedFilteredRecords.first else {
             throw OWSAssertionError("At least one record is required.")
         }
+
+        self.context = latestRecord.context
 
         if let groupId = latestRecord.groupId {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -92,6 +92,21 @@ struct IncomingStoryViewModel: Dependencies {
                 }
             } + updatedRecords
         guard !records.isEmpty else { return nil }
-        return try .init(records: records, identifier: identifier, transaction: transaction)
+        return try .init(records: records, transaction: transaction)
     }
+}
+
+extension StoryContext: BatchUpdateValue {
+    public var batchUpdateId: String {
+        switch self {
+        case .groupId(let data):
+            return data.hexadecimalString
+        case .authorUuid(let uuid):
+            return uuid.uuidString
+        case .none:
+            owsFailDebug("Unexpected StoryContext for batch update")
+            return "none"
+        }
+    }
+    public var logSafeDescription: String { batchUpdateId }
 }

@@ -51,3 +51,21 @@ public class StoryManager: NSObject {
         return NSNumber(value: timestamp + storyLifetime)
     }
 }
+
+public enum StoryContext: Equatable, Hashable {
+    case groupId(Data)
+    case authorUuid(UUID)
+    case none
+}
+
+public extension TSThread {
+    var storyContext: StoryContext {
+        if let groupThread = self as? TSGroupThread {
+            return .groupId(groupThread.groupId)
+        } else if let contactThread = self as? TSContactThread, let authorUuid = contactThread.contactAddress.uuid {
+            return .authorUuid(authorUuid)
+        } else {
+            return .none
+        }
+    }
+}

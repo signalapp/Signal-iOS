@@ -9,11 +9,6 @@ public protocol BatchUpdateValue: Equatable {
     var logSafeDescription: String { get }
 }
 
-extension UUID: BatchUpdateValue {
-    public var batchUpdateId: String { uuidString }
-    public var logSafeDescription: String { uuidString }
-}
-
 // MARK: -
 
 public enum BatchUpdateType: Equatable {

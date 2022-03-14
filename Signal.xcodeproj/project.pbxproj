@@ -841,6 +841,10 @@
 		8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */; };
 		884DB94527DD70F700C6A309 /* IncomingStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */; };
 		884DB94727DD754700C6A309 /* StoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94627DD754700C6A309 /* StoryCell.swift */; };
+		884DB94F27DE67BB00C6A309 /* StoryPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */; };
+		884DB95027DE67BB00C6A309 /* StoryHorizontalPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94E27DE67BB00C6A309 /* StoryHorizontalPageViewController.swift */; };
+		884DB95227DE67D900C6A309 /* StoryItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB95127DE67D900C6A309 /* StoryItemViewController.swift */; };
+		884DB95427DEB9E900C6A309 /* StoryPlaybackProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */; };
 		8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */; };
 		8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */; };
 		8852572927DD366D0032073C /* StoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8852572827DD366D0032073C /* StoriesViewController.swift */; };
@@ -2056,6 +2060,10 @@
 		8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarEditViewController.swift; sourceTree = "<group>"; };
 		884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingStoryViewModel.swift; sourceTree = "<group>"; };
 		884DB94627DD754700C6A309 /* StoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCell.swift; sourceTree = "<group>"; };
+		884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryPageViewController.swift; sourceTree = "<group>"; };
+		884DB94E27DE67BB00C6A309 /* StoryHorizontalPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryHorizontalPageViewController.swift; sourceTree = "<group>"; };
+		884DB95127DE67D900C6A309 /* StoryItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryItemViewController.swift; sourceTree = "<group>"; };
+		884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPlaybackProgressView.swift; sourceTree = "<group>"; };
 		8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputTextView.swift; sourceTree = "<group>"; };
 		8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Mentions.swift"; sourceTree = "<group>"; };
 		8852572827DD366D0032073C /* StoriesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewController.swift; sourceTree = "<group>"; };
@@ -4011,12 +4019,24 @@
 			path = Avatars;
 			sourceTree = "<group>";
 		};
+		884DB94A27DE66E000C6A309 /* Context View */ = {
+			isa = PBXGroup;
+			children = (
+				884DB94E27DE67BB00C6A309 /* StoryHorizontalPageViewController.swift */,
+				884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */,
+				884DB95127DE67D900C6A309 /* StoryItemViewController.swift */,
+				884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */,
+			);
+			path = "Context View";
+			sourceTree = "<group>";
+		};
 		8852572727DD365D0032073C /* Stories */ = {
 			isa = PBXGroup;
 			children = (
 				8852572827DD366D0032073C /* StoriesViewController.swift */,
 				884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */,
 				884DB94627DD754700C6A309 /* StoryCell.swift */,
+				884DB94A27DE66E000C6A309 /* Context View */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -6022,6 +6042,7 @@
 				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
+				884DB95227DE67D900C6A309 /* StoryItemViewController.swift in Sources */,
 				8852572C27DD40870032073C /* HomeTabBarController.swift in Sources */,
 				4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */,
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
@@ -6160,6 +6181,7 @@
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				341D392925472F3B00996E7B /* CVViewState.swift in Sources */,
 				88238EA224E9DDB700F28079 /* LocalVideoView.swift in Sources */,
+				884DB95427DEB9E900C6A309 /* StoryPlaybackProgressView.swift in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
@@ -6244,6 +6266,7 @@
 				34C7C7152625D8E100F4DC2A /* DebugUIMessages.swift in Sources */,
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				3497971525D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift in Sources */,
+				884DB94F27DE67BB00C6A309 /* StoryPageViewController.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* DeviceTransferQRScanningViewController.swift in Sources */,
 				34E95C24269F4F4F004807EC /* CLVViewState.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
@@ -6270,6 +6293,7 @@
 				88D23D2323CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift in Sources */,
 				88FBE9502649E7EB005F6C80 /* DonationViewController.swift in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
+				884DB95027DE67BB00C6A309 /* StoryHorizontalPageViewController.swift in Sources */,
 				34A4D87F2677B23100A794E7 /* ConversationViewController+MessageActions.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */,

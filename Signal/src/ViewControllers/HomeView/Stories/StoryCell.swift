@@ -53,18 +53,30 @@ class StoryCell: UITableViewCell {
         attachmentThumbnail.backgroundColor = Theme.washColor
         attachmentThumbnail.removeAllSubviews()
 
+        let contentMode: UIView.ContentMode = .scaleAspectFill
+
         switch model.latestRecordAttachment {
         case .file(let attachment):
-            // TODO: Downloading state
-            guard let attachment = attachment as? TSAttachmentStream else { break }
-            let imageView = UIImageView()
-            imageView.contentMode = .scaleAspectFill
-            attachmentThumbnail.addSubview(imageView)
-            imageView.autoPinEdgesToSuperviewEdges()
-            attachment.thumbnailImageSmall {
-                imageView.image = $0
-            } failure: {
-                owsFailDebug("Failed to generate thumbnail")
+            if let pointer = attachment as? TSAttachmentPointer {
+                let pointerView = UIView()
+
+                if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer, contentMode: contentMode) {
+                    pointerView.addSubview(blurHashImageView)
+                    blurHashImageView.autoPinEdgesToSuperviewEdges()
+                }
+
+                let downloadStateView = buildDownloadStateView(for: pointer)
+                pointerView.addSubview(downloadStateView)
+                downloadStateView.autoPinEdgesToSuperviewEdges()
+
+                attachmentThumbnail.addSubview(pointerView)
+                pointerView.autoPinEdgesToSuperviewEdges()
+            } else if let stream = attachment as? TSAttachmentStream {
+                let imageView = buildThumbnailImageView(stream: stream, contentMode: contentMode)
+                attachmentThumbnail.addSubview(imageView)
+                imageView.autoPinEdgesToSuperviewEdges()
+            } else {
+                owsFailDebug("Unexpected attachment type \(type(of: attachment))")
             }
         case .text(let attachment):
             // TODO: Render text attachments
@@ -73,6 +85,52 @@ class StoryCell: UITableViewCell {
             // TODO: error state
             break
         }
+    }
+
+    private func buildThumbnailImageView(stream: TSAttachmentStream, contentMode: UIView.ContentMode) -> UIView {
+        let imageView = UIImageView()
+        imageView.contentMode = contentMode
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
+        imageView.layer.allowsEdgeAntialiasing = true
+
+        stream.thumbnailImageSmall {
+            imageView.image = $0
+        } failure: {
+            owsFailDebug("Failed to generate thumbnail")
+        }
+
+        return imageView
+    }
+
+    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer, contentMode: UIView.ContentMode) -> UIView? {
+        guard let blurHash = pointer.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
+            return nil
+        }
+        let imageView = UIImageView()
+        imageView.contentMode = contentMode
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
+        imageView.layer.allowsEdgeAntialiasing = true
+        imageView.image = blurHashImage
+        return imageView
+    }
+
+    private static let mediaCache = CVMediaCache()
+    private func buildDownloadStateView(for pointer: TSAttachmentPointer) -> UIView {
+        let view = UIView()
+
+        let progressView = CVAttachmentProgressView(
+            direction: .download(attachmentPointer: pointer),
+            style: .withCircle,
+            isDarkThemeEnabled: true,
+            mediaCache: Self.mediaCache
+        )
+        view.addSubview(progressView)
+        progressView.autoSetDimensions(to: progressView.layoutSize)
+        progressView.autoCenterInSuperview()
+
+        return view
     }
 
     func configureTimestamp(with model: IncomingStoryViewModel) {

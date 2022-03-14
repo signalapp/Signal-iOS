@@ -86,8 +86,7 @@ class StoriesViewController: OWSViewController {
 
                 let modal = CameraFirstCaptureNavigationController.cameraFirstModal()
                 modal.cameraFirstCaptureSendFlow.delegate = self
-                modal.modalPresentationStyle = .fullScreen
-                self.present(modal, animated: true)
+                self.presentFullScreen(modal, animated: true)
             }
         }
     }
@@ -116,8 +115,8 @@ class StoriesViewController: OWSViewController {
             var deletedRowIds = rowIds.subtracting(updatedRecords.compactMap { $0.id })
             var groupedRecords = self.groupStoryRecordsByContext(updatedRecords)
 
-            let oldIdentifiers = self.models.map { $0.identifier }
-            var changedIdentifiers = [UUID]()
+            let oldContexts = self.models.map { $0.context }
+            var changedContexts = [StoryContext]()
 
             let newModels = Self.databaseStorage.read { transaction in
                 self.models.compactMap { model in
@@ -126,12 +125,11 @@ class StoriesViewController: OWSViewController {
                     let modelDeletedRowIds = model.recordIds.filter { deletedRowIds.contains($0) }
                     deletedRowIds.subtract(deletedRowIds)
 
-                    let modelContext: StoryContext = latestRecord.groupId.map { .groupId($0) } ?? .authorUuid(latestRecord.authorUuid)
-                    let modelUpdatedRecords = groupedRecords.removeValue(forKey: modelContext) ?? []
+                    let modelUpdatedRecords = groupedRecords.removeValue(forKey: latestRecord.context) ?? []
 
                     guard !modelUpdatedRecords.isEmpty || !modelDeletedRowIds.isEmpty else { return model }
 
-                    changedIdentifiers.append(model.identifier)
+                    changedContexts.append(model.context)
 
                     return try! model.copy(
                         updatedRecords: modelUpdatedRecords,
@@ -143,9 +141,9 @@ class StoriesViewController: OWSViewController {
 
             let batchUpdateItems = try! BatchUpdate.build(
                 viewType: .uiTableView,
-                oldValues: oldIdentifiers,
-                newValues: newModels.map { $0.identifier },
-                changedValues: changedIdentifiers
+                oldValues: oldContexts,
+                newValues: newModels.map { $0.context },
+                changedValues: changedContexts
             )
 
             DispatchQueue.main.async {
@@ -179,16 +177,11 @@ class StoriesViewController: OWSViewController {
         }
     }
 
-    private enum StoryContext: Hashable {
-        case groupId(Data)
-        case authorUuid(UUID)
-    }
     private func groupStoryRecordsByContext(_ storyRecords: [StoryMessageRecord]) -> [StoryContext: [StoryMessageRecord]] {
         storyRecords.reduce(into: [StoryContext: [StoryMessageRecord]]()) { partialResult, record in
-            let context: StoryContext = record.groupId.map { .groupId($0) } ?? .authorUuid(record.authorUuid)
-            var records = partialResult[context] ?? []
+            var records = partialResult[record.context] ?? []
             records.append(record)
-            partialResult[context] = records
+            partialResult[record.context] = records
         }
     }
 }
@@ -218,7 +211,16 @@ extension StoriesViewController: DatabaseChangeDelegate {
 }
 
 extension StoriesViewController: UITableViewDelegate {
-
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard let model = models[safe: indexPath.row] else {
+            owsFailDebug("Missing model for story")
+            return
+        }
+        let vc = StoryPageViewController(context: model.context)
+        vc.contextDataSource = self
+        vc.present(from: self, animated: true)
+    }
 }
 
 extension StoriesViewController: UITableViewDataSource {
@@ -238,5 +240,23 @@ extension StoriesViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return models.count
+    }
+}
+
+extension StoriesViewController: StoryPageViewControllerDataSource {
+    func storyPageViewController(_ storyPageViewController: StoryPageViewController, storyContextBefore storyContext: StoryContext) -> StoryContext? {
+        guard let contextIndex = models.firstIndex(where: { $0.context == storyContext }),
+              let contextBefore = models[safe: contextIndex.advanced(by: -1)]?.context else {
+                  return nil
+              }
+        return contextBefore
+    }
+
+    func storyPageViewController(_ storyPageViewController: StoryPageViewController, storyContextAfter storyContext: StoryContext) -> StoryContext? {
+        guard let contextIndex = models.firstIndex(where: { $0.context == storyContext }),
+              let contextAfter = models[safe: contextIndex.advanced(by: 1)]?.context else {
+                  return nil
+              }
+        return contextAfter
     }
 }

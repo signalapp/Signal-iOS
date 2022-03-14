@@ -11,6 +11,8 @@ import UIKit
 public final class StoryMessageRecord: NSObject, Codable, Identifiable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "story_messages"
 
+    public var context: StoryContext { groupId.map { .groupId($0) } ?? .authorUuid(authorUuid) }
+
     public var id: Int64?
 
     public let timestamp: UInt64
