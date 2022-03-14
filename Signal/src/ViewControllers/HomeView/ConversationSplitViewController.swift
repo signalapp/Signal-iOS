@@ -243,8 +243,8 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             // is set in init this method is getting called OR this `viewControllers` is
             // returning stale information. The latter seems most plausible, but is near
             // impossible to reproduce.
-            owsAssertDebug(viewControllers.first == chatListNavController)
-            viewControllers = [chatListNavController, vc]
+            owsAssertDebug(viewControllers.first == homeVC)
+            viewControllers = [homeVC, vc]
         }
 
         // If the detail VC is a nav controller, we want to keep track of
@@ -518,7 +518,7 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
     }
 
     func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
-        assert(primaryViewController == chatListNavController)
+        assert(primaryViewController == homeVC)
 
         applyNavBarStyle(collapsed: false)
 
