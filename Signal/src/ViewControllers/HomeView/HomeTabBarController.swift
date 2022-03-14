@@ -69,7 +69,7 @@ class HomeTabBarController: UITabBarController {
     func updateStoriesBadge() {
         guard !tabBar.isHidden else { return }
         let unviewedStoriesCount = databaseStorage.read { transaction in
-            StoryFinder.unviewedSenderCount(transaction: transaction.unwrapGrdbRead)
+            StoryFinder.unviewedSenderCount(transaction: transaction)
         }
         storiesTabBarItem.badgeValue = unviewedStoriesCount > 0 ? "\(unviewedStoriesCount)" : nil
     }

@@ -105,7 +105,7 @@ public class ThreadViewModel: NSObject {
             self.isWallpaperPhoto = false
         }
 
-        if let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction.unwrapGrdbRead) {
+        if let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction) {
             switch latestStory.manifest {
             case .incoming(_, let viewedTimestamp):
                 storyState = viewedTimestamp != nil ? .viewed : .unviewed

@@ -169,7 +169,7 @@ class StoryHorizontalPageViewController: OWSViewController {
         var storyItems = [StoryItem]()
         databaseStorage.asyncRead { [weak self] transaction in
             guard let self = self else { return }
-            StoryFinder.enumerateStoriesForContext(self.context, transaction: transaction.unwrapGrdbRead) { message, stop in
+            StoryFinder.enumerateStoriesForContext(self.context, transaction: transaction) { message, stop in
                 guard let storyItem = self.buildStoryItem(for: message, transaction: transaction) else { return }
                 storyItems.append(storyItem)
                 if storyItems.count >= Self.maxItemsToRender { stop.pointee = true }

@@ -94,7 +94,7 @@ class StoriesViewController: OWSViewController {
     private static let loadingQueue = DispatchQueue(label: "StoriesViewController.loadingQueue", qos: .userInitiated)
     private func reloadStories() {
         Self.loadingQueue.async {
-            let incomingMessages = Self.databaseStorage.read { StoryFinder.incomingStories(transaction: $0.unwrapGrdbRead) }
+            let incomingMessages = Self.databaseStorage.read { StoryFinder.incomingStories(transaction: $0) }
             let groupedMessages = self.groupStoryMessagesByContext(incomingMessages)
             let newModels = Self.databaseStorage.read { transaction in
                 groupedMessages.compactMap { try? IncomingStoryViewModel(messages: $1, transaction: transaction) }
@@ -110,7 +110,7 @@ class StoriesViewController: OWSViewController {
         guard !rowIds.isEmpty else { return }
         Self.loadingQueue.async {
             let updatedMessages = Self.databaseStorage.read {
-                StoryFinder.incomingStoriesWithRowIds(Array(rowIds), transaction: $0.unwrapGrdbRead)
+                StoryFinder.incomingStoriesWithRowIds(Array(rowIds), transaction: $0)
             }
             var deletedRowIds = rowIds.subtracting(updatedMessages.map { $0.id! })
             var groupedMessages = self.groupStoryMessagesByContext(updatedMessages)

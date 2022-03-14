@@ -7,7 +7,7 @@ import GRDB
 
 @objc
 public class StoryFinder: NSObject {
-    public static func unviewedSenderCount(transaction: GRDBReadTransaction) -> Int {
+    public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
         let sql = """
             SELECT COUNT(*) OVER ()
             FROM \(StoryMessage.databaseTableName)
@@ -21,14 +21,14 @@ public class StoryFinder: NSObject {
             LIMIT 1
         """
         do {
-            return try Int.fetchOne(transaction.database, sql: sql) ?? 0
+            return try Int.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? 0
         } catch {
             owsFailDebug("Failed to query unviewed story sender count \(error)")
             return 0
         }
     }
 
-    public static func incomingStories(transaction: GRDBReadTransaction) -> [StoryMessage] {
+    public static func incomingStories(transaction: SDSAnyReadTransaction) -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -37,14 +37,14 @@ public class StoryFinder: NSObject {
         """
 
         do {
-            return try StoryMessage.fetchAll(transaction.database, sql: sql)
+            return try StoryMessage.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return []
         }
     }
 
-    public static func incomingStoriesWithRowIds(_ rowIds: [Int64], transaction: GRDBReadTransaction) -> [StoryMessage] {
+    public static func incomingStoriesWithRowIds(_ rowIds: [Int64], transaction: SDSAnyReadTransaction) -> [StoryMessage] {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
@@ -54,18 +54,18 @@ public class StoryFinder: NSObject {
         """
 
         do {
-            return try StoryMessage.fetchAll(transaction.database, sql: sql)
+            return try StoryMessage.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return []
         }
     }
 
-    public static func latestStoryForThread(_ thread: TSThread, transaction: GRDBReadTransaction) -> StoryMessage? {
+    public static func latestStoryForThread(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> StoryMessage? {
         latestStoryForContext(thread.storyContext, transaction: transaction)
     }
 
-    public static func latestStoryForContext(_ context: StoryContext, transaction: GRDBReadTransaction) -> StoryMessage? {
+    public static func latestStoryForContext(_ context: StoryContext, transaction: SDSAnyReadTransaction) -> StoryMessage? {
 
         guard let contextQuery = context.query else { return nil }
 
@@ -78,14 +78,14 @@ public class StoryFinder: NSObject {
         """
 
         do {
-            return try StoryMessage.fetchOne(transaction.database, sql: sql)
+            return try StoryMessage.fetchOne(transaction.unwrapGrdbRead.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return nil
         }
     }
 
-    public static func enumerateStoriesForContext(_ context: StoryContext, transaction: GRDBReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateStoriesForContext(_ context: StoryContext, transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         guard let contextQuery = context.query else { return }
 
@@ -97,7 +97,7 @@ public class StoryFinder: NSObject {
         """
 
         do {
-            let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
+            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
             while let message = try cursor.next() {
                 var stop: ObjCBool = false
                 block(message, &stop)
@@ -111,7 +111,7 @@ public class StoryFinder: NSObject {
     }
 
     // The stories should be enumerated in order from "next to expire" to "last to expire".
-    public static func enumerateExpiredStories(transaction: GRDBReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateExpiredStories(transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         let sql = """
             SELECT *
@@ -121,7 +121,7 @@ public class StoryFinder: NSObject {
         """
 
         do {
-            let cursor = try StoryMessage.fetchCursor(transaction.database, sql: sql)
+            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
             while let message = try cursor.next() {
                 var stop: ObjCBool = false
                 block(message, &stop)
@@ -134,7 +134,7 @@ public class StoryFinder: NSObject {
         }
     }
 
-    public static func oldestTimestamp(transaction: GRDBReadTransaction) -> UInt64? {
+    public static func oldestTimestamp(transaction: SDSAnyReadTransaction) -> UInt64? {
         let sql = """
             SELECT \(StoryMessage.columnName(.timestamp))
             FROM \(StoryMessage.databaseTableName)
@@ -143,7 +143,7 @@ public class StoryFinder: NSObject {
         """
 
         do {
-            return try UInt64.fetchOne(transaction.database, sql: sql)
+            return try UInt64.fetchOne(transaction.unwrapGrdbRead.database, sql: sql)
         } catch {
             owsFailDebug("failed to lookup next story expiration \(error)")
             return nil
@@ -151,7 +151,7 @@ public class StoryFinder: NSObject {
     }
 
     @objc
-    public static func story(timestamp: UInt64, author: SignalServiceAddress, transaction: GRDBReadTransaction) -> StoryMessage? {
+    public static func story(timestamp: UInt64, author: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> StoryMessage? {
         guard let authorUuid = author.uuid else {
             owsFailDebug("Cannot query story for author without UUID")
             return nil
@@ -167,7 +167,7 @@ public class StoryFinder: NSObject {
         """
 
         do {
-            return try StoryMessage.fetchOne(transaction.database, sql: sql)
+            return try StoryMessage.fetchOne(transaction.unwrapGrdbRead.database, sql: sql)
         } catch {
             owsFailDebug("Failed to fetch story \(error)")
             return nil

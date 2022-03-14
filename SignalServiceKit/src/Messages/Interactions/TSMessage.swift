@@ -186,7 +186,7 @@ public extension TSMessage {
         } else if let storyMessage = StoryFinder.story(
             timestamp: sentAtTimestamp,
             author: authorAddress,
-            transaction: transaction.unwrapGrdbRead
+            transaction: transaction
         ) {
             storyMessage.anyRemove(transaction: transaction)
             return .success

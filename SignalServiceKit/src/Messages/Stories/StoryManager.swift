@@ -36,7 +36,7 @@ public class StoryManager: NSObject {
     @objc
     public class func deleteExpiredStories(transaction: SDSAnyWriteTransaction) -> UInt {
         var removedCount: UInt = 0
-        StoryFinder.enumerateExpiredStories(transaction: transaction.unwrapGrdbRead) { message, _ in
+        StoryFinder.enumerateExpiredStories(transaction: transaction) { message, _ in
             Logger.info("Removing StoryMessage \(message.timestamp) which expired at: \(message.timestamp + storyLifetime)")
             message.anyRemove(transaction: transaction)
             removedCount += 1
@@ -46,7 +46,7 @@ public class StoryManager: NSObject {
 
     @objc
     public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> NSNumber? {
-        guard let timestamp = StoryFinder.oldestTimestamp(transaction: transaction.unwrapGrdbRead) else { return nil }
+        guard let timestamp = StoryFinder.oldestTimestamp(transaction: transaction) else { return nil }
         return NSNumber(value: timestamp + storyLifetime)
     }
 }
