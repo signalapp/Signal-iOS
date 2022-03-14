@@ -198,14 +198,6 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         return result
     }()
     
-    private lazy var suggestionGridStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ suggestionGridTitleLabel, suggestionGrid ])
-        result.axis = .vertical
-        result.alignment = .fill
-        result.spacing = Values.mediumSpacing
-        return result
-    }()
-    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Remove background color
@@ -216,7 +208,7 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridStackView, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)
@@ -272,11 +264,14 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         isKeyboardShowing = true
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = newHeight + bottomMargin
-        UIView.animate(withDuration: 0.25) {
+        UIView.animate(withDuration: 0.25, animations: {
             self.view.layoutIfNeeded()
-            self.suggestionGridStackView.isHidden = true
-            self.suggestionGridStackView.alpha = 0
-        }
+            self.suggestionGridTitleLabel.alpha = 0
+            self.suggestionGrid.alpha = 0
+        }, completion: { _ in
+            self.suggestionGridTitleLabel.isHidden = true
+            self.suggestionGrid.isHidden = true
+        })
     }
     
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
@@ -285,8 +280,10 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         bottomConstraint.constant = bottomMargin
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
-            self.suggestionGridStackView.isHidden = false
-            self.suggestionGridStackView.alpha = 1
+            self.suggestionGridTitleLabel.isHidden = false
+            self.suggestionGridTitleLabel.alpha = 1
+            self.suggestionGrid.isHidden = false
+            self.suggestionGrid.alpha = 1
         }
     }
 }
