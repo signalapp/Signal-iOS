@@ -12,15 +12,17 @@ public class CreatePreKeysOperation: OWSOperation {
 
         let identityKeyPair = self.identityManager.identityKeyPair(for: .aci) ?? self.identityManager.generateNewIdentityKey(for: .aci)
         let identityKey: Data = identityKeyPair.publicKey
-        let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
-        let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()
+
+        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
+        let preKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
 
         self.databaseStorage.write { transaction in
-            self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                     signedPreKeyRecord: signedPreKeyRecord,
-                                                     transaction: transaction)
+            signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                                    signedPreKeyRecord: signedPreKeyRecord,
+                                                                    transaction: transaction)
         }
-        self.preKeyStore.storePreKeyRecords(preKeyRecords)
+        signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords)
 
         firstly(on: .global()) { () -> Promise<Void> in
             guard self.tsAccountManager.isRegisteredAndReady else {
@@ -34,11 +36,11 @@ public class CreatePreKeysOperation: OWSOperation {
         }.done {
             signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in
-                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                         signedPreKeyRecord: signedPreKeyRecord,
-                                                         transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                                        signedPreKeyRecord: signedPreKeyRecord,
+                                                                        transaction: transaction)
             }
-            self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             Logger.debug("done")
             self.reportSuccess()

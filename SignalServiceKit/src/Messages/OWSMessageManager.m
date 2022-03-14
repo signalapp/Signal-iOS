@@ -1819,7 +1819,8 @@ NS_ASSUME_NONNULL_BEGIN
     [[[TSInfoMessage alloc] initWithThread:thread
                                messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
 
-    [self.sessionStore archiveAllSessionsForAddress:envelope.sourceAddress transaction:transaction];
+    SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+    [sessionStore archiveAllSessionsForAddress:envelope.sourceAddress transaction:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope

@@ -279,7 +279,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                createdAt:[NSDate new]
                                        verificationState:verificationState] anyUpsertWithTransaction:transaction];
 
-        [self.sessionStore archiveAllSessionsForAccountId:accountId transaction:transaction];
+        SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+        [sessionStore archiveAllSessionsForAccountId:accountId transaction:transaction];
 
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForAccountId:accountId transaction:transaction];

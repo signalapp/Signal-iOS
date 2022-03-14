@@ -437,11 +437,12 @@ private struct KeyRecipient: Codable, Dependencies {
         }
 
         let protocolAddresses = try deviceIds.map { try ProtocolAddress(from: address, deviceId: $0.uint32Value) }
+        let sessionStore = signalProtocolStore(for: .aci).sessionStore
         let devices: [Device] = try protocolAddresses.map {
             // We have to fetch the registrationId since deviceIds can be reused.
             // By comparing a set of (deviceId,registrationId) structs, we should be able to detect reused
             // deviceIds that will need an SKDM
-            let registrationId = try Self.sessionStore.loadSession(
+            let registrationId = try sessionStore.loadSession(
                 for: SignalServiceAddress(from: $0),
                 deviceId: Int32($0.deviceId),
                 transaction: transaction

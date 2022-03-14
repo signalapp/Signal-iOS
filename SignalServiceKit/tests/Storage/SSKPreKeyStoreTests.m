@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SDSDatabaseStorage+Objc.h"
 #import "SSKBaseTestObjC.h"
 #import "SSKPreKeyStore.h"
 #import "SignedPrekeyRecord.h"
+#import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface SSKPreKeyStoreTests : SSKBaseTestObjC
@@ -51,7 +52,7 @@
 
 - (SSKPreKeyStore *)preKeyStore
 {
-    return SSKEnvironment.shared.preKeyStore;
+    return [self signalProtocolStoreForIdentity:OWSIdentityACI].preKeyStore;
 }
 
 - (void)testGeneratingAndStoringPreKeys

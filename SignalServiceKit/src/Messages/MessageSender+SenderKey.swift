@@ -661,9 +661,9 @@ extension MessageSender {
 
         let protocolAddresses = recipients.flatMap { $0.protocolAddresses }
         let secretCipher = try SMKSecretSessionCipher(
-            sessionStore: Self.sessionStore,
-            preKeyStore: Self.preKeyStore,
-            signedPreKeyStore: Self.signedPreKeyStore,
+            sessionStore: Self.signalProtocolStore(for: .aci).sessionStore,
+            preKeyStore: Self.signalProtocolStore(for: .aci).preKeyStore,
+            signedPreKeyStore: Self.signalProtocolStore(for: .aci).signedPreKeyStore,
             identityStore: Self.identityKeyStore,
             senderKeyStore: Self.senderKeyStore)
 
@@ -780,9 +780,12 @@ fileprivate extension SignalServiceAddress {
     // Once we've done this, we can remove this entire filter clause.
     func hasValidRegistrationIds(transaction readTx: SDSAnyReadTransaction) -> Bool {
         let candidateDevices = MessageSender.Recipient(address: self, transaction: readTx).devices
+        let sessionStore = signalProtocolStore(for: .aci).sessionStore
         return candidateDevices.allSatisfy { deviceId in
             do {
-                guard let sessionRecord = try sessionStore.loadSession(for: self, deviceId: Int32(deviceId), transaction: readTx),
+                guard let sessionRecord = try sessionStore.loadSession(for: self,
+                                                                       deviceId: Int32(deviceId),
+                                                                       transaction: readTx),
                       sessionRecord.hasCurrentState else {
                     Logger.warn("No session for address: \(self)")
                     return false

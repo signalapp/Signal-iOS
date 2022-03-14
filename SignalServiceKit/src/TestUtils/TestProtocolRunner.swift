@@ -206,15 +206,15 @@ public struct LocalSignalClient: TestSignalClient {
     public let deviceId: UInt32 = 1
 
     public var sessionStore: SessionStore {
-        return SSKEnvironment.shared.sessionStore
+        return SSKEnvironment.shared.signalProtocolStore(for: .aci).sessionStore
     }
 
     public var preKeyStore: PreKeyStore {
-        return SSKEnvironment.shared.preKeyStore
+        return SSKEnvironment.shared.signalProtocolStore(for: .aci).preKeyStore
     }
 
     public var signedPreKeyStore: SignedPreKeyStore {
-        return SSKEnvironment.shared.signedPreKeyStore
+        return SSKEnvironment.shared.signalProtocolStore(for: .aci).signedPreKeyStore
     }
 
     public var identityKeyStore: IdentityKeyStore {

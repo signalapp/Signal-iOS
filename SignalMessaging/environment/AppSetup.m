@@ -70,9 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
         BlockingManager *blockingManager = [BlockingManager new];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
         id<RemoteConfigManager> remoteConfigManager = [ServiceRemoteConfigManager new];
-        SSKSessionStore *sessionStore = [SSKSessionStore new];
-        SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
-        SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
+        SignalProtocolStore *aciSignalProtocolStore = [SignalProtocolStore new];
+        SignalProtocolStore *pniSignalProtocolStore = [SignalProtocolStore new];
         id<OWSUDManager> udManager = [OWSUDManagerImpl new];
         OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
         GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
@@ -141,9 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   blockingManager:blockingManager
                                                                   identityManager:identityManager
                                                               remoteConfigManager:remoteConfigManager
-                                                                     sessionStore:sessionStore
-                                                                signedPreKeyStore:signedPreKeyStore
-                                                                      preKeyStore:preKeyStore
+                                                           aciSignalProtocolStore:aciSignalProtocolStore
+                                                           pniSignalProtocolStore:pniSignalProtocolStore
                                                                         udManager:udManager
                                                                  messageDecrypter:messageDecrypter
                                                          groupsV2MessageProcessor:groupsV2MessageProcessor

@@ -486,9 +486,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             senderIdsResetDuringCurrentBatch.add(senderId)
 
             Logger.warn("Archiving session for undecryptable message from \(senderId)")
-            Self.sessionStore.archiveSession(for: sourceAddress,
-                                             deviceId: Int32(envelope.sourceDevice),
-                                             transaction: transaction)
+            Self.signalProtocolStore(for: .aci).sessionStore.archiveSession(for: sourceAddress,
+                                                                            deviceId: Int32(envelope.sourceDevice),
+                                                                            transaction: transaction)
 
             trySendNullMessage(in: contactThread, senderId: senderId, transaction: transaction)
             return true
@@ -540,6 +540,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
 
             let protocolAddress = try ProtocolAddress(from: sourceAddress, deviceId: deviceId)
+            let signalProtocolStore = signalProtocolStore(for: .aci)
 
             let plaintext: [UInt8]
             switch cipherType {
@@ -547,7 +548,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 let message = try SignalMessage(bytes: encryptedData)
                 plaintext = try signalDecrypt(message: message,
                                               from: protocolAddress,
-                                              sessionStore: Self.sessionStore,
+                                              sessionStore: signalProtocolStore.sessionStore,
                                               identityStore: Self.identityManager,
                                               context: transaction)
                 sendReactiveProfileKeyIfNecessary(address: sourceAddress, transaction: transaction)
@@ -555,10 +556,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 let message = try PreKeySignalMessage(bytes: encryptedData)
                 plaintext = try signalDecryptPreKey(message: message,
                                                     from: protocolAddress,
-                                                    sessionStore: Self.sessionStore,
+                                                    sessionStore: signalProtocolStore.sessionStore,
                                                     identityStore: Self.identityManager,
-                                                    preKeyStore: Self.preKeyStore,
-                                                    signedPreKeyStore: Self.signedPreKeyStore,
+                                                    preKeyStore: signalProtocolStore.preKeyStore,
+                                                    signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                                                     context: transaction)
             case .senderKey:
                 plaintext = try groupDecrypt(
@@ -666,12 +667,14 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return .failure(OWSAssertionError("Invalid serverTimestamp."))
         }
 
+        let signalProtocolStore = Self.signalProtocolStore(for: .aci)
+
         let cipher: SMKSecretSessionCipher
         do {
             cipher = try SMKSecretSessionCipher(
-                sessionStore: Self.sessionStore,
-                preKeyStore: Self.preKeyStore,
-                signedPreKeyStore: Self.signedPreKeyStore,
+                sessionStore: signalProtocolStore.sessionStore,
+                preKeyStore: signalProtocolStore.preKeyStore,
+                signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                 identityStore: Self.identityManager,
                 senderKeyStore: Self.senderKeyStore
             )

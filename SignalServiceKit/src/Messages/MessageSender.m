@@ -1368,9 +1368,10 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     __block BOOL hasSession;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        hasSession = [self.sessionStore containsActiveSessionForAccountId:accountId
-                                                                 deviceId:[deviceId intValue]
-                                                              transaction:transaction];
+        SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+        hasSession = [sessionStore containsActiveSessionForAccountId:accountId
+                                                            deviceId:[deviceId intValue]
+                                                         transaction:transaction];
     }];
     if (hasSession) {
         return;

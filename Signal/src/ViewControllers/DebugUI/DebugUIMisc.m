@@ -212,16 +212,19 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)removeAllPrekeys
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [SSKEnvironment.shared.signedPreKeyStore removeAll:transaction];
-        [SSKEnvironment.shared.preKeyStore removeAll:transaction];
+        SignalProtocolStore *signalProtocolStore = [self signalProtocolStoreForIdentity:OWSIdentityACI];
+        [signalProtocolStore.signedPreKeyStore removeAll:transaction];
+        [signalProtocolStore.preKeyStore removeAll:transaction];
     });
 }
 
 + (void)removeAllSessions
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [SSKEnvironment.shared.signedPreKeyStore removeAll:transaction];
-        [SSKEnvironment.shared.preKeyStore removeAll:transaction];
+        SignalProtocolStore *signalProtocolStore = [self signalProtocolStoreForIdentity:OWSIdentityACI];
+        // FIXME: This isn't removing sessions!
+        [signalProtocolStore.signedPreKeyStore removeAll:transaction];
+        [signalProtocolStore.preKeyStore removeAll:transaction];
     });
 }
 

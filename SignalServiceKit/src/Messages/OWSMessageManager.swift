@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalClient
@@ -192,6 +192,7 @@ extension OWSMessageManager {
             if let ratchetKey = errorMessage.ratchetKey {
                 // If a ratchet key is included, this was a 1:1 session message
                 // Archive the session if the current key matches.
+                let sessionStore = signalProtocolStore(for: .aci).sessionStore
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
                     Logger.info("Decryption error included ratchet key. Archiving...")

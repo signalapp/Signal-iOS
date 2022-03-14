@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSPreKeyManager.h"
@@ -62,9 +62,10 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
     // Only disable message sending if we have failed more than N times
     // over a period of at least M days.
-    return ([self.signedPreKeyStore prekeyUpdateFailureCount] >= kMaxPrekeyUpdateFailureCount &&
-        [self.signedPreKeyStore firstPrekeyUpdateFailureDate] != nil
-        && fabs([[self.signedPreKeyStore firstPrekeyUpdateFailureDate] timeIntervalSinceNow])
+    SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
+    return ([signedPreKeyStore prekeyUpdateFailureCount] >= kMaxPrekeyUpdateFailureCount &&
+        [signedPreKeyStore firstPrekeyUpdateFailureDate] != nil
+        && fabs([[signedPreKeyStore firstPrekeyUpdateFailureDate] timeIntervalSinceNow])
             >= kSignedPreKeyUpdateFailureMaxFailureDuration);
 }
 
@@ -73,20 +74,22 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     // PERF TODO use a single transaction / take in a transaction
 
     // Record a prekey update failure.
-    NSInteger failureCount = [self.signedPreKeyStore incrementPrekeyUpdateFailureCount];
+    SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
+    NSInteger failureCount = [signedPreKeyStore incrementPrekeyUpdateFailureCount];
     OWSLogInfo(@"new failureCount: %ld", (unsigned long)failureCount);
 
-    if (failureCount == 1 || ![self.signedPreKeyStore firstPrekeyUpdateFailureDate]) {
+    if (failureCount == 1 || ![signedPreKeyStore firstPrekeyUpdateFailureDate]) {
         // If this is the "first" failure, record the timestamp of that
         // failure.
-        [self.signedPreKeyStore setFirstPrekeyUpdateFailureDate:[NSDate new]];
+        [signedPreKeyStore setFirstPrekeyUpdateFailureDate:[NSDate new]];
     }
 }
 
 + (void)clearPreKeyUpdateFailureCount
 {
-    [self.signedPreKeyStore clearFirstPrekeyUpdateFailureDate];
-    [self.signedPreKeyStore clearPrekeyUpdateFailureCount];
+    SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
+    [signedPreKeyStore clearFirstPrekeyUpdateFailureDate];
+    [signedPreKeyStore clearPrekeyUpdateFailureCount];
 }
 
 + (void)refreshPreKeysDidSucceed
@@ -165,7 +168,9 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     if (shouldThrottle) {
         __weak SSKRotateSignedPreKeyOperation *weakRotationOperation = rotationOperation;
         NSBlockOperation *checkIfRotationNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
-            SignedPreKeyRecord *_Nullable signedPreKey = [self.signedPreKeyStore currentSignedPreKey];
+            SSKSignedPreKeyStore *signedPreKeyStore =
+                [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
+            SignedPreKeyRecord *_Nullable signedPreKey = [signedPreKeyStore currentSignedPreKey];
 
             BOOL shouldCheck
                 = !signedPreKey || fabs(signedPreKey.generatedAt.timeIntervalSinceNow) >= kSignedPreKeyRotationTime;
@@ -232,7 +237,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 }
 
 + (void)clearSignedPreKeyRecords {
-    NSNumber *_Nullable currentSignedPrekeyId = [self.signedPreKeyStore currentSignedPrekeyId];
+    SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
+    NSNumber *_Nullable currentSignedPrekeyId = [signedPreKeyStore currentSignedPrekeyId];
     [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId];
 }
 
@@ -248,8 +254,10 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     __block SignedPreKeyRecord *_Nullable currentRecord;
     __block NSArray *allSignedPrekeys;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        currentRecord = [self.signedPreKeyStore loadSignedPreKey:keyId.intValue transaction:transaction];
-        allSignedPrekeys = [self.signedPreKeyStore loadSignedPreKeysWithTransaction:transaction];
+        SSKSignedPreKeyStore *signedPreKeyStore =
+            [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
+        currentRecord = [signedPreKeyStore loadSignedPreKey:keyId.intValue transaction:transaction];
+        allSignedPrekeys = [signedPreKeyStore loadSignedPreKeysWithTransaction:transaction];
     }];
     if (!currentRecord) {
         OWSFailDebug(@"Couldn't find signed prekey for id: %@", keyId);
@@ -313,7 +321,9 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         oldSignedPreKeyCount--;
 
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [self.signedPreKeyStore removeSignedPreKey:signedPrekey.Id transaction:transaction];
+            SSKSignedPreKeyStore *signedPreKeyStore =
+                [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
+            [signedPreKeyStore removeSignedPreKey:signedPrekey.Id transaction:transaction];
         });
     }
 }
@@ -321,7 +331,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 + (void)cullPreKeyRecords {
     NSTimeInterval expirationInterval = kDayInterval * 30;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        NSMutableArray<NSString *> *keys = [[self.preKeyStore.keyStore allKeysWithTransaction:transaction] mutableCopy];
+        SSKPreKeyStore *preKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].preKeyStore;
+        NSMutableArray<NSString *> *keys = [[preKeyStore.keyStore allKeysWithTransaction:transaction] mutableCopy];
         NSMutableSet<NSString *> *keysToRemove = [NSMutableSet new];
         [Batching loopObjcWithBatchSize:Batching.kDefaultBatchSize
                               loopBlock:^(BOOL *stop) {
@@ -331,8 +342,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                                       return;
                                   }
                                   [keys removeLastObject];
-                                  PreKeyRecord *_Nullable record =
-                                      [self.preKeyStore.keyStore getObjectForKey:key transaction:transaction];
+                                  PreKeyRecord *_Nullable record = [preKeyStore.keyStore getObjectForKey:key
+                                                                                             transaction:transaction];
                                   if (![record isKindOfClass:[PreKeyRecord class]]) {
                                       OWSFailDebug(@"Unexpected value: %@", [record class]);
                                       return;
@@ -355,8 +366,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
         }
         OWSLogInfo(@"Culling prekeys: %lu", (unsigned long) keysToRemove.count);
         for (NSString *key in keysToRemove) {
-            [self.preKeyStore.keyStore removeValueForKey:key
-                                             transaction:transaction];
+            [preKeyStore.keyStore removeValueForKey:key transaction:transaction];
         }
     });
 }
