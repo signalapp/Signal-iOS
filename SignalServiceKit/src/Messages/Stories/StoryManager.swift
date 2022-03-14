@@ -15,6 +15,9 @@ public class StoryManager: NSObject {
         author: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) throws {
+        // Drop all story messages until the feature is enabled.
+        guard FeatureFlags.stories else { return }
+
         let record = try StoryMessageRecord.create(
             withIncomingStoryMessage: storyMessage,
             timestamp: timestamp,
