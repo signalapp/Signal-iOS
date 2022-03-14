@@ -97,7 +97,7 @@ class StoriesViewController: OWSViewController {
             let incomingRecords = Self.databaseStorage.read { StoryFinder.incomingStories(transaction: $0.unwrapGrdbRead) }
             let groupedRecords = self.groupStoryRecordsByContext(incomingRecords)
             let newModels = Self.databaseStorage.read { transaction in
-                groupedRecords.map { try! IncomingStoryViewModel(records: $1, transaction: transaction) }
+                groupedRecords.compactMap { try? IncomingStoryViewModel(records: $1, transaction: transaction) }
             }.sorted { $0.latestRecordTimestamp > $1.latestRecordTimestamp }
             DispatchQueue.main.async {
                 self.models = newModels
@@ -118,33 +118,47 @@ class StoriesViewController: OWSViewController {
             let oldContexts = self.models.map { $0.context }
             var changedContexts = [StoryContext]()
 
-            let newModels = Self.databaseStorage.read { transaction in
-                self.models.compactMap { model in
-                    guard let latestRecord = model.records.first else { return model }
+            let newModels: [IncomingStoryViewModel]
+            do {
+                newModels = try Self.databaseStorage.read { transaction in
+                    try self.models.compactMap { model in
+                        guard let latestRecord = model.records.first else { return model }
 
-                    let modelDeletedRowIds = model.recordIds.filter { deletedRowIds.contains($0) }
-                    deletedRowIds.subtract(deletedRowIds)
+                        let modelDeletedRowIds = model.recordIds.filter { deletedRowIds.contains($0) }
+                        deletedRowIds.subtract(deletedRowIds)
 
-                    let modelUpdatedRecords = groupedRecords.removeValue(forKey: latestRecord.context) ?? []
+                        let modelUpdatedRecords = groupedRecords.removeValue(forKey: latestRecord.context) ?? []
 
-                    guard !modelUpdatedRecords.isEmpty || !modelDeletedRowIds.isEmpty else { return model }
+                        guard !modelUpdatedRecords.isEmpty || !modelDeletedRowIds.isEmpty else { return model }
 
-                    changedContexts.append(model.context)
+                        changedContexts.append(model.context)
 
-                    return try! model.copy(
-                        updatedRecords: modelUpdatedRecords,
-                        deletedRecordIds: modelDeletedRowIds,
-                        transaction: transaction
-                    )
-                } + groupedRecords.map { try! IncomingStoryViewModel(records: $1, transaction: transaction) }
-            }.sorted { $0.latestRecordTimestamp > $1.latestRecordTimestamp }
+                        return try model.copy(
+                            updatedRecords: modelUpdatedRecords,
+                            deletedRecordIds: modelDeletedRowIds,
+                            transaction: transaction
+                        )
+                    } + groupedRecords.map { try IncomingStoryViewModel(records: $1, transaction: transaction) }
+                }.sorted { $0.latestRecordTimestamp > $1.latestRecordTimestamp }
+            } catch {
+                owsFailDebug("Failed to build new models, hard reloading \(error)")
+                DispatchQueue.main.async { self.reloadStories() }
+                return
+            }
 
-            let batchUpdateItems = try! BatchUpdate.build(
-                viewType: .uiTableView,
-                oldValues: oldContexts,
-                newValues: newModels.map { $0.context },
-                changedValues: changedContexts
-            )
+            let batchUpdateItems: [BatchUpdate<StoryContext>.Item]
+            do {
+                batchUpdateItems = try BatchUpdate.build(
+                    viewType: .uiTableView,
+                    oldValues: oldContexts,
+                    newValues: newModels.map { $0.context },
+                    changedValues: changedContexts
+                )
+            } catch {
+                owsFailDebug("Failed to calculate batch updates, hard reloading \(error)")
+                DispatchQueue.main.async { self.reloadStories() }
+                return
+            }
 
             DispatchQueue.main.async {
                 self.models = newModels

@@ -151,7 +151,7 @@ class StoryHorizontalPageViewController: OWSViewController {
                 return
             }
 
-            UIView.animate(withDuration: 0.2) {
+            UIView.animate(withDuration: 0.2) { [weak self] in
                 spinner.alpha = 0
                 self?.pageViewController.view.alpha = 1
             } completion: { _ in
@@ -167,7 +167,8 @@ class StoryHorizontalPageViewController: OWSViewController {
     private static let maxItemsToRender = 100
     private func loadStoryItems(completion: @escaping ([StoryItem]) -> Void) {
         var storyItems = [StoryItem]()
-        databaseStorage.asyncRead { transaction in
+        databaseStorage.asyncRead { [weak self] transaction in
+            guard let self = self else { return }
             StoryFinder.enumerateStoriesForContext(self.context, transaction: transaction.unwrapGrdbRead) { record, stop in
                 guard let storyItem = self.buildStoryItem(for: record, transaction: transaction) else { return }
                 storyItems.append(storyItem)
@@ -201,7 +202,7 @@ class StoryHorizontalPageViewController: OWSViewController {
     }
 
     private var pauseTime: CFTimeInterval?
-    private var displayLink: CADisplayLink?
+    private var displayLink: WeakDisplayLink?
     private var lastTransitionTime: CFTimeInterval?
     private static let transitionDuration: CFTimeInterval = 5
     private func updateProgressState() {
@@ -210,14 +211,14 @@ class StoryHorizontalPageViewController: OWSViewController {
         if let displayLink = displayLink {
             displayLink.isPaused = false
         } else {
-            let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkStep(_:)))
+            let displayLink = WeakDisplayLink { [weak self] displayLink in self?.displayLinkStep(displayLink) }
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
         }
     }
 
     @objc
-    func displayLinkStep(_ displayLink: CADisplayLink) {
+    func displayLinkStep(_ displayLink: WeakDisplayLink) {
         AssertIsOnMainThread()
         playbackProgressView.numberOfItems = items.count
         if let currentItemVC = currentItemViewController, let idx = items.firstIndex(of: currentItemVC.item) {

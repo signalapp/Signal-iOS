@@ -107,7 +107,7 @@ public class StoryFinder: NSObject {
                 }
             }
         } catch {
-            owsFail("error: \(error)")
+            owsFailDebug("error: \(error)")
         }
     }
 
@@ -131,7 +131,7 @@ public class StoryFinder: NSObject {
                 }
             }
         } catch {
-            owsFail("error: \(error)")
+            owsFailDebug("error: \(error)")
         }
     }
 
