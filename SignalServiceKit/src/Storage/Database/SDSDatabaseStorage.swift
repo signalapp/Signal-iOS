@@ -273,7 +273,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func touch(storyMessage: StoryMessageRecord, transaction: SDSAnyWriteTransaction) {
+    public func touch(storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):
             DatabaseChangeObserver.serializedSync {

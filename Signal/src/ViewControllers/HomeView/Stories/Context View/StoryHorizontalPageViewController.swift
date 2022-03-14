@@ -169,8 +169,8 @@ class StoryHorizontalPageViewController: OWSViewController {
         var storyItems = [StoryItem]()
         databaseStorage.asyncRead { [weak self] transaction in
             guard let self = self else { return }
-            StoryFinder.enumerateStoriesForContext(self.context, transaction: transaction.unwrapGrdbRead) { record, stop in
-                guard let storyItem = self.buildStoryItem(for: record, transaction: transaction) else { return }
+            StoryFinder.enumerateStoriesForContext(self.context, transaction: transaction.unwrapGrdbRead) { message, stop in
+                guard let storyItem = self.buildStoryItem(for: message, transaction: transaction) else { return }
                 storyItems.append(storyItem)
                 if storyItems.count >= Self.maxItemsToRender { stop.pointee = true }
             }
@@ -181,23 +181,23 @@ class StoryHorizontalPageViewController: OWSViewController {
         }
     }
 
-    private func buildStoryItem(for record: StoryMessageRecord, transaction: SDSAnyReadTransaction) -> StoryItem? {
-        switch record.attachment {
+    private func buildStoryItem(for message: StoryMessage, transaction: SDSAnyReadTransaction) -> StoryItem? {
+        switch message.attachment {
         case .file(let attachmentId):
             guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
-                owsFailDebug("Missing attachment for StoryMessage with timestamp \(record.timestamp)")
+                owsFailDebug("Missing attachment for StoryMessage with timestamp \(message.timestamp)")
                 return nil
             }
             if let attachment = attachment as? TSAttachmentPointer {
-                return .init(record: record, attachment: .pointer(attachment))
+                return .init(message: message, attachment: .pointer(attachment))
             } else if let attachment = attachment as? TSAttachmentStream {
-                return .init(record: record, attachment: .stream(attachment))
+                return .init(message: message, attachment: .stream(attachment))
             } else {
                 owsFailDebug("Unexpected attachment type \(type(of: attachment))")
                 return nil
             }
         case .text(let attachment):
-            return .init(record: record, attachment: .text(attachment))
+            return .init(message: message, attachment: .text(attachment))
         }
     }
 
@@ -223,9 +223,9 @@ class StoryHorizontalPageViewController: OWSViewController {
         playbackProgressView.numberOfItems = items.count
         if let currentItemVC = currentItemViewController, let idx = items.firstIndex(of: currentItemVC.item) {
             // When we present a story, mark it as viewed if it's not already.
-            if !currentItemVC.isDownloading, case .incoming(_, let viewedTimestamp) = currentItemVC.item.record.manifest, viewedTimestamp == nil {
+            if !currentItemVC.isDownloading, case .incoming(_, let viewedTimestamp) = currentItemVC.item.message.manifest, viewedTimestamp == nil {
                 databaseStorage.write { transaction in
-                    currentItemVC.item.record.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction.unwrapGrdbWrite)
+                    currentItemVC.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
             }
 
@@ -420,12 +420,13 @@ extension StoryHorizontalPageViewController: DatabaseChangeDelegate {
         databaseStorage.asyncRead { transaction in
             var newItems = self.items
             var shouldDismiss = false
-            for (idx, item) in self.items.enumerated().reversed() where databaseChanges.storyMessageRowIds.contains(item.record.id!) {
-                if let record = try? StoryMessageRecord.fetchOne(transaction.unwrapGrdbRead.database, key: item.record.id!) {
-                    if let newItem = self.buildStoryItem(for: record, transaction: transaction) {
+            for (idx, item) in self.items.enumerated().reversed() {
+                guard let id = item.message.id, databaseChanges.storyMessageRowIds.contains(id) else { continue }
+                if let message = StoryMessage.anyFetch(uniqueId: item.message.uniqueId, transaction: transaction) {
+                    if let newItem = self.buildStoryItem(for: message, transaction: transaction) {
                         newItems[idx] = newItem
 
-                        if item.record.id == currentItem.record.id {
+                        if item.message.uniqueId == currentItem.message.uniqueId {
                             currentItem = newItem
                         }
 
@@ -434,7 +435,7 @@ extension StoryHorizontalPageViewController: DatabaseChangeDelegate {
                 }
 
                 newItems.remove(at: idx)
-                if item.record.id == currentItem.record.id {
+                if item.message.uniqueId == currentItem.message.uniqueId {
                     shouldDismiss = true
                     break
                 }

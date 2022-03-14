@@ -188,22 +188,8 @@ public extension TSMessage {
             author: authorAddress,
             transaction: transaction.unwrapGrdbRead
         ) {
-            if storyMessage.direction == .outgoing, authorAddress.isLocalAddress {
-                do {
-                    try storyMessage.delete(transaction.unwrapGrdbWrite.database)
-                } catch {
-                    owsFail("Failed to remotely delete story message \(error)")
-                }
-                return .success
-            } else {
-                do {
-                    try storyMessage.delete(transaction.unwrapGrdbWrite.database)
-                } catch {
-                    owsFail("Failed to remotely delete story message \(error)")
-                }
-
-                return .success
-            }
+            storyMessage.anyRemove(transaction: transaction)
+            return .success
         } else {
             // The message doesn't exist locally, so nothing to do.
             Logger.info("Attempted to remotely delete a message that doesn't exist \(sentAtTimestamp)")

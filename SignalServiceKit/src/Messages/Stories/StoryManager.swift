@@ -18,7 +18,7 @@ public class StoryManager: NSObject {
         // Drop all story messages until the feature is enabled.
         guard FeatureFlags.stories else { return }
 
-        let record = try StoryMessageRecord.create(
+        let message = try StoryMessage.create(
             withIncomingStoryMessage: storyMessage,
             timestamp: timestamp,
             author: author,
@@ -26,24 +26,20 @@ public class StoryManager: NSObject {
         )
 
         // TODO: Optimistic downloading of story attachments.
-        attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(record, transaction: transaction)
+        attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
 
-        OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: record.timestamp + storyLifetime)
+        OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetime)
 
-        earlyMessageManager.applyPendingMessages(for: record, transaction: transaction)
+        earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
     }
 
     @objc
     public class func deleteExpiredStories(transaction: SDSAnyWriteTransaction) -> UInt {
         var removedCount: UInt = 0
-        StoryFinder.enumerateExpiredStories(transaction: transaction.unwrapGrdbRead) { record, _ in
-            Logger.info("Removing StoryMessage \(record.timestamp) which expired at: \(record.timestamp + storyLifetime)")
-            do {
-                try record.delete(transaction.unwrapGrdbWrite.database)
-                removedCount += 1
-            } catch {
-                owsFailDebug("Failed to remove expired story with timestamp \(record.timestamp) \(error)")
-            }
+        StoryFinder.enumerateExpiredStories(transaction: transaction.unwrapGrdbRead) { message, _ in
+            Logger.info("Removing StoryMessage \(message.timestamp) which expired at: \(message.timestamp + storyLifetime)")
+            message.anyRemove(transaction: transaction)
+            removedCount += 1
         }
         return removedCount
     }

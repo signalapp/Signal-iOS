@@ -1516,9 +1516,14 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.createStoryMessageTable.rawValue) { db in
             do {
-                try db.create(table: "story_messages") { table in
+                try db.create(table: "model_StoryMessage") { table in
                     table.autoIncrementedPrimaryKey("id")
                         .notNull()
+                    table.column("recordType", .integer)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+                        .unique(onConflict: .fail)
                     table.column("timestamp", .integer)
                         .notNull()
                     table.column("authorUuid", .text)
@@ -1532,19 +1537,28 @@ public class GRDBSchemaMigrator: NSObject {
                         .notNull()
                 }
 
+                try db.create(index: "index_model_StoryMessage_on_uniqueId", on: "model_StoryMessage", columns: ["uniqueId"])
+
                 try db.create(
-                    index: "index_story_messages_on_timestamp_and_authorUuid",
-                    on: "story_messages",
+                    index: "index_model_StoryMessage_on_timestamp_and_authorUuid",
+                    on: "model_StoryMessage",
                     columns: ["timestamp", "authorUuid"]
                 )
                 try db.create(
-                    index: "index_story_messages_on_direction",
-                    on: "story_messages",
+                    index: "index_model_StoryMessage_on_direction",
+                    on: "model_StoryMessage",
                     columns: ["direction"]
                 )
                 try db.execute(sql: """
-                    CREATE INDEX index_story_messages_on_incoming_viewedTimestamp
-                    ON story_messages(json_extract(manifest, '$.incoming.viewedTimestamp'));
+                    CREATE
+                        INDEX index_model_StoryMessage_on_incoming_viewedTimestamp
+                            ON model_StoryMessage (
+                            json_extract (
+                                manifest
+                                ,'$.incoming.viewedTimestamp'
+                            )
+                        )
+                    ;
                 """)
             } catch {
                 owsFail("Error: \(error)")

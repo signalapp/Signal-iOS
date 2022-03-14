@@ -8,31 +8,32 @@ import SignalClient
 import UIKit
 
 @objc
-public final class StoryMessageRecord: NSObject, Codable, Identifiable, FetchableRecord, PersistableRecord {
-    public static let databaseTableName = "story_messages"
+public final class StoryMessage: NSObject, SDSCodableModel {
+    public static let databaseTableName = "model_StoryMessage"
 
-    public var context: StoryContext { groupId.map { .groupId($0) } ?? .authorUuid(authorUuid) }
+    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+        case id
+        case recordType
+        case uniqueId
+        case timestamp
+        case authorUuid
+        case groupId
+        case direction
+        case manifest
+        case attachment
+    }
 
     public var id: Int64?
-
-    @objc
-    public var idNumber: NSNumber? { id.map { .init(value: $0) } }
-
-    @objc
-    public let timestamp: UInt64
-
+    @objc public let uniqueId: String
+    @objc public let timestamp: UInt64
     public let authorUuid: UUID
-
-    @objc
-    public var authorAddress: SignalServiceAddress { SignalServiceAddress(uuid: authorUuid) }
-
+    @objc public var authorAddress: SignalServiceAddress { SignalServiceAddress(uuid: authorUuid) }
     public let groupId: Data?
 
     public enum Direction: Int, Codable { case incoming = 0, outgoing = 1 }
     public let direction: Direction
 
     public private(set) var manifest: StoryManifest
-
     public let attachment: StoryMessageAttachment
 
     public var allAttachmentIds: [String] {
@@ -48,7 +49,7 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
         }
     }
 
-    public static var databaseUUIDEncodingStrategy: DatabaseUUIDEncodingStrategy { .string }
+    public var context: StoryContext { groupId.map { .groupId($0) } ?? .authorUuid(authorUuid) }
 
     public init(
         timestamp: UInt64,
@@ -57,6 +58,7 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
         manifest: StoryManifest,
         attachment: StoryMessageAttachment
     ) {
+        self.uniqueId = UUID().uuidString
         self.timestamp = timestamp
         self.authorUuid = authorUuid
         self.groupId = groupId
@@ -70,13 +72,43 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
         self.attachment = attachment
     }
 
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        let decodedRecordType = try container.decode(Int.self, forKey: .recordType)
+        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
+
+        id = try container.decodeIfPresent(RowId.self, forKey: .id)
+        uniqueId = try container.decode(String.self, forKey: .uniqueId)
+        timestamp = try container.decode(UInt64.self, forKey: .timestamp)
+        authorUuid = try container.decode(UUID.self, forKey: .authorUuid)
+        groupId = try container.decodeIfPresent(Data.self, forKey: .groupId)
+        direction = try container.decode(Direction.self, forKey: .direction)
+        manifest = try container.decode(StoryManifest.self, forKey: .manifest)
+        attachment = try container.decode(StoryMessageAttachment.self, forKey: .attachment)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        if let id = id { try container.encode(id, forKey: .id) }
+        try container.encode(recordType, forKey: .recordType)
+        try container.encode(uniqueId, forKey: .uniqueId)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(authorUuid, forKey: .authorUuid)
+        if let groupId = groupId { try container.encode(groupId, forKey: .groupId) }
+        try container.encode(direction, forKey: .direction)
+        try container.encode(manifest, forKey: .manifest)
+        try container.encode(attachment, forKey: .attachment)
+    }
+
     @discardableResult
     public static func create(
         withIncomingStoryMessage storyMessage: SSKProtoStoryMessage,
         timestamp: UInt64,
         author: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
-    ) throws -> StoryMessageRecord {
+    ) throws -> StoryMessage {
         Logger.info("Processing StoryMessage from \(author) with timestamp \(timestamp)")
 
         guard let authorUuid = author.uuid else {
@@ -112,43 +144,36 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
 
-        let record = StoryMessageRecord(
+        let record = StoryMessage(
             timestamp: timestamp,
             authorUuid: authorUuid,
             groupId: groupId,
             manifest: manifest,
             attachment: attachment
         )
-        try record.insert(transaction.unwrapGrdbWrite.database)
+        record.anyInsert(transaction: transaction)
 
         return record
     }
 
-    public func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
-    }
-
-    @discardableResult
-    public func delete(_ db: Database) throws -> Bool {
+    public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
         // TODO: Cleanup associated records
-        return try performDelete(db)
     }
 
     @objc
-    public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: GRDBWriteTransaction) {
-        updateWith(transaction: transaction) { record in
+    public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { record in
             guard case .incoming(let allowsReplies, _) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark outgoing message as viewed with wrong method.")
             }
             record.manifest = .incoming(allowsReplies: allowsReplies, viewedTimestamp: timestamp)
         }
-
-        receiptManager.storyWasViewed(self, circumstance: circumstance, transaction: transaction.asAnyWrite)
+        receiptManager.storyWasViewed(self, circumstance: circumstance, transaction: transaction)
     }
 
     @objc
-    public func markAsViewed(at timestamp: UInt64, by recipient: SignalServiceAddress, transaction: GRDBWriteTransaction) {
-        updateWith(transaction: transaction) { record in
+    public func markAsViewed(at timestamp: UInt64, by recipient: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { record in
             guard case .outgoing(var manifest) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
             }
@@ -161,27 +186,6 @@ public final class StoryMessageRecord: NSObject, Codable, Identifiable, Fetchabl
             manifest[recipientUuid] = recipientState
 
             record.manifest = .outgoing(manifest: manifest)
-        }
-    }
-
-    private func updateWith(transaction: GRDBWriteTransaction, block: (StoryMessageRecord) -> Void) {
-        block(self)
-
-        if let id = id, let storedCopy = try? Self.fetchOne(transaction.database, key: id), storedCopy !== self {
-            block(storedCopy)
-
-            do {
-                try storedCopy.update(transaction.database)
-            } catch {
-                owsFail("Unexpectedly failed to update \(error)")
-            }
-        } else {
-            do {
-                owsFailDebug("Could not update missing record, inserting instead.")
-                try insert(transaction.database)
-            } catch {
-                owsFail("Unexpectedly failed to insert \(error)")
-            }
         }
     }
 }

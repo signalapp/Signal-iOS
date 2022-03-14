@@ -447,7 +447,7 @@ public class EarlyMessageManager: NSObject {
         }
     }
 
-    public func applyPendingMessages(for storyMessage: StoryMessageRecord, transaction: SDSAnyWriteTransaction) {
+    public func applyPendingMessages(for storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
         let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAddress)
 
         let earlyReceipts: [EarlyReceipt]?
@@ -473,7 +473,7 @@ public class EarlyMessageManager: NSObject {
                     continue
                 }
 
-                storyMessage.markAsViewed(at: timestamp, by: sender, transaction: transaction.unwrapGrdbWrite)
+                storyMessage.markAsViewed(at: timestamp, by: sender, transaction: transaction)
             case .outgoingMessageDelivered(let sender, let deviceId, _):
                 Logger.info("Applying early delivery receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
 
@@ -488,7 +488,7 @@ public class EarlyMessageManager: NSObject {
             case .messageViewedOnLinkedDevice(let timestamp):
                 Logger.info("Applying early viewed receipt from linked device for StoryMessage \(identifier)")
 
-                storyMessage.markAsViewed(at: timestamp, circumstance: .onLinkedDevice, transaction: transaction.unwrapGrdbWrite)
+                storyMessage.markAsViewed(at: timestamp, circumstance: .onLinkedDevice, transaction: transaction)
             }
         }
 

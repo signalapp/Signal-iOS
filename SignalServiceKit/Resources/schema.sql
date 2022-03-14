@@ -1257,8 +1257,11 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "story_messages" (
+        IF NOT EXISTS "model_StoryMessage" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
             ,"timestamp" INTEGER NOT NULL
             ,"authorUuid" TEXT NOT NULL
             ,"groupId" BLOB
@@ -1269,21 +1272,27 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_story_messages_on_timestamp_and_authorUuid"
-        ON "story_messages"("timestamp"
+    INDEX "index_model_StoryMessage_on_uniqueId"
+        ON "model_StoryMessage"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_model_StoryMessage_on_timestamp_and_authorUuid"
+        ON "model_StoryMessage"("timestamp"
     ,"authorUuid"
 )
 ;
 
 CREATE
-    INDEX "index_story_messages_on_direction"
-        ON "story_messages"("direction"
+    INDEX "index_model_StoryMessage_on_direction"
+        ON "model_StoryMessage"("direction"
 )
 ;
 
 CREATE
-    INDEX index_story_messages_on_incoming_viewedTimestamp
-        ON story_messages (
+    INDEX index_model_StoryMessage_on_incoming_viewedTimestamp
+        ON model_StoryMessage (
         json_extract (
             manifest
             ,'$.incoming.viewedTimestamp'

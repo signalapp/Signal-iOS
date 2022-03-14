@@ -174,7 +174,7 @@ public extension OWSReceiptManager {
         }
     }
 
-    func enqueueLinkedDeviceViewedReceipt(forStoryMessage message: StoryMessageRecord,
+    func enqueueLinkedDeviceViewedReceipt(forStoryMessage message: StoryMessage,
                                           transaction: SDSAnyWriteTransaction) {
         // Unlike TSMessage, we need to send a viewed receipt for *every* StoryMessage
         let uniqueId = "story-\(message.timestamp)"

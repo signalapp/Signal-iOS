@@ -42,11 +42,11 @@ class StoryCell: UITableViewCell {
 
         nameLabel.font = .ows_dynamicTypeHeadline
         nameLabel.textColor = Theme.primaryTextColor
-        nameLabel.text = model.latestRecordName
+        nameLabel.text = model.latestMessageName
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = model.latestRecordAvatarDataSource
-            config.storyState = model.hasUnviewedRecords ? .unviewed : .viewed
+            config.dataSource = model.latestMessageAvatarDataSource
+            config.storyState = model.hasUnviewedMessages ? .unviewed : .viewed
             config.usePlaceholderImages()
         }
 
@@ -55,7 +55,7 @@ class StoryCell: UITableViewCell {
 
         let contentMode: UIView.ContentMode = .scaleAspectFill
 
-        switch model.latestRecordAttachment {
+        switch model.latestMessageAttachment {
         case .file(let attachment):
             if let pointer = attachment as? TSAttachmentPointer {
                 let pointerView = UIView()
@@ -136,6 +136,6 @@ class StoryCell: UITableViewCell {
     func configureTimestamp(with model: IncomingStoryViewModel) {
         timestampLabel.font = .ows_dynamicTypeSubheadline
         timestampLabel.textColor = Theme.secondaryTextAndIconColor
-        timestampLabel.text = DateUtil.formatTimestampShort(model.latestRecordTimestamp)
+        timestampLabel.text = DateUtil.formatTimestampShort(model.latestMessageTimestamp)
     }
 }

@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoSyncMessageRead;
 @class SSKProtoSyncMessageViewed;
 @class SignalServiceAddress;
-@class StoryMessageRecord;
+@class StoryMessage;
 @class TSIncomingMessage;
 @class TSMessage;
 @class TSOutgoingMessage;
@@ -109,7 +109,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
             circumstance:(OWSReceiptCircumstance)circumstance
              transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)storyWasViewed:(StoryMessageRecord *)storyMessage
+- (void)storyWasViewed:(StoryMessage *)storyMessage
           circumstance:(OWSReceiptCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction;
 

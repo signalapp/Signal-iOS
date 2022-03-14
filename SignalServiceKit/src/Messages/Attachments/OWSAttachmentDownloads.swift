@@ -11,7 +11,7 @@ public class OWSAttachmentDownloads: NSObject {
 
     private enum JobType {
         case messageAttachment(attachmentId: AttachmentId, message: TSMessage)
-        case storyMessageAttachment(attachmentId: AttachmentId, storyMessage: StoryMessageRecord)
+        case storyMessageAttachment(attachmentId: AttachmentId, storyMessage: StoryMessage)
         case headlessAttachment(attachmentPointer: TSAttachmentPointer)
 
         var attachmentId: AttachmentId {
@@ -36,7 +36,7 @@ public class OWSAttachmentDownloads: NSObject {
             }
         }
 
-        var storyMessage: StoryMessageRecord? {
+        var storyMessage: StoryMessage? {
             switch self {
             case .storyMessageAttachment(_, let storyMessage):
                 return storyMessage
@@ -69,7 +69,7 @@ public class OWSAttachmentDownloads: NSObject {
         var progress: CGFloat = 0
         var attachmentId: AttachmentId { jobType.attachmentId }
         var message: TSMessage? { jobType.message }
-        var storyMessage: StoryMessageRecord? { jobType.storyMessage }
+        var storyMessage: StoryMessage? { jobType.storyMessage }
         var category: AttachmentCategory { jobRequest.category }
 
         init(jobRequest: JobRequest, downloadBehavior: AttachmentDownloadBehavior) {
@@ -937,13 +937,12 @@ public extension OWSAttachmentDownloads {
         }
     }
 
-    func enqueueDownloadOfAttachmentsForNewStoryMessage(_ message: StoryMessageRecord, transaction: SDSAnyWriteTransaction) {
+    func enqueueDownloadOfAttachmentsForNewStoryMessage(_ message: StoryMessage, transaction: SDSAnyWriteTransaction) {
         // No attachments, nothing to do.
-        guard let messageId = message.id else { return owsFailDebug("Missing id for story message") }
         guard !message.allAttachmentIds.isEmpty else { return }
 
         enqueueDownloadOfAttachmentsForNewStoryMessageId(
-            messageId,
+            message.uniqueId,
             downloadBehavior: message.direction == .outgoing ? .bypassAll : .default,
             touchMessageImmediately: false,
             transaction: transaction
@@ -951,7 +950,7 @@ public extension OWSAttachmentDownloads {
     }
 
     private func enqueueDownloadOfAttachmentsForNewStoryMessageId(
-        _ storyMessageId: Int64,
+        _ storyMessageId: String,
         downloadBehavior: AttachmentDownloadBehavior,
         touchMessageImmediately: Bool,
         transaction: SDSAnyWriteTransaction
@@ -961,13 +960,13 @@ public extension OWSAttachmentDownloads {
         guard CurrentAppContext().isMainApp else {
             Self.pendingNewStoryMessageDownloads.setUInt(
                 downloadBehavior.rawValue,
-                key: String(storyMessageId),
+                key: storyMessageId,
                 transaction: transaction
             )
             return
         }
 
-        Self.pendingNewStoryMessageDownloads.removeValue(forKey: String(storyMessageId), transaction: transaction)
+        Self.pendingNewStoryMessageDownloads.removeValue(forKey: storyMessageId, transaction: transaction)
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race
@@ -987,7 +986,7 @@ public extension OWSAttachmentDownloads {
     }
 
     @objc
-    func enqueueDownloadOfAttachments(forStoryMessageId storyMessageId: Int64,
+    func enqueueDownloadOfAttachments(forStoryMessageId storyMessageId: String,
                                       attachmentGroup: AttachmentGroup,
                                       downloadBehavior: AttachmentDownloadBehavior,
                                       touchMessageImmediately: Bool,
@@ -1000,7 +999,7 @@ public extension OWSAttachmentDownloads {
                 return
             }
             Self.databaseStorage.read { transaction in
-                guard let message = try? StoryMessageRecord.fetchOne(transaction.unwrapGrdbRead.database, key: storyMessageId) else {
+                guard let message = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
                     failure(Self.buildError())
                     return
                 }
@@ -1210,7 +1209,7 @@ public extension OWSAttachmentDownloads {
         return jobRequests
     }
 
-    private class func buildJobRequests(forStoryMessage storyMessage: StoryMessageRecord,
+    private class func buildJobRequests(forStoryMessage storyMessage: StoryMessage,
                                         attachmentGroup: AttachmentGroup,
                                         transaction: SDSAnyReadTransaction) -> [JobRequest] {
 

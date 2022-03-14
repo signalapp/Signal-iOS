@@ -8,92 +8,95 @@ import SignalServiceKit
 struct IncomingStoryViewModel: Dependencies {
     let context: StoryContext
 
-    let records: [StoryMessageRecord]
-    let recordIds: [Int64]
-    let hasUnviewedRecords: Bool
+    let messages: [StoryMessage]
+    let messageRowIds: [Int64]
+    let hasUnviewedMessages: Bool
     enum Attachment {
         case file(TSAttachment)
         case text(TextAttachment)
         case missing
     }
-    let latestRecordAttachment: Attachment
-    let latestRecordHasReplies: Bool
-    let latestRecordName: String
-    let latestRecordTimestamp: UInt64
+    let latestMessageAttachment: Attachment
+    let latestMessageHasReplies: Bool
+    let latestMessageName: String
+    let latestMessageTimestamp: UInt64
 
-    let latestRecordAvatarDataSource: ConversationAvatarDataSource
+    let latestMessageAvatarDataSource: ConversationAvatarDataSource
 
-    init(records: [StoryMessageRecord], transaction: SDSAnyReadTransaction) throws {
-        let sortedFilteredRecords = records.lazy.filter { $0.direction == .incoming }.sorted { $0.timestamp > $1.timestamp }
-        self.records = sortedFilteredRecords
-        self.recordIds = sortedFilteredRecords.compactMap { $0.id }
-        self.hasUnviewedRecords = sortedFilteredRecords.reduce(false, { partialResult, record in
-            switch record.manifest {
+    init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) throws {
+        let sortedFilteredMessages = messages.lazy.filter { $0.direction == .incoming }.sorted { $0.timestamp > $1.timestamp }
+        self.messages = sortedFilteredMessages
+        self.messageRowIds = sortedFilteredMessages.compactMap { $0.id }
+        self.hasUnviewedMessages = sortedFilteredMessages.reduce(false, { partialResult, message in
+            switch message.manifest {
             case .incoming(_, let viewedTimestamp):
                 return partialResult || (viewedTimestamp == nil)
             case .outgoing:
-                owsFailDebug("Unexpected record type")
+                owsFailDebug("Unexpected message type")
                 return partialResult
             }
         })
 
-        guard let latestRecord = sortedFilteredRecords.first else {
-            throw OWSAssertionError("At least one record is required.")
+        guard let latestMessage = sortedFilteredMessages.first else {
+            throw OWSAssertionError("At least one message is required.")
         }
 
-        self.context = latestRecord.context
+        self.context = latestMessage.context
 
-        if let groupId = latestRecord.groupId {
+        if let groupId = latestMessage.groupId {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing group thread for group story")
             }
             let authorShortName = Self.contactsManager.shortDisplayName(
-                for: latestRecord.authorAddress,
+                for: latestMessage.authorAddress,
                 transaction: transaction
             )
             let nameFormat = NSLocalizedString(
                 "GROUP_STORY_NAME_FORMAT",
                 comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}")
-            latestRecordName = String(format: nameFormat, authorShortName, groupThread.groupNameOrDefault)
-            latestRecordAvatarDataSource = .thread(groupThread)
+            latestMessageName = String(format: nameFormat, authorShortName, groupThread.groupNameOrDefault)
+            latestMessageAvatarDataSource = .thread(groupThread)
         } else {
-            latestRecordName = Self.contactsManager.displayName(
-                for: latestRecord.authorAddress,
+            latestMessageName = Self.contactsManager.displayName(
+                for: latestMessage.authorAddress,
                 transaction: transaction
             )
-            latestRecordAvatarDataSource = .address(latestRecord.authorAddress)
+            latestMessageAvatarDataSource = .address(latestMessage.authorAddress)
         }
 
-        switch latestRecord.attachment {
+        switch latestMessage.attachment {
         case .file(let attachmentId):
             guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
                 owsFailDebug("Unexpectedly missing attachment for story")
-                latestRecordAttachment = .missing
+                latestMessageAttachment = .missing
                 break
             }
-            latestRecordAttachment = .file(attachment)
+            latestMessageAttachment = .file(attachment)
         case .text(let attachment):
-            latestRecordAttachment = .text(attachment)
+            latestMessageAttachment = .text(attachment)
         }
 
-        latestRecordHasReplies = false // TODO: replies
-        latestRecordTimestamp = latestRecord.timestamp
+        latestMessageHasReplies = false // TODO: replies
+        latestMessageTimestamp = latestMessage.timestamp
     }
 
-    func copy(updatedRecords: [StoryMessageRecord], deletedRecordIds: [Int64], transaction: SDSAnyReadTransaction) throws -> Self? {
-        var newRecords = updatedRecords
-        var records: [StoryMessageRecord] = self.records.lazy
-            .filter { !deletedRecordIds.contains($0.id ?? 0) }
-            .map { oldRecord in
-                if let idx = newRecords.firstIndex(where: { $0.id == oldRecord.id }) {
-                    return newRecords.remove(at: idx)
+    func copy(updatedMessages: [StoryMessage], deletedMessageRowIds: [Int64], transaction: SDSAnyReadTransaction) throws -> Self? {
+        var newMessages = updatedMessages
+        var messages: [StoryMessage] = self.messages.lazy
+            .filter { oldMessage in
+                guard let oldMessageId = oldMessage.id else { return true }
+                return !deletedMessageRowIds.contains(oldMessageId)
+            }
+            .map { oldMessage in
+                if let idx = newMessages.firstIndex(where: { $0.uniqueId == oldMessage.uniqueId }) {
+                    return newMessages.remove(at: idx)
                 } else {
-                    return oldRecord
+                    return oldMessage
                 }
             }
-        records.append(contentsOf: newRecords)
-        guard !records.isEmpty else { return nil }
-        return try .init(records: records, transaction: transaction)
+        messages.append(contentsOf: newMessages)
+        guard !messages.isEmpty else { return nil }
+        return try .init(messages: messages, transaction: transaction)
     }
 }
 

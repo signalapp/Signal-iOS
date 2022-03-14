@@ -29,13 +29,13 @@ class StoryItemViewController: OWSViewController {
     }
 
     func updateTimestampText() {
-        timestampLabel.text = DateUtil.formatTimestampShort(item.record.timestamp)
+        timestampLabel.text = DateUtil.formatTimestampShort(item.message.timestamp)
     }
 
     func startAttachmentDownloadIfNecessary() -> Bool {
         guard case .pointer(let pointer) = item.attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
         attachmentDownloads.enqueueDownloadOfAttachments(
-            forStoryMessageId: item.record.id!,
+            forStoryMessageId: item.message.uniqueId,
             attachmentGroup: .allAttachmentsIncoming,
             downloadBehavior: .bypassAll,
             touchMessageImmediately: true) { [weak self] _ in
@@ -228,10 +228,10 @@ class StoryItemViewController: OWSViewController {
             useAutolayout: true
         )
         authorAvatarView.update(transaction) { config in
-            config.dataSource = .address(item.record.authorAddress)
+            config.dataSource = .address(item.message.authorAddress)
         }
 
-        switch item.record.context {
+        switch item.message.context {
         case .groupId(let groupId):
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 owsFailDebug("Unexpectedly missing group thread")
@@ -270,7 +270,7 @@ class StoryItemViewController: OWSViewController {
         label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
         label.text = {
-            switch item.record.context {
+            switch item.message.context {
             case .groupId(let groupId):
                 let groupName: String = {
                     guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -281,7 +281,7 @@ class StoryItemViewController: OWSViewController {
                 }()
 
                 let authorShortName = Self.contactsManager.shortDisplayName(
-                    for: item.record.authorAddress,
+                    for: item.message.authorAddress,
                     transaction: transaction
                 )
                 let nameFormat = NSLocalizedString(
@@ -290,7 +290,7 @@ class StoryItemViewController: OWSViewController {
                 return String(format: nameFormat, authorShortName, groupName)
             default:
                 return Self.contactsManager.displayName(
-                    for: item.record.authorAddress,
+                    for: item.message.authorAddress,
                     transaction: transaction
                 )
             }
@@ -438,7 +438,7 @@ class StoryItemViewController: OWSViewController {
 }
 
 class StoryItem: NSObject {
-    let record: StoryMessageRecord
+    let message: StoryMessage
     enum Attachment {
         case pointer(TSAttachmentPointer)
         case stream(TSAttachmentStream)
@@ -446,8 +446,8 @@ class StoryItem: NSObject {
     }
     var attachment: Attachment
 
-    init(record: StoryMessageRecord, attachment: Attachment) {
-        self.record = record
+    init(message: StoryMessage, attachment: Attachment) {
+        self.message = message
         self.attachment = attachment
     }
 }

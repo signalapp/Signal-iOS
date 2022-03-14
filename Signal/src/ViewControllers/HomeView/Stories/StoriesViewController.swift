@@ -94,11 +94,11 @@ class StoriesViewController: OWSViewController {
     private static let loadingQueue = DispatchQueue(label: "StoriesViewController.loadingQueue", qos: .userInitiated)
     private func reloadStories() {
         Self.loadingQueue.async {
-            let incomingRecords = Self.databaseStorage.read { StoryFinder.incomingStories(transaction: $0.unwrapGrdbRead) }
-            let groupedRecords = self.groupStoryRecordsByContext(incomingRecords)
+            let incomingMessages = Self.databaseStorage.read { StoryFinder.incomingStories(transaction: $0.unwrapGrdbRead) }
+            let groupedMessages = self.groupStoryMessagesByContext(incomingMessages)
             let newModels = Self.databaseStorage.read { transaction in
-                groupedRecords.compactMap { try? IncomingStoryViewModel(records: $1, transaction: transaction) }
-            }.sorted { $0.latestRecordTimestamp > $1.latestRecordTimestamp }
+                groupedMessages.compactMap { try? IncomingStoryViewModel(messages: $1, transaction: transaction) }
+            }.sorted { $0.latestMessageTimestamp > $1.latestMessageTimestamp }
             DispatchQueue.main.async {
                 self.models = newModels
                 self.tableView.reloadData()
@@ -109,11 +109,11 @@ class StoriesViewController: OWSViewController {
     private func updateStories(forRowIds rowIds: Set<Int64>) {
         guard !rowIds.isEmpty else { return }
         Self.loadingQueue.async {
-            let updatedRecords = Self.databaseStorage.read {
+            let updatedMessages = Self.databaseStorage.read {
                 StoryFinder.incomingStoriesWithRowIds(Array(rowIds), transaction: $0.unwrapGrdbRead)
             }
-            var deletedRowIds = rowIds.subtracting(updatedRecords.compactMap { $0.id })
-            var groupedRecords = self.groupStoryRecordsByContext(updatedRecords)
+            var deletedRowIds = rowIds.subtracting(updatedMessages.map { $0.id! })
+            var groupedMessages = self.groupStoryMessagesByContext(updatedMessages)
 
             let oldContexts = self.models.map { $0.context }
             var changedContexts = [StoryContext]()
@@ -122,24 +122,24 @@ class StoriesViewController: OWSViewController {
             do {
                 newModels = try Self.databaseStorage.read { transaction in
                     try self.models.compactMap { model in
-                        guard let latestRecord = model.records.first else { return model }
+                        guard let latestMessage = model.messages.first else { return model }
 
-                        let modelDeletedRowIds = model.recordIds.filter { deletedRowIds.contains($0) }
-                        deletedRowIds.subtract(deletedRowIds)
+                        let modelDeletedRowIds = model.messageRowIds.filter { deletedRowIds.contains($0) }
+                        deletedRowIds.subtract(modelDeletedRowIds)
 
-                        let modelUpdatedRecords = groupedRecords.removeValue(forKey: latestRecord.context) ?? []
+                        let modelUpdatedMessages = groupedMessages.removeValue(forKey: latestMessage.context) ?? []
 
-                        guard !modelUpdatedRecords.isEmpty || !modelDeletedRowIds.isEmpty else { return model }
+                        guard !modelUpdatedMessages.isEmpty || !modelDeletedRowIds.isEmpty else { return model }
 
                         changedContexts.append(model.context)
 
                         return try model.copy(
-                            updatedRecords: modelUpdatedRecords,
-                            deletedRecordIds: modelDeletedRowIds,
+                            updatedMessages: modelUpdatedMessages,
+                            deletedMessageRowIds: modelDeletedRowIds,
                             transaction: transaction
                         )
-                    } + groupedRecords.map { try IncomingStoryViewModel(records: $1, transaction: transaction) }
-                }.sorted { $0.latestRecordTimestamp > $1.latestRecordTimestamp }
+                    } + groupedMessages.map { try IncomingStoryViewModel(messages: $1, transaction: transaction) }
+                }.sorted { $0.latestMessageTimestamp > $1.latestMessageTimestamp }
             } catch {
                 owsFailDebug("Failed to build new models, hard reloading \(error)")
                 DispatchQueue.main.async { self.reloadStories() }
@@ -191,11 +191,11 @@ class StoriesViewController: OWSViewController {
         }
     }
 
-    private func groupStoryRecordsByContext(_ storyRecords: [StoryMessageRecord]) -> [StoryContext: [StoryMessageRecord]] {
-        storyRecords.reduce(into: [StoryContext: [StoryMessageRecord]]()) { partialResult, record in
-            var records = partialResult[record.context] ?? []
-            records.append(record)
-            partialResult[record.context] = records
+    private func groupStoryMessagesByContext(_ storyMessages: [StoryMessage]) -> [StoryContext: [StoryMessage]] {
+        storyMessages.reduce(into: [StoryContext: [StoryMessage]]()) { partialResult, message in
+            var messages = partialResult[message.context] ?? []
+            messages.append(message)
+            partialResult[message.context] = messages
         }
     }
 }

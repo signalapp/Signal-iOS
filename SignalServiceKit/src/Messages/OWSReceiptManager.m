@@ -181,7 +181,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     }
 }
 
-- (void)storyWasViewed:(StoryMessageRecord *)storyMessage
+- (void)storyWasViewed:(StoryMessage *)storyMessage
           circumstance:(OWSReceiptCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -203,11 +203,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
-                // This just needs to be a) consistent and b) not overlap with TSMessage ids
-                NSString *storyMessageUniqueId = [NSString stringWithFormat:@"story-%@", storyMessage.idNumber];
                 [self.outgoingReceiptManager enqueueViewedReceiptForAddress:storyMessage.authorAddress
                                                                   timestamp:storyMessage.timestamp
-                                                            messageUniqueId:storyMessageUniqueId
+                                                            messageUniqueId:storyMessage.uniqueId
                                                                 transaction:transaction];
             }
             break;
@@ -315,11 +313,11 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                        transaction:transaction];
             }
         } else {
-            StoryMessageRecord *_Nullable storyMessage = [StoryFinder storyWithTimestamp:sentTimestamp
-                                                                                  author:address
-                                                                             transaction:transaction.unwrapGrdbRead];
+            StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:sentTimestamp
+                                                                            author:address
+                                                                       transaction:transaction.unwrapGrdbRead];
             if (storyMessage) {
-                [storyMessage markAsViewedAt:viewedTimestamp by:address transaction:transaction.unwrapGrdbWrite];
+                [storyMessage markAsViewedAt:viewedTimestamp by:address transaction:transaction];
             } else {
                 [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
             }
@@ -478,13 +476,13 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                      transaction:transaction];
             }
         } else {
-            StoryMessageRecord *_Nullable storyMessage = [StoryFinder storyWithTimestamp:messageIdTimestamp
-                                                                                  author:senderAddress
-                                                                             transaction:transaction.unwrapGrdbRead];
+            StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:messageIdTimestamp
+                                                                            author:senderAddress
+                                                                       transaction:transaction.unwrapGrdbRead];
             if (storyMessage) {
                 [storyMessage markAsViewedAt:viewedTimestamp
                                 circumstance:OWSReceiptCircumstanceOnLinkedDevice
-                                 transaction:transaction.unwrapGrdbWrite];
+                                 transaction:transaction];
             } else {
                 [receiptsMissingMessage addObject:viewedReceiptProto];
             }
