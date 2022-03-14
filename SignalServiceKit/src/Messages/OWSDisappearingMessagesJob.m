@@ -168,16 +168,22 @@ void AssertIsOnDisappearingMessagesQueue()
              function:__FUNCTION__
                  line:__LINE__];
 
-    if (!nextMessageExpirationTimestampNumber && !nextStoryExpirationTimestampNumber) {
+    uint64_t nextExpirationAt;
+    if (nextMessageExpirationTimestampNumber && nextStoryExpirationTimestampNumber) {
+        uint64_t nextMessageExpirationAt = nextMessageExpirationTimestampNumber.unsignedLongLongValue;
+        uint64_t nextStoryExpirationAt = nextStoryExpirationTimestampNumber.unsignedLongLongValue;
+        nextExpirationAt = MIN(nextMessageExpirationAt, nextStoryExpirationAt);
+    } else if (nextMessageExpirationTimestampNumber) {
+        nextExpirationAt = nextMessageExpirationTimestampNumber.unsignedLongLongValue;
+    } else if (nextStoryExpirationTimestampNumber) {
+        nextExpirationAt = nextStoryExpirationTimestampNumber.unsignedLongLongValue;
+    } else {
         OWSLogDebug(@"No more expiring messages.");
         return deletedCount;
     }
 
-    uint64_t nextMessageExpirationAt = nextMessageExpirationTimestampNumber.unsignedLongLongValue;
-    uint64_t nextStoryExpirationAt = nextStoryExpirationTimestampNumber.unsignedLongLongValue;
-    uint64_t nextExpirationAt = MIN(nextMessageExpirationAt, nextStoryExpirationAt);
-    NSDate *nextEpirationDate = [NSDate ows_dateWithMillisecondsSince1970:nextExpirationAt];
-    [self scheduleRunByDate:nextEpirationDate];
+    NSDate *nextExpirationDate = [NSDate ows_dateWithMillisecondsSince1970:nextExpirationAt];
+    [self scheduleRunByDate:nextExpirationDate];
 
     return deletedCount;
 }
