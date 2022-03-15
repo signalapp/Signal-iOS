@@ -365,7 +365,7 @@ extension MessageReceiver {
         }
         // Persist the message
         guard let tsMessageID = storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview,
-            groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
+            groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.duplicateMessage }
         message.threadID = threadID
         // Start attachment downloads if needed
         let isContactTrusted = Storage.shared.getContact(with: message.sender!)?.isTrusted ?? false
