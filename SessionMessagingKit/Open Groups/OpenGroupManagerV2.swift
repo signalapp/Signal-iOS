@@ -34,7 +34,7 @@ public final class OpenGroupManagerV2 : NSObject {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(room)")
         
-        if OpenGroupManagerV2.shared.pollers[server] != nil && TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupId), transaction: transaction) != nil {
+        if OpenGroupManagerV2.shared.pollers[server] != nil && TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil {
             SNLog("Ignoring join open group attempt (already joined)")
             return Promise.value(())
         }

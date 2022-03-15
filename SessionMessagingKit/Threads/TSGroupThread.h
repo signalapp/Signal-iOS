@@ -30,7 +30,8 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
                                    groupType:(GroupType) groupType
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(fetch(groupId:transaction:));
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
