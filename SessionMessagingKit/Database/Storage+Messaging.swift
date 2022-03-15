@@ -28,7 +28,7 @@ extension Storage {
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
         let tsMessage: TSMessage
         if message.sender == getUserPublicKey() {
-            if let _ = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) { return nil }
+            if TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) != nil { return nil }
             let tsOutgoingMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
             var recipients: [String] = []
             if let syncTarget = message.syncTarget {
@@ -42,7 +42,7 @@ extension Storage {
             }
             tsMessage = tsOutgoingMessage
         } else {
-            if let _ = TSIncomingMessage.find(withAuthorId: message.sender!, timestamp: message.sentTimestamp!, transaction: transaction) { return nil }
+            if TSIncomingMessage.find(withAuthorId: message.sender!, timestamp: message.sentTimestamp!, transaction: transaction) != nil { return nil }
             tsMessage = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         }
         tsMessage.save(with: transaction)
