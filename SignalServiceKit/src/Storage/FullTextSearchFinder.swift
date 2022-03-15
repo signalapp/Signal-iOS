@@ -33,7 +33,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     @objc
-    public func modelWasUpdatedObjc(model: TSYapDatabaseObject, transaction: SDSAnyWriteTransaction) {
+    public func modelWasUpdatedObjc(model: AnyObject, transaction: SDSAnyWriteTransaction) {
         guard let model = model as? SDSIndexableModel else {
             owsFailDebug("Invalid model.")
             return

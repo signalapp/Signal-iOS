@@ -1836,9 +1836,7 @@ public class GRDBSchemaMigrator: NSObject {
             // query. This is superfluous anyways, so it's safe to skip.
             guard !hasRunMigration("dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData", transaction: transaction) else { return }
 
-            let memberCursor = TSGroupMember.grdbFetchCursor(
-                transaction: transaction
-            )
+            let memberCursor = try TSGroupMember.fetchCursor(db)
 
             while let member = try memberCursor.next() {
                 autoreleasepool {

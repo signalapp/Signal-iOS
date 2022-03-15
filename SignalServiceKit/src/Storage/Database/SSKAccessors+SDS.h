@@ -148,15 +148,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface TSGroupMember (SDS)
-
-@property (nonatomic, nullable, readonly) NSString *phoneNumber;
-@property (nonatomic, nullable, readonly) NSString *uuidString;
-
-@end
-
-#pragma mark -
-
 @interface OWSUserProfile (SDS)
 
 @property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
