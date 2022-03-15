@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Фотоаппаратқа қайта оралу";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Ақпарат құралдары жинағына қайта оралу";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Досты қауіпсіз емес SMS арқылы шақыру керек пе?";
 
@@ -6269,10 +6266,10 @@
 "SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
 
 /* Label for 'off' state of a switch control. */
-"SWITCH_OFF" = "Off";
+"SWITCH_OFF" = "Өшіру";
 
 /* Label for 'on' state of a switch control. */
-"SWITCH_ON" = "On";
+"SWITCH_ON" = "Қосу";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify";
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal жуырда iOS 11 не жаңарақ нұсқасын талап етеді. Параметрлер қолданбасы >> Жалпы >> Бағдарламалық жасақтаманы жаңарту қалтасында жаңа нұсқаға ауыстырыңыз.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS жаңа нұсқасына ауыстыру";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal қолданбасында пайдаланушы аттары міндетті емес. Егер пайдаланушы атын жасасаңыз, басқа Signal пайдаланушылары сізді осы пайдаланушы аты арқылы табады да, телефон нөміріңізді білместен-ақ сізге хабарласады.";

@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Επιστροφή στην κάμερα";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Επιστροφή στη βιβλιοθήκη πολυμέσων";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Πρόσκληση φίλου μέσω μη-ασφαλούς SMS;";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Δεν μπορέσαμε να ενημερώσουμε την ομάδα. Έλεγξε τη σύνδεσή σου στο διαδίκτυο και ξαναδοκίμασε.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Το Signal σύντομα θα χρειάζεται την έκδοση iOS 11 ή νεότερη για να λειτουργήσει. Παρακαλώ αναβάθμισε τη συσκευή σου στην εφαρμογή Ρυθμίσεις > Γενικά > Αναβάθμιση Λογισμικού.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Αναβάθμιση λογισμικού iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Τα ονόματα χρήστη του Signal είναι προαιρετικά. Αν διαλέξεις να δημιουργήσεις ένα όνομα χρήστη, τότε άλλοι χρήστες/τριες του Signal θα μπορούν να σε βρουν αναζητώντας σε με αυτό το όνομα χρήστη, και θα μπορούν να επικοινωνούν μαζί σου χωρίς να ξέρουν τον αριθμό τηλεφώνου σου.";

@@ -372,9 +372,9 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     /// Enumerates all the unread interactions in this thread, sorted by sort id.
-    @objc
-    public func enumerateAllUnreadMessages(transaction: GRDBReadTransaction,
-                                           block: (OWSReadTracking, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func fetchAllUnreadMessages(
+        transaction: GRDBReadTransaction
+    ) -> SDSMappedCursor<TSInteractionCursor, OWSReadTracking> {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
@@ -384,25 +384,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         """
 
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
-
-        do {
-            while let interaction = try cursor.next() {
-                guard let readTracking = interaction as? OWSReadTracking else {
-                    owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
-                    continue
-                }
-                guard !readTracking.wasRead else {
-                    owsFailDebug("Unexpectedly found read interaction: \(interaction.timestamp)")
-                    continue
-                }
-                var stop: ObjCBool = false
-                block(readTracking, &stop)
-                if stop.boolValue {
-                    break
-                }
+        return cursor.compactMap { interaction -> OWSReadTracking? in
+            guard let readTracking = interaction as? OWSReadTracking else {
+                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
+                return nil
             }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
+            guard !readTracking.wasRead else {
+                owsFailDebug("Unexpectedly found read interaction: \(interaction.timestamp)")
+                return nil
+            }
+            return readTracking
         }
     }
 
@@ -432,12 +423,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     /// Enumerates all the unread interactions in this thread before a given sort id,
     /// sorted by sort id.
-    @objc
-    public func enumerateUnreadMessages(
+    public func fetchUnreadMessages(
         beforeSortId: UInt64,
-        transaction: GRDBReadTransaction,
-        block: (OWSReadTracking, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
+        transaction: GRDBReadTransaction
+    ) -> SDSMappedCursor<TSInteractionCursor, OWSReadTracking> {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
@@ -448,25 +437,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         """
 
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId, beforeSortId], transaction: transaction)
-
-        do {
-            while let interaction = try cursor.next() {
-                guard let readTracking = interaction as? OWSReadTracking else {
-                    owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
-                    continue
-                }
-                guard !readTracking.wasRead else {
-                    owsFailDebug("Unexpectedly found read interaction: \(interaction.timestamp)")
-                    continue
-                }
-                var stop: ObjCBool = false
-                block(readTracking, &stop)
-                if stop.boolValue {
-                    break
-                }
+        return cursor.compactMap { interaction -> OWSReadTracking? in
+            guard let readTracking = interaction as? OWSReadTracking else {
+                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
+                return nil
             }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
+            guard !readTracking.wasRead else {
+                owsFailDebug("Unexpectedly found read interaction: \(interaction.timestamp)")
+                return nil
+            }
+            return readTracking
         }
     }
 
@@ -499,12 +479,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     /// Returns all the messages with unread reactions in this thread before a given sort id,
     /// sorted by sort id.
-    @objc
-    public func enumerateMessagesWithUnreadReactions(
+    public func fetchMessagesWithUnreadReactions(
         beforeSortId: UInt64,
-        transaction: GRDBReadTransaction,
-        block: (TSOutgoingMessage, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) {
+        transaction: GRDBReadTransaction
+    ) -> SDSMappedCursor<TSInteractionCursor, TSOutgoingMessage> {
         let sql = """
             SELECT interaction.*
             FROM \(InteractionRecord.databaseTableName) AS interaction
@@ -519,18 +497,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         """
 
         let cursor = TSOutgoingMessage.grdbFetchCursor(sql: sql, arguments: [threadUniqueId, beforeSortId], transaction: transaction)
-
-        do {
-            while let message = try cursor.next() as? TSOutgoingMessage {
-                var stop: ObjCBool = false
-                block(message, &stop)
-                if stop.boolValue {
-                    break
-                }
-            }
-        } catch {
-            owsFailDebug("unexpected error \(error)")
-        }
+        return cursor.compactMap { $0 as? TSOutgoingMessage }
     }
 
     public func oldestUnreadInteraction(transaction: GRDBReadTransaction) throws -> TSInteraction? {

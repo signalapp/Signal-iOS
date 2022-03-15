@@ -14,10 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 extern const int32_t kGroupIdLengthV1;
 extern const int32_t kGroupIdLengthV2;
 
-typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) { GroupsVersionV1 = 0, GroupsVersionV2 };
+typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) {
+    GroupsVersionV1 = 0,
+    GroupsVersionV2
+};
 
-typedef NS_CLOSED_ENUM(
-    NSUInteger, TSGroupMemberRole) { TSGroupMemberRole_Normal = 0, TSGroupMemberRole_Administrator = 1 };
+typedef NS_CLOSED_ENUM(NSUInteger, TSGroupMemberRole) {
+    TSGroupMemberRole_Normal = 0,
+    TSGroupMemberRole_Administrator = 1
+};
 
 typedef NS_CLOSED_ENUM(NSUInteger, TSGroupModelComparisonMode) {
     TSGroupModelComparisonMode_CompareAll,

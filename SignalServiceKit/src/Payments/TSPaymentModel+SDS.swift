@@ -425,7 +425,7 @@ public extension TSPaymentModel {
 // MARK: - TSPaymentModelCursor
 
 @objc
-public class TSPaymentModelCursor: NSObject {
+public class TSPaymentModelCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<PaymentModelRecord>?
 

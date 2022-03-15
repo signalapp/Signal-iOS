@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Rejea kwa Kamera";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Rejea kwenye Maktaba ya Media";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Alika rafiki kupitia ujumbe usio salama?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Kikundi hakikuweza kusasishwa. Kagua muunganisho wako wa mtandao kisha ujaribu tena.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Hivi karibuni Signal itahitaji iOS 11 au ya karibuni. Tafadhali boresha katika programu ya Mipangilio >> Jumla >> Sasisha Programu.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Boresha iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Majina ya watumiaji kwenye Signal ni ya hiari. Ukichagua kuunda jina la mtumiaji watumiaji wengine wa Signal wataweza kukupata kwa jina hili la mtumiaji na kuwasiliana na wewe bila kujua nambari yako ya simu.";

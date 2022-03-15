@@ -675,9 +675,8 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
             let httpResponse = MobileCoin.HTTPResponse(statusCode: statusCode, url: url, allHeaderFields: headerFields, responseData: responseData)
             completion(.success(httpResponse))
         }.catch { error in
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("MobileCoin http request failed \(error)")
-                completion(.failure(ConnectionError.invalidServerResponse("No Response")))
+            if let statusCode = error.httpStatusCode {
+                completion(.success(MobileCoin.HTTPResponse(statusCode: statusCode, url: nil, allHeaderFields: [:], responseData: nil)))
             } else {
                 owsFailDebug("MobileCoin http request failed \(error)")
                 completion(.failure(ConnectionError.invalidServerResponse("No Response")))

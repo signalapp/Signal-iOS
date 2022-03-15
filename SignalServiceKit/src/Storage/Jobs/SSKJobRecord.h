@@ -10,12 +10,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSErrorDomain const SSKJobRecordErrorDomain;
 
-typedef NS_ERROR_ENUM(SSKJobRecordErrorDomain, JobRecordError){
+typedef NS_ERROR_ENUM(SSKJobRecordErrorDomain, JobRecordError) {
     JobRecordError_AssertionError = 100,
     JobRecordError_IllegalStateTransition,
 };
 
-typedef NS_CLOSED_ENUM(NSUInteger, SSKJobRecordStatus){
+typedef NS_CLOSED_ENUM(NSUInteger, SSKJobRecordStatus) {
     SSKJobRecordStatus_Unknown,
     SSKJobRecordStatus_Ready,
     SSKJobRecordStatus_Running,

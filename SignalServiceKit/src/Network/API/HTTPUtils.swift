@@ -104,7 +104,7 @@ extension HTTPUtils {
             let error = buildServiceResponseError(description: description,
                                                   recoverySuggestion: recoverySuggestion)
             return error
-        case 413:
+        case 413, 429:
             Logger.warn("Rate limit exceeded: \(request.httpMethod) \(requestUrl.absoluteString)")
             let description = OWSLocalizedString("REGISTER_RATE_LIMITING_ERROR", comment: "")
             let recoverySuggestion = OWSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")

@@ -328,7 +328,7 @@ public extension OWSRecipientIdentity {
 // MARK: - OWSRecipientIdentityCursor
 
 @objc
-public class OWSRecipientIdentityCursor: NSObject {
+public class OWSRecipientIdentityCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<RecipientIdentityRecord>?
 
@@ -670,7 +670,7 @@ fileprivate extension OWSRecipientIdentity {
                 let cursor = try Row.fetchCursor(grdbTransaction.database,
                                                  sql: sql,
                                                  arguments: StatementArguments(args))
-                let mapped = cursor.map { row in 
+                let mapped = cursor.map { row in
                     return SignalServiceAddress(uuid: row[0], phoneNumber: row[1])
                 }
                 return try Array(mapped)

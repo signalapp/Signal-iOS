@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Uɣal ɣer tkamiṛat";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Uɣal ɣer temkarḍit n yimidyaten";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Snubget-d ameddakkel s SMS araɣellsan?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Agraw yugi ad yettuleqqem. Senqed tuqqna-inek·inem syen εreḍ tikkelt-nniḍen.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ad d-isuter iOS 11 neɣ ɣer sdat. Ttxil-k·m leqqem deg yiɣewwaren Asnas n yiɣewwaren >> Amatu >> Leqqem aseɣẓan.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Leqqem iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Isemawen n yiseqdacen deg Signal d ifrayanen. Ma yella tferneḍ ad ternuḍ isem n useqdac, iseqdacen-nniḍen n Signal ad izmiren ad ak·akem-afen s yisem-a n useqdac syen ad ak·akem-id-remsen war ma ssnen uṭṭun-ik·im n tiliɣri.";

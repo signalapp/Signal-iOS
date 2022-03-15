@@ -2,6 +2,8 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
+import SignalServiceKit
+
 public protocol ForwardMessageDelegate: AnyObject {
     func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                        recipientThreads: [TSThread])
@@ -24,7 +26,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
     public typealias Item = ForwardMessageItem
     fileprivate typealias Content = ForwardMessageContent
-    fileprivate typealias RecipientThread = ForwardMessageRecipientThread
 
     fileprivate var content: Content
 
@@ -32,8 +33,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
     private let selection = ConversationPickerSelection()
     var selectedConversations: [ConversationItem] { selection.conversations }
-
-    fileprivate var currentMentionableAddresses: [SignalServiceAddress] = []
 
     private init(content: Content) {
         self.content = content
@@ -177,25 +176,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
     override var renderExternalHandle: Bool { false }
     override var minHeight: CGFloat { 576 }
-
-    fileprivate func updateCurrentMentionableAddresses() {
-        guard selectedConversations.count == 1,
-              let conversationItem = selectedConversations.first else {
-            self.currentMentionableAddresses = []
-            return
-        }
-
-        do {
-            try databaseStorage.write { transaction in
-                let recipientThread = try RecipientThread.build(conversationItem: conversationItem,
-                                                                transaction: transaction)
-                self.currentMentionableAddresses = recipientThread.mentionCandidates
-            }
-        } catch {
-            owsFailDebug("Error: \(error)")
-            self.currentMentionableAddresses = []
-        }
-    }
 }
 
 // MARK: - Sending
@@ -269,11 +249,11 @@ extension ForwardMessageViewController {
         let recipientConversations = self.selectedConversations
         firstly(on: .global()) {
             self.recipientThreads(for: recipientConversations)
-        }.then(on: .main) { (recipientThreads: [RecipientThread]) -> Promise<Void> in
+        }.then(on: .main) { (recipientThreads: [TSThread]) -> Promise<Void> in
             try Self.databaseStorage.write { transaction in
                 for recipientThread in recipientThreads {
                     // We're sending a message to this thread, approve any pending message request
-                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: recipientThread.thread,
+                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: recipientThread,
                                                                                                     transaction: transaction)
                 }
 
@@ -314,16 +294,15 @@ extension ForwardMessageViewController {
                         return self.send(toRecipientThreads: recipientThreads) { recipientThread in
                             self.send(body: messageBody,
                                       linkPreviewDraft: nil,
-                                      thread: recipientThread.thread)
+                                      recipientThread: recipientThread)
                         }
                     } else {
                         return Promise.value(())
                     }
                 }
             }.map(on: .main) {
-                let threads = recipientThreads.map { $0.thread }
                 self.forwardMessageDelegate?.forwardMessageFlowDidComplete(items: content.allItems,
-                                                                           recipientThreads: threads)
+                                                                           recipientThreads: recipientThreads)
             }
         }.catch(on: .main) { error in
             owsFailDebug("Error: \(error)")
@@ -332,7 +311,7 @@ extension ForwardMessageViewController {
         }
     }
 
-    private func send(item: Item, toRecipientThreads recipientThreads: [RecipientThread]) -> Promise<Void> {
+    private func send(item: Item, toRecipientThreads recipientThreads: [TSThread]) -> Promise<Void> {
         AssertIsOnMainThread()
 
         let componentState = item.componentState
@@ -341,7 +320,7 @@ extension ForwardMessageViewController {
             let stickerInfo = stickerMetadata.stickerInfo
             if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
                 return send(toRecipientThreads: recipientThreads) { recipientThread in
-                    self.send(installedSticker: stickerInfo, thread: recipientThread.thread)
+                    self.send(installedSticker: stickerInfo, thread: recipientThread)
                 }
             } else {
                 guard let stickerAttachment = componentState.stickerAttachment else {
@@ -352,7 +331,7 @@ extension ForwardMessageViewController {
                     return send(toRecipientThreads: recipientThreads) { recipientThread in
                         self.send(uninstalledSticker: stickerMetadata,
                                   stickerData: stickerData,
-                                  thread: recipientThread.thread)
+                                  thread: recipientThread)
                     }
                 } catch {
                     return Promise(error: error)
@@ -365,7 +344,7 @@ extension ForwardMessageViewController {
                         contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
                     }
                 }
-                return self.send(contactShare: contactShare, thread: recipientThread.thread)
+                return self.send(contactShare: contactShare, thread: recipientThread)
             }
         } else if let attachments = item.attachments,
                   !attachments.isEmpty {
@@ -379,20 +358,22 @@ extension ForwardMessageViewController {
             return send(toRecipientThreads: recipientThreads) { recipientThread in
                 self.send(body: messageBody,
                           linkPreviewDraft: linkPreviewDraft,
-                          thread: recipientThread.thread)
+                          recipientThread: recipientThread)
             }
         } else {
             return Promise(error: ForwardError.invalidInteraction)
         }
     }
 
-    fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, thread: TSThread) -> Promise<Void> {
+    fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, recipientThread: TSThread) -> Promise<Void> {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(body: body,
-                                      thread: thread,
-                                      quotedReplyModel: nil,
-                                      linkPreviewDraft: linkPreviewDraft,
-                                      transaction: transaction)
+            ThreadUtil.enqueueMessage(
+                body: body.forNewContext(recipientThread, transaction: transaction.unwrapGrdbRead),
+                thread: recipientThread,
+                quotedReplyModel: nil,
+                linkPreviewDraft: linkPreviewDraft,
+                transaction: transaction
+            )
         }
         return Promise.value(())
     }
@@ -424,14 +405,14 @@ extension ForwardMessageViewController {
         return Promise.value(())
     }
 
-    fileprivate func send(toRecipientThreads recipientThreads: [RecipientThread],
-                          enqueueBlock: @escaping (RecipientThread) -> Promise<Void>) -> Promise<Void> {
+    fileprivate func send(toRecipientThreads recipientThreads: [TSThread],
+                          enqueueBlock: @escaping (TSThread) -> Promise<Void>) -> Promise<Void> {
         AssertIsOnMainThread()
 
         return Promise.when(fulfilled: recipientThreads.map { thread in enqueueBlock(thread) }).asVoid()
     }
 
-    fileprivate func recipientThreads(for conversationItems: [ConversationItem]) -> Promise<[RecipientThread]> {
+    fileprivate func recipientThreads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
         firstly(on: .global()) {
             guard conversationItems.count > 0 else {
                 throw OWSAssertionError("No recipients.")
@@ -439,7 +420,10 @@ extension ForwardMessageViewController {
 
             return try self.databaseStorage.write { transaction in
                 try conversationItems.map {
-                    try RecipientThread.build(conversationItem: $0, transaction: transaction)
+                    guard let thread = $0.getOrCreateThread(transaction: transaction) else {
+                        throw ForwardError.missingThread
+                    }
+                    return thread
                 }
             }
         }
@@ -450,7 +434,6 @@ extension ForwardMessageViewController {
 
 extension ForwardMessageViewController: ConversationPickerDelegate {
     func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
-        updateCurrentMentionableAddresses()
         ensureBottomFooterVisibility()
     }
 
@@ -809,37 +792,6 @@ private enum ForwardMessageContent {
             throw ForwardError.invalidInteraction
         }
         return componentState
-    }
-}
-
-// MARK: -
-
-private struct ForwardMessageRecipientThread {
-    let thread: TSThread
-    let mentionCandidates: [SignalServiceAddress]
-
-    static func build(conversationItem: ConversationItem,
-                      transaction: SDSAnyWriteTransaction) throws -> ForwardMessageRecipientThread {
-
-        guard let thread = conversationItem.getOrCreateThread(transaction: transaction) else {
-            owsFailDebug("Missing thread for conversation")
-            throw ForwardError.missingThread
-        }
-
-        let mentionCandidates = self.mentionCandidates(conversationItem: conversationItem,
-                                                       thread: thread,
-                                                       transaction: transaction)
-        return ForwardMessageRecipientThread(thread: thread, mentionCandidates: mentionCandidates)
-    }
-
-    private static func mentionCandidates(conversationItem: ConversationItem,
-                                          thread: TSThread,
-                                          transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        guard let groupThread = thread as? TSGroupThread,
-              Mention.threadAllowsMentionSend(groupThread) else {
-            return []
-        }
-        return groupThread.recipientAddresses
     }
 }
 

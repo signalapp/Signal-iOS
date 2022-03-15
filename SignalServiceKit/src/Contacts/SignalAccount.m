@@ -37,7 +37,7 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
 
 @implementation SignalAccount
 
-+ (BOOL)FTSIndexMode
++ (TSFTSIndexMode)FTSIndexMode
 {
     return TSFTSIndexModeAlways;
 }

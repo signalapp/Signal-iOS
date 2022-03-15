@@ -318,7 +318,7 @@ public extension TSGroupMember {
 // MARK: - TSGroupMemberCursor
 
 @objc
-public class TSGroupMemberCursor: NSObject {
+public class TSGroupMemberCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<GroupMemberRecord>?
 

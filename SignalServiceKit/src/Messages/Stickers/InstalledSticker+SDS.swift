@@ -312,7 +312,7 @@ public extension InstalledSticker {
 // MARK: - InstalledStickerCursor
 
 @objc
-public class InstalledStickerCursor: NSObject {
+public class InstalledStickerCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<InstalledStickerRecord>?
 

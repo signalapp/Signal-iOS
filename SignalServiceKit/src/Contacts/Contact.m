@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "Contact.h"
@@ -281,14 +281,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSData *)avatarDataForCNContact:(nullable CNContact *)cnContact
 {
-    if (cnContact.thumbnailImageData) {
-        return cnContact.thumbnailImageData.copy;
-    } else if (cnContact.imageData) {
-        // This only occurs when sharing a contact via the share extension
-        return cnContact.imageData.copy;
-    } else {
-        return nil;
+    NSData *imageData = cnContact.thumbnailImageData;
+    if (!imageData) {
+        // This only occurs when sharing a contact via the share extension.
+        imageData = cnContact.imageData;
     }
+    return [imageData copy];
 }
 
 - (NSArray<NSString *> *)e164PhoneNumbers

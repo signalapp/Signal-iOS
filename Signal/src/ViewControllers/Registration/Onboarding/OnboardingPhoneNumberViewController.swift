@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -598,7 +598,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             guard !willDismiss else { return }
             self.phoneNumberTextField.becomeFirstResponder()
 
-            if let error = error, error.httpStatusCode == 413 {
+            if let error = error, error.httpStatusCode == 413 || error.httpStatusCode == 429 {
                 // If we're not handed a retry-after date directly from the server, either
                 // use the existing date we already have or construct a new date 5 min from now
                 let retryAfterDate = error.httpRetryAfterDate ?? {

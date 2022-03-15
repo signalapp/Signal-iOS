@@ -1528,7 +1528,7 @@ public extension %(class_name)s {
 // MARK: - %sCursor
 
 @objc
-public class %sCursor: NSObject {
+public class %sCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<%s>?
 

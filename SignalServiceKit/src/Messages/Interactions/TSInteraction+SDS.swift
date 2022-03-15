@@ -4159,7 +4159,7 @@ public extension TSInteraction {
 // MARK: - TSInteractionCursor
 
 @objc
-public class TSInteractionCursor: NSObject {
+public class TSInteractionCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<InteractionRecord>?
 

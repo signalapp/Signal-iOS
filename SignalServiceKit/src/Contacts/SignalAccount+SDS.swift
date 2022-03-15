@@ -349,7 +349,7 @@ public extension SignalAccount {
 // MARK: - SignalAccountCursor
 
 @objc
-public class SignalAccountCursor: NSObject {
+public class SignalAccountCursor: NSObject, SDSCursor {
     private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<SignalAccountRecord>?
 

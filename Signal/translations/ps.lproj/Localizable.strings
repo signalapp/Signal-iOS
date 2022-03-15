@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "کیمرې ته ور وګرځئ";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "د رسنیو کتابتون ته ور وګرځئ";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "غواړئ یو ملګری د ناخوندي SMS له لارې را وبلئ؟";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ګروپ اپډیټ نشو. خپل انټرنېټ مو وګورئ او بیا هڅه وکړئ.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal به ډېر ژر iOS11 یا تر هغه وروستۍ نسخه له تاسې وغواړي. د مهرباني له مخې د اپلیکیشن تنظیماتو >> عمومي>>د سافټ ویر اپډیت ته د اپګریډ لپاره ورشئ.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "د iOS اپګریډ";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "په Signal کې کارن نومونه اختیاري دي. که غواړئ چې یو کارن نوم جوړ کړئ، د Signal نور کارنونه به وکولای شي چې تاسې د همدې کارن نوم په مټ ومومي او پرته له دې چې ستاسې د ټلیفون شمېره ولري، تاسې سره اړیکه کې شي.";

@@ -29,6 +29,7 @@ public enum GroupsV2Error: Error {
     case unexpectedRevision
     case groupBlocked
     case newMemberMissingAnnouncementOnlyCapability
+    case localUserBlockedFromJoining
 }
 
 // MARK: -

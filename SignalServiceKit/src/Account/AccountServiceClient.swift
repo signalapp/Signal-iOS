@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,7 +56,7 @@ public class AccountServiceClient: NSObject {
     public func verifySecondaryDevice(verificationCode: String,
                                       phoneNumber: String,
                                       authKey: String,
-                                      encryptedDeviceName: Data) -> Promise<UInt32> {
+                                      encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse> {
         return serviceClient.verifySecondaryDevice(verificationCode: verificationCode, phoneNumber: phoneNumber, authKey: authKey, encryptedDeviceName: encryptedDeviceName)
     }
 }

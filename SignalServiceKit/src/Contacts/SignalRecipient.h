@@ -10,8 +10,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 
-typedef NS_CLOSED_ENUM(
-    NSUInteger, SignalRecipientTrustLevel) { SignalRecipientTrustLevelLow, SignalRecipientTrustLevelHigh };
+typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
+    SignalRecipientTrustLevelLow,
+    SignalRecipientTrustLevelHigh
+};
 
 /// SignalRecipient serves two purposes:
 ///

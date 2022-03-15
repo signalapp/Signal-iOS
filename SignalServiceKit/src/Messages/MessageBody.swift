@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,6 +44,48 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
 
     public func plaintextBody(transaction: GRDBReadTransaction) -> String {
         return ranges.plaintextBody(text: text, transaction: transaction)
+    }
+
+    public func forNewContext(
+        _ context: TSThread,
+        transaction: GRDBReadTransaction
+    ) -> MessageBody {
+        guard hasRanges else { return self }
+        guard let groupThread = context as? TSGroupThread, groupThread.isGroupV2Thread else {
+            return MessageBody(text: plaintextBody(transaction: transaction), ranges: .empty)
+        }
+
+        let mutableText = NSMutableString(string: text)
+        var mentions = [NSRange: UUID]()
+        var rangeOffset = 0
+
+        func shouldPreserveMention(_ address: SignalServiceAddress) -> Bool {
+            return groupThread.recipientAddresses.contains(address)
+        }
+
+        for (range, uuid) in ranges.orderedMentions {
+            guard range.location >= 0 && range.location + range.length <= (text as NSString).length else {
+                owsFailDebug("Ignoring invalid range in body ranges \(range)")
+                continue
+            }
+
+            let mentionAddress = SignalServiceAddress(uuid: uuid)
+            let offsetRange = NSRange(location: range.location + rangeOffset, length: range.length)
+
+            if shouldPreserveMention(mentionAddress) {
+                mentions[offsetRange] = uuid
+            } else {
+                let displayName = Self.contactsManager.displayName(
+                    for: mentionAddress,
+                    transaction: transaction.asAnyRead
+                )
+                let mentionPlaintext = MessageBodyRanges.mentionPrefix + displayName
+                mutableText.replaceCharacters(in: offsetRange, with: mentionPlaintext)
+                rangeOffset += (mentionPlaintext as NSString).length - range.length
+            }
+        }
+
+        return MessageBody(text: String(mutableText), ranges: MessageBodyRanges(mentions: mentions))
     }
 }
 

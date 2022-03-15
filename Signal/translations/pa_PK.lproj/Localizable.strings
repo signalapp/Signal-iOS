@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "کیمرہ اتے واپس جاؤ";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "میڈیا لائبریری اتے واپس جاؤ";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "غیرمحفوظ SMS دے ذریعے کسے سجن نوں مدعو کرو؟";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal نوں چھیتی ای iOS 11 یا بعد آلے دی لوڑ ہووے گی۔ مہربانی کر کے ترتیباں ایپ >> عمومی >> سافٹ ویئر اپ ڈیٹ اچ تساں گریڈ کرو۔";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS نوں اپ گریڈ کرو";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal اتے صارف ناں اختیاری ہین۔ جے تساں صارف ناں بنان دا انتخاب کر دے او تے دوجے Signal صارفین تساں نوں ایس صارف ناں دے ولوں لبھ سکن گے تے تساں دا فون نمر جانے بغیر تساں نال رابطہ کر سکن گے۔";

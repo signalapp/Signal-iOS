@@ -296,7 +296,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     // Use this opportunity to delete old log files from extensions as well.
 
     // Compute an approximate "N days ago", ignoring calendars and daylight savings changes and such.
-    NSDate *cutoffDate = [NSDate dateWithTimeIntervalSinceNow:-self.maximumNumberOfLogFiles * kDayInterval];
+    NSDate *cutoffDate = [NSDate dateWithTimeIntervalSinceNow:self.maximumNumberOfLogFiles * -kDayInterval];
 
     for (NSString *logsDirPath in [DebugLogger allLogsDirPaths]) {
         if ([logsDirPath isEqual:self.logsDirectory]) {

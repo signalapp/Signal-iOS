@@ -5107,9 +5107,6 @@
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "ត្រឡប់ទៅកាមេរ៉ា";
 
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "ត្រឡប់ទៅបណ្ណាល័យមេឌៀ";
-
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "អញ្ជើញមិត្តភក្តិតាម SMS ដែលមិនមានសុវត្ថិភាព?";
 
@@ -6462,12 +6459,6 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "មិនអាចធ្វើបច្ចុប្បន្នភាពក្រុមបានទេ។ សូមពិនិត្យការភ្ជាប់អុីនធឺណិតរបស់អ្នក ហើយព្យាយាមម្ដងទៀត។";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal នឹងទាមទារ iOS ជំនាន់ 11 ឬ ថ្មីជាងនេះ។ សូមដំឡើងក្នុង ការកំណត់ >> ទូទៅ >> បច្ចុប្បភាពកម្មវិធី។";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "ធ្វើបច្ចុប្បន្នភាព iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "ឈ្មោះអ្នកប្រើប្រាស់លើ Signal ជាជម្រើស។ បើអ្នកជ្រើសរើសបង្កើតឈ្មោះអ្នកប្រើប្រាស់មួយ អ្នកប្រើប្រាស់ Signal ផ្សេងទៀតនឹងអាចស្វែងរកអ្នកតាមរយៈឈ្មោះអ្នកប្រើប្រាស់នេះ និងទាក់ទងអ្នក ដោយមិនចាំបាច់ដឹងពីលេខទូរស័ព្ទរបស់អ្នកឡើយ។";
