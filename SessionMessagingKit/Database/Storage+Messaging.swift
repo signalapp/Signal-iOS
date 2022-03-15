@@ -42,6 +42,7 @@ extension Storage {
             }
             tsMessage = tsOutgoingMessage
         } else {
+            if let _ = TSIncomingMessage.find(withAuthorId: message.sender!, timestamp: message.sentTimestamp!, transaction: transaction) { return nil }
             tsMessage = TSIncomingMessage.from(message, quotedMessage: quotedMessage, linkPreview: linkPreview, associatedWith: thread)
         }
         tsMessage.save(with: transaction)
