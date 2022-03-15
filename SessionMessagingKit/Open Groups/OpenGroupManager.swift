@@ -76,7 +76,7 @@ public final class OpenGroupManager: NSObject {
         // If we are currently polling for this server and already have a TSGroupThread for this room the do nothing
         let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
         
-        if OpenGroupManager.shared.cache.pollers[server] != nil && TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupId), transaction: transaction) != nil {
+        if OpenGroupManager.shared.cache.pollers[server] != nil && TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil {
             SNLog("Ignoring join open group attempt (already joined), user initiated: \(!isConfigMessage)")
             return Promise.value(())
         }
