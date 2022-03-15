@@ -21,9 +21,9 @@ public class MentionFinder: NSObject {
         var sql = """
             SELECT interaction.*
             FROM \(InteractionRecord.databaseTableName) as interaction
-            INNER JOIN \(MentionRecord.databaseTableName) as mention
-                ON mention.\(mentionColumn: .uniqueMessageId) = interaction.\(interactionColumn: .uniqueId)
-                AND mention.\(mentionColumn: .uuidString) = ?
+            INNER JOIN \(TSMention.databaseTableName) as mention
+                ON mention.\(TSMention.columnName(.uniqueMessageId)) = interaction.\(interactionColumn: .uniqueId)
+                AND mention.\(TSMention.columnName(.uuidString)) = ?
         """
 
         var arguments = [uuidString]
@@ -60,8 +60,8 @@ public class MentionFinder: NSObject {
     @objc
     public class func deleteAllMentions(for message: TSMessage, transaction: GRDBWriteTransaction) {
         let sql = """
-            DELETE FROM \(MentionRecord.databaseTableName)
-            WHERE \(mentionColumn: .uniqueMessageId) = ?
+            DELETE FROM \(TSMention.databaseTableName)
+            WHERE \(TSMention.columnName(.uniqueMessageId)) = ?
         """
         transaction.executeUpdate(sql: sql, arguments: [message.uniqueId])
     }
@@ -70,15 +70,14 @@ public class MentionFinder: NSObject {
     public class func mentionedAddresses(for message: TSMessage, transaction: GRDBReadTransaction) -> [SignalServiceAddress] {
         let sql = """
             SELECT *
-            FROM \(MentionRecord.databaseTableName)
-            WHERE \(mentionColumn: .uniqueMessageId) = ?
+            FROM \(TSMention.databaseTableName)
+            WHERE \(TSMention.columnName(.uniqueMessageId)) = ?
         """
-
-        let cursor = TSMention.grdbFetchCursor(sql: sql, arguments: [message.uniqueId], transaction: transaction)
 
         var addresses = [SignalServiceAddress]()
 
         do {
+            let cursor = try TSMention.fetchCursor(transaction.database, sql: sql, arguments: [message.uniqueId])
             while let mention = try cursor.next() {
                 addresses.append(mention.address)
             }
@@ -87,5 +86,32 @@ public class MentionFinder: NSObject {
         }
 
         return addresses
+    }
+
+    @objc
+    public class func tryToCleanupOrphanedMention(
+        uniqueId: String,
+        thresholdDate: Date,
+        shouldPerformRemove: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) -> Bool {
+        guard let mention = TSMention.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+            // This could just be a race condition, but it should be very unlikely.
+            Logger.warn("Could not load mention: \(uniqueId)")
+            return false
+        }
+
+        guard !mention.creationDate.isAfter(thresholdDate) else {
+            Logger.info("Skipping orphan mention due to age: \(mention.creationDate.timeIntervalSinceNow)")
+            return false
+        }
+
+        Logger.info("Removing orphan mention: \(mention.uniqueId)")
+
+        // Sometimes we cleanup orphaned data as an audit and don't actually
+        // perform the remove operation.
+        if shouldPerformRemove { mention.anyRemove(transaction: transaction) }
+
+        return true
     }
 }

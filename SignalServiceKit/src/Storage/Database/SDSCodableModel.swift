@@ -58,6 +58,8 @@ public extension SDSCodableModel {
     func anyDidRemove(transaction: SDSAnyWriteTransaction) {}
 
     static var databaseUUIDEncodingStrategy: DatabaseUUIDEncodingStrategy { .string }
+    static var databaseDateEncodingStrategy: DatabaseDateEncodingStrategy { .timeIntervalSince1970 }
+    static var databaseDateDecodingStrategy: DatabaseDateDecodingStrategy { .timeIntervalSince1970 }
 
     mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
@@ -168,7 +170,7 @@ public extension SDSCodableModel where Self: AnyObject {
     }
 }
 
-fileprivate extension SDSCodableModel {
+public extension SDSCodableModel {
     func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         guard shouldBeSaved else {
             Logger.warn("Skipping save of: \(type(of: self))")

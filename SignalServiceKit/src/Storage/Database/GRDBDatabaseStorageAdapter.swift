@@ -156,7 +156,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             OWSDevice.table,
             TestModel.table,
             IncomingGroupsV2MessageJob.table,
-            TSMention.table,
             TSPaymentModel.table,
             TSPaymentRequestModel.table
             // NOTE: We don't include OWSMessageDecryptJob,
@@ -176,7 +175,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             ProfileBadge.self,
             StoryMessage.self,
             OWSReaction.self,
-            TSGroupMember.self
+            TSGroupMember.self,
+            TSMention.self
         ]
     }
 
