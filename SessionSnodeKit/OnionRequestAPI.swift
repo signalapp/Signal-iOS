@@ -615,8 +615,8 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         return seal.reject(HTTP.Error.invalidResponse)
                     }
 
-                    // Custom handle a clock out of sync error
-                    guard responseInfo.code != 406 else {
+                    // Custom handle a clock out of sync error (v4 returns '425' but included the '406' just in case)
+                    guard responseInfo.code != 406 && responseInfo.code != 425 else {
                         SNLog("The user's clock is out of sync with the service node network.")
                         return seal.reject(SnodeAPI.Error.clockOutOfSync)
                     }
