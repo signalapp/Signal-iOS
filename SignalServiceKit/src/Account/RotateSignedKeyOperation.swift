@@ -15,6 +15,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
 
+        // PNI TODO: parameterize this entire operation on OWSIdentity
         let signalProtocolStore = self.signalProtocolStore(for: .aci)
         let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
 

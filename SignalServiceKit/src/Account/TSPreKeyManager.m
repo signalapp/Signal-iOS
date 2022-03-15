@@ -59,6 +59,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 + (BOOL)isAppLockedDueToPreKeyUpdateFailures
 {
     // PERF TODO use a single transaction / take in a transaction
+    // PNI TODO: handle PNI pre-keys too.
 
     // Only disable message sending if we have failed more than N times
     // over a period of at least M days.
@@ -72,6 +73,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 + (void)incrementPreKeyUpdateFailureCount
 {
     // PERF TODO use a single transaction / take in a transaction
+    // PNI TODO: handle PNI pre-keys too.
 
     // Record a prekey update failure.
     SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
@@ -87,6 +89,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)clearPreKeyUpdateFailureCount
 {
+    // PNI TODO: handle PNI pre-keys too.
     SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
     [signedPreKeyStore clearFirstPrekeyUpdateFailureDate];
     [signedPreKeyStore clearPrekeyUpdateFailureCount];
@@ -131,6 +134,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)checkPreKeysWithShouldThrottle:(BOOL)shouldThrottle
 {
+    // PNI TODO: handle PNI pre-keys too.
     if (!CurrentAppContext().isMainAppAndActive) {
         return;
     }
@@ -237,6 +241,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 }
 
 + (void)clearSignedPreKeyRecords {
+    // PNI TODO: rethink this API.
     SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
     NSNumber *_Nullable currentSignedPrekeyId = [signedPreKeyStore currentSignedPrekeyId];
     [self clearSignedPreKeyRecordsWithKeyId:currentSignedPrekeyId];
@@ -244,6 +249,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *_Nullable)keyId
 {
+    // PNI TODO: rethink this API.
     if (!keyId) {
         // currentSignedPreKeyId should only be nil before we've completed registration.
         // We have this guard here for robustness, but we should never get here.
@@ -329,6 +335,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 }
 
 + (void)cullPreKeyRecords {
+    // PNI TODO: handle PNI pre-keys too.
     NSTimeInterval expirationInterval = kDayInterval * 30;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         SSKPreKeyStore *preKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].preKeyStore;

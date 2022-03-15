@@ -279,6 +279,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                createdAt:[NSDate new]
                                        verificationState:verificationState] anyUpsertWithTransaction:transaction];
 
+        // PNI TODO: archive PNI sessions too
         SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
         [sessionStore archiveAllSessionsForAccountId:accountId transaction:transaction];
 

@@ -10,6 +10,7 @@ public class CreatePreKeysOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
+        // PNI TODO: parameterize this entire operation on OWSIdentity
         let identityKeyPair = self.identityManager.identityKeyPair(for: .aci) ?? self.identityManager.generateNewIdentityKey(for: .aci)
         let identityKey: Data = identityKeyPair.publicKey
 

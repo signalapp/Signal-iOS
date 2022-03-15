@@ -25,6 +25,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.accountServiceClient.getPreKeysCount()
         }.then(on: .global()) { (preKeysCount: Int) -> Promise<Void> in
             Logger.info("preKeysCount: \(preKeysCount)")
+            // PNI TODO: parameterize this entire operation on OWSIdentity
             let signalProtocolStore = self.signalProtocolStore(for: .aci)
 
             guard preKeysCount < kEphemeralPreKeysMinimumCount ||

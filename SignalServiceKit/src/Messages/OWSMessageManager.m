@@ -1819,6 +1819,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[[TSInfoMessage alloc] initWithThread:thread
                                messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
 
+    // PNI TODO: this should end the PNI session if it was sent to our PNI.
     SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
     [sessionStore archiveAllSessionsForAddress:envelope.sourceAddress transaction:transaction];
 }

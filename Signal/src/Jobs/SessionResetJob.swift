@@ -101,6 +101,8 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         if firstAttempt {
             self.databaseStorage.write { transaction in
                 Logger.info("archiving sessions for recipient: \(self.recipientAddress)")
+                // PNI TODO: should this archive PNI sessions as well, or should that be a parameter of the job?
+                // Do we ever need a SessionResetJob for a PNI session?
                 self.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(for: self.recipientAddress,
                                                                                     transaction: transaction)
             }
@@ -123,6 +125,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                 // Archive the just-created session since the recipient should delete their corresponding
                 // session upon receiving and decrypting our EndSession message.
                 // Otherwise if we send another message before them, they wont have the session to decrypt it.
+                // PNI TODO: same as above
                 self.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(for: self.recipientAddress,
                                                                                     transaction: transaction)
 
@@ -168,6 +171,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             // Archive the just-created session since the recipient should delete their corresponding
             // session upon receiving and decrypting our EndSession message.
             // Otherwise if we send another message before them, they won't have the session to decrypt it.
+            // PNI TODO: same as above
             self.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(for: self.recipientAddress,
                                                                                 transaction: transaction)
         }

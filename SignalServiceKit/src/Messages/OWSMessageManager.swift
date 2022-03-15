@@ -192,6 +192,7 @@ extension OWSMessageManager {
             if let ratchetKey = errorMessage.ratchetKey {
                 // If a ratchet key is included, this was a 1:1 session message
                 // Archive the session if the current key matches.
+                // PNI TODO: We should never get a DEM for our PNI, but we should check that anyway.
                 let sessionStore = signalProtocolStore(for: .aci).sessionStore
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {

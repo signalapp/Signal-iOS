@@ -53,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *theirName = [self.contactsManager displayNameForAddress:theirSignalAddress];
 
     SignalServiceAddress *mySignalAddress = [self.accountManager localAddress];
+    // PNI TODO: This should use the identity key associated with our PNI if we only have a PNI session with them.
     NSData *myIdentityKey = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityACI].publicKey;
 
     return [OWSFingerprint fingerprintWithMyStableAddress:mySignalAddress
