@@ -191,4 +191,32 @@ public class ReactionManager: NSObject {
 
         return .success
     }
+
+    @objc
+    public class func tryToCleanupOrphanedReaction(
+        uniqueId: String,
+        thresholdDate: Date,
+        shouldPerformRemove: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) -> Bool {
+        guard let reaction = OWSReaction.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+            // This could just be a race condition, but it should be very unlikely.
+            Logger.warn("Could not load reaction: \(uniqueId)")
+            return false
+        }
+
+        let creationDate = Date(millisecondsSince1970: reaction.sentAtTimestamp)
+        guard !creationDate.isAfter(thresholdDate) else {
+            Logger.info("Skipping orphan reaction due to age: \(creationDate.timeIntervalSinceNow)")
+            return false
+        }
+
+        Logger.info("Removing orphan reaction: \(reaction.uniqueId)")
+
+        // Sometimes we cleanup orphaned data as an audit and don't actually
+        // perform the remove operation.
+        if shouldPerformRemove { reaction.anyRemove(transaction: transaction) }
+
+        return true
+    }
 }

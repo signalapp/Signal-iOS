@@ -14,8 +14,8 @@ public protocol SDSCodableModel: Codable, FetchableRecord, PersistableRecord, SD
 
     // For compatibility with SDSRecord. Subclasses should override
     // to differentiate their records from the parent class.
-    static var recordType: Int { get }
-    var recordType: Int { get }
+    static var recordType: UInt { get }
+    var recordType: UInt { get }
 
     var uniqueId: String { get }
 
@@ -36,8 +36,8 @@ public protocol SDSCodableModel: Codable, FetchableRecord, PersistableRecord, SD
 }
 
 public extension SDSCodableModel {
-    static var recordType: Int { 0 }
-    var recordType: Int { Self.recordType }
+    static var recordType: UInt { 0 }
+    var recordType: UInt { Self.recordType }
 
     var grdbId: NSNumber? { id.map { NSNumber(value: $0) } }
 
@@ -302,6 +302,110 @@ fileprivate extension SDSCodableModel {
         // attempt to perform recovery.
         if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
             SSKPreferences.setHasGrdbDatabaseCorruption(true)
+        }
+    }
+}
+
+public extension SDSCodableModel {
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    static func anyEnumerate(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (Self, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false, block: block)
+    }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    static func anyEnumerate(
+        transaction: SDSAnyReadTransaction,
+        batched: Bool = false,
+        block: @escaping (Self, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        let batchSize = batched ? Batching.kDefaultBatchSize : 0
+        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
+    }
+
+    // Traverses all records.
+    // Records are not visited in any particular order.
+    //
+    // If batchSize > 0, the enumeration is performed in autoreleased batches.
+    static func anyEnumerate(
+        transaction: SDSAnyReadTransaction,
+        batchSize: UInt,
+        block: @escaping (Self, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        let cursor: RecordCursor<Self>
+        do {
+            cursor = try Self.fetchCursor(transaction.unwrapGrdbRead.database)
+        } catch {
+            owsFailDebug("Couldn't fetch cursor \(error)")
+            return
+        }
+
+        Batching.loop(
+            batchSize: batchSize,
+            loopBlock: { stop in
+                do {
+                    guard let value = try cursor.next() else {
+                        stop.pointee = true
+                        return
+                    }
+                    block(value, stop)
+                } catch let error {
+                    owsFailDebug("Couldn't fetch model: \(error)")
+                }
+            }
+        )
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    static func anyEnumerateUniqueIds(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        anyEnumerateUniqueIds(transaction: transaction, batched: false, block: block)
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    static func anyEnumerateUniqueIds(
+        transaction: SDSAnyReadTransaction,
+        batched: Bool = false,
+        block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        let batchSize = batched ? Batching.kDefaultBatchSize : 0
+        anyEnumerateUniqueIds(transaction: transaction, batchSize: batchSize, block: block)
+    }
+
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    //
+    // If batchSize > 0, the enumeration is performed in autoreleased batches.
+    static func anyEnumerateUniqueIds(
+        transaction: SDSAnyReadTransaction,
+        batchSize: UInt,
+        block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        do {
+            let cursor = try String.fetchCursor(
+                transaction.unwrapGrdbRead.database,
+                sql: "SELECT uniqueId FROM \(databaseTableName)"
+            )
+            try Batching.loop(
+                batchSize: batchSize,
+                loopBlock: { stop in
+                    guard let uniqueId = try cursor.next() else {
+                        stop.pointee = true
+                        return
+                    }
+                    block(uniqueId, stop)
+                }
+            )
+        } catch let error as NSError {
+            owsFailDebug("Couldn't fetch uniqueIds: \(error)")
         }
     }
 }

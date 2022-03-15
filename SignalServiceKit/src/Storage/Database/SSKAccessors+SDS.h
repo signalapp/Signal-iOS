@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -162,15 +162,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
 @property (atomic, nullable, readonly) NSString *recipientUUID;
 @property (atomic, nullable, readonly) NSString *profileName;
-
-@end
-
-#pragma mark -
-
-@interface OWSReaction (SDS)
-
-@property (nonatomic, readonly, nullable) NSString *reactorE164;
-@property (nonatomic, readonly, nullable) NSString *reactorUUID;
 
 @end
 

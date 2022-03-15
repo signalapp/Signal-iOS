@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -61,7 +61,7 @@ public class MentionFinder: NSObject {
     public class func deleteAllMentions(for message: TSMessage, transaction: GRDBWriteTransaction) {
         let sql = """
             DELETE FROM \(MentionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
+            WHERE \(mentionColumn: .uniqueMessageId) = ?
         """
         transaction.executeUpdate(sql: sql, arguments: [message.uniqueId])
     }
