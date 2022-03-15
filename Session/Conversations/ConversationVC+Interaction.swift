@@ -1171,7 +1171,7 @@ extension ConversationVC {
         // (it'll be updated with correct profile info if they accept the message request so this
         // shouldn't cause weird behaviours)
         let sessionId: String = contactThread.contactSessionID()
-        let contact: Contact = (Storage.shared.getContact(with: sessionId) ?? Contact(sessionID: sessionId))
+        let contact: Contact = (Storage.shared.getContact(with: sessionId, using: transaction) ?? Contact(sessionID: sessionId))
         
         guard !contact.isApproved else { return Promise.value(()) }
         

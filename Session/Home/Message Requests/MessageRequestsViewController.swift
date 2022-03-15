@@ -313,7 +313,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         // Update the contact
         let sessionId: String = contactThread.contactSessionID()
         
-        if let contact: Contact = Storage.shared.getContact(with: sessionId), (contact.isApproved || !contact.isBlocked) {
+        if let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction), (contact.isApproved || !contact.isBlocked) {
             contact.isApproved = false
             contact.isBlocked = true
             
