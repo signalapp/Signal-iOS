@@ -254,8 +254,9 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let authorLabelSize = authorLabel.sizeThatFits(authorLabelAvailableSpace)
         authorLabelHeightConstraint.constant = (viewItem.senderName != nil) ? authorLabelSize.height : 0
         // Message status image view
-        let (image, backgroundColor) = getMessageStatusImage(for: message)
+        let (image, tintColor, backgroundColor) = getMessageStatusImage(for: message)
         messageStatusImageView.image = image
+        messageStatusImageView.tintColor = tintColor
         messageStatusImageView.backgroundColor = backgroundColor
         if let message = message as? TSOutgoingMessage {
             messageStatusImageView.isHidden = (message.messageState == .sent && thread?.lastInteraction != message)
@@ -612,20 +613,33 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         }
     }
     
-    private func getMessageStatusImage(for message: TSMessage) -> (image: UIImage?, backgroundColor: UIColor?) {
-        guard let message = message as? TSOutgoingMessage else { return (nil, nil) }
+    private func getMessageStatusImage(for message: TSMessage) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
+        guard let message = message as? TSOutgoingMessage else { return (nil, nil, nil) }
+        
         let image: UIImage
+        var tintColor: UIColor? = nil
         var backgroundColor: UIColor? = nil
         let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: message)
+        
         switch status {
-        case .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot").asTintedImage(color: Colors.text)!
-        case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck").asTintedImage(color: Colors.text)!
-        case .read:
-            backgroundColor = isLightMode ? .black : .white
-            image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
-        case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.destructive)!
+            case .uploading, .sending:
+                image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
+                tintColor = Colors.text
+                
+            case .sent, .skipped, .delivered:
+                image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
+                tintColor = Colors.text
+                
+            case .read:
+                image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
+                backgroundColor = isLightMode ? .black : .white
+                
+            case .failed:
+                image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
+                tintColor = Colors.destructive
         }
-        return (image, backgroundColor)
+        
+        return (image, tintColor, backgroundColor)
     }
     
     private func getSize(for viewItem: ConversationViewItem) -> CGSize {
