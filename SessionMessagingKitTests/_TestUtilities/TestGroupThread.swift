@@ -4,28 +4,28 @@ import Foundation
 import SessionMessagingKit
 
 // FIXME: Turn this into a protocol to make mocking possible
-class TestInteraction: TSInteraction, Mockable {
+class TestGroupThread: TSGroupThread, Mockable {
     // MARK: - Mockable
     
     enum DataKey: Hashable {
-        case uniqueId
-        case timestamp
+        case groupModel
+        case interactions
     }
     
     typealias Key = DataKey
     
     var mockData: [DataKey: Any] = [:]
-    var didCallSave: Bool = true
+    var didCallSave: Bool = false
     
-    // MARK: - TSInteraction
+    // MARK: - TSGroupThread
     
-    override var uniqueId: String? {
-        get { (mockData[.uniqueId] as? String) }
-        set { mockData[.uniqueId] = newValue }
+    override var groupModel: TSGroupModel {
+        get { (mockData[.groupModel] as! TSGroupModel) }
+        set {}
     }
     
-    override var timestamp: UInt64 {
-        (mockData[.timestamp] as! UInt64)
+    override func enumerateInteractions(_ block: @escaping (TSInteraction) -> Void) {
+        ((mockData[.interactions] as? [TSInteraction]) ?? []).forEach(block)
     }
     
     override func save(with transaction: YapDatabaseReadWriteTransaction) { didCallSave = true }

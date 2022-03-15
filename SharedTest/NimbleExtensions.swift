@@ -181,12 +181,12 @@ fileprivate func generateCallInfo<M, T, R>(_ actualExpression: Expression<M>, _ 
                 return
             }
             
-            allFunctionsCalled = Array(validInstance.functionConsumer.calls.keys)
+            allFunctionsCalled = Array(validInstance.functionConsumer.calls.wrappedValue.keys)
             
             let builder: MockFunctionBuilder<T, R> = builderCreator(validInstance)
             validInstance.functionConsumer.trackCalls = false
             maybeFunction = try? builder.build()
-            desiredFunctionCalls = (validInstance.functionConsumer.calls[maybeFunction?.name ?? ""] ?? [])
+            desiredFunctionCalls = (validInstance.functionConsumer.calls.wrappedValue[maybeFunction?.name ?? ""] ?? [])
             validInstance.functionConsumer.trackCalls = true
         }
         catch {
@@ -205,12 +205,12 @@ fileprivate func generateCallInfo<M, T, R>(_ actualExpression: Expression<M>, _ 
     // Just hope for the best and if there is a force-cast there's not much we can do
     guard let validInstance: M = try? actualExpression.evaluate() else { return CallInfo.error }
     
-    allFunctionsCalled = Array(validInstance.functionConsumer.calls.keys)
+    allFunctionsCalled = Array(validInstance.functionConsumer.calls.wrappedValue.keys)
     
     let builder: MockExpectationBuilder<T, R> = builderCreator(validInstance)
     validInstance.functionConsumer.trackCalls = false
     maybeFunction = try? builder.build()
-    desiredFunctionCalls = (validInstance.functionConsumer.calls[maybeFunction?.name ?? ""] ?? [])
+    desiredFunctionCalls = (validInstance.functionConsumer.calls.wrappedValue[maybeFunction?.name ?? ""] ?? [])
     validInstance.functionConsumer.trackCalls = true
     #endif
     

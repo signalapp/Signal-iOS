@@ -75,10 +75,6 @@ public final class FileServerAPI: NSObject {
     // MARK: - Convenience
     
     private static func send<T: Encodable>(_ request: Request<T, Endpoint>, serverPublicKey: String) -> Promise<Data> {
-        guard request.useOnionRouting else {
-            preconditionFailure("It's currently not allowed to send non onion routed requests.")
-        }
-        
         let urlRequest: URLRequest
         
         do {

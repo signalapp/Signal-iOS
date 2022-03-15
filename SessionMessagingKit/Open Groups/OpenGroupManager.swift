@@ -9,6 +9,9 @@ public final class OpenGroupManager: NSObject {
         public var defaultRoomsPromise: Promise<[OpenGroupAPI.Room]>?
         fileprivate var groupImagePromises: [String: Promise<Data>] = [:]
         
+        public var pollers: [String: OpenGroupAPI.Poller] = [:] // One for each server
+        public var isPolling: Bool = false
+        
         /// Server URL to room ID to set of user IDs
         fileprivate var moderators: [String: [String: Set<String>]] = [:]
         fileprivate var admins: [String: [String: Set<String>]] = [:]
@@ -40,29 +43,31 @@ public final class OpenGroupManager: NSObject {
     public let mutableCache: Atomic<Cache> = Atomic(Cache())
     public var cache: Cache { return mutableCache.wrappedValue }
     
-    private var pollers: [String: OpenGroupAPI.Poller] = [:] // One for each server
-    private var isPolling = false
-    
     // MARK: - Polling
-    
-    @objc public func startPolling() {
-        guard !isPolling else { return }
+
+    public func startPolling(using dependencies: Dependencies = Dependencies()) {
+        guard !cache.isPolling else { return }
         
-        isPolling = true
-        pollers = Set(Storage.shared.getAllOpenGroups().values.map { $0.server })
-            .reduce(into: [:]) { prev, server in
-                pollers[server]?.stop() // Should never occur
-                
-                let poller = OpenGroupAPI.Poller(for: server)
-                poller.startIfNeeded()
-                
-                prev[server] = poller
-            }
+        mutableCache.mutate { cache in
+            cache.isPolling = true
+            cache.pollers = Set(dependencies.storage.getAllOpenGroups().values.map { openGroup in openGroup.server })
+                .reduce(into: [:]) { prev, server in
+                    cache.pollers[server]?.stop() // Should never occur
+                    
+                    let poller = OpenGroupAPI.Poller(for: server)
+                    poller.startIfNeeded(using: dependencies)
+                    
+                    prev[server] = poller
+                }
+        }
     }
 
     @objc public func stopPolling() {
-        pollers.forEach { (_, openGroupPoller) in openGroupPoller.stop() }
-        pollers.removeAll()
+        mutableCache.mutate {
+            $0.pollers.forEach { (_, openGroupPoller) in openGroupPoller.stop() }
+            $0.pollers.removeAll()
+            $0.isPolling = false
+        }
     }
 
     // MARK: - Adding & Removing
@@ -71,7 +76,7 @@ public final class OpenGroupManager: NSObject {
         // If we are currently polling for this server and already have a TSGroupThread for this room the do nothing
         let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
         
-        if OpenGroupManager.shared.pollers[server] != nil && TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupId), transaction: transaction) != nil {
+        if OpenGroupManager.shared.cache.pollers[server] != nil && TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupId), transaction: transaction) != nil {
             SNLog("Ignoring join open group attempt (already joined), user initiated: \(!isConfigMessage)")
             return Promise.value(())
         }
@@ -86,19 +91,13 @@ public final class OpenGroupManager: NSObject {
         
         transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             OpenGroupAPI.capabilitiesAndRoom(for: roomToken, on: server, using: dependencies)
-                .done(on: DispatchQueue.global(qos: .userInitiated)) { (capabilitiesResponse: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Capabilities?), roomResponse: (info: OnionRequestResponseInfoType, data: OpenGroupAPI.Room?)) in
-                    guard let capabilities: OpenGroupAPI.Capabilities = capabilitiesResponse.data, let room: OpenGroupAPI.Room = roomResponse.data else {
-                        SNLog("Failed to join open group due to invalid data.")
-                        seal.reject(HTTP.Error.generic)
-                        return
-                    }
-                    
-                    dependencies.storage.write { anyTransactionas in
-                        guard let transaction: YapDatabaseReadWriteTransaction = anyTransactionas as? YapDatabaseReadWriteTransaction else { return }
+                .done(on: DispatchQueue.global(qos: .userInitiated)) { response in
+                    dependencies.storage.write { anyTransaction in
+                        guard let transaction: YapDatabaseReadWriteTransaction = anyTransaction as? YapDatabaseReadWriteTransaction else { return }
                         
                         // Store the capabilities first
                         OpenGroupManager.handleCapabilities(
-                            capabilities,
+                            response.capabilities.data,
                             on: server,
                             using: transaction,
                             dependencies: dependencies
@@ -106,7 +105,7 @@ public final class OpenGroupManager: NSObject {
                         
                         // Then the room
                         OpenGroupManager.handleRoom(
-                            room,
+                            response.room.data,
                             publicKey: publicKey,
                             for: roomToken,
                             on: server,
@@ -118,6 +117,7 @@ public final class OpenGroupManager: NSObject {
                     }
                 }
                 .catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
+                    SNLog("Failed to join open group.")
                     seal.reject(error)
                 }
         }
@@ -125,15 +125,13 @@ public final class OpenGroupManager: NSObject {
         return promise
     }
 
-    public func delete(_ openGroup: OpenGroup, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
-        let storage = SNMessagingKitConfiguration.shared.storage
-        
+    public func delete(_ openGroup: OpenGroup, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction, dependencies: Dependencies = Dependencies()) {
         // Stop the poller if needed
-        let openGroups = storage.getAllOpenGroups().values.filter { $0.server == openGroup.server }
+        let openGroups = dependencies.storage.getAllOpenGroups().values.filter { $0.server == openGroup.server }
         if openGroups.count == 1 && openGroups.last == openGroup {
-            let poller = pollers[openGroup.server]
+            let poller = cache.pollers[openGroup.server]
             poller?.stop()
-            pollers[openGroup.server] = nil
+            mutableCache.mutate { $0.pollers[openGroup.server] = nil }
         }
         
         // Remove all data
@@ -143,17 +141,18 @@ public final class OpenGroupManager: NSObject {
             messageIDs.insert(interaction.uniqueId!)
             messageTimestamps.insert(interaction.timestamp)
         }
-        storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
-        Storage.shared.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
-        Storage.shared.removeOpenGroupSequenceNumber(for: openGroup.room, on: openGroup.server, using: transaction)
+        dependencies.storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
+        dependencies.storage.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
+        dependencies.storage.removeOpenGroupSequenceNumber(for: openGroup.room, on: openGroup.server, using: transaction)
         
         thread.removeAllThreadInteractions(with: transaction)
         thread.remove(with: transaction)
-        Storage.shared.removeOpenGroup(for: thread.uniqueId!, using: transaction)
+        dependencies.storage.removeOpenGroup(for: thread.uniqueId!, using: transaction)
         
-        // Only remove the open group public key if the user isn't in any other rooms 
+        // Only remove the open group public key and server info if the user isn't in any other rooms
         if openGroups.count <= 1 {
-            Storage.shared.removeOpenGroupPublicKey(for: openGroup.server, using: transaction)
+            dependencies.storage.removeOpenGroupServer(name: openGroup.server, using: transaction)
+            dependencies.storage.removeOpenGroupPublicKey(for: openGroup.server, using: transaction)
         }
     }
     
@@ -262,9 +261,11 @@ public final class OpenGroupManager: NSObject {
         
         transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             // Start the poller if needed
-            if OpenGroupManager.shared.pollers[server] == nil {
-                OpenGroupManager.shared.pollers[server] = OpenGroupAPI.Poller(for: server)
-                OpenGroupManager.shared.pollers[server]?.startIfNeeded()
+            if OpenGroupManager.shared.cache.pollers[server] == nil {
+                OpenGroupManager.shared.mutableCache.mutate {
+                    $0.pollers[server] = OpenGroupAPI.Poller(for: server)
+                    $0.pollers[server]?.startIfNeeded(using: dependencies)
+                }
             }
             
             // - Moderators
@@ -649,6 +650,11 @@ public final class OpenGroupManager: NSObject {
 }
 
 extension OpenGroupManager {
+    @objc(startPolling)
+    public func objc_startPolling() {
+        startPolling()
+    }
+    
     @objc(getDefaultRoomsIfNeeded)
     public static func objc_getDefaultRoomsIfNeeded() {
         getDefaultRoomsIfNeeded()

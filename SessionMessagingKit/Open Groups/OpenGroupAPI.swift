@@ -76,7 +76,7 @@ public enum OpenGroupAPI {
                                     .roomMessagesSince(openGroup.room, seqNo: targetSeqNo)
                                 )
                             ),
-                            responseType: [Message].self
+                            responseType: [Failable<Message>].self
                         )
                     ]
                 }
@@ -242,7 +242,7 @@ public enum OpenGroupAPI {
         for roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
-    ) -> Promise<(capabilities: (OnionRequestResponseInfoType, Capabilities?), room: (OnionRequestResponseInfoType, Room?))> {
+    ) -> Promise<(capabilities: (info: OnionRequestResponseInfoType, data: Capabilities), room: (info: OnionRequestResponseInfoType, data: Room))> {
         let requestResponseType: [BatchRequestInfoType] = [
             // Get the latest capabilities for the server (in case it's a new server or the cached ones are stale)
             BatchRequestInfo(
@@ -264,8 +264,8 @@ public enum OpenGroupAPI {
         ]
         
         return sequence(server, requests: requestResponseType, using: dependencies)
-            .map { (response: [Endpoint: (OnionRequestResponseInfoType, Codable?)]) -> (capabilities: (OnionRequestResponseInfoType, Capabilities?), room: (OnionRequestResponseInfoType, Room?)) in
-                let maybeCapabilities: (OnionRequestResponseInfoType, Capabilities?)? = response[.capabilities]
+            .map { (response: [Endpoint: (OnionRequestResponseInfoType, Codable?)]) -> (capabilities: (OnionRequestResponseInfoType, Capabilities), room: (OnionRequestResponseInfoType, Room)) in
+                let maybeCapabilities: (info: OnionRequestResponseInfoType, data: Capabilities?)? = response[.capabilities]
                     .map { info, data in (info, (data as? BatchSubResponse<Capabilities>)?.body) }
                 let maybeRoomResponse: (OnionRequestResponseInfoType, Codable?)? = response
                     .first(where: { key, _ in
@@ -275,14 +275,22 @@ public enum OpenGroupAPI {
                         }
                     })
                     .map { _, value in value }
-                let maybeRoom: (OnionRequestResponseInfoType, Room?)? = maybeRoomResponse
+                let maybeRoom: (info: OnionRequestResponseInfoType, data: Room?)? = maybeRoomResponse
                     .map { info, data in (info, (data as? BatchSubResponse<Room>)?.body) }
                 
-                guard let capabilities: (OnionRequestResponseInfoType, Capabilities?) = maybeCapabilities, let room: (OnionRequestResponseInfoType, Room?) = maybeRoom else {
+                guard
+                    let capabilitiesInfo: OnionRequestResponseInfoType = maybeCapabilities?.info,
+                    let capabilities: Capabilities = maybeCapabilities?.data,
+                    let roomInfo: OnionRequestResponseInfoType = maybeRoom?.info,
+                    let room: Room = maybeRoom?.data
+                else {
                     throw HTTP.Error.parsingFailed
                 }
                 
-                return (capabilities, room)
+                return (
+                    (capabilitiesInfo, capabilities),
+                    (roomInfo, room)
+                )
             }
     }
     
@@ -298,7 +306,7 @@ public enum OpenGroupAPI {
         fileIds: [String]?,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Message)> {
-        guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, using: dependencies) else {
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
@@ -352,7 +360,7 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
-        guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, using: dependencies) else {
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(plaintext.bytes, for: server, fallbackSigningType: .standard, using: dependencies) else {
             return Promise(error: Error.signingFailed)
         }
         
@@ -427,6 +435,34 @@ public enum OpenGroupAPI {
 
         return send(request, using: dependencies)
             .decoded(as: [Message].self, on: OpenGroupAPI.workQueue, using: dependencies)
+    }
+    
+    /// Deletes all messages from a given sessionId within the provided rooms (or globally) on a server
+    ///
+    /// - Parameters:
+    ///   - sessionId: The sessionId (either standard or blinded) of the user whose messages should be deleted
+    ///
+    ///   - roomToken: The room token from which the messages should be deleted
+    ///
+    ///     The invoking user **must** be a moderator of the given room or an admin if trying to delete the messages
+    ///     of another admin.
+    ///
+    ///   - server: The server to delete messages from
+    ///
+    ///   - dependencies: Injected dependencies (used for unit testing)
+    public static func messagesDeleteAll(
+        _ sessionId: String,
+        in roomToken: String,
+        on server: String,
+        using dependencies: Dependencies = Dependencies()
+    ) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+        let request: Request = Request<NoBody, Endpoint>(
+            method: .delete,
+            server: server,
+            endpoint: Endpoint.roomDeleteMessages(roomToken, sessionId: sessionId)
+        )
+        
+        return send(request, using: dependencies)
     }
     
     // MARK: - Pinning
@@ -791,64 +827,18 @@ public enum OpenGroupAPI {
         return send(request, using: dependencies)
     }
     
-    // TODO: Need to test this once the API has been implemented
-    // TODO: Update docs to align with the API documentation once implemented
-    /// Deletes all messages from a given sessionId within the provided rooms (or globally) on a server
-    ///
-    /// - Parameters:
-    ///   - sessionId: The sessionId (either standard or blinded) of the user whose messages should be deleted
-    ///
-    ///   - roomTokens: List of one or more room tokens from which the messages should be deleted
-    ///
-    ///     The invoking user **must** be an admin of all of the given rooms.
-    ///
-    ///     This may be set to the single-element list `["*"]` to add or remove the moderator from all rooms in which the current user has admin
-    ///     permissions (the call will succeed if the calling user is an admin in at least one channel)
-    ///
-    ///     **Note:** You can delete messages from all rooms on a server by providing a `nil` value for this parameter
-    ///
-    ///   - server: The server to delete messages from
-    ///
-    ///   - dependencies: Injected dependencies (used for unit testing)
-    public static func userDeleteMessages(
-        _ sessionId: String,
-        from roomTokens: [String]?,
-        on server: String,
-        using dependencies: Dependencies = Dependencies()
-    ) -> Promise<(OnionRequestResponseInfoType, UserDeleteMessagesResponse)> {
-        let requestBody: UserDeleteMessagesRequest = UserDeleteMessagesRequest(
-            rooms: roomTokens,
-            global: (roomTokens == nil ? true : nil)
-        )
-        
-        let request: Request = Request(
-            method: .post,
-            server: server,
-            endpoint: Endpoint.userDeleteMessages(sessionId),
-            body: requestBody
-        )
-        
-        return send(request, using: dependencies)
-            .decoded(as: UserDeleteMessagesResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
-    }
-    
-    // TODO: Need to test this once the API has been implemented
     /// This is a convenience method which constructs a `/sequence` of the `userBan` and `userDeleteMessages`  requests, refer to those
     /// methods for the documented behaviour of each method
-    public static func userBanAndDeleteAllMessage(
+    public static func userBanAndDeleteAllMessages(
         _ sessionId: String,
-        from roomTokens: [String]?,
+        in roomToken: String,
         on server: String,
         using dependencies: Dependencies = Dependencies()
     ) -> Promise<[OnionRequestResponseInfoType]> {
         let banRequestBody: UserBanRequest = UserBanRequest(
-            rooms: roomTokens,
-            global: (roomTokens == nil ? true : nil),
+            rooms: [roomToken],
+            global: nil,
             timeout: nil
-        )
-        let deleteMessageRequestBody: UserDeleteMessagesRequest = UserDeleteMessagesRequest(
-            rooms: roomTokens,
-            global: (roomTokens == nil ? true : nil)
         )
         
         // Generate the requests
@@ -862,27 +852,22 @@ public enum OpenGroupAPI {
                 )
             ),
             BatchRequestInfo(
-                request: Request(
-                    method: .post,
+                request: Request<NoBody, Endpoint>(
+                    method: .delete,
                     server: server,
-                    endpoint: .userDeleteMessages(sessionId),
-                    body: deleteMessageRequestBody
-                ),
-                responseType: UserDeleteMessagesResponse.self
+                    endpoint: Endpoint.roomDeleteMessages(roomToken, sessionId: sessionId)
+                )
             )
         ]
         
         return sequence(server, requests: requestResponseType, using: dependencies)
-            .map { results in
-                // TODO: Handle deletions...???? Hand off to OpenGroupAPIManager?
-                return results.values.map { responseInfo, _ in responseInfo }
-            }
+            .map { $0.values.map { responseInfo, _ in responseInfo } }
     }
     
     // MARK: - Authentication
     
     /// Sign a message to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
-    private static func sign(_ messageBytes: Bytes, for serverName: String, using dependencies: Dependencies = Dependencies()) -> (publicKey: String, signature: Bytes)? {
+    private static func sign(_ messageBytes: Bytes, for serverName: String, fallbackSigningType signingType: SessionId.Prefix, using dependencies: Dependencies = Dependencies()) -> (publicKey: String, signature: Bytes)? {
         guard let userEdKeyPair: Box.KeyPair = dependencies.storage.getUserED25519KeyPair() else { return nil }
         guard let serverPublicKey: String = dependencies.storage.getOpenGroupPublicKey(for: serverName) else {
             return nil
@@ -906,15 +891,30 @@ public enum OpenGroupAPI {
             )
         }
         
-        // Otherwise fall back to sign using the unblinded key
-        guard let signatureResult: Bytes = dependencies.sign.signature(message: messageBytes, secretKey: userEdKeyPair.secretKey) else {
-            return nil
+        // Otherwise sign using the fallback type
+        switch signingType {
+            case .unblinded:
+                guard let signatureResult: Bytes = dependencies.sign.signature(message: messageBytes, secretKey: userEdKeyPair.secretKey) else {
+                    return nil
+                }
+                
+                return (
+                    publicKey: SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString,
+                    signature: signatureResult
+                )
+                
+            // Default to using the 'standard' key
+            default:
+                guard let userKeyPair: ECKeyPair = dependencies.storage.getUserKeyPair() else { return nil }
+                guard let signatureResult: Bytes = try? dependencies.ed25519.sign(data: messageBytes, keyPair: userKeyPair) else {
+                    return nil
+                }
+                
+                return (
+                    publicKey: SessionId(.standard, publicKey: userKeyPair.publicKey.bytes).hexString,
+                    signature: signatureResult
+                )
         }
-        
-        return (
-            publicKey: SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString,
-            signature: signatureResult
-        )
     }
     
     /// Sign a request to be sent to SOGS (handles both un-blinded and blinded signing based on the server capabilities)
@@ -954,7 +954,7 @@ public enum OpenGroupAPI {
             .appending(bodyHash ?? [])
         
         /// Sign the above message
-        guard let signResult: (publicKey: String, signature: Bytes) = sign(messageBytes, for: serverName, using: dependencies) else {
+        guard let signResult: (publicKey: String, signature: Bytes) = sign(messageBytes, for: serverName, fallbackSigningType: .unblinded, using: dependencies) else {
             return nil
         }
         
@@ -981,23 +981,15 @@ public enum OpenGroupAPI {
             return Promise(error: error)
         }
         
-        if request.useOnionRouting {
-            guard let publicKey = dependencies.storage.getOpenGroupPublicKey(for: request.server) else {
-                return Promise(error: Error.noPublicKey)
-            }
-            
-            if request.isAuthRequired {
-                // Attempt to sign the request with the new auth
-                guard let signedRequest: URLRequest = sign(urlRequest, for: request.server, with: publicKey, using: dependencies) else {
-                    return Promise(error: Error.signingFailed)
-                }
-                
-                return dependencies.api.sendOnionRequest(signedRequest, to: request.server, with: publicKey)
-            }
-            
-            return dependencies.api.sendOnionRequest(urlRequest, to: request.server, with: publicKey)
+        guard let publicKey = dependencies.storage.getOpenGroupPublicKey(for: request.server) else {
+            return Promise(error: Error.noPublicKey)
         }
         
-        preconditionFailure("It's currently not allowed to send non onion routed requests.")
+        // Attempt to sign the request with the new auth
+        guard let signedRequest: URLRequest = sign(urlRequest, for: request.server, with: publicKey, using: dependencies) else {
+            return Promise(error: Error.signingFailed)
+        }
+        
+        return dependencies.onionApi.sendOnionRequest(signedRequest, to: request.server, with: publicKey)
     }
 }

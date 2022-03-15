@@ -8,10 +8,10 @@ import SessionUtilitiesKit
 // MARK: - Dependencies
 
 public class Dependencies {
-    private var _api: OnionRequestAPIType.Type?
-    public var api: OnionRequestAPIType.Type {
-        get { getValueSettingIfNull(&_api) { OnionRequestAPI.self } }
-        set { _api = newValue }
+    private var _onionApi: OnionRequestAPIType.Type?
+    public var onionApi: OnionRequestAPIType.Type {
+        get { getValueSettingIfNull(&_onionApi) { OnionRequestAPI.self } }
+        set { _onionApi = newValue }
     }
     
     private var _storage: SessionMessagingKitStorageProtocol?
@@ -77,7 +77,7 @@ public class Dependencies {
     // MARK: - Initialization
     
     public init(
-        api: OnionRequestAPIType.Type? = nil,
+        onionApi: OnionRequestAPIType.Type? = nil,
         storage: SessionMessagingKitStorageProtocol? = nil,
         sodium: SodiumType? = nil,
         aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
@@ -89,7 +89,7 @@ public class Dependencies {
         standardUserDefaults: UserDefaultsType? = nil,
         date: Date? = nil
     ) {
-        _api = api
+        _onionApi = onionApi
         _storage = storage
         _sodium = sodium
         _aeadXChaCha20Poly1305Ietf = aeadXChaCha20Poly1305Ietf
@@ -105,7 +105,7 @@ public class Dependencies {
     // MARK: - Convenience
     
     public func with(
-        api: OnionRequestAPIType.Type? = nil,
+        onionApi: OnionRequestAPIType.Type? = nil,
         storage: SessionMessagingKitStorageProtocol? = nil,
         sodium: SodiumType? = nil,
         aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
@@ -118,7 +118,7 @@ public class Dependencies {
         date: Date? = nil
     ) -> Dependencies {
         return Dependencies(
-            api: (api ?? self._api),
+            onionApi: (onionApi ?? self._onionApi),
             storage: (storage ?? self._storage),
             sodium: (sodium ?? self._sodium),
             aeadXChaCha20Poly1305Ietf: (aeadXChaCha20Poly1305Ietf ?? self._aeadXChaCha20Poly1305Ietf),

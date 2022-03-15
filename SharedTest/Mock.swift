@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import SessionUtilitiesKit
 
 // MARK: - Mocked
 
@@ -22,10 +23,14 @@ public class Mock<T> {
     private let functionHandler: MockFunctionHandler
     internal let functionConsumer: FunctionConsumer
     
+    // MARK: - Initialization
+    
     internal required init(functionHandler: MockFunctionHandler? = nil) {
         self.functionConsumer = FunctionConsumer()
         self.functionHandler = (functionHandler ?? self.functionConsumer)
     }
+    
+    // MARK: - MockFunctionHandler
     
     @discardableResult internal func accept(funcName: String = #function, args: [Any?] = []) -> Any? {
         return accept(funcName: funcName, checkArgs: args, actionArgs: args)
@@ -35,12 +40,27 @@ public class Mock<T> {
         return functionHandler.accept(funcName, parameterSummary: summary(for: checkArgs), actionArgs: actionArgs)
     }
     
+    // MARK: - Functions
+    
+    internal func reset() {
+        functionConsumer.trackCalls = true
+        functionConsumer.functionBuilders = []
+        functionConsumer.functionHandlers = [:]
+        functionConsumer.calls.mutate { $0 = [:] }
+    }
+    
+    internal func resetCallCounts() {
+        functionConsumer.calls.mutate { $0 = [:] }
+    }
+    
     internal func when<R>(_ callBlock: @escaping (T) throws -> R) -> MockFunctionBuilder<T, R> {
         let builder: MockFunctionBuilder<T, R> = MockFunctionBuilder(callBlock, mockInit: type(of: self).init)
         functionConsumer.functionBuilders.append(builder.build)
         
         return builder
     }
+    
+    // MARK: - Convenience
     
     private func summary(for argument: Any) -> String {
         switch argument {
@@ -134,7 +154,7 @@ internal class FunctionConsumer: MockFunctionHandler {
     var trackCalls: Bool = true
     var functionBuilders: [() throws -> MockFunction?] = []
     var functionHandlers: [String: [String: MockFunction]] = [:]
-    var calls: [String: [String]] = [:]
+    var calls: Atomic<[String: [String]]> = Atomic([:])
     
     func accept(_ functionName: String, parameterSummary: String, actionArgs: [Any?]) -> Any? {
         if !functionBuilders.isEmpty {
@@ -154,7 +174,7 @@ internal class FunctionConsumer: MockFunctionHandler {
         
         // Record the call so it can be validated later (assuming we are tracking calls)
         if trackCalls {
-            calls[functionName] = (calls[functionName] ?? []).appending(parameterSummary)
+            calls.mutate { $0[functionName] = ($0[functionName] ?? []).appending(parameterSummary) }
         }
         
         for action in expectation.actions {

@@ -18,15 +18,15 @@ extension OpenGroupAPI {
         public init(for server: String) {
             self.server = server
         }
-
-        @objc public func startIfNeeded() {
+        
+        public func startIfNeeded(using dependencies: Dependencies = Dependencies()) {
             guard !hasStarted else { return }
             
             hasStarted = true
             timer = Timer.scheduledTimerOnMainThread(withTimeInterval: Poller.pollInterval, repeats: true) { _ in
-                self.poll().retainUntilComplete()
+                self.poll(using: dependencies).retainUntilComplete()
             }
-            poll().retainUntilComplete()
+            poll(using: dependencies).retainUntilComplete()
         }
 
         @objc public func stop() {
@@ -37,12 +37,12 @@ extension OpenGroupAPI {
         // MARK: - Polling
         
         @discardableResult
-        public func poll() -> Promise<Void> {
-            return poll(isBackgroundPoll: false)
+        public func poll(using dependencies: Dependencies = Dependencies()) -> Promise<Void> {
+            return poll(isBackgroundPoll: false, using: dependencies)
         }
 
         @discardableResult
-        public func poll(isBackgroundPoll: Bool) -> Promise<Void> {
+        public func poll(isBackgroundPoll: Bool, using dependencies: Dependencies = Dependencies()) -> Promise<Void> {
             guard !self.isPolling else { return Promise.value(()) }
             
             self.isPolling = true
@@ -57,12 +57,13 @@ extension OpenGroupAPI {
                         hasPerformedInitialPoll: OpenGroupManager.shared.cache.hasPerformedInitialPoll[server] == true,
                         timeSinceLastPoll: (
                             OpenGroupManager.shared.cache.timeSinceLastPoll[server] ??
-                            OpenGroupManager.shared.cache.getTimeSinceLastOpen()
-                        )
+                            OpenGroupManager.shared.cache.getTimeSinceLastOpen(using: dependencies)
+                        ),
+                        using: dependencies
                     )
                     .done(on: OpenGroupAPI.workQueue) { [weak self] response in
                         self?.isPolling = false
-                        self?.handlePollResponse(response, isBackgroundPoll: isBackgroundPoll)
+                        self?.handlePollResponse(response, isBackgroundPoll: isBackgroundPoll, using: dependencies)
                         
                         OpenGroupManager.shared.mutableCache.mutate { cache in
                             cache.hasPerformedInitialPoll[server] = true
@@ -81,10 +82,10 @@ extension OpenGroupAPI {
             return promise
         }
         
-        private func handlePollResponse(_ response: [OpenGroupAPI.Endpoint: (info: OnionRequestResponseInfoType, data: Codable?)], isBackgroundPoll: Bool) {
+        private func handlePollResponse(_ response: [OpenGroupAPI.Endpoint: (info: OnionRequestResponseInfoType, data: Codable?)], isBackgroundPoll: Bool, using dependencies: Dependencies = Dependencies()) {
             let server: String = self.server
             
-            Storage.shared.write { anyTransaction in
+            dependencies.storage.write { anyTransaction in
                 guard let transaction: YapDatabaseReadWriteTransaction = anyTransaction as? YapDatabaseReadWriteTransaction else {
                     SNLog("Open group polling failed due to invalid database transaction.")
                     return
@@ -101,21 +102,30 @@ extension OpenGroupAPI {
                             OpenGroupManager.handleCapabilities(
                                 responseBody,
                                 on: server,
-                                using: transaction
+                                using: transaction,
+                                dependencies: dependencies
                             )
                             
                         case .roomMessagesRecent(let roomToken), .roomMessagesBefore(let roomToken, _), .roomMessagesSince(let roomToken, _):
-                            guard let responseData: BatchSubResponse<[Message]> = endpointResponse.data as? BatchSubResponse<[Message]>, let responseBody: [Message] = responseData.body else {
+                            guard let responseData: BatchSubResponse<[Failable<Message>]> = endpointResponse.data as? BatchSubResponse<[Failable<Message>]>, let responseBody: [Failable<Message>] = responseData.body else {
                                 SNLog("Open group polling failed due to invalid data.")
                                 return
                             }
+                            let successfulMessages: [Message] = responseBody.compactMap { $0.value }
+                            
+                            if successfulMessages.count != responseBody.count {
+                                let droppedCount: Int = (responseBody.count - successfulMessages.count)
+                                
+                                SNLog("Dropped \(droppedCount) invalid open group message\(droppedCount == 1 ? "" : "s").")
+                            }
                             
                             OpenGroupManager.handleMessages(
-                                responseBody,
+                                successfulMessages,
                                 for: roomToken,
                                 on: server,
                                 isBackgroundPoll: isBackgroundPoll,
-                                using: transaction
+                                using: transaction,
+                                dependencies: dependencies
                             )
                             
                         case .roomPollInfo(let roomToken, _):
@@ -129,7 +139,8 @@ extension OpenGroupAPI {
                                 publicKey: nil,
                                 for: roomToken,
                                 on: server,
-                                using: transaction
+                                using: transaction,
+                                dependencies: dependencies
                             )
                             
                         case .inbox, .inboxSince, .outbox, .outboxSince:
@@ -150,7 +161,8 @@ extension OpenGroupAPI {
                                 fromOutbox: fromOutbox,
                                 on: server,
                                 isBackgroundPoll: isBackgroundPoll,
-                                using: transaction
+                                using: transaction,
+                                dependencies: dependencies
                             )
                             
                         default: break // No custom handling needed
@@ -158,5 +170,12 @@ extension OpenGroupAPI {
                 }
             }
         }
+    }
+}
+
+extension OpenGroupAPI.Poller {
+    @objc(startIfNeeded)
+    public func objc_startIfNeeded() {
+        startIfNeeded()
     }
 }

@@ -34,6 +34,8 @@ class SOGSEndpointSpec: QuickSpec {
                 expect(OpenGroupAPI.Endpoint.roomMessagesBefore("test", id: 123).path).to(equal("room/test/messages/before/123"))
                 expect(OpenGroupAPI.Endpoint.roomMessagesSince("test", seqNo: 123).path)
                     .to(equal("room/test/messages/since/123"))
+                expect(OpenGroupAPI.Endpoint.roomDeleteMessages("test", sessionId: "testId").path)
+                    .to(equal("room/test/all/testId"))
                 
                 // Pinning
                 
@@ -60,7 +62,6 @@ class SOGSEndpointSpec: QuickSpec {
                 expect(OpenGroupAPI.Endpoint.userBan("test").path).to(equal("user/test/ban"))
                 expect(OpenGroupAPI.Endpoint.userUnban("test").path).to(equal("user/test/unban"))
                 expect(OpenGroupAPI.Endpoint.userModerator("test").path).to(equal("user/test/moderator"))
-                expect(OpenGroupAPI.Endpoint.userDeleteMessages("test").path).to(equal("user/test/deleteMessages"))
             }
         }
     }

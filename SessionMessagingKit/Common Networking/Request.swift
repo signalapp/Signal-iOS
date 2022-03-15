@@ -25,10 +25,6 @@ struct Request<T: Encodable, Endpoint: EndpointType> {
     /// **Warning:** The `bodyData` value should be used to when making the actual request instead of this as there
     /// is custom handling for certain data types
     let body: T?
-    let isAuthRequired: Bool
-    /// Always `true` under normal circumstances. You might want to disable
-    /// this when running over Lokinet.
-    let useOnionRouting: Bool
     
     // MARK: - Initialization
 
@@ -38,9 +34,7 @@ struct Request<T: Encodable, Endpoint: EndpointType> {
         endpoint: Endpoint,
         queryParameters: [QueryParam: String] = [:],
         headers: [Header: String] = [:],
-        body: T? = nil,
-        isAuthRequired: Bool = true,
-        useOnionRouting: Bool = true
+        body: T? = nil
     ) {
         self.method = method
         self.server = server
@@ -48,8 +42,6 @@ struct Request<T: Encodable, Endpoint: EndpointType> {
         self.queryParameters = queryParameters
         self.headers = headers
         self.body = body
-        self.isAuthRequired = isAuthRequired
-        self.useOnionRouting = useOnionRouting
     }
     
     // MARK: - Internal Methods

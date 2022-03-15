@@ -28,6 +28,7 @@ public protocol AeadXChaCha20Poly1305IetfType {
 }
 
 public protocol Ed25519Type {
+    func sign(data: Bytes, keyPair: ECKeyPair) throws -> Bytes?
     func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool
 }
 
@@ -82,6 +83,10 @@ extension Sign: SignType {}
 extension GenericHash: GenericHashType {}
 
 struct Ed25519Wrapper: Ed25519Type {
+    func sign(data: Bytes, keyPair: ECKeyPair) throws -> Bytes? {
+        return try Ed25519.sign(Data(data), with: keyPair).bytes
+    }
+    
     func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool {
         return try Ed25519.verifySignature(signature, publicKey: publicKey, data: data)
     }

@@ -391,7 +391,8 @@ public final class MessageSender : NSObject {
                 on: server,
                 whisperTo: whisperTo,
                 whisperMods: whisperMods,
-                fileIds: fileIds
+                fileIds: fileIds,
+                using: dependencies
             )
             .done(on: DispatchQueue.global(qos: .userInitiated)) { responseInfo, data in
                 message.openGroupServerMessageID = UInt64(data.id)

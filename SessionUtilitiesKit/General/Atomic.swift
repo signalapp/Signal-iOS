@@ -27,13 +27,13 @@ public class Atomic<Value> {
     
     // MARK: - Initialization
 
-    init(_ initialValue: Value) {
+    public init(_ initialValue: Value) {
         self.value = initialValue
     }
     
     // MARK: - Functions
     
-    func mutate(_ mutation: (inout Value) -> Void) {
+    public func mutate(_ mutation: (inout Value) -> Void) {
         return queue.sync {
             mutation(&value)
         }

@@ -24,6 +24,7 @@ extension OpenGroupAPI {
         case roomMessagesRecent(String)
         case roomMessagesBefore(String, id: UInt64)
         case roomMessagesSince(String, seqNo: Int64)
+        case roomDeleteMessages(String, sessionId: String)
         
         // Pinning
         
@@ -50,7 +51,6 @@ extension OpenGroupAPI {
         case userBan(String)
         case userUnban(String)
         case userModerator(String)
-        case userDeleteMessages(String)
         
         var path: String {
             switch self {
@@ -84,6 +84,9 @@ extension OpenGroupAPI {
                 case .roomMessagesSince(let roomToken, let seqNo):
                     return "room/\(roomToken)/messages/since/\(seqNo)"
                     
+                case .roomDeleteMessages(let roomToken, let sessionId):
+                    return "room/\(roomToken)/all/\(sessionId)"
+                    
                 // Pinning
                     
                 case .roomPinMessage(let roomToken, let messageId):
@@ -114,7 +117,6 @@ extension OpenGroupAPI {
                 case .userBan(let sessionId): return "user/\(sessionId)/ban"
                 case .userUnban(let sessionId): return "user/\(sessionId)/unban"
                 case .userModerator(let sessionId): return "user/\(sessionId)/moderator"
-                case .userDeleteMessages(let sessionId): return "user/\(sessionId)/deleteMessages"
             }
         }
     }
