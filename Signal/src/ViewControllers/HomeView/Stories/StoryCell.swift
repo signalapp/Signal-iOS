@@ -80,8 +80,21 @@ class StoryCell: UITableViewCell {
                 owsFailDebug("Unexpected attachment type \(type(of: attachment))")
             }
         case .text(let attachment):
-            // TODO: Render text attachments
-            break
+            let textView = TextAttachmentView(attachment: attachment)
+            // We render the textView at a large 3:2 size (matching the aspect of
+            // the thumbnail container), so the fonts and gradients all render properly
+            // for the preview. We then scale it down to render a "thumbnail" view.
+            let textViewRenderSize = CGSize(width: 375, height: 562.5)
+            textView.frame = CGRect(origin: .zero, size: textViewRenderSize)
+
+            let layerView = OWSLayerView(frame: .zero) { view in
+                textView.transform = .scale(view.width / textViewRenderSize.width)
+                textView.center = view.center
+            }
+            layerView.addSubview(textView)
+
+            attachmentThumbnail.addSubview(layerView)
+            layerView.autoPinEdgesToSuperviewEdges()
         case .missing:
             // TODO: error state
             break

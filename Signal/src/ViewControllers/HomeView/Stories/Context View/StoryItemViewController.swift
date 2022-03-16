@@ -32,7 +32,17 @@ class StoryItemViewController: OWSViewController {
         timestampLabel.text = DateUtil.formatTimestampShort(item.message.timestamp)
     }
 
-    func startAttachmentDownloadIfNecessary() -> Bool {
+    func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
+        if startAttachmentDownloadIfNecessary() { return true }
+
+        if let textAttachmentView = mediaView as? TextAttachmentView {
+            return textAttachmentView.willHandleTapGesture(gesture)
+        }
+
+        return false
+    }
+
+    private func startAttachmentDownloadIfNecessary() -> Bool {
         guard case .pointer(let pointer) = item.attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
         attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: item.message.uniqueId,
@@ -108,20 +118,7 @@ class StoryItemViewController: OWSViewController {
         return constraints
     }()
 
-    private lazy var topGradientView: UIView = {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor.black.withAlphaComponent(0.5).cgColor,
-            UIColor.black.withAlphaComponent(0).cgColor
-        ]
-        let view = OWSLayerView(frame: .zero) { view in
-            gradientLayer.frame = view.bounds
-        }
-        view.layer.addSublayer(gradientLayer)
-        return view
-    }()
-
-    private lazy var bottomGradientView: UIView = {
+    private lazy var gradientProtectionView: UIView = {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
             UIColor.black.withAlphaComponent(0).cgColor,
@@ -149,15 +146,10 @@ class StoryItemViewController: OWSViewController {
             mediaViewContainer.autoPinEdge(toSuperviewEdge: .bottom)
         }
 
-        mediaViewContainer.addSubview(topGradientView)
-        topGradientView.autoPinWidthToSuperview()
-        topGradientView.autoPinEdge(toSuperviewEdge: .top)
-        topGradientView.autoMatch(.height, to: .height, of: mediaViewContainer, withMultiplier: 0.4)
-
-        mediaViewContainer.addSubview(bottomGradientView)
-        bottomGradientView.autoPinWidthToSuperview()
-        bottomGradientView.autoPinEdge(toSuperviewEdge: .bottom)
-        bottomGradientView.autoMatch(.height, to: .height, of: mediaViewContainer, withMultiplier: 0.4)
+        mediaViewContainer.addSubview(gradientProtectionView)
+        gradientProtectionView.autoPinWidthToSuperview()
+        gradientProtectionView.autoPinEdge(toSuperviewEdge: .bottom)
+        gradientProtectionView.autoMatch(.height, to: .height, of: mediaViewContainer, withMultiplier: 0.4)
 
         createAuthorRow()
 
@@ -297,7 +289,7 @@ class StoryItemViewController: OWSViewController {
         return label
     }
 
-    private var mediaView: UIView?
+    private weak var mediaView: UIView?
     private func updateMediaView() {
         mediaView?.removeFromSuperview()
 
@@ -358,8 +350,7 @@ class StoryItemViewController: OWSViewController {
 
             return container
         case .text(let text):
-            // TODO:
-            return UIView()
+            return TextAttachmentView(attachment: text)
         }
     }
 

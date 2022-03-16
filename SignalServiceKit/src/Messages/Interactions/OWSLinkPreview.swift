@@ -745,7 +745,7 @@ fileprivate extension HTMLMetadata {
 // MARK: - To be moved
 // Everything after this line should find a new home at some point
 
-fileprivate extension OWSLinkPreviewManager {
+public extension OWSLinkPreviewManager {
     @objc
     class func displayDomain(forUrl urlString: String?) -> String? {
         guard let urlString = urlString else {

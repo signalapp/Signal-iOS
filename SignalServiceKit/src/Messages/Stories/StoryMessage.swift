@@ -243,9 +243,9 @@ public struct TextAttachment: Codable {
         case color(UIColor)
         case gradient(Gradient)
         public struct Gradient {
-            let startColor: UIColor
-            let endColor: UIColor
-            let angle: UInt32
+            public let startColor: UIColor
+            public let endColor: UIColor
+            public let angle: UInt32
         }
     }
     public var background: Background {
@@ -286,13 +286,13 @@ public struct TextAttachment: Codable {
             self.textStyle = .condensed
         }
 
-        if proto.hasTextForegroundColor {
+        if proto.textForegroundColor != 0 {
             textForegroundColorHex = proto.textForegroundColor
         } else {
             textForegroundColorHex = nil
         }
 
-        if proto.hasTextBackgroundColor {
+        if proto.textBackgroundColor != 0 {
             textBackgroundColorHex = proto.textBackgroundColor
         } else {
             textBackgroundColorHex = nil
@@ -304,7 +304,7 @@ public struct TextAttachment: Codable {
                 endColorHex: gradient.endColor,
                 angle: gradient.angle
             ))
-        } else if proto.hasColor {
+        } else if proto.color != 0 {
             rawBackground = .color(hex: proto.color)
         } else {
             throw OWSAssertionError("Missing background for attachment.")

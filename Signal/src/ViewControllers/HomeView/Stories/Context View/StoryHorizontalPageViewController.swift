@@ -132,6 +132,7 @@ class StoryHorizontalPageViewController: OWSViewController {
         let closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white) { [weak self] in
             self?.dismiss(animated: true)
         }
+        closeButton.setShadow()
         closeButton.imageEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 16)
         view.addSubview(closeButton)
         closeButton.autoSetDimensions(to: CGSize(square: 56))
@@ -327,13 +328,13 @@ class StoryHorizontalPageViewController: OWSViewController {
 extension StoryHorizontalPageViewController: UIGestureRecognizerDelegate {
     @objc
     func didTapLeft() {
-        guard currentItemViewController?.startAttachmentDownloadIfNecessary() != true else { return }
+        guard currentItemViewController?.willHandleTapGesture(leftTapGestureRecognizer) != true else { return }
         CurrentAppContext().isRTL ? transitionToPreviousItem() : transitionToNextItem()
     }
 
     @objc
     func didTapRight() {
-        guard currentItemViewController?.startAttachmentDownloadIfNecessary() != true else { return }
+        guard currentItemViewController?.willHandleTapGesture(rightTapGestureRecognizer) != true else { return }
         CurrentAppContext().isRTL ? transitionToNextItem() : transitionToPreviousItem()
     }
 
