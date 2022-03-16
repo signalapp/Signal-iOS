@@ -12,6 +12,7 @@ final class LinkPreviewView : UIView {
         let isOutgoing = (viewItem!.interaction.interactionType() == .outgoingMessage)
         switch (isOutgoing, AppModeManager.shared.currentAppMode) {
         case (true, .dark), (false, .light): return .black
+        case (true, .light): return Colors.grey
         default: return .white
         }
     }()
@@ -133,15 +134,7 @@ final class LinkPreviewView : UIView {
         loader.alpha = (image != nil) ? 0 : 1
         if image != nil { loader.stopAnimating() } else { loader.startAnimating() }
         // Title
-        let isSent = (linkPreviewState is LinkPreviewSent)
-        let isOutgoing = (viewItem?.interaction.interactionType() == .outgoingMessage)
-        let textColor: UIColor
-        if isSent && isOutgoing && isLightMode {
-            textColor = .white
-        } else {
-            textColor = isDarkMode ? .white : .black
-        }
-        titleLabel.textColor = textColor
+        titleLabel.textColor = sentLinkPreviewTextColor
         titleLabel.text = linkPreviewState.title()
         // Horizontal stack view
         switch linkPreviewState {
