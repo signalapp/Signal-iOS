@@ -894,12 +894,12 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           parameters:@{ @"type" : @"recaptcha", @"token" : serverToken, @"captcha" : captchaToken }];
 }
 
-+ (TSRequest *)reportSpamFromPhoneNumber:(NSString *)phoneNumber withServerGuid:(NSString *)serverGuid
++ (TSRequest *)reportSpamFromUuid:(NSUUID *)senderUuid withServerGuid:(NSString *)serverGuid
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(senderUuid != nil);
     OWSAssertDebug(serverGuid.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"/v1/messages/report/%@/%@", phoneNumber, serverGuid];
+    NSString *path = [NSString stringWithFormat:@"/v1/messages/report/%@/%@", senderUuid.UUIDString, serverGuid];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"POST" parameters:@{}];
 }
 
