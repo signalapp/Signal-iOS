@@ -781,6 +781,7 @@
 		FD078E4F27E175F1000769AF /* DependencyExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E4E27E175F1000769AF /* DependencyExtensions.swift */; };
 		FD078E5227E1760A000769AF /* OGMDependencyExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E5127E1760A000769AF /* OGMDependencyExtensions.swift */; };
 		FD078E5427E197CA000769AF /* OpenGroupManagerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC2909D27D85751005DAE71 /* OpenGroupManagerSpec.swift */; };
+		FD078E5827E1B831000769AF /* TestIncomingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E5727E1B831000769AF /* TestIncomingMessage.swift */; };
 		FD0BA51B27CD88EC00CC6805 /* BlindedIdMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */; };
 		FD0BA51D27CDC34600CC6805 /* SOGSV4Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */; };
 		FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */; };
@@ -1926,6 +1927,7 @@
 		FD078E4C27E17156000769AF /* MockOGMCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockOGMCache.swift; sourceTree = "<group>"; };
 		FD078E4E27E175F1000769AF /* DependencyExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyExtensions.swift; sourceTree = "<group>"; };
 		FD078E5127E1760A000769AF /* OGMDependencyExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OGMDependencyExtensions.swift; sourceTree = "<group>"; };
+		FD078E5727E1B831000769AF /* TestIncomingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestIncomingMessage.swift; sourceTree = "<group>"; };
 		FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindedIdMapping.swift; sourceTree = "<group>"; };
 		FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSV4Migration.swift; sourceTree = "<group>"; };
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
@@ -4060,6 +4062,7 @@
 				FDC2909F27D85826005DAE71 /* TestThread.swift */,
 				FDC290B627E00FDB005DAE71 /* TestGroupThread.swift */,
 				FDC290A127D85890005DAE71 /* TestInteraction.swift */,
+				FD078E5727E1B831000769AF /* TestIncomingMessage.swift */,
 				FDC290AB27DB0B1C005DAE71 /* MockedExtensions.swift */,
 				FD078E4E27E175F1000769AF /* DependencyExtensions.swift */,
 				FD078E5127E1760A000769AF /* OGMDependencyExtensions.swift */,
@@ -5657,6 +5660,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FDC290AC27DB0B1C005DAE71 /* MockedExtensions.swift in Sources */,
+				FD078E5827E1B831000769AF /* TestIncomingMessage.swift in Sources */,
 				FD859EFA27C2F5C500510D0C /* MockGenericHash.swift in Sources */,
 				FDC2909427D710B4005DAE71 /* SOGSEndpointSpec.swift in Sources */,
 				FDC290AF27DFEE97005DAE71 /* TestTransaction.swift in Sources */,

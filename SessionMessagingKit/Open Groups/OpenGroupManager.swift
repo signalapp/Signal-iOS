@@ -321,6 +321,7 @@ public final class OpenGroupManager: NSObject {
         // Sorting the messages by server ID before importing them fixes an issue where messages
         // that quote older messages can't find those older messages
         let openGroupID = "\(server).\(roomToken)"
+        let openGroupIdData: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroupID)
         let sortedMessages: [OpenGroupAPI.Message] = messages
             .sorted { lhs, rhs in lhs.id < rhs.id }
         let seqNo: Int64? = sortedMessages.map { $0.seqNo }.max()
@@ -333,11 +334,12 @@ public final class OpenGroupManager: NSObject {
         
         // Process the messages
         sortedMessages.forEach { message in
-            guard let base64EncodedString: String = message.base64EncodedData, let data = Data(base64Encoded: base64EncodedString), let sender: String = message.sender else {
+            guard let base64EncodedString: String = message.base64EncodedData, let data = Data(base64Encoded: base64EncodedString) else {
                 // A message with no data has been deleted so add it to the list to remove
                 messageServerIDsToRemove.append(UInt64(message.id))
                 return
             }
+            guard let sender: String = message.sender else { return }   // Need a sender in order to process the message
             
             // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
             let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
@@ -356,7 +358,7 @@ public final class OpenGroupManager: NSObject {
 
         // Handle any deletions that are needed
         guard !messageServerIDsToRemove.isEmpty else { return }
-        guard let thread = TSGroupThread.fetch(groupId: openGroupID, transaction: transaction) else { return }
+        guard let thread = TSGroupThread.fetch(groupId: openGroupIdData, transaction: transaction) else { return }
         
         var messagesToRemove: [TSMessage] = []
         

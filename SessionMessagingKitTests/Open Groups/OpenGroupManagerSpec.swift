@@ -79,10 +79,12 @@ class OpenGroupManagerSpec: QuickSpec {
         var dependencies: OpenGroupManager.OGMDependencies!
         
         var testInteraction: TestInteraction!
+        var testIncomingMessage: TestIncomingMessage!
         var testGroupThread: TestGroupThread!
         var testTransaction: TestTransaction!
         var testOpenGroup: OpenGroup!
         var testPollInfo: OpenGroupAPI.RoomPollInfo!
+        var testMessage: OpenGroupAPI.Message!
         
         var cache: OpenGroupManager.Cache!
         var openGroupManager: OpenGroupManager!
@@ -116,6 +118,9 @@ class OpenGroupManagerSpec: QuickSpec {
                 testInteraction.mockData[.uniqueId] = "TestInteractionId"
                 testInteraction.mockData[.timestamp] = UInt64(123)
                 
+                testIncomingMessage = TestIncomingMessage(uniqueId: "TestMessageId")
+                testIncomingMessage.openGroupServerMessageID = 127
+                
                 testGroupThread = TestGroupThread()
                 testGroupThread.mockData[.uniqueId] = "TestGroupId"
                 testGroupThread.mockData[.groupModel] = TSGroupModel(
@@ -127,7 +132,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     adminIds: [],
                     moderatorIds: []
                 )
-                testGroupThread.mockData[.interactions] = [testInteraction]
+                testGroupThread.mockData[.interactions] = [testInteraction, testIncomingMessage]
                 
                 testTransaction = TestTransaction()
                 testTransaction.mockData[.objectForKey] = testGroupThread
@@ -156,6 +161,30 @@ class OpenGroupManagerSpec: QuickSpec {
                     upload: false,
                     defaultUpload: nil,
                     details: TestCapabilitiesAndRoomApi.roomData
+                )
+                testMessage = OpenGroupAPI.Message(
+                    id: 127,
+                    sender: "05\(TestConstants.publicKey)",
+                    posted: 123,
+                    edited: nil,
+                    seqNo: 124,
+                    whisper: false,
+                    whisperMods: false,
+                    whisperTo: nil,
+                    base64EncodedData: [
+                        "Cg0KC1Rlc3RNZXNzYWdlg",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AAAAAAAAAAAAAAAAAAAAA",
+                        "AA"
+                    ].joined(),
+                    base64EncodedSignature: nil
                 )
                 
                 mockStorage
@@ -407,6 +436,8 @@ class OpenGroupManagerSpec: QuickSpec {
             
             // MARK: - Adding & Removing
             
+            // MARK: - --add
+            
             context("when adding") {
                 beforeEach {
                     mockStorage.when { $0.removeOpenGroupSequenceNumber(for: any(), on: any(), using: anyAny()) }.thenReturn(())
@@ -428,6 +459,8 @@ class OpenGroupManagerSpec: QuickSpec {
                 }
                 
                 it("resets the sequence number of the open group") {
+                    var didComplete: Bool = false   // Prevent multi-threading test bugs
+                    
                     openGroupManager
                         .add(
                             roomToken: "testRoom",
@@ -437,21 +470,25 @@ class OpenGroupManagerSpec: QuickSpec {
                             using: testTransaction,
                             dependencies: dependencies
                         )
+                        .map { _ -> Void in didComplete = true }
                         .retainUntilComplete()
                     
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                     expect(mockStorage)
                         .to(
                             call(.exactly(times: 1)) {
                                 $0.removeOpenGroupSequenceNumber(
                                     for: "testRoom",
                                     on: "testServer",
-                                    using: testTransaction as Any
+                                    using: testTransaction! as Any
                                 )
                             }
                         )
                 }
                 
                 it("sets the public key of the open group server") {
+                    var didComplete: Bool = false   // Prevent multi-threading test bugs
+                    
                     openGroupManager
                         .add(
                             roomToken: "testRoom",
@@ -461,21 +498,25 @@ class OpenGroupManagerSpec: QuickSpec {
                             using: testTransaction,
                             dependencies: dependencies
                         )
+                        .map { _ -> Void in didComplete = true }
                         .retainUntilComplete()
                     
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                     expect(mockStorage)
                         .to(
                             call(.exactly(times: 1)) {
                                 $0.setOpenGroupPublicKey(
                                     for: "testRoom",
                                     to: "testKey",
-                                    using: testTransaction as Any
+                                    using: testTransaction! as Any
                                 )
                             }
                         )
                 }
                 
                 it("adds a poller") {
+                    var didComplete: Bool = false   // Prevent multi-threading test bugs
+                    
                     openGroupManager
                         .add(
                             roomToken: "testRoom",
@@ -485,8 +526,10 @@ class OpenGroupManagerSpec: QuickSpec {
                             using: testTransaction,
                             dependencies: dependencies
                         )
+                        .map { _ -> Void in didComplete = true }
                         .retainUntilComplete()
                     
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                     expect(mockOGMCache)
                         .toEventually(
                             call(matchingParameters: true) {
@@ -502,6 +545,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("does not reset the sequence number or update the public key") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         openGroupManager
                             .add(
                                 roomToken: "testRoom",
@@ -511,15 +556,17 @@ class OpenGroupManagerSpec: QuickSpec {
                                 using: testTransaction,
                                 dependencies: dependencies
                             )
+                            .map { _ -> Void in didComplete = true }
                             .retainUntilComplete()
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockStorage)
                             .toEventuallyNot(
                                 call {
                                     $0.removeOpenGroupSequenceNumber(
                                         for: "testRoom",
                                         on: "testServer",
-                                        using: testTransaction as Any
+                                        using: testTransaction! as Any
                                     )
                                 },
                                 timeout: .milliseconds(100)
@@ -530,7 +577,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     $0.setOpenGroupPublicKey(
                                         for: "testRoom",
                                         to: "testKey",
-                                        using: testTransaction as Any
+                                        using: testTransaction! as Any
                                     )
                                 },
                                 timeout: .milliseconds(100)
@@ -574,8 +621,12 @@ class OpenGroupManagerSpec: QuickSpec {
                 }
             }
             
-            context("when removing") {
+            // MARK: - --delete
+            
+            context("when deleting") {
                 beforeEach {
+                    testGroupThread.mockData[.interactions] = [testInteraction]
+                    
                     mockStorage
                         .when { $0.updateMessageIDCollectionByPruningMessagesWithIDs(anySet(), using: anyAny()) }
                         .thenReturn(())
@@ -838,6 +889,8 @@ class OpenGroupManagerSpec: QuickSpec {
                 }
                 
                 it("attempts to retrieve the existing thread") {
+                    var didComplete: Bool = false   // Prevent multi-threading test bugs
+                    
                     OpenGroupManager.handlePollInfo(
                         testPollInfo,
                         publicKey: TestConstants.publicKey,
@@ -845,13 +898,15 @@ class OpenGroupManagerSpec: QuickSpec {
                         on: "testServer",
                         using: testTransaction,
                         dependencies: dependencies
-                    )
+                    ) { didComplete = true }
                     
-                    // The 'testGroupThread' should be the one retrieved
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                     expect(testGroupThread.numSaveCalls).to(equal(1))
                 }
                 
                 it("attempts to retrieve the existing open group") {
+                    var didComplete: Bool = false   // Prevent multi-threading test bugs
+                    
                     OpenGroupManager.handlePollInfo(
                         testPollInfo,
                         publicKey: TestConstants.publicKey,
@@ -859,12 +914,15 @@ class OpenGroupManagerSpec: QuickSpec {
                         on: "testServer",
                         using: testTransaction,
                         dependencies: dependencies
-                    )
+                    ) { didComplete = true }
                     
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                     expect(mockStorage).to(call { $0.getOpenGroup(for: any()) })
                 }
                 
                 it("saves the thread") {
+                    var didComplete: Bool = false   // Prevent multi-threading test bugs
+                    
                     OpenGroupManager.handlePollInfo(
                         testPollInfo,
                         publicKey: TestConstants.publicKey,
@@ -872,12 +930,15 @@ class OpenGroupManagerSpec: QuickSpec {
                         on: "testServer",
                         using: testTransaction,
                         dependencies: dependencies
-                    )
+                    ) { didComplete = true }
                     
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                     expect(testGroupThread.numSaveCalls).to(equal(1))
                 }
                 
                 it("saves the open group") {
+                    var didComplete: Bool = false   // Prevent multi-threading test bugs
+                    
                     OpenGroupManager.handlePollInfo(
                         testPollInfo,
                         publicKey: TestConstants.publicKey,
@@ -885,12 +946,15 @@ class OpenGroupManagerSpec: QuickSpec {
                         on: "testServer",
                         using: testTransaction,
                         dependencies: dependencies
-                    )
+                    ) { didComplete = true }
                     
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                     expect(mockStorage).to(call { $0.setOpenGroup(any(), for: any(), using: anyAny()) })
                 }
                 
                 it("saves the updated user count") {
+                    var didComplete: Bool = false   // Prevent multi-threading test bugs
+                    
                     OpenGroupManager.handlePollInfo(
                         testPollInfo,
                         publicKey: TestConstants.publicKey,
@@ -898,8 +962,9 @@ class OpenGroupManagerSpec: QuickSpec {
                         on: "testServer",
                         using: testTransaction,
                         dependencies: dependencies
-                    )
+                    ) { didComplete = true }
                     
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                     expect(mockStorage)
                         .to(call(matchingParameters: true) {
                             $0.setUserCount(to: 10, forOpenGroupWithID: "testServer.testRoom", using: testTransaction! as Any)
@@ -929,6 +994,8 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 context("and updating the moderator list") {
                     it("successfully updates") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockOGMCache.when { $0.moderators }.thenReturn([:])
                         testPollInfo = OpenGroupAPI.RoomPollInfo(
                             token: "testRoom",
@@ -954,8 +1021,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockOGMCache)
                             .toEventually(
                                 call(matchingParameters: true) {
@@ -966,6 +1034,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("defaults to an empty array if no moderators are provided") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockOGMCache.when { $0.moderators }.thenReturn([:])
                         testPollInfo = OpenGroupAPI.RoomPollInfo(
                             token: "testRoom",
@@ -991,8 +1061,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockOGMCache)
                             .toEventually(
                                 call(matchingParameters: true) {
@@ -1005,6 +1076,8 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 context("and updating the admin list") {
                     it("successfully updates") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockOGMCache.when { $0.admins }.thenReturn([:])
                         testPollInfo = OpenGroupAPI.RoomPollInfo(
                             token: "testRoom",
@@ -1030,8 +1103,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockOGMCache)
                             .toEventually(
                                 call(matchingParameters: true) {
@@ -1042,6 +1116,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("defaults to an empty array if no moderators are provided") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockOGMCache.when { $0.admins }.thenReturn([:])
                         testPollInfo = OpenGroupAPI.RoomPollInfo(
                             token: "testRoom",
@@ -1067,8 +1143,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockOGMCache)
                             .toEventually(
                                 call(matchingParameters: true) {
@@ -1098,6 +1175,8 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 context("when not given a public key") {
                     it("saves the open group with the existing public key") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         OpenGroupManager.handlePollInfo(
                             testPollInfo,
                             publicKey: nil,
@@ -1105,8 +1184,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1145,6 +1225,8 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 context("when storing the open group") {
                     it("defaults the infoUpdates to zero") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockStorage.when { $0.getOpenGroup(for: any()) }.thenReturn(nil)
                         testPollInfo = OpenGroupAPI.RoomPollInfo(
                             token: "testRoom",
@@ -1170,8 +1252,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1193,6 +1276,8 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 context("when checking to start polling") {
                     it("starts a new poller when not already polling") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockOGMCache.when { $0.pollers }.thenReturn([:])
                         
                         OpenGroupManager.handlePollInfo(
@@ -1202,8 +1287,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockOGMCache)
                             .to(call(matchingParameters: true) {
                                 $0.pollers = ["testServer": OpenGroupAPI.Poller(for: "testServer")]
@@ -1211,6 +1297,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("does not start a new poller when already polling") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockOGMCache.when { $0.pollers }.thenReturn(["testServer": OpenGroupAPI.Poller(for: "testServer")])
                         
                         OpenGroupManager.handlePollInfo(
@@ -1220,8 +1308,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockOGMCache).to(call(.exactly(times: 1)) { $0.pollers })
                     }
                 }
@@ -1237,6 +1326,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("uses the provided room image id if available") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         testPollInfo = OpenGroupAPI.RoomPollInfo(
                             token: "testRoom",
                             activeUsers: 10,
@@ -1287,8 +1378,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1318,6 +1410,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("uses the existing room image id if none is provided") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockStorage
                             .when { $0.getOpenGroup(for: any()) }
                             .thenReturn(
@@ -1355,8 +1449,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1386,6 +1481,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("uses the new room image id if there is an existing one") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         testGroupThread.mockData[.groupModel] = TSGroupModel(
                             title: "TestTitle",
                             memberIds: [],
@@ -1458,8 +1555,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1489,6 +1587,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("does nothing if there is no room image") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         OpenGroupManager.handlePollInfo(
                             testPollInfo,
                             publicKey: TestConstants.publicKey,
@@ -1496,8 +1596,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventually(
                                 beNil(),
@@ -1511,6 +1612,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("does nothing if it fails to retrieve the room image") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         mockOGMCache.when { $0.groupImagePromises }
                             .thenReturn(["testServer.testRoom": Promise(error: HTTP.Error.generic)])
                         
@@ -1564,8 +1667,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventually(
                                 beNil(),
@@ -1579,6 +1683,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("saves the retrieved room image") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
                         testPollInfo = OpenGroupAPI.RoomPollInfo(
                             token: "testRoom",
                             activeUsers: 10,
@@ -1629,8 +1735,9 @@ class OpenGroupManagerSpec: QuickSpec {
                             on: "testServer",
                             using: testTransaction,
                             dependencies: dependencies
-                        )
+                        ) { didComplete = true }
                         
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventuallyNot(
                                 beNil(),
@@ -1649,6 +1756,11 @@ class OpenGroupManagerSpec: QuickSpec {
             
             context("when handling messages") {
                 beforeEach {
+                    testTransaction.mockData[.objectForKey] = [
+                        "TestGroupId": testGroupThread,
+                        "TestMessageId": testIncomingMessage
+                    ]
+                    
                     mockStorage
                         .when {
                             $0.setOpenGroupSequenceNumber(
@@ -1659,6 +1771,33 @@ class OpenGroupManagerSpec: QuickSpec {
                             )
                         }
                         .thenReturn(())
+                    mockStorage.when { $0.getUserPublicKey() }.thenReturn("05\(TestConstants.publicKey)")
+                    mockStorage.when { $0.getReceivedMessageTimestamps(using: testTransaction as Any) }.thenReturn([])
+                    mockStorage.when { $0.addReceivedMessageTimestamp(any(), using: testTransaction as Any) }.thenReturn(())
+                    mockStorage.when { $0.persist(anyArray(), using: testTransaction as Any) }.thenReturn([])
+                    mockStorage
+                        .when {
+                            $0.getOrCreateThread(
+                                for: any(),
+                                groupPublicKey: any(),
+                                openGroupID: any(),
+                                using: testTransaction as Any
+                            )
+                        }
+                        .thenReturn("TestGroupId")
+                    mockStorage
+                        .when {
+                            $0.persist(
+                                any(),
+                                quotedMessage: nil,
+                                linkPreview: nil,
+                                groupPublicKey: any(),
+                                openGroupID: any(),
+                                using: testTransaction as Any
+                            )
+                        }
+                        .thenReturn("TestMessageId")
+                    mockStorage.when { $0.getContact(with: any()) }.thenReturn(nil)
                 }
                 
                 it("updates the sequence number when there are messages") {
@@ -1690,7 +1829,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                 for: "testRoom",
                                 on: "testServer",
                                 to: 124,
-                                using: testTransaction as Any
+                                using: testTransaction! as Any
                             )
                         })
                 }
@@ -1710,6 +1849,208 @@ class OpenGroupManagerSpec: QuickSpec {
                             $0.setOpenGroupSequenceNumber(for: any(), on: any(), to: any(), using: testTransaction as Any)
                         })
                 }
+                
+                it("ignores a message with no sender") {
+                    OpenGroupManager.handleMessages(
+                        [
+                            OpenGroupAPI.Message(
+                                id: 1,
+                                sender: nil,
+                                posted: 123,
+                                edited: nil,
+                                seqNo: 124,
+                                whisper: false,
+                                whisperMods: false,
+                                whisperTo: nil,
+                                base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
+                                base64EncodedSignature: nil
+                            )
+                        ],
+                        for: "testRoom",
+                        on: "testServer",
+                        isBackgroundPoll: false,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    )
+                    
+                    expect(testIncomingMessage.didCallSave).toEventuallyNot(beTrue(), timeout: .milliseconds(50))
+                    expect(testIncomingMessage.didCallRemove).toEventuallyNot(beTrue(), timeout: .milliseconds(50))
+                }
+                
+                it("ignores a message with invalid data") {
+                    OpenGroupManager.handleMessages(
+                        [
+                            OpenGroupAPI.Message(
+                                id: 1,
+                                sender: "05\(TestConstants.publicKey)",
+                                posted: 123,
+                                edited: nil,
+                                seqNo: 124,
+                                whisper: false,
+                                whisperMods: false,
+                                whisperTo: nil,
+                                base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
+                                base64EncodedSignature: nil
+                            )
+                        ],
+                        for: "testRoom",
+                        on: "testServer",
+                        isBackgroundPoll: false,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    )
+                    
+                    expect(testIncomingMessage.didCallSave).toEventuallyNot(beTrue(), timeout: .milliseconds(50))
+                    expect(testIncomingMessage.didCallRemove).toEventuallyNot(beTrue(), timeout: .milliseconds(50))
+                }
+                
+                it("processes a message with valid data") {
+                    OpenGroupManager.handleMessages(
+                        [testMessage],
+                        for: "testRoom",
+                        on: "testServer",
+                        isBackgroundPoll: false,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    )
+                    
+                    expect(testIncomingMessage.didCallSave)
+                        .toEventually(
+                            beTrue(),
+                            timeout: .milliseconds(100)
+                        )
+                }
+                
+                it("processes valid messages when combined with invalid ones") {
+                    OpenGroupManager.handleMessages(
+                        [
+                            OpenGroupAPI.Message(
+                                id: 2,
+                                sender: "05\(TestConstants.publicKey)",
+                                posted: 122,
+                                edited: nil,
+                                seqNo: 123,
+                                whisper: false,
+                                whisperMods: false,
+                                whisperTo: nil,
+                                base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
+                                base64EncodedSignature: nil
+                            ),
+                            testMessage,
+                        ],
+                        for: "testRoom",
+                        on: "testServer",
+                        isBackgroundPoll: false,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    )
+                    
+                    expect(testIncomingMessage.didCallSave)
+                        .toEventually(
+                            beTrue(),
+                            timeout: .milliseconds(100)
+                        )
+                }
+                
+                context("with no data") {
+                    it("deletes the message if we have the message") {
+                        testTransaction.mockData[.objectForKey] = testGroupThread
+                        
+                        OpenGroupManager.handleMessages(
+                            [
+                                OpenGroupAPI.Message(
+                                    id: 127,
+                                    sender: "05\(TestConstants.publicKey)",
+                                    posted: 123,
+                                    edited: nil,
+                                    seqNo: 123,
+                                    whisper: false,
+                                    whisperMods: false,
+                                    whisperTo: nil,
+                                    base64EncodedData: nil,
+                                    base64EncodedSignature: nil
+                                )
+                            ],
+                            for: "testRoom",
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(testIncomingMessage.didCallRemove)
+                            .toEventually(
+                                beTrue(),
+                                timeout: .milliseconds(100)
+                            )
+                    }
+                    
+                    it("does nothing if we do not have the thread") {
+                        testTransaction.mockData[.objectForKey] = nil
+                        
+                        OpenGroupManager.handleMessages(
+                            [
+                                OpenGroupAPI.Message(
+                                    id: 1,
+                                    sender: "05\(TestConstants.publicKey)",
+                                    posted: 123,
+                                    edited: nil,
+                                    seqNo: 123,
+                                    whisper: false,
+                                    whisperMods: false,
+                                    whisperTo: nil,
+                                    base64EncodedData: nil,
+                                    base64EncodedSignature: nil
+                                )
+                            ],
+                            for: "testRoom",
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(testIncomingMessage.didCallRemove)
+                            .toEventuallyNot(
+                                beTrue(),
+                                timeout: .milliseconds(100)
+                            )
+                    }
+                    
+                    it("does nothing if we do not have the message") {
+                        testGroupThread.mockData[.interactions] = [testInteraction]
+                        testTransaction.mockData[.objectForKey] = testGroupThread
+                        
+                        OpenGroupManager.handleMessages(
+                            [
+                                OpenGroupAPI.Message(
+                                    id: 127,
+                                    sender: "05\(TestConstants.publicKey)",
+                                    posted: 123,
+                                    edited: nil,
+                                    seqNo: 123,
+                                    whisper: false,
+                                    whisperMods: false,
+                                    whisperTo: nil,
+                                    base64EncodedData: nil,
+                                    base64EncodedSignature: nil
+                                )
+                            ],
+                            for: "testRoom",
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(testIncomingMessage.didCallRemove)
+                            .toEventuallyNot(
+                                beTrue(),
+                                timeout: .milliseconds(100)
+                            )
+                    }
+                }
+            }
             }
         }
     }

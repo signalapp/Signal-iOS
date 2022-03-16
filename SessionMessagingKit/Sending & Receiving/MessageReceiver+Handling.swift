@@ -411,12 +411,17 @@ extension MessageReceiver {
         }
         
         // Notify the user if needed
-        guard let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
-            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
+        guard
+            let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
+            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction)
+        else {
+            return tsMessageID
+        }
+        
         // Use the same identifier for notifications when in backgroud polling to prevent spam
         let notificationIdentifier = isBackgroundPoll ? thread.uniqueId : UUID().uuidString
         tsIncomingMessage.setNotificationIdentifier(notificationIdentifier, transaction: transaction)
-        SSKEnvironment.shared.notificationsManager!.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
+        SSKEnvironment.shared.notificationsManager?.notifyUser(for: tsIncomingMessage, in: thread, transaction: transaction)
         return tsMessageID
     }
     

@@ -18,6 +18,10 @@ final class TestTransaction: YapDatabaseReadWriteTransaction, Mockable {
     // MARK: - YapDatabaseReadWriteTransaction
     
     override func object(forKey key: String, inCollection collection: String?) -> Any? {
+        if let dictionary: [String: Any] = mockData[.objectForKey] as? [String: Any] {
+            return dictionary[key]
+        }
+        
         return mockData[.objectForKey]
     }
     

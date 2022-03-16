@@ -21,3 +21,7 @@ extension OpenGroupAPI.Server: Mocked {
         capabilities: OpenGroupAPI.Capabilities(capabilities: anyArray(), missing: anyArray())
     )
 }
+
+extension VisibleMessage: Mocked {
+    static var mockValue: VisibleMessage = VisibleMessage()
+}
