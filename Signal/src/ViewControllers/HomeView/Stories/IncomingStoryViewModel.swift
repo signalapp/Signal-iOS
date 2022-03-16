@@ -23,7 +23,7 @@ struct IncomingStoryViewModel: Dependencies {
     let latestMessageAvatarDataSource: ConversationAvatarDataSource
 
     init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) throws {
-        let sortedFilteredMessages = messages.lazy.filter { $0.direction == .incoming }.sorted { $0.timestamp > $1.timestamp }
+        let sortedFilteredMessages = messages.lazy.filter { $0.direction == .incoming }.sorted { $0.timestamp < $1.timestamp }
         self.messages = sortedFilteredMessages
         self.hasUnviewedMessages = sortedFilteredMessages.contains { message in
             switch message.manifest {
@@ -35,7 +35,7 @@ struct IncomingStoryViewModel: Dependencies {
             }
         }
 
-        guard let latestMessage = sortedFilteredMessages.first else {
+        guard let latestMessage = sortedFilteredMessages.last else {
             throw OWSAssertionError("At least one message is required.")
         }
 

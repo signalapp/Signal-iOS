@@ -7,11 +7,34 @@ import SignalCoreKit
 import YYImage
 import UIKit
 import SignalUI
+import SafariServices
 
-class StoryItemViewController: OWSViewController {
+class StoryItemMediaView: UIView {
     let item: StoryItem
     init(item: StoryItem) {
         self.item = item
+
+        super.init(frame: .zero)
+
+        autoPin(toAspectRatio: 9/16)
+
+        updateMediaView()
+
+        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            layer.cornerRadius = 18
+            clipsToBounds = true
+        }
+
+        addSubview(gradientProtectionView)
+        gradientProtectionView.autoPinWidthToSuperview()
+        gradientProtectionView.autoPinEdge(toSuperviewEdge: .bottom)
+        gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.4)
+
+        createAuthorRow()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     func reset() {
@@ -76,48 +99,6 @@ class StoryItemViewController: OWSViewController {
         return CMTimeGetSeconds(currentTime)
     }
 
-    private lazy var iPadLandscapeConstraints = [
-        mediaViewContainer.autoMatch(
-            .height,
-            to: .height,
-            of: view,
-            withMultiplier: 0.75,
-            relation: .lessThanOrEqual
-        )
-    ]
-    private lazy var iPadPortraitConstraints = [
-        mediaViewContainer.autoMatch(
-            .height,
-            to: .height,
-            of: view,
-            withMultiplier: 0.65,
-            relation: .lessThanOrEqual
-        )
-    ]
-
-    private let mediaViewContainer = UIView()
-
-    private lazy var iPhoneConstraints = [
-        mediaViewContainer.autoPinEdge(toSuperviewEdge: .top),
-        mediaViewContainer.autoPinEdge(toSuperviewEdge: .leading),
-        mediaViewContainer.autoPinEdge(toSuperviewEdge: .trailing)
-    ]
-
-    private lazy var iPadConstraints: [NSLayoutConstraint] = {
-        var constraints = mediaViewContainer.autoCenterInSuperview()
-
-        // Prefer to be as big as possible.
-        let heightConstraint = mediaViewContainer.autoMatch(.height, to: .height, of: view)
-        heightConstraint.priority = .defaultHigh
-        constraints.append(heightConstraint)
-
-        let widthConstraint = mediaViewContainer.autoMatch(.width, to: .width, of: view)
-        widthConstraint.priority = .defaultHigh
-        constraints.append(widthConstraint)
-
-        return constraints
-    }()
-
     private lazy var gradientProtectionView: UIView = {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
@@ -130,58 +111,6 @@ class StoryItemViewController: OWSViewController {
         view.layer.addSublayer(gradientLayer)
         return view
     }()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        mediaViewContainer.autoPin(toAspectRatio: 9/16)
-        view.addSubview(mediaViewContainer)
-
-        updateMediaView()
-
-        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-            mediaViewContainer.layer.cornerRadius = 18
-            mediaViewContainer.clipsToBounds = true
-        } else {
-            mediaViewContainer.autoPinEdge(toSuperviewEdge: .bottom)
-        }
-
-        mediaViewContainer.addSubview(gradientProtectionView)
-        gradientProtectionView.autoPinWidthToSuperview()
-        gradientProtectionView.autoPinEdge(toSuperviewEdge: .bottom)
-        gradientProtectionView.autoMatch(.height, to: .height, of: mediaViewContainer, withMultiplier: 0.4)
-
-        createAuthorRow()
-
-        applyConstraints()
-    }
-
-    private func applyConstraints(newSize: CGSize = CurrentAppContext().frame.size) {
-        NSLayoutConstraint.deactivate(iPhoneConstraints)
-        NSLayoutConstraint.deactivate(iPadConstraints)
-        NSLayoutConstraint.deactivate(iPadPortraitConstraints)
-        NSLayoutConstraint.deactivate(iPadLandscapeConstraints)
-
-        if UIDevice.current.isIPad {
-            NSLayoutConstraint.activate(iPadConstraints)
-            if newSize.width > newSize.height {
-                NSLayoutConstraint.activate(iPadLandscapeConstraints)
-            } else {
-                NSLayoutConstraint.activate(iPadPortraitConstraints)
-            }
-        } else {
-            NSLayoutConstraint.activate(iPhoneConstraints)
-        }
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate { _ in
-            self.applyConstraints(newSize: size)
-        } completion: { _ in
-            self.applyConstraints()
-        }
-    }
 
     private lazy var timestampLabel = UILabel()
     private func createAuthorRow() {
@@ -205,7 +134,7 @@ class StoryItemViewController: OWSViewController {
         timestampLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
         updateTimestampText()
 
-        mediaViewContainer.addSubview(stackView)
+        addSubview(stackView)
         stackView.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
         stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
     }
@@ -295,7 +224,7 @@ class StoryItemViewController: OWSViewController {
 
         let mediaView = buildMediaView()
         self.mediaView = mediaView
-        mediaViewContainer.insertSubview(mediaView, at: 0)
+        insertSubview(mediaView, at: 0)
         mediaView.autoPinEdgesToSuperviewEdges()
     }
 

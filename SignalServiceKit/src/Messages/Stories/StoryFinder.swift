@@ -12,6 +12,7 @@ public class StoryFinder: NSObject {
             SELECT COUNT(*) OVER ()
             FROM \(StoryMessage.databaseTableName)
             WHERE json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.viewedTimestamp') is NULL
+            AND \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
             GROUP BY (
                 CASE
                     WHEN \(StoryMessage.columnName(.groupId)) is NULL THEN \(StoryMessage.columnName(.authorUuid))
@@ -33,7 +34,7 @@ public class StoryFinder: NSObject {
             SELECT *
             FROM \(StoryMessage.databaseTableName)
             WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
-            ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
+            ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
         """
 
         do {
@@ -50,7 +51,7 @@ public class StoryFinder: NSObject {
             FROM \(StoryMessage.databaseTableName)
             WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
             AND \(StoryMessage.columnName(.id)) IN (\(rowIds.lazy.map { "\($0)" }.joined(separator: ",")))
-            ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
+            ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
         """
 
         do {
@@ -93,7 +94,7 @@ public class StoryFinder: NSObject {
             SELECT *
             FROM \(StoryMessage.databaseTableName)
             WHERE \(contextQuery)
-            ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
+            ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
         """
 
         do {

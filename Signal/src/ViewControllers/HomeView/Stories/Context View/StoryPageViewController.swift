@@ -13,10 +13,10 @@ protocol StoryPageViewControllerDataSource: AnyObject {
 class StoryPageViewController: UIPageViewController {
     var currentContext: StoryContext {
         set {
-            setViewControllers([StoryHorizontalPageViewController(context: newValue, delegate: self)], direction: .forward, animated: false)
+            setViewControllers([StoryContextViewController(context: newValue, delegate: self)], direction: .forward, animated: false)
         }
         get {
-            (viewControllers!.first as! StoryHorizontalPageViewController).context
+            (viewControllers!.first as! StoryContextViewController).context
         }
     }
     weak var contextDataSource: StoryPageViewControllerDataSource?
@@ -57,7 +57,7 @@ extension StoryPageViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         pendingViewControllers
             .lazy
-            .map { $0 as! StoryHorizontalPageViewController }
+            .map { $0 as! StoryContextViewController }
             .forEach { $0.resetForPresentation() }
     }
 }
@@ -68,7 +68,7 @@ extension StoryPageViewController: UIPageViewControllerDataSource {
             return nil
         }
 
-        return StoryHorizontalPageViewController(context: contextBefore, delegate: self)
+        return StoryContextViewController(context: contextBefore, delegate: self)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
@@ -76,30 +76,30 @@ extension StoryPageViewController: UIPageViewControllerDataSource {
             return nil
         }
 
-        return StoryHorizontalPageViewController(context: contextAfter, delegate: self)
+        return StoryContextViewController(context: contextAfter, delegate: self)
     }
 }
 
-extension StoryPageViewController: StoryHorizontalPageViewControllerDelegate {
-    func storyHorizontalPageViewControllerWantsTransitionToNextContext(_ storyHorizontalPageViewController: StoryHorizontalPageViewController) {
+extension StoryPageViewController: StoryContextViewControllerDelegate {
+    func storyContextViewControllerWantsTransitionToNextContext(_ storyContextViewController: StoryContextViewController) {
         guard let nextContext = contextDataSource?.storyPageViewController(self, storyContextAfter: currentContext) else {
                   dismiss(animated: true)
                   return
               }
         setViewControllers(
-            [StoryHorizontalPageViewController(context: nextContext, delegate: self)],
+            [StoryContextViewController(context: nextContext, delegate: self)],
             direction: .forward,
             animated: true
         )
     }
 
-    func storyHorizontalPageViewControllerWantsTransitionToPreviousContext(_ storyHorizontalPageViewController: StoryHorizontalPageViewController) {
+    func storyContextViewControllerWantsTransitionToPreviousContext(_ storyContextViewController: StoryContextViewController) {
         guard let previousContext = contextDataSource?.storyPageViewController(self, storyContextBefore: currentContext) else {
-            storyHorizontalPageViewController.resetForPresentation()
+            storyContextViewController.resetForPresentation()
                   return
               }
         setViewControllers(
-            [StoryHorizontalPageViewController(context: previousContext, delegate: self)],
+            [StoryContextViewController(context: previousContext, delegate: self)],
             direction: .reverse,
             animated: true
         )

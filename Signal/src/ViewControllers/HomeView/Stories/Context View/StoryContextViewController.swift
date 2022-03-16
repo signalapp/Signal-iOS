@@ -7,42 +7,36 @@ import SignalServiceKit
 import UIKit
 import SignalUI
 
-protocol StoryHorizontalPageViewControllerDelegate: AnyObject {
-    func storyHorizontalPageViewControllerWantsTransitionToNextContext(_ storyHorizontalPageViewController: StoryHorizontalPageViewController)
-    func storyHorizontalPageViewControllerWantsTransitionToPreviousContext(_ storyHorizontalPageViewController: StoryHorizontalPageViewController)
+protocol StoryContextViewControllerDelegate: AnyObject {
+    func storyContextViewControllerWantsTransitionToNextContext(_ storyContextViewController: StoryContextViewController)
+    func storyContextViewControllerWantsTransitionToPreviousContext(_ storyContextViewController: StoryContextViewController)
 }
 
-class StoryHorizontalPageViewController: OWSViewController {
+class StoryContextViewController: OWSViewController {
     let context: StoryContext
 
-    weak var delegate: StoryHorizontalPageViewControllerDelegate?
+    weak var delegate: StoryContextViewControllerDelegate?
 
-    private lazy var pageViewController = UIPageViewController(
-        transitionStyle: .scroll,
-        navigationOrientation: .horizontal,
-        options: nil
-    )
     private lazy var playbackProgressView = StoryPlaybackProgressView()
 
     private var items = [StoryItem]()
     var currentItem: StoryItem? {
-        set {
-            let viewControllers: [StoryItemViewController]
-            if let newValue = newValue {
-                viewControllers = [StoryItemViewController(item: newValue)]
-            } else {
-                viewControllers = []
+        didSet {
+            currentItemMediaView?.removeFromSuperview()
+
+            if let currentItem = currentItem {
+                let itemView = StoryItemMediaView(item: currentItem)
+                self.currentItemMediaView = itemView
+                mediaViewContainer.addSubview(itemView)
+                itemView.autoPinEdgesToSuperviewEdges()
             }
-            pageViewController.setViewControllers(viewControllers, direction: .forward, animated: false)
+
             updateProgressState()
         }
-        get { currentItemViewController?.item }
     }
-    var currentItemViewController: StoryItemViewController? {
-        pageViewController.viewControllers?.first as? StoryItemViewController
-    }
+    var currentItemMediaView: StoryItemMediaView?
 
-    required init(context: StoryContext, delegate: StoryHorizontalPageViewControllerDelegate) {
+    required init(context: StoryContext, delegate: StoryContextViewControllerDelegate) {
         self.context = context
         super.init()
         self.delegate = delegate
@@ -54,32 +48,36 @@ class StoryHorizontalPageViewController: OWSViewController {
     }
 
     func resetForPresentation() {
-        // If we've loaded already, reset to the first item
-        if let firstItem = items.first {
-            currentItem = firstItem
-        }
+        // Start on the first unviewed story. If there are no
+        // unviewed stories, start on the newest story.
+        currentItem = items.first { item in
+            guard case .incoming(_, let viewedTimestamp) = item.message.manifest else { return false }
+            return viewedTimestamp == nil
+        } ?? items.last
     }
 
     @objc
     func transitionToNextItem() {
-        guard let currentVC = currentItemViewController,
-              let nextVC = pageViewController(pageViewController, viewControllerAfter: currentVC) else {
-                  delegate?.storyHorizontalPageViewControllerWantsTransitionToNextContext(self)
+        guard let currentItem = currentItem,
+              let currentItemIndex = items.firstIndex(of: currentItem),
+              let itemAfter = items[safe: currentItemIndex.advanced(by: 1)] else {
+                  delegate?.storyContextViewControllerWantsTransitionToNextContext(self)
                   return
               }
-        pageViewController.setViewControllers([nextVC], direction: .forward, animated: true)
-        updateProgressState()
+
+        self.currentItem = itemAfter
     }
 
     @objc
     func transitionToPreviousItem() {
-        guard let currentVC = currentItemViewController,
-              let previousVC = pageViewController(pageViewController, viewControllerBefore: currentVC) else {
-                  delegate?.storyHorizontalPageViewControllerWantsTransitionToPreviousContext(self)
+        guard let currentItem = currentItem,
+              let currentItemIndex = items.firstIndex(of: currentItem),
+              let itemBefore = items[safe: currentItemIndex.advanced(by: -1)] else {
+                  delegate?.storyContextViewControllerWantsTransitionToPreviousContext(self)
                   return
               }
-        pageViewController.setViewControllers([previousVC], direction: .reverse, animated: true)
-        updateProgressState()
+
+        self.currentItem = itemBefore
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -92,6 +90,7 @@ class StoryHorizontalPageViewController: OWSViewController {
     private lazy var rightTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapRight))
     private lazy var pauseGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
 
+    private lazy var mediaViewContainer = UIView()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -107,19 +106,13 @@ class StoryHorizontalPageViewController: OWSViewController {
         leftTapGestureRecognizer.require(toFail: pauseGestureRecognizer)
         rightTapGestureRecognizer.require(toFail: pauseGestureRecognizer)
 
-        pageViewController.view.alpha = 0
-        pageViewController.dataSource = self
-        pageViewController.delegate = self
-        pageViewController.view.isUserInteractionEnabled = false
-        addChild(pageViewController)
-        view.addSubview(pageViewController.view)
-        pageViewController.view.autoPinEdgesToSuperviewSafeArea()
+        view.addSubview(mediaViewContainer)
 
-        view.addLayoutGuide(mediaLayoutGuide)
-        mediaLayoutGuide.widthAnchor.constraint(equalTo: mediaLayoutGuide.heightAnchor, multiplier: 9/16).isActive = true
-
-        if !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad {
-            mediaLayoutGuide.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            mediaViewContainer.layer.cornerRadius = 18
+            mediaViewContainer.clipsToBounds = true
+        } else {
+            mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .bottom)
         }
 
         applyConstraints()
@@ -136,33 +129,32 @@ class StoryHorizontalPageViewController: OWSViewController {
         closeButton.imageEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 16)
         view.addSubview(closeButton)
         closeButton.autoSetDimensions(to: CGSize(square: 56))
-        closeButton.autoPinEdge(.top, to: .top, of: pageViewController.view)
-        closeButton.autoPinEdge(.leading, to: .leading, of: pageViewController.view)
+        closeButton.autoPinEdge(.top, to: .top, of: mediaViewContainer)
+        closeButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
 
         view.addSubview(playbackProgressView)
-        playbackProgressView.leadingAnchor.constraint(equalTo: mediaLayoutGuide.leadingAnchor, constant: OWSTableViewController2.defaultHOuterMargin).isActive = true
-        playbackProgressView.trailingAnchor.constraint(equalTo: mediaLayoutGuide.trailingAnchor, constant: -OWSTableViewController2.defaultHOuterMargin).isActive = true
-        playbackProgressView.bottomAnchor.constraint(equalTo: mediaLayoutGuide.bottomAnchor, constant: -OWSTableViewController2.defaultHOuterMargin).isActive = true
+        playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
+        playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
+        playbackProgressView.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
         playbackProgressView.autoSetDimension(.height, toSize: 2)
         playbackProgressView.isUserInteractionEnabled = false
 
         loadStoryItems { [weak self] storyItems in
             // If there are no stories for this context, dismiss.
-            guard let firstStoryItem = storyItems.first else {
+            guard !storyItems.isEmpty else {
                 self?.dismiss(animated: true)
                 return
             }
 
-            UIView.animate(withDuration: 0.2) { [weak self] in
+            UIView.animate(withDuration: 0.2) {
                 spinner.alpha = 0
-                self?.pageViewController.view.alpha = 1
             } completion: { _ in
                 spinner.stopAnimating()
                 spinner.removeFromSuperview()
             }
 
             self?.items = storyItems
-            self?.currentItem = firstStoryItem
+            self?.resetForPresentation()
         }
     }
 
@@ -223,21 +215,21 @@ class StoryHorizontalPageViewController: OWSViewController {
     func displayLinkStep(_ displayLink: CADisplayLink) {
         AssertIsOnMainThread()
         playbackProgressView.numberOfItems = items.count
-        if let currentItemVC = currentItemViewController, let idx = items.firstIndex(of: currentItemVC.item) {
+        if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
             // When we present a story, mark it as viewed if it's not already.
-            if !currentItemVC.isDownloading, case .incoming(_, let viewedTimestamp) = currentItemVC.item.message.manifest, viewedTimestamp == nil {
+            if !currentItemView.isDownloading, case .incoming(_, let viewedTimestamp) = currentItemView.item.message.manifest, viewedTimestamp == nil {
                 databaseStorage.write { transaction in
-                    currentItemVC.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
+                    currentItemView.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
             }
 
-            currentItemVC.updateTimestampText()
-            if currentItemVC.isDownloading {
+            currentItemView.updateTimestampText()
+            if currentItemView.isDownloading {
                 lastTransitionTime = CACurrentMediaTime()
                 playbackProgressView.itemState = .init(index: idx, value: 0)
             } else if let lastTransitionTime = lastTransitionTime {
                 let currentTime: CFTimeInterval
-                if let elapsedTime = currentItemVC.elapsedTime {
+                if let elapsedTime = currentItemView.elapsedTime {
                     currentTime = lastTransitionTime + elapsedTime
                 } else {
                     currentTime = displayLink.targetTimestamp
@@ -245,7 +237,7 @@ class StoryHorizontalPageViewController: OWSViewController {
 
                 let value = currentTime.inverseLerp(
                     lastTransitionTime,
-                    (lastTransitionTime + currentItemVC.duration),
+                    (lastTransitionTime + currentItemView.duration),
                     shouldClamp: true
                 )
                 playbackProgressView.itemState = .init(index: idx, value: value)
@@ -264,38 +256,45 @@ class StoryHorizontalPageViewController: OWSViewController {
         }
     }
 
-    private lazy var iPadLandscapeConstraints = [
-        mediaLayoutGuide.heightAnchor.constraint(lessThanOrEqualTo: pageViewController.view.heightAnchor, multiplier: 0.75)
-    ]
-    private lazy var iPadPortraitConstraints = [
-        mediaLayoutGuide.heightAnchor.constraint(lessThanOrEqualTo: pageViewController.view.heightAnchor, multiplier: 0.65)
-    ]
-
-    private let mediaLayoutGuide = UILayoutGuide()
-
     private lazy var iPhoneConstraints = [
-        mediaLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-        mediaLayoutGuide.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-        mediaLayoutGuide.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .top),
+        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .leading),
+        mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .trailing)
     ]
 
     private lazy var iPadConstraints: [NSLayoutConstraint] = {
-        var constraints = [
-            mediaLayoutGuide.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            mediaLayoutGuide.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ]
+        var constraints = mediaViewContainer.autoCenterInSuperview()
 
         // Prefer to be as big as possible.
-        let heightConstraint = mediaLayoutGuide.heightAnchor.constraint(equalTo: pageViewController.view.heightAnchor)
+        let heightConstraint = mediaViewContainer.autoMatch(.height, to: .height, of: view)
         heightConstraint.priority = .defaultHigh
         constraints.append(heightConstraint)
 
-        let widthConstraint = mediaLayoutGuide.widthAnchor.constraint(equalTo: pageViewController.view.widthAnchor)
+        let widthConstraint = mediaViewContainer.autoMatch(.width, to: .width, of: view)
         widthConstraint.priority = .defaultHigh
         constraints.append(widthConstraint)
 
         return constraints
     }()
+
+    private lazy var iPadLandscapeConstraints = [
+        mediaViewContainer.autoMatch(
+            .height,
+            to: .height,
+            of: view,
+            withMultiplier: 0.75,
+            relation: .lessThanOrEqual
+        )
+    ]
+    private lazy var iPadPortraitConstraints = [
+        mediaViewContainer.autoMatch(
+            .height,
+            to: .height,
+            of: view,
+            withMultiplier: 0.65,
+            relation: .lessThanOrEqual
+        )
+    ]
 
     private func applyConstraints(newSize: CGSize = CurrentAppContext().frame.size) {
         NSLayoutConstraint.deactivate(iPhoneConstraints)
@@ -325,17 +324,17 @@ class StoryHorizontalPageViewController: OWSViewController {
     }
 }
 
-extension StoryHorizontalPageViewController: UIGestureRecognizerDelegate {
+extension StoryContextViewController: UIGestureRecognizerDelegate {
     @objc
     func didTapLeft() {
-        guard currentItemViewController?.willHandleTapGesture(leftTapGestureRecognizer) != true else { return }
-        CurrentAppContext().isRTL ? transitionToPreviousItem() : transitionToNextItem()
+        guard currentItemMediaView?.willHandleTapGesture(leftTapGestureRecognizer) != true else { return }
+        CurrentAppContext().isRTL ? transitionToNextItem() : transitionToPreviousItem()
     }
 
     @objc
     func didTapRight() {
-        guard currentItemViewController?.willHandleTapGesture(rightTapGestureRecognizer) != true else { return }
-        CurrentAppContext().isRTL ? transitionToNextItem() : transitionToPreviousItem()
+        guard currentItemMediaView?.willHandleTapGesture(rightTapGestureRecognizer) != true else { return }
+        CurrentAppContext().isRTL ? transitionToPreviousItem() : transitionToNextItem()
     }
 
     @objc
@@ -344,14 +343,14 @@ extension StoryHorizontalPageViewController: UIGestureRecognizerDelegate {
         case .began:
             pauseTime = CACurrentMediaTime()
             displayLink?.isPaused = true
-            currentItemViewController?.pause()
+            currentItemMediaView?.pause()
         case .ended:
             if let lastTransitionTime = lastTransitionTime, let pauseTime = pauseTime {
                 let pauseDuration = CACurrentMediaTime() - pauseTime
                 self.lastTransitionTime = lastTransitionTime + pauseDuration
                 self.pauseTime = nil
             }
-            currentItemViewController?.play()
+            currentItemMediaView?.play()
             displayLink?.isPaused = false
         default:
             break
@@ -361,14 +360,14 @@ extension StoryHorizontalPageViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         let touchLocation = gestureRecognizer.location(in: view)
         if gestureRecognizer == leftTapGestureRecognizer {
-            var nextFrame = mediaLayoutGuide.layoutFrame
+            var previousFrame = mediaViewContainer.frame
+            previousFrame.width = previousFrame.width / 2
+            return previousFrame.contains(touchLocation)
+        } else if gestureRecognizer == rightTapGestureRecognizer {
+            var nextFrame = mediaViewContainer.frame
             nextFrame.width = nextFrame.width / 2
             nextFrame.x += nextFrame.width
             return nextFrame.contains(touchLocation)
-        } else if gestureRecognizer == rightTapGestureRecognizer {
-            var previousFrame = mediaLayoutGuide.layoutFrame
-            previousFrame.width = previousFrame.width / 2
-            return previousFrame.contains(touchLocation)
         } else {
             return true
         }
@@ -379,42 +378,7 @@ extension StoryHorizontalPageViewController: UIGestureRecognizerDelegate {
     }
 }
 
-extension StoryHorizontalPageViewController: UIPageViewControllerDelegate {
-    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        updateProgressState()
-    }
-
-    func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
-        pendingViewControllers
-            .lazy
-            .map { $0 as! StoryItemViewController }
-            .forEach { $0.reset() }
-    }
-}
-
-extension StoryHorizontalPageViewController: UIPageViewControllerDataSource {
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let currentItem = currentItem,
-              let currentItemIndex = items.firstIndex(of: currentItem),
-              let itemBefore = items[safe: currentItemIndex.advanced(by: -1)] else {
-                  return nil
-              }
-
-        return StoryItemViewController(item: itemBefore)
-    }
-
-    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let currentItem = currentItem,
-              let currentItemIndex = items.firstIndex(of: currentItem),
-              let itemAfter = items[safe: currentItemIndex.advanced(by: 1)] else {
-                  return nil
-              }
-
-        return StoryItemViewController(item: itemAfter)
-    }
-}
-
-extension StoryHorizontalPageViewController: DatabaseChangeDelegate {
+extension StoryContextViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard var currentItem = currentItem else { return }
         guard !databaseChanges.storyMessageRowIds.isEmpty else { return }
