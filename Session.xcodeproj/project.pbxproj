@@ -777,6 +777,10 @@
 		FD078E4827E02561000769AF /* CommonMockedExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E4727E02561000769AF /* CommonMockedExtensions.swift */; };
 		FD078E4927E02576000769AF /* CommonMockedExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E4727E02561000769AF /* CommonMockedExtensions.swift */; };
 		FD078E4B27E02C5D000769AF /* Failable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E4A27E02C5D000769AF /* Failable.swift */; };
+		FD078E4D27E17156000769AF /* MockOGMCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E4C27E17156000769AF /* MockOGMCache.swift */; };
+		FD078E4F27E175F1000769AF /* DependencyExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E4E27E175F1000769AF /* DependencyExtensions.swift */; };
+		FD078E5227E1760A000769AF /* OGMDependencyExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E5127E1760A000769AF /* OGMDependencyExtensions.swift */; };
+		FD078E5427E197CA000769AF /* OpenGroupManagerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC2909D27D85751005DAE71 /* OpenGroupManagerSpec.swift */; };
 		FD0BA51B27CD88EC00CC6805 /* BlindedIdMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */; };
 		FD0BA51D27CDC34600CC6805 /* SOGSV4Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */; };
 		FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */; };
@@ -823,7 +827,6 @@
 		FDC2909827D7129B005DAE71 /* PersonalizationSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC2909727D7129B005DAE71 /* PersonalizationSpec.swift */; };
 		FDC2909A27D71376005DAE71 /* NonceGeneratorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC2909927D71376005DAE71 /* NonceGeneratorSpec.swift */; };
 		FDC2909C27D713D2005DAE71 /* SodiumProtocolsSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC2909B27D713D2005DAE71 /* SodiumProtocolsSpec.swift */; };
-		FDC2909E27D85751005DAE71 /* OpenGroupManagerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC2909D27D85751005DAE71 /* OpenGroupManagerSpec.swift */; };
 		FDC290A027D85826005DAE71 /* TestThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC2909F27D85826005DAE71 /* TestThread.swift */; };
 		FDC290A227D85890005DAE71 /* TestInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A127D85890005DAE71 /* TestInteraction.swift */; };
 		FDC290A627D860CE005DAE71 /* Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A527D860CE005DAE71 /* Mock.swift */; };
@@ -1920,6 +1923,9 @@
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FD078E4727E02561000769AF /* CommonMockedExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMockedExtensions.swift; sourceTree = "<group>"; };
 		FD078E4A27E02C5D000769AF /* Failable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Failable.swift; sourceTree = "<group>"; };
+		FD078E4C27E17156000769AF /* MockOGMCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockOGMCache.swift; sourceTree = "<group>"; };
+		FD078E4E27E175F1000769AF /* DependencyExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyExtensions.swift; sourceTree = "<group>"; };
+		FD078E5127E1760A000769AF /* OGMDependencyExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OGMDependencyExtensions.swift; sourceTree = "<group>"; };
 		FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindedIdMapping.swift; sourceTree = "<group>"; };
 		FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSV4Migration.swift; sourceTree = "<group>"; };
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
@@ -4048,12 +4054,15 @@
 				FD859EF927C2F5C500510D0C /* MockGenericHash.swift */,
 				FD859EFB27C2F60700510D0C /* MockEd25519.swift */,
 				FD83B9D127D59495005E1583 /* MockUserDefaults.swift */,
+				FD078E4C27E17156000769AF /* MockOGMCache.swift */,
 				FDC290B227DFF9F5005DAE71 /* TestOnionRequestAPI.swift */,
 				FDC290AE27DFEE97005DAE71 /* TestTransaction.swift */,
 				FDC2909F27D85826005DAE71 /* TestThread.swift */,
 				FDC290B627E00FDB005DAE71 /* TestGroupThread.swift */,
 				FDC290A127D85890005DAE71 /* TestInteraction.swift */,
 				FDC290AB27DB0B1C005DAE71 /* MockedExtensions.swift */,
+				FD078E4E27E175F1000769AF /* DependencyExtensions.swift */,
+				FD078E5127E1760A000769AF /* OGMDependencyExtensions.swift */,
 			);
 			path = _TestUtilities;
 			sourceTree = "<group>";
@@ -5655,6 +5664,7 @@
 				FDC2909127D709CA005DAE71 /* SOGSMessageSpec.swift in Sources */,
 				FDC2909627D71252005DAE71 /* SOGSErrorSpec.swift in Sources */,
 				FDC2908727D7047F005DAE71 /* RoomSpec.swift in Sources */,
+				FD078E4F27E175F1000769AF /* DependencyExtensions.swift in Sources */,
 				FDC2909C27D713D2005DAE71 /* SodiumProtocolsSpec.swift in Sources */,
 				FD83B9C327CF33F7005E1583 /* ServerSpec.swift in Sources */,
 				FD83B9C727CF3F10005E1583 /* CapabilitiesSpec.swift in Sources */,
@@ -5664,6 +5674,8 @@
 				FD859EF827C2F58900510D0C /* MockAeadXChaCha20Poly1305Ietf.swift in Sources */,
 				FDC2909827D7129B005DAE71 /* PersonalizationSpec.swift in Sources */,
 				FD859EF427C2F49200510D0C /* MockSodium.swift in Sources */,
+				FD078E4D27E17156000769AF /* MockOGMCache.swift in Sources */,
+				FD078E5227E1760A000769AF /* OGMDependencyExtensions.swift in Sources */,
 				FD859EFC27C2F60700510D0C /* MockEd25519.swift in Sources */,
 				FDC290A627D860CE005DAE71 /* Mock.swift in Sources */,
 				FD83B9C027CF2294005E1583 /* TestConstants.swift in Sources */,
@@ -5676,9 +5688,9 @@
 				FDC438BD27BB2AB400C60D73 /* Mockable.swift in Sources */,
 				FD859EF627C2F52C00510D0C /* MockSign.swift in Sources */,
 				FDC2908927D70656005DAE71 /* RoomPollInfoSpec.swift in Sources */,
-				FDC2909E27D85751005DAE71 /* OpenGroupManagerSpec.swift in Sources */,
 				FDC2908D27D70905005DAE71 /* UpdateMessageRequestSpec.swift in Sources */,
 				FDC290A227D85890005DAE71 /* TestInteraction.swift in Sources */,
+				FD078E5427E197CA000769AF /* OpenGroupManagerSpec.swift in Sources */,
 				FDC4389D27BA01F000C60D73 /* MockStorage.swift in Sources */,
 				FD83B9D227D59495005E1583 /* MockUserDefaults.swift in Sources */,
 			);

@@ -27,7 +27,7 @@ public func call<M, T, R>(
     _ amount: CallAmount = .atLeast(times: 1),
     matchingParameters: Bool = false,
     exclusive: Bool = false,
-    functionBlock: @escaping (T) throws -> R
+    functionBlock: @escaping (inout T) throws -> R
 ) -> Predicate<M> where M: Mock<T> {
     return Predicate.define { actualExpression in
         let callInfo: CallInfo = generateCallInfo(actualExpression, functionBlock)
@@ -94,9 +94,18 @@ public func call<M, T, R>(
                     actualMessage = "called \(timeStr(callInfo.desiredFunctionCalls.count))"
                     
                 case (false, false, _):
-                    actualMessage = "called \(timeStr(matchingParameterRecords.count)) with matching parameters, \(timeStr(callInfo.desiredFunctionCalls.count)) total"
+                    let distinctSetterCombinations: Set<String> = distinctParameterCombinations.filter { $0 != "[]" }
+                    
+                    // A getter/setter combo will have function calls split between no params and the set value
+                    // if the setter didn't match then we still want to show the incorrect parameters
+                    if distinctSetterCombinations.count == 1, let paramCombo: String = distinctSetterCombinations.first {
+                        actualMessage = "called with: \(paramCombo)"
+                    }
+                    else {
+                        actualMessage = "called \(timeStr(matchingParameterRecords.count)) with matching parameters, \(timeStr(callInfo.desiredFunctionCalls.count)) total"
+                    }
                 
-                default: actualMessage = ""
+                default: actualMessage = "\(exclusive ? " exclusive " : "")call to '\(callInfo.functionName)'"
             }
         }
         
@@ -157,7 +166,7 @@ fileprivate struct CallInfo {
     }
 }
 
-fileprivate func generateCallInfo<M, T, R>(_ actualExpression: Expression<M>, _ functionBlock: @escaping (T) throws -> R) -> CallInfo where M: Mock<T> {
+fileprivate func generateCallInfo<M, T, R>(_ actualExpression: Expression<M>, _ functionBlock: @escaping (inout T) throws -> R) -> CallInfo where M: Mock<T> {
     var maybeFunction: MockFunction?
     var allFunctionsCalled: [String] = []
     var desiredFunctionCalls: [String] = []

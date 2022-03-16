@@ -3,18 +3,46 @@ import Sodium
 import SessionUtilitiesKit
 import SessionSnodeKit
 
+// MARK: - OGMCacheType
+
+public protocol OGMCacheType {
+    var defaultRoomsPromise: Promise<[OpenGroupAPI.Room]>? { get set }
+    var groupImagePromises: [String: Promise<Data>] { get set }
+    
+    var pollers: [String: OpenGroupAPI.Poller] { get set }
+    var isPolling: Bool { get set }
+    
+    var moderators: [String: [String: Set<String>]] { get set }
+    var admins: [String: [String: Set<String>]] { get set }
+    
+    var hasPerformedInitialPoll: [String: Bool] { get set }
+    var timeSinceLastPoll: [String: TimeInterval] { get set }
+    
+    func getTimeSinceLastOpen(using dependencies: Dependencies) -> TimeInterval
+}
+
+extension OGMCacheType {
+    func getTimeSinceLastOpen() -> TimeInterval {
+        return getTimeSinceLastOpen(using: Dependencies())
+    }
+}
+
+// MARK: - OpenGroupManager
+
 @objc(SNOpenGroupManager)
 public final class OpenGroupManager: NSObject {
-    public class Cache {
+    // MARK: - Cache
+    
+    public class Cache: OGMCacheType {
         public var defaultRoomsPromise: Promise<[OpenGroupAPI.Room]>?
-        fileprivate var groupImagePromises: [String: Promise<Data>] = [:]
+        public var groupImagePromises: [String: Promise<Data>] = [:]
         
         public var pollers: [String: OpenGroupAPI.Poller] = [:] // One for each server
         public var isPolling: Bool = false
         
         /// Server URL to room ID to set of user IDs
-        fileprivate var moderators: [String: [String: Set<String>]] = [:]
-        fileprivate var admins: [String: [String: Set<String>]] = [:]
+        public var moderators: [String: [String: Set<String>]] = [:]
+        public var admins: [String: [String: Set<String>]] = [:]
         
         /// Server URL to value
         public var hasPerformedInitialPoll: [String: Bool] = [:]
@@ -40,15 +68,15 @@ public final class OpenGroupManager: NSObject {
     
     @objc public static let shared: OpenGroupManager = OpenGroupManager()
     
-    public let mutableCache: Atomic<Cache> = Atomic(Cache())
-    public var cache: Cache { return mutableCache.wrappedValue }
+    /// Note: This should not be accessed directly but rather via the 'OGMDependencies' type
+    fileprivate let mutableCache: Atomic<OGMCacheType> = Atomic(Cache())
     
     // MARK: - Polling
 
-    public func startPolling(using dependencies: Dependencies = Dependencies()) {
-        guard !cache.isPolling else { return }
+    public func startPolling(using dependencies: OGMDependencies = OGMDependencies()) {
+        guard !dependencies.cache.isPolling else { return }
         
-        mutableCache.mutate { cache in
+        dependencies.mutableCache.mutate { cache in
             cache.isPolling = true
             cache.pollers = Set(dependencies.storage.getAllOpenGroups().values.map { openGroup in openGroup.server })
                 .reduce(into: [:]) { prev, server in
@@ -62,8 +90,8 @@ public final class OpenGroupManager: NSObject {
         }
     }
 
-    @objc public func stopPolling() {
-        mutableCache.mutate {
+    public func stopPolling(using dependencies: OGMDependencies = OGMDependencies()) {
+        dependencies.mutableCache.mutate {
             $0.pollers.forEach { (_, openGroupPoller) in openGroupPoller.stop() }
             $0.pollers.removeAll()
             $0.isPolling = false
@@ -72,11 +100,11 @@ public final class OpenGroupManager: NSObject {
 
     // MARK: - Adding & Removing
     
-    public func add(roomToken: String, server: String, publicKey: String, isConfigMessage: Bool, using transaction: YapDatabaseReadWriteTransaction, dependencies: Dependencies = Dependencies()) -> Promise<Void> {
+    public func add(roomToken: String, server: String, publicKey: String, isConfigMessage: Bool, using transaction: YapDatabaseReadWriteTransaction, dependencies: OGMDependencies = OGMDependencies()) -> Promise<Void> {
         // If we are currently polling for this server and already have a TSGroupThread for this room the do nothing
         let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
         
-        if OpenGroupManager.shared.cache.pollers[server] != nil && TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil {
+        if dependencies.cache.pollers[server] != nil && TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil {
             SNLog("Ignoring join open group attempt (already joined), user initiated: \(!isConfigMessage)")
             return Promise.value(())
         }
@@ -104,8 +132,8 @@ public final class OpenGroupManager: NSObject {
                         )
                         
                         // Then the room
-                        OpenGroupManager.handleRoom(
-                            response.room.data,
+                        OpenGroupManager.handlePollInfo(
+                            OpenGroupAPI.RoomPollInfo(room: response.room.data),
                             publicKey: publicKey,
                             for: roomToken,
                             on: server,
@@ -125,13 +153,13 @@ public final class OpenGroupManager: NSObject {
         return promise
     }
 
-    public func delete(_ openGroup: OpenGroup, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction, dependencies: Dependencies = Dependencies()) {
+    public func delete(_ openGroup: OpenGroup, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction, dependencies: OGMDependencies = OGMDependencies()) {
         // Stop the poller if needed
         let openGroups = dependencies.storage.getAllOpenGroups().values.filter { $0.server == openGroup.server }
         if openGroups.count == 1 && openGroups.last == openGroup {
-            let poller = cache.pollers[openGroup.server]
+            let poller = dependencies.cache.pollers[openGroup.server]
             poller?.stop()
-            mutableCache.mutate { $0.pollers[openGroup.server] = nil }
+            dependencies.mutableCache.mutate { $0.pollers[openGroup.server] = nil }
         }
         
         // Remove all data
@@ -162,7 +190,7 @@ public final class OpenGroupManager: NSObject {
         _ capabilities: OpenGroupAPI.Capabilities,
         on server: String,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: Dependencies = Dependencies()
+        dependencies: OGMDependencies = OGMDependencies()
     ) {
         let updatedServer: OpenGroupAPI.Server = OpenGroupAPI.Server(
             name: server,
@@ -172,33 +200,13 @@ public final class OpenGroupManager: NSObject {
         dependencies.storage.setOpenGroupServer(updatedServer, using: transaction)
     }
     
-    internal static func handleRoom(
-        _ room: OpenGroupAPI.Room,
-        publicKey: String,
-        for roomToken: String,
-        on server: String,
-        using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: Dependencies = Dependencies(),
-        completion: (() -> ())? = nil
-    ) {
-        OpenGroupManager.handlePollInfo(
-            OpenGroupAPI.RoomPollInfo(room: room),
-            publicKey: publicKey,
-            for: roomToken,
-            on: server,
-            using: transaction,
-            dependencies: dependencies,
-            completion: completion
-        )
-    }
-    
     internal static func handlePollInfo(
         _ pollInfo: OpenGroupAPI.RoomPollInfo,
         publicKey maybePublicKey: String?,
         for roomToken: String,
         on server: String,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: Dependencies = Dependencies(),
+        dependencies: OGMDependencies = OGMDependencies(),
         completion: (() -> ())? = nil
     ) {
         // Create the open group model and get or create the thread
@@ -239,7 +247,7 @@ public final class OpenGroupManager: NSObject {
             room: pollInfo.token,
             publicKey: publicKey,
             name: (pollInfo.details?.name ?? thread.name()),
-            groupDescription: (pollInfo.details?.description ?? existingOpenGroup?.description),
+            groupDescription: (pollInfo.details?.roomDescription ?? existingOpenGroup?.groupDescription),
             imageID: (pollInfo.details?.imageId.map { "\($0)" } ?? existingOpenGroup?.imageID),
             infoUpdates: ((pollInfo.details?.infoUpdates ?? existingOpenGroup?.infoUpdates) ?? 0)
         )
@@ -261,8 +269,8 @@ public final class OpenGroupManager: NSObject {
         
         transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             // Start the poller if needed
-            if OpenGroupManager.shared.cache.pollers[server] == nil {
-                OpenGroupManager.shared.mutableCache.mutate {
+            if dependencies.cache.pollers[server] == nil {
+                dependencies.mutableCache.mutate {
                     $0.pollers[server] = OpenGroupAPI.Poller(for: server)
                     $0.pollers[server]?.startIfNeeded(using: dependencies)
                 }
@@ -270,21 +278,21 @@ public final class OpenGroupManager: NSObject {
             
             // - Moderators
             if let moderators: [String] = (pollInfo.details?.moderators ?? maybeUpdatedModel?.groupModeratorIds) {
-                OpenGroupManager.shared.mutableCache.mutate { cache in
+                dependencies.mutableCache.mutate { cache in
                     cache.moderators[server] = (cache.moderators[server] ?? [:]).setting(roomToken, Set(moderators))
                 }
             }
             
             // - Admins
             if let admins: [String] = (pollInfo.details?.admins ?? maybeUpdatedModel?.groupAdminIds) {
-                OpenGroupManager.shared.mutableCache.mutate { cache in
+                dependencies.mutableCache.mutate { cache in
                     cache.admins[server] = (cache.admins[server] ?? [:]).setting(roomToken, Set(admins))
                 }
             }
 
-            // - Room image (if there is one)
-            if let imageId: UInt64 = pollInfo.details?.imageId {
-                OpenGroupManager.roomImage(imageId, for: roomToken, on: server)
+            // - Room image (if there is one and it's different from the existing one, or we don't have the existing one)
+            if let imageId: UInt64 = UInt64(updatedOpenGroup.imageID ?? ""), (updatedModel.groupImage == nil || updatedOpenGroup.imageID != existingOpenGroup?.imageID) {
+                OpenGroupManager.roomImage(imageId, for: roomToken, on: server, using: dependencies)
                     .done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                         dependencies.storage.write { transaction in
                             // Update the thread
@@ -308,7 +316,7 @@ public final class OpenGroupManager: NSObject {
         on server: String,
         isBackgroundPoll: Bool,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: Dependencies = Dependencies()
+        dependencies: OGMDependencies = OGMDependencies()
     ) {
         // Sorting the messages by server ID before importing them fixes an issue where messages
         // that quote older messages can't find those older messages
@@ -338,8 +346,8 @@ public final class OpenGroupManager: NSObject {
             
             do {
                 let data = try envelope.buildSerializedData()
-                let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: UInt64(message.id), isRetry: false, using: transaction)
-                try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
+                let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: UInt64(message.id), isRetry: false, using: transaction, dependencies: dependencies)
+                try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction, dependencies: dependencies)
             }
             catch {
                 SNLog("Couldn't receive open group message due to error: \(error).")
@@ -348,9 +356,7 @@ public final class OpenGroupManager: NSObject {
 
         // Handle any deletions that are needed
         guard !messageServerIDsToRemove.isEmpty else { return }
-        guard let threadID = dependencies.storage.getThreadID(for: openGroupID), let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else {
-            return
-        }
+        guard let thread = TSGroupThread.fetch(groupId: openGroupID, transaction: transaction) else { return }
         
         var messagesToRemove: [TSMessage] = []
         
@@ -372,7 +378,7 @@ public final class OpenGroupManager: NSObject {
         on server: String,
         isBackgroundPoll: Bool,
         using transaction: YapDatabaseReadWriteTransaction,
-        dependencies: Dependencies = Dependencies()
+        dependencies: OGMDependencies = OGMDependencies()
     ) {
         // Don't need to do anything if we have no messages (it's a valid case)
         guard !messages.isEmpty else { return }
@@ -417,7 +423,8 @@ public final class OpenGroupManager: NSObject {
                     isOutgoing: fromOutbox,
                     otherBlindedPublicKey: (fromOutbox ? message.recipient : message.sender),
                     isRetry: false,
-                    using: transaction
+                    using: transaction,
+                    dependencies: dependencies
                 )
                 
                 // If the message was an outgoing message then attempt to unblind the recipient (this will help put
@@ -455,7 +462,7 @@ public final class OpenGroupManager: NSObject {
                     mappingCache[message.recipient] = mapping
                 }
                 
-                try MessageReceiver.handle(receivedMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: isBackgroundPoll, using: transaction)
+                try MessageReceiver.handle(receivedMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: isBackgroundPoll, using: transaction, dependencies: dependencies)
                 
                 // If this message is from the outbox then we should add the open group details back to the
                 // thread just in case this is from a restore (otherwise the user won't be able to send a new
@@ -475,14 +482,9 @@ public final class OpenGroupManager: NSObject {
     // MARK: - Convenience
     
     /// This method specifies if the given publicKey is a moderator or an admin within a specified Open Group
-    @objc(isUserModeratorOrAdmin:forRoom:onServer:)
-    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String) -> Bool {
-        return isUserModeratorOrAdmin(publicKey, for: room, on: server, using: Dependencies())
-    }
-    
-    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: Dependencies = Dependencies()) -> Bool {
-        let modAndAdminKeys: Set<String> = (OpenGroupManager.shared.cache.moderators[server]?[room] ?? Set())
-            .union(OpenGroupManager.shared.cache.admins[server]?[room] ?? Set())
+    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String, using dependencies: OGMDependencies = OGMDependencies()) -> Bool {
+        let modAndAdminKeys: Set<String> = (dependencies.cache.moderators[server]?[room] ?? Set())
+            .union(dependencies.cache.admins[server]?[room] ?? Set())
 
         // If the publicKey is in the set then return immediately, otherwise only continue if it's the
         // current user
@@ -528,9 +530,9 @@ public final class OpenGroupManager: NSObject {
         }
     }
     
-    @discardableResult public static func getDefaultRoomsIfNeeded(using dependencies: Dependencies = Dependencies()) -> Promise<[OpenGroupAPI.Room]> {
+    @discardableResult public static func getDefaultRoomsIfNeeded(using dependencies: OGMDependencies = OGMDependencies()) -> Promise<[OpenGroupAPI.Room]> {
         // Note: If we already have a 'defaultRoomsPromise' then there is no need to get it again
-        if let existingPromise: Promise<[OpenGroupAPI.Room]> = OpenGroupManager.shared.cache.defaultRoomsPromise {
+        if let existingPromise: Promise<[OpenGroupAPI.Room]> = dependencies.cache.defaultRoomsPromise {
             return existingPromise
         }
         
@@ -567,7 +569,7 @@ public final class OpenGroupManager: NSObject {
                 
                 internalPromise
                     .catch(on: OpenGroupAPI.workQueue) { error in
-                        OpenGroupManager.shared.mutableCache.mutate { cache in
+                        dependencies.mutableCache.mutate { cache in
                             cache.defaultRoomsPromise = nil
                         }
                         seal.reject(error)
@@ -586,7 +588,7 @@ public final class OpenGroupManager: NSObject {
         _ fileId: UInt64,
         for roomToken: String,
         on server: String,
-        using dependencies: Dependencies = Dependencies()
+        using dependencies: OGMDependencies = OGMDependencies()
     ) -> Promise<Data> {
         // Normally the image for a given group is stored with the group thread, so it's only
         // fetched once. However, on the join open group screen we show images for groups the
@@ -597,7 +599,7 @@ public final class OpenGroupManager: NSObject {
         // we only need to maintain one date in user defaults. On top of all of this we also
         // don't double up on fetch requests by storing the existing request as a promise if
         // there is one.
-        let lastOpenGroupImageUpdate: Date? = UserDefaults.standard[.lastOpenGroupImageUpdate]
+        let lastOpenGroupImageUpdate: Date? = dependencies.standardUserDefaults[.lastOpenGroupImageUpdate]
         let now: Date = dependencies.date
         let timeSinceLastUpdate: TimeInterval = (lastOpenGroupImageUpdate.map { now.timeIntervalSince($0) } ?? .greatestFiniteMagnitude)
         let updateInterval: TimeInterval = (7 * 24 * 60 * 60)
@@ -606,7 +608,7 @@ public final class OpenGroupManager: NSObject {
             return Promise.value(data)
         }
         
-        if let promise = OpenGroupManager.shared.cache.groupImagePromises["\(server).\(roomToken)"] {
+        if let promise = dependencies.cache.groupImagePromises["\(server).\(roomToken)"] {
             return promise
         }
         
@@ -621,21 +623,26 @@ public final class OpenGroupManager: NSObject {
                 UserDefaults.standard[.lastOpenGroupImageUpdate] = now
             }
         }
-        OpenGroupManager.shared.mutableCache.mutate { cache in
+        dependencies.mutableCache.mutate { cache in
             cache.groupImagePromises["\(server).\(roomToken)"] = promise
         }
         
         return promise
     }
     
-    public static func parseV2OpenGroup(from string: String) -> (room: String, server: String, publicKey: String)? {
+    public static func parseOpenGroup(from string: String) -> (room: String, server: String, publicKey: String)? {
         guard let url = URL(string: string), let host = url.host ?? given(string.split(separator: "/").first, { String($0) }), let query = url.query else { return nil }
         // Inputs that should work:
+        // https://sessionopengroup.co/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         // https://sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
+        // http://sessionopengroup.co/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         // http://sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         // sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c (does NOT go to HTTPS)
+        // sessionopengroup.co/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c (does NOT go to HTTPS)
+        // https://143.198.213.225:443/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         // https://143.198.213.225:443/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         // 143.198.213.255:80/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
+        // 143.198.213.255:80/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         let useTLS = (url.scheme == "https")
         let updatedPath = (url.path.starts(with: "/r/") ? url.path.substring(from: 2) : url.path)
         let room = String(updatedPath.dropFirst()) // Drop the leading slash
@@ -649,14 +656,72 @@ public final class OpenGroupManager: NSObject {
     }
 }
 
+// MARK: - Objective C Methods
+
 extension OpenGroupManager {
     @objc(startPolling)
     public func objc_startPolling() {
         startPolling()
     }
     
+    @objc(stopPolling)
+    public func objc_stopPolling() {
+        stopPolling()
+    }
+    
     @objc(getDefaultRoomsIfNeeded)
     public static func objc_getDefaultRoomsIfNeeded() {
         getDefaultRoomsIfNeeded()
+    }
+    
+    @objc(isUserModeratorOrAdmin:forRoom:onServer:)
+    public static func isUserModeratorOrAdmin(_ publicKey: String, for room: String, on server: String) -> Bool {
+        return isUserModeratorOrAdmin(publicKey, for: room, on: server, using: OGMDependencies())
+    }
+}
+
+
+// MARK: - OGMDependencies
+
+extension OpenGroupManager {
+    public class OGMDependencies: Dependencies {
+        internal var _mutableCache: Atomic<OGMCacheType>?
+        public var mutableCache: Atomic<OGMCacheType> {
+            get { Dependencies.getValueSettingIfNull(&_mutableCache) { OpenGroupManager.shared.mutableCache } }
+            set { _mutableCache = newValue }
+        }
+        
+        public var cache: OGMCacheType { return mutableCache.wrappedValue }
+        
+        public init(
+            cache: Atomic<OGMCacheType>? = nil,
+            onionApi: OnionRequestAPIType.Type? = nil,
+            storage: SessionMessagingKitStorageProtocol? = nil,
+            sodium: SodiumType? = nil,
+            aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
+            sign: SignType? = nil,
+            genericHash: GenericHashType? = nil,
+            ed25519: Ed25519Type? = nil,
+            nonceGenerator16: NonceGenerator16ByteType? = nil,
+            nonceGenerator24: NonceGenerator24ByteType? = nil,
+            standardUserDefaults: UserDefaultsType? = nil,
+            date: Date? = nil
+        ) {
+            _mutableCache = cache
+            
+            super.init(
+                onionApi: onionApi,
+                storage: storage,
+                sodium: sodium,
+                aeadXChaCha20Poly1305Ietf: aeadXChaCha20Poly1305Ietf,
+                sign: sign,
+                genericHash: genericHash,
+                ed25519: ed25519,
+                nonceGenerator16: nonceGenerator16,
+                nonceGenerator24: nonceGenerator24,
+                standardUserDefaults: standardUserDefaults,
+                date: date
+            )
+        }
     }
 }

@@ -27,6 +27,14 @@ class MockStorage: Mock<SessionMessagingKitStorageProtocol>, SessionMessagingKit
     func getUserKeyPair() -> ECKeyPair? { return accept() as? ECKeyPair }
     func getUserED25519KeyPair() -> Box.KeyPair? { return accept() as? Box.KeyPair }
     func getUser() -> Contact? { return accept() as? Contact }
+    
+    // MARK: - Contacts
+    
+    func getContact(with sessionID: String) -> Contact? { return accept(args: [sessionID]) as? Contact }
+    func getContact(with sessionID: String, using transaction: Any) -> Contact? {
+        return accept(args: [sessionID, transaction]) as? Contact
+    }
+    func setContact(_ contact: Contact, using transaction: Any) { accept(args: [contact, transaction]) }
     func getAllContacts() -> Set<Contact> { return accept() as! Set<Contact> }
     func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact> { return accept() as! Set<Contact> }
     
@@ -52,7 +60,19 @@ class MockStorage: Mock<SessionMessagingKitStorageProtocol>, SessionMessagingKit
     }
 
     // MARK: - Closed Groups
-
+    
+    func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [ECKeyPair] {
+        return accept(args: [groupPublicKey]) as! [ECKeyPair]
+    }
+    func getLatestClosedGroupEncryptionKeyPair(for groupPublicKey: String) -> ECKeyPair? {
+        return accept(args: [groupPublicKey]) as? ECKeyPair
+    }
+    func addClosedGroupEncryptionKeyPair(_ keyPair: ECKeyPair, for groupPublicKey: String, using transaction: Any) {
+        accept(args: [keyPair, groupPublicKey, transaction])
+    }
+    func removeAllClosedGroupEncryptionKeyPairs(for groupPublicKey: String, using transaction: Any) {
+        accept(args: [groupPublicKey, transaction])
+    }
     func getUserClosedGroupPublicKeys() -> Set<String> { return accept() as! Set<String> }
     func getZombieMembers(for groupPublicKey: String) -> Set<String> { return accept() as! Set<String> }
     func setZombieMembers(for groupPublicKey: String, to zombies: Set<String>, using transaction: Any) {

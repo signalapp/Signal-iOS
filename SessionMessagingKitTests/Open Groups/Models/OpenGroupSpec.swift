@@ -71,6 +71,23 @@ class OpenGroupSpec: QuickSpec {
                         .to(equal("name (Server: server, Room: room)"))
                 }
             }
+            
+            context("when describing in debug") {
+                it("includes relevant information") {
+                    let openGroup: OpenGroup = OpenGroup(
+                        server: "server",
+                        room: "room",
+                        publicKey: "1234",
+                        name: "name",
+                        groupDescription: nil,
+                        imageID: nil,
+                        infoUpdates: 0
+                    )
+                    
+                    expect(openGroup.debugDescription)
+                        .to(equal("OpenGroup(server: \"server\", room: \"room\", id: \"server.room\", publicKey: \"1234\", name: \"name\", groupDescription: null, imageID: null, infoUpdates: 0)"))
+                }
+            }
         }
     }
 }

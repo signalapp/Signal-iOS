@@ -17,7 +17,7 @@ class RoomPollInfoSpec: QuickSpec {
                     let room: OpenGroupAPI.Room = OpenGroupAPI.Room(
                         token: "testToken",
                         name: "testName",
-                        description: nil,
+                        roomDescription: nil,
                         infoUpdates: 123,
                         messageSequence: 0,
                         created: 0,

@@ -64,4 +64,16 @@ public final class OpenGroup: NSObject, NSCoding { // NSObject/NSCoding conforma
     }
 
     override public var description: String { "\(name) (Server: \(server), Room: \(room))" }
+    override public var debugDescription: String {
+        [
+            "OpenGroup(server: \"\(server)\"",
+            "room: \"\(room)\"",
+            "id: \"\(id)\"",
+            "publicKey: \"\(publicKey)\"",
+            "name: \"\(name)\"",
+            "groupDescription: \(groupDescription.map { "\"\($0)\"" } ?? "null")",
+            "imageID: \(imageID ?? "null")",
+            "infoUpdates: \(infoUpdates))"
+        ].joined(separator: ", ")
+    }
 }

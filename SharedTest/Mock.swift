@@ -9,13 +9,15 @@ protocol Mocked { static var mockValue: Self { get } }
 
 func any<R: Mocked>() -> R { R.mockValue }
 func any<R: FixedWidthInteger>() -> R { unsafeBitCast(0, to: R.self) }
-func any<R>() -> [R] { [] }
 func any<K: Hashable, V>() -> [K: V] { [:] }
-func any() -> Any { 0 }
 func any() -> Float { 0 }
 func any() -> Double { 0 }
 func any() -> String { "" }
 func any() -> Data { Data() }
+
+func anyAny() -> Any { 0 }              // Unique name for compilation performance reasons
+func anyArray<R>() -> [R] { [] }        // Unique name for compilation performance reasons
+func anySet<R>() -> Set<R> { Set() }    // Unique name for compilation performance reasons
 
 // MARK: - Mock<T>
 
@@ -49,11 +51,7 @@ public class Mock<T> {
         functionConsumer.calls.mutate { $0 = [:] }
     }
     
-    internal func resetCallCounts() {
-        functionConsumer.calls.mutate { $0 = [:] }
-    }
-    
-    internal func when<R>(_ callBlock: @escaping (T) throws -> R) -> MockFunctionBuilder<T, R> {
+    internal func when<R>(_ callBlock: @escaping (inout T) throws -> R) -> MockFunctionBuilder<T, R> {
         let builder: MockFunctionBuilder<T, R> = MockFunctionBuilder(callBlock, mockInit: type(of: self).init)
         functionConsumer.functionBuilders.append(builder.build)
         
@@ -68,9 +66,14 @@ public class Mock<T> {
             case let array as [Any]: return "[\(array.map { summary(for: $0) }.joined(separator: ", "))]"
                 
             case let dict as [String: Any]:
-                return "[\(dict.map { key, value in "\(summary(for: key)):\(summary(for: value))" }.joined(separator: ", "))]"
+                if dict.isEmpty { return "[:]" }
                 
-            default: return String(describing: argument)
+                let sortedValues: [String] = dict
+                    .map { key, value in "\(summary(for: key)):\(summary(for: value))" }
+                    .sorted()
+                return "[\(sortedValues.joined(separator: ", "))]"
+                
+            default: return String(reflecting: argument)    // Default to the `debugDescription` if available
         }
     }
 }
@@ -100,7 +103,7 @@ internal class MockFunction {
 // MARK: - MockFunctionBuilder
 
 internal class MockFunctionBuilder<T, R>: MockFunctionHandler {
-    private let callBlock: (T) throws -> R
+    private let callBlock: (inout T) throws -> R
     private let mockInit: (MockFunctionHandler?) -> Mock<T>
     private var functionName: String?
     private var parameterSummary: String?
@@ -110,7 +113,7 @@ internal class MockFunctionBuilder<T, R>: MockFunctionHandler {
     
     // MARK: - Initialization
     
-    init(_ callBlock: @escaping (T) throws -> R, mockInit: @escaping (MockFunctionHandler?) -> Mock<T>) {
+    init(_ callBlock: @escaping (inout T) throws -> R, mockInit: @escaping (MockFunctionHandler?) -> Mock<T>) {
         self.callBlock = callBlock
         self.mockInit = mockInit
     }
@@ -137,8 +140,8 @@ internal class MockFunctionBuilder<T, R>: MockFunctionHandler {
     // MARK: - Build
     
     func build() throws -> MockFunction {
-        let completionMock = mockInit(self) as! T
-        _ = try callBlock(completionMock)
+        var completionMock = mockInit(self) as! T
+        _ = try callBlock(&completionMock)
         
         guard let name: String = functionName, let parameterSummary: String = parameterSummary else {
             preconditionFailure("Attempted to build the MockFunction before it was called")

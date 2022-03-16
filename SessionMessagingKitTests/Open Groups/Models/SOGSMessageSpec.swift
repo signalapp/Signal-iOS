@@ -203,7 +203,9 @@ class SOGSMessageSpec: QuickSpec {
                         }
                         
                         it("succeeds if it succeeds verification") {
-                            mockSign.when { $0.verify(message: any(), publicKey: any(), signature: any()) }.thenReturn(true)
+                            mockSign
+                                .when { $0.verify(message: anyArray(), publicKey: anyArray(), signature: anyArray()) }
+                                .thenReturn(true)
                             
                             expect {
                                 try decoder.decode(OpenGroupAPI.Message.self, from: messageData)
@@ -212,7 +214,9 @@ class SOGSMessageSpec: QuickSpec {
                         }
                         
                         it("provides the correct values as parameters") {
-                            mockSign.when { $0.verify(message: any(), publicKey: any(), signature: any()) }.thenReturn(true)
+                            mockSign
+                                .when { $0.verify(message: anyArray(), publicKey: anyArray(), signature: anyArray()) }
+                                .thenReturn(true)
                             
                             _ = try? decoder.decode(OpenGroupAPI.Message.self, from: messageData)
                             
@@ -227,7 +231,9 @@ class SOGSMessageSpec: QuickSpec {
                         }
                         
                         it("throws if it fails verification") {
-                            mockSign.when { $0.verify(message: any(), publicKey: any(), signature: any()) }.thenReturn(false)
+                            mockSign
+                                .when { $0.verify(message: anyArray(), publicKey: anyArray(), signature: anyArray()) }
+                                .thenReturn(false)
                             
                             expect {
                                 try decoder.decode(OpenGroupAPI.Message.self, from: messageData)

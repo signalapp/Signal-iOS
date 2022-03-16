@@ -7,7 +7,7 @@ extension OpenGroupAPI {
         enum CodingKeys: String, CodingKey {
             case token
             case name
-            case description
+            case roomDescription = "description"
             case infoUpdates = "info_updates"
             case messageSequence = "message_sequence"
             case created
@@ -43,7 +43,7 @@ extension OpenGroupAPI {
         public let name: String
         
         /// Text description of the room, e.g. "All the best sodoku discussion!"
-        public let description: String?
+        public let roomDescription: String?
         
         /// Monotonic integer counter that increases whenever the room's metadata changes
         public let infoUpdates: Int64
@@ -153,7 +153,7 @@ extension OpenGroupAPI.Room {
         self = OpenGroupAPI.Room(
             token: try container.decode(String.self, forKey: .token),
             name: try container.decode(String.self, forKey: .name),
-            description: try? container.decode(String.self, forKey: .description),
+            roomDescription: try? container.decode(String.self, forKey: .roomDescription),
             infoUpdates: try container.decode(Int64.self, forKey: .infoUpdates),
             messageSequence: try container.decode(Int64.self, forKey: .messageSequence),
             created: try container.decode(TimeInterval.self, forKey: .created),

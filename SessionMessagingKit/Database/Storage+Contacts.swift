@@ -1,6 +1,8 @@
 
 extension Storage {
     
+    // MARK: - Contacts
+    
     private static let contactCollection = "LokiContactCollection"
 
     @objc(getContactWithSessionID:)

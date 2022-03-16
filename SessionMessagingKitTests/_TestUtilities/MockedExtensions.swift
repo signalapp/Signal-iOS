@@ -18,6 +18,6 @@ extension OpenGroup: Mocked {
 extension OpenGroupAPI.Server: Mocked {
     static var mockValue: OpenGroupAPI.Server = OpenGroupAPI.Server(
         name: any(),
-        capabilities: OpenGroupAPI.Capabilities(capabilities: any(), missing: any())
+        capabilities: OpenGroupAPI.Capabilities(capabilities: anyArray(), missing: anyArray())
     )
 }

@@ -55,14 +55,14 @@ public enum MessageReceiver {
         isOutgoing: Bool? = nil,
         otherBlindedPublicKey: String? = nil,
         isRetry: Bool = false,
-        using transaction: Any
+        using transaction: Any,
+        dependencies: Dependencies = Dependencies()
     ) throws -> (Message, SNProtoContent) {
-        let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey()
+        let userPublicKey = dependencies.storage.getUserPublicKey()
         let isOpenGroupMessage = (openGroupMessageServerID != nil)
         
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
-        let storage = SNMessagingKitConfiguration.shared.storage
         
         // Decrypt the contents
         guard let ciphertext = envelope.content else { throw Error.noData }
@@ -80,7 +80,7 @@ public enum MessageReceiver {
                     // Default to 'standard' as the old code didn't seem to require an `envelope.source`
                     switch (SessionId.Prefix(from: envelope.source) ?? .standard) {
                         case .standard, .unblinded:
-                            guard let userX25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else {
+                            guard let userX25519KeyPair = dependencies.storage.getUserKeyPair() else {
                                 throw Error.noUserX25519KeyPair
                             }
                             
@@ -91,7 +91,7 @@ public enum MessageReceiver {
                             guard let openGroupServerPublicKey: String = openGroupServerPublicKey else {
                                 throw Error.invalidGroupPublicKey
                             }
-                            guard let userEd25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserED25519KeyPair() else {
+                            guard let userEd25519KeyPair = dependencies.storage.getUserED25519KeyPair() else {
                                 throw Error.noUserED25519KeyPair
                             }
                             
@@ -100,16 +100,17 @@ public enum MessageReceiver {
                                 isOutgoing: (isOutgoing == true),
                                 otherBlindedPublicKey: otherBlindedPublicKey,
                                 with: openGroupServerPublicKey,
-                                userEd25519KeyPair: userEd25519KeyPair
+                                userEd25519KeyPair: userEd25519KeyPair,
+                                using: dependencies
                             )
                     }
                     
                 case .closedGroupMessage:
-                    guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else {
+                    guard let hexEncodedGroupPublicKey = envelope.source, dependencies.storage.isClosedGroup(hexEncodedGroupPublicKey) else {
                         throw Error.invalidGroupPublicKey
                     }
                     
-                    var encryptionKeyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
+                    var encryptionKeyPairs = dependencies.storage.getClosedGroupEncryptionKeyPairs(for: hexEncodedGroupPublicKey)
                     
                     guard !encryptionKeyPairs.isEmpty else { throw Error.noGroupKeyPair }
                     
@@ -199,13 +200,13 @@ public enum MessageReceiver {
                 // • Processing wasn't finished
                 // • The user doesn't see the new closed group
             } else {
-                guard !Set(storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) || isRetry else { throw Error.duplicateMessage }
-                storage.addReceivedMessageTimestamp(envelope.timestamp, using: transaction)
+                guard !Set(dependencies.storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) || isRetry else { throw Error.duplicateMessage }
+                dependencies.storage.addReceivedMessageTimestamp(envelope.timestamp, using: transaction)
             }
             // Return
             return (message, proto)
-        } else {
-            throw Error.unknownMessage
         }
+        
+        throw Error.unknownMessage
     }
 }

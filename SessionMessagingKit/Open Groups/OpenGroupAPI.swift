@@ -32,7 +32,8 @@ public enum OpenGroupAPI {
         let maybeLastOutboxMessageId: Int64? = dependencies.storage.getOpenGroupOutboxLatestMessageId(for: server)
         let lastInboxMessageId: Int64 = (maybeLastInboxMessageId ?? 0)
         let lastOutboxMessageId: Int64 = (maybeLastOutboxMessageId ?? 0)
-        
+        let serverConfig: Server? = dependencies.storage.getOpenGroupServer(name: server)
+
         // Generate the requests
         let requestResponseType: [BatchRequestInfoType] = [
             BatchRequestInfo(
@@ -81,31 +82,35 @@ public enum OpenGroupAPI {
                     ]
                 }
         )
-        .appending([
-            // Inbox
-            BatchRequestInfo(
-                request: Request<NoBody, Endpoint>(
-                    server: server,
-                    endpoint: (maybeLastInboxMessageId == nil ?
-                        .inbox :
-                        .inboxSince(id: lastInboxMessageId)
-                   )
+        .appending(
+            // The 'inbox' and 'outbox' only work with blinded keys so don't bother polling them if not blinded
+            serverConfig?.capabilities.capabilities.contains(.blind) != true ? [] :
+            [
+                // Inbox
+                BatchRequestInfo(
+                    request: Request<NoBody, Endpoint>(
+                        server: server,
+                        endpoint: (maybeLastInboxMessageId == nil ?
+                            .inbox :
+                            .inboxSince(id: lastInboxMessageId)
+                       )
+                    ),
+                    responseType: [DirectMessage]?.self // 'inboxSince' will return a `304` with an empty response if no messages
                 ),
-                responseType: [DirectMessage]?.self // 'inboxSince' will return a `304` with an empty response if no messages
-            ),
-            
-            // Outbox
-            BatchRequestInfo(
-                request: Request<NoBody, Endpoint>(
-                    server: server,
-                    endpoint: (maybeLastOutboxMessageId == nil ?
-                        .outbox :
-                        .outboxSince(id: lastOutboxMessageId)
-                   )
-                ),
-                responseType: [DirectMessage]?.self // 'outboxSince' will return a `304` with an empty response if no messages
-            )
-        ])
+                
+                // Outbox
+                BatchRequestInfo(
+                    request: Request<NoBody, Endpoint>(
+                        server: server,
+                        endpoint: (maybeLastOutboxMessageId == nil ?
+                            .outbox :
+                            .outboxSince(id: lastOutboxMessageId)
+                       )
+                    ),
+                    responseType: [DirectMessage]?.self // 'outboxSince' will return a `304` with an empty response if no messages
+                )
+            ]
+        )
         
         return batch(server, requests: requestResponseType, using: dependencies)
     }

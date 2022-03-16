@@ -63,7 +63,7 @@ final class JoinOpenGroupModal : Modal {
     
     // MARK: Interaction
     @objc private func joinOpenGroup() {
-        guard let (room, server, publicKey) = OpenGroupManager.parseV2OpenGroup(from: url) else {
+        guard let (room, server, publicKey) = OpenGroupManager.parseOpenGroup(from: url) else {
             let alert = UIAlertController(title: "Couldn't Join", message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
             return presentingViewController!.present(alert, animated: true, completion: nil)

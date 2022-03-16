@@ -17,21 +17,42 @@ class SodiumProtocolsSpec: QuickSpec {
             it("provides the default values in it's extensions") {
                 let mockAead: MockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
                 mockAead
-                    .when { $0.encrypt(message: any(), secretKey: any(), nonce: any(), additionalData: any()) }
+                    .when {
+                        $0.encrypt(
+                            message: anyArray(),
+                            secretKey: anyArray(),
+                            nonce: anyArray(),
+                            additionalData: anyArray()
+                        )
+                    }
                     .thenReturn(testValue)
                 mockAead
-                    .when { $0.decrypt(authenticatedCipherText: any(), secretKey: any(), nonce: any(), additionalData: any()) }
+                    .when {
+                        $0.decrypt(
+                            authenticatedCipherText: anyArray(),
+                            secretKey: anyArray(),
+                            nonce: anyArray(),
+                            additionalData: anyArray()
+                        )
+                    }
                     .thenReturn(testValue)
                 
                 _ = mockAead.encrypt(message: [], secretKey: [], nonce: [])
                 _ = mockAead.decrypt(authenticatedCipherText: [], secretKey: [], nonce: [])
                 
                 expect(mockAead)
-                    .to(call { $0.encrypt(message: any(), secretKey: any(), nonce: any(), additionalData: any()) })
+                    .to(call {
+                        $0.encrypt(message: anyArray(), secretKey: anyArray(), nonce: anyArray(), additionalData: anyArray())
+                    })
                 
                 expect(mockAead)
                     .to(call {
-                        $0.decrypt(authenticatedCipherText: any(), secretKey: any(), nonce: any(), additionalData: any())
+                        $0.decrypt(
+                            authenticatedCipherText: anyArray(),
+                            secretKey: anyArray(),
+                            nonce: anyArray(),
+                            additionalData: anyArray()
+                        )
                     })
             }
         }
@@ -41,19 +62,35 @@ class SodiumProtocolsSpec: QuickSpec {
             
             it("provides the default values in it's extensions") {
                 let mockGenericHash: MockGenericHash = MockGenericHash()
-                mockGenericHash.when { $0.hash(message: any(), key: any()) }.thenReturn(testValue)
                 mockGenericHash
-                    .when { $0.hashSaltPersonal(message: any(), outputLength: any(), key: any(), salt: any(), personal: any()) }
+                    .when { $0.hash(message: anyArray(), key: anyArray()) }
+                    .thenReturn(testValue)
+                mockGenericHash
+                    .when {
+                        $0.hashSaltPersonal(
+                            message: anyArray(),
+                            outputLength: any(),
+                            key: anyArray(),
+                            salt: anyArray(),
+                            personal: anyArray()
+                        )
+                    }
                     .thenReturn(testValue)
                 
                 _ = mockGenericHash.hash(message: [])
                 _ = mockGenericHash.hashSaltPersonal(message: [], outputLength: 0, salt: [], personal: [])
                 
                 expect(mockGenericHash)
-                    .to(call { $0.hash(message: any(), key: any()) })
+                    .to(call { $0.hash(message: anyArray(), key: anyArray()) })
                 expect(mockGenericHash)
                     .to(call {
-                        $0.hashSaltPersonal(message: any(), outputLength: any(), key: any(), salt: any(), personal: any())
+                        $0.hashSaltPersonal(
+                            message: anyArray(),
+                            outputLength: any(),
+                            key: anyArray(),
+                            salt: anyArray(),
+                            personal: anyArray()
+                        )
                     })
             }
         }

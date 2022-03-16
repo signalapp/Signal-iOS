@@ -127,7 +127,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
     fileprivate func joinOpenGroup(with string: String) {
         // A V2 open group URL will look like: <optional scheme> + <host> + <optional port> + <room> + <public key>
         // The host doesn't parse if no explicit scheme is provided
-        if let (room, server, publicKey) = OpenGroupManager.parseV2OpenGroup(from: string) {
+        if let (room, server, publicKey) = OpenGroupManager.parseOpenGroup(from: string) {
             joinV2OpenGroup(roomToken: room, server: server, publicKey: publicKey)
         } else {
             let title = NSLocalizedString("invalid_url", comment: "")

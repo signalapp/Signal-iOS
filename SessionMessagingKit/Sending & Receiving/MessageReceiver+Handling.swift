@@ -9,7 +9,7 @@ extension MessageReceiver {
         return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
     }
 
-    public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws {
+    public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any, dependencies: Dependencies = Dependencies()) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
@@ -19,7 +19,7 @@ extension MessageReceiver {
         case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
         case let message as UnsendRequest: handleUnsendRequest(message, using: transaction)
         case let message as MessageRequestResponse: handleMessageRequestResponse(message, using: transaction)
-        case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
+        case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction, dependencies: dependencies)
         default: fatalError()
         }
         
@@ -29,8 +29,7 @@ extension MessageReceiver {
         }
         guard isMainAppAndActive else { return }
         // Touch the thread to update the home screen preview
-        let storage = SNMessagingKitConfiguration.shared.storage
-        guard let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { return }
+        guard let threadID = dependencies.storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { return }
         ThreadUpdateBatcher.shared.touch(threadID)
     }
 
@@ -277,7 +276,7 @@ extension MessageReceiver {
             
             // Open groups
             for openGroupURL in message.openGroups {
-                if let (room, server, publicKey) = OpenGroupManager.parseV2OpenGroup(from: openGroupURL) {
+                if let (room, server, publicKey) = OpenGroupManager.parseOpenGroup(from: openGroupURL) {
                     OpenGroupManager.shared.add(roomToken: room, server: server, publicKey: publicKey, isConfigMessage: true, using: transaction).retainUntilComplete()
                 }
             }
@@ -324,8 +323,7 @@ extension MessageReceiver {
     // MARK: - Visible Messages
 
     @discardableResult
-    public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws -> String {
-        let storage = SNMessagingKitConfiguration.shared.storage
+    public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any, dependencies: Dependencies = Dependencies()) throws -> String {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var isMainAppAndActive = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
@@ -336,7 +334,7 @@ extension MessageReceiver {
             guard let attachment = VisibleMessage.Attachment.fromProto(proto) else { return nil }
             return attachment.isValid ? attachment : nil
         }
-        let attachmentIDs = storage.persist(attachments, using: transaction)
+        let attachmentIDs = dependencies.storage.persist(attachments, using: transaction)
         message.attachmentIDs = attachmentIDs
         var attachmentsToDownload = attachmentIDs
         // Update profile if needed
@@ -348,7 +346,7 @@ extension MessageReceiver {
                 profileKey: contactProfileKey, sentTimestamp: message.sentTimestamp!, transaction: transaction)
         }
         // Get or create thread
-        guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
+        guard let threadID = dependencies.storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         // Parse quote if needed
         var tsQuotedMessage: TSQuotedMessage? = nil
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
@@ -366,11 +364,10 @@ extension MessageReceiver {
             }
         }
         // Persist the message
-        guard let tsMessageID = storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview,
-            groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.duplicateMessage }
+        guard let tsMessageID = dependencies.storage.persist(message, quotedMessage: tsQuotedMessage, linkPreview: owsLinkPreview, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.duplicateMessage }
         message.threadID = threadID
         // Start attachment downloads if needed
-        let isContactTrusted = Storage.shared.getContact(with: message.sender!)?.isTrusted ?? false
+        let isContactTrusted = dependencies.storage.getContact(with: message.sender!)?.isTrusted ?? false
         let isGroup = message.groupPublicKey != nil || openGroupID != nil
         attachmentsToDownload.forEach { attachmentID in
             let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsMessageID: tsMessageID, threadID: threadID)
@@ -426,11 +423,10 @@ extension MessageReceiver {
     
     
     // MARK: - Profile Updating
-    private static func updateProfileIfNeeded(publicKey: String, name: String?, profilePictureURL: String?,
-        profileKey: OWSAES256Key?, sentTimestamp: UInt64, transaction: YapDatabaseReadWriteTransaction) {
+    private static func updateProfileIfNeeded(publicKey: String, name: String?, profilePictureURL: String?, profileKey: OWSAES256Key?, sentTimestamp: UInt64, transaction: YapDatabaseReadWriteTransaction, dependencies: Dependencies = Dependencies()) {
         let isCurrentUser = (publicKey == getUserHexEncodedPublicKey())
         let userDefaults = UserDefaults.standard
-        let contact = Storage.shared.getContact(with: publicKey) ?? Contact(sessionID: publicKey) // New API
+        let contact = (dependencies.storage.getContact(with: publicKey) ?? Contact(sessionID: publicKey)) // New API
         // Name
         if let name = name, name != contact.name {
             let shouldUpdate: Bool
@@ -464,7 +460,7 @@ extension MessageReceiver {
             }
         }
         // Persist changes
-        Storage.shared.setContact(contact, using: transaction)
+        dependencies.storage.setContact(contact, using: transaction)
         // Download the profile picture if needed
         transaction.addCompletionQueue(DispatchQueue.main) {
             SSKEnvironment.shared.profileManager.downloadAvatar(forUserProfile: contact)

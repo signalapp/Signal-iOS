@@ -19,7 +19,7 @@ extension OpenGroupAPI {
             self.server = server
         }
         
-        public func startIfNeeded(using dependencies: Dependencies = Dependencies()) {
+        public func startIfNeeded(using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) {
             guard !hasStarted else { return }
             
             hasStarted = true
@@ -37,12 +37,12 @@ extension OpenGroupAPI {
         // MARK: - Polling
         
         @discardableResult
-        public func poll(using dependencies: Dependencies = Dependencies()) -> Promise<Void> {
+        public func poll(using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) -> Promise<Void> {
             return poll(isBackgroundPoll: false, using: dependencies)
         }
 
         @discardableResult
-        public func poll(isBackgroundPoll: Bool, using dependencies: Dependencies = Dependencies()) -> Promise<Void> {
+        public func poll(isBackgroundPoll: Bool, using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) -> Promise<Void> {
             guard !self.isPolling else { return Promise.value(()) }
             
             self.isPolling = true
@@ -54,10 +54,10 @@ extension OpenGroupAPI {
                 OpenGroupAPI
                     .poll(
                         server,
-                        hasPerformedInitialPoll: OpenGroupManager.shared.cache.hasPerformedInitialPoll[server] == true,
+                        hasPerformedInitialPoll: dependencies.cache.hasPerformedInitialPoll[server] == true,
                         timeSinceLastPoll: (
-                            OpenGroupManager.shared.cache.timeSinceLastPoll[server] ??
-                            OpenGroupManager.shared.cache.getTimeSinceLastOpen(using: dependencies)
+                            dependencies.cache.timeSinceLastPoll[server] ??
+                            dependencies.cache.getTimeSinceLastOpen(using: dependencies)
                         ),
                         using: dependencies
                     )
@@ -65,7 +65,7 @@ extension OpenGroupAPI {
                         self?.isPolling = false
                         self?.handlePollResponse(response, isBackgroundPoll: isBackgroundPoll, using: dependencies)
                         
-                        OpenGroupManager.shared.mutableCache.mutate { cache in
+                        dependencies.mutableCache.mutate { cache in
                             cache.hasPerformedInitialPoll[server] = true
                             cache.timeSinceLastPoll[server] = Date().timeIntervalSince1970
                             UserDefaults.standard[.lastOpen] = Date()
@@ -82,7 +82,7 @@ extension OpenGroupAPI {
             return promise
         }
         
-        private func handlePollResponse(_ response: [OpenGroupAPI.Endpoint: (info: OnionRequestResponseInfoType, data: Codable?)], isBackgroundPoll: Bool, using dependencies: Dependencies = Dependencies()) {
+        private func handlePollResponse(_ response: [OpenGroupAPI.Endpoint: (info: OnionRequestResponseInfoType, data: Codable?)], isBackgroundPoll: Bool, using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) {
             let server: String = self.server
             
             dependencies.storage.write { anyTransaction in

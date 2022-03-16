@@ -1,5 +1,6 @@
 import PromiseKit
 import Sodium
+import Curve25519Kit
 import YapDatabase
 
 public protocol SessionMessagingKitStorageProtocol {
@@ -18,6 +19,12 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUserKeyPair() -> ECKeyPair?
     func getUserED25519KeyPair() -> Box.KeyPair?
     func getUser() -> Contact?
+    
+    // MARK: - Contacts
+    
+    func getContact(with sessionID: String) -> Contact?
+    func getContact(with sessionID: String, using transaction: Any) -> Contact?
+    func setContact(_ contact: Contact, using transaction: Any)
     func getAllContacts() -> Set<Contact>
     func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact>
     
@@ -32,6 +39,10 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - Closed Groups
 
+    func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [ECKeyPair]
+    func getLatestClosedGroupEncryptionKeyPair(for groupPublicKey: String) -> ECKeyPair?
+    func addClosedGroupEncryptionKeyPair(_ keyPair: ECKeyPair, for groupPublicKey: String, using transaction: Any)
+    func removeAllClosedGroupEncryptionKeyPairs(for groupPublicKey: String, using transaction: Any)
     func getUserClosedGroupPublicKeys() -> Set<String>
     func getZombieMembers(for groupPublicKey: String) -> Set<String>
     func setZombieMembers(for groupPublicKey: String, to zombies: Set<String>, using transaction: Any)
