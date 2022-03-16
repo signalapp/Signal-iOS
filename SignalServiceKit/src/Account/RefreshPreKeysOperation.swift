@@ -46,7 +46,10 @@ public class RefreshPreKeysOperation: OWSOperation {
             signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords)
 
             return firstly(on: .global()) { () -> Promise<Void> in
-                self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
+                self.accountServiceClient.setPreKeys(for: .aci,
+                                                     identityKey: identityKey,
+                                                     signedPreKeyRecord: signedPreKeyRecord,
+                                                     preKeyRecords: preKeyRecords)
             }.done(on: .global()) { () in
                 signedPreKeyRecord.markAsAcceptedByService()
 

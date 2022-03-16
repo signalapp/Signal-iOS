@@ -16,7 +16,7 @@ public protocol SignalServiceClient {
     func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
     func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse>
     func getAvailablePreKeys() -> Promise<Int>
-    func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
+    func registerPreKeys(for identity: OWSIdentity, identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
@@ -82,10 +82,16 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }
     }
 
-    public func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
+    public func registerPreKeys(for identity: OWSIdentity,
+                                identityKey: IdentityKey,
+                                signedPreKeyRecord: SignedPreKeyRecord,
+                                preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
         Logger.debug("")
 
-        let request = OWSRequestFactory.registerPrekeysRequest(withPrekeyArray: preKeyRecords, identityKey: identityKey, signedPreKey: signedPreKeyRecord)
+        let request = OWSRequestFactory.registerPrekeysRequest(for: identity,
+                                                               prekeyArray: preKeyRecords,
+                                                               identityKey: identityKey,
+                                                               signedPreKey: signedPreKeyRecord)
         return networkManager.makePromise(request: request).asVoid()
     }
 

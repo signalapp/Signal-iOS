@@ -562,15 +562,24 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           parameters:[self dictionaryFromSignedPreKey:signedPreKey]];
 }
 
-+ (TSRequest *)registerPrekeysRequestWithPrekeyArray:(NSArray *)prekeys
-                                         identityKey:(NSData *)identityKeyPublic
-                                        signedPreKey:(SignedPreKeyRecord *)signedPreKey
++ (TSRequest *)registerPrekeysRequestForIdentity:(OWSIdentity)identity
+                                     prekeyArray:(NSArray *)prekeys
+                                     identityKey:(NSData *)identityKeyPublic
+                                    signedPreKey:(SignedPreKeyRecord *)signedPreKey
 {
     OWSAssertDebug(prekeys.count > 0);
     OWSAssertDebug(identityKeyPublic.length > 0);
     OWSAssertDebug(signedPreKey);
 
     NSString *path = self.textSecureKeysAPI;
+    switch (identity) {
+        case OWSIdentityACI:
+            break;
+        case OWSIdentityPNI:
+            path = [path stringByAppendingString:@"?identity=pni"];
+            break;
+    }
+
     NSString *publicIdentityKey = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
     NSMutableArray *serializedPrekeyList = [NSMutableArray array];
     for (PreKeyRecord *preKey in prekeys) {

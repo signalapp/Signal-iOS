@@ -23,7 +23,7 @@ public class FakeAccountServiceClient: AccountServiceClient {
         return Promise { $0.resolve(0) }
     }
 
-    public override func setPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
+    public override func setPreKeys(for identity: OWSIdentity, identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void> {
         return Promise { $0.resolve() }
     }
 

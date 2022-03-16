@@ -203,10 +203,11 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     OWSAssertDebug(!self.tsAccountManager.isRegisteredAndReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        SSKCreatePreKeysOperation *operation = [SSKCreatePreKeysOperation new];
-        [self.operationQueue addOperations:@[ operation ] waitUntilFinished:YES];
+        SSKCreatePreKeysOperation *aciOp = [[SSKCreatePreKeysOperation alloc] initForIdentity:OWSIdentityACI];
+        SSKCreatePreKeysOperation *pniOp = [[SSKCreatePreKeysOperation alloc] initForIdentity:OWSIdentityPNI];
+        [self.operationQueue addOperations:@[ aciOp, pniOp ] waitUntilFinished:YES];
 
-        NSError *_Nullable error = operation.failingError;
+        NSError *_Nullable error = aciOp.failingError ?: pniOp.failingError;
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 failureHandler(error);

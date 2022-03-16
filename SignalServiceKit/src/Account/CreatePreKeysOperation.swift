@@ -6,15 +6,21 @@ import Foundation
 
 @objc(SSKCreatePreKeysOperation)
 public class CreatePreKeysOperation: OWSOperation {
+    private let identity: OWSIdentity
+
+    @objc(initForIdentity:)
+    public init(for identity: OWSIdentity) {
+        self.identity = identity
+    }
 
     public override func run() {
         Logger.debug("")
 
-        // PNI TODO: parameterize this entire operation on OWSIdentity
-        let identityKeyPair = self.identityManager.identityKeyPair(for: .aci) ?? self.identityManager.generateNewIdentityKey(for: .aci)
+        let identityKeyPair = self.identityManager.identityKeyPair(for: identity) ??
+            self.identityManager.generateNewIdentityKey(for: identity)
         let identityKey: Data = identityKeyPair.publicKey
 
-        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        let signalProtocolStore = self.signalProtocolStore(for: identity)
         let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
 
@@ -31,7 +37,8 @@ public class CreatePreKeysOperation: OWSOperation {
             }
             return self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.then(on: .global()) { () -> Promise<Void> in
-            self.accountServiceClient.setPreKeys(identityKey: identityKey,
+            self.accountServiceClient.setPreKeys(for: self.identity,
+                                                 identityKey: identityKey,
                                                  signedPreKeyRecord: signedPreKeyRecord,
                                                  preKeyRecords: preKeyRecords)
         }.done {

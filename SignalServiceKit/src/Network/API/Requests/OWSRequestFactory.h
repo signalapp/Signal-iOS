@@ -18,6 +18,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
     TSVerificationTransportSMS
 };
 
+typedef NS_ENUM(uint8_t, OWSIdentity);
+
 @interface OWSRequestFactory : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -126,9 +128,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) {
 
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey;
 
-+ (TSRequest *)registerPrekeysRequestWithPrekeyArray:(NSArray *)prekeys
-                                         identityKey:(NSData *)identityKeyPublic
-                                        signedPreKey:(SignedPreKeyRecord *)signedPreKey;
++ (TSRequest *)registerPrekeysRequestForIdentity:(OWSIdentity)identity
+                                     prekeyArray:(NSArray *)prekeys
+                                     identityKey:(NSData *)identityKeyPublic
+                                    signedPreKey:(SignedPreKeyRecord *)signedPreKey;
 
 #pragma mark - Storage Service
 
