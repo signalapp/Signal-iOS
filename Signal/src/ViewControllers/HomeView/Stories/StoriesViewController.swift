@@ -225,7 +225,7 @@ extension StoriesViewController: UITableViewDelegate {
         }
         let vc = StoryPageViewController(context: model.context)
         vc.contextDataSource = self
-        vc.present(from: self, animated: true)
+        presentFullScreen(vc, animated: true)
     }
 }
 

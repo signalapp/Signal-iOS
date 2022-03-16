@@ -53,14 +53,12 @@ class StoryCell: UITableViewCell {
         attachmentThumbnail.backgroundColor = Theme.washColor
         attachmentThumbnail.removeAllSubviews()
 
-        let contentMode: UIView.ContentMode = .scaleAspectFill
-
         switch model.latestMessageAttachment {
         case .file(let attachment):
             if let pointer = attachment as? TSAttachmentPointer {
                 let pointerView = UIView()
 
-                if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer, contentMode: contentMode) {
+                if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
                     pointerView.addSubview(blurHashImageView)
                     blurHashImageView.autoPinEdgesToSuperviewEdges()
                 }
@@ -72,7 +70,10 @@ class StoryCell: UITableViewCell {
                 attachmentThumbnail.addSubview(pointerView)
                 pointerView.autoPinEdgesToSuperviewEdges()
             } else if let stream = attachment as? TSAttachmentStream {
-                let imageView = buildThumbnailImageView(stream: stream, contentMode: contentMode)
+                let backgroundImageView = buildBackgroundImageView(stream: stream)
+                attachmentThumbnail.addSubview(backgroundImageView)
+                backgroundImageView.autoPinEdgesToSuperviewEdges()
+                let imageView = buildThumbnailImageView(stream: stream)
                 attachmentThumbnail.addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
             } else {
@@ -87,9 +88,26 @@ class StoryCell: UITableViewCell {
         }
     }
 
-    private func buildThumbnailImageView(stream: TSAttachmentStream, contentMode: UIView.ContentMode) -> UIView {
+    private func buildBackgroundImageView(stream: TSAttachmentStream) -> UIView {
         let imageView = UIImageView()
-        imageView.contentMode = contentMode
+        imageView.contentMode = .scaleAspectFill
+
+        stream.thumbnailImageSmall {
+            imageView.image = $0
+        } failure: {
+            owsFailDebug("Failed to generate thumbnail")
+        }
+
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        imageView.addSubview(blurView)
+        blurView.autoPinEdgesToSuperviewEdges()
+
+        return imageView
+    }
+
+    private func buildThumbnailImageView(stream: TSAttachmentStream) -> UIView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.allowsEdgeAntialiasing = true
@@ -103,12 +121,12 @@ class StoryCell: UITableViewCell {
         return imageView
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer, contentMode: UIView.ContentMode) -> UIView? {
+    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer) -> UIView? {
         guard let blurHash = pointer.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
             return nil
         }
         let imageView = UIImageView()
-        imageView.contentMode = contentMode
+        imageView.contentMode = .scaleAspectFill
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.allowsEdgeAntialiasing = true

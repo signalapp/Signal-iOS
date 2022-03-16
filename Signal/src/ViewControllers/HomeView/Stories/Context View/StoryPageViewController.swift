@@ -26,15 +26,6 @@ class StoryPageViewController: UIPageViewController {
         self.currentContext = context
     }
 
-    public func present(from fromViewController: UIViewController, animated: Bool) {
-        AssertIsOnMainThread()
-
-        modalPresentationStyle = .custom
-        modalPresentationCapturesStatusBarAppearance = true
-        transitioningDelegate = self
-        fromViewController.present(self, animated: animated)
-    }
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -49,6 +40,7 @@ class StoryPageViewController: UIPageViewController {
         super.viewDidLoad()
         dataSource = self
         delegate = self
+        view.backgroundColor = .black
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -111,48 +103,5 @@ extension StoryPageViewController: StoryHorizontalPageViewControllerDelegate {
             direction: .reverse,
             animated: true
         )
-    }
-}
-
-private class AnimationController: UIPresentationController {
-
-    let backdropView: UIView = UIView()
-
-    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
-        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
-        if UIAccessibility.isReduceTransparencyEnabled {
-            backdropView.backgroundColor = Theme.backdropColor
-        } else {
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            backdropView.addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-            backdropView.backgroundColor = .ows_blackAlpha60
-        }
-    }
-
-    override func presentationTransitionWillBegin() {
-        guard let containerView = containerView else { return }
-        backdropView.alpha = 0
-        containerView.addSubview(backdropView)
-        backdropView.autoPinEdgesToSuperviewEdges()
-
-        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
-            self.backdropView.alpha = 1
-        }, completion: nil)
-    }
-
-    override func dismissalTransitionWillBegin() {
-        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
-            self.backdropView.alpha = 0
-        }, completion: { _ in
-            self.backdropView.removeFromSuperview()
-        })
-    }
-}
-
-extension StoryPageViewController: UIViewControllerTransitioningDelegate {
-    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return AnimationController(presentedViewController: presented, presenting: presenting)
     }
 }

@@ -308,31 +308,46 @@ class StoryItemViewController: OWSViewController {
     }
 
     private func buildMediaView() -> UIView {
-        // TODO: Talk to design about how we handle things that are not 9:16.
-        // Do we letter box? What does the letterboxing look like?
-        let contentMode: UIView.ContentMode = .scaleAspectFit
-
         switch item.attachment {
         case .stream(let stream):
+            let container = UIView()
+
             guard let originalMediaUrl = stream.originalMediaURL else {
                 owsFailDebug("Missing media for attachment stream")
                 return buildContentUnavailableView()
             }
 
+            guard let thumbnailImage = stream.thumbnailImageSmallSync() else {
+                owsFailDebug("Failed to generate thumbnail for attachment stream")
+                return buildContentUnavailableView()
+            }
+
+            let backgroundImageView = buildBackgroundImageView(thumbnailImage: thumbnailImage)
+            container.addSubview(backgroundImageView)
+            backgroundImageView.autoPinEdgesToSuperviewEdges()
+
             if stream.isVideo {
-                return buildVideoView(originalMediaUrl: originalMediaUrl, contentMode: contentMode)
+                let videoView = buildVideoView(originalMediaUrl: originalMediaUrl)
+                container.addSubview(videoView)
+                videoView.autoPinEdgesToSuperviewEdges()
             } else if stream.shouldBeRenderedByYY {
-                return buildYYImageView(originalMediaUrl: originalMediaUrl, contentMode: contentMode)
+                let yyImageView = buildYYImageView(originalMediaUrl: originalMediaUrl)
+                container.addSubview(yyImageView)
+                yyImageView.autoPinEdgesToSuperviewEdges()
             } else if stream.isImage {
-                return buildImageView(originalMediaUrl: originalMediaUrl, contentMode: contentMode)
+                let imageView = buildImageView(originalMediaUrl: originalMediaUrl)
+                container.addSubview(imageView)
+                imageView.autoPinEdgesToSuperviewEdges()
             } else {
                 owsFailDebug("Unexpected content type.")
                 return buildContentUnavailableView()
             }
+
+            return container
         case .pointer(let pointer):
             let container = UIView()
 
-            if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer, contentMode: contentMode) {
+            if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
                 container.addSubview(blurHashImageView)
                 blurHashImageView.autoPinEdgesToSuperviewEdges()
             }
@@ -349,19 +364,19 @@ class StoryItemViewController: OWSViewController {
     }
 
     private var videoPlayer: OWSVideoPlayer?
-    private func buildVideoView(originalMediaUrl: URL, contentMode: UIView.ContentMode) -> UIView {
+    private func buildVideoView(originalMediaUrl: URL) -> UIView {
         let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: false)
         self.videoPlayer = player
 
         let playerView = VideoPlayerView()
-        playerView.contentMode = contentMode
+        playerView.contentMode = .scaleAspectFit
         playerView.videoPlayer = player
         player.play()
 
         return playerView
     }
 
-    private func buildYYImageView(originalMediaUrl: URL, contentMode: UIView.ContentMode) -> UIView {
+    private func buildYYImageView(originalMediaUrl: URL) -> UIView {
         guard let image = YYImage(contentsOfFile: originalMediaUrl.path) else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
@@ -372,7 +387,7 @@ class StoryItemViewController: OWSViewController {
                 return buildContentUnavailableView()
         }
         let animatedImageView = YYAnimatedImageView()
-        animatedImageView.contentMode = contentMode
+        animatedImageView.contentMode = .scaleAspectFit
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
         animatedImageView.layer.allowsEdgeAntialiasing = true
@@ -380,7 +395,7 @@ class StoryItemViewController: OWSViewController {
         return animatedImageView
     }
 
-    private func buildImageView(originalMediaUrl: URL, contentMode: UIView.ContentMode) -> UIView {
+    private func buildImageView(originalMediaUrl: URL) -> UIView {
         guard let image = UIImage(contentsOfFile: originalMediaUrl.path) else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
@@ -392,7 +407,7 @@ class StoryItemViewController: OWSViewController {
         }
 
         let imageView = UIImageView()
-        imageView.contentMode = contentMode
+        imageView.contentMode = .scaleAspectFit
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.allowsEdgeAntialiasing = true
@@ -400,16 +415,28 @@ class StoryItemViewController: OWSViewController {
         return imageView
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer, contentMode: UIView.ContentMode) -> UIView? {
+    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer) -> UIView? {
         guard let blurHash = pointer.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
             return nil
         }
         let imageView = UIImageView()
-        imageView.contentMode = contentMode
+        imageView.contentMode = .scaleAspectFill
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.allowsEdgeAntialiasing = true
         imageView.image = blurHashImage
+        return imageView
+    }
+
+    private func buildBackgroundImageView(thumbnailImage: UIImage) -> UIView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = thumbnailImage
+
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        imageView.addSubview(blurView)
+        blurView.autoPinEdgesToSuperviewEdges()
+
         return imageView
     }
 
