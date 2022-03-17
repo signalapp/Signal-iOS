@@ -135,7 +135,7 @@ class AudioMessageView: ManualStackView {
         } else if let attachmentPointer = audioAttachment.attachmentPointer {
             leftView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                 style: .withoutCircle(diameter: Self.animationSize),
-                                                conversationStyle: conversationStyle,
+                                                isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                                 mediaCache: mediaCache)
         } else {
             owsFailDebug("Unexpected state.")

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,7 +22,7 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
         super.viewDidLoad()
         if avatarImage == nil {
             avatarImage = Self.avatarBuilder.avatarImageForLocalUserWithSneakyTransaction(
-                diameterPoints: sizeClass.avatarDiameter,
+                diameterPoints: sizeClass.diameter,
                 localUserDisplayMode: .asUser)
         }
         updateAvatarView()

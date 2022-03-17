@@ -7,18 +7,18 @@ import SignalUI
 import UIKit
 
 @objc
-public class HVTableDataSource: NSObject {
-    private var viewState: HVViewState!
+public class CLVTableDataSource: NSObject {
+    private var viewState: CLVViewState!
 
-    public let tableView = HVTableView()
+    public let tableView = CLVTableView()
 
     @objc
-    public weak var viewController: HomeViewController?
+    public weak var viewController: ChatListViewController?
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
     @objc
-    public var renderState: HVRenderState = .empty
+    public var renderState: CLVRenderState = .empty
 
     fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
 
@@ -51,7 +51,7 @@ public class HVTableDataSource: NSObject {
         super.init()
     }
 
-    func configure(viewState: HVViewState) {
+    func configure(viewState: CLVViewState) {
         AssertIsOnMainThread()
 
         self.viewState = viewState
@@ -60,7 +60,7 @@ public class HVTableDataSource: NSObject {
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.separatorColor = Theme.cellSeparatorColor
-        tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.reuseIdentifier)
+        tableView.register(ChatListCell.self, forCellReuseIdentifier: ChatListCell.reuseIdentifier)
         tableView.register(ArchivedConversationsCell.self, forCellReuseIdentifier: ArchivedConversationsCell.reuseIdentifier)
         tableView.tableFooterView = UIView()
     }
@@ -68,14 +68,14 @@ public class HVTableDataSource: NSObject {
 
 // MARK: -
 
-extension HVTableDataSource {
+extension CLVTableDataSource {
     public func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
         let threadViewModelCache = viewState.threadViewModelCache
         if let value = threadViewModelCache.get(key: thread.uniqueId) {
             return value
         }
         let threadViewModel = databaseStorage.read { transaction in
-            ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
+            ThreadViewModel(thread: thread, forChatList: true, transaction: transaction)
         }
         threadViewModelCache.set(key: thread.uniqueId, value: threadViewModel)
         return threadViewModel
@@ -96,7 +96,7 @@ extension HVTableDataSource {
 
 // MARK: - UIScrollViewDelegate
 
-extension HVTableDataSource: UIScrollViewDelegate {
+extension CLVTableDataSource: UIScrollViewDelegate {
 
     private func preloadCellsIfNecessary() {
         AssertIsOnMainThread()
@@ -133,7 +133,7 @@ extension HVTableDataSource: UIScrollViewDelegate {
             return
         }
         let conversationIndexPaths = visibleIndexPaths.compactMap { indexPath -> IndexPath? in
-            guard let section = HomeViewSection(rawValue: indexPath.section) else {
+            guard let section = ChatListSection(rawValue: indexPath.section) else {
                 owsFailDebug("Invalid section: \(indexPath.section).")
                 return nil
             }
@@ -211,7 +211,7 @@ extension HVTableDataSource: UIScrollViewDelegate {
 // MARK: -
 
 @objc
-public enum HomeViewMode: Int, CaseIterable {
+public enum ChatListMode: Int, CaseIterable {
     case archive
     case inbox
 }
@@ -219,7 +219,7 @@ public enum HomeViewMode: Int, CaseIterable {
 // MARK: -
 
 @objc
-public enum HomeViewSection: Int, CaseIterable {
+public enum ChatListSection: Int, CaseIterable {
     case reminders
     case pinned
     case unpinned
@@ -228,7 +228,7 @@ public enum HomeViewSection: Int, CaseIterable {
 
 // MARK: -
 
-extension HVTableDataSource: UITableViewDelegate {
+extension CLVTableDataSource: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView,
                    editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
@@ -273,7 +273,7 @@ extension HVTableDataSource: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         AssertIsOnMainThread()
 
-        guard let section = HomeViewSection(rawValue: section) else {
+        guard let section = ChatListSection(rawValue: section) else {
             owsFailDebug("Invalid section: \(section).")
             return 0
         }
@@ -306,7 +306,7 @@ extension HVTableDataSource: UITableViewDelegate {
                           viewForHeaderInSection section: Int) -> UIView? {
         AssertIsOnMainThread()
 
-        guard let section = HomeViewSection(rawValue: section) else {
+        guard let section = ChatListSection(rawValue: section) else {
             owsFailDebug("Invalid section: \(section).")
             return nil
         }
@@ -363,7 +363,7 @@ extension HVTableDataSource: UITableViewDelegate {
 
         viewController.dismissSearchKeyboard()
 
-        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return
         }
@@ -453,7 +453,7 @@ extension HVTableDataSource: UITableViewDelegate {
         // defer data source updates until the transition completes but, as far as I can tell, we aren't
         // notified when this happens.
 
-        guard let cell = tableView.cellForRow(at: indexPath) as? HomeViewCell else {
+        guard let cell = tableView.cellForRow(at: indexPath) as? ChatListCell else {
             owsFailDebug("Invalid cell.")
             return nil
         }
@@ -489,7 +489,7 @@ extension HVTableDataSource: UITableViewDelegate {
                           forRowAt indexPath: IndexPath) {
         AssertIsOnMainThread()
 
-        guard let cell = cell as? HomeViewCell else {
+        guard let cell = cell as? ChatListCell else {
             return
         }
         viewController?.updateCellVisibility(cell: cell, isCellVisible: true)
@@ -502,7 +502,7 @@ extension HVTableDataSource: UITableViewDelegate {
                           forRowAt indexPath: IndexPath) {
         AssertIsOnMainThread()
 
-        guard let cell = cell as? HomeViewCell else {
+        guard let cell = cell as? ChatListCell else {
             return
         }
         viewController?.updateCellVisibility(cell: cell, isCellVisible: false)
@@ -511,12 +511,12 @@ extension HVTableDataSource: UITableViewDelegate {
 
 // MARK: -
 
-extension HVTableDataSource: UITableViewDataSource {
+extension CLVTableDataSource: UITableViewDataSource {
 
     public func numberOfSections(in tableView: UITableView) -> Int {
         AssertIsOnMainThread()
 
-        return HomeViewSection.allCases.count
+        return ChatListSection.allCases.count
     }
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -533,7 +533,7 @@ extension HVTableDataSource: UITableViewDataSource {
             return 0
         }
 
-        guard let section = HomeViewSection(rawValue: section) else {
+        guard let section = ChatListSection(rawValue: section) else {
             owsFailDebug("Invalid section: \(section).")
             return 0
         }
@@ -551,7 +551,7 @@ extension HVTableDataSource: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         AssertIsOnMainThread()
-                guard let section = HomeViewSection(rawValue: indexPath.section) else {
+                guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return UITableView.automaticDimension
         }
@@ -573,7 +573,7 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Missing viewController.")
             return UITableViewCell()
         }
-        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return UITableViewCell()
         }
@@ -607,7 +607,7 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableView.automaticDimension
         }
-        let result = HomeViewCell.measureCellHeight(cellContentToken: cellConfigurationAndContentToken.contentToken)
+        let result = ChatListCell.measureCellHeight(cellContentToken: cellConfigurationAndContentToken.contentToken)
         viewController.conversationCellHeightCache = result
         return result
     }
@@ -615,7 +615,7 @@ extension HVTableDataSource: UITableViewDataSource {
     private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatListCell.reuseIdentifier) as? ChatListCell else {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
@@ -687,7 +687,7 @@ extension HVTableDataSource: UITableViewDataSource {
                           trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
-        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return nil
         }
@@ -717,7 +717,7 @@ extension HVTableDataSource: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         AssertIsOnMainThread()
 
-        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return false
         }
@@ -736,7 +736,7 @@ extension HVTableDataSource: UITableViewDataSource {
                           leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
-        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return nil
         }
@@ -763,9 +763,9 @@ extension HVTableDataSource: UITableViewDataSource {
 
 // MARK: -
 
-extension HVTableDataSource {
+extension CLVTableDataSource {
 
-    func updateAndSetRefreshTimer(for cell: HomeViewCell?) {
+    func updateAndSetRefreshTimer(for cell: ChatListCell?) {
         if let cell = cell, let timestamp = cell.nextUpdateTimestamp {
             if nextUpdateAt == nil || timestamp.isBefore(nextUpdateAt!) {
                 nextUpdateAt = timestamp
@@ -787,7 +787,7 @@ extension HVTableDataSource {
     func calcRefreshTimer() {
         nextUpdateAt = nil
         for cell in tableView.visibleCells {
-            updateAndSetRefreshTimer(for: cell as? HomeViewCell)
+            updateAndSetRefreshTimer(for: cell as? ChatListCell)
         }
     }
 
@@ -796,7 +796,7 @@ extension HVTableDataSource {
         AssertIsOnMainThread()
 
         guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return false }
-        guard let homeCell = tableView.cellForRow(at: indexPath) as? HomeViewCell else { return false }
+        guard let homeCell = tableView.cellForRow(at: indexPath) as? ChatListCell else { return false }
         guard let configToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken else { return false }
 
         let cellWasVisible = homeCell.isCellVisible
@@ -807,26 +807,26 @@ extension HVTableDataSource {
         return true
     }
 
-    fileprivate struct HVCellConfigurationAndContentToken {
-        let configuration: HomeViewCell.Configuration
-        let contentToken: HVCellContentToken
+    fileprivate struct CLVCellConfigurationAndContentToken {
+        let configuration: ChatListCell.Configuration
+        let contentToken: CLVCellContentToken
     }
 
     // This method can be called from any thread.
     private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
                                                lastReloadDate: Date?,
-                                               isSplitViewControllerExpanded: Bool) -> HomeViewCell.Configuration {
-        owsAssertDebug(threadViewModel.homeViewInfo != nil)
+                                               isSplitViewControllerExpanded: Bool) -> ChatListCell.Configuration {
+        owsAssertDebug(threadViewModel.chatListInfo != nil)
 
-        let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
-        let configuration = HomeViewCell.Configuration(thread: threadViewModel,
+        let isBlocked = threadViewModel.chatListInfo?.isBlocked == true
+        let configuration = ChatListCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,
                                                        isBlocked: isBlocked,
                                                        isSplitViewControllerExpanded: isSplitViewControllerExpanded)
         return configuration
     }
 
-    fileprivate func buildCellConfigurationAndContentTokenSync(forIndexPath indexPath: IndexPath) -> HVCellConfigurationAndContentToken? {
+    fileprivate func buildCellConfigurationAndContentTokenSync(forIndexPath indexPath: IndexPath) -> CLVCellConfigurationAndContentToken? {
         AssertIsOnMainThread()
 
         guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
@@ -847,24 +847,24 @@ extension HVTableDataSource {
                                                         lastReloadDate: lastReloadDate,
                                                         isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
         let cellContentCache = viewController.cellContentCache
-        let contentToken = { () -> HVCellContentToken in
-            // If we have an existing HVCellContentToken, use it.
+        let contentToken = { () -> CLVCellContentToken in
+            // If we have an existing CLVCellContentToken, use it.
             // Cell measurement/arrangement is expensive.
             let cacheKey = configuration.thread.threadRecord.uniqueId
             if let cellContentToken = cellContentCache.get(key: cacheKey) {
                 return cellContentToken
             }
 
-            let cellContentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
+            let cellContentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
             cellContentCache.set(key: cacheKey, value: cellContentToken)
             return cellContentToken
         }()
-        return HVCellConfigurationAndContentToken(configuration: configuration,
+        return CLVCellConfigurationAndContentToken(configuration: configuration,
                                                   contentToken: contentToken)
     }
 
     // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
-    private static let preloadSerialQueue = DispatchQueue(label: "HVTableDataSource.preloadSerialQueue")
+    private static let preloadSerialQueue = DispatchQueue(label: "CLVTableDataSource.preloadSerialQueue")
 
     fileprivate func preloadCellIfNecessaryAsync(indexPath: IndexPath) {
         AssertIsOnMainThread()
@@ -888,7 +888,7 @@ extension HVTableDataSource {
         }
         let cacheKey = thread.uniqueId
         guard nil == cellContentCache.get(key: cacheKey) else {
-            // If we already have an existing HVCellContentToken, abort.
+            // If we already have an existing CLVCellContentToken, abort.
             return
         }
 
@@ -901,22 +901,22 @@ extension HVTableDataSource {
 
         // We use a serial queue to ensure we don't race and preload the same cell
         // twice at the same time.
-        firstly(on: Self.preloadSerialQueue) { () -> (ThreadViewModel, HVCellContentToken) in
+        firstly(on: Self.preloadSerialQueue) { () -> (ThreadViewModel, CLVCellContentToken) in
             guard nil == cellContentCache.get(key: cacheKey) else {
-                // If we already have an existing HVCellContentToken, abort.
-                throw HVPreloadError.alreadyLoaded
+                // If we already have an existing CLVCellContentToken, abort.
+                throw CLVPreloadError.alreadyLoaded
             }
             // This is the expensive work we do off the main thread.
             let threadViewModel = Self.databaseStorage.read { transaction in
-                ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
+                ThreadViewModel(thread: thread, forChatList: true, transaction: transaction)
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
                                                             lastReloadDate: lastReloadDate,
                                                             isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
-            let contentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
+            let contentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
         }.done(on: .main) { (threadViewModel: ThreadViewModel,
-                             contentToken: HVCellContentToken) in
+                             contentToken: CLVCellContentToken) in
             // Commit the preloaded values to their respective caches.
             guard cellContentCacheResetCount == cellContentCache.resetCount else {
                 Logger.info("cellContentCache was reset.")
@@ -937,21 +937,21 @@ extension HVTableDataSource {
                 Logger.info("contentToken already loaded.")
             }
         }.catch(on: .global()) { error in
-            if case HVPreloadError.alreadyLoaded = error {
+            if case CLVPreloadError.alreadyLoaded = error {
                 return
             }
             owsFailDebugUnlessNetworkFailure(error)
         }
     }
 
-    private enum HVPreloadError: Error {
+    private enum CLVPreloadError: Error {
         case alreadyLoaded
     }
 }
 
 // MARK: -
 
-public class HVTableView: UITableView {
+public class CLVTableView: UITableView {
 
     fileprivate var lastReloadDate: Date?
 
@@ -961,7 +961,7 @@ public class HVTableView: UITableView {
 
         lastReloadDate = Date()
         super.reloadData()
-        (dataSource as? HVTableDataSource)?.calcRefreshTimer()
+        (dataSource as? CLVTableDataSource)?.calcRefreshTimer()
     }
 
     @objc

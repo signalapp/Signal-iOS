@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -118,7 +118,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         var innerSubviewInfos = [ManualStackSubviewInfo]()
 
         if typingIndicator.avatarDataSource != nil {
-            let avatarSize: CGSize = ConversationStyle.groupMessageAvatarSizeClass.avatarSize
+            let avatarSize: CGSize = ConversationStyle.groupMessageAvatarSizeClass.size
             outerSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
 

@@ -273,7 +273,7 @@ extension TSThread {
         return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
     }
 
-    // Use the same point size as home view avatars, so it's likely cached and ready for the NSE.
+    // Use the same point size as chat list avatars, so it's likely cached and ready for the NSE.
     // The NSE cannot read the device scale, so we rely on a cached scale to correctly calculate
     // the appropriate pixel size for our avatars.
     private static let intentAvatarDiameterPixels: CGFloat = 56 * Environment.preferences.cachedDeviceScale

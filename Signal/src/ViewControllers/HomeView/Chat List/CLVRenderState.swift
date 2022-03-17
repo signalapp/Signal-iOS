@@ -5,9 +5,9 @@
 import Foundation
 
 @objc
-public class HVRenderState: NSObject {
+public class CLVRenderState: NSObject {
 
-    let viewInfo: HVViewInfo
+    let viewInfo: CLVViewInfo
 
     let pinnedThreads: OrderedDictionary<String, TSThread>
     let unpinnedThreads: [TSThread]
@@ -23,7 +23,7 @@ public class HVRenderState: NSObject {
 
     // MARK: -
 
-    public init(viewInfo: HVViewInfo,
+    public init(viewInfo: CLVViewInfo,
                 pinnedThreads: OrderedDictionary<String, TSThread>,
                 unpinnedThreads: [TSThread]) {
         self.viewInfo = viewInfo
@@ -31,8 +31,8 @@ public class HVRenderState: NSObject {
         self.unpinnedThreads = unpinnedThreads
     }
 
-    public static var empty: HVRenderState {
-        HVRenderState(viewInfo: .empty,
+    public static var empty: CLVRenderState {
+        CLVRenderState(viewInfo: .empty,
                       pinnedThreads: OrderedDictionary(),
                       unpinnedThreads: [])
     }
@@ -43,7 +43,7 @@ public class HVRenderState: NSObject {
 
     @objc
     func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
-        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
             if expectsSuccess {
                 owsFailDebug("Invalid section: \(indexPath.section).")
             }
@@ -78,9 +78,9 @@ public class HVRenderState: NSObject {
     @objc
     func indexPath(forUniqueId uniqueId: String) -> IndexPath? {
         if let index = (unpinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
-            return IndexPath(item: index, section: HomeViewSection.unpinned.rawValue)
+            return IndexPath(item: index, section: ChatListSection.unpinned.rawValue)
         } else if let index = (pinnedThreads.orderedKeys.firstIndex { $0 == uniqueId}) {
-            return IndexPath(item: index, section: HomeViewSection.pinned.rawValue)
+            return IndexPath(item: index, section: ChatListSection.pinned.rawValue)
         } else {
             return nil
         }
@@ -94,7 +94,7 @@ public class HVRenderState: NSObject {
             isPinnedThread = false
         }
 
-        let section: HomeViewSection = isPinnedThread ? .pinned : .unpinned
+        let section: ChatListSection = isPinnedThread ? .pinned : .unpinned
         let threadsInSection = isPinnedThread ? pinnedThreads.orderedValues : unpinnedThreads
 
         guard !threadsInSection.isEmpty else { return nil }
@@ -121,7 +121,7 @@ public class HVRenderState: NSObject {
             isPinnedThread = false
         }
 
-        let section: HomeViewSection = isPinnedThread ? .pinned : .unpinned
+        let section: ChatListSection = isPinnedThread ? .pinned : .unpinned
         let threadsInSection = isPinnedThread ? pinnedThreads.orderedValues : unpinnedThreads
 
         guard !threadsInSection.isEmpty else { return nil }
@@ -143,30 +143,30 @@ public class HVRenderState: NSObject {
 
 // MARK: -
 
-public struct HVViewInfo: Equatable {
-    let homeViewMode: HomeViewMode
+public struct CLVViewInfo: Equatable {
+    let chatListMode: ChatListMode
     let archiveCount: UInt
     let inboxCount: UInt
     let hasArchivedThreadsRow: Bool
     let hasVisibleReminders: Bool
 
-    static var empty: HVViewInfo {
-        HVViewInfo(homeViewMode: .inbox,
+    static var empty: CLVViewInfo {
+        CLVViewInfo(chatListMode: .inbox,
                    archiveCount: 0,
                    inboxCount: 0,
                    hasArchivedThreadsRow: false,
                    hasVisibleReminders: false)
     }
 
-    static func build(homeViewMode: HomeViewMode,
+    static func build(chatListMode: ChatListMode,
                       hasVisibleReminders: Bool,
-                      transaction: SDSAnyReadTransaction) -> HVViewInfo {
+                      transaction: SDSAnyReadTransaction) -> CLVViewInfo {
         do {
             let threadFinder = AnyThreadFinder()
             let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
             let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
-            let hasArchivedThreadsRow = (homeViewMode == .inbox && archiveCount > 0)
-            return HVViewInfo(homeViewMode: homeViewMode,
+            let hasArchivedThreadsRow = (chatListMode == .inbox && archiveCount > 0)
+            return CLVViewInfo(chatListMode: chatListMode,
                               archiveCount: archiveCount,
                                inboxCount: inboxCount,
                                hasArchivedThreadsRow: hasArchivedThreadsRow,

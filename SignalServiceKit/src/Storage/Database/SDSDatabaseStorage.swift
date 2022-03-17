@@ -273,6 +273,19 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
+    public func touch(storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .grdbWrite(let grdb):
+            DatabaseChangeObserver.serializedSync {
+                if let databaseChangeObserver = grdbStorage.databaseChangeObserver {
+                    databaseChangeObserver.didTouch(storyMessage: storyMessage, transaction: grdb)
+                } else if AppReadiness.isAppReady {
+                    owsFailDebug("databaseChangeObserver was unexpectedly nil")
+                }
+            }
+        }
+    }
+
     // MARK: - Cross Process Notifications
 
     private func handleCrossProcessWrite() {

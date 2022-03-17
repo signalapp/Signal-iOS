@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,6 +25,18 @@ public class VideoPlayerView: UIView {
     public var videoPlayer: OWSVideoPlayer? {
         didSet {
             player = videoPlayer?.avPlayer
+        }
+    }
+
+    @objc
+    override public var contentMode: UIView.ContentMode {
+        didSet {
+            switch contentMode {
+            case .scaleAspectFill: playerLayer.videoGravity = .resizeAspectFill
+            case .scaleToFill: playerLayer.videoGravity = .resize
+            case .scaleAspectFit: playerLayer.videoGravity = .resizeAspect
+            default: playerLayer.videoGravity = .resizeAspect
+            }
         }
     }
 

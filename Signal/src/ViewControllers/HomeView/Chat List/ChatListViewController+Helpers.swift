@@ -6,9 +6,9 @@ import Foundation
 
 // TODO: Decompose into multiple source files?
 @objc
-public extension HomeViewController {
+public extension ChatListViewController {
 
-    var renderState: HVRenderState { viewState.tableDataSource.renderState }
+    var renderState: CLVRenderState { viewState.tableDataSource.renderState }
 
     func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
         tableDataSource.threadViewModel(forThread: thread)
@@ -47,31 +47,32 @@ public extension HomeViewController {
     func showArchivedConversations(offerMultiSelectMode: Bool = true) {
         AssertIsOnMainThread()
 
-        owsAssertDebug(self.homeViewMode == .inbox)
+        owsAssertDebug(self.chatListMode == .inbox)
 
         // When showing archived conversations, we want to use a conventional "back" button
         // to return to the "inbox" conversation list.
         applyArchiveBackButton()
 
         // Push a separate instance of this view using "archive" mode.
-        let homeView = HomeViewController()
-        homeView.homeViewMode = .archive
+        let chatList = ChatListViewController()
+        chatList.chatListMode = .archive
+        chatList.hidesBottomBarWhenPushed = true
 
         if offerMultiSelectMode {
-            homeView.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            chatList.navigationItem.rightBarButtonItem = UIBarButtonItem(
                 title: CommonStrings.selectButton,
                 style: .plain,
-                target: homeView,
-                action: #selector(homeView.switchMultiSelectState),
+                target: chatList,
+                action: #selector(chatList.switchMultiSelectState),
                 accessibilityIdentifier: "select")
         }
-        self.show(homeView, sender: self)
+        self.show(chatList, sender: self)
     }
 
-    var presentedHomeViewController: HomeViewController? {
+    var presentedChatListViewController: ChatListViewController? {
         AssertIsOnMainThread()
 
-        guard let topViewController = navigationController?.topViewController as? HomeViewController,
+        guard let topViewController = navigationController?.topViewController as? ChatListViewController,
               topViewController != self else {
             return nil
         }
@@ -117,7 +118,7 @@ public extension HomeViewController {
         guard let indexPath = indexPath else {
             return false
         }
-        guard let section = HomeViewSection(rawValue: indexPath.section) else {
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
             owsFailDebug("Invalid section: \(indexPath.section).")
             return false
         }

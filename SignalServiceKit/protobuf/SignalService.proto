@@ -54,6 +54,52 @@ message TypingMessage {
   optional bytes groupId = 3;
 }
 
+message StoryMessage {
+  optional bytes profileKey = 1;
+  optional GroupContextV2 group = 2;
+  // oneof attachment {
+    optional AttachmentPointer fileAttachment = 3;
+    optional TextAttachment textAttachment = 4;
+  // }
+  optional bool allowsReplies = 5;
+}
+
+message Preview {
+  // @required
+  optional string url = 1;
+  optional string title = 2;
+  optional AttachmentPointer image = 3;
+  optional string previewDescription = 4;
+  optional uint64 date = 5;
+}
+
+message TextAttachment {
+  enum Style {
+    DEFAULT = 0;
+    REGULAR = 1;
+    BOLD = 2;
+    SERIF = 3;
+    SCRIPT = 4;
+    CONDENSED = 5;
+  }
+
+  message Gradient {
+    optional uint32 startColor = 1;
+    optional uint32 endColor = 2;
+    optional uint32 angle = 3; // degrees
+  }
+
+  optional string text = 1;
+  optional Style textStyle = 2;
+  optional uint32 textForegroundColor = 3; // integer representation of hex color
+  optional uint32 textBackgroundColor = 4;
+  optional Preview preview = 5;
+  // oneof background {
+    optional Gradient gradient = 6;
+    optional uint32 color = 7;
+  // }
+}
+
 message Content {
   optional DataMessage    dataMessage                   = 1;
   optional SyncMessage    syncMessage                   = 2;
@@ -63,6 +109,7 @@ message Content {
   optional TypingMessage  typingMessage                 = 6;
   optional bytes          senderKeyDistributionMessage  = 7;    // Serialized SKDM
   optional bytes          decryptionErrorMessage        = 8;    // Serialized decryption error
+  optional StoryMessage   storyMessage                  = 9;
 }
 
 message CallMessage {
@@ -237,15 +284,6 @@ message DataMessage {
     repeated PostalAddress     address         = 5;
     optional Avatar            avatar          = 6;
     optional string            organization    = 7;
-  }
-
-  message Preview {
-    // @required
-    optional string            url                = 1;
-    optional string            title              = 2;
-    optional AttachmentPointer image              = 3;
-    optional string            previewDescription = 4;
-    optional uint64            date               = 5;
   }
 
   message Sticker {

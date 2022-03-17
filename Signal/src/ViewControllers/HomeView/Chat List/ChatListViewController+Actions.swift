@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-extension HomeViewController {
+extension ChatListViewController {
 
     func selectPreviousConversation() {
         AssertIsOnMainThread()
@@ -12,8 +12,8 @@ extension HomeViewController {
         Logger.info("")
 
         // If we have presented a conversation list (the archive) navigate through that instead.
-        if let presentedHomeViewController = self.presentedHomeViewController {
-            presentedHomeViewController.selectPreviousConversation()
+        if let presentedChatListViewController = self.presentedChatListViewController {
+            presentedChatListViewController.selectPreviousConversation()
             return
         }
 
@@ -31,8 +31,8 @@ extension HomeViewController {
         Logger.info("")
 
         // If we have presented a conversation list (the archive) navigate through that instead.
-        if let presentedHomeViewController = self.presentedHomeViewController {
-            presentedHomeViewController.selectNextConversation()
+        if let presentedChatListViewController = self.presentedChatListViewController {
+            presentedChatListViewController.selectNextConversation()
             return
         }
 

@@ -7,9 +7,9 @@ import SignalMessaging
 import SignalUI
 
 @objc
-public class HomeViewCell: UITableViewCell {
+public class ChatListCell: UITableViewCell {
     @objc
-    public static let reuseIdentifier = "HomeViewCell"
+    public static let reuseIdentifier = "ChatListCell"
 
     private var avatarView: ConversationAvatarView?
     private let nameLabel = CVLabel()
@@ -66,15 +66,15 @@ public class HomeViewCell: UITableViewCell {
         case unreadWithoutCount
     }
 
-    // Compare with HVCellContentToken:
+    // Compare with CLVCellContentToken:
     //
     // * Configuration captures _how_ the view wants to render the cell.
-    //   HomeViewCell is used by Home view and Home Search view and they
+    //   ChatListCell is used by chat list and Home Search view and they
     //   render cells differently. Configuration reflects that.
     //   Configuration is cheap to build.
-    // * HVCellContentToken captures (only) the exact content that will
+    // * CLVCellContentToken captures (only) the exact content that will
     //   be rendered in the cell, its measurement/layout, etc.
-    //   HVCellContentToken is expensive to build.
+    //   CLVCellContentToken is expensive to build.
     struct Configuration {
         let thread: ThreadViewModel
         let lastReloadDate: Date?
@@ -117,7 +117,7 @@ public class HomeViewCell: UITableViewCell {
             self.isSplitViewControllerExpanded = isSplitViewControllerExpanded
         }
     }
-    private var cellContentToken: HVCellContentToken?
+    private var cellContentToken: CLVCellContentToken?
     public var nextUpdateTimestamp: Date?
     var thread: TSThread? {
         cellContentToken?.thread
@@ -178,29 +178,29 @@ public class HomeViewCell: UITableViewCell {
     }
 
     // This method can be invoked from any thread.
-    static func measureCellHeight(cellContentToken: HVCellContentToken) -> CGFloat {
+    static func measureCellHeight(cellContentToken: CLVCellContentToken) -> CGFloat {
         cellContentToken.measurements.outerHStackMeasurement.measuredSize.height
     }
 
     // This method can be invoked from any thread.
-    internal static func buildCellContentToken(forConfiguration configuration: Configuration) -> HVCellContentToken {
+    internal static func buildCellContentToken(forConfiguration configuration: Configuration) -> CLVCellContentToken {
         let configs = buildCellConfigs(configuration: configuration)
         let measurements = buildMeasurements(configuration: configuration,
                                              configs: configs)
-        let cellContentToken = HVCellContentToken(configs: configs,
+        let cellContentToken = CLVCellContentToken(configs: configs,
                                                   measurements: measurements)
         return cellContentToken
     }
 
-    private static func buildCellConfigs(configuration: Configuration) -> HVCellConfigs {
+    private static func buildCellConfigs(configuration: Configuration) -> CLVCellConfigs {
         let shouldShowMuteIndicator = Self.shouldShowMuteIndicator(configuration: configuration)
         let messageStatusToken = Self.buildMessageStatusToken(configuration: configuration)
         let unreadIndicatorLabelConfig = Self.buildUnreadIndicatorLabelConfig(configuration: configuration)
 
-        return HVCellConfigs(
+        return CLVCellConfigs(
             thread: configuration.thread.threadRecord,
             lastReloadDate: configuration.lastReloadDate,
-            timestamp: configuration.overrideDate ?? configuration.thread.homeViewInfo?.lastMessageDate,
+            timestamp: configuration.overrideDate ?? configuration.thread.chatListInfo?.lastMessageDate,
             isBlocked: configuration.isBlocked,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
@@ -220,7 +220,7 @@ public class HomeViewCell: UITableViewCell {
     }
 
     private static func buildMeasurements(configuration: Configuration,
-                                          configs: HVCellConfigs) -> HVCellMeasurements {
+                                          configs: CLVCellConfigs) -> CLVCellMeasurements {
         let shouldShowMuteIndicator = configs.shouldShowMuteIndicator
 
         let topRowStackConfig = configs.topRowStackConfig
@@ -245,7 +245,7 @@ public class HomeViewCell: UITableViewCell {
         topRowStackSubviewInfos.append(dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand,
                                                                          verticalFlowBehavior: .fixed))
 
-        let avatarSize: CGSize = .square(CGFloat(HomeViewCell.avatarSize))
+        let avatarSize: CGSize = .square(CGFloat(ChatListCell.avatarSize))
         let avatarStackMeasurement = ManualStackView.measure(config: avatarStackConfig,
                                                              subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ])
         let avatarStackSize = avatarStackMeasurement.measuredSize
@@ -273,7 +273,7 @@ public class HomeViewCell: UITableViewCell {
                                                                                       locationOffset: locationOffset))
         }
 
-        var unreadBadgeMeasurements: HVUnreadBadgeMeasurements?
+        var unreadBadgeMeasurements: CLVUnreadBadgeMeasurements?
         if let unreadMeasurements = measureUnreadBadge(unreadIndicatorLabelConfig: configs.unreadIndicatorLabelConfig) {
             unreadBadgeMeasurements = unreadMeasurements
             let unreadBadgeSize = unreadMeasurements.badgeSize
@@ -301,7 +301,7 @@ public class HomeViewCell: UITableViewCell {
                                                                 vStackSize.asManualSubviewInfo
                                                              ])
 
-        return HVCellMeasurements(avatarStackMeasurement: avatarStackMeasurement,
+        return CLVCellMeasurements(avatarStackMeasurement: avatarStackMeasurement,
                                   topRowStackMeasurement: topRowStackMeasurement,
                                   bottomRowStackMeasurement: bottomRowStackMeasurement,
                                   vStackMeasurement: vStackMeasurement,
@@ -310,7 +310,7 @@ public class HomeViewCell: UITableViewCell {
                                   unreadBadgeMeasurements: unreadBadgeMeasurements)
     }
 
-    func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
+    func configure(cellContentToken: CLVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
         AssertIsOnMainThread()
 
         OWSTableItem.configureCell(self, isSplitViewControllerExpanded: cellContentToken.configs.isSplitViewControllerExpanded)
@@ -341,7 +341,7 @@ public class HomeViewCell: UITableViewCell {
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
 
-        owsAssertDebug(avatarView == nil, "HomeViewCell.configure without prior reset called")
+        owsAssertDebug(avatarView == nil, "ChatListCell.configure without prior reset called")
         avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
         avatarView?.updateWithSneakyTransactionIfNecessary({ config in
             config.dataSource = .thread(cellContentToken.thread)
@@ -352,7 +352,7 @@ public class HomeViewCell: UITableViewCell {
             }
         })
 
-        typingIndicatorView.configureForHomeView()
+        typingIndicatorView.configureForChatList()
 
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self,
@@ -552,7 +552,7 @@ public class HomeViewCell: UITableViewCell {
 
     // MARK: - Message Status Indicator
 
-    private static func buildMessageStatusToken(configuration: Configuration) -> HVMessageStatusToken? {
+    private static func buildMessageStatusToken(configuration: Configuration) -> CLVMessageStatusToken? {
 
         // If we're using the conversation list cell to render search results,
         // don't show "unread badge" or "message status" indicator.
@@ -602,12 +602,12 @@ public class HomeViewCell: UITableViewCell {
         guard let image = statusIndicatorImage else {
             return nil
         }
-        return HVMessageStatusToken(image: image.withRenderingMode(.alwaysTemplate),
+        return CLVMessageStatusToken(image: image.withRenderingMode(.alwaysTemplate),
                                     tintColor: messageStatusViewTintColor,
                                     shouldAnimateStatusIcon: shouldAnimateStatusIcon)
     }
 
-    private func configureStatusIndicatorView(token: HVMessageStatusToken) -> UIView {
+    private func configureStatusIndicatorView(token: CLVMessageStatusToken) -> UIView {
         messageStatusIconView.image = token.image.withRenderingMode(.alwaysTemplate)
         messageStatusIconView.tintColor = token.tintColor
 
@@ -650,7 +650,7 @@ public class HomeViewCell: UITableViewCell {
                              textAlignment: .center)
     }
 
-    private static func measureUnreadBadge(unreadIndicatorLabelConfig: CVLabelConfig?) -> HVUnreadBadgeMeasurements? {
+    private static func measureUnreadBadge(unreadIndicatorLabelConfig: CVLabelConfig?) -> CLVUnreadBadgeMeasurements? {
 
         guard let unreadIndicatorLabelConfig = unreadIndicatorLabelConfig else {
             return nil
@@ -668,12 +668,12 @@ public class HomeViewCell: UITableViewCell {
                                           unreadLabelSize.width + minMargin),
                                height: unreadBadgeHeight)
 
-        return HVUnreadBadgeMeasurements(badgeSize: badgeSize,
+        return CLVUnreadBadgeMeasurements(badgeSize: badgeSize,
                                          unreadLabelSize: unreadLabelSize)
     }
 
     private func configureUnreadBadge(unreadIndicatorLabelConfig: CVLabelConfig,
-                                      unreadBadgeMeasurements measurements: HVUnreadBadgeMeasurements) -> UIView {
+                                      unreadBadgeMeasurements measurements: CLVUnreadBadgeMeasurements) -> UIView {
 
         let unreadLabel = self.unreadLabel
         unreadIndicatorLabelConfig.applyForRendering(label: unreadLabel)
@@ -696,8 +696,8 @@ public class HomeViewCell: UITableViewCell {
     // MARK: - Label Configs
 
     private static func attributedSnippet(configuration: Configuration) -> NSAttributedString {
-        owsAssertDebug(configuration.thread.homeViewInfo != nil)
-        let snippet: HVSnippet = configuration.thread.homeViewInfo?.snippet ?? .none
+        owsAssertDebug(configuration.thread.chatListInfo != nil)
+        let snippet: CLVSnippet = configuration.thread.chatListInfo?.snippet ?? .none
 
         switch snippet {
         case .blocked:
@@ -808,7 +808,7 @@ public class HomeViewCell: UITableViewCell {
     private static func dateTimeLabelConfig(configuration: Configuration) -> CVLabelConfig {
         let thread = configuration.thread
         var text: String = ""
-        if let labelDate = configuration.overrideDate ?? thread.homeViewInfo?.lastMessageDate {
+        if let labelDate = configuration.overrideDate ?? thread.chatListInfo?.lastMessageDate {
             text = DateUtil.formatDateShort(labelDate)
         }
         return CVLabelConfig(text: text,
@@ -953,7 +953,7 @@ public class HomeViewCell: UITableViewCell {
 
 // MARK: -
 
-private struct HVMessageStatusToken {
+private struct CLVMessageStatusToken {
     let image: UIImage
     let tintColor: UIColor
     let shouldAnimateStatusIcon: Bool
@@ -961,7 +961,7 @@ private struct HVMessageStatusToken {
 
 // MARK: -
 
-private struct HVCellConfigs {
+private struct CLVCellConfigs {
     // State
     let thread: TSThread
     let lastReloadDate: Date?
@@ -970,7 +970,7 @@ private struct HVCellConfigs {
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool
     let isSplitViewControllerExpanded: Bool
-    let messageStatusToken: HVMessageStatusToken?
+    let messageStatusToken: CLVMessageStatusToken?
     let unreadIndicatorLabelConfig: CVLabelConfig?
 
     // Configs
@@ -986,38 +986,38 @@ private struct HVCellConfigs {
 
 // MARK: -
 
-private struct HVUnreadBadgeMeasurements {
+private struct CLVUnreadBadgeMeasurements {
     let badgeSize: CGSize
     let unreadLabelSize: CGSize
 }
 
 // MARK: -
 
-private struct HVCellMeasurements {
+private struct CLVCellMeasurements {
     let avatarStackMeasurement: ManualStackView.Measurement
     let topRowStackMeasurement: ManualStackView.Measurement
     let bottomRowStackMeasurement: ManualStackView.Measurement
     let vStackMeasurement: ManualStackView.Measurement
     let outerHStackMeasurement: ManualStackView.Measurement
     let snippetLineHeight: CGFloat
-    let unreadBadgeMeasurements: HVUnreadBadgeMeasurements?
+    let unreadBadgeMeasurements: CLVUnreadBadgeMeasurements?
 }
 
 // MARK: -
 
-// Perf matters in home view.  Configuring home view cells is
+// Perf matters in chat list.  Configuring chat list cells is
 // probably the biggest perf bottleneck.  In conversation view,
 // we address this by doing cell measurement/arrangement off
 // the main thread.  That's viable in conversation view because
 // there's a "load window" so there's an upper bound on how
 // many cells need to be prepared.
 //
-// Home view has no load window.  Therefore, home view defers
+// Chat list has no load window.  Therefore, chat list defers
 // the expensive work of a) building ThreadViewModel
 // b) measurement/arrangement of cells.  threadViewModelCache
 // caches a).  cellContentCache caches b).
 //
-// When configuring a hohome view cell, we reuse any existing
+// When configuring a chat list cell, we reuse any existing
 // cell measurement in cellContentCache.  If none exists,
 // we build one and store it in cellContentCache for next
 // time.
@@ -1027,15 +1027,15 @@ private struct HVCellMeasurements {
 // Compare with Configuration:
 //
 // * Configuration captures _how_ the view wants to render the cell.
-//   HomeViewCell is used by Home view and Home Search view and they
+//   ChatListCell is used by chat list and Home Search view and they
 //   render cells differently. Configuration reflects that.
 //   Configuration is cheap to build.
-// * HVCellContentToken captures (only) the exact content that will
+// * CLVCellContentToken captures (only) the exact content that will
 //   be rendered in the cell, its measurement/layout, etc.
-//   HVCellContentToken is expensive to build.
-class HVCellContentToken {
-    fileprivate let configs: HVCellConfigs
-    fileprivate let measurements: HVCellMeasurements
+//   CLVCellContentToken is expensive to build.
+class CLVCellContentToken {
+    fileprivate let configs: CLVCellConfigs
+    fileprivate let measurements: CLVCellMeasurements
 
     fileprivate var thread: TSThread { configs.thread }
     fileprivate var isBlocked: Bool { configs.isBlocked }
@@ -1052,8 +1052,8 @@ class HVCellContentToken {
         return abs(lastReloadDate.timeIntervalSinceNow) > avatarAsyncLoadInterval
     }
 
-    fileprivate init(configs: HVCellConfigs,
-                     measurements: HVCellMeasurements) {
+    fileprivate init(configs: CLVCellConfigs,
+                     measurements: CLVCellMeasurements) {
         self.configs = configs
         self.measurements = measurements
     }

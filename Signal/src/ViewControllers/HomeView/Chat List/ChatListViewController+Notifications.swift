@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-extension HomeViewController {
+extension ChatListViewController {
 
     public static let clearSearch = Notification.Name("clearSearch")
 
@@ -62,7 +62,7 @@ extension HomeViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(clearSearch),
-                                               name: HomeViewController.clearSearch,
+                                               name: ChatListViewController.clearSearch,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(clearSearch),
@@ -200,7 +200,7 @@ extension HomeViewController {
 
 // MARK: - Notifications
 
-extension HomeViewController: DatabaseChangeDelegate {
+extension ChatListViewController: DatabaseChangeDelegate {
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()

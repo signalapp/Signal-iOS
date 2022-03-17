@@ -181,6 +181,41 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     }
 }
 
+- (void)storyWasViewed:(StoryMessage *)storyMessage
+          circumstance:(OWSReceiptCircumstance)circumstance
+           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    switch (circumstance) {
+        case OWSReceiptCircumstanceOnLinkedDevice:
+            // nothing further to do
+            break;
+        case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
+            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            break;
+        case OWSReceiptCircumstanceOnThisDevice: {
+            [self enqueueLinkedDeviceViewedReceiptForStoryMessage:storyMessage transaction:transaction];
+            [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
+
+            if (storyMessage.authorAddress.isLocalAddress) {
+                OWSFailDebug(@"We don't support incoming messages from self.");
+                return;
+            }
+
+            if ([self areReadReceiptsEnabled]) {
+                OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
+                [self.outgoingReceiptManager enqueueViewedReceiptForAddress:storyMessage.authorAddress
+                                                                  timestamp:storyMessage.timestamp
+                                                            messageUniqueId:storyMessage.uniqueId
+                                                                transaction:transaction];
+            }
+            break;
+        }
+        case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
+            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            break;
+    }
+}
+
 #pragma mark - Read Receipts From Recipient
 
 - (NSArray<NSNumber *> *)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
@@ -278,7 +313,14 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                        transaction:transaction];
             }
         } else {
-            [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
+            StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:sentTimestamp
+                                                                            author:address
+                                                                       transaction:transaction];
+            if (storyMessage) {
+                [storyMessage markAsViewedAt:viewedTimestamp by:address transaction:transaction];
+            } else {
+                [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
+            }
         }
     }
 
@@ -434,7 +476,16 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                      transaction:transaction];
             }
         } else {
-            [receiptsMissingMessage addObject:viewedReceiptProto];
+            StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:messageIdTimestamp
+                                                                            author:senderAddress
+                                                                       transaction:transaction];
+            if (storyMessage) {
+                [storyMessage markAsViewedAt:viewedTimestamp
+                                circumstance:OWSReceiptCircumstanceOnLinkedDevice
+                                 transaction:transaction];
+            } else {
+                [receiptsMissingMessage addObject:viewedReceiptProto];
+            }
         }
     }
 

@@ -278,7 +278,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             return UIImage(data: avatarData)
         } else {
             return avatarBuilder.defaultAvatarImageForLocalUser(
-                diameterPoints: avatarSizeClass.avatarDiameter,
+                diameterPoints: avatarSizeClass.diameter,
                 transaction: transaction)
         }
     }

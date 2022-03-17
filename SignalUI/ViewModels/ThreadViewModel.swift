@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,6 +19,8 @@ public class ThreadViewModel: NSObject {
     @objc public let groupCallInProgress: Bool
     @objc public let hasWallpaper: Bool
     @objc public let isWallpaperPhoto: Bool
+
+    public let storyState: ConversationAvatarView.Configuration.StoryState
 
     @objc
     public var isArchived: Bool { associatedData.isArchived }
@@ -49,11 +51,11 @@ public class ThreadViewModel: NSObject {
     @objc
     public let lastMessageForInbox: TSInteraction?
 
-    // This property is only populated if forHomeView is true.
-    public let homeViewInfo: HomeViewInfo?
+    // This property is only populated if forChatList is true.
+    public let chatListInfo: ChatListInfo?
 
     @objc
-    public init(thread: TSThread, forHomeView: Bool, transaction: SDSAnyReadTransaction) {
+    public init(thread: TSThread, forChatList: Bool, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
         self.disappearingMessagesConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
 
@@ -82,13 +84,13 @@ public class ThreadViewModel: NSObject {
 
         self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
 
-        if forHomeView {
-            homeViewInfo = HomeViewInfo(thread: thread,
+        if forChatList {
+            chatListInfo = ChatListInfo(thread: thread,
                                         lastMessageForInbox: lastMessageForInbox,
                                         hasPendingMessageRequest: hasPendingMessageRequest,
                                         transaction: transaction)
         } else {
-            homeViewInfo = nil
+            chatListInfo = nil
         }
 
         if let wallpaper = Wallpaper.wallpaperForRendering(for: thread, transaction: transaction) {
@@ -101,6 +103,17 @@ public class ThreadViewModel: NSObject {
         } else {
             self.hasWallpaper = false
             self.isWallpaperPhoto = false
+        }
+
+        if let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction) {
+            switch latestStory.manifest {
+            case .incoming(_, let viewedTimestamp):
+                storyState = viewedTimestamp != nil ? .viewed : .unviewed
+            case .outgoing:
+                storyState = .viewed
+            }
+        } else {
+            self.storyState = .none
         }
     }
 
@@ -116,11 +129,11 @@ public class ThreadViewModel: NSObject {
 
 // MARK: -
 
-public class HomeViewInfo: Dependencies {
+public class ChatListInfo: Dependencies {
 
     public let lastMessageDate: Date?
     public let isBlocked: Bool
-    public let snippet: HVSnippet
+    public let snippet: CLVSnippet
 
     @objc
     public init(thread: TSThread,
@@ -132,18 +145,18 @@ public class HomeViewInfo: Dependencies {
 
         self.lastMessageDate = lastMessageForInbox?.timestampDate
 
-        self.snippet = Self.buildHVSnippet(thread: thread,
+        self.snippet = Self.buildCLVSnippet(thread: thread,
                                            isBlocked: isBlocked,
                                            hasPendingMessageRequest: hasPendingMessageRequest,
                                            lastMessageForInbox: lastMessageForInbox,
                                            transaction: transaction)
     }
 
-    private static func buildHVSnippet(thread: TSThread,
+    private static func buildCLVSnippet(thread: TSThread,
                                        isBlocked: Bool,
                                        hasPendingMessageRequest: Bool,
                                        lastMessageForInbox: TSInteraction?,
-                                       transaction: SDSAnyReadTransaction) -> HVSnippet {
+                                       transaction: SDSAnyReadTransaction) -> CLVSnippet {
 
         func loadDraftText() -> String? {
             guard let draftMessageBody = thread.currentDraft(shouldFetchLatest: false,
@@ -208,7 +221,7 @@ public class HomeViewInfo: Dependencies {
 
 // MARK: -
 
-public enum HVSnippet {
+public enum CLVSnippet {
     case blocked
     case pendingMessageRequest(addedToGroupByName: String?)
     case draft(draftText: String)

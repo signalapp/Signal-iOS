@@ -4,7 +4,7 @@
 
 import Foundation
 
-enum HVRowChangeType {
+enum CLVRowChangeType {
     case delete(oldIndexPath: IndexPath)
     case insert(newIndexPath: IndexPath)
     case move(oldIndexPath: IndexPath, newIndexPath: IndexPath)
@@ -28,11 +28,11 @@ enum HVRowChangeType {
 
 // MARK: -
 
-struct HVRowChange {
-    public let type: HVRowChangeType
+struct CLVRowChange {
+    public let type: CLVRowChangeType
     public let threadUniqueId: String
 
-    init(type: HVRowChangeType, threadUniqueId: String) {
+    init(type: CLVRowChangeType, threadUniqueId: String) {
         self.type = type
         self.threadUniqueId = threadUniqueId
     }
@@ -46,27 +46,27 @@ struct HVRowChange {
 
 // MARK: -
 
-enum HVLoadResult {
-    case renderStateForReset(renderState: HVRenderState)
-    case renderStateWithRowChanges(renderState: HVRenderState, rowChanges: [HVRowChange])
-    case renderStateWithoutRowChanges(renderState: HVRenderState)
+enum CLVLoadResult {
+    case renderStateForReset(renderState: CLVRenderState)
+    case renderStateWithRowChanges(renderState: CLVRenderState, rowChanges: [CLVRowChange])
+    case renderStateWithoutRowChanges(renderState: CLVRenderState)
     case reloadTable
     case noChanges
 }
 
 // MARK: -
 
-public class HVLoader: NSObject {
+public class CLVLoader: NSObject {
 
-    static func loadRenderStateForReset(viewInfo: HVViewInfo,
-                                        transaction: SDSAnyReadTransaction) -> HVLoadResult {
+    static func loadRenderStateForReset(viewInfo: CLVViewInfo,
+                                        transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
         do {
-            return try Bench(title: "loadRenderState for reset (\(viewInfo.homeViewMode))") {
+            return try Bench(title: "loadRenderState for reset (\(viewInfo.chatListMode))") {
                 let renderState = try Self.loadRenderStateInternal(viewInfo: viewInfo,
                                                                    transaction: transaction)
-                return HVLoadResult.renderStateForReset(renderState: renderState)
+                return CLVLoadResult.renderStateForReset(renderState: renderState)
             }
         } catch {
             owsFailDebug("error: \(error)")
@@ -74,18 +74,18 @@ public class HVLoader: NSObject {
         }
     }
 
-    private static func loadRenderStateInternal(viewInfo: HVViewInfo,
-                                                transaction: SDSAnyReadTransaction) throws -> HVRenderState {
+    private static func loadRenderStateInternal(viewInfo: CLVViewInfo,
+                                                transaction: SDSAnyReadTransaction) throws -> CLVRenderState {
 
         let threadFinder = AnyThreadFinder()
-        let isViewingArchive = viewInfo.homeViewMode == .archive
+        let isViewingArchive = viewInfo.chatListMode == .archive
 
         var pinnedThreads = [TSThread]()
         var threads = [TSThread]()
 
         let pinnedThreadIds = PinnedThreadManager.pinnedThreadIds
 
-        func buildRenderState() -> HVRenderState {
+        func buildRenderState() -> CLVRenderState {
             // Pinned threads are always ordered in the order they were pinned.
             let pinnedThreadsFinal: OrderedDictionary<String, TSThread>
             if isViewingArchive {
@@ -99,7 +99,7 @@ public class HVLoader: NSObject {
             }
             let unpinnedThreadsFinal = threads
 
-            return HVRenderState(viewInfo: viewInfo,
+            return CLVRenderState(viewInfo: viewInfo,
                                  pinnedThreads: pinnedThreadsFinal,
                                  unpinnedThreads: unpinnedThreadsFinal)
         }
@@ -177,10 +177,10 @@ public class HVLoader: NSObject {
         return buildRenderState()
     }
 
-    static func loadRenderStateAndDiff(viewInfo: HVViewInfo,
+    static func loadRenderStateAndDiff(viewInfo: CLVViewInfo,
                                        updatedItemIds: Set<String>,
-                                       lastRenderState: HVRenderState,
-                                       transaction: SDSAnyReadTransaction) -> HVLoadResult {
+                                       lastRenderState: CLVRenderState,
+                                       transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         do {
             return try loadRenderStateAndDiffInternal(viewInfo: viewInfo,
                                                       updatedItemIds: updatedItemIds,
@@ -193,10 +193,10 @@ public class HVLoader: NSObject {
         }
     }
 
-    private static func loadRenderStateAndDiffInternal(viewInfo: HVViewInfo,
+    private static func loadRenderStateAndDiffInternal(viewInfo: CLVViewInfo,
                                                        updatedItemIds allUpdatedItemIds: Set<String>,
-                                                       lastRenderState: HVRenderState,
-                                                       transaction: SDSAnyReadTransaction) throws -> HVLoadResult {
+                                                       lastRenderState: CLVRenderState,
+                                                       transaction: SDSAnyReadTransaction) throws -> CLVLoadResult {
 
         // Ignore updates to non-visible threads.
         var updatedItemIds = Set<String>()
@@ -210,7 +210,7 @@ public class HVLoader: NSObject {
             }
         }
 
-        let newRenderState = try Bench(title: "loadRenderState for diff (\(viewInfo.homeViewMode))") {
+        let newRenderState = try Bench(title: "loadRenderState for diff (\(viewInfo.chatListMode))") {
             try Self.loadRenderStateInternal(viewInfo: viewInfo, transaction: transaction)
         }
 
@@ -219,17 +219,17 @@ public class HVLoader: NSObject {
         let newPinnedThreadIds: [String] = newRenderState.pinnedThreads.orderedKeys
         let newUnpinnedThreadIds: [String] = newRenderState.unpinnedThreads.map { $0.uniqueId }
 
-        struct HVBatchUpdateValue: BatchUpdateValue {
+        struct CLVBatchUpdateValue: BatchUpdateValue {
             let threadUniqueId: String
 
             var batchUpdateId: String { threadUniqueId }
             var logSafeDescription: String { threadUniqueId }
         }
 
-        let oldPinnedValues = oldPinnedThreadIds.map { HVBatchUpdateValue(threadUniqueId: $0) }
-        let newPinnedValues = newPinnedThreadIds.map { HVBatchUpdateValue(threadUniqueId: $0) }
-        let oldUnpinnedValues = oldUnpinnedThreadIds.map { HVBatchUpdateValue(threadUniqueId: $0) }
-        let newUnpinnedValues = newUnpinnedThreadIds.map { HVBatchUpdateValue(threadUniqueId: $0) }
+        let oldPinnedValues = oldPinnedThreadIds.map { CLVBatchUpdateValue(threadUniqueId: $0) }
+        let newPinnedValues = newPinnedThreadIds.map { CLVBatchUpdateValue(threadUniqueId: $0) }
+        let oldUnpinnedValues = oldUnpinnedThreadIds.map { CLVBatchUpdateValue(threadUniqueId: $0) }
+        let newUnpinnedValues = newUnpinnedThreadIds.map { CLVBatchUpdateValue(threadUniqueId: $0) }
 
         let pinnedChangedValues = newPinnedValues.filter { allUpdatedItemIds.contains($0.threadUniqueId) }
         let unpinnedChangedValues = newUnpinnedValues.filter { allUpdatedItemIds.contains($0.threadUniqueId) }
@@ -244,31 +244,31 @@ public class HVLoader: NSObject {
                                                                                  changedValues: unpinnedChangedValues)
 
         func rowChangeType(forBatchUpdateType batchUpdateType: BatchUpdateType,
-                           homeViewSection: HomeViewSection) -> HVRowChangeType {
+                           chatListSection: ChatListSection) -> CLVRowChangeType {
             switch batchUpdateType {
             case .delete(let oldIndex):
-                return .delete(oldIndexPath: IndexPath(row: oldIndex, section: homeViewSection.rawValue))
+                return .delete(oldIndexPath: IndexPath(row: oldIndex, section: chatListSection.rawValue))
             case .insert(let newIndex):
-                return .insert(newIndexPath: IndexPath(row: newIndex, section: homeViewSection.rawValue))
+                return .insert(newIndexPath: IndexPath(row: newIndex, section: chatListSection.rawValue))
             case .move(let oldIndex, let newIndex):
-                return .move(oldIndexPath: IndexPath(row: oldIndex, section: homeViewSection.rawValue),
-                             newIndexPath: IndexPath(row: newIndex, section: homeViewSection.rawValue))
+                return .move(oldIndexPath: IndexPath(row: oldIndex, section: chatListSection.rawValue),
+                             newIndexPath: IndexPath(row: newIndex, section: chatListSection.rawValue))
             case .update(let oldIndex, _):
-                return .update(oldIndexPath: IndexPath(row: oldIndex, section: homeViewSection.rawValue))
+                return .update(oldIndexPath: IndexPath(row: oldIndex, section: chatListSection.rawValue))
             }
         }
-        func rowChanges(forBatchUpdateItems batchUpdateItems: [BatchUpdate<HVBatchUpdateValue>.Item],
-                        homeViewSection: HomeViewSection) -> [HVRowChange] {
+        func rowChanges(forBatchUpdateItems batchUpdateItems: [BatchUpdate<CLVBatchUpdateValue>.Item],
+                        chatListSection: ChatListSection) -> [CLVRowChange] {
             batchUpdateItems.map { batchUpdateItem in
-                HVRowChange(type: rowChangeType(forBatchUpdateType: batchUpdateItem.updateType,
-                                                homeViewSection: homeViewSection),
+                CLVRowChange(type: rowChangeType(forBatchUpdateType: batchUpdateItem.updateType,
+                                                 chatListSection: chatListSection),
                             threadUniqueId: batchUpdateItem.value.threadUniqueId)
             }
         }
         let pinnedRowChanges = rowChanges(forBatchUpdateItems: pinnedBatchUpdateItems,
-                                          homeViewSection: .pinned)
+                                          chatListSection: .pinned)
         let unpinnedRowChanges = rowChanges(forBatchUpdateItems: unpinnedBatchUpdateItems,
-                                            homeViewSection: .unpinned)
+                                            chatListSection: .unpinned)
 
         var allRowChanges = pinnedRowChanges + unpinnedRowChanges
 
@@ -289,7 +289,7 @@ public class HVLoader: NSObject {
                 switch unpinnedRowChange.type {
                 case .insert(let newIndexPath):
                     // Unpin: Move from .pinned to .unpinned section.
-                    allRowChanges = [HVRowChange(type: .move(oldIndexPath: oldIndexPath,
+                    allRowChanges = [CLVRowChange(type: .move(oldIndexPath: oldIndexPath,
                                                              newIndexPath: newIndexPath),
                                                  threadUniqueId: pinnedRowChange.threadUniqueId)]
                 default:
@@ -299,7 +299,7 @@ public class HVLoader: NSObject {
                 switch unpinnedRowChange.type {
                 case .delete(let oldIndexPath):
                     // Pin: Move from .unpinned to .pinned section.
-                    allRowChanges = [HVRowChange(type: .move(oldIndexPath: oldIndexPath,
+                    allRowChanges = [CLVRowChange(type: .move(oldIndexPath: oldIndexPath,
                                                              newIndexPath: newIndexPath),
                                                  threadUniqueId: pinnedRowChange.threadUniqueId)]
                 default:

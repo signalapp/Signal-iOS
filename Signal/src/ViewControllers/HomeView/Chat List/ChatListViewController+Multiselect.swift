@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-extension HomeViewController {
+extension ChatListViewController {
 
     // MARK: - context menu
 
@@ -50,7 +50,7 @@ extension HomeViewController {
         // multi selection does not work well with displaying search results, so let's clear the search for now
         searchBar.delegate?.searchBarCancelButtonClicked?(searchBar)
         viewState.multiSelectState.title = title
-        if homeViewMode == .inbox {
+        if chatListMode == .inbox {
             let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
             navigationItem.setLeftBarButton(doneButton, animated: true)
             navigationItem.setRightBarButtonItems(nil, animated: true)
@@ -72,7 +72,7 @@ extension HomeViewController {
             return
         }
 
-        if homeViewMode == .archive {
+        if chatListMode == .archive {
             owsAssertDebug(navigationItem.rightBarButtonItem != nil, "can't change label of right bar button")
             navigationItem.rightBarButtonItem?.title = CommonStrings.selectButton
             navigationItem.rightBarButtonItem?.accessibilityHint = CommonStrings.selectButton
@@ -142,7 +142,7 @@ extension HomeViewController {
         if renderState.inboxCount > 0 {
             contextMenuActions.append(
                 ContextMenuAction(
-                    title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the HomeView."),
+                    title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the ChatList."),
                     image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"),
                     attributes: [],
                     handler: { [weak self] (_) in
@@ -195,7 +195,7 @@ extension HomeViewController {
     private func done() {
         leaveMultiselectMode()
         updateBarButtonItems()
-        if self.homeViewMode == .archive {
+        if self.chatListMode == .archive {
             navigationItem.rightBarButtonItem?.title = CommonStrings.selectButton
         }
     }
@@ -287,7 +287,7 @@ extension HomeViewController {
         let hasSelectedEntries = !(tableView.indexPathsForSelectedRows ?? []).isEmpty
 
         let archiveBtn = UIBarButtonItem(
-            title: homeViewMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
+            title: chatListMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
             style: .plain, target: self, action: #selector(performUnarchive))
         archiveBtn.isEnabled = hasSelectedEntries
 
@@ -302,7 +302,7 @@ extension HomeViewController {
                 }
             }
         } else {
-            readButton = UIBarButtonItem(title: NSLocalizedString("HOME_VIEW_TOOLBAR_READ_ALL", comment: "Title 'Read All' button in the toolbar of the homeview if multi-section is active."), style: .plain, target: self, action: #selector(performReadAll))
+            readButton = UIBarButtonItem(title: NSLocalizedString("HOME_VIEW_TOOLBAR_READ_ALL", comment: "Title 'Read All' button in the toolbar of the ChatList if multi-section is active."), style: .plain, target: self, action: #selector(performReadAll))
             readButton.isEnabled = hasUnreadEntry(threads: Array(renderState.pinnedThreads.orderedValues)) || hasUnreadEntry(threads: Array(renderState.unpinnedThreads))
         }
 
@@ -459,7 +459,7 @@ extension HomeViewController {
 }
 
 // MARK: - implementation of ContextMenuActionsViewDelegate
-extension HomeViewController: ContextMenuActionsViewDelegate {
+extension ChatListViewController: ContextMenuActionsViewDelegate {
     func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction) {
         contextMenuAction.handler(contextMenuAction)
     }

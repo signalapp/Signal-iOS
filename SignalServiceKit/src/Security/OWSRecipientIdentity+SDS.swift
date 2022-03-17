@@ -622,9 +622,9 @@ fileprivate extension OWSRecipientIdentity {
         let comparisonOperator = negated ? "!=" : "="
         let stateClause = "\(recipientIdentityColumnFullyQualified: .verificationState) \(comparisonOperator) \(state.rawValue)"
 
-        let groupMember_phoneNumber = "\(groupMemberColumnFullyQualified: .phoneNumber)"
-        let groupMember_groupThreadID = "\(groupMemberColumnFullyQualified: .groupThreadId)"
-        let groupMember_uuidString = "\(groupMemberColumnFullyQualified: .uuidString)"
+        let groupMember_phoneNumber = TSGroupMember.columnName(.phoneNumber, fullyQualified: true)
+        let groupMember_groupThreadID = TSGroupMember.columnName(.groupThreadId, fullyQualified: true)
+        let groupMember_uuidString = TSGroupMember.columnName(.uuidString, fullyQualified: true)
 
         let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"
         let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified:  .recipientPhoneNumber)"
@@ -638,7 +638,7 @@ fileprivate extension OWSRecipientIdentity {
         SELECT \(recipient_recipientUUID), \(recipient_recipientPhoneNumber)
         FROM \(SignalRecipientRecord.databaseTableName),
              \(RecipientIdentityRecord.databaseTableName),
-             \(GroupMemberRecord.databaseTableName)
+             \(TSGroupMember.databaseTableName)
         WHERE  \(recipient_uniqueID) = \(recipientIdentity_uniqueID) AND
                \(groupMember_groupThreadID) = ? AND
                (\(groupMember_uuidString) = \(recipient_recipientUUID) OR

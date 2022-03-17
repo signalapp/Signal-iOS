@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,12 +8,16 @@ import GRDB
 @objc
 public protocol DatabaseChanges: AnyObject {
     typealias UniqueId = String
+    typealias RowId = Int64
 
     var threadUniqueIds: Set<UniqueId> { get }
     var interactionUniqueIds: Set<UniqueId> { get }
+    var storyMessageUniqueIds: Set<UniqueId> { get }
+    var storyMessageRowIds: Set<RowId> { get }
     var attachmentUniqueIds: Set<UniqueId> { get }
 
     var interactionDeletedUniqueIds: Set<UniqueId> { get }
+    var storyMessageDeletedUniqueIds: Set<UniqueId> { get }
     var attachmentDeletedUniqueIds: Set<UniqueId> { get }
 
     var tableNames: Set<String> { get }
@@ -87,6 +91,7 @@ class ObservedDatabaseChanges: NSObject {
                     _tableNames.isEmpty &&
                     threads.isEmpty &&
                     interactions.isEmpty &&
+                    storyMessages.isEmpty &&
                     attachments.isEmpty &&
                     _lastError == nil)
     }
@@ -194,6 +199,14 @@ class ObservedDatabaseChanges: NSObject {
         interactions.append(uniqueIds: interactionUniqueIds)
     }
 
+    func append(interactionDeletedUniqueIds: Set<UniqueId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        interactions.append(deletedUniqueIds: interactionDeletedUniqueIds)
+    }
+
     func append(interactionRowId: RowId) {
         #if TESTABLE_BUILD
         checkConcurrency()
@@ -208,6 +221,58 @@ class ObservedDatabaseChanges: NSObject {
         #endif
 
         interactions.append(rowIds: interactionRowIds)
+    }
+
+    // MARK: - Stories
+
+    private var storyMessages = ObservedModelChanges()
+
+    func append(storyMessage: StoryMessage) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        storyMessages.append(model: storyMessage)
+    }
+
+    func append(storyMessageUniqueId: UniqueId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        storyMessages.append(uniqueId: storyMessageUniqueId)
+    }
+
+    func append(storyMessageUniqueIds: Set<UniqueId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        storyMessages.append(uniqueIds: storyMessageUniqueIds)
+    }
+
+    func append(storyMessageDeletedUniqueIds: Set<UniqueId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        storyMessages.append(deletedUniqueIds: storyMessageDeletedUniqueIds)
+    }
+
+    func append(storyMessageRowId: RowId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        storyMessages.append(rowId: storyMessageRowId)
+    }
+
+    func append(storyMessageRowIds: Set<RowId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        storyMessages.append(rowIds: storyMessageRowIds)
     }
 
     // MARK: - Attachments
@@ -236,14 +301,6 @@ class ObservedDatabaseChanges: NSObject {
         #endif
 
         attachments.append(uniqueIds: attachmentUniqueIds)
-    }
-
-    func append(interactionDeletedUniqueIds: Set<UniqueId>) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        interactions.append(deletedUniqueIds: interactionDeletedUniqueIds)
     }
 
     func append(attachmentDeletedUniqueIds: Set<UniqueId>) {
@@ -328,7 +385,7 @@ private struct ObservedModelChanges {
                     rowIdToUniqueIdMap.isEmpty)
     }
 
-    mutating func append(model: BaseModel) {
+    mutating func append(model: SDSIdentifiableModel) {
         _uniqueIds.insert(model.uniqueId)
         guard let grdbId = model.grdbId else {
             owsFailDebug("Missing grdbId")
@@ -424,6 +481,26 @@ extension ObservedDatabaseChanges: DatabaseChanges {
         }
     }
 
+    var storyMessageUniqueIds: Set<UniqueId> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return storyMessages.uniqueIds
+        }
+    }
+
+    var storyMessageRowIds: Set<RowId> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return storyMessages.rowIds
+        }
+    }
+
     var attachmentUniqueIds: Set<UniqueId> {
         get {
             #if TESTABLE_BUILD
@@ -441,6 +518,16 @@ extension ObservedDatabaseChanges: DatabaseChanges {
             #endif
 
             return interactions.deletedUniqueIds
+        }
+    }
+
+    var storyMessageDeletedUniqueIds: Set<UniqueId> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return storyMessages.deletedUniqueIds
         }
     }
 
@@ -646,4 +733,9 @@ extension ObservedDatabaseChanges: DatabaseChanges {
             append(collection: collection)
         }
     }
+}
+
+public protocol SDSIdentifiableModel {
+    var uniqueId: String { get }
+    var grdbId: NSNumber? { get }
 }

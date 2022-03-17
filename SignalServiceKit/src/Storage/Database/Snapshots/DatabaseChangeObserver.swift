@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -343,6 +343,19 @@ extension DatabaseChangeObserver: TransactionObserver {
         didModifyPendingChanges()
     }
 
+    // internal - should only be called by DatabaseStorage
+    func didTouch(storyMessage: StoryMessage, transaction: GRDBWriteTransaction) {
+        // Note: We don't actually use the `transaction` param, but touching must happen within
+        // a write transaction in order for the touch machinery to notify its observers
+        // in the expected way.
+        AssertHasDatabaseChangeObserverLock()
+
+        pendingChanges.append(storyMessage: storyMessage)
+        pendingChanges.append(tableName: StoryMessage.databaseTableName)
+
+        didModifyPendingChanges()
+    }
+
     // Database observation operates like so:
     //
     // * This class (DatabaseChangeObserver) observes writes to the database
@@ -379,6 +392,8 @@ extension DatabaseChangeObserver: TransactionObserver {
                 pendingChanges.append(threadRowId: event.rowID)
             } else if event.tableName == AttachmentRecord.databaseTableName {
                 pendingChanges.append(attachmentRowId: event.rowID)
+            } else if event.tableName == StoryMessage.databaseTableName {
+                pendingChanges.append(storyMessageRowId: event.rowID)
             }
 
             // We record certain deletions.
@@ -411,18 +426,26 @@ extension DatabaseChangeObserver: TransactionObserver {
 
                 let interactionUniqueIds = pendingChangesToCommit.interactionUniqueIds
                 let threadUniqueIds = pendingChangesToCommit.threadUniqueIds
+                let storyMessageUniqueIds = pendingChangesToCommit.storyMessageUniqueIds
+                let storyMessageRowIds = pendingChangesToCommit.storyMessageRowIds
                 let attachmentUniqueIds = pendingChangesToCommit.attachmentUniqueIds
                 let interactionDeletedUniqueIds = pendingChangesToCommit.interactionDeletedUniqueIds
+                let storyMessageDeletedUniqueIds = pendingChangesToCommit.storyMessageDeletedUniqueIds
                 let attachmentDeletedUniqueIds = pendingChangesToCommit.attachmentDeletedUniqueIds
                 let collections = pendingChangesToCommit.collections
+                let tableNames = pendingChangesToCommit.tableNames
 
                 Self.committedChangesLock.withLock {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
                     self.committedChanges.append(threadUniqueIds: threadUniqueIds)
+                    self.committedChanges.append(storyMessageUniqueIds: storyMessageUniqueIds)
+                    self.committedChanges.append(storyMessageRowIds: storyMessageRowIds)
                     self.committedChanges.append(attachmentUniqueIds: attachmentUniqueIds)
                     self.committedChanges.append(interactionDeletedUniqueIds: interactionDeletedUniqueIds)
+                    self.committedChanges.append(storyMessageDeletedUniqueIds: storyMessageDeletedUniqueIds)
                     self.committedChanges.append(attachmentDeletedUniqueIds: attachmentDeletedUniqueIds)
                     self.committedChanges.append(collections: collections)
+                    self.committedChanges.append(tableNames: tableNames)
                 }
             } catch {
                 Self.committedChangesLock.withLock {

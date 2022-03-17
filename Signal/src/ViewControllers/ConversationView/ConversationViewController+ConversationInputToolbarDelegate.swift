@@ -144,7 +144,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             ensureBannerState()
         }
 
-        NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
+        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
     public func sendSticker(_ stickerInfo: StickerInfo) {
@@ -329,7 +329,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 self.ensureBannerState()
             }
 
-            NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
+            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
         }
     }
 
@@ -604,7 +604,7 @@ extension ConversationViewController: LocationPickerDelegate {
                 self.ensureBannerState()
             }
 
-            NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
+            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error).")
         }

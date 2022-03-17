@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -132,7 +132,7 @@ public class BatchUpdate<T: BatchUpdateValue> {
     //
     // * We use "value" to refer to the Model/ViewModel for the content.
     //   In practice this is a CVRenderItem in conversation view and a
-    //   threadUniqueId box in home view.
+    //   threadUniqueId box in chat list.
     // * We use "value id" to refer to a unique identifier for the model.
     //   In practice this is a model uniqueId.
     // * We use "cell" to refer to the view item that renders the content.
@@ -521,9 +521,9 @@ public class BatchUpdate<T: BatchUpdateValue> {
     // It's important (and non-trivial) that we update the ordering
     // of the values using the minimum number of moves possible.
     //
-    // Consider the case of home view displaying threads ABCDEF.
+    // Consider the case of chat list displaying threads ABCDEF.
     // Thread D receives a new message and moves to the top of
-    // home view: D ABC EF.  This can be accomplished many ways.
+    // chat list: D ABC EF.  This can be accomplished many ways.
     // We can .move D up or we can .move ABC down.
     //
     // In the case of more complex re-orderings, the number of
@@ -533,7 +533,7 @@ public class BatchUpdate<T: BatchUpdateValue> {
     // efficient, looks best, and is most likely to correspond to
     // the "change" that re-ordered the values.
     //
-    // In home view and conversation view, most values ("the herd")
+    // In chat list and conversation view, most values ("the herd")
     // don't move in a given set of batch updates. A few ("the
     // wanderers") do.
     //

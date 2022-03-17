@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -388,7 +388,7 @@ class SubscriptionViewController: OWSTableViewController2 {
         } else {
             databaseStorage.read { readTx in
                 if self.avatarImage == nil {
-                    self.avatarImage = Self.avatarBuilder.avatarImageForLocalUser(diameterPoints: self.sizeClass.avatarDiameter,
+                    self.avatarImage = Self.avatarBuilder.avatarImageForLocalUser(diameterPoints: self.sizeClass.diameter,
                                                                                   localUserDisplayMode: .asUser,
                                                                                   transaction: readTx)
                 }

@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-#import "HomeViewController.h"
+#import "ChatListViewController.h"
 #import "AppDelegate.h"
 #import "RegistrationUtils.h"
 #import "Signal-Swift.h"
@@ -28,18 +28,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// The bulk of the content in this view is driven by HVRenderState.
+// The bulk of the content in this view is driven by CLVRenderState.
 // However, we also want to optionally include ReminderView's at the top
 // and an "Archived Conversations" button at the bottom. Rather than introduce
 // index-offsets into the Mapping calculation, we introduce two pseudo groups
 // to add a top and bottom section to the content, and create cells for those
-// sections without consulting the HVRenderState.
+// sections without consulting the CLVRenderState.
 // This is a bit of a hack, but it consolidates the hacks into the Reminder/Archive section
 // and allows us to leaves the bulk of the content logic on the happy path.
 NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";
 NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
-@interface HomeViewController () <UIViewControllerPreviewingDelegate,
+@interface ChatListViewController () <UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
     CameraFirstCaptureDelegate,
@@ -59,7 +59,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark -
 
-@implementation HomeViewController
+@implementation ChatListViewController
 
 #pragma mark - Init
 
@@ -70,7 +70,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return self;
     }
 
-    _viewState = [HVViewState new];
+    _viewState = [CLVViewState new];
     self.tableDataSource.viewController = self;
     self.loadCoordinator.viewController = self;
     self.reminderViews.viewController = self;
@@ -391,13 +391,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self observeNotifications];
 
-    switch (self.homeViewMode) {
-        case HomeViewModeInbox:
+    switch (self.chatListMode) {
+        case ChatListModeInbox:
             // TODO: Should our app name be translated?  Probably not.
             self.title
-                = NSLocalizedString(@"HOME_VIEW_TITLE_INBOX", @"Title for the conversation list's default mode.");
+                = NSLocalizedString(@"CHAT_LIST_TITLE_INBOX", @"Title for the chat list's default mode.");
             break;
-        case HomeViewModeArchive:
+        case ChatListModeArchive:
             self.title
                 = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the conversation list's 'archive' mode.");
             break;
@@ -457,7 +457,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [super viewDidAppear:animated];
 
     [BenchManager completeEventWithEventId:@"AppStart" logIfAbsent:NO];
-    [InstrumentsMonitor trackEventWithName:@"HomeViewController.viewDidAppear"];
+    [InstrumentsMonitor trackEventWithName:@"ChatListViewController.viewDidAppear"];
 
     if (!self.getStartedBanner && !self.hasEverPresentedExperienceUpgrade &&
         [ExperienceUpgradeManager presentNextFromViewController:self]) {
@@ -490,7 +490,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-    [InstrumentsMonitor trackEventWithName:@"HomeViewController.viewDidDisappear"];
+    [InstrumentsMonitor trackEventWithName:@"ChatListViewController.viewDidDisappear"];
 
     [super viewDidDisappear:animated];
 
@@ -512,7 +512,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateBarButtonItems
 {
-    if (self.homeViewMode != HomeViewModeInbox || self.viewState.multiSelectState.isActive) {
+    if (self.chatListMode != ChatListModeInbox || self.viewState.multiSelectState.isActive) {
         return;
     }
 
@@ -620,8 +620,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSLogInfo(@"");
 
     // If we have presented a conversation list (the archive) search there instead.
-    if (self.presentedHomeViewController) {
-        [self.presentedHomeViewController focusSearch];
+    if (self.presentedChatListViewController) {
+        [self.presentedChatListViewController focusSearch];
         return;
     }
 
@@ -752,7 +752,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self updateUnreadPaymentNotificationsCountWithSneakyTransaction];
 
-    // During main app launch, the home view becomes visible _before_
+    // During main app launch, the chat list becomes visible _before_
     // app is foreground and active.  Therefore we need to make an
     // exception and update the view contents; otherwise, the home
     // view will briefly appear empty after launch. But to avoid
@@ -766,7 +766,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     NSIndexPath *_Nullable selectedIndexPath = self.tableView.indexPathForSelectedRow;
     if (selectedIndexPath != nil) {
-        // Deselect row when swiping back/returning to home view.
+        // Deselect row when swiping back/returning to chat list.
         [self.tableView deselectRowAtIndexPath:selectedIndexPath animated:NO];
     }
 }
@@ -961,7 +961,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (BOOL)shouldShowEmptyInboxView
 {
-    return self.homeViewMode == HomeViewModeInbox && self.numberOfInboxThreads == 0
+    return self.chatListMode == ChatListModeInbox && self.numberOfInboxThreads == 0
         && self.numberOfArchivedThreads == 0;
 }
 
@@ -1002,7 +1002,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)presentGetStartedBannerIfNecessary
 {
-    if (self.getStartedBanner || self.homeViewMode != HomeViewModeInbox) {
+    if (self.getStartedBanner || self.chatListMode != ChatListModeInbox) {
         return;
     }
 

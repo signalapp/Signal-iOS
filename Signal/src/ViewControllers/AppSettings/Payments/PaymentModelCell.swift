@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -50,7 +50,7 @@ public class PaymentModelCell: UITableViewCell {
     private static var hStackSpacing: CGFloat = 12
 
     public static var separatorInsetLeading: CGFloat {
-        CGFloat(avatarSizeClass.avatarDiameter) + hStackSpacing
+        CGFloat(avatarSizeClass.diameter) + hStackSpacing
     }
 
     func configure(paymentItem: PaymentsHistoryItem) {
@@ -81,7 +81,7 @@ public class PaymentModelCell: UITableViewCell {
                             paymentItem.isOutgoingTransfer ||
                             paymentItem.isDefragmentation)
 
-            let avatarSize = Self.avatarSizeClass.avatarDiameter
+            let avatarSize = Self.avatarSizeClass.diameter
             avatarView = PaymentsViewUtils.buildUnidentifiedTransactionAvatar(avatarSize: avatarSize)
         }
         if paymentModel.isUnread {

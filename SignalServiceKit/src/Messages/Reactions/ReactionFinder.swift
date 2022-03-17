@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,36 +33,46 @@ public class ReactionFinder: NSObject {
     private func reactionForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> OWSReaction? {
         guard let uuidString = uuid?.uuidString else { return nil }
         let sql = """
-            SELECT * FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
-            AND \(reactionColumn: .reactorUUID) = ?
+            SELECT * FROM \(OWSReaction.databaseTableName)
+            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
+            AND \(OWSReaction.columnName(.reactorUUID)) = ?
         """
-        return OWSReaction.grdbFetchOne(sql: sql, arguments: [uniqueMessageId, uuidString], transaction: transaction)
+        do {
+            return try OWSReaction.fetchOne(transaction.database, sql: sql, arguments: [uniqueMessageId, uuidString])
+        } catch {
+            owsFailDebug("Failed to fetch reaction \(error)")
+            return nil
+        }
     }
 
     private func reactionForE164(_ e164: String?, transaction: GRDBReadTransaction) -> OWSReaction? {
         guard let e164 = e164 else { return nil }
         let sql = """
-            SELECT * FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
-            AND \(reactionColumn: .reactorE164) = ?
+            SELECT * FROM \(OWSReaction.databaseTableName)
+            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
+            AND \(OWSReaction.columnName(.reactorE164)) = ?
         """
-        return OWSReaction.grdbFetchOne(sql: sql, arguments: [uniqueMessageId, e164], transaction: transaction)
+        do {
+            return try OWSReaction.fetchOne(transaction.database, sql: sql, arguments: [uniqueMessageId, e164])
+        } catch {
+            owsFailDebug("Failed to fetch reaction \(error)")
+            return nil
+        }
     }
 
     /// Returns a list of all reactions to this message
     @objc
     public func allReactions(transaction: GRDBReadTransaction) -> [OWSReaction] {
         let sql = """
-            SELECT * FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
-            ORDER BY \(reactionColumn: .id) DESC
+            SELECT * FROM \(OWSReaction.databaseTableName)
+            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
+            ORDER BY \(OWSReaction.columnName(.id)) DESC
         """
-        let cursor = OWSReaction.grdbFetchCursor(sql: sql, arguments: [uniqueMessageId], transaction: transaction)
 
         var reactions = [OWSReaction]()
 
         do {
+            let cursor = try OWSReaction.fetchCursor(transaction.database, sql: sql, arguments: [uniqueMessageId])
             while let reaction = try cursor.next() {
                 reactions.append(reaction)
             }
@@ -77,16 +87,16 @@ public class ReactionFinder: NSObject {
     @objc
     public func unreadReactions(transaction: GRDBReadTransaction) -> [OWSReaction] {
         let sql = """
-            SELECT * FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
-            AND \(reactionColumn: .read) IS 0
-            ORDER BY \(reactionColumn: .id) DESC
+            SELECT * FROM \(OWSReaction.databaseTableName)
+            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
+            AND \(OWSReaction.columnName(.read)) IS 0
+            ORDER BY \(OWSReaction.columnName(.id)) DESC
         """
-        let cursor = OWSReaction.grdbFetchCursor(sql: sql, arguments: [uniqueMessageId], transaction: transaction)
 
         var reactions = [OWSReaction]()
 
         do {
+            let cursor = try OWSReaction.fetchCursor(transaction.database, sql: sql, arguments: [uniqueMessageId])
             while let reaction = try cursor.next() {
                 reactions.append(reaction)
             }
@@ -101,9 +111,9 @@ public class ReactionFinder: NSObject {
     @objc
     public func allUniqueIds(transaction: GRDBReadTransaction) -> [String] {
         let sql = """
-            SELECT \(reactionColumn: .uniqueId)
-            FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
+            SELECT \(OWSReaction.columnName(.uniqueId))
+            FROM \(OWSReaction.databaseTableName)
+            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
         """
         let sqlRequest = SQLRequest<Void>(sql: sql, arguments: [uniqueMessageId], cached: true)
 
@@ -120,8 +130,8 @@ public class ReactionFinder: NSObject {
     @objc
     public func deleteAllReactions(transaction: GRDBWriteTransaction) {
         let sql = """
-            DELETE FROM \(ReactionRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueMessageId) = ?
+            DELETE FROM \(OWSReaction.databaseTableName)
+            WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
         """
         transaction.executeUpdate(sql: sql, arguments: [uniqueMessageId])
     }

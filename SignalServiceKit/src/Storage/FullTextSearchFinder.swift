@@ -16,14 +16,14 @@ public class FullTextSearchFinder: NSObject {
         }
     }
 
-    public func enumerateObjects<T: SDSModel>(searchText: String, maxResults: UInt, transaction: SDSAnyReadTransaction, block: @escaping (T, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateObjects<T: SDSIndexableModel>(searchText: String, maxResults: UInt, transaction: SDSAnyReadTransaction, block: @escaping (T, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             GRDBFullTextSearchFinder.enumerateObjects(searchText: searchText, maxResults: maxResults, transaction: grdbRead, block: block)
         }
     }
 
-    public func modelWasInserted(model: SDSModel, transaction: SDSAnyWriteTransaction) {
+    public func modelWasInserted(model: SDSIndexableModel, transaction: SDSAnyWriteTransaction) {
         assert(type(of: model).ftsIndexMode != .never)
 
         switch transaction.writeTransaction {
@@ -33,15 +33,15 @@ public class FullTextSearchFinder: NSObject {
     }
 
     @objc
-    public func modelWasUpdatedObjc(model: TSYapDatabaseObject, transaction: SDSAnyWriteTransaction) {
-        guard let model = model as? SDSModel else {
+    public func modelWasUpdatedObjc(model: AnyObject, transaction: SDSAnyWriteTransaction) {
+        guard let model = model as? SDSIndexableModel else {
             owsFailDebug("Invalid model.")
             return
         }
         modelWasUpdated(model: model, transaction: transaction)
     }
 
-    public func modelWasUpdated(model: SDSModel, transaction: SDSAnyWriteTransaction) {
+    public func modelWasUpdated(model: SDSIndexableModel, transaction: SDSAnyWriteTransaction) {
         assert(type(of: model).ftsIndexMode != .never)
 
         switch transaction.writeTransaction {
@@ -50,7 +50,7 @@ public class FullTextSearchFinder: NSObject {
         }
     }
 
-    public func modelWasRemoved(model: SDSModel, transaction: SDSAnyWriteTransaction) {
+    public func modelWasRemoved(model: SDSIndexableModel, transaction: SDSAnyWriteTransaction) {
         assert(type(of: model).ftsIndexMode != .never)
 
         switch transaction.writeTransaction {
@@ -205,7 +205,7 @@ class GRDBFullTextSearchFinder: NSObject {
     static let ftsContentColumn = "ftsIndexableContent"
     static var matchTag: String { FullTextSearchFinder.matchTag }
 
-    private class func collection(forModel model: SDSModel) -> String {
+    private class func collection(forModel model: SDSIndexableModel) -> String {
         // Note that allModelsWereRemoved(collection: ) makes the same
         // assumption that the FTS collection matches the
         // TSYapDatabaseObject.collection.
@@ -220,7 +220,7 @@ class GRDBFullTextSearchFinder: NSObject {
         return "\(collection).\(uniqueId)"
     }
 
-    private class func shouldIndexModel(_ model: SDSModel) -> Bool {
+    private class func shouldIndexModel(_ model: SDSIndexableModel) -> Bool {
         if let userProfile = model as? OWSUserProfile,
            OWSUserProfile.isLocalProfileAddress(userProfile.address) {
             // We don't need to index the user profile for the local user.
@@ -246,7 +246,7 @@ class GRDBFullTextSearchFinder: NSObject {
         return true
     }
 
-    public class func modelWasInserted(model: SDSModel, transaction: GRDBWriteTransaction) {
+    public class func modelWasInserted(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         guard shouldIndexModel(model) else {
             Logger.verbose("Not indexing model: \(type(of: (model)))")
             removeModelFromIndex(model, transaction: transaction)
@@ -272,7 +272,7 @@ class GRDBFullTextSearchFinder: NSObject {
             transaction: transaction)
     }
 
-    public class func modelWasUpdated(model: SDSModel, transaction: GRDBWriteTransaction) {
+    public class func modelWasUpdated(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         guard shouldIndexModel(model) else {
             Logger.verbose("Not indexing model: \(type(of: (model)))")
             removeModelFromIndex(model, transaction: transaction)
@@ -312,11 +312,11 @@ class GRDBFullTextSearchFinder: NSObject {
             transaction: transaction)
     }
 
-    public class func modelWasRemoved(model: SDSModel, transaction: GRDBWriteTransaction) {
+    public class func modelWasRemoved(model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         removeModelFromIndex(model, transaction: transaction)
     }
 
-    private class func removeModelFromIndex(_ model: SDSModel, transaction: GRDBWriteTransaction) {
+    private class func removeModelFromIndex(_ model: SDSIndexableModel, transaction: GRDBWriteTransaction) {
         let uniqueId = model.uniqueId
         let collection = self.collection(forModel: model)
 
@@ -365,7 +365,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
     private class func modelForFTSMatch(collection: String,
                                         uniqueId: String,
-                                        transaction: GRDBReadTransaction) -> SDSModel? {
+                                        transaction: GRDBReadTransaction) -> SDSIndexableModel? {
         switch collection {
         case SignalAccount.collection():
             guard let model = SignalAccount.anyFetch(uniqueId: uniqueId,
@@ -409,7 +409,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
     // MARK: - Querying
 
-    public class func enumerateObjects<T: SDSModel>(searchText: String, maxResults: UInt, transaction: GRDBReadTransaction, block: @escaping (T, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public class func enumerateObjects<T: SDSIndexableModel>(searchText: String, maxResults: UInt, transaction: GRDBReadTransaction, block: @escaping (T, String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         enumerateObjects(
             searchText: searchText,
             collections: [T.collection()],
@@ -594,4 +594,10 @@ class AnySearchIndexer: Dependencies {
             return nil
         }
     }
+}
+
+public protocol SDSIndexableModel {
+    var uniqueId: String { get }
+    static var ftsIndexMode: TSFTSIndexMode { get }
+    static func collection() -> String
 }

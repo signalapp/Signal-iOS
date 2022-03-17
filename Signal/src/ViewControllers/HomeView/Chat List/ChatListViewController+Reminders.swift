@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
-public class HVReminderViews: NSObject {
+public class CLVReminderViews: NSObject {
 
     fileprivate let reminderViewCell = UITableViewCell()
     fileprivate let reminderStackView = UIStackView()
@@ -16,7 +16,7 @@ public class HVReminderViews: NSObject {
     fileprivate let paymentsReminderView = UIView()
 
     @objc
-    public weak var viewController: HomeViewController?
+    public weak var viewController: ChatListViewController?
 
     required override init() {
         AssertIsOnMainThread()
@@ -81,7 +81,7 @@ public class HVReminderViews: NSObject {
 
 // MARK: -
 
-extension HomeViewController {
+extension ChatListViewController {
 
     @objc
     public var unreadPaymentNotificationsCount: UInt {
@@ -105,13 +105,13 @@ extension HomeViewController {
     fileprivate var paymentsReminderView: UIView { reminderViews.paymentsReminderView }
 
     @objc
-    public var reminderViews: HVReminderViews { viewState.reminderViews }
+    public var reminderViews: CLVReminderViews { viewState.reminderViews }
 
     @objc
     public func updateReminderViews() {
         AssertIsOnMainThread()
 
-        archiveReminderView.isHidden = homeViewMode != .archive
+        archiveReminderView.isHidden = chatListMode != .archive
         deregisteredView.isHidden = (!TSAccountManager.shared.isDeregistered() ||
                                         TSAccountManager.shared.isTransferInProgress)
         outageView.isHidden = !OutageDetection.shared.hasOutage

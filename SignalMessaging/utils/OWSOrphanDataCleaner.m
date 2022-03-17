@@ -14,13 +14,11 @@
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
 #import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
-#import <SignalServiceKit/OWSReaction.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSInteraction.h>
-#import <SignalServiceKit/TSMention.h>
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -916,25 +914,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 shouldAbort = YES;
                 return;
             }
-            OWSReaction *_Nullable reaction =
-                [OWSReaction anyFetchWithUniqueId:reactionId transaction:transaction];
-            if (!reaction) {
-                // This could just be a race condition, but it should be very unlikely.
-                OWSLogWarn(@"Could not load reaction: %@", reactionId);
-                continue;
+
+            BOOL performedCleanup = [OWSReactionManager tryToCleanupOrphanedReactionWithUniqueId:reactionId
+                                                                                   thresholdDate:thresholdDate
+                                                                             shouldPerformRemove:shouldRemoveOrphans
+                                                                                     transaction:transaction];
+            if (performedCleanup) {
+                reactionsRemoved++;
             }
-            // Don't delete reactions which were created in the last N minutes.
-            NSDate *creationDate = [NSDate ows_dateWithMillisecondsSince1970:reaction.sentAtTimestamp];
-            if ([creationDate isAfterDate:thresholdDate]) {
-                OWSLogInfo(@"Skipping orphan reaction due to age: %f", fabs(creationDate.timeIntervalSinceNow));
-                continue;
-            }
-            OWSLogInfo(@"Removing orphan reaction: %@", reaction.uniqueId);
-            reactionsRemoved++;
-            if (!shouldRemoveOrphans) {
-                continue;
-            }
-            [reaction anyRemoveWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan reactions: %zu", reactionsRemoved);
 
@@ -944,24 +931,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 shouldAbort = YES;
                 return;
             }
-            TSMention *_Nullable mention = [TSMention anyFetchWithUniqueId:mentionId transaction:transaction];
-            if (!mention) {
-                // This could just be a race condition, but it should be very unlikely.
-                OWSLogWarn(@"Could not load mention: %@", mentionId);
-                continue;
+
+            BOOL performedCleanup = [MentionFinder tryToCleanupOrphanedMentionWithUniqueId:mentionId
+                                                                             thresholdDate:thresholdDate
+                                                                       shouldPerformRemove:shouldRemoveOrphans
+                                                                               transaction:transaction];
+            if (performedCleanup) {
+                mentionsRemoved++;
             }
-            // Don't delete mentions which were created in the last N minutes.
-            NSDate *creationDate = mention.creationTimestamp;
-            if ([creationDate isAfterDate:thresholdDate]) {
-                OWSLogInfo(@"Skipping orphan mention due to age: %f", fabs(creationDate.timeIntervalSinceNow));
-                continue;
-            }
-            OWSLogInfo(@"Removing orphan mention: %@", mention.uniqueId);
-            mentionsRemoved++;
-            if (!shouldRemoveOrphans) {
-                continue;
-            }
-            [mention anyRemoveWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan mentions: %zu", mentionsRemoved);
     });

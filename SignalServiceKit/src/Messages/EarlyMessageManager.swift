@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -349,25 +349,14 @@ public class EarlyMessageManager: NSObject {
             return owsFailDebug("attempted to apply pending messages for unsupported message type \(message.interactionType)")
         }
 
-        let earlyReceipts: [EarlyReceipt]?
-        do {
-            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction)
-        } catch {
-            owsFailDebug("Failed to decode early receipts for message \(identifier) with error \(error)")
-            earlyReceipts = nil
-        }
-
-        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction)
-
-        // Apply any early receipts for this message
-        for earlyReceipt in earlyReceipts ?? [] {
+        applyPendingMessages(for: identifier, transaction: transaction) { earlyReceipt in
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, let timestamp):
                 Logger.info("Applying early read receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
-                    continue
+                    break
                 }
                 message.update(
                     withReadRecipient: sender,
@@ -380,7 +369,7 @@ public class EarlyMessageManager: NSObject {
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
-                    continue
+                    break
                 }
                 message.update(
                     withViewedRecipient: sender,
@@ -393,7 +382,7 @@ public class EarlyMessageManager: NSObject {
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
-                    continue
+                    break
                 }
                 message.update(
                     withDeliveredRecipient: sender,
@@ -421,12 +410,65 @@ public class EarlyMessageManager: NSObject {
                 )
             }
         }
+    }
+
+    public func applyPendingMessages(for storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
+        let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAddress)
+        applyPendingMessages(for: identifier, transaction: transaction) { earlyReceipt in
+            switch earlyReceipt {
+            case .outgoingMessageRead(let sender, let deviceId, _):
+                owsFailDebug("Unexpectedly received early read receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
+            case .outgoingMessageViewed(let sender, let deviceId, let timestamp):
+                Logger.info("Applying early viewed receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
+
+                guard storyMessage.direction == .outgoing else {
+                    owsFailDebug("Unexpected message type for early read receipt for StoryMessage.")
+                    break
+                }
+
+                storyMessage.markAsViewed(at: timestamp, by: sender, transaction: transaction)
+            case .outgoingMessageDelivered(let sender, let deviceId, _):
+                Logger.info("Applying early delivery receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
+
+                guard storyMessage.direction == .outgoing else {
+                    owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
+                    break
+                }
+
+                // TODO: Mark Delivered
+            case .messageReadOnLinkedDevice:
+                owsFailDebug("Unexpectexly received early read receipt from linked device for StoryMessage \(identifier)")
+            case .messageViewedOnLinkedDevice(let timestamp):
+                Logger.info("Applying early viewed receipt from linked device for StoryMessage \(identifier)")
+
+                storyMessage.markAsViewed(at: timestamp, circumstance: .onLinkedDevice, transaction: transaction)
+            }
+        }
+    }
+
+    private func applyPendingMessages(
+        for identifier: MessageIdentifier,
+        transaction: SDSAnyWriteTransaction,
+        earlyReceiptProcessor: (EarlyReceipt) -> Void
+    ) {
+        let earlyReceipts: [EarlyReceipt]?
+        do {
+            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to decode early receipts for message \(identifier) with error \(error)")
+            earlyReceipts = nil
+        }
+
+        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction)
+
+        // Apply any early receipts for this message
+        earlyReceipts?.forEach { earlyReceiptProcessor($0) }
 
         let earlyEnvelopes: [EarlyEnvelope]?
         do {
             earlyEnvelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction)
         } catch {
-            owsFailDebug("Failed to decode early envelopes for message \(identifier) with error \(error)")
+            owsFailDebug("Failed to decode early envelopes for \(identifier) with error \(error)")
             earlyEnvelopes = nil
         }
 
@@ -434,7 +476,7 @@ public class EarlyMessageManager: NSObject {
 
         // Re-process any early envelopes associated with this message
         for earlyEnvelope in earlyEnvelopes ?? [] {
-            Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for message \(identifier)")
+            Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for \(identifier)")
 
             Self.messageManager.processEnvelope(
                 earlyEnvelope.envelope,

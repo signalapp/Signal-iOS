@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -329,7 +329,7 @@ extension ConversationSettingsViewController {
                 ) { configuration in
                     self?.disappearingMessagesConfiguration = configuration
                     self?.updateTableContents()
-                    NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
+                    NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
                 }
                 self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }

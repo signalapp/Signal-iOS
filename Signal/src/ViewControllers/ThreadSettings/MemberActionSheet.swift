@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,7 +42,7 @@ class MemberActionSheet: InteractiveSheetViewController {
                 ) else { return nil }
                 return ThreadViewModel(
                     thread: thread,
-                    forHomeView: false,
+                    forChatList: false,
                     transaction: transaction
                 )
             }) else {
@@ -53,7 +53,7 @@ class MemberActionSheet: InteractiveSheetViewController {
                     )
                     return ThreadViewModel(
                         thread: thread,
-                        forHomeView: false,
+                        forChatList: false,
                         transaction: transaction
                     )
                 }

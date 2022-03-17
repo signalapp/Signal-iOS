@@ -63,7 +63,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
             return self.threadViewHelper.threads.filter { thread -> Bool in
                 guard let groupThread = thread as? TSGroupThread else { return false }
                 let threadViewModel = ThreadViewModel(thread: groupThread,
-                                                      forHomeView: false,
+                                                      forChatList: false,
                                                       transaction: transaction)
                 let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
                 return groupViewHelper.canEditConversationMembership

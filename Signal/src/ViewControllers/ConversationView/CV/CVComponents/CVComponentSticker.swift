@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -74,7 +74,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             case .uploading:
                 let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
                                                             style: .withCircle,
-                                                            conversationStyle: conversationStyle,
+                                                            isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                                             mediaCache: mediaCache)
                 stackView.addSubview(progressView)
                 stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
@@ -103,7 +103,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
                                                         style: .withCircle,
-                                                        conversationStyle: conversationStyle,
+                                                        isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                                         mediaCache: mediaCache)
             stackView.addSubview(progressView)
             stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)

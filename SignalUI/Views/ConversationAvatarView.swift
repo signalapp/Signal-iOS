@@ -33,6 +33,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         super.init(frame: .zero)
 
+        addSubview(storyStateView)
         addSubview(avatarView)
         addSubview(badgeView)
         autoresizesSubviews = false
@@ -64,25 +65,25 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
             public init(avatarDiameter: UInt) {
                 switch avatarDiameter {
-                case Self.twentyFour.avatarDiameter:
+                case Self.twentyFour.diameter:
                     self = .twentyFour
-                case Self.twentyEight.avatarDiameter:
+                case Self.twentyEight.diameter:
                     self = .twentyEight
-                case Self.thirtySix.avatarDiameter:
+                case Self.thirtySix.diameter:
                     self = .thirtySix
-                case Self.forty.avatarDiameter:
+                case Self.forty.diameter:
                     self = .forty
-                case Self.fortyEight.avatarDiameter:
+                case Self.fortyEight.diameter:
                     self = .fortyEight
-                case Self.fiftySix.avatarDiameter:
+                case Self.fiftySix.diameter:
                     self = .fiftySix
-                case Self.sixtyFour.avatarDiameter:
+                case Self.sixtyFour.diameter:
                     self = .sixtyFour
-                case Self.eighty.avatarDiameter:
+                case Self.eighty.diameter:
                     self = .eighty
-                case Self.eightyEight.avatarDiameter:
+                case Self.eightyEight.diameter:
                     self = .eightyEight
-                case Self.oneHundredTwelve.avatarDiameter:
+                case Self.oneHundredTwelve.diameter:
                     self = .oneHundredTwelve
                 default:
                     self = .customDiameter(avatarDiameter)
@@ -98,6 +99,17 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         /// The preferred size class of the avatar. Used for avatar generation and autolayout (if enabled)
         /// If a predefined size class is used, a badge can optionally be placed by specifying `addBadgeIfApplicable`
         public var sizeClass: SizeClass
+
+        fileprivate var avatarSizeClass: SizeClass {
+            guard storyState != .none else { return sizeClass }
+            return .customDiameter(sizeClass.diameter - (sizeClass.storyBorderInsets * 2))
+        }
+
+        fileprivate var avatarOffset: CGPoint {
+            guard storyState != .none else { return .zero }
+            return CGPoint(x: Int(sizeClass.storyBorderInsets), y: Int(sizeClass.storyBorderInsets))
+        }
+
         /// The data provider used to fetch an avatar and badge
         public var dataSource: ConversationAvatarDataSource?
         /// Adjusts how the local user profile avatar is generated (Note to Self or Avatar?)
@@ -133,6 +145,13 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         public mutating func usePlaceholderImages() {
             useCachedImages = false
         }
+
+        public enum StoryState: Equatable {
+            case unviewed
+            case viewed
+            case none
+        }
+        public var storyState: StoryState = .none
     }
 
     public private(set) var configuration: Configuration {
@@ -150,23 +169,25 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         // We may need to update our model, layout, or constraints based on the changes to the configuration
         let sizeClassDidChange = configuration.sizeClass != oldValue.sizeClass
+        let avatarSizeClassDidChange = configuration.avatarSizeClass != oldValue.avatarSizeClass
         let dataSourceDidChange = configuration.dataSource != oldValue.dataSource
         let localUserDisplayModeDidChange = configuration.localUserDisplayMode != oldValue.localUserDisplayMode
         let shouldShowBadgeDidChange = configuration.addBadgeIfApplicable != oldValue.addBadgeIfApplicable
         let shapeDidChange = configuration.shape != oldValue.shape
         let autolayoutDidChange = configuration.useAutolayout != oldValue.useAutolayout
+        let storyStateDidChange = configuration.storyState != oldValue.storyState
 
         // Any changes to avatar size or provider will trigger a model update
-        if sizeClassDidChange || dataSourceDidChange || localUserDisplayModeDidChange || shouldShowBadgeDidChange {
+        if sizeClassDidChange || avatarSizeClassDidChange || dataSourceDidChange || localUserDisplayModeDidChange || shouldShowBadgeDidChange {
             setNeedsModelUpdate()
         }
 
         // If autolayout was toggled, or the size changed while autolayout is enabled we need to update our constraints
-        if autolayoutDidChange || (configuration.useAutolayout && sizeClassDidChange) {
+        if autolayoutDidChange || (configuration.useAutolayout && (sizeClassDidChange || avatarSizeClassDidChange)) {
             setNeedsUpdateConstraints()
         }
 
-        if sizeClassDidChange || shouldShowBadgeDidChange || shapeDidChange {
+        if sizeClassDidChange || avatarSizeClassDidChange || shouldShowBadgeDidChange || shapeDidChange || storyStateDidChange {
             setNeedsLayout()
         }
     }
@@ -301,6 +322,12 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     // MARK: Subviews and Layout
 
+    private var storyStateView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }()
+
     private var avatarView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFill
@@ -319,7 +346,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     private var sizeConstraints: (width: NSLayoutConstraint, height: NSLayoutConstraint)?
     override public func updateConstraints() {
-        let targetSize = configuration.sizeClass.avatarSize
+        let targetSize = configuration.sizeClass.size
 
         switch (configuration.useAutolayout, sizeConstraints) {
         case (true, let constraints?):
@@ -341,22 +368,40 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
 
-        avatarView.frame = CGRect(origin: .zero, size: configuration.sizeClass.avatarSize)
+        switch configuration.storyState {
+        case .none:
+            storyStateView.isHidden = true
+        case .viewed:
+            storyStateView.isHidden = false
+            storyStateView.layer.borderColor = UIColor.ows_blackAlpha25.cgColor
+            storyStateView.layer.borderWidth = configuration.sizeClass.storyViewedBorderSize
+        case .unviewed:
+            storyStateView.isHidden = false
+            storyStateView.layer.borderColor = UIColor.ows_accentBlue.cgColor
+            storyStateView.layer.borderWidth = configuration.sizeClass.storyUnviewedBorderSize
+        }
+
+        storyStateView.frame = CGRect(origin: .zero, size: configuration.sizeClass.size)
+        avatarView.frame = CGRect(origin: configuration.avatarOffset, size: configuration.avatarSizeClass.size)
         badgeView.frame = CGRect(origin: configuration.sizeClass.badgeOffset, size: configuration.sizeClass.badgeSize)
         badgeView.isHidden = (badgeView.image == nil)
 
         switch configuration.shape {
         case .circular:
+            storyStateView.layer.cornerRadius = (storyStateView.bounds.height / 2)
+            storyStateView.layer.masksToBounds = true
             avatarView.layer.cornerRadius = (avatarView.bounds.height / 2)
             avatarView.layer.masksToBounds = true
         case .rectangular:
+            storyStateView.layer.cornerRadius = 0
+            storyStateView.layer.masksToBounds = false
             avatarView.layer.cornerRadius = 0
             avatarView.layer.masksToBounds = false
         }
     }
 
     @objc
-    public override var intrinsicContentSize: CGSize { configuration.sizeClass.avatarSize }
+    public override var intrinsicContentSize: CGSize { configuration.sizeClass.size }
 
     @objc
     public override func sizeThatFits(_ size: CGSize) -> CGSize { intrinsicContentSize }
@@ -656,7 +701,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.avatarImage(
                     forAddress: contactThread.contactAddress,
-                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
+                    diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
                     transaction: $0)
             }
@@ -665,7 +710,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.avatarImage(
                     forAddress: address,
-                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
+                    diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
                     transaction: $0)
             }
@@ -674,7 +719,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.avatarImage(
                     forGroupThread: groupThread,
-                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
+                    diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     transaction: $0)
             }
 
@@ -693,7 +738,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.precachedAvatarImage(
                     forAddress: contactThread.contactAddress,
-                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
+                    diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
                     transaction: $0)
             }
@@ -702,7 +747,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.precachedAvatarImage(
                     forAddress: address,
-                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
+                    diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
                     transaction: $0)
             }
@@ -711,7 +756,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.precachedAvatarImage(
                     forGroupThread: groupThread,
-                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
+                    diameterPoints: UInt(configuration.avatarSizeClass.diameter),
                     transaction: $0)
             }
 
@@ -747,7 +792,7 @@ extension ConversationAvatarView.Configuration.SizeClass {
     // an arbitrarily sized avatar. Design has provided us with these pre-defined sizes.
     // An avatar outside of these sizes will not support badging
 
-    public var avatarDiameter: UInt {
+    public var diameter: UInt {
         switch self {
         case .twentyFour: return 24
         case .twentyEight: return 28
@@ -767,14 +812,14 @@ extension ConversationAvatarView.Configuration.SizeClass {
         // Originally, we were only using badge sprites for explicit size classes
         // But it turns out we need these badges displayed in more places than originally thought
         // Now we lerp between the explicit size classes that design has provided for us
-        switch avatarDiameter {
+        switch diameter {
         case ..<24: return 0
         case 24...36: return 16
-        case 36..<40: return CGFloat(avatarDiameter).inverseLerp(36, 40).lerp(16, 24)
+        case 36..<40: return CGFloat(diameter).inverseLerp(36, 40).lerp(16, 24)
         case 40...64: return 24
-        case 64..<80: return CGFloat(avatarDiameter).inverseLerp(64, 80).lerp(24, 36)
+        case 64..<80: return CGFloat(diameter).inverseLerp(64, 80).lerp(24, 36)
         case 80...112: return 36
-        case 112...: return (CGFloat(avatarDiameter) / 112) * 36
+        case 112...: return (CGFloat(diameter) / 112) * 36
         default: return 0
         }
     }
@@ -795,7 +840,7 @@ extension ConversationAvatarView.Configuration.SizeClass {
         case .customDiameter:
             // Design hand-selected the above offsets for each size class
             // For anything in between, let's just stick the badge at the bottom left of the frame for now
-            let avatarFrame = CGRect(origin: .zero, size: avatarSize)
+            let avatarFrame = CGRect(origin: .zero, size: size)
             let offsetVector = CGVector(dx: -badgeSize.width, dy: -badgeSize.height)
             return avatarFrame.bottomRight.offsetBy(offsetVector)
         }
@@ -813,6 +858,40 @@ extension ConversationAvatarView.Configuration.SizeClass {
         }
     }
 
-    public var avatarSize: CGSize { .init(square: CGFloat(avatarDiameter)) }
+    public var size: CGSize { .init(square: CGFloat(diameter)) }
     public var badgeSize: CGSize { .init(square: CGFloat(badgeDiameter)) }
+
+    public var storyBorderInsets: UInt {
+        switch self {
+        case .twentyFour: return 4
+        case .twentyEight: return 4
+        case .thirtySix: return 4
+        case .forty: return 4
+        case .fortyEight: return 5
+        case .fiftySix: return 5
+        case .sixtyFour: return 5
+        case .eighty: return 5
+        case .eightyEight: return 6
+        case .oneHundredTwelve: return 6
+        case .customDiameter: return UInt(CGFloat(diameter) * 0.09)
+        }
+    }
+
+    public var storyUnviewedBorderSize: CGFloat {
+        switch self {
+        case .twentyFour: return 2
+        case .twentyEight: return 2
+        case .thirtySix: return 2
+        case .forty: return 2
+        case .fortyEight: return 2
+        case .fiftySix: return 2
+        case .sixtyFour: return 2
+        case .eighty: return 3
+        case .eightyEight: return 3
+        case .oneHundredTwelve: return 3
+        case .customDiameter: return CGFloat(diameter) * 0.04
+        }
+    }
+
+    public var storyViewedBorderSize: CGFloat { storyUnviewedBorderSize / 2 }
 }

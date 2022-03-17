@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1238,7 +1238,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         if hasSenderAvatarLayout {
             // Sender avatar in groups.
-            contentMaxWidth -= CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter) + ConversationStyle.messageStackSpacing
+            contentMaxWidth -= CGFloat(ConversationStyle.groupMessageAvatarSizeClass.diameter) + ConversationStyle.messageStackSpacing
         }
 
         owsAssertDebug(conversationStyle.maxMediaMessageWidth <= conversationStyle.maxMessageWidth)
@@ -1260,7 +1260,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if hasSenderAvatarLayout,
            nil != self.senderAvatar {
             // Sender avatar in groups.
-            let avatarSize = CGSize.square(CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter))
+            let avatarSize = CGSize.square(CGFloat(ConversationStyle.groupMessageAvatarSizeClass.diameter))
             hInnerStackSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
         // NOTE: The contentStackSize does not have fixed width and may grow
