@@ -402,6 +402,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // Messages
     NSMutableSet<NSString *> *orphanInteractionIds = [NSMutableSet new];
     NSMutableSet<NSString *> *allMessageAttachmentIds = [NSMutableSet new];
+    NSMutableSet<NSString *> *allStoryAttachmentIds = [NSMutableSet new];
     NSMutableSet<NSString *> *allMessageReactionIds = [NSMutableSet new];
     NSMutableSet<NSString *> *allMessageMentionIds = [NSMutableSet new];
     // Stickers
@@ -509,6 +510,24 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             return;
         }
 
+        [StoryMessage anyEnumerateWithTransaction:transaction
+                                          batched:YES
+                                            block:^(StoryMessage *message, BOOL *stop) {
+                                                if (!self.isMainAppAndActive) {
+                                                    shouldAbort = YES;
+                                                    *stop = YES;
+                                                    return;
+                                                }
+                                                if (![message isKindOfClass:[StoryMessage class]]) {
+                                                    return;
+                                                }
+                                                [allStoryAttachmentIds addObjectsFromArray:message.allAttachmentIds];
+                                            }];
+
+        if (shouldAbort) {
+            return;
+        }
+
         [MessageSenderJobQueue
             enumerateEnqueuedInteractionsWithTransaction:transaction
                                                    block:^(TSInteraction *interaction, BOOL *stop) {
@@ -598,9 +617,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     OWSLogDebug(@"attachmentIds: %zu", allAttachmentIds.count);
     OWSLogDebug(@"allMessageAttachmentIds: %zu", allMessageAttachmentIds.count);
+    OWSLogDebug(@"allStoryAttachmentIds: %zu", allStoryAttachmentIds.count);
 
     NSMutableSet<NSString *> *orphanAttachmentIds = [allAttachmentIds mutableCopy];
     [orphanAttachmentIds minusSet:allMessageAttachmentIds];
+    [orphanAttachmentIds minusSet:allStoryAttachmentIds];
     NSMutableSet<NSString *> *missingAttachmentIds = [allMessageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:allAttachmentIds];
 
