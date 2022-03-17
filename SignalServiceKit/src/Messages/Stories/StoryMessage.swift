@@ -239,10 +239,10 @@ public struct TextAttachment: Codable {
     public let textStyle: TextStyle
 
     private let textForegroundColorHex: UInt32?
-    public var textForegroundColor: UIColor? { textForegroundColorHex.map { UIColor(rgbHex: $0) } }
+    public var textForegroundColor: UIColor? { textForegroundColorHex.map { UIColor(argbHex: $0) } }
 
     private let textBackgroundColorHex: UInt32?
-    public var textBackgroundColor: UIColor? { textBackgroundColorHex.map { UIColor(rgbHex: $0) } }
+    public var textBackgroundColor: UIColor? { textBackgroundColorHex.map { UIColor(argbHex: $0) } }
 
     private enum RawBackground: Codable {
         case color(hex: UInt32)
@@ -267,11 +267,11 @@ public struct TextAttachment: Codable {
     public var background: Background {
         switch rawBackground {
         case .color(let hex):
-            return .color(.init(rgbHex: hex))
+            return .color(.init(argbHex: hex))
         case .gradient(let rawGradient):
             return .gradient(.init(
-                startColor: .init(rgbHex: rawGradient.startColorHex),
-                endColor: .init(rgbHex: rawGradient.endColorHex),
+                startColor: .init(argbHex: rawGradient.startColorHex),
+                endColor: .init(argbHex: rawGradient.endColorHex),
                 angle: rawGradient.angle
             ))
         }
@@ -302,13 +302,13 @@ public struct TextAttachment: Codable {
             self.textStyle = .condensed
         }
 
-        if proto.textForegroundColor != 0 {
+        if proto.hasTextForegroundColor {
             textForegroundColorHex = proto.textForegroundColor
         } else {
             textForegroundColorHex = nil
         }
 
-        if proto.textBackgroundColor != 0 {
+        if proto.hasTextBackgroundColor {
             textBackgroundColorHex = proto.textBackgroundColor
         } else {
             textBackgroundColorHex = nil
@@ -320,7 +320,7 @@ public struct TextAttachment: Codable {
                 endColorHex: gradient.endColor,
                 angle: gradient.angle
             ))
-        } else if proto.color != 0 {
+        } else if proto.hasColor {
             rawBackground = .color(hex: proto.color)
         } else {
             throw OWSAssertionError("Missing background for attachment.")
