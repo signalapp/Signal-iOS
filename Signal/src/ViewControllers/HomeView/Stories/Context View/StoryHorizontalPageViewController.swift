@@ -84,7 +84,8 @@ class StoryHorizontalPageViewController: OWSViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        displayLink?.isPaused = true
+        displayLink?.invalidate()
+        displayLink = nil
     }
 
     private lazy var leftTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapLeft))
@@ -202,7 +203,7 @@ class StoryHorizontalPageViewController: OWSViewController {
     }
 
     private var pauseTime: CFTimeInterval?
-    private var displayLink: WeakDisplayLink?
+    private var displayLink: CADisplayLink?
     private var lastTransitionTime: CFTimeInterval?
     private static let transitionDuration: CFTimeInterval = 5
     private func updateProgressState() {
@@ -211,14 +212,14 @@ class StoryHorizontalPageViewController: OWSViewController {
         if let displayLink = displayLink {
             displayLink.isPaused = false
         } else {
-            let displayLink = WeakDisplayLink { [weak self] displayLink in self?.displayLinkStep(displayLink) }
+            let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkStep))
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
         }
     }
 
     @objc
-    func displayLinkStep(_ displayLink: WeakDisplayLink) {
+    func displayLinkStep(_ displayLink: CADisplayLink) {
         AssertIsOnMainThread()
         playbackProgressView.numberOfItems = items.count
         if let currentItemVC = currentItemViewController, let idx = items.firstIndex(of: currentItemVC.item) {

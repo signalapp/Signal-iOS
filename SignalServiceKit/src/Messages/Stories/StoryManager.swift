@@ -6,7 +6,7 @@ import Foundation
 
 @objc
 public class StoryManager: NSObject {
-    public static let storyLifetime = kDayInMs
+    public static let storyLifetimeMillis = kDayInMs
 
     @objc
     public class func processIncomingStoryMessage(
@@ -18,17 +18,17 @@ public class StoryManager: NSObject {
         // Drop all story messages until the feature is enabled.
         guard FeatureFlags.stories else { return }
 
-        let message = try StoryMessage.create(
+        guard let message = try StoryMessage.create(
             withIncomingStoryMessage: storyMessage,
             timestamp: timestamp,
             author: author,
             transaction: transaction
-        )
+        ) else { return }
 
         // TODO: Optimistic downloading of story attachments.
         attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
 
-        OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetime)
+        OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
 
         earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
     }
@@ -37,7 +37,7 @@ public class StoryManager: NSObject {
     public class func deleteExpiredStories(transaction: SDSAnyWriteTransaction) -> UInt {
         var removedCount: UInt = 0
         StoryFinder.enumerateExpiredStories(transaction: transaction) { message, _ in
-            Logger.info("Removing StoryMessage \(message.timestamp) which expired at: \(message.timestamp + storyLifetime)")
+            Logger.info("Removing StoryMessage \(message.timestamp) which expired at: \(message.timestamp + storyLifetimeMillis)")
             message.anyRemove(transaction: transaction)
             removedCount += 1
         }
@@ -47,7 +47,7 @@ public class StoryManager: NSObject {
     @objc
     public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> NSNumber? {
         guard let timestamp = StoryFinder.oldestTimestamp(transaction: transaction) else { return nil }
-        return NSNumber(value: timestamp + storyLifetime)
+        return NSNumber(value: timestamp + storyLifetimeMillis)
     }
 }
 

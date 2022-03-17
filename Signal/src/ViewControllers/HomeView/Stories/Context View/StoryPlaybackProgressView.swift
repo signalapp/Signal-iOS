@@ -20,21 +20,21 @@ class StoryPlaybackProgressView: UIView {
     public override var bounds: CGRect {
         didSet {
             guard bounds != oldValue else { return }
-            redrawItems()
+            setNeedsDisplay()
         }
     }
 
     public override var frame: CGRect {
         didSet {
             guard frame != oldValue else { return }
-            redrawItems()
+            setNeedsDisplay()
         }
     }
 
     public override var center: CGPoint {
         didSet {
             guard center != oldValue else { return }
-            redrawItems()
+            setNeedsDisplay()
         }
     }
 
@@ -45,13 +45,13 @@ class StoryPlaybackProgressView: UIView {
     var itemState: ItemState = .init(index: 0, value: 0) {
         didSet {
             guard itemState != oldValue else { return }
-            redrawItems()
+            setNeedsDisplay()
         }
     }
     var numberOfItems: Int = 0 {
         didSet {
             guard numberOfItems != oldValue else { return }
-            redrawItems()
+            setNeedsDisplay()
         }
     }
 
@@ -72,8 +72,8 @@ class StoryPlaybackProgressView: UIView {
     private let playedShapeLayer = CAShapeLayer()
     private let unplayedShapeLayer = CAShapeLayer()
 
-    private func redrawItems() {
-        AssertIsOnMainThread()
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
 
         guard numberOfItems > 0 else {
             playedShapeLayer.path = nil

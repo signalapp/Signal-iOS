@@ -349,25 +349,14 @@ public class EarlyMessageManager: NSObject {
             return owsFailDebug("attempted to apply pending messages for unsupported message type \(message.interactionType)")
         }
 
-        let earlyReceipts: [EarlyReceipt]?
-        do {
-            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction)
-        } catch {
-            owsFailDebug("Failed to decode early receipts for message \(identifier) with error \(error)")
-            earlyReceipts = nil
-        }
-
-        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction)
-
-        // Apply any early receipts for this message
-        for earlyReceipt in earlyReceipts ?? [] {
+        applyPendingMessages(for: identifier, transaction: transaction) { earlyReceipt in
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, let timestamp):
                 Logger.info("Applying early read receipt from \(sender):\(deviceId) for outgoing message \(identifier)")
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
-                    continue
+                    break
                 }
                 message.update(
                     withReadRecipient: sender,
@@ -380,7 +369,7 @@ public class EarlyMessageManager: NSObject {
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
-                    continue
+                    break
                 }
                 message.update(
                     withViewedRecipient: sender,
@@ -393,7 +382,7 @@ public class EarlyMessageManager: NSObject {
 
                 guard let message = message as? TSOutgoingMessage else {
                     owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
-                    continue
+                    break
                 }
                 message.update(
                     withDeliveredRecipient: sender,
@@ -421,47 +410,11 @@ public class EarlyMessageManager: NSObject {
                 )
             }
         }
-
-        let earlyEnvelopes: [EarlyEnvelope]?
-        do {
-            earlyEnvelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction)
-        } catch {
-            owsFailDebug("Failed to decode early envelopes for message \(identifier) with error \(error)")
-            earlyEnvelopes = nil
-        }
-
-        pendingEnvelopeStore.removeValue(forKey: identifier.key, transaction: transaction)
-
-        // Re-process any early envelopes associated with this message
-        for earlyEnvelope in earlyEnvelopes ?? [] {
-            Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for message \(identifier)")
-
-            Self.messageManager.processEnvelope(
-                earlyEnvelope.envelope,
-                plaintextData: earlyEnvelope.plainTextData,
-                wasReceivedByUD: earlyEnvelope.wasReceivedByUD,
-                serverDeliveryTimestamp: earlyEnvelope.serverDeliveryTimestamp,
-                shouldDiscardVisibleMessages: false,
-                transaction: transaction
-            )
-        }
     }
 
     public func applyPendingMessages(for storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
         let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAddress)
-
-        let earlyReceipts: [EarlyReceipt]?
-        do {
-            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction)
-        } catch {
-            owsFailDebug("Failed to decode early receipts for message \(identifier) with error \(error)")
-            earlyReceipts = nil
-        }
-
-        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction)
-
-        // Apply any early receipts for this message
-        for earlyReceipt in earlyReceipts ?? [] {
+        applyPendingMessages(for: identifier, transaction: transaction) { earlyReceipt in
             switch earlyReceipt {
             case .outgoingMessageRead(let sender, let deviceId, _):
                 owsFailDebug("Unexpectedly received early read receipt from \(sender):\(deviceId) for StoryMessage \(identifier)")
@@ -470,7 +423,7 @@ public class EarlyMessageManager: NSObject {
 
                 guard storyMessage.direction == .outgoing else {
                     owsFailDebug("Unexpected message type for early read receipt for StoryMessage.")
-                    continue
+                    break
                 }
 
                 storyMessage.markAsViewed(at: timestamp, by: sender, transaction: transaction)
@@ -479,7 +432,7 @@ public class EarlyMessageManager: NSObject {
 
                 guard storyMessage.direction == .outgoing else {
                     owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
-                    continue
+                    break
                 }
 
                 // TODO: Mark Delivered
@@ -491,12 +444,31 @@ public class EarlyMessageManager: NSObject {
                 storyMessage.markAsViewed(at: timestamp, circumstance: .onLinkedDevice, transaction: transaction)
             }
         }
+    }
+
+    private func applyPendingMessages(
+        for identifier: MessageIdentifier,
+        transaction: SDSAnyWriteTransaction,
+        earlyReceiptProcessor: (EarlyReceipt) -> Void
+    ) {
+        let earlyReceipts: [EarlyReceipt]?
+        do {
+            earlyReceipts = try pendingReceiptStore.getCodableValue(forKey: identifier.key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to decode early receipts for message \(identifier) with error \(error)")
+            earlyReceipts = nil
+        }
+
+        pendingReceiptStore.removeValue(forKey: identifier.key, transaction: transaction)
+
+        // Apply any early receipts for this message
+        earlyReceipts?.forEach { earlyReceiptProcessor($0) }
 
         let earlyEnvelopes: [EarlyEnvelope]?
         do {
             earlyEnvelopes = try pendingEnvelopeStore.getCodableValue(forKey: identifier.key, transaction: transaction)
         } catch {
-            owsFailDebug("Failed to decode early envelopes for StoryMessage \(identifier) with error \(error)")
+            owsFailDebug("Failed to decode early envelopes for \(identifier) with error \(error)")
             earlyEnvelopes = nil
         }
 
@@ -504,7 +476,7 @@ public class EarlyMessageManager: NSObject {
 
         // Re-process any early envelopes associated with this message
         for earlyEnvelope in earlyEnvelopes ?? [] {
-            Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for StoryMessage \(identifier)")
+            Logger.info("Reprocessing early envelope \(OWSMessageManager.description(for: earlyEnvelope.envelope)) for \(identifier)")
 
             Self.messageManager.processEnvelope(
                 earlyEnvelope.envelope,

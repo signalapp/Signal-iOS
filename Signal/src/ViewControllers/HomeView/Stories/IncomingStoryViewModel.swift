@@ -9,7 +9,6 @@ struct IncomingStoryViewModel: Dependencies {
     let context: StoryContext
 
     let messages: [StoryMessage]
-    let messageRowIds: [Int64]
     let hasUnviewedMessages: Bool
     enum Attachment {
         case file(TSAttachment)
@@ -26,16 +25,15 @@ struct IncomingStoryViewModel: Dependencies {
     init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) throws {
         let sortedFilteredMessages = messages.lazy.filter { $0.direction == .incoming }.sorted { $0.timestamp > $1.timestamp }
         self.messages = sortedFilteredMessages
-        self.messageRowIds = sortedFilteredMessages.compactMap { $0.id }
-        self.hasUnviewedMessages = sortedFilteredMessages.reduce(false, { partialResult, message in
+        self.hasUnviewedMessages = sortedFilteredMessages.contains { message in
             switch message.manifest {
             case .incoming(_, let viewedTimestamp):
-                return partialResult || (viewedTimestamp == nil)
+                return viewedTimestamp == nil
             case .outgoing:
                 owsFailDebug("Unexpected message type")
-                return partialResult
+                return false
             }
-        })
+        }
 
         guard let latestMessage = sortedFilteredMessages.first else {
             throw OWSAssertionError("At least one message is required.")

@@ -54,7 +54,7 @@ class StoryItemViewController: OWSViewController {
     }
 
     var duration: CFTimeInterval {
-        if let videoPlayer = videoPlayer, let asset = videoPlayer.avPlayer.currentItem?.asset {
+        if let asset = videoPlayer?.avPlayer.currentItem?.asset {
             return CMTimeGetSeconds(asset.duration)
         } else {
             return 5

@@ -40,7 +40,7 @@ class StoriesViewController: OWSViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        timestampUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+        timestampUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             AssertIsOnMainThread()
 
             for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {
@@ -48,7 +48,7 @@ class StoriesViewController: OWSViewController {
                 guard let model = self.models[safe: indexPath.row] else { continue }
                 cell.configureTimestamp(with: model)
             }
-        })
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -95,7 +95,7 @@ class StoriesViewController: OWSViewController {
     private func reloadStories() {
         Self.loadingQueue.async {
             let incomingMessages = Self.databaseStorage.read { StoryFinder.incomingStories(transaction: $0) }
-            let groupedMessages = self.groupStoryMessagesByContext(incomingMessages)
+            let groupedMessages = Dictionary(grouping: incomingMessages) { $0.context }
             let newModels = Self.databaseStorage.read { transaction in
                 groupedMessages.compactMap { try? IncomingStoryViewModel(messages: $1, transaction: transaction) }
             }.sorted { $0.latestMessageTimestamp > $1.latestMessageTimestamp }
@@ -113,7 +113,7 @@ class StoriesViewController: OWSViewController {
                 StoryFinder.incomingStoriesWithRowIds(Array(rowIds), transaction: $0)
             }
             var deletedRowIds = rowIds.subtracting(updatedMessages.map { $0.id! })
-            var groupedMessages = self.groupStoryMessagesByContext(updatedMessages)
+            var groupedMessages = Dictionary(grouping: updatedMessages) { $0.context }
 
             let oldContexts = self.models.map { $0.context }
             var changedContexts = [StoryContext]()
@@ -124,7 +124,7 @@ class StoriesViewController: OWSViewController {
                     try self.models.compactMap { model in
                         guard let latestMessage = model.messages.first else { return model }
 
-                        let modelDeletedRowIds = model.messageRowIds.filter { deletedRowIds.contains($0) }
+                        let modelDeletedRowIds: [Int64] = model.messages.lazy.compactMap { $0.id }.filter { deletedRowIds.contains($0) }
                         deletedRowIds.subtract(modelDeletedRowIds)
 
                         let modelUpdatedMessages = groupedMessages.removeValue(forKey: latestMessage.context) ?? []
@@ -188,14 +188,6 @@ class StoriesViewController: OWSViewController {
                 }
                 self.tableView.endUpdates()
             }
-        }
-    }
-
-    private func groupStoryMessagesByContext(_ storyMessages: [StoryMessage]) -> [StoryContext: [StoryMessage]] {
-        storyMessages.reduce(into: [StoryContext: [StoryMessage]]()) { partialResult, message in
-            var messages = partialResult[message.context] ?? []
-            messages.append(message)
-            partialResult[message.context] = messages
         }
     }
 }

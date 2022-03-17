@@ -464,14 +464,14 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope
                 withDecryptionErrorMessage:contentProto.decryptionErrorMessage
                                transaction:transaction];
+        } else if (contentProto.storyMessage) {
+            [self handleIncomingEnvelope:envelope withStoryMessage:contentProto.storyMessage transaction:transaction];
         } else if (contentProto.hasSenderKeyDistributionMessage) {
             // Sender key distribution messages are not mutually exclusive. They can be
             // included with any message type. However, they're not processed here. They're
             // processed in the -preprocess phase that occurs post-decryption.
             //
             // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
-        } else if (contentProto.storyMessage) {
-            [self handleIncomingEnvelope:envelope withStoryMessage:contentProto.storyMessage transaction:transaction];
         } else {
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
         }

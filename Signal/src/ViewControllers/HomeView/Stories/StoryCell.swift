@@ -11,7 +11,7 @@ class StoryCell: UITableViewCell {
 
     let nameLabel = UILabel()
     let timestampLabel = UILabel()
-    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
+    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
     let attachmentThumbnail = UIView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

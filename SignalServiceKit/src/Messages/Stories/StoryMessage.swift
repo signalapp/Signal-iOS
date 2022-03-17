@@ -108,7 +108,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         timestamp: UInt64,
         author: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
-    ) throws -> StoryMessage {
+    ) throws -> StoryMessage? {
         Logger.info("Processing StoryMessage from \(author) with timestamp \(timestamp)")
 
         guard let authorUuid = author.uuid else {
@@ -124,9 +124,11 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
 
         if let groupId = groupId, blockingManager.isGroupIdBlocked(groupId) {
-            throw OWSGenericError("Ignoring StoryMessage in blocked group.")
+            Logger.warn("Ignoring StoryMessage in blocked group.")
+            return nil
         } else if blockingManager.isAddressBlocked(author) {
-            throw OWSGenericError("Ignoring StoryMessage from blocked author.")
+            Logger.warn("Ignoring StoryMessage from blocked author.")
+            return nil
         }
 
         let manifest = StoryManifest.incoming(allowsReplies: storyMessage.allowsReplies, viewedTimestamp: nil)
@@ -220,18 +222,18 @@ public struct TextAttachment: Codable {
     }
     public let textStyle: TextStyle
 
-    private let textForegroundColorHex: UInt?
+    private let textForegroundColorHex: UInt32?
     public var textForegroundColor: UIColor? { textForegroundColorHex.map { UIColor(rgbHex: $0) } }
 
-    private let textBackgroundColorHex: UInt?
+    private let textBackgroundColorHex: UInt32?
     public var textBackgroundColor: UIColor? { textBackgroundColorHex.map { UIColor(rgbHex: $0) } }
 
     private enum RawBackground: Codable {
-        case color(hex: UInt)
+        case color(hex: UInt32)
         case gradient(raw: RawGradient)
         struct RawGradient: Codable {
-            let startColorHex: UInt
-            let endColorHex: UInt
+            let startColorHex: UInt32
+            let endColorHex: UInt32
             let angle: UInt32
         }
     }
@@ -285,25 +287,25 @@ public struct TextAttachment: Codable {
         }
 
         if proto.hasTextForegroundColor {
-            textForegroundColorHex = UInt(proto.textForegroundColor)
+            textForegroundColorHex = proto.textForegroundColor
         } else {
             textForegroundColorHex = nil
         }
 
         if proto.hasTextBackgroundColor {
-            textBackgroundColorHex = UInt(proto.textBackgroundColor)
+            textBackgroundColorHex = proto.textBackgroundColor
         } else {
             textBackgroundColorHex = nil
         }
 
         if let gradient = proto.gradient {
             rawBackground = .gradient(raw: .init(
-                startColorHex: UInt(gradient.startColor),
-                endColorHex: UInt(gradient.endColor),
+                startColorHex: gradient.startColor,
+                endColorHex: gradient.endColor,
                 angle: gradient.angle
             ))
         } else if proto.hasColor {
-            rawBackground = .color(hex: UInt(proto.color))
+            rawBackground = .color(hex: proto.color)
         } else {
             throw OWSAssertionError("Missing background for attachment.")
         }

@@ -108,6 +108,25 @@ public extension SDSCodableModel {
         sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
+    // This method is an alternative to `anyUpdate(transaction:block:)` methods.
+    //
+    // We should generally use `anyUpdate` to ensure we're not unintentionally
+    // clobbering other columns in the database when another concurrent update
+    // has occured.
+    //
+    // There are cases when this doesn't make sense, e.g. when  we know we've
+    // just loaded the model in the same transaction. In those cases it is
+    // safe and faster to do a "overwriting" update
+    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
+        sdsRemove(transaction: transaction)
+    }
+}
+
+public extension SDSCodableModel where Self: AnyObject {
     // This method is used by "updateWith..." methods.
     //
     // This model may be updated from many threads. We don't want to save
@@ -132,38 +151,6 @@ public extension SDSCodableModel {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (Self) -> Void) {
-
-        block(self)
-
-        guard let dbCopy = Self.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-            return
-        }
-
-        block(dbCopy)
-
-        dbCopy.sdsSave(saveMode: .update, transaction: transaction)
-    }
-
-    // This method is an alternative to `anyUpdate(transaction:block:)` methods.
-    //
-    // We should generally use `anyUpdate` to ensure we're not unintentionally
-    // clobbering other columns in the database when another concurrent update
-    // has occured.
-    //
-    // There are cases when this doesn't make sense, e.g. when  we know we've
-    // just loaded the model in the same transaction. In those cases it is
-    // safe and faster to do a "overwriting" update
-    func anyOverwritingUpdate(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .update, transaction: transaction)
-    }
-
-    func anyRemove(transaction: SDSAnyWriteTransaction) {
-        sdsRemove(transaction: transaction)
-    }
-}
-
-public extension SDSCodableModel where Self: AnyObject {
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (Self) -> Void) {
 
         block(self)

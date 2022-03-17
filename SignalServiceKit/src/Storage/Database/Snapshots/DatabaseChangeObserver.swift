@@ -346,7 +346,7 @@ extension DatabaseChangeObserver: TransactionObserver {
     // internal - should only be called by DatabaseStorage
     func didTouch(storyMessage: StoryMessage, transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
-        // a write transaction in order for the touch machinery to notify it's observers
+        // a write transaction in order for the touch machinery to notify its observers
         // in the expected way.
         AssertHasDatabaseChangeObserverLock()
 

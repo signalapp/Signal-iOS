@@ -49,7 +49,7 @@ public class StoryFinder: NSObject {
             SELECT *
             FROM \(StoryMessage.databaseTableName)
             WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
-            AND \(StoryMessage.columnName(.id)) IN (\(rowIds.map { "\($0)" }.joined(separator: ",")))
+            AND \(StoryMessage.columnName(.id)) IN (\(rowIds.lazy.map { "\($0)" }.joined(separator: ",")))
             ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
         """
 
@@ -116,7 +116,7 @@ public class StoryFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(StoryMessage.databaseTableName)
-            WHERE \(StoryMessage.columnName(.timestamp)) <= \(Date().ows_millisecondsSince1970 - StoryManager.storyLifetime)
+            WHERE \(StoryMessage.columnName(.timestamp)) <= \(Date().ows_millisecondsSince1970 - StoryManager.storyLifetimeMillis)
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
         """
 

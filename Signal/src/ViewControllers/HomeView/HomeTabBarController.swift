@@ -61,7 +61,6 @@ class HomeTabBarController: UITabBarController {
     }
 
     func updateAllBadges() {
-        guard FeatureFlags.stories else { return }
         updateStoriesBadge()
         updateChatListBadge()
     }

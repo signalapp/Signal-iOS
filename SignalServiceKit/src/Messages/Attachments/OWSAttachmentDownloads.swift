@@ -1256,22 +1256,7 @@ public extension OWSAttachmentDownloads {
                 owsFailDebug("Missing attachment: \(attachmentId)")
                 break
             }
-            let category: AttachmentCategory = {
-                if attachment.isImage {
-                    return .bodyMediaImage
-                } else if attachment.isVideo {
-                    return .bodyMediaVideo
-                } else if attachment.isVoiceMessage {
-                    return .bodyAudioVoiceMemo
-                } else if attachment.isAudio {
-                    return .bodyAudioOther
-                } else if attachment.isOversizeText {
-                    return .bodyOversizeText
-                } else {
-                    return .bodyFile
-                }
-            }()
-            addJobRequest(attachment: attachment, category: category)
+            addJobRequest(attachment: attachment, category: attachment.downloadCategory)
         case .text(let attachment):
             if let attachmentId = attachment.preview?.imageAttachmentId {
                 addJobRequest(attachmentId: attachmentId, category: .linkedPreviewThumbnail)
@@ -1284,22 +1269,7 @@ public extension OWSAttachmentDownloads {
                 owsFailDebug("Missing attachment: \(attachmentId)")
                 continue
             }
-            let category: AttachmentCategory = {
-                if attachment.isImage {
-                    return .bodyMediaImage
-                } else if attachment.isVideo {
-                    return .bodyMediaVideo
-                } else if attachment.isVoiceMessage {
-                    return .bodyAudioVoiceMemo
-                } else if attachment.isAudio {
-                    return .bodyAudioOther
-                } else if attachment.isOversizeText {
-                    return .bodyOversizeText
-                } else {
-                    return .bodyFile
-                }
-            }()
-            addJobRequest(attachment: attachment, category: category)
+            addJobRequest(attachment: attachment, category: attachment.downloadCategory)
         }
 
         return jobRequests
@@ -1639,5 +1609,23 @@ public extension OWSAttachmentDownloads {
                                                                 attachmentDownloadProgressKey: NSNumber(value: progress),
                                                                 attachmentDownloadAttachmentIDKey: attachmentId
                                                              ])
+    }
+}
+
+private extension TSAttachment {
+    var downloadCategory: OWSAttachmentDownloads.AttachmentCategory {
+        if isImage {
+            return .bodyMediaImage
+        } else if isVideo {
+            return .bodyMediaVideo
+        } else if isVoiceMessage {
+            return .bodyAudioVoiceMemo
+        } else if isAudio {
+            return .bodyAudioOther
+        } else if isOversizeText {
+            return .bodyOversizeText
+        } else {
+            return .bodyFile
+        }
     }
 }
