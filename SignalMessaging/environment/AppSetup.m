@@ -103,7 +103,8 @@ NS_ASSUME_NONNULL_BEGIN
         BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
         BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
         id<VersionedProfiles> versionedProfiles = [VersionedProfilesImpl new];
-        ModelReadCaches *modelReadCaches = [ModelReadCaches new];
+        ModelReadCaches *modelReadCaches =
+            [[ModelReadCaches alloc] initWithModelReadCacheFactory:[ModelReadCacheFactory new]];
         EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
         OWSMessagePipelineSupervisor *messagePipelineSupervisor =
             [OWSMessagePipelineSupervisor createStandardSupervisor];

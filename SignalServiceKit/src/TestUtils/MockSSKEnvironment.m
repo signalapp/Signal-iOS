@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
     MockSSKEnvironment *instance = [[self alloc] init];
     [self setShared:instance];
     [instance configure];
-    
+
     [instance warmCaches];
 }
 
@@ -39,16 +39,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Ensure that OWSBackgroundTaskManager is created now.
     [OWSBackgroundTaskManager shared];
-    
+
     StorageCoordinator *storageCoordinator = [StorageCoordinator new];
     SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
-    
+
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
     NetworkManager *networkManager = [OWSFakeNetworkManager new];
     MessageSender *messageSender = [OWSFakeMessageSender new];
     MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
-    
+
     OWSMessageManager *messageManager = [OWSMessageManager new];
     BlockingManager *blockingManager = [BlockingManager new];
     OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
@@ -79,7 +79,8 @@ NS_ASSUME_NONNULL_BEGIN
     BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
     BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
     id<VersionedProfiles> versionedProfiles = [MockVersionedProfiles new];
-    ModelReadCaches *modelReadCaches = [ModelReadCaches new];
+    ModelReadCaches *modelReadCaches =
+        [[ModelReadCaches alloc] initWithModelReadCacheFactory:[TestableModelReadCacheFactory new]];
     EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
     OWSMessagePipelineSupervisor *messagePipelineSupervisor = [OWSMessagePipelineSupervisor createStandardSupervisor];
     AppExpiry *appExpiry = [AppExpiry new];
@@ -153,11 +154,16 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return nil;
     }
-    
+
     self.callMessageHandlerRef = [OWSFakeCallMessageHandler new];
     self.notificationsManagerRef = [NoopNotificationsManager new];
-    
+
     return self;
+}
+
+- (void)setContactsManagerForMockEnvironment:(id<ContactsManagerProtocol>)contactsManager
+{
+    [super setContactsManagerRef:contactsManager];
 }
 
 - (void)configure
@@ -165,10 +171,10 @@ NS_ASSUME_NONNULL_BEGIN
     __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [self configureGrdb].done(^(id value) {
         OWSAssertIsOnMainThread();
-        
+
         dispatch_semaphore_signal(semaphore);
     });
-    
+
     // Registering extensions is a complicated process than can move
     // on and off the main thread.  While we wait for it to complete,
     // we need to process the run loop so that the work on the main
@@ -180,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (success) {
             break;
         }
-        
+
         // Process a single "source" (e.g. item) on the default run loop.
         CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, false);
     }
@@ -189,10 +195,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (AnyPromise *)configureGrdb
 {
     OWSAssertIsOnMainThread();
-    
+
     GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
-    [grdbSchemaMigrator runSchemaMigrations];
-    
+    (void)[grdbSchemaMigrator runSchemaMigrations];
+
     return [AnyPromise promiseWithValue:@(1)];
 }
 
