@@ -1,2 +1,3 @@
-• Het camerascherm binnen de Signal-app is vernieuwd
-• Bij meldingen wordt vanaf nu onderscheid gemaakt tussen een reactie op jouw bericht en een vermelding van je naam
+• The size of the Signal app is now almost 25% smaller 💪
+• More performance improvements to make opening group chats faster
+• Squashed several bugs including one that might cause you to lose your profile photo

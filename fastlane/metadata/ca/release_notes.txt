@@ -1,2 +1,3 @@
-• La càmera de l'aplicació ha rebut una nova capa de pintura perquè pugueu fer fotos i vídeos amb estil.
-• Les notificacions ara us permeten saber si algú ha respost el vostre missatge o us ha mencionat.
+• The size of the Signal app is now almost 25% smaller 💪
+• More performance improvements to make opening group chats faster
+• Squashed several bugs including one that might cause you to lose your profile photo

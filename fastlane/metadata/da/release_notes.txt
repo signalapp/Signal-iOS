@@ -1,2 +1,3 @@
-• Kameraet i appen har fået et nyt lag maling, så du kan tage billeder og videoer med stil
-• Notifikationer lader dig nu vide, hvis nogen har svaret på din besked eller nævnt dig
+• The size of the Signal app is now almost 25% smaller 💪
+• More performance improvements to make opening group chats faster
+• Squashed several bugs including one that might cause you to lose your profile photo
