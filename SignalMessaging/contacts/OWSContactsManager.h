@@ -44,9 +44,6 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 // This will always return an instance of SignalAccount.
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 
-- (nullable NSString *)cachedContactNameForAddress:(SignalServiceAddress *)address
-                                       transaction:(SDSAnyReadTransaction *)transaction;
-
 #pragma mark - System Contact Fetching
 
 // Must call `requestSystemContactsOnce` before accessing this method
