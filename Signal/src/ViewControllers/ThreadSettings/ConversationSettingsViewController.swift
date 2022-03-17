@@ -339,7 +339,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func didTapAvatar() {
         guard avatarView != nil else { return }
-        presentAvatarViewController()
+
+        if threadViewModel.storyState == .none {
+            presentAvatarViewController()
+        } else {
+            let vc = StoryPageViewController(context: thread.storyContext)
+            presentFullScreen(vc, animated: true)
+        }
     }
 
     func didTapBadge() {

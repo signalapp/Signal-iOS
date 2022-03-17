@@ -36,7 +36,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     public private(set) var manifest: StoryManifest
     public let attachment: StoryMessageAttachment
 
-    public var allAttachmentIds: [String] {
+    @objc public var allAttachmentIds: [String] {
         switch attachment {
         case .file(let attachmentId):
             return [attachmentId]
@@ -70,36 +70,6 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
         self.manifest = manifest
         self.attachment = attachment
-    }
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        let decodedRecordType = try container.decode(Int.self, forKey: .recordType)
-        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
-
-        id = try container.decodeIfPresent(RowId.self, forKey: .id)
-        uniqueId = try container.decode(String.self, forKey: .uniqueId)
-        timestamp = try container.decode(UInt64.self, forKey: .timestamp)
-        authorUuid = try container.decode(UUID.self, forKey: .authorUuid)
-        groupId = try container.decodeIfPresent(Data.self, forKey: .groupId)
-        direction = try container.decode(Direction.self, forKey: .direction)
-        manifest = try container.decode(StoryManifest.self, forKey: .manifest)
-        attachment = try container.decode(StoryMessageAttachment.self, forKey: .attachment)
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-
-        if let id = id { try container.encode(id, forKey: .id) }
-        try container.encode(recordType, forKey: .recordType)
-        try container.encode(uniqueId, forKey: .uniqueId)
-        try container.encode(timestamp, forKey: .timestamp)
-        try container.encode(authorUuid, forKey: .authorUuid)
-        if let groupId = groupId { try container.encode(groupId, forKey: .groupId) }
-        try container.encode(direction, forKey: .direction)
-        try container.encode(manifest, forKey: .manifest)
-        try container.encode(attachment, forKey: .attachment)
     }
 
     @discardableResult
@@ -158,9 +128,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         return record
     }
 
-    public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
-        // TODO: Cleanup associated records
-    }
+    // MARK: -
 
     @objc
     public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
@@ -189,6 +157,54 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
             record.manifest = .outgoing(manifest: manifest)
         }
+    }
+
+    // MARK: -
+
+    public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
+        // TODO: Cleanup associated records
+    }
+
+    @objc
+    public class func anyEnumerate(
+        transaction: SDSAnyReadTransaction,
+        batched: Bool = false,
+        block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        let batchSize = batched ? Batching.kDefaultBatchSize : 0
+        anyEnumerate(transaction: transaction, batchSize: batchSize, block: block)
+    }
+
+    // MARK: - Codable
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        let decodedRecordType = try container.decode(Int.self, forKey: .recordType)
+        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
+
+        id = try container.decodeIfPresent(RowId.self, forKey: .id)
+        uniqueId = try container.decode(String.self, forKey: .uniqueId)
+        timestamp = try container.decode(UInt64.self, forKey: .timestamp)
+        authorUuid = try container.decode(UUID.self, forKey: .authorUuid)
+        groupId = try container.decodeIfPresent(Data.self, forKey: .groupId)
+        direction = try container.decode(Direction.self, forKey: .direction)
+        manifest = try container.decode(StoryManifest.self, forKey: .manifest)
+        attachment = try container.decode(StoryMessageAttachment.self, forKey: .attachment)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        if let id = id { try container.encode(id, forKey: .id) }
+        try container.encode(recordType, forKey: .recordType)
+        try container.encode(uniqueId, forKey: .uniqueId)
+        try container.encode(timestamp, forKey: .timestamp)
+        try container.encode(authorUuid, forKey: .authorUuid)
+        if let groupId = groupId { try container.encode(groupId, forKey: .groupId) }
+        try container.encode(direction, forKey: .direction)
+        try container.encode(manifest, forKey: .manifest)
+        try container.encode(attachment, forKey: .attachment)
     }
 }
 
@@ -223,10 +239,10 @@ public struct TextAttachment: Codable {
     public let textStyle: TextStyle
 
     private let textForegroundColorHex: UInt32?
-    public var textForegroundColor: UIColor? { textForegroundColorHex.map { UIColor(rgbHex: $0) } }
+    public var textForegroundColor: UIColor? { textForegroundColorHex.map { UIColor(argbHex: $0) } }
 
     private let textBackgroundColorHex: UInt32?
-    public var textBackgroundColor: UIColor? { textBackgroundColorHex.map { UIColor(rgbHex: $0) } }
+    public var textBackgroundColor: UIColor? { textBackgroundColorHex.map { UIColor(argbHex: $0) } }
 
     private enum RawBackground: Codable {
         case color(hex: UInt32)
@@ -243,19 +259,19 @@ public struct TextAttachment: Codable {
         case color(UIColor)
         case gradient(Gradient)
         public struct Gradient {
-            let startColor: UIColor
-            let endColor: UIColor
-            let angle: UInt32
+            public let startColor: UIColor
+            public let endColor: UIColor
+            public let angle: UInt32
         }
     }
     public var background: Background {
         switch rawBackground {
         case .color(let hex):
-            return .color(.init(rgbHex: hex))
+            return .color(.init(argbHex: hex))
         case .gradient(let rawGradient):
             return .gradient(.init(
-                startColor: .init(rgbHex: rawGradient.startColorHex),
-                endColor: .init(rgbHex: rawGradient.endColorHex),
+                startColor: .init(argbHex: rawGradient.startColorHex),
+                endColor: .init(argbHex: rawGradient.endColorHex),
                 angle: rawGradient.angle
             ))
         }
