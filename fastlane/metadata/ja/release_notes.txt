@@ -1,2 +1,3 @@
-• アプリ内カメラが一新し、写真や動画をスタイリッシュに撮影できるようになりました。
-• 誰かがあなたのメッセージに返信したり、あなたにメンションした場合に、通知できるようになりました。
+• The size of the Signal app is now almost 25% smaller 💪
+• More performance improvements to make opening group chats faster
+• Squashed several bugs including one that might cause you to lose your profile photo

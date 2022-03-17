@@ -1,2 +1,3 @@
-• La fotocamera in-app ha ricevuto una nuova mano di vernice per scattare foto e video con stile
-• Le notifiche ora ti fanno sapere se qualcuno ha risposto al tuo messaggio o ti ha menzionato
+• The size of the Signal app is now almost 25% smaller 💪
+• More performance improvements to make opening group chats faster
+• Squashed several bugs including one that might cause you to lose your profile photo
