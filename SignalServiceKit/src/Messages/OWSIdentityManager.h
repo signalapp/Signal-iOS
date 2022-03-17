@@ -23,6 +23,18 @@ typedef NS_ENUM(NSInteger, TSMessageDirection) {
     TSMessageDirectionOutgoing
 };
 
+/// Distinguishes which kind of identity we're referring to.
+///
+/// The ACI ("account identifier") represents the user in question,
+/// while the PNI ("phone number identifier") represents the user's phone number (e164).
+///
+/// And yes, that means the full enumerator names mean "account identifier identity" and
+/// "phone number identifier identity".
+typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
+    OWSIdentityACI NS_SWIFT_NAME(aci),
+    OWSIdentityPNI NS_SWIFT_NAME(pni)
+};
+
 @class ECKeyPair;
 @class OWSRecipientIdentity;
 @class SDSAnyReadTransaction;
@@ -38,11 +50,15 @@ typedef NS_ENUM(NSInteger, TSMessageDirection) {
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage;
 
-- (void)generateNewIdentityKey;
-- (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction;
+- (ECKeyPair *)generateNewIdentityKeyForIdentity:(OWSIdentity)identity;
+- (void)storeIdentityKeyPair:(ECKeyPair *)keyPair
+                 forIdentity:(OWSIdentity)identity
+                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (int)localRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
-- (nullable ECKeyPair *)identityKeyPairWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (nullable ECKeyPair *)identityKeyPairForIdentity:(OWSIdentity)identity
+                                       transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable ECKeyPair *)identityKeyPairForIdentity:(OWSIdentity)identity;
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
@@ -105,8 +121,6 @@ typedef NS_ENUM(NSInteger, TSMessageDirection) {
                                transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - Debug
-
-- (nullable ECKeyPair *)identityKeyPair;
 
 #if DEBUG
 // Clears everything except the local identity key.

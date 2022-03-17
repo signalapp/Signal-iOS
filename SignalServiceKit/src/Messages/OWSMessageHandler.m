@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
@@ -92,6 +92,8 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         [message appendFormat:@"<TypingMessage: %@ />", content.typingMessage];
     } else if (content.decryptionErrorMessage) {
         [message appendFormat:@"<DecryptionErrorMessage: %@ />", content.decryptionErrorMessage];
+    } else if (content.storyMessage) {
+        [message appendFormat:@"<StoryMessage: %@ />", content.storyMessage];
     }
 
     // SKDM's are not mutually exclusive with other content types

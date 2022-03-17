@@ -314,7 +314,9 @@ public class AccountManager: NSObject {
             self.tsAccountManager.pniAwaitingVerification = response.pni
 
             self.databaseStorage.write { transaction in
+                // PNI TODO: set our PNI identity key as well.
                 self.identityManager.storeIdentityKeyPair(provisionMessage.identityKeyPair,
+                                                          for: .aci,
                                                           transaction: transaction)
 
                 self.profileManagerImpl.setLocalProfileKey(provisionMessage.profileKey,
@@ -463,7 +465,9 @@ public class AccountManager: NSObject {
         tsAccountManager.uuidAwaitingVerification = uuid
 
         databaseStorage.write { transaction in
+            // PNI TODO: set a PNI identity key as well.
             self.identityManager.storeIdentityKeyPair(identityKeyPair,
+                                                      for: .aci,
                                                       transaction: transaction)
             self.profileManagerImpl.setLocalProfileKey(profileKey,
                                                        userProfileWriter: .debugging,

@@ -546,12 +546,14 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     SignalRecipient *_Nullable winningInstance = nil;
 
     // We try to preserve the recipient that has a session.
-    BOOL hasSessionForUuid = [self.sessionStore containsActiveSessionForAccountId:uuidInstance.accountId
-                                                                         deviceId:OWSDevicePrimaryDeviceId
-                                                                      transaction:transaction];
-    BOOL hasSessionForPhoneNumber = [self.sessionStore containsActiveSessionForAccountId:phoneNumberInstance.accountId
-                                                                                deviceId:OWSDevicePrimaryDeviceId
-                                                                             transaction:transaction];
+    // (Note that we don't check for PNI sessions; we always prefer the ACI session there.)
+    SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+    BOOL hasSessionForUuid = [sessionStore containsActiveSessionForAccountId:uuidInstance.accountId
+                                                                    deviceId:OWSDevicePrimaryDeviceId
+                                                                 transaction:transaction];
+    BOOL hasSessionForPhoneNumber = [sessionStore containsActiveSessionForAccountId:phoneNumberInstance.accountId
+                                                                           deviceId:OWSDevicePrimaryDeviceId
+                                                                        transaction:transaction];
 
     if (SSKDebugFlags.verboseSignalRecipientLogging) {
         OWSLogInfo(@"phoneNumberInstance: %@", phoneNumberInstance);

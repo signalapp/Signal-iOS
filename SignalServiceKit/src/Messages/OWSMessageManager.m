@@ -464,6 +464,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope
                 withDecryptionErrorMessage:contentProto.decryptionErrorMessage
                                transaction:transaction];
+        } else if (contentProto.storyMessage) {
+            [self handleIncomingEnvelope:envelope withStoryMessage:contentProto.storyMessage transaction:transaction];
         } else if (contentProto.hasSenderKeyDistributionMessage) {
             // Sender key distribution messages are not mutually exclusive. They can be
             // included with any message type. However, they're not processed here. They're
@@ -946,6 +948,34 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Move to internal logging without flush.
     OWSLogInfo(@"Complete.");
+}
+
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+              withStoryMessage:(SSKProtoStoryMessage *)storyMessage
+                   transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!envelope) {
+        OWSFailDebug(@"Missing envelope.");
+        return;
+    }
+    if (!storyMessage) {
+        OWSFailDebug(@"Missing storyMessage.");
+        return;
+    }
+    if (!transaction) {
+        OWSFail(@"Missing transaction.");
+        return;
+    }
+
+    NSError *error;
+    [StoryManager processIncomingStoryMessage:storyMessage
+                                    timestamp:envelope.timestamp
+                                       author:envelope.sourceAddress
+                                  transaction:transaction
+                                        error:&error];
+    if (error) {
+        OWSLogInfo(@"Failed to insert story message with error %@", error.localizedDescription);
+    }
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -1819,7 +1849,9 @@ NS_ASSUME_NONNULL_BEGIN
     [[[TSInfoMessage alloc] initWithThread:thread
                                messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
 
-    [self.sessionStore archiveAllSessionsForAddress:envelope.sourceAddress transaction:transaction];
+    // PNI TODO: this should end the PNI session if it was sent to our PNI.
+    SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+    [sessionStore archiveAllSessionsForAddress:envelope.sourceAddress transaction:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope

@@ -5,7 +5,7 @@
 import Foundation
 import GRDB
 
-public protocol SDSModel: TSYapDatabaseObject {
+public protocol SDSModel: TSYapDatabaseObject, SDSIndexableModel, SDSIdentifiableModel {
     var sdsTableName: String { get }
 
     func asRecord() throws -> SDSRecord

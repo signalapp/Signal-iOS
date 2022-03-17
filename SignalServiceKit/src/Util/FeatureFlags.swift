@@ -88,6 +88,8 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let groupRings = false
 
+    public static let stories = build.includes(.qa)
+
     @objc
     public static let canUseNativeWebsocket = build.includes(.beta)
 

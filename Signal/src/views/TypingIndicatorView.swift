@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 @objc
@@ -49,7 +49,7 @@ class TypingIndicatorView: ManualStackView {
     // MARK: -
 
     @objc
-    func configureForHomeView() {
+    func configureForChatList() {
         if let measurement = self.cachedMeasurement {
             self.configureForReuse(config: Self.stackConfig,
                                    measurement: measurement)

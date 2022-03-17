@@ -835,7 +835,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
             [self.keyValueStore removeAllWithTransaction:transaction];
 
-            [self.sessionStore resetSessionStore:transaction];
+            [[self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore resetSessionStore:transaction];
+            [[self signalProtocolStoreForIdentity:OWSIdentityPNI].sessionStore resetSessionStore:transaction];
             [self.senderKeyStore resetSenderKeyStoreWithTransaction:transaction];
 
             [self.udManager removeSenderCertificatesWithTransaction:transaction];

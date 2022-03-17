@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -192,7 +192,7 @@ public struct LocalSignalClient: TestSignalClient {
     public init() { }
 
     public var identityKeyPair: ECKeyPair {
-        return SSKEnvironment.shared.identityManager.identityKeyPair()!
+        return SSKEnvironment.shared.identityManager.identityKeyPair(for: .aci)!
     }
 
     public var e164Identifier: SignalE164Identifier? {
@@ -206,15 +206,15 @@ public struct LocalSignalClient: TestSignalClient {
     public let deviceId: UInt32 = 1
 
     public var sessionStore: SessionStore {
-        return SSKEnvironment.shared.sessionStore
+        return SSKEnvironment.shared.signalProtocolStore(for: .aci).sessionStore
     }
 
     public var preKeyStore: PreKeyStore {
-        return SSKEnvironment.shared.preKeyStore
+        return SSKEnvironment.shared.signalProtocolStore(for: .aci).preKeyStore
     }
 
     public var signedPreKeyStore: SignedPreKeyStore {
-        return SSKEnvironment.shared.signedPreKeyStore
+        return SSKEnvironment.shared.signalProtocolStore(for: .aci).signedPreKeyStore
     }
 
     public var identityKeyStore: IdentityKeyStore {

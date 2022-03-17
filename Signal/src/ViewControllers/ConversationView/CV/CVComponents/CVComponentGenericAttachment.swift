@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -210,7 +210,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
         return CVAttachmentProgressView(direction: direction,
                                         style: .withoutCircle(diameter: progressSize),
-                                        conversationStyle: conversationStyle,
+                                        isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                         mediaCache: mediaCache)
     }
 

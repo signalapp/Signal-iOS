@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,19 +10,20 @@ public class CreatePreKeysOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        if self.identityManager.identityKeyPair() == nil {
-            self.identityManager.generateNewIdentityKey()
-        }
-        let identityKey: Data = self.identityManager.identityKeyPair()!.publicKey
-        let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
-        let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()
+        // PNI TODO: parameterize this entire operation on OWSIdentity
+        let identityKeyPair = self.identityManager.identityKeyPair(for: .aci) ?? self.identityManager.generateNewIdentityKey(for: .aci)
+        let identityKey: Data = identityKeyPair.publicKey
+
+        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
+        let preKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
 
         self.databaseStorage.write { transaction in
-            self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                     signedPreKeyRecord: signedPreKeyRecord,
-                                                     transaction: transaction)
+            signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                                    signedPreKeyRecord: signedPreKeyRecord,
+                                                                    transaction: transaction)
         }
-        self.preKeyStore.storePreKeyRecords(preKeyRecords)
+        signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords)
 
         firstly(on: .global()) { () -> Promise<Void> in
             guard self.tsAccountManager.isRegisteredAndReady else {
@@ -36,11 +37,11 @@ public class CreatePreKeysOperation: OWSOperation {
         }.done {
             signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in
-                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                         signedPreKeyRecord: signedPreKeyRecord,
-                                                         transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                                        signedPreKeyRecord: signedPreKeyRecord,
+                                                                        transaction: transaction)
             }
-            self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             Logger.debug("done")
             self.reportSuccess()

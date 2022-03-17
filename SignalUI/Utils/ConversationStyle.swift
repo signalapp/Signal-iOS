@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -188,7 +188,7 @@ public class ConversationStyle: NSObject {
         maxMessageWidth -= Self.messageDirectionSpacing
 
         if thread.isGroupThread {
-            maxMessageWidth -= (CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarSize.width) + Self.messageStackSpacing)
+            maxMessageWidth -= (CGFloat(ConversationStyle.groupMessageAvatarSizeClass.size.width) + Self.messageStackSpacing)
         }
         self.maxMessageWidth = maxMessageWidth
 

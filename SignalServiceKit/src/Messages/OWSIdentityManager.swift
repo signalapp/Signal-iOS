@@ -21,15 +21,16 @@ extension SignalClient.IdentityKey {
     }
 }
 
+// PNI TODO: Maybe have a wrapper around OWSIdentityManager to change the behavior of identityKeyPair(context:)?
 extension OWSIdentityManager: IdentityKeyStore {
     public func identityKeyPair(context: StoreContext) throws -> IdentityKeyPair {
         let transaction = context.asTransaction
-        if let keyPair = self.identityKeyPair(with: transaction) {
+        if let keyPair = self.identityKeyPair(for: .aci, transaction: transaction) {
             return keyPair.identityKeyPair
         }
 
         let newKeyPair = IdentityKeyPair.generate()
-        self.storeIdentityKeyPair(ECKeyPair(newKeyPair), transaction: transaction)
+        self.storeIdentityKeyPair(ECKeyPair(newKeyPair), for: .aci, transaction: transaction)
         return newKeyPair
     }
 

@@ -66,7 +66,10 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 #pragma mark -
 
-@implementation SSKEnvironment
+@implementation SSKEnvironment {
+    SignalProtocolStore *_aciSignalProtocolStoreRef;
+    SignalProtocolStore *_pniSignalProtocolStoreRef;
+}
 
 @synthesize callMessageHandlerRef = _callMessageHandlerRef;
 @synthesize notificationsManagerRef = _notificationsManagerRef;
@@ -82,9 +85,8 @@ static SSKEnvironment *sharedSSKEnvironment;
                         blockingManager:(BlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
                     remoteConfigManager:(id<RemoteConfigManager>)remoteConfigManager
-                           sessionStore:(SSKSessionStore *)sessionStore
-                      signedPreKeyStore:(SSKSignedPreKeyStore *)signedPreKeyStore
-                            preKeyStore:(SSKPreKeyStore *)preKeyStore
+                 aciSignalProtocolStore:(SignalProtocolStore *)aciSignalProtocolStore
+                 pniSignalProtocolStore:(SignalProtocolStore *)pniSignalProtocolStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
@@ -143,9 +145,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     _blockingManagerRef = blockingManager;
     _identityManagerRef = identityManager;
     _remoteConfigManagerRef = remoteConfigManager;
-    _sessionStoreRef = sessionStore;
-    _signedPreKeyStoreRef = signedPreKeyStore;
-    _preKeyStoreRef = preKeyStore;
+    _aciSignalProtocolStoreRef = aciSignalProtocolStore;
+    _pniSignalProtocolStoreRef = pniSignalProtocolStore;
     _udManagerRef = udManager;
     _messageDecrypterRef = messageDecrypter;
     _groupsV2MessageProcessorRef = groupsV2MessageProcessor;
@@ -253,6 +254,16 @@ static SSKEnvironment *sharedSSKEnvironment;
         OWSAssertDebug(!_notificationsManagerRef);
         
         _notificationsManagerRef = notificationsManagerRef;
+    }
+}
+
+- (SignalProtocolStore *)signalProtocolStoreRefForIdentity:(OWSIdentity)identity
+{
+    switch (identity) {
+        case OWSIdentityACI:
+            return _aciSignalProtocolStoreRef;
+        case OWSIdentityPNI:
+            return _pniSignalProtocolStoreRef;
     }
 }
 

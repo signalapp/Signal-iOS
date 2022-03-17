@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -94,7 +94,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                                                                 comment: "Indicator that a blurred avatar can be revealed by tapping."),
                                                         font: UIFont.ows_dynamicTypeSubheadlineClamped,
                                                         textColor: .ows_white)
-            let maxWidth = CGFloat(avatarSizeClass.avatarDiameter) - 12
+            let maxWidth = CGFloat(avatarSizeClass.diameter) - 12
             let unblurAvatarLabelSize = CVText.measureLabel(config: unblurAvatarLabelConfig, maxWidth: maxWidth)
             unblurAvatarSubviewInfos.append(unblurAvatarLabelSize.asManualSubviewInfo)
             let unblurAvatarLabel = CVLabel()
@@ -254,7 +254,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         let avatarDataSource = avatarBuilder.buildAvatarDataSource(forAddress: contactThread.contactAddress,
                                                                    includingBadge: true,
                                                                    localUserDisplayMode: .noteToSelf,
-                                                                   diameterPoints: avatarSizeClass.avatarDiameter)
+                                                                   diameterPoints: avatarSizeClass.diameter)
 
         let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(contactThread: contactThread,
                                                                           transaction: transaction)
@@ -400,7 +400,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let avatarDataSource = avatarBuilder.buildAvatarDataSource(
             forGroupThread: groupThread,
-            diameterPoints: avatarSizeClass.avatarDiameter)
+            diameterPoints: avatarSizeClass.diameter)
 
         let isAvatarBlurred = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
                                                                         transaction: transaction)
@@ -457,7 +457,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         let maxContentWidth = maxWidth - (outerStackConfig.layoutMargins.totalWidth +
                                             innerStackConfig.layoutMargins.totalWidth)
 
-        innerSubviewInfos.append(avatarSizeClass.avatarSize.asManualSubviewInfo)
+        innerSubviewInfos.append(avatarSizeClass.size.asManualSubviewInfo)
         innerSubviewInfos.append(CGSize(square: 1).asManualSubviewInfo)
 
         let titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxContentWidth)

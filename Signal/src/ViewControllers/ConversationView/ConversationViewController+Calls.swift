@@ -98,7 +98,7 @@ public extension ConversationViewController {
         ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
 
         outboundIndividualCallInitiator.initiateCall(thread: contactThread, isVideo: withVideo)
-        NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
+        NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 
     func refreshCallState() {

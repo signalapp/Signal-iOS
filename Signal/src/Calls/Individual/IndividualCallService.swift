@@ -216,7 +216,8 @@ import CallKit
     }
 
     private func getIdentityKeys(thread: TSContactThread, transaction: SDSAnyReadTransaction) -> CallIdentityKeys? {
-        guard let localIdentityKey = self.identityManager.identityKeyPair(with: transaction)?.publicKey else {
+        guard let localIdentityKey = self.identityManager.identityKeyPair(for: .aci,
+                                                                          transaction: transaction)?.publicKey else {
             owsFailDebug("missing localIdentityKey")
             return nil
         }

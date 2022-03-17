@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -53,9 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
     BlockingManager *blockingManager = [BlockingManager new];
     OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
     id<RemoteConfigManager> remoteConfigManager = [StubbableRemoteConfigManager new];
-    SSKSessionStore *sessionStore = [SSKSessionStore new];
-    SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
-    SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
+    SignalProtocolStore *aciSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityACI];
+    SignalProtocolStore *pniSignalProtocolStore = [[SignalProtocolStore alloc] initForIdentity:OWSIdentityPNI];
     id<OWSUDManager> udManager = [OWSUDManagerImpl new];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
     GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
@@ -107,9 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
                           blockingManager:blockingManager
                           identityManager:identityManager
                       remoteConfigManager:remoteConfigManager
-                             sessionStore:sessionStore
-                        signedPreKeyStore:signedPreKeyStore
-                              preKeyStore:preKeyStore
+                   aciSignalProtocolStore:aciSignalProtocolStore
+                   pniSignalProtocolStore:pniSignalProtocolStore
                                 udManager:udManager
                          messageDecrypter:messageDecrypter
                  groupsV2MessageProcessor:groupsV2MessageProcessor

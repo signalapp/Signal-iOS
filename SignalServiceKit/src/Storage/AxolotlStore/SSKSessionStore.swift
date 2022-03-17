@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalClient
@@ -7,11 +7,18 @@ import SignalClient
 public class SSKSessionStore: NSObject {
     fileprivate typealias SessionsByDeviceDictionary = [Int32: AnyObject]
 
-    @objc // Used by migration, exposed in <SignalMessaging/PrivateMethodsForMigration.h>
-    private let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerSessionStoreCollection")
+    private let keyValueStore: SDSKeyValueStore
 
-    public override init() {
+    @objc(initForIdentity:)
+    public init(for identity: OWSIdentity) {
         LegacySessionRecord.setUpKeyedArchiverSubstitutions()
+
+        switch identity {
+        case .aci:
+            keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerSessionStoreCollection")
+        case .pni:
+            keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerPNISessionStoreCollection")
+        }
     }
 
     fileprivate func loadSerializedSession(for address: SignalServiceAddress,

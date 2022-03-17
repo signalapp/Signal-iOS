@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -73,7 +73,7 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     func updateModel() {
         cellModels = databaseStorage.read(block: { readTx in
             if self.groupViewHelper == nil, self.thread.isGroupThread {
-                let threadViewModel = ThreadViewModel(thread: self.thread, forHomeView: false, transaction: readTx)
+                let threadViewModel = ThreadViewModel(thread: self.thread, forChatList: false, transaction: readTx)
                 self.groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
                 self.groupViewHelper?.delegate = self
             }

@@ -58,7 +58,7 @@ public class CVLoader: NSObject {
                         return prevRenderState.threadViewModel
                     }
                     return ThreadViewModel(thread: thread,
-                                           forHomeView: false,
+                                           forChatList: false,
                                            transaction: transaction)
                 }
                 let threadViewModel = loadThreadViewModel()
@@ -296,7 +296,7 @@ public class CVLoader: NSObject {
         AssertIsOnMainThread()
 
         let threadViewModel = ThreadViewModel(thread: thread,
-                                              forHomeView: false,
+                                              forChatList: false,
                                               transaction: transaction)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(coreState: coreState)
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)
@@ -332,7 +332,7 @@ public class CVLoader: NSObject {
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
         let threadViewModel = ThreadViewModel(thread: thread,
-                                              forHomeView: false,
+                                              forChatList: false,
                                               transaction: transaction)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(coreState: coreState)
         let avatarBuilder = CVAvatarBuilder(transaction: transaction)

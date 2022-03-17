@@ -27,10 +27,21 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // Storing our own identity key
-NSString *const kIdentityKeyStore_IdentityKey = @"TSStorageManagerIdentityKeyStoreIdentityKey";
+static NSString *const kIdentityKeyStore_ACIIdentityKey = @"TSStorageManagerIdentityKeyStoreIdentityKey";
+static NSString *const kIdentityKeyStore_PNIIdentityKey = @"TSStorageManagerIdentityKeyStorePNIIdentityKey";
+
+static NSString *keyForIdentity(OWSIdentity identity)
+{
+    switch (identity) {
+        case OWSIdentityACI:
+            return kIdentityKeyStore_ACIIdentityKey;
+        case OWSIdentityPNI:
+            return kIdentityKeyStore_PNIIdentityKey;
+    }
+}
 
 // Don't trust an identity for sending to unless they've been around for at least this long
-const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
+static const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
 // The canonical key includes 32 bytes of identity material plus one byte specifying the key type
 const NSUInteger kIdentityKeyLength = 33;
@@ -102,16 +113,21 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                object:nil];
 }
 
-- (void)generateNewIdentityKey
+- (ECKeyPair *)generateNewIdentityKeyForIdentity:(OWSIdentity)identity
 {
+    __block ECKeyPair *newKeyPair;
     [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
-        [self storeIdentityKeyPair:[Curve25519 generateKeyPair] transaction:transaction];
+        newKeyPair = [Curve25519 generateKeyPair];
+        [self storeIdentityKeyPair:newKeyPair forIdentity:identity transaction:transaction];
     }];
+    return newKeyPair;
 }
 
-- (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction
+- (void)storeIdentityKeyPair:(ECKeyPair *)keyPair
+                 forIdentity:(OWSIdentity)identity
+                 transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self.ownIdentityKeyValueStore setObject:keyPair key:kIdentityKeyStore_IdentityKey transaction:transaction];
+    [self.ownIdentityKeyValueStore setObject:keyPair key:keyForIdentity(identity) transaction:transaction];
 }
 
 - (NSString *)ensureAccountIdForAddress:(SignalServiceAddress *)address
@@ -153,19 +169,20 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     return [OWSRecipientIdentity anyFetchWithUniqueId:accountId transaction:transaction].identityKey;
 }
 
-- (nullable ECKeyPair *)identityKeyPair
+- (nullable ECKeyPair *)identityKeyPairForIdentity:(OWSIdentity)identity
 {
     __block ECKeyPair *_Nullable identityKeyPair = nil;
     [self readWithUnfairLock:^(SDSAnyReadTransaction *transaction) {
-        identityKeyPair = [self identityKeyPairWithTransaction:transaction];
+        identityKeyPair = [self identityKeyPairForIdentity:identity transaction:transaction];
     }];
     return identityKeyPair;
 }
 
-- (nullable ECKeyPair *)identityKeyPairWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable ECKeyPair *)identityKeyPairForIdentity:(OWSIdentity)identity
+                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    id _Nullable object = [self.ownIdentityKeyValueStore getObjectForKey:kIdentityKeyStore_IdentityKey
+    id _Nullable object = [self.ownIdentityKeyValueStore getObjectForKey:keyForIdentity(identity)
                                                              transaction:transaction];
     if ([object isKindOfClass:[ECKeyPair class]]) {
         return (ECKeyPair *)object;
@@ -262,7 +279,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                createdAt:[NSDate new]
                                        verificationState:verificationState] anyUpsertWithTransaction:transaction];
 
-        [self.sessionStore archiveAllSessionsForAccountId:accountId transaction:transaction];
+        // PNI TODO: archive PNI sessions too
+        SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+        [sessionStore archiveAllSessionsForAccountId:accountId transaction:transaction];
 
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForAccountId:accountId transaction:transaction];
@@ -474,7 +493,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSAssertDebug(transaction);
 
     if (address.isLocalAddress) {
-        ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPairWithTransaction:transaction];
+        ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPairForIdentity:OWSIdentityACI
+                                                                         transaction:transaction];
 
         if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
             return YES;
@@ -1007,8 +1027,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
     NSMutableArray<NSString *> *identityKeysToRemove = [NSMutableArray new];
     for (NSString *key in [self.ownIdentityKeyValueStore allKeysWithTransaction:transaction]) {
-        if ([key isEqualToString:kIdentityKeyStore_IdentityKey]) {
-            // Don't delete our own key.
+        if ([key isEqualToString:kIdentityKeyStore_ACIIdentityKey] ||
+            [key isEqualToString:kIdentityKeyStore_PNIIdentityKey]) {
+            // Don't delete our own keys.
             return;
         }
         [identityKeysToRemove addObject:key];

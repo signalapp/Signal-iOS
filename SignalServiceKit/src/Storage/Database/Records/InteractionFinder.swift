@@ -456,9 +456,9 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             let sql = """
                 SELECT COUNT(DISTINCT interaction.\(interactionColumn: .id))
                 FROM \(InteractionRecord.databaseTableName) AS interaction
-                INNER JOIN \(ReactionRecord.databaseTableName) AS reaction
-                    ON interaction.\(interactionColumn: .uniqueId) = reaction.\(reactionColumn: .uniqueMessageId)
-                    AND reaction.\(reactionColumn: .read) IS 0
+                INNER JOIN \(OWSReaction.databaseTableName) AS reaction
+                    ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
+                    AND reaction.\(OWSReaction.columnName(.read)) IS 0
                 WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
                 AND interaction.\(interactionColumn: .threadUniqueId) = ?
                 AND interaction.\(interactionColumn: .id) <= ?
@@ -486,9 +486,9 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         let sql = """
             SELECT interaction.*
             FROM \(InteractionRecord.databaseTableName) AS interaction
-            INNER JOIN \(ReactionRecord.databaseTableName) AS reaction
-                ON interaction.\(interactionColumn: .uniqueId) = reaction.\(reactionColumn: .uniqueMessageId)
-                AND reaction.\(reactionColumn: .read) IS 0
+            INNER JOIN \(OWSReaction.databaseTableName) AS reaction
+                ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
+                AND reaction.\(OWSReaction.columnName(.read)) IS 0
             WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
             AND interaction.\(interactionColumn: .threadUniqueId) = ?
             AND interaction.\(interactionColumn: .id) <= ?

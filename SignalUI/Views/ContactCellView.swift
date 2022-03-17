@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -172,7 +172,7 @@ public class ContactCellView: ManualStackView {
         // Configure self.
         do {
             var rootStackSubviews: [UIView] = [ avatarView ]
-            let avatarSize = Self.avatarSizeClass.avatarSize
+            let avatarSize = Self.avatarSizeClass.size
             var rootStackSubviewInfos = [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]
 
             // Configure textStack.

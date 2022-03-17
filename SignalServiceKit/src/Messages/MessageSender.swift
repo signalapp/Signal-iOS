@@ -77,8 +77,9 @@ extension MessageSender {
                 deviceIds = deviceIds.filter { $0 != localDeviceId }
             }
 
+            let sessionStore = signalProtocolStore(for: .aci).sessionStore
             return deviceIds.filter { deviceId in
-                !self.sessionStore.containsActiveSession(
+                !sessionStore.containsActiveSession(
                     forAccountId: recipient.accountId,
                     deviceId: Int32(deviceId),
                     transaction: transaction
@@ -281,9 +282,9 @@ public extension MessageSender {
 
         Logger.info("Creating session for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
-        guard !sessionStore.containsActiveSession(forAccountId: accountId,
-                                                  deviceId: deviceId.int32Value,
-                                                  transaction: transaction) else {
+        guard !signalProtocolStore(for: .aci).sessionStore.containsActiveSession(forAccountId: accountId,
+                                                                                 deviceId: deviceId.int32Value,
+                                                                                 transaction: transaction) else {
             Logger.warn("Session already exists.")
             return
         }
@@ -313,7 +314,7 @@ public extension MessageSender {
             let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: deviceId.uint32Value)
             try processPreKeyBundle(bundle,
                                     for: protocolAddress,
-                                    sessionStore: sessionStore,
+                                    sessionStore: signalProtocolStore(for: .aci).sessionStore,
                                     identityStore: identityManager,
                                     context: transaction)
         } catch SignalError.untrustedIdentity(_) {
@@ -323,9 +324,9 @@ public extension MessageSender {
                                             transaction: transaction)
             throw UntrustedIdentityError(address: recipientAddress)
         }
-        if !sessionStore.containsActiveSession(forAccountId: accountId,
-                                               deviceId: deviceId.int32Value,
-                                               transaction: transaction) {
+        if !signalProtocolStore(for: .aci).sessionStore.containsActiveSession(forAccountId: accountId,
+                                                                              deviceId: deviceId.int32Value,
+                                                                              transaction: transaction) {
             owsFailDebug("Session does not exist.")
         }
     }
@@ -1074,7 +1075,7 @@ extension MessageSender {
 
     // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
     func handleStaleDevices(staleDevices devicesIn: [Int]?,
-                                    address: SignalServiceAddress) {
+                            address: SignalServiceAddress) {
         owsAssertDebug(!Thread.isMainThread)
         let staleDevices = devicesIn ?? []
 
@@ -1088,8 +1089,9 @@ extension MessageSender {
 
         Self.databaseStorage.write { transaction in
             Logger.info("Archiving sessions for stale devices: \(staleDevices)")
+            let sessionStore = signalProtocolStore(for: .aci).sessionStore
             for staleDeviceId in staleDevices {
-                Self.sessionStore.archiveSession(for: address, deviceId: Int32(staleDeviceId), transaction: transaction)
+                sessionStore.archiveSession(for: address, deviceId: Int32(staleDeviceId), transaction: transaction)
             }
         }
     }
@@ -1119,6 +1121,7 @@ extension MessageSender {
 
         if !devicesToRemove.isEmpty {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove), \(devicesToRemove)")
+            let sessionStore = signalProtocolStore(for: .aci).sessionStore
             for deviceId in devicesToRemove {
                 sessionStore.archiveSession(for: address, deviceId: deviceId.int32Value, transaction: transaction)
             }
@@ -1139,9 +1142,10 @@ extension MessageSender {
         let recipientAddress = messageSend.address
         owsAssertDebug(recipientAddress.isValid)
 
-        guard Self.sessionStore.containsActiveSession(for: recipientAddress,
-                                                      deviceId: deviceId,
-                                                      transaction: transaction) else {
+        let signalProtocolStore = signalProtocolStore(for: .aci)
+        guard signalProtocolStore.sessionStore.containsActiveSession(for: recipientAddress,
+                                                                        deviceId: deviceId,
+                                                                        transaction: transaction) else {
             throw MessageSendEncryptionError(recipientAddress: recipientAddress, deviceId: deviceId)
         }
         guard let plainText = messageSend.plaintextContent else {
@@ -1156,9 +1160,9 @@ extension MessageSender {
         let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
 
         if let udSendingAccess = messageSend.udSendingAccess {
-            let secretCipher = try SMKSecretSessionCipher(sessionStore: Self.sessionStore,
-                                                          preKeyStore: Self.preKeyStore,
-                                                          signedPreKeyStore: Self.signedPreKeyStore,
+            let secretCipher = try SMKSecretSessionCipher(sessionStore: signalProtocolStore.sessionStore,
+                                                          preKeyStore: signalProtocolStore.preKeyStore,
+                                                          signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                                                           identityStore: Self.identityManager,
                                                           senderKeyStore: Self.senderKeyStore)
 
@@ -1176,7 +1180,7 @@ extension MessageSender {
         } else {
             let result = try signalEncrypt(message: paddedPlaintext,
                                            for: protocolAddress,
-                                           sessionStore: Self.sessionStore,
+                                           sessionStore: signalProtocolStore.sessionStore,
                                            identityStore: Self.identityManager,
                                            context: transaction)
 
@@ -1203,7 +1207,7 @@ extension MessageSender {
         }
 
         // We had better have a session after encrypting for this recipient!
-        let session = try Self.sessionStore.loadSession(for: protocolAddress, context: transaction)!
+        let session = try signalProtocolStore.sessionStore.loadSession(for: protocolAddress, context: transaction)!
 
         // Returns the per-device-message parameters used when submitting a message to
         // the Signal Web Service.
@@ -1260,7 +1264,8 @@ extension MessageSender {
         // Returns the per-device-message parameters used when submitting a message to
         // the Signal Web Service.
         // See: https://github.com/signalapp/Signal-Server/blob/master/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java
-        let session = try Self.sessionStore.loadSession(for: protocolAddress, context: transaction)!
+        let session = try signalProtocolStore(for: .aci).sessionStore.loadSession(for: protocolAddress,
+                                                                                  context: transaction)!
         return [
             "type": messageType.rawValue,
             "destination": protocolAddress.name,

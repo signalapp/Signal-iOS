@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -106,7 +106,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testBuildValidatedLinkPreview_TitleAndImage() {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
-        let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
+        let previewBuilder = SSKProtoPreview.builder(url: url)
         previewBuilder.setTitle("Some Youtube Video")
         let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder()
         imageAttachmentBuilder.setCdnID(1)
@@ -126,7 +126,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testBuildValidatedLinkPreview_Title() {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
-        let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
+        let previewBuilder = SSKProtoPreview.builder(url: url)
         previewBuilder.setTitle("Some Youtube Video")
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
@@ -141,7 +141,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testBuildValidatedLinkPreview_Image() {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
-        let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
+        let previewBuilder = SSKProtoPreview.builder(url: url)
         let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder()
         imageAttachmentBuilder.setCdnID(1)
         imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
@@ -160,7 +160,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testBuildValidatedLinkPreview_NoTitleOrImage() {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
-        let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
+        let previewBuilder = SSKProtoPreview.builder(url: url)
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 

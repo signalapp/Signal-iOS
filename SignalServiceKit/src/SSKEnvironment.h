@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -32,11 +32,9 @@ extern NSNotificationName const WarmCachesNotification;
 @class OWSReceiptManager;
 @class PhoneNumberUtil;
 @class SDSDatabaseStorage;
-@class SSKPreKeyStore;
 @class SSKPreferences;
-@class SSKSessionStore;
-@class SSKSignedPreKeyStore;
 @class SenderKeyStore;
+@class SignalProtocolStore;
 @class SignalServiceAddressCache;
 @class SocketManager;
 @class SpamChallengeResolver;
@@ -65,6 +63,8 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol VersionedProfiles;
 @protocol WebSocketFactory;
 
+typedef NS_ENUM(uint8_t, OWSIdentity);
+
 @interface SSKEnvironment : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -81,9 +81,8 @@ extern NSNotificationName const WarmCachesNotification;
                         blockingManager:(BlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
                     remoteConfigManager:(id<RemoteConfigManager>)remoteConfigManager
-                           sessionStore:(SSKSessionStore *)sessionStore
-                      signedPreKeyStore:(SSKSignedPreKeyStore *)signedPreKeyStore
-                            preKeyStore:(SSKPreKeyStore *)preKeyStore
+                 aciSignalProtocolStore:(SignalProtocolStore *)aciSignalProtocolStore
+                 pniSignalProtocolStore:(SignalProtocolStore *)pniSignalProtocolStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                groupsV2MessageProcessor:(GroupsV2MessageProcessor *)groupsV2MessageProcessor
@@ -148,9 +147,6 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) BlockingManager *blockingManagerRef;
 @property (nonatomic, readonly) OWSIdentityManager *identityManagerRef;
 @property (nonatomic, readonly) id<RemoteConfigManager> remoteConfigManagerRef;
-@property (nonatomic, readonly) SSKSessionStore *sessionStoreRef;
-@property (nonatomic, readonly) SSKSignedPreKeyStore *signedPreKeyStoreRef;
-@property (nonatomic, readonly) SSKPreKeyStore *preKeyStoreRef;
 @property (nonatomic, readonly) id<OWSUDManager> udManagerRef;
 @property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypterRef;
 @property (nonatomic, readonly) GroupsV2MessageProcessor *groupsV2MessageProcessorRef;
@@ -197,6 +193,8 @@ extern NSNotificationName const WarmCachesNotification;
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<NotificationsProtocol> notificationsManagerRef;
+
+- (SignalProtocolStore *)signalProtocolStoreRefForIdentity:(OWSIdentity)identity;
 
 - (BOOL)isComplete;
 

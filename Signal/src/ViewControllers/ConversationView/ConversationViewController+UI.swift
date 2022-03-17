@@ -52,7 +52,7 @@ extension ConversationViewController {
     public func createHeaderViews() {
         AssertIsOnMainThread()
 
-        headerView.configure(thread: thread)
+        headerView.configure(threadViewModel: threadViewModel)
         headerView.accessibilityLabel = NSLocalizedString("CONVERSATION_SETTINGS",
                                                           comment: "title for conversation settings screen")
         headerView.accessibilityIdentifier = "headerView"

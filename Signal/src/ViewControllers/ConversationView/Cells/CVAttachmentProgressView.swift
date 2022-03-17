@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -46,7 +46,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     private let direction: Direction
     private let style: Style
-    private let conversationStyle: ConversationStyle
+    private let isDarkThemeEnabled: Bool
 
     private let stateView: StateView
 
@@ -54,15 +54,15 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     public required init(direction: Direction,
                          style: Style,
-                         conversationStyle: ConversationStyle,
+                         isDarkThemeEnabled: Bool,
                          mediaCache: CVMediaCache) {
         self.direction = direction
         self.style = style
-        self.conversationStyle = conversationStyle
+        self.isDarkThemeEnabled = isDarkThemeEnabled
         self.stateView = StateView(diameter: Self.innerDiameter(style: style),
                                    direction: direction,
                                    style: style,
-                                   conversationStyle: conversationStyle,
+                                   isDarkThemeEnabled: isDarkThemeEnabled,
                                    mediaCache: mediaCache)
 
         super.init(name: "CVAttachmentProgressView")
@@ -132,7 +132,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
         private let diameter: CGFloat
         private let direction: Direction
         private let style: Style
-        private let conversationStyle: ConversationStyle
+        private let isDarkThemeEnabled: Bool
         private lazy var imageView = CVImageView()
         private var unknownProgressView: Lottie.AnimationView?
         private var progressView: Lottie.AnimationView?
@@ -147,7 +147,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
             }
         }
 
-        private var isDarkThemeEnabled: Bool { conversationStyle.isDarkThemeEnabled }
         private var isIncoming: Bool {
             switch direction {
             case .upload:
@@ -160,12 +159,12 @@ public class CVAttachmentProgressView: ManualLayoutView {
         required init(diameter: CGFloat,
                       direction: Direction,
                       style: Style,
-                      conversationStyle: ConversationStyle,
+                      isDarkThemeEnabled: Bool,
                       mediaCache: CVMediaCache) {
             self.diameter = diameter
             self.direction = direction
             self.style = style
-            self.conversationStyle = conversationStyle
+            self.isDarkThemeEnabled = isDarkThemeEnabled
             self.mediaCache = mediaCache
 
             super.init(name: "CVAttachmentProgressView.StateView")

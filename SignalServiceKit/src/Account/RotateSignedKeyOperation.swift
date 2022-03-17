@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,26 +15,28 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
 
-        let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
+        // PNI TODO: parameterize this entire operation on OWSIdentity
+        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
 
         firstly(on: .global()) { () -> Promise<Void> in
             self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.then(on: .global()) { () -> Promise<Void> in
             self.databaseStorage.write { transaction in
-                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                         signedPreKeyRecord: signedPreKeyRecord,
-                                                         transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                                        signedPreKeyRecord: signedPreKeyRecord,
+                                                                        transaction: transaction)
             }
             return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord)
         }.done(on: .global()) { () in
             Logger.info("Successfully uploaded signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in
-                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                         signedPreKeyRecord: signedPreKeyRecord,
-                                                         transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                                        signedPreKeyRecord: signedPreKeyRecord,
+                                                                        transaction: transaction)
             }
-            self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()

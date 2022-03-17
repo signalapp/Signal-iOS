@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,21 +25,25 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.accountServiceClient.getPreKeysCount()
         }.then(on: .global()) { (preKeysCount: Int) -> Promise<Void> in
             Logger.info("preKeysCount: \(preKeysCount)")
-            guard preKeysCount < kEphemeralPreKeysMinimumCount || self.signedPreKeyStore.currentSignedPrekeyId() == nil else {
+            // PNI TODO: parameterize this entire operation on OWSIdentity
+            let signalProtocolStore = self.signalProtocolStore(for: .aci)
+
+            guard preKeysCount < kEphemeralPreKeysMinimumCount ||
+                    signalProtocolStore.signedPreKeyStore.currentSignedPrekeyId() == nil else {
                 Logger.debug("Available keys sufficient: \(preKeysCount)")
                 return Promise.value(())
             }
 
-            let identityKey: Data = self.identityManager.identityKeyPair()!.publicKey
-            let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
-            let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()
+            let identityKey: Data = self.identityManager.identityKeyPair(for: .aci)!.publicKey
+            let signedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
+            let preKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
 
             self.databaseStorage.write { transaction in
-                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                         signedPreKeyRecord: signedPreKeyRecord,
-                                                         transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                                        signedPreKeyRecord: signedPreKeyRecord,
+                                                                        transaction: transaction)
             }
-            self.preKeyStore.storePreKeyRecords(preKeyRecords)
+            signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords)
 
             return firstly(on: .global()) { () -> Promise<Void> in
                 self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
@@ -47,11 +51,11 @@ public class RefreshPreKeysOperation: OWSOperation {
                 signedPreKeyRecord.markAsAcceptedByService()
 
                 self.databaseStorage.write { transaction in
-                    self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
-                                                             signedPreKeyRecord: signedPreKeyRecord,
-                                                             transaction: transaction)
+                    signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
+                                                                            signedPreKeyRecord: signedPreKeyRecord,
+                                                                            transaction: transaction)
                 }
-                self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+                signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()
                 TSPreKeyManager.clearSignedPreKeyRecords()

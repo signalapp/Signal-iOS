@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUISessionState.h"
@@ -29,13 +29,13 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *thread = (TSContactThread *)threadParameter;
         [items addObjectsFromArray:@[
             [OWSTableItem itemWithTitle:@"Log All Recipient Identities"
-                            actionBlock:^{
-                                [OWSRecipientIdentity printAllIdentities];
-                            }],
+                            actionBlock:^{ [OWSRecipientIdentity printAllIdentities]; }],
             [OWSTableItem itemWithTitle:@"Log All Sessions"
                             actionBlock:^{
                                 [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                                    [self.sessionStore printAllSessionsWithTransaction:transaction];
+                                    SSKSessionStore *sessionStore =
+                                        [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+                                    [sessionStore printAllSessionsWithTransaction:transaction];
                                 }];
                             }],
             [OWSTableItem itemWithTitle:@"Toggle Key Change"
@@ -58,15 +58,19 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
                                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                    [self.sessionStore deleteAllSessionsForAddress:thread.contactAddress
-                                                                       transaction:transaction];
+                                    SSKSessionStore *sessionStore =
+                                        [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+                                    [sessionStore deleteAllSessionsForAddress:thread.contactAddress
+                                                                  transaction:transaction];
                                 });
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
                                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                    [self.sessionStore archiveAllSessionsForAddress:thread.contactAddress
-                                                                        transaction:transaction];
+                                    SSKSessionStore *sessionStore =
+                                        [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+                                    [sessionStore archiveAllSessionsForAddress:thread.contactAddress
+                                                                   transaction:transaction];
                                 });
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
@@ -114,7 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clearSessionAndIdentityStore
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.sessionStore resetSessionStore:transaction];
+        SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
+        [sessionStore resetSessionStore:transaction];
         [[OWSIdentityManager shared] clearIdentityState:transaction];
     });
 }

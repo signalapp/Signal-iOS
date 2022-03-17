@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkDeviceViewController.h"
@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Optimistically set this flag.
     [OWSDeviceManager.shared setMayHaveLinkedDevices];
 
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPair];
+    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityACI];
     OWSAssertDebug(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;
     NSData *myPrivateKey = identityKeyPair.privateKey;

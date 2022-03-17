@@ -123,6 +123,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createProfileBadgeTable
         case createSubscriptionDurableJob
         case addReceiptPresentationToSubscriptionDurableJob
+        case createStoryMessageTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -165,7 +166,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 32
+    public static let grdbSchemaVersionLatest: UInt = 33
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1513,6 +1514,57 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(MigrationId.createStoryMessageTable.rawValue) { db in
+            do {
+                try db.create(table: "model_StoryMessage") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                        .notNull()
+                    table.column("recordType", .integer)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column("timestamp", .integer)
+                        .notNull()
+                    table.column("authorUuid", .text)
+                        .notNull()
+                    table.column("groupId", .blob)
+                    table.column("direction", .integer)
+                        .notNull()
+                    table.column("manifest", .blob)
+                        .notNull()
+                    table.column("attachment", .blob)
+                        .notNull()
+                }
+
+                try db.create(index: "index_model_StoryMessage_on_uniqueId", on: "model_StoryMessage", columns: ["uniqueId"])
+
+                try db.create(
+                    index: "index_model_StoryMessage_on_timestamp_and_authorUuid",
+                    on: "model_StoryMessage",
+                    columns: ["timestamp", "authorUuid"]
+                )
+                try db.create(
+                    index: "index_model_StoryMessage_on_direction",
+                    on: "model_StoryMessage",
+                    columns: ["direction"]
+                )
+                try db.execute(sql: """
+                    CREATE
+                        INDEX index_model_StoryMessage_on_incoming_viewedTimestamp
+                            ON model_StoryMessage (
+                            json_extract (
+                                manifest
+                                ,'$.incoming.viewedTimestamp'
+                            )
+                        )
+                    ;
+                """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -1784,9 +1836,7 @@ public class GRDBSchemaMigrator: NSObject {
             // query. This is superfluous anyways, so it's safe to skip.
             guard !hasRunMigration("dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData", transaction: transaction) else { return }
 
-            let memberCursor = TSGroupMember.grdbFetchCursor(
-                transaction: transaction
-            )
+            let memberCursor = try TSGroupMember.fetchCursor(db)
 
             while let member = try memberCursor.next() {
                 autoreleasepool {
