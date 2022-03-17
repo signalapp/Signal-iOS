@@ -66,7 +66,7 @@ class HomeTabBarController: UITabBarController {
     }
 
     func updateStoriesBadge() {
-        guard !tabBar.isHidden else { return }
+        guard FeatureFlags.stories else { return }
         let unviewedStoriesCount = databaseStorage.read { transaction in
             StoryFinder.unviewedSenderCount(transaction: transaction)
         }
@@ -74,7 +74,7 @@ class HomeTabBarController: UITabBarController {
     }
 
     func updateChatListBadge() {
-        guard !tabBar.isHidden else { return }
+        guard FeatureFlags.stories else { return }
         let unreadMessageCount = databaseStorage.read { transaction in
             InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
         }
