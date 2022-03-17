@@ -1005,7 +1005,6 @@ extension OWSContactsManager {
                 return CommonFormats.formatUsername(username)
             }
         }.refine { addresses in
-            // TODO: Combine these db queries into one.
             return addresses.lazy.map {
                 self.fetchProfile(forUnknownAddress: $0)
                 return self.unknownUserLabel
