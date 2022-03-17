@@ -514,7 +514,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         .map { _ -> Void in didComplete = true }
                         .retainUntilComplete()
                     
-                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                     expect(mockStorage)
                         .to(
                             call(.exactly(times: 1)) {
@@ -542,7 +542,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         .map { _ -> Void in didComplete = true }
                         .retainUntilComplete()
                     
-                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                     expect(mockStorage)
                         .to(
                             call(.exactly(times: 1)) {
@@ -570,13 +570,13 @@ class OpenGroupManagerSpec: QuickSpec {
                         .map { _ -> Void in didComplete = true }
                         .retainUntilComplete()
                     
-                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                     expect(mockOGMCache)
                         .toEventually(
                             call(matchingParameters: true) {
                                 $0.pollers = ["testServer": OpenGroupAPI.Poller(for: "testServer")]
                             },
-                            timeout: .milliseconds(100)
+                            timeout: .milliseconds(50)
                         )
                 }
                 
@@ -600,7 +600,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             .map { _ -> Void in didComplete = true }
                             .retainUntilComplete()
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockStorage)
                             .toEventuallyNot(
                                 call {
@@ -610,7 +610,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                         using: testTransaction! as Any
                                     )
                                 },
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                         expect(mockStorage)
                             .toEventuallyNot(
@@ -621,7 +621,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                         using: testTransaction! as Any
                                     )
                                 },
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                 }
@@ -656,7 +656,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         expect(error?.localizedDescription)
                             .toEventually(
                                 equal(HTTP.Error.parsingFailed.localizedDescription),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                 }
@@ -941,7 +941,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         dependencies: dependencies
                     ) { didComplete = true }
                     
-                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                     expect(testGroupThread.numSaveCalls).to(equal(1))
                 }
                 
@@ -957,7 +957,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         dependencies: dependencies
                     ) { didComplete = true }
                     
-                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                     expect(mockStorage).to(call { $0.getOpenGroup(for: any()) })
                 }
                 
@@ -973,7 +973,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         dependencies: dependencies
                     ) { didComplete = true }
                     
-                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                     expect(testGroupThread.numSaveCalls).to(equal(1))
                 }
                 
@@ -989,7 +989,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         dependencies: dependencies
                     ) { didComplete = true }
                     
-                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                     expect(mockStorage).to(call { $0.setOpenGroup(any(), for: any(), using: anyAny()) })
                 }
                 
@@ -1005,7 +1005,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         dependencies: dependencies
                     ) { didComplete = true }
                     
-                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                    expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                     expect(mockStorage)
                         .to(call(matchingParameters: true) {
                             $0.setUserCount(to: 10, forOpenGroupWithID: "testServer.testRoom", using: testTransaction! as Any)
@@ -1029,7 +1029,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     expect(didCallComplete)
                         .toEventually(
                             beTrue(),
-                            timeout: .milliseconds(100)
+                            timeout: .milliseconds(50)
                         )
                 }
                 
@@ -1064,13 +1064,13 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockOGMCache)
                             .toEventually(
                                 call(matchingParameters: true) {
                                     $0.moderators = ["testServer": ["testRoom": Set(arrayLiteral: "TestMod")]]
                                 },
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -1104,13 +1104,13 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockOGMCache)
                             .toEventually(
                                 call(matchingParameters: true) {
                                     $0.moderators = ["testServer": ["testRoom": Set()]]
                                 },
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                 }
@@ -1146,13 +1146,13 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockOGMCache)
                             .toEventually(
                                 call(matchingParameters: true) {
                                     $0.admins = ["testServer": ["testRoom": Set(arrayLiteral: "TestAdmin")]]
                                 },
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -1186,13 +1186,13 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockOGMCache)
                             .toEventually(
                                 call(matchingParameters: true) {
                                     $0.admins = ["testServer": ["testRoom": Set()]]
                                 },
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                 }
@@ -1227,7 +1227,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1295,7 +1295,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1330,7 +1330,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockOGMCache)
                             .to(call(matchingParameters: true) {
                                 $0.pollers = ["testServer": OpenGroupAPI.Poller(for: "testServer")]
@@ -1351,7 +1351,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockOGMCache).to(call(.exactly(times: 1)) { $0.pollers })
                     }
                 }
@@ -1421,7 +1421,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1441,12 +1441,12 @@ class OpenGroupManagerSpec: QuickSpec {
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventuallyNot(
                                 beNil(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                         expect(testGroupThread.numSaveCalls)
                             .toEventually(
                                 equal(2),   // Call to save the open group and then to save the image
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -1492,7 +1492,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1512,12 +1512,12 @@ class OpenGroupManagerSpec: QuickSpec {
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventuallyNot(
                                 beNil(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                         expect(testGroupThread.numSaveCalls)
                             .toEventually(
                                 equal(2),   // Call to save the open group and then to save the image
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -1598,7 +1598,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockStorage)
                             .to(call(matchingParameters: true) {
                                 $0.setOpenGroup(
@@ -1618,12 +1618,12 @@ class OpenGroupManagerSpec: QuickSpec {
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventuallyNot(
                                 beNil(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                         expect(testGroupThread.numSaveCalls)
                             .toEventually(
                                 equal(2),   // Call to save the open group and then to save the image
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -1639,16 +1639,16 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventually(
                                 beNil(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                         expect(testGroupThread.numSaveCalls)
                             .toEventually(
                                 equal(1),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -1710,16 +1710,16 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventually(
                                 beNil(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                         expect(testGroupThread.numSaveCalls)
                             .toEventually(
                                 equal(1),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -1778,16 +1778,16 @@ class OpenGroupManagerSpec: QuickSpec {
                             dependencies: dependencies
                         ) { didComplete = true }
                         
-                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(100))
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventuallyNot(
                                 beNil(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                         expect(testGroupThread.numSaveCalls)
                             .toEventually(
                                 equal(2),   // Call to save the open group and then to save the image
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                 }
@@ -1958,7 +1958,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     expect(testIncomingMessage.didCallSave)
                         .toEventually(
                             beTrue(),
-                            timeout: .milliseconds(100)
+                            timeout: .milliseconds(50)
                         )
                 }
                 
@@ -1989,7 +1989,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     expect(testIncomingMessage.didCallSave)
                         .toEventually(
                             beTrue(),
-                            timeout: .milliseconds(100)
+                            timeout: .milliseconds(50)
                         )
                 }
                 
@@ -2022,7 +2022,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         expect(testIncomingMessage.didCallRemove)
                             .toEventually(
                                 beTrue(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -2054,7 +2054,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         expect(testIncomingMessage.didCallRemove)
                             .toEventuallyNot(
                                 beTrue(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                     
@@ -2087,7 +2087,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         expect(testIncomingMessage.didCallRemove)
                             .toEventuallyNot(
                                 beTrue(),
-                                timeout: .milliseconds(100)
+                                timeout: .milliseconds(50)
                             )
                     }
                 }
@@ -3060,6 +3060,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         .when { $0.setOpenGroupImage(to: any(), for: any(), on: any(), using: anyAny()) }
                         .thenReturn(())
                     mockUserDefaults.when { $0.object(forKey: any()) }.thenReturn(nil)
+                    mockUserDefaults.when { $0.set(anyAny(), forKey: any()) }.thenReturn(())
                 }
                 
                 it("caches the promise if there is no cached promise") {
@@ -3133,7 +3134,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     )
                                 ]
                             ),
-                            timeout: .milliseconds(100)
+                            timeout: .milliseconds(50)
                         )
                 }
                 
@@ -3157,7 +3158,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     expect(error?.localizedDescription)
                         .toEventually(
                             equal(HTTP.Error.invalidResponse.localizedDescription),
-                            timeout: .milliseconds(100)
+                            timeout: .milliseconds(50)
                         )
                     expect(TestRoomsApi.callCounter).to(equal(9))   // First attempt + 8 retries
                 }
@@ -3177,7 +3178,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     expect(error?.localizedDescription)
                         .toEventually(
                             equal(HTTP.Error.invalidResponse.localizedDescription),
-                            timeout: .milliseconds(100)
+                            timeout: .milliseconds(50)
                         )
                     expect(mockOGMCache)
                         .to(call(matchingParameters: true) {
@@ -3235,11 +3236,391 @@ class OpenGroupManagerSpec: QuickSpec {
                                     using: testTransaction! as Any
                                 )
                             },
-                            timeout: .milliseconds(100)
+                            timeout: .milliseconds(50)
                         )
                 }
             }
             
+            // MARK: - --roomImage
+            
+            context("when getting a room image") {
+                beforeEach {
+                    class TestImageApi: TestOnionRequestAPI {
+                        override class var mockResponse: Data? { return Data([1, 2, 3]) }
+                    }
+                    dependencies = dependencies.with(onionApi: TestImageApi.self)
+                    
+                    mockUserDefaults.when { $0.object(forKey: any()) }.thenReturn(nil)
+                    mockUserDefaults.when { $0.set(anyAny(), forKey: any()) }.thenReturn(())
+                    mockStorage.when { $0.getOpenGroupImage(for: any(), on: any()) }.thenReturn(nil)
+                    mockStorage
+                        .when { $0.setOpenGroupImage(to: any(), for: any(), on: any(), using: anyAny()) }
+                        .thenReturn(())
+                    mockOGMCache.when { $0.groupImagePromises }.thenReturn([:])
+                }
+                
+                it("retrieves the image retrieval promise from the cache if it exists") {
+                    let (promise, _) = Promise<Data>.pending()
+                    mockOGMCache
+                        .when { $0.groupImagePromises }
+                        .thenReturn(["testServer.testRoom": promise])
+                    
+                    expect(
+                        OpenGroupManager
+                            .roomImage(
+                                1,
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                    ).to(equal(promise))
+                }
+                
+                it("does not save the fetched image to storage") {
+                    let promise = OpenGroupManager
+                        .roomImage(
+                            1,
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    promise.retainUntilComplete()
+                    
+                    expect(promise.isFulfilled).toEventually(beTrue(), timeout: .milliseconds(50))
+                    expect(mockStorage)
+                        .toEventuallyNot(
+                            call(matchingParameters: true) {
+                                $0.setOpenGroupImage(
+                                    to: Data([1, 2, 3]),
+                                    for: "testRoom",
+                                    on: "testServer",
+                                    using: testTransaction! as Any
+                                )
+                            },
+                            timeout: .milliseconds(50)
+                        )
+                }
+                
+                it("does not update the image update timestamp") {
+                    let promise = OpenGroupManager
+                        .roomImage(
+                            1,
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    promise.retainUntilComplete()
+                    
+                    expect(promise.isFulfilled).toEventually(beTrue(), timeout: .milliseconds(50))
+                    expect(mockUserDefaults)
+                        .toEventuallyNot(
+                            call(matchingParameters: true) {
+                                $0.set(
+                                    dependencies.date,
+                                    forKey: SNUserDefaults.Date.lastOpenGroupImageUpdate.rawValue
+                                )
+                            },
+                            timeout: .milliseconds(50)
+                        )
+                }
+                
+                it("adds the image retrieval promise to the cache") {
+                    class TestNeverReturningApi: OnionRequestAPIType {
+                        static func sendOnionRequest(_ request: URLRequest, to server: String, using version: OnionRequestAPI.Version, with x25519PublicKey: String) -> Promise<(OnionRequestResponseInfoType, Data?)> {
+                            return Promise<(OnionRequestResponseInfoType, Data?)>.pending().promise
+                        }
+                        
+                        static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, using version: OnionRequestAPI.Version, associatedWith publicKey: String?) -> Promise<Data> {
+                            return Promise.value(Data())
+                        }
+                    }
+                    dependencies = dependencies.with(onionApi: TestNeverReturningApi.self)
+                    
+                    let promise = OpenGroupManager.roomImage(
+                        1,
+                        for: "testRoom",
+                        on: "testServer",
+                        using: dependencies
+                    )
+                    
+                    expect(mockOGMCache)
+                        .toEventually(
+                            call(matchingParameters: true) {
+                                $0.groupImagePromises = ["testServer.testRoom": promise]
+                            },
+                            timeout: .milliseconds(50)
+                        )
+                }
+                
+                context("for the default server") {
+                    it("fetches a new image if there is no cached one") {
+                        var result: Data?
+                        
+                        let promise = OpenGroupManager
+                            .roomImage(
+                                1,
+                                for: "testRoom",
+                                on: OpenGroupAPI.defaultServer,
+                                using: dependencies
+                            )
+                            .done { result = $0 }
+                        promise.retainUntilComplete()
+                        
+                        expect(promise.isFulfilled).toEventually(beTrue(), timeout: .milliseconds(50))
+                        expect(result).toEventually(equal(Data([1, 2, 3])), timeout: .milliseconds(50))
+                    }
+                    
+                    it("saves the fetched image to storage") {
+                        let promise = OpenGroupManager
+                            .roomImage(
+                                1,
+                                for: "testRoom",
+                                on: OpenGroupAPI.defaultServer,
+                                using: dependencies
+                            )
+                        promise.retainUntilComplete()
+                        
+                        expect(promise.isFulfilled).toEventually(beTrue(), timeout: .milliseconds(50))
+                        expect(mockStorage)
+                            .toEventually(
+                                call(matchingParameters: true) {
+                                    $0.setOpenGroupImage(
+                                        to: Data([1, 2, 3]),
+                                        for: "testRoom",
+                                        on: OpenGroupAPI.defaultServer,
+                                        using: testTransaction! as Any
+                                    )
+                                },
+                                timeout: .milliseconds(50)
+                            )
+                    }
+                    
+                    it("updates the image update timestamp") {
+                        let promise = OpenGroupManager
+                            .roomImage(
+                                1,
+                                for: "testRoom",
+                                on: OpenGroupAPI.defaultServer,
+                                using: dependencies
+                            )
+                        promise.retainUntilComplete()
+                        
+                        expect(promise.isFulfilled).toEventually(beTrue(), timeout: .milliseconds(50))
+                        expect(mockUserDefaults)
+                            .toEventually(
+                                call(matchingParameters: true) {
+                                    $0.set(
+                                        dependencies.date,
+                                        forKey: SNUserDefaults.Date.lastOpenGroupImageUpdate.rawValue
+                                    )
+                                },
+                                timeout: .milliseconds(50)
+                            )
+                    }
+                    
+                    context("and there is a cached image") {
+                        beforeEach {
+                            mockUserDefaults.when { $0.object(forKey: any()) }.thenReturn(dependencies.date)
+                            mockStorage
+                                .when { $0.getOpenGroupImage(for: any(), on: any()) }
+                                .thenReturn(Data([2, 3, 4]))
+                        }
+                        
+                        it("retrieves the cached image") {
+                            var result: Data?
+                            
+                            let promise = OpenGroupManager
+                                .roomImage(
+                                    1,
+                                    for: "testRoom",
+                                    on: OpenGroupAPI.defaultServer,
+                                    using: dependencies
+                                )
+                                .done { result = $0 }
+                            promise.retainUntilComplete()
+                            
+                            expect(promise.isFulfilled).toEventually(beTrue(), timeout: .milliseconds(50))
+                            expect(result).toEventually(equal(Data([2, 3, 4])), timeout: .milliseconds(50))
+                        }
+                        
+                        it("fetches a new image if the cached on is older than a week") {
+                            mockUserDefaults
+                                .when { $0.object(forKey: any()) }
+                                .thenReturn(
+                                    Date(timeIntervalSince1970:
+                                        (dependencies.date.timeIntervalSince1970 - (7 * 24 * 60 * 60) - 1)
+                                    )
+                                )
+                            
+                            var result: Data?
+                            
+                            let promise = OpenGroupManager
+                                .roomImage(
+                                    1,
+                                    for: "testRoom",
+                                    on: OpenGroupAPI.defaultServer,
+                                    using: dependencies
+                                )
+                                .done { result = $0 }
+                            promise.retainUntilComplete()
+                            
+                            expect(promise.isFulfilled).toEventually(beTrue(), timeout: .milliseconds(50))
+                            expect(result).toEventually(equal(Data([1, 2, 3])), timeout: .milliseconds(50))
+                        }
+                    }
+                }
+            }
+            
+            // MARK: - --parseOpenGroup
+            
+            context("when parsing an open group url") {
+                it("handles the example urls correctly") {
+                    let validUrls: [String] = [
+                         "https://sessionopengroup.co/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "https://sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "http://sessionopengroup.co/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "http://sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "sessionopengroup.co/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "sessionopengroup.co/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "https://143.198.213.225:443/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "https://143.198.213.225:443/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "143.198.213.255:80/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                         "143.198.213.255:80/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"
+                    ]
+                    let processedValues: [(room: String, server: String, publicKey: String)] = validUrls
+                        .map { OpenGroupManager.parseOpenGroup(from: $0) }
+                        .compactMap { $0 }
+                    let processedRooms: [String] = processedValues.map { $0.room }
+                    let processedServers: [String] = processedValues.map { $0.server }
+                    let processedPublicKeys: [String] = processedValues.map { $0.publicKey }
+                    let expectedRooms: [String] = [String](repeating: "main", count: 10)
+                    let expectedServers: [String] = [
+                        "https://sessionopengroup.co",
+                        "https://sessionopengroup.co",
+                        "http://sessionopengroup.co",
+                        "http://sessionopengroup.co",
+                        "http://sessionopengroup.co",
+                        "http://sessionopengroup.co",
+                        "https://143.198.213.225:443",
+                        "https://143.198.213.225:443",
+                        "http://143.198.213.255:80",
+                        "http://143.198.213.255:80"
+                    ]
+                    let expectedPublicKeys: [String] = [String](
+                        repeating: "658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c",
+                        count: 10
+                    )
+                    
+                    expect(processedValues.count).to(equal(validUrls.count))
+                    expect(processedRooms).to(equal(expectedRooms))
+                    expect(processedServers).to(equal(expectedServers))
+                    expect(processedPublicKeys).to(equal(expectedPublicKeys))
+                }
+                
+                it("handles the r prefix if present") {
+                    let info = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "https://sessionopengroup.co/r/main?",
+                            "public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"
+                        ].joined()
+                    )
+                    
+                    expect(info?.room).to(equal("main"))
+                    expect(info?.server).to(equal("https://sessionopengroup.co"))
+                    expect(info?.publicKey).to(equal("658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"))
+                }
+                
+                it("fails if there is no room") {
+                    let info = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "https://sessionopengroup.co?",
+                            "public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"
+                        ].joined()
+                    )
+                    
+                    expect(info?.room).to(beNil())
+                    expect(info?.server).to(beNil())
+                    expect(info?.publicKey).to(beNil())
+                }
+                
+                it("fails if there is no public key parameter") {
+                    let info = OpenGroupManager.parseOpenGroup(
+                        from: "https://sessionopengroup.co/r/main"
+                    )
+                    
+                    expect(info?.room).to(beNil())
+                    expect(info?.server).to(beNil())
+                    expect(info?.publicKey).to(beNil())
+                }
+                
+                it("fails if the public key parameter is not 64 characters") {
+                    let info = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "https://sessionopengroup.co/r/main?",
+                            "public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231"
+                        ].joined()
+                    )
+                    
+                    expect(info?.room).to(beNil())
+                    expect(info?.server).to(beNil())
+                    expect(info?.publicKey).to(beNil())
+                }
+                
+                it("fails if the public key parameter is not a hex string") {
+                    let info = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "https://sessionopengroup.co/r/main?",
+                            "public_key=!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                        ].joined()
+                    )
+                    
+                    expect(info?.room).to(beNil())
+                    expect(info?.server).to(beNil())
+                    expect(info?.publicKey).to(beNil())
+                }
+                
+                it("maintains the same TLS") {
+                    let server1 = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "sessionopengroup.co/r/main?",
+                            "public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"
+                        ].joined()
+                    )?.server
+                    let server2 = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "http://sessionopengroup.co/r/main?",
+                            "public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"
+                        ].joined()
+                    )?.server
+                    let server3 = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "https://sessionopengroup.co/r/main?",
+                            "public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"
+                        ].joined()
+                    )?.server
+                    
+                    expect(server1).to(equal("http://sessionopengroup.co"))
+                    expect(server2).to(equal("http://sessionopengroup.co"))
+                    expect(server3).to(equal("https://sessionopengroup.co"))
+                }
+                
+                it("maintains the same port") {
+                    let server1 = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "https://sessionopengroup.co/r/main?",
+                            "public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"
+                        ].joined()
+                    )?.server
+                    let server2 = OpenGroupManager.parseOpenGroup(
+                        from: [
+                            "https://sessionopengroup.co:1234/r/main?",
+                            "public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c"
+                        ].joined()
+                    )?.server
+                    
+                    expect(server1).to(equal("https://sessionopengroup.co"))
+                    expect(server2).to(equal("https://sessionopengroup.co:1234"))
+                }
             }
         }
     }

@@ -620,7 +620,7 @@ public final class OpenGroupManager: NSObject {
                 dependencies.storage.write { transaction in
                     dependencies.storage.setOpenGroupImage(to: imageData, for: roomToken, on: server, using: transaction)
                 }
-                UserDefaults.standard[.lastOpenGroupImageUpdate] = now
+                dependencies.standardUserDefaults[.lastOpenGroupImageUpdate] = now
             }
         }
         dependencies.mutableCache.mutate { cache in
@@ -644,7 +644,10 @@ public final class OpenGroupManager: NSObject {
         // 143.198.213.255:80/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         // 143.198.213.255:80/r/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         let useTLS = (url.scheme == "https")
-        let updatedPath = (url.path.starts(with: "/r/") ? url.path.substring(from: 2) : url.path)
+        
+        // If there is no scheme then the host is included in the path (so handle that case)
+        let hostFreePath = (url.host != nil ? url.path : url.path.substring(from: host.count))
+        let updatedPath = (hostFreePath.starts(with: "/r/") ? hostFreePath.substring(from: 2) : hostFreePath)
         let room = String(updatedPath.dropFirst()) // Drop the leading slash
         let queryParts = query.split(separator: "=")
         guard !room.isEmpty && !room.contains("/"), queryParts.count == 2, queryParts[0] == "public_key" else { return nil }
