@@ -54,6 +54,9 @@ class StoryContextViewController: OWSViewController {
             guard case .incoming(_, let viewedTimestamp) = item.message.manifest else { return false }
             return viewedTimestamp == nil
         } ?? items.last
+
+        playbackProgressView.alpha = 1
+        closeButton.alpha = 1
     }
 
     @objc
@@ -90,6 +93,8 @@ class StoryContextViewController: OWSViewController {
     private lazy var rightTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapRight))
     private lazy var pauseGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
 
+    private lazy var closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white)
+
     private lazy var mediaViewContainer = UIView()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -122,7 +127,7 @@ class StoryContextViewController: OWSViewController {
         spinner.autoCenterInSuperview()
         spinner.startAnimating()
 
-        let closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white) { [weak self] in
+        closeButton.block = { [weak self] in
             self?.dismiss(animated: true)
         }
         closeButton.setShadow()
@@ -343,14 +348,20 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         case .began:
             pauseTime = CACurrentMediaTime()
             displayLink?.isPaused = true
-            currentItemMediaView?.pause()
+            currentItemMediaView?.pause {
+                self.playbackProgressView.alpha = 0
+                self.closeButton.alpha = 0
+            }
         case .ended:
             if let lastTransitionTime = lastTransitionTime, let pauseTime = pauseTime {
                 let pauseDuration = CACurrentMediaTime() - pauseTime
                 self.lastTransitionTime = lastTransitionTime + pauseDuration
                 self.pauseTime = nil
             }
-            currentItemMediaView?.play()
+            currentItemMediaView?.play {
+                self.playbackProgressView.alpha = 1
+                self.closeButton.alpha = 1
+            }
             displayLink?.isPaused = false
         default:
             break

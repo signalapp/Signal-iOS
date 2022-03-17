@@ -41,14 +41,32 @@ class StoryItemMediaView: UIView {
         videoPlayer?.seek(to: .zero)
         videoPlayer?.play()
         updateTimestampText()
+        authorRow.alpha = 1
+        gradientProtectionView.alpha = 1
     }
 
-    func pause() {
+    func pause(animateAlongside: @escaping () -> Void) {
         videoPlayer?.pause()
+
+        UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+            self.authorRow.alpha = 0
+            self.gradientProtectionView.alpha = 0
+            animateAlongside()
+        } completion: { _ in
+
+        }
     }
 
-    func play() {
+    func play(animateAlongside: @escaping () -> Void) {
         videoPlayer?.play()
+
+        UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+            self.authorRow.alpha = 1
+            self.gradientProtectionView.alpha = 1
+            animateAlongside()
+        } completion: { _ in
+
+        }
     }
 
     func updateTimestampText() {
@@ -113,13 +131,14 @@ class StoryItemMediaView: UIView {
     }()
 
     private lazy var timestampLabel = UILabel()
+    private lazy var authorRow = UIStackView()
     private func createAuthorRow() {
         let (avatarView, nameLabel) = databaseStorage.read { (
             buildAvatarView(transaction: $0),
             buildNameLabel(transaction: $0)
         ) }
 
-        let stackView = UIStackView(arrangedSubviews: [
+        authorRow.addArrangedSubviews([
             avatarView,
             .spacer(withWidth: 12),
             nameLabel,
@@ -127,16 +146,16 @@ class StoryItemMediaView: UIView {
             timestampLabel,
             .hStretchingSpacer()
         ])
-        stackView.axis = .horizontal
-        stackView.alignment = .center
+        authorRow.axis = .horizontal
+        authorRow.alignment = .center
 
         timestampLabel.font = .ows_dynamicTypeFootnote
         timestampLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
         updateTimestampText()
 
-        addSubview(stackView)
-        stackView.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
-        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
+        addSubview(authorRow)
+        authorRow.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
+        authorRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
     }
 
     private func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
