@@ -37,6 +37,8 @@ class HomeTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        delegate = self
+
         // Don't render the tab bar if stories isn't enabled.
         // TODO: Eventually there will be a setting for hiding stories.
         guard FeatureFlags.stories else {
@@ -101,5 +103,24 @@ extension HomeTabBarController: DatabaseChangeDelegate {
 
     func databaseChangesDidReset() {
         updateAllBadges()
+    }
+}
+
+extension HomeTabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        // If we re-select the active tab, scroll to the top.
+        if selectedViewController == viewController {
+            let tableView: UITableView
+            switch selectedTab {
+            case .chatList:
+                tableView = chatListViewController.tableView
+            case .stories:
+                tableView = storiesViewController.tableView
+            }
+
+            tableView.setContentOffset(CGPoint(x: 0, y: -tableView.safeAreaInsets.top), animated: true)
+        }
+
+        return true
     }
 }
