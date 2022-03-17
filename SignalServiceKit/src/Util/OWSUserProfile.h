@@ -32,9 +32,13 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
 
 NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 
+@protocol OWSMaybeUserProfile
+@property (nonatomic, nullable, readonly) OWSUserProfile *userProfileOrNil;
+@end
+
 #pragma mark -
 
-@interface OWSUserProfile : BaseModel
+@interface OWSUserProfile : BaseModel <OWSMaybeUserProfile>
 
 @property (atomic, readonly) SignalServiceAddress *address;
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;
@@ -138,6 +142,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 - (OWSUserProfile *)shallowCopy;
 
+@end
+
+@interface NSNull (OWSUserProfile) <OWSMaybeUserProfile>
 @end
 
 NS_ASSUME_NONNULL_END

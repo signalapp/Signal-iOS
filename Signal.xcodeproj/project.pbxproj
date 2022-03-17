@@ -663,6 +663,7 @@
 		459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */; };
 		45A2F005204473A3002E978A /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
 		45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */; };
+		45A3579B27DBD5BB0051CE8B /* OWSProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A3579A27DBD5BB0051CE8B /* OWSProfileManagerTest.swift */; };
 		45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A663C41F92EC760027B59E /* GroupTableViewCell.swift */; };
 		45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
 		45B27B862037FFB400A539DF /* DebugUIFileBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B27B852037FFB400A539DF /* DebugUIFileBrowser.swift */; };
@@ -1876,6 +1877,7 @@
 		4597E94F1D8313CB00040CDE /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = translations/bg.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45A2F004204473A3002E978A /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = NewMessage.aifc; path = Signal/AudioFiles/NewMessage.aifc; sourceTree = SOURCE_ROOT; };
 		45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileTest.swift; sourceTree = "<group>"; };
+		45A3579A27DBD5BB0051CE8B /* OWSProfileManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSProfileManagerTest.swift; sourceTree = "<group>"; };
 		45A663C41F92EC760027B59E /* GroupTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupTableViewCell.swift; sourceTree = "<group>"; };
 		45A6DAD51EBBF85500893231 /* ReminderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReminderView.swift; sourceTree = "<group>"; };
 		45B201741DAECBFD00C461E0 /* Signal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Signal-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -3772,6 +3774,14 @@
 			name = Models;
 			sourceTree = "<group>";
 		};
+		45A3579927DBD5A20051CE8B /* profiles */ = {
+			isa = PBXGroup;
+			children = (
+				45A3579A27DBD5BB0051CE8B /* OWSProfileManagerTest.swift */,
+			);
+			path = profiles;
+			sourceTree = "<group>";
+		};
 		45CD81A41DBFF8CF004C9430 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
@@ -4451,6 +4461,7 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
+				45A3579927DBD5A20051CE8B /* profiles */,
 				34C6B0A41FA0E46F00D35993 /* Assets */,
 				1704690725D4C2DA000793D8 /* attachments */,
 				B660F6751C29867F00687D6E /* contact */,
@@ -6513,6 +6524,7 @@
 				3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */,
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
 				349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */,
+				45A3579B27DBD5BB0051CE8B /* OWSProfileManagerTest.swift in Sources */,
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */,
 				34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */,
