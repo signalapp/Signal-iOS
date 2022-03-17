@@ -115,25 +115,31 @@ extension StoryPageViewController: UIPageViewControllerDataSource {
 }
 
 extension StoryPageViewController: StoryContextViewControllerDelegate {
-    func storyContextViewControllerWantsTransitionToNextContext(_ storyContextViewController: StoryContextViewController) {
+    func storyContextViewControllerWantsTransitionToNextContext(
+        _ storyContextViewController: StoryContextViewController,
+        loadPosition: StoryContextViewController.LoadPosition
+    ) {
         guard let nextContext = contextDataSource?.storyPageViewController(self, storyContextAfter: currentContext) else {
-                  dismiss(animated: true)
-                  return
-              }
+            dismiss(animated: true)
+            return
+        }
         setViewControllers(
-            [StoryContextViewController(context: nextContext, delegate: self)],
+            [StoryContextViewController(context: nextContext, loadPosition: loadPosition, delegate: self)],
             direction: .forward,
             animated: true
         )
     }
 
-    func storyContextViewControllerWantsTransitionToPreviousContext(_ storyContextViewController: StoryContextViewController) {
+    func storyContextViewControllerWantsTransitionToPreviousContext(
+        _ storyContextViewController: StoryContextViewController,
+        loadPosition: StoryContextViewController.LoadPosition
+    ) {
         guard let previousContext = contextDataSource?.storyPageViewController(self, storyContextBefore: currentContext) else {
             storyContextViewController.resetForPresentation()
-                  return
-              }
+            return
+        }
         setViewControllers(
-            [StoryContextViewController(context: previousContext, delegate: self)],
+            [StoryContextViewController(context: previousContext, loadPosition: loadPosition, delegate: self)],
             direction: .reverse,
             animated: true
         )

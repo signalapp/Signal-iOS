@@ -8,8 +8,14 @@ import UIKit
 import SignalUI
 
 protocol StoryContextViewControllerDelegate: AnyObject {
-    func storyContextViewControllerWantsTransitionToNextContext(_ storyContextViewController: StoryContextViewController)
-    func storyContextViewControllerWantsTransitionToPreviousContext(_ storyContextViewController: StoryContextViewController)
+    func storyContextViewControllerWantsTransitionToNextContext(
+        _ storyContextViewController: StoryContextViewController,
+        loadPosition: StoryContextViewController.LoadPosition
+    )
+    func storyContextViewControllerWantsTransitionToPreviousContext(
+        _ storyContextViewController: StoryContextViewController,
+        loadPosition: StoryContextViewController.LoadPosition
+    )
     func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController)
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController)
 }
@@ -38,8 +44,16 @@ class StoryContextViewController: OWSViewController {
     }
     var currentItemMediaView: StoryItemMediaView?
 
-    required init(context: StoryContext, delegate: StoryContextViewControllerDelegate) {
+    enum LoadPosition {
+        case `default`
+        case newest
+        case oldest
+    }
+    private(set) var loadPosition: LoadPosition
+
+    required init(context: StoryContext, loadPosition: LoadPosition = .default, delegate: StoryContextViewControllerDelegate) {
         self.context = context
+        self.loadPosition = loadPosition
         super.init()
         self.delegate = delegate
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -50,42 +64,50 @@ class StoryContextViewController: OWSViewController {
     }
 
     func resetForPresentation() {
-
         if let currentItemMediaView = currentItemMediaView {
             // Restart playback for the current item
             currentItemMediaView.reset()
             updateProgressState()
         } else {
-            // Start on the first unviewed story. If there are no
-            // unviewed stories, start on the newest story.
-            currentItem = items.first { item in
+            // If there's an unviewed story, we always want to present that first.
+            if let firstUnviewedStory = items.first(where: { item in
                 guard case .incoming(_, let viewedTimestamp) = item.message.manifest else { return false }
                 return viewedTimestamp == nil
-            } ?? items.last
+            }) {
+                currentItem = firstUnviewedStory
+            } else {
+                switch loadPosition {
+                case .newest, .default:
+                    currentItem = items.last
+                case .oldest:
+                    currentItem = items.first
+                }
+            }
+
+            // For subsequent loads, use the default position.
+            loadPosition = .default
         }
 
         playbackProgressView.alpha = 1
         closeButton.alpha = 1
     }
 
-    @objc
-    func transitionToNextItem() {
+    func transitionToNextItem(nextContextLoadPosition: LoadPosition = .default) {
         guard let currentItem = currentItem,
               let currentItemIndex = items.firstIndex(of: currentItem),
               let itemAfter = items[safe: currentItemIndex.advanced(by: 1)] else {
-                  delegate?.storyContextViewControllerWantsTransitionToNextContext(self)
+                  delegate?.storyContextViewControllerWantsTransitionToNextContext(self, loadPosition: nextContextLoadPosition)
                   return
               }
 
         self.currentItem = itemAfter
     }
 
-    @objc
-    func transitionToPreviousItem() {
+    func transitionToPreviousItem(previousContextLoadPosition: LoadPosition = .default) {
         guard let currentItem = currentItem,
               let currentItemIndex = items.firstIndex(of: currentItem),
               let itemBefore = items[safe: currentItemIndex.advanced(by: -1)] else {
-                  delegate?.storyContextViewControllerWantsTransitionToPreviousContext(self)
+                  delegate?.storyContextViewControllerWantsTransitionToPreviousContext(self, loadPosition: previousContextLoadPosition)
                   return
               }
 
@@ -324,13 +346,17 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     @objc
     func didTapLeft() {
         guard currentItemMediaView?.willHandleTapGesture(leftTapGestureRecognizer) != true else { return }
-        CurrentAppContext().isRTL ? transitionToNextItem() : transitionToPreviousItem()
+        CurrentAppContext().isRTL
+            ? transitionToNextItem(nextContextLoadPosition: .oldest)
+            : transitionToPreviousItem(previousContextLoadPosition: .newest)
     }
 
     @objc
     func didTapRight() {
         guard currentItemMediaView?.willHandleTapGesture(rightTapGestureRecognizer) != true else { return }
-        CurrentAppContext().isRTL ? transitionToPreviousItem() : transitionToNextItem()
+        CurrentAppContext().isRTL
+            ? transitionToPreviousItem(previousContextLoadPosition: .newest)
+            : transitionToNextItem(nextContextLoadPosition: .oldest)
     }
 
     @objc
