@@ -736,6 +736,9 @@
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Автоматски се совпаѓа со бојата на позадината";
 
+/* Title for the chat list's default mode. */
+"CHAT_LIST_TITLE_INBOX" = "Разговори";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Боја и позадина за разговор";
 
@@ -2260,6 +2263,9 @@
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
 
+/* Subtitle indicating that the local user has been blocked from joining the group */
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Линкот за групата повеќе не е валиден.";
 
@@ -2471,7 +2477,7 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ члена на групата имаат исто име.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+"GROUP_NAME_PLACEHOLDER" = "Име на група (задолжително)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "Име на група";
@@ -2599,6 +2605,9 @@
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Барања и покани";
 
+/* Name for a group story on the stories list. Embeds {author's name}, {group name} */
+"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Групата е ажурирана.";
 
@@ -2693,7 +2702,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Испрати порака на админ";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Изберете нов администратор на оваа група пред да ја напуштите.";
@@ -2941,14 +2950,11 @@
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Архива";
 
-/* Title for the conversation list's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+/* Title for the 'Select Chats' option in the ChatList. */
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Избери разговори";
 
-/* Title for the 'Select Chats' option in the HomeView. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
-
-/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
+/* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Прочитај сѐ";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Нацртајте било каде за да замаглите";
@@ -3017,7 +3023,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ го промени телефонскиот број.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ е на Signal!";
@@ -3263,7 +3269,7 @@
 "MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Facetime Video";
 
 /* Label for button to send a text message a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
+"MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Испрати текстуална порака";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Одговори на оваа порака";
@@ -3281,13 +3287,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Стикер пакет";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Избрани";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Избрана";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Избрани";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Порака";
@@ -3356,7 +3362,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Блокирај и Избриши";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Пријави спам и блокирај";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Блокираните луѓе нема да можат да ви се јават и да ви испраќаат пораки.";
@@ -3374,7 +3380,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Избриши";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This chat will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Овој разговор ќе биде избришан од сите Ваши уреди.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Да се избрише разговорот?";
@@ -3389,7 +3395,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Избриши и напушти ја групата?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Review requests carefully. Signal found another contact with the same name.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Прегледај ги барањата внимателно. Signal пронајде друг контакт со истото име.";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Ваш контакт";
@@ -3581,7 +3587,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Најди по телефонски број";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 член";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Нова група";
@@ -3782,25 +3788,25 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Поврзувањето на вашиот iPad не е препорачливо и ќе ја ограничи основната функционалност.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Овозможи дозволи";
 
 /* Explanation in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_TITLE" = "Овозможи дозволи";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Изберете кој може да Ве најде на Сигнал преку Вашиот телефонски број %@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Your phone number";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Вашиот телефонски број";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Ве молиме почекајте неколку минути пред да се обидете повторно. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Внесете го вашиот телефонски број";
@@ -3809,7 +3815,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Вашиот телефонски број";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Неважечки телефонски број. Ве молиме внесете важечки телефонски број за да се регистрирате.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Останавте без обиди за ПИН, но сеуште можете да и пристапите на вашата Signal сметка со создавање на нов ПИН. За вашата приватност и безбедност вашата сметка ќе биде повратена без зачувани информации и поставки за профилот.";
@@ -3836,13 +3842,13 @@
 "ONBOARDING_PIN_TITLE" = "Внесете го вашиот ПИН";
 
 /* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
+"ONBOARDING_PROFILE_CREATION_TITLE" = "Вашиот профил";
 
 /* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Last Name (Optional)";
+"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Презиме (опционално)";
 
 /* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "First Name (Required)";
+"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "Име (задолжително)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Услови и Политика на Приватност";
@@ -3854,7 +3860,7 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Погрешен број?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Call Me";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Повикај ме";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %@";
@@ -3893,7 +3899,7 @@
 "OUTGOING_CALL_FORMAT" = "Го повикавте %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Одбиј барање";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
@@ -4547,10 +4553,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Вашето име е премногу долго.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Презиме (опционално)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Име (задолжително)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Профилот може да биде ажуриран само кога сте поврзани на Интернет.";
@@ -5084,7 +5090,7 @@
 "SECURE_SESSION_RESET" = "Безбедносната сесија беше ресетирана.";
 
 /* Label for the 'see all' button. */
-"SEE_ALL_BUTTON" = "See All";
+"SEE_ALL_BUTTON" = "Види сѐ";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Испрати повторно";
@@ -5294,10 +5300,10 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Reset Auto-Download Settings";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Квалитет на испратена медија";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Изберете квалитет на фотографиите и видеата што ги испраќате .";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
@@ -5360,7 +5366,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Услови и Политика на Приватност";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generate Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Генерирај прегледи за линкови";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Преземај прегледи на линкови директно од веб страниците за испратените пораки.";
@@ -6084,6 +6090,9 @@
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Де-инсталирај";
+
+/* Title for the stories view. */
+"STORIES_TITLE" = "Stories";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Беџови";

@@ -736,6 +736,9 @@
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Tự động tương thích màu với màn hình nền";
 
+/* Title for the chat list's default mode. */
+"CHAT_LIST_TITLE_INBOX" = "Trò chuyện";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Màu cuộc trò chuyện & Màn hình nền";
 
@@ -2260,6 +2263,9 @@
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ đã thay đổi cài đặt nhóm để chỉ cho phép người quản trị gửi tin nhắn.";
 
+/* Subtitle indicating that the local user has been blocked from joining the group */
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Đường dẫn nhóm không còn hiệu lực.";
 
@@ -2598,6 +2604,9 @@
 
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Yêu cầu & Lời mời";
+
+/* Name for a group story on the stories list. Embeds {author's name}, {group name} */
+"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Nhóm được cập nhật.";
@@ -2941,13 +2950,10 @@
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Lưu trữ";
 
-/* Title for the conversation list's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Title for the 'Select Chats' option in the HomeView. */
+/* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
 
-/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+/* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
 
 /* The image editor hint that you can draw blur */
@@ -6084,6 +6090,9 @@
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Gỡ cài đặt";
+
+/* Title for the stories view. */
+"STORIES_TITLE" = "Stories";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Huy hiệu";

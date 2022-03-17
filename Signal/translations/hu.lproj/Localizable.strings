@@ -736,6 +736,9 @@
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Háttérképhez passzoló automatikus színválasztás";
 
+/* Title for the chat list's default mode. */
+"CHAT_LIST_TITLE_INBOX" = "Beszélgetések";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Csevegés színek és háttérkép";
 
@@ -1583,7 +1586,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Jelvények megjelenítése a profilon";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Cenzúra megkerülése innen";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Cenzúramegkerülés innen";
 
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Adomány összege";
@@ -2260,6 +2263,9 @@
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ megváltoztatta a csoportbeállításokat: mostantól csak adminok küldhetnek üzenetet a csoportba.";
 
+/* Subtitle indicating that the local user has been blocked from joining the group */
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ez a csoporthivatkozás már érvénytelen.";
 
@@ -2598,6 +2604,9 @@
 
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Kérelmek és meghívók";
+
+/* Name for a group story on the stories list. Embeds {author's name}, {group name} */
+"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Csoport frissítve. ";
@@ -2941,13 +2950,10 @@
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archív";
 
-/* Title for the conversation list's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Title for the 'Select Chats' option in the HomeView. */
+/* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Kiválasztás";
 
-/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+/* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Mind olvasott";
 
 /* The image editor hint that you can draw blur */
@@ -5141,7 +5147,7 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Letiltás";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Cenzúra megkerülése";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Cenzúramegkerülés";
 
 /* Label for the 'manual censorship circumvention' country. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Hely";
@@ -5150,16 +5156,16 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Ha engedélyezed, a Signal megpróbálja megkerülni az állami blokkolást. Ne engedélyezd ezt a funkciót, ha a tartózkodási helyeden a Signal nincs cenzúrázva.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "A cenzúra megkerülés funkció aktiválva lett a telefonszámod alapján.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "A cenzúramegkerülés funkciót aktiváltuk a telefonszámod országkódja alapján.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Cenzúra megkerülés funkció manuálisan letiltva.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Cenzúramegkerülés funkció manuálisan letiltva.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "A cenzúra megkerülés funkció csak aktív internetkapcsolat esetén aktiválható.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "A cenzúramegkerülés funkció csak aktív internetkapcsolat esetén aktiválható.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzúra megkerülés funkció nem szükséges; a Signal szolgáltatás aktív.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzúramegkerülés funkció nem szükséges, mert a Signal szolgáltatás aktív.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Hibanapló engedélyezés";
@@ -5846,7 +5852,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Cenzúra megkerülés, hívások átjátszása, biztonságos feladó kijelzés beállítások.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Cenzúramegkerülés, hívások átjátszása, biztonságos feladó kijelzés beállítások.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Haladó";
@@ -6084,6 +6090,9 @@
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Eltávolítás";
+
+/* Title for the stories view. */
+"STORIES_TITLE" = "Történetek";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Jelvények";

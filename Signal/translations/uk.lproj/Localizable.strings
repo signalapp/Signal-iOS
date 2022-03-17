@@ -260,7 +260,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Неможливо змінити розмір зображення.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Долучення завелике.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Вкладення завелике.";
 
 /* Attachment error message for attachments with invalid data */
 "ATTACHMENT_ERROR_INVALID_DATA" = "Долучення містить хибний вміст.";
@@ -735,6 +735,9 @@
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Автоматично припасувати колір до шпалер";
+
+/* Title for the chat list's default mode. */
+"CHAT_LIST_TITLE_INBOX" = "Чати";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Колір чату та шпалери";
@@ -1481,7 +1484,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Продовжуючи, ви відключите Signal для інших пристроїв, де він зареєстрований на цей же номер телефону.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Не вдалось перевірити ваш нове пристрій. Будь-ласка, спробуйте ще раз";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Не вдалось перевірити ваш новий пристрій. Будь ласка, спробуйте ще раз";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Не вдалось завершити перенесення. Будь ласка, переконайтеся, що ваші пристрої знаходяться поруч один з одним і спробуйте ще раз";
@@ -1838,7 +1841,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ваш код безпеки із %@ недавно змінився. Можливо, його необхідно завірити перед тим, як надіслати це повідомлення знову.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Не вдалося завірити код безпеки!";
+"FAILED_VERIFICATION_TITLE" = "Не вдалося підтвердити код безпеки!";
 
 /* Section header directing user to select a badge */
 "FEATURED_BADGE_SECTION_HEADER" = "Обрати емблему";
@@ -2260,6 +2263,9 @@
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ змінив налаштування групи, щоб лише адміністратори мали змогу відправляти повідомлення.";
 
+/* Subtitle indicating that the local user has been blocked from joining the group */
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Це посилання групи більше недійсне.";
 
@@ -2598,6 +2604,9 @@
 
 /* The title for the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Запити та запрошення";
+
+/* Name for a group story on the stories list. Embeds {author's name}, {group name} */
+"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Групу оновлено.";
@@ -2941,13 +2950,10 @@
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Архів";
 
-/* Title for the conversation list's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
-
-/* Title for the 'Select Chats' option in the HomeView. */
+/* Title for the 'Select Chats' option in the ChatList. */
 "HOME_VIEW_TITLE_SELECT_CHATS" = "Обрати чати";
 
-/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+/* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Прочитати усі";
 
 /* The image editor hint that you can draw blur */
@@ -4457,7 +4463,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Очистити завірення";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Це не схоже на ваш код безпеки із %@. Ви завіряєте саме той контакт, який хотіли?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Це не схоже на ваш код безпеки із %@. Ви підтверджуєте саме той контакт, який хотіли?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Цифри у вашому буфері обміну не схожі на вірний код безпеки для цієї розмови.";
@@ -4481,7 +4487,7 @@
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Якщо ви хочете переконатися, що ваша розмова з %@ захищена наскрізним шифруванням, порівняйте код вище із кодом на його пристрої.\n\nАбо ж відскануйте код на його телефоні чи попросіть його відсканувати ваш код.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Завірити код безпеки";
+"PRIVACY_VERIFICATION_TITLE" = "Підтвердити код безпеки";
 
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "Завірити";
@@ -4820,10 +4826,10 @@
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Детальніше";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Наш номер безпеки Signal:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Наш код безпеки Signal:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ваш номер безпеки із %@ змінився. Можливо, його слід підтвердити.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ваш код безпеки із %@ змінився. Можливо, його слід підтвердити.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Відскануйте QR-код на пристрої вашого контакту.";
@@ -5972,7 +5978,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Ваш номер безпеки із %@ недавно змінився. Можливо, його слід підтвердити в основній програмі перед тим, як надіслати повідомлення знову.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Ваш код безпеки із %@ недавно змінився. Можливо, його слід підтвердити в основній програмі перед тим, як надіслати повідомлення знову.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Завантаження...";
@@ -6008,7 +6014,7 @@
 "SHARING_SUGGESTIONS_DISABLE_ERROR" = "Не вдалось вимкнути пропозиції поширення.";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Показати номер безпеки";
+"SHOW_SAFETY_NUMBER_ACTION" = "Показати код безпеки";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Показати чат";
@@ -6085,6 +6091,9 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Видалити";
 
+/* Title for the stories view. */
+"STORIES_TITLE" = "Історії";
+
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Емблеми";
 
@@ -6107,10 +6116,10 @@
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "Стати підтримувачем";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваші номери безпеки із %@ збігаються. Ви можете підтвердити цей контакт.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваші коди безпеки із %@ збігаються. Ви можете підтвердити цей контакт.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Номери безпеки збіглись!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Коди безпеки збіглись!";
 
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "Зв’язатися з нами";
@@ -6518,10 +6527,10 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Стан підтвердження змінено.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Подивитись номер безпеки";
+"VERIFY_PRIVACY" = "Подивитись код безпеки";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Переглянути номери безпеки";
+"VERIFY_PRIVACY_MULTIPLE" = "Переглянути код безпеки";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Відеовиклик";
