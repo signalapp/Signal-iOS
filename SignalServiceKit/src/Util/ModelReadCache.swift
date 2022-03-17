@@ -607,6 +607,11 @@ public class UserProfileReadCache: NSObject {
             }
             return modelCopy
         }
+
+        override func read(keys: [UserProfileReadCache.KeyType],
+                           transaction: SDSAnyReadTransaction) -> [UserProfileReadCache.ValueType?] {
+            return OWSUserProfile.getFor(keys: keys, transaction: transaction)
+        }
     }
 
     private let cache: ModelReadCache<KeyType, ValueType>
@@ -643,6 +648,12 @@ public class UserProfileReadCache: NSObject {
     @objc
     public func leaseCacheSize(_ size: Int) -> ModelReadCacheSizeLease {
         return ModelReadCacheSizeLease(size, model: cache)
+    }
+
+    public func getUserProfiles(for addresses: AnySequence<SignalServiceAddress>,
+                                transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        let cacheKeys = addresses.map { self.adapter.cacheKey(forKey: OWSUserProfile.resolve($0)) }
+        return cache.getValues(for: cacheKeys, transaction: transaction)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -588,4 +588,14 @@ public extension OWSUserProfile {
               completion: nil)
     }
     #endif
+}
+
+extension OWSUserProfile {
+    static func getFor(keys: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        let resolvedAddresses = keys.map { address -> SignalServiceAddress in
+            owsAssertDebug(address.isValid)
+            return resolve(address)
+        }
+        return userProfileFinder.userProfiles(for: resolvedAddresses, transaction: transaction)
+    }
 }

@@ -295,10 +295,7 @@ extension OWSProfileManager {
             lazy var profile = { self.getLocalUserProfile(with: transaction) }()
             return localAddresses.lazy.map { _ in profile }
         }, otherwise: { remoteAddresses in
-            // TODO: Replace this with a single call that fetches a batch of profiles in one query.
-            return remoteAddresses.lazy.map { address -> OWSUserProfile? in
-                self.modelReadCaches.userProfileReadCache.getUserProfile(address: address, transaction: transaction)
-            }
+            return self.modelReadCaches.userProfileReadCache.getUserProfiles(for: remoteAddresses, transaction: transaction)
         }).values
 
         return profiles

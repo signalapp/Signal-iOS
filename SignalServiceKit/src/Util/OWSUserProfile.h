@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^OWSUserProfileCompletion)(void);
 
+@class AnyUserProfileFinder;
 @class OWSAES256Key;
 @class OWSUserProfileBadgeInfo;
 @class SDSAnyReadTransaction;
@@ -98,6 +99,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 // --- CODE GENERATION MARKER
 
 @property (atomic, readonly, class) SignalServiceAddress *localProfileAddress;
+@property (nonatomic, readonly, class) AnyUserProfileFinder *userProfileFinder;
+
 + (BOOL)isLocalProfileAddress:(SignalServiceAddress *)address;
 + (SignalServiceAddress *)resolveUserProfileAddress:(SignalServiceAddress *)address;
 + (SignalServiceAddress *)publicAddressForAddress:(SignalServiceAddress *)address;
