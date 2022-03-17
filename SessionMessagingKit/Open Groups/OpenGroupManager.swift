@@ -577,7 +577,7 @@ public final class OpenGroupManager: NSObject {
             }
         )
         
-        OpenGroupManager.shared.mutableCache.mutate { cache in
+        dependencies.mutableCache.mutate { cache in
             cache.defaultRoomsPromise = promise
         }
         

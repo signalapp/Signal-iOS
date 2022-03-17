@@ -222,12 +222,12 @@ class OpenGroupManagerSpec: QuickSpec {
                     )
                 mockStorage
                     .when { $0.write(with: { _ in }) }
-                    .then { args in (args.first as? ((Any) -> Void))?(testTransaction as Any) }
+                    .then { [testTransaction] args in (args.first as? ((Any) -> Void))?(testTransaction! as Any) }
                     .thenReturn(Promise.value(()))
                 mockStorage
                     .when { $0.write(with: { _ in }, completion: { }) }
-                    .then { args in
-                        (args.first as? ((Any) -> Void))?(testTransaction as Any)
+                    .then { [testTransaction] args in
+                        (args.first as? ((Any) -> Void))?(testTransaction! as Any)
                         (args.last as? (() -> Void))?()
                     }
                     .thenReturn(Promise.value(()))
@@ -3005,6 +3005,238 @@ class OpenGroupManagerSpec: QuickSpec {
                             )
                         ).to(beTrue())
                     }
+                }
+            }
+            
+            // MARK: - --getDefaultRoomsIfNeeded
+            
+            context("when getting the default rooms if needed") {
+                beforeEach {
+                    class TestRoomsApi: TestOnionRequestAPI {
+                        static let roomsData: [OpenGroupAPI.Room] = [
+                            TestCapabilitiesAndRoomApi.roomData,
+                            OpenGroupAPI.Room(
+                                token: "test2",
+                                name: "test2",
+                                roomDescription: nil,
+                                infoUpdates: 11,
+                                messageSequence: 0,
+                                created: 0,
+                                activeUsers: 0,
+                                activeUsersCutoff: 0,
+                                imageId: 12,
+                                pinnedMessages: nil,
+                                admin: false,
+                                globalAdmin: false,
+                                admins: [],
+                                hiddenAdmins: nil,
+                                moderator: false,
+                                globalModerator: false,
+                                moderators: [],
+                                hiddenModerators: nil,
+                                read: false,
+                                defaultRead: nil,
+                                defaultAccessible: nil,
+                                write: false,
+                                defaultWrite: nil,
+                                upload: false,
+                                defaultUpload: nil
+                            )
+                        ]
+                        
+                        override class var mockResponse: Data? {
+                            return try! JSONEncoder().encode(roomsData)
+                        }
+                    }
+                    dependencies = dependencies.with(onionApi: TestRoomsApi.self)
+                    
+                    mockOGMCache.when { $0.defaultRoomsPromise }.thenReturn(nil)
+                    mockOGMCache.when { $0.groupImagePromises }.thenReturn([:])
+                    mockStorage
+                        .when { $0.setOpenGroupPublicKey(for: any(), to: any(), using: anyAny())}
+                        .thenReturn(())
+                    mockStorage.when { $0.getOpenGroupImage(for: any(), on: any()) }.thenReturn(nil)
+                    mockStorage
+                        .when { $0.setOpenGroupImage(to: any(), for: any(), on: any(), using: anyAny()) }
+                        .thenReturn(())
+                    mockUserDefaults.when { $0.object(forKey: any()) }.thenReturn(nil)
+                }
+                
+                it("caches the promise if there is no cached promise") {
+                    let promise = OpenGroupManager.getDefaultRoomsIfNeeded(using: dependencies)
+                    
+                    expect(mockOGMCache)
+                        .to(call(matchingParameters: true) {
+                            $0.defaultRoomsPromise = promise
+                        })
+                }
+                
+                it("returns the cached promise if there is one") {
+                    let (promise, _) = Promise<[OpenGroupAPI.Room]>.pending()
+                    mockOGMCache.when { $0.defaultRoomsPromise }.thenReturn(promise)
+                    
+                    expect(OpenGroupManager.getDefaultRoomsIfNeeded(using: dependencies))
+                        .to(equal(promise))
+                }
+                
+                it("stores the public key information") {
+                    OpenGroupManager.getDefaultRoomsIfNeeded(using: dependencies)
+
+                    expect(mockStorage)
+                        .to(call(matchingParameters: true) {
+                            $0.setOpenGroupPublicKey(
+                                for: "http://116.203.70.33",
+                                to: "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238",
+                                using: testTransaction! as Any
+                            )
+                        })
+                }
+                
+                it("fetches rooms for the server") {
+                    var response: [OpenGroupAPI.Room]?
+                    
+                    OpenGroupManager.getDefaultRoomsIfNeeded(using: dependencies)
+                        .done { response = $0 }
+                        .retainUntilComplete()
+                    
+                    expect(response)
+                        .toEventually(
+                            equal(
+                                [
+                                    TestCapabilitiesAndRoomApi.roomData,
+                                    OpenGroupAPI.Room(
+                                        token: "test2",
+                                        name: "test2",
+                                        roomDescription: nil,
+                                        infoUpdates: 11,
+                                        messageSequence: 0,
+                                        created: 0,
+                                        activeUsers: 0,
+                                        activeUsersCutoff: 0,
+                                        imageId: 12,
+                                        pinnedMessages: nil,
+                                        admin: false,
+                                        globalAdmin: false,
+                                        admins: [],
+                                        hiddenAdmins: nil,
+                                        moderator: false,
+                                        globalModerator: false,
+                                        moderators: [],
+                                        hiddenModerators: nil,
+                                        read: false,
+                                        defaultRead: nil,
+                                        defaultAccessible: nil,
+                                        write: false,
+                                        defaultWrite: nil,
+                                        upload: false,
+                                        defaultUpload: nil
+                                    )
+                                ]
+                            ),
+                            timeout: .milliseconds(100)
+                        )
+                }
+                
+                it("will retry fetching rooms 8 times before it fails") {
+                    class TestRoomsApi: TestOnionRequestAPI {
+                        static var callCounter: Int = 0
+                        
+                        override class var mockResponse: Data? {
+                            callCounter += 1
+                            return nil
+                        }
+                    }
+                    dependencies = dependencies.with(onionApi: TestRoomsApi.self)
+                    
+                    var error: Error?
+                    
+                    OpenGroupManager.getDefaultRoomsIfNeeded(using: dependencies)
+                        .catch { error = $0 }
+                        .retainUntilComplete()
+                    
+                    expect(error?.localizedDescription)
+                        .toEventually(
+                            equal(HTTP.Error.invalidResponse.localizedDescription),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(TestRoomsApi.callCounter).to(equal(9))   // First attempt + 8 retries
+                }
+                
+                it("removes the cache promise if all retries fail") {
+                    class TestRoomsApi: TestOnionRequestAPI {
+                        override class var mockResponse: Data? { return nil }
+                    }
+                    dependencies = dependencies.with(onionApi: TestRoomsApi.self)
+                    
+                    var error: Error?
+                    
+                    OpenGroupManager.getDefaultRoomsIfNeeded(using: dependencies)
+                        .catch { error = $0 }
+                        .retainUntilComplete()
+                    
+                    expect(error?.localizedDescription)
+                        .toEventually(
+                            equal(HTTP.Error.invalidResponse.localizedDescription),
+                            timeout: .milliseconds(100)
+                        )
+                    expect(mockOGMCache)
+                        .to(call(matchingParameters: true) {
+                            $0.defaultRoomsPromise = nil
+                        })
+                }
+                
+                it("fetches the image for any rooms with images") {
+                    class TestRoomsApi: TestOnionRequestAPI {
+                        static let roomsData: [OpenGroupAPI.Room] = [
+                            OpenGroupAPI.Room(
+                                token: "test2",
+                                name: "test2",
+                                roomDescription: nil,
+                                infoUpdates: 11,
+                                messageSequence: 0,
+                                created: 0,
+                                activeUsers: 0,
+                                activeUsersCutoff: 0,
+                                imageId: 12,
+                                pinnedMessages: nil,
+                                admin: false,
+                                globalAdmin: false,
+                                admins: [],
+                                hiddenAdmins: nil,
+                                moderator: false,
+                                globalModerator: false,
+                                moderators: [],
+                                hiddenModerators: nil,
+                                read: false,
+                                defaultRead: nil,
+                                defaultAccessible: nil,
+                                write: false,
+                                defaultWrite: nil,
+                                upload: false,
+                                defaultUpload: nil
+                            )
+                        ]
+                        
+                        override class var mockResponse: Data? {
+                            return try! JSONEncoder().encode(roomsData)
+                        }
+                    }
+                    dependencies = dependencies.with(onionApi: TestRoomsApi.self)
+                    
+                    OpenGroupManager.getDefaultRoomsIfNeeded(using: dependencies)
+
+                    expect(mockStorage)
+                        .toEventually(
+                            call(matchingParameters: true) {
+                                $0.setOpenGroupImage(
+                                    to: TestRoomsApi.mockResponse!,
+                                    for: "test2",
+                                    on: "http://116.203.70.33",
+                                    using: testTransaction! as Any
+                                )
+                            },
+                            timeout: .milliseconds(100)
+                        )
                 }
             }
             
