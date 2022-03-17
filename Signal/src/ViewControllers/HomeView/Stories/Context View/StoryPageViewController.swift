@@ -13,26 +13,18 @@ protocol StoryPageViewControllerDataSource: AnyObject {
 class StoryPageViewController: UIPageViewController {
     var currentContext: StoryContext {
         set {
-            setViewControllers([StoryHorizontalPageViewController(context: newValue, delegate: self)], direction: .forward, animated: false)
+            setViewControllers([StoryContextViewController(context: newValue, delegate: self)], direction: .forward, animated: false)
         }
-        get {
-            (viewControllers!.first as! StoryHorizontalPageViewController).context
-        }
+        get { currentContextViewController.context }
+    }
+    var currentContextViewController: StoryContextViewController {
+        viewControllers!.first as! StoryContextViewController
     }
     weak var contextDataSource: StoryPageViewControllerDataSource?
 
     required init(context: StoryContext) {
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
         self.currentContext = context
-    }
-
-    public func present(from fromViewController: UIViewController, animated: Bool) {
-        AssertIsOnMainThread()
-
-        modalPresentationStyle = .custom
-        modalPresentationCapturesStatusBarAppearance = true
-        transitioningDelegate = self
-        fromViewController.present(self, animated: animated)
     }
 
     required init?(coder: NSCoder) {
@@ -49,6 +41,7 @@ class StoryPageViewController: UIPageViewController {
         super.viewDidLoad()
         dataSource = self
         delegate = self
+        view.backgroundColor = .black
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -59,13 +52,46 @@ class StoryPageViewController: UIPageViewController {
             UIDevice.current.ows_setOrientation(.portrait)
         }
     }
+
+    private var displayLink: CADisplayLink?
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let displayLink = displayLink {
+            displayLink.isPaused = false
+        } else {
+            let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkStep))
+            displayLink.add(to: .main, forMode: .common)
+            self.displayLink = displayLink
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        displayLink?.isPaused = true
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if isBeingDismissed {
+            displayLink?.invalidate()
+            displayLink = nil
+        }
+    }
+
+    @objc
+    func displayLinkStep(_ displayLink: CADisplayLink) {
+        currentContextViewController.displayLinkStep(displayLink)
+    }
 }
 
 extension StoryPageViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         pendingViewControllers
             .lazy
-            .map { $0 as! StoryHorizontalPageViewController }
+            .map { $0 as! StoryContextViewController }
             .forEach { $0.resetForPresentation() }
     }
 }
@@ -76,7 +102,7 @@ extension StoryPageViewController: UIPageViewControllerDataSource {
             return nil
         }
 
-        return StoryHorizontalPageViewController(context: contextBefore, delegate: self)
+        return StoryContextViewController(context: contextBefore, delegate: self)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
@@ -84,75 +110,46 @@ extension StoryPageViewController: UIPageViewControllerDataSource {
             return nil
         }
 
-        return StoryHorizontalPageViewController(context: contextAfter, delegate: self)
+        return StoryContextViewController(context: contextAfter, delegate: self)
     }
 }
 
-extension StoryPageViewController: StoryHorizontalPageViewControllerDelegate {
-    func storyHorizontalPageViewControllerWantsTransitionToNextContext(_ storyHorizontalPageViewController: StoryHorizontalPageViewController) {
+extension StoryPageViewController: StoryContextViewControllerDelegate {
+    func storyContextViewControllerWantsTransitionToNextContext(
+        _ storyContextViewController: StoryContextViewController,
+        loadPositionIfRead: StoryContextViewController.LoadPosition
+    ) {
         guard let nextContext = contextDataSource?.storyPageViewController(self, storyContextAfter: currentContext) else {
-                  dismiss(animated: true)
-                  return
-              }
+            dismiss(animated: true)
+            return
+        }
         setViewControllers(
-            [StoryHorizontalPageViewController(context: nextContext, delegate: self)],
+            [StoryContextViewController(context: nextContext, loadPositionIfRead: loadPositionIfRead, delegate: self)],
             direction: .forward,
             animated: true
         )
     }
 
-    func storyHorizontalPageViewControllerWantsTransitionToPreviousContext(_ storyHorizontalPageViewController: StoryHorizontalPageViewController) {
+    func storyContextViewControllerWantsTransitionToPreviousContext(
+        _ storyContextViewController: StoryContextViewController,
+        loadPositionIfRead: StoryContextViewController.LoadPosition
+    ) {
         guard let previousContext = contextDataSource?.storyPageViewController(self, storyContextBefore: currentContext) else {
-            storyHorizontalPageViewController.resetForPresentation()
-                  return
-              }
+            storyContextViewController.resetForPresentation()
+            return
+        }
         setViewControllers(
-            [StoryHorizontalPageViewController(context: previousContext, delegate: self)],
+            [StoryContextViewController(context: previousContext, loadPositionIfRead: loadPositionIfRead, delegate: self)],
             direction: .reverse,
             animated: true
         )
     }
-}
 
-private class AnimationController: UIPresentationController {
-
-    let backdropView: UIView = UIView()
-
-    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
-        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
-        if UIAccessibility.isReduceTransparencyEnabled {
-            backdropView.backgroundColor = Theme.backdropColor
-        } else {
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            backdropView.addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-            backdropView.backgroundColor = .ows_blackAlpha60
-        }
+    func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController) {
+        displayLink?.isPaused = true
     }
 
-    override func presentationTransitionWillBegin() {
-        guard let containerView = containerView else { return }
-        backdropView.alpha = 0
-        containerView.addSubview(backdropView)
-        backdropView.autoPinEdgesToSuperviewEdges()
-
-        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
-            self.backdropView.alpha = 1
-        }, completion: nil)
-    }
-
-    override func dismissalTransitionWillBegin() {
-        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
-            self.backdropView.alpha = 0
-        }, completion: { _ in
-            self.backdropView.removeFromSuperview()
-        })
-    }
-}
-
-extension StoryPageViewController: UIViewControllerTransitioningDelegate {
-    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return AnimationController(presentedViewController: presented, presenting: presenting)
+    func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController) {
+        displayLink?.isPaused = false
     }
 }

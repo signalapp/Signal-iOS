@@ -51,6 +51,29 @@ class StoriesViewController: OWSViewController {
         }
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // Whether or not the theme has changed, always ensure
+        // the right theme is applied. The initial collapsed
+        // state of the split view controller is determined between
+        // `viewWillAppear` and `viewDidAppear`, so this is the soonest
+        // we can know the right thing to display.
+        applyTheme()
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        // We could be changing between collapsed and expanded
+        // split view state, so we must re-apply the theme.
+        coordinator.animate { _ in
+            self.applyTheme()
+        } completion: { _ in
+            self.applyTheme()
+        }
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -65,6 +88,14 @@ class StoriesViewController: OWSViewController {
             guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
             guard let model = self.models[safe: indexPath.row] else { continue }
             cell.configure(with: model)
+        }
+
+        if splitViewController?.isCollapsed == true {
+            view.backgroundColor = Theme.backgroundColor
+            tableView.backgroundColor = Theme.backgroundColor
+        } else {
+            view.backgroundColor = Theme.secondaryBackgroundColor
+            tableView.backgroundColor = Theme.secondaryBackgroundColor
         }
     }
 
@@ -225,7 +256,7 @@ extension StoriesViewController: UITableViewDelegate {
         }
         let vc = StoryPageViewController(context: model.context)
         vc.contextDataSource = self
-        vc.present(from: self, animated: true)
+        presentFullScreen(vc, animated: true)
     }
 }
 

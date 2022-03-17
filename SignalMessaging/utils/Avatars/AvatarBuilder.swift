@@ -1134,7 +1134,7 @@ public class AvatarBuilder: NSObject {
         // the height of the avatar. By sizing it to half the dimater, it
         // will always be at least big enough to scale down to fit within
         // the avatar.
-        return UIFont(name: "Inter", size: diameter * (isEmojiOnly ? 0.6 : 0.45))!
+        return UIFont(name: "Inter-Regular_Medium", size: diameter * (isEmojiOnly ? 0.6 : 0.45))!
     }
 
     public static func avatarImageMargins(diameter: CGFloat) -> UIEdgeInsets {

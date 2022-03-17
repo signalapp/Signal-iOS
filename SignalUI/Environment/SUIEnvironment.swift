@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -46,5 +46,20 @@ public class SUIEnvironment: NSObject {
 
     @objc
     public func setup() {
+        registerCustomFonts()
+    }
+
+    private func registerCustomFonts() {
+        guard let fontUrls = Bundle(for: type(of: self)).urls(forResourcesWithExtension: "ttf", subdirectory: nil) else {
+            return owsFailDebug("Failed to load fonts from bundle.")
+        }
+        for url in fontUrls {
+            var error: Unmanaged<CFError>?
+            guard CTFontManagerRegisterFontsForURL(url as CFURL, .process, &error) else {
+                let errorMessage = (error?.takeRetainedValue()).map { String(describing: $0) } ?? "(unknown error)"
+                owsFailDebug("Could not register font with url \(url): \(errorMessage)")
+                continue
+            }
+        }
     }
 }

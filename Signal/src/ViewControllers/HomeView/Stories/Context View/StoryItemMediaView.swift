@@ -7,32 +7,83 @@ import SignalCoreKit
 import YYImage
 import UIKit
 import SignalUI
+import SafariServices
 
-class StoryItemViewController: OWSViewController {
+class StoryItemMediaView: UIView {
     let item: StoryItem
     init(item: StoryItem) {
         self.item = item
+
+        super.init(frame: .zero)
+
+        autoPin(toAspectRatio: 9/16)
+
+        updateMediaView()
+
+        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            layer.cornerRadius = 18
+            clipsToBounds = true
+        }
+
+        addSubview(gradientProtectionView)
+        gradientProtectionView.autoPinWidthToSuperview()
+        gradientProtectionView.autoPinEdge(toSuperviewEdge: .bottom)
+        gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.4)
+
+        createAuthorRow()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     func reset() {
         videoPlayer?.seek(to: .zero)
         videoPlayer?.play()
         updateTimestampText()
+        authorRow.alpha = 1
+        gradientProtectionView.alpha = 1
     }
 
-    func pause() {
+    func pause(animateAlongside: @escaping () -> Void) {
         videoPlayer?.pause()
+
+        UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+            self.authorRow.alpha = 0
+            self.gradientProtectionView.alpha = 0
+            animateAlongside()
+        } completion: { _ in
+
+        }
     }
 
-    func play() {
+    func play(animateAlongside: @escaping () -> Void) {
         videoPlayer?.play()
+
+        UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+            self.authorRow.alpha = 1
+            self.gradientProtectionView.alpha = 1
+            animateAlongside()
+        } completion: { _ in
+
+        }
     }
 
     func updateTimestampText() {
         timestampLabel.text = DateUtil.formatTimestampShort(item.message.timestamp)
     }
 
-    func startAttachmentDownloadIfNecessary() -> Bool {
+    func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
+        if startAttachmentDownloadIfNecessary() { return true }
+
+        if let textAttachmentView = mediaView as? TextAttachmentView {
+            return textAttachmentView.willHandleTapGesture(gesture)
+        }
+
+        return false
+    }
+
+    private func startAttachmentDownloadIfNecessary() -> Bool {
         guard case .pointer(let pointer) = item.attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
         attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: item.message.uniqueId,
@@ -66,62 +117,7 @@ class StoryItemViewController: OWSViewController {
         return CMTimeGetSeconds(currentTime)
     }
 
-    private lazy var iPadLandscapeConstraints = [
-        mediaViewContainer.autoMatch(
-            .height,
-            to: .height,
-            of: view,
-            withMultiplier: 0.75,
-            relation: .lessThanOrEqual
-        )
-    ]
-    private lazy var iPadPortraitConstraints = [
-        mediaViewContainer.autoMatch(
-            .height,
-            to: .height,
-            of: view,
-            withMultiplier: 0.65,
-            relation: .lessThanOrEqual
-        )
-    ]
-
-    private let mediaViewContainer = UIView()
-
-    private lazy var iPhoneConstraints = [
-        mediaViewContainer.autoPinEdge(toSuperviewEdge: .top),
-        mediaViewContainer.autoPinEdge(toSuperviewEdge: .leading),
-        mediaViewContainer.autoPinEdge(toSuperviewEdge: .trailing)
-    ]
-
-    private lazy var iPadConstraints: [NSLayoutConstraint] = {
-        var constraints = mediaViewContainer.autoCenterInSuperview()
-
-        // Prefer to be as big as possible.
-        let heightConstraint = mediaViewContainer.autoMatch(.height, to: .height, of: view)
-        heightConstraint.priority = .defaultHigh
-        constraints.append(heightConstraint)
-
-        let widthConstraint = mediaViewContainer.autoMatch(.width, to: .width, of: view)
-        widthConstraint.priority = .defaultHigh
-        constraints.append(widthConstraint)
-
-        return constraints
-    }()
-
-    private lazy var topGradientView: UIView = {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor.black.withAlphaComponent(0.5).cgColor,
-            UIColor.black.withAlphaComponent(0).cgColor
-        ]
-        let view = OWSLayerView(frame: .zero) { view in
-            gradientLayer.frame = view.bounds
-        }
-        view.layer.addSublayer(gradientLayer)
-        return view
-    }()
-
-    private lazy var bottomGradientView: UIView = {
+    private lazy var gradientProtectionView: UIView = {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
             UIColor.black.withAlphaComponent(0).cgColor,
@@ -134,71 +130,15 @@ class StoryItemViewController: OWSViewController {
         return view
     }()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        mediaViewContainer.autoPin(toAspectRatio: 9/16)
-        view.addSubview(mediaViewContainer)
-
-        updateMediaView()
-
-        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-            mediaViewContainer.layer.cornerRadius = 18
-            mediaViewContainer.clipsToBounds = true
-        } else {
-            mediaViewContainer.autoPinEdge(toSuperviewEdge: .bottom)
-        }
-
-        mediaViewContainer.addSubview(topGradientView)
-        topGradientView.autoPinWidthToSuperview()
-        topGradientView.autoPinEdge(toSuperviewEdge: .top)
-        topGradientView.autoMatch(.height, to: .height, of: mediaViewContainer, withMultiplier: 0.4)
-
-        mediaViewContainer.addSubview(bottomGradientView)
-        bottomGradientView.autoPinWidthToSuperview()
-        bottomGradientView.autoPinEdge(toSuperviewEdge: .bottom)
-        bottomGradientView.autoMatch(.height, to: .height, of: mediaViewContainer, withMultiplier: 0.4)
-
-        createAuthorRow()
-
-        applyConstraints()
-    }
-
-    private func applyConstraints(newSize: CGSize = CurrentAppContext().frame.size) {
-        NSLayoutConstraint.deactivate(iPhoneConstraints)
-        NSLayoutConstraint.deactivate(iPadConstraints)
-        NSLayoutConstraint.deactivate(iPadPortraitConstraints)
-        NSLayoutConstraint.deactivate(iPadLandscapeConstraints)
-
-        if UIDevice.current.isIPad {
-            NSLayoutConstraint.activate(iPadConstraints)
-            if newSize.width > newSize.height {
-                NSLayoutConstraint.activate(iPadLandscapeConstraints)
-            } else {
-                NSLayoutConstraint.activate(iPadPortraitConstraints)
-            }
-        } else {
-            NSLayoutConstraint.activate(iPhoneConstraints)
-        }
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate { _ in
-            self.applyConstraints(newSize: size)
-        } completion: { _ in
-            self.applyConstraints()
-        }
-    }
-
     private lazy var timestampLabel = UILabel()
+    private lazy var authorRow = UIStackView()
     private func createAuthorRow() {
         let (avatarView, nameLabel) = databaseStorage.read { (
             buildAvatarView(transaction: $0),
             buildNameLabel(transaction: $0)
         ) }
 
-        let stackView = UIStackView(arrangedSubviews: [
+        authorRow.addArrangedSubviews([
             avatarView,
             .spacer(withWidth: 12),
             nameLabel,
@@ -206,16 +146,18 @@ class StoryItemViewController: OWSViewController {
             timestampLabel,
             .hStretchingSpacer()
         ])
-        stackView.axis = .horizontal
-        stackView.alignment = .center
+        authorRow.axis = .horizontal
+        authorRow.alignment = .center
 
+        timestampLabel.setCompressionResistanceHorizontalHigh()
+        timestampLabel.setContentHuggingHorizontalHigh()
         timestampLabel.font = .ows_dynamicTypeFootnote
         timestampLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
         updateTimestampText()
 
-        mediaViewContainer.addSubview(stackView)
-        stackView.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
-        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
+        addSubview(authorRow)
+        authorRow.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
+        authorRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
     }
 
     private func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
@@ -297,42 +239,57 @@ class StoryItemViewController: OWSViewController {
         return label
     }
 
-    private var mediaView: UIView?
+    private weak var mediaView: UIView?
     private func updateMediaView() {
         mediaView?.removeFromSuperview()
 
         let mediaView = buildMediaView()
         self.mediaView = mediaView
-        mediaViewContainer.insertSubview(mediaView, at: 0)
+        insertSubview(mediaView, at: 0)
         mediaView.autoPinEdgesToSuperviewEdges()
     }
 
     private func buildMediaView() -> UIView {
-        // TODO: Talk to design about how we handle things that are not 9:16.
-        // Do we letter box? What does the letterboxing look like?
-        let contentMode: UIView.ContentMode = .scaleAspectFit
-
         switch item.attachment {
         case .stream(let stream):
+            let container = UIView()
+
             guard let originalMediaUrl = stream.originalMediaURL else {
                 owsFailDebug("Missing media for attachment stream")
                 return buildContentUnavailableView()
             }
 
+            guard let thumbnailImage = stream.thumbnailImageSmallSync() else {
+                owsFailDebug("Failed to generate thumbnail for attachment stream")
+                return buildContentUnavailableView()
+            }
+
+            let backgroundImageView = buildBackgroundImageView(thumbnailImage: thumbnailImage)
+            container.addSubview(backgroundImageView)
+            backgroundImageView.autoPinEdgesToSuperviewEdges()
+
             if stream.isVideo {
-                return buildVideoView(originalMediaUrl: originalMediaUrl, contentMode: contentMode)
+                let videoView = buildVideoView(originalMediaUrl: originalMediaUrl)
+                container.addSubview(videoView)
+                videoView.autoPinEdgesToSuperviewEdges()
             } else if stream.shouldBeRenderedByYY {
-                return buildYYImageView(originalMediaUrl: originalMediaUrl, contentMode: contentMode)
+                let yyImageView = buildYYImageView(originalMediaUrl: originalMediaUrl)
+                container.addSubview(yyImageView)
+                yyImageView.autoPinEdgesToSuperviewEdges()
             } else if stream.isImage {
-                return buildImageView(originalMediaUrl: originalMediaUrl, contentMode: contentMode)
+                let imageView = buildImageView(originalMediaUrl: originalMediaUrl)
+                container.addSubview(imageView)
+                imageView.autoPinEdgesToSuperviewEdges()
             } else {
                 owsFailDebug("Unexpected content type.")
                 return buildContentUnavailableView()
             }
+
+            return container
         case .pointer(let pointer):
             let container = UIView()
 
-            if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer, contentMode: contentMode) {
+            if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
                 container.addSubview(blurHashImageView)
                 blurHashImageView.autoPinEdgesToSuperviewEdges()
             }
@@ -343,25 +300,24 @@ class StoryItemViewController: OWSViewController {
 
             return container
         case .text(let text):
-            // TODO:
-            return UIView()
+            return TextAttachmentView(attachment: text)
         }
     }
 
     private var videoPlayer: OWSVideoPlayer?
-    private func buildVideoView(originalMediaUrl: URL, contentMode: UIView.ContentMode) -> UIView {
+    private func buildVideoView(originalMediaUrl: URL) -> UIView {
         let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: false)
         self.videoPlayer = player
 
         let playerView = VideoPlayerView()
-        playerView.contentMode = contentMode
+        playerView.contentMode = .scaleAspectFit
         playerView.videoPlayer = player
         player.play()
 
         return playerView
     }
 
-    private func buildYYImageView(originalMediaUrl: URL, contentMode: UIView.ContentMode) -> UIView {
+    private func buildYYImageView(originalMediaUrl: URL) -> UIView {
         guard let image = YYImage(contentsOfFile: originalMediaUrl.path) else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
@@ -372,7 +328,7 @@ class StoryItemViewController: OWSViewController {
                 return buildContentUnavailableView()
         }
         let animatedImageView = YYAnimatedImageView()
-        animatedImageView.contentMode = contentMode
+        animatedImageView.contentMode = .scaleAspectFit
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
         animatedImageView.layer.allowsEdgeAntialiasing = true
@@ -380,7 +336,7 @@ class StoryItemViewController: OWSViewController {
         return animatedImageView
     }
 
-    private func buildImageView(originalMediaUrl: URL, contentMode: UIView.ContentMode) -> UIView {
+    private func buildImageView(originalMediaUrl: URL) -> UIView {
         guard let image = UIImage(contentsOfFile: originalMediaUrl.path) else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
@@ -392,7 +348,7 @@ class StoryItemViewController: OWSViewController {
         }
 
         let imageView = UIImageView()
-        imageView.contentMode = contentMode
+        imageView.contentMode = .scaleAspectFit
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.allowsEdgeAntialiasing = true
@@ -400,16 +356,28 @@ class StoryItemViewController: OWSViewController {
         return imageView
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer, contentMode: UIView.ContentMode) -> UIView? {
+    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer) -> UIView? {
         guard let blurHash = pointer.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
             return nil
         }
         let imageView = UIImageView()
-        imageView.contentMode = contentMode
+        imageView.contentMode = .scaleAspectFill
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.allowsEdgeAntialiasing = true
         imageView.image = blurHashImage
+        return imageView
+    }
+
+    private func buildBackgroundImageView(thumbnailImage: UIImage) -> UIView {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.image = thumbnailImage
+
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        imageView.addSubview(blurView)
+        blurView.autoPinEdgesToSuperviewEdges()
+
         return imageView
     }
 

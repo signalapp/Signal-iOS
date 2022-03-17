@@ -156,20 +156,21 @@ public class OWSAttachmentDownloads: NSObject {
     private func startPendingNewMessageDownloads() {
         owsAssertDebug(CurrentAppContext().isMainApp)
 
-        let pendingNewMessageDownloads = databaseStorage.read { transaction in
-            Self.pendingNewMessageDownloads.allUIntValuesMap(transaction: transaction)
+        let (pendingNewMessageDownloads, pendingNewStoryMessageDownloads) = databaseStorage.read { transaction in
+            (
+                Self.pendingNewMessageDownloads.allUIntValuesMap(transaction: transaction),
+                Self.pendingNewStoryMessageDownloads.allUIntValuesMap(transaction: transaction)
+            )
         }
 
-        guard !pendingNewMessageDownloads.isEmpty else { return }
+        guard !pendingNewMessageDownloads.isEmpty || !pendingNewStoryMessageDownloads.isEmpty else { return }
 
         databaseStorage.asyncWrite { transaction in
-            for (pendingNewMessageId, rawDownloadBehavior) in pendingNewMessageDownloads {
-                guard let downloadBehavior = AttachmentDownloadBehavior(rawValue: rawDownloadBehavior) else {
-                    owsFailDebug("Unexpected download behavior \(rawDownloadBehavior)")
-                    Self.pendingNewMessageDownloads.removeValue(forKey: pendingNewMessageId, transaction: transaction)
-                    continue
-                }
-
+            self.processPendingMessages(
+                pendingNewMessageDownloads,
+                store: Self.pendingNewMessageDownloads,
+                transaction: transaction
+            ) { pendingNewMessageId, downloadBehavior in
                 self.enqueueDownloadOfAttachmentsForNewMessageId(
                     pendingNewMessageId,
                     downloadBehavior: downloadBehavior,
@@ -177,6 +178,36 @@ public class OWSAttachmentDownloads: NSObject {
                     transaction: transaction
                 )
             }
+
+            self.processPendingMessages(
+                pendingNewStoryMessageDownloads,
+                store: Self.pendingNewStoryMessageDownloads,
+                transaction: transaction
+            ) { pendingNewStoryMessageId, downloadBehavior in
+                self.enqueueDownloadOfAttachmentsForNewStoryMessageId(
+                    pendingNewStoryMessageId,
+                    downloadBehavior: downloadBehavior,
+                    touchMessageImmediately: true,
+                    transaction: transaction
+                )
+            }
+        }
+    }
+
+    private func processPendingMessages(
+        _ pendingMessages: [String: UInt],
+        store: SDSKeyValueStore,
+        transaction: SDSAnyWriteTransaction,
+        enqueue: (String, AttachmentDownloadBehavior) -> Void
+    ) {
+        for (uniqueId, rawDownloadBehavior) in pendingMessages {
+            guard let downloadBehavior = AttachmentDownloadBehavior(rawValue: rawDownloadBehavior) else {
+                owsFailDebug("Unexpected download behavior \(rawDownloadBehavior)")
+                store.removeValue(forKey: uniqueId, transaction: transaction)
+                continue
+            }
+
+            enqueue(uniqueId, downloadBehavior)
         }
     }
 

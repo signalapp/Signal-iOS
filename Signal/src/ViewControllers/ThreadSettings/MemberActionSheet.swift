@@ -334,12 +334,22 @@ class MemberActionSheet: InteractiveSheetViewController {
 extension MemberActionSheet: ConversationHeaderDelegate {
     var isBlockedByMigration: Bool { groupViewHelper?.isBlockedByMigration == true }
     func didTapAvatar() {
+        if threadViewModel.storyState == .none {
+            presentAvatarViewController()
+        } else {
+            let vc = StoryPageViewController(context: thread.storyContext)
+            presentFullScreen(vc, animated: true)
+        }
+    }
+
+    func presentAvatarViewController() {
         guard let avatarView = avatarView, avatarView.primaryImage != nil else { return }
         guard let vc = databaseStorage.read(block: { readTx in
             AvatarViewController(address: self.address, renderLocalUserAsNoteToSelf: false, readTx: readTx)
         }) else { return }
         present(vc, animated: true)
     }
+
     func didTapBadge() {
         guard avatarView != nil else { return }
         let (profile, shortName) = databaseStorage.read { transaction in
