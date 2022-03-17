@@ -131,7 +131,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 + (NSString *)defaultGroupName
 {
-    return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
+    return OWSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
 - (void)updateWithGroupModel:(TSGroupModel *)newGroupModel transaction:(SDSAnyWriteTransaction *)transaction

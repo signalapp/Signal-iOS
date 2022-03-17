@@ -83,9 +83,9 @@ public enum ImageQualityLevel: UInt {
     public var localizedString: String {
         switch self {
         case .one, .two:
-            return NSLocalizedString("SENT_MEDIA_QUALITY_STANDARD", comment: "String describing standard quality sent media")
+            return OWSLocalizedString("SENT_MEDIA_QUALITY_STANDARD", comment: "String describing standard quality sent media")
         case .three:
-            return NSLocalizedString("SENT_MEDIA_QUALITY_HIGH", comment: "String describing high quality sent media")
+            return OWSLocalizedString("SENT_MEDIA_QUALITY_HIGH", comment: "String describing high quality sent media")
         }
     }
 }

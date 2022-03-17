@@ -85,7 +85,7 @@ class SAELoadViewController: UIViewController {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
         label.font = .systemFont(ofSize: 17)
-        label.text = NSLocalizedString("SHARE_EXTENSION_LOADING",
+        label.text = OWSLocalizedString("SHARE_EXTENSION_LOADING",
                                        comment: "Indicates that the share extension is still loading.")
         self.view.addSubview(label)
         label.autoHCenterInSuperview()

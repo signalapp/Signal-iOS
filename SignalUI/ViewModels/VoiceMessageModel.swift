@@ -79,7 +79,7 @@ public class VoiceMessageModel: NSObject {
     private func outputFileName(at date: Date) -> String {
         String(
             format: "%@ %@.%@",
-            NSLocalizedString("VOICE_MESSAGE_FILE_NAME", comment: "Filename for voice messages."),
+            OWSLocalizedString("VOICE_MESSAGE_FILE_NAME", comment: "Filename for voice messages."),
             DateFormatter.localizedString(from: date, dateStyle: .short, timeStyle: .short),
             Self.audioExtension
         )

@@ -303,7 +303,7 @@ NSString *const kLastReceivedSyncMessageKey = @"kLastReceivedSyncMessage";
     if (self.deviceId == OWSDevicePrimaryDeviceId) {
         return @"This Device";
     }
-    return NSLocalizedString(@"UNNAMED_DEVICE", @"Label text in device manager for a device with no name");
+    return OWSLocalizedString(@"UNNAMED_DEVICE", @"Label text in device manager for a device with no name");
 }
 
 - (BOOL)updateAttributesWithDevice:(OWSDevice *)other

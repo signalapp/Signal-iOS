@@ -9,6 +9,7 @@
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -195,11 +196,9 @@ NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
         }
 
         if (includeExampleLabel) {
-            return [NSString
-                stringWithFormat:
-                    NSLocalizedString(@"PHONE_NUMBER_EXAMPLE_FORMAT",
-                        @"A format for a label showing an example phone number. Embeds {{the example phone number}}."),
-                [examplePhoneNumber substringFromIndex:callingCode.length]];
+            NSString* format = OWSLocalizedString(@"PHONE_NUMBER_EXAMPLE_FORMAT",
+                                                 @"A format for a label showing an example phone number. Embeds {{the example phone number}}.");
+            return [NSString stringWithFormat: format, [examplePhoneNumber substringFromIndex:callingCode.length]];
         } else {
             return [examplePhoneNumber substringFromIndex:callingCode.length];
         }

@@ -311,13 +311,13 @@ extension TSAccountManager {
 
         switch statusCode {
         case 403:
-            let message = NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
+            let message = OWSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
                                             comment: "Error message indicating that registration failed due to a missing or incorrect verification code.")
             return OWSError(error: .userError,
                             description: message,
                             isRetryable: false)
         case 409:
-            let message = NSLocalizedString("REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION",
+            let message = OWSLocalizedString("REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION",
                                             comment: "Error message indicating that device transfer from another device might be possible.")
             return OWSError(error: .registrationTransferAvailable,
                             description: message,
@@ -325,7 +325,7 @@ extension TSAccountManager {
         case 413, 429:
             // In the case of the "rate limiting" error, we want to show the
             // "recovery suggestion", not the error's "description."
-            let recoverySuggestion = NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
+            let recoverySuggestion = OWSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
             return OWSError(error: .userError,
                             description: recoverySuggestion,
                             isRetryable: false)
@@ -414,7 +414,7 @@ public class RegistrationMissing2FAPinError: NSObject, Error, IsRetryableProvide
     }
 
     public var localizedDescription: String {
-        NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
+        OWSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
                                                      comment: "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.")
     }
 

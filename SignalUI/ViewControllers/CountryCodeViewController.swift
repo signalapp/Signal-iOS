@@ -33,7 +33,7 @@ public class CountryCodeViewController: OWSTableViewController2 {
 
         // Configure searchBar() before super.viewDidLoad().
         searchBar.delegate = self
-        searchBar.placeholder = NSLocalizedString("SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", comment: "")
+        searchBar.placeholder = OWSLocalizedString("SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", comment: "")
         searchBar.sizeToFit()
 
         let searchBarWrapper = UIStackView()
@@ -46,7 +46,7 @@ public class CountryCodeViewController: OWSTableViewController2 {
 
         self.delegate = self
 
-        self.title = NSLocalizedString("COUNTRYCODE_SELECT_TITLE", comment: "")
+        self.title = OWSLocalizedString("COUNTRYCODE_SELECT_TITLE", comment: "")
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .stop,

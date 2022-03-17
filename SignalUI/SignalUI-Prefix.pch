@@ -20,4 +20,6 @@
     #import <SignalServiceKit/OWSAnalytics.h>
     #import <SignalServiceKit/SSKAsserts.h>
     #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
+    #import <SignalCoreKit/SignalCoreKit-Swift.h>
+    #import <SignalCoreKit/SignalCoreKit.h>
 #endif

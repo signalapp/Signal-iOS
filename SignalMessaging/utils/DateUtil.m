@@ -139,9 +139,9 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     NSDate *pastDate = [NSDate ows_dateWithMillisecondsSince1970:pastTimestamp];
     NSString *dateString;
     if (isFutureTimestamp || [self dateIsToday:pastDate]) {
-        dateString = NSLocalizedString(@"DATE_TODAY", @"The current day.");
+        dateString = OWSLocalizedString(@"DATE_TODAY", @"The current day.");
     } else if ([self dateIsYesterday:pastDate]) {
-        dateString = NSLocalizedString(@"DATE_YESTERDAY", @"The day before today.");
+        dateString = OWSLocalizedString(@"DATE_YESTERDAY", @"The day before today.");
     } else {
         dateString = [[self dateFormatter] stringFromDate:pastDate];
     }

@@ -297,30 +297,30 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
         BOOL isLoopingVideo = self.isLoopingVideo && ([MIMETypeUtil isVideo:self.contentType]);
 
         if (isGIF || isLoopingVideo) {
-            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_GIF",
+            attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_GIF",
                 @"Short text label for a gif attachment, used for thread preview and on the lock screen");
         } else {
-            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_IMAGE",
+            attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_IMAGE",
                 @"Short text label for an image attachment, used for thread preview and on the lock screen");
         }
     } else if ([MIMETypeUtil isImage:self.contentType]) {
-        attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_PHOTO",
+        attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_PHOTO",
             @"Short text label for a photo attachment, used for thread preview and on the lock screen");
     } else if ([MIMETypeUtil isVideo:self.contentType]) {
-        attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_VIDEO",
+        attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VIDEO",
             @"Short text label for a video attachment, used for thread preview and on the lock screen");
     } else if ([MIMETypeUtil isAudio:self.contentType]) {
         // a missing filename is the legacy way to determine if an audio attachment is
         // a voice note vs. other arbitrary audio attachments.
         if (self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0) {
-            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
+            attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
         } else {
-            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_AUDIO",
+            attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_AUDIO",
                 @"Short text label for a audio attachment, used for thread preview and on the lock screen");
         }
     } else {
-        attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_FILE",
+        attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_FILE",
             @"Short text label for a file attachment, used for thread preview and on the lock screen");
     }
 

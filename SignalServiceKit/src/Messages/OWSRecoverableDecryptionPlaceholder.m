@@ -91,12 +91,12 @@ NS_ASSUME_NONNULL_BEGIN
             initWithFormat:@"Placeholder for timestamp: %llu from sender: %@", self.timestamp, senderName];
     } else if (senderName) {
         OWSFailDebug(@"Should not be directly surfaced to user");
-        NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
+        NSString *formatString = OWSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
             @"Error message for a decryption failure. Embeds {{sender short name}}.");
         return [[NSString alloc] initWithFormat:formatString, senderName];
     } else {
         OWSFailDebug(@"Should not be directly surfaced to user");
-        return NSLocalizedString(
+        return OWSLocalizedString(
             @"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");
     }
 }

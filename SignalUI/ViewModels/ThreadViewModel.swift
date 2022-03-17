@@ -185,7 +185,7 @@ public class ChatListInfo: Dependencies {
                     transaction: transaction
                 )
             } else if lastMessageForInbox is TSOutgoingMessage {
-                return NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
+                return OWSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                          comment: "Label indicating the local user.")
             } else {
                 return nil

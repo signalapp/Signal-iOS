@@ -5,7 +5,6 @@
 #import "ThreadUtil.h"
 #import "OWSProfileManager.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>

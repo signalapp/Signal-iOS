@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(countryCode != nil);
 
     if (countryCode.length < 1) {
-        return NSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
+        return OWSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
     }
     NSDictionary *countryCodeComponent = @{NSLocaleCountryCode : countryCode};
     NSString *identifier               = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
         countryName = [NSLocale.systemLocale displayNameForKey:NSLocaleIdentifier value:identifier];
     }
     if (countryName.length < 1) {
-        countryName = NSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
+        countryName = OWSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
     }
     return countryName;
 }

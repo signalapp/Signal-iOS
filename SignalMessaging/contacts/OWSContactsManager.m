@@ -8,7 +8,6 @@
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSError.h>
@@ -739,7 +738,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)unknownContactName
 {
-    return NSLocalizedString(
+    return OWSLocalizedString(
                              @"UNKNOWN_CONTACT_NAME", @"Displayed if for some reason we can't determine a contacts phone number *or* name");
 }
 
@@ -812,7 +811,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)unknownUserLabel
 {
-    return NSLocalizedString(@"UNKNOWN_USER", @"Label indicating an unknown user.");
+    return OWSLocalizedString(@"UNKNOWN_USER", @"Label indicating an unknown user.");
 }
 
 - (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address

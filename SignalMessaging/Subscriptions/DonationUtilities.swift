@@ -90,7 +90,7 @@ public class DonationUtilities: NSObject {
     public static func newPaymentRequest(for amount: NSDecimalNumber, currencyCode: String) -> PKPaymentRequest {
         let request = PKPaymentRequest()
         request.paymentSummaryItems = [PKPaymentSummaryItem(
-            label: NSLocalizedString(
+            label: OWSLocalizedString(
                 "DONATION_VIEW_DONATION_TO_SIGNAL",
                 comment: "Text describing to the user that they're going to pay a donation to Signal"
             ),

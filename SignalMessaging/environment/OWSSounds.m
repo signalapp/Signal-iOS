@@ -5,7 +5,6 @@
 #import "OWSSounds.h"
 #import "Environment.h"
 #import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -255,7 +254,7 @@ const NSUInteger OWSCustomSoundShift = 16;
 
         // Other
         case OWSStandardSound_None:
-            return NSLocalizedString(@"SOUNDS_NONE",
+            return OWSLocalizedString(@"SOUNDS_NONE",
                 @"Label for the 'no sound' option that allows users to disable sounds for notifications, "
                 @"etc.");
 

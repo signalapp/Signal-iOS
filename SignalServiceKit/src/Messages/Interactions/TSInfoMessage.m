@@ -209,7 +209,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 {
     switch (self.messageType) {
         case TSInfoMessageSyncedThread:
-            return NSLocalizedString(@"INFO_MESSAGE_SYNCED_THREAD",
+            return OWSLocalizedString(@"INFO_MESSAGE_SYNCED_THREAD",
                                      @"Shown in inbox and conversation after syncing as a placeholder indicating why your message history "
                                      @"is missing.");
         default:
@@ -221,35 +221,35 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 {
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:
-            return NSLocalizedString(@"SECURE_SESSION_RESET", nil);
+            return OWSLocalizedString(@"SECURE_SESSION_RESET", nil);
         case TSInfoMessageTypeUnsupportedMessage:
-            return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
+            return OWSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
             if (self.unregisteredAddress.isValid) {
                 NSString *recipientName = [self.contactsManager displayNameForAddress:self.unregisteredAddress
                                                                           transaction:transaction];
-                return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
+                return [NSString stringWithFormat:OWSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
                                                       @"Format string for 'unregistered user' error. Embeds {{the "
                                                       @"unregistered user's name or signal id}}."),
                                  recipientName];
             } else {
-                return NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
+                return OWSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
             }
         case TSInfoMessageTypeGroupQuit:
-            return NSLocalizedString(@"GROUP_YOU_LEFT", nil);
+            return OWSLocalizedString(@"GROUP_YOU_LEFT", nil);
         case TSInfoMessageTypeGroupUpdate:
             return [self groupUpdateDescriptionWithTransaction:transaction];
         case TSInfoMessageAddToContactsOffer:
-            return NSLocalizedString(@"ADD_TO_CONTACTS_OFFER",
+            return OWSLocalizedString(@"ADD_TO_CONTACTS_OFFER",
                 @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.");
         case TSInfoMessageVerificationStateChange:
-            return NSLocalizedString(@"VERIFICATION_STATE_CHANGE_GENERIC",
+            return OWSLocalizedString(@"VERIFICATION_STATE_CHANGE_GENERIC",
                 @"Generic message indicating that verification state changed for a given user.");
         case TSInfoMessageAddUserToProfileWhitelistOffer:
-            return NSLocalizedString(@"ADD_USER_TO_PROFILE_WHITELIST_OFFER",
+            return OWSLocalizedString(@"ADD_USER_TO_PROFILE_WHITELIST_OFFER",
                 @"Message shown in conversation view that offers to share your profile with a user.");
         case TSInfoMessageAddGroupToProfileWhitelistOffer:
-            return NSLocalizedString(@"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER",
+            return OWSLocalizedString(@"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER",
                 @"Message shown in conversation view that offers to share your profile with a group.");
         case TSInfoMessageTypeDisappearingMessagesUpdate:
             break;
@@ -259,7 +259,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             SignalServiceAddress *address = [TSContactThread contactAddressFromThreadId:self.uniqueThreadId
                                                                             transaction:transaction];
             NSString *recipientName = [self.contactsManager displayNameForAddress:address transaction:transaction];
-            NSString *format = NSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
+            NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
                 @"Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact "
                 @"name}}");
             return [NSString stringWithFormat:format, recipientName];
@@ -282,7 +282,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:uuid];
             NSString *userName = [self.contactsManager displayNameForAddress:address transaction:transaction];
 
-            NSString *format = NSLocalizedString(@"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT",
+            NSString *format = OWSLocalizedString(@"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT",
                 @"Indicates that another user has changed their phone number. Embeds: {{ the user's name}}".);
             return [NSString stringWithFormat:format, userName];
         }

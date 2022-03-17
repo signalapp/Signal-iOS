@@ -396,7 +396,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         if conversationCollection.isSearchResults,
            !hasContents {
             let section = OWSTableSection()
-            section.add(.label(withText: NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS",
+            section.add(.label(withText: OWSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS",
                                                            comment: "keyboard toolbar label when no messages match the search string")))
             contents.addSection(section)
         }
@@ -511,7 +511,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func showBlockedByAnnouncementOnlyToast() {
         Logger.info("")
 
-        let toastFormat = NSLocalizedString("CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY",
+        let toastFormat = OWSLocalizedString("CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY",
                                             comment: "Message indicating that only administrators can send message to an announcement-only group.")
 
         let toastText = String(format: toastFormat, NSNumber(value: kMaxPickerSelection))
@@ -534,7 +534,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func showTooManySelectedToast() {
         Logger.info("")
 
-        let toastFormat = NSLocalizedString("CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS",
+        let toastFormat = OWSLocalizedString("CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS",
                                             comment: "Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected.")
 
         let toastText = String(format: toastFormat, NSNumber(value: kMaxPickerSelection))
@@ -644,10 +644,10 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
 
 extension ConversationPickerViewController {
     private struct Strings {
-        static let title = NSLocalizedString("CONVERSATION_PICKER_TITLE", comment: "navbar header")
-        static let recentsSection = NSLocalizedString("CONVERSATION_PICKER_SECTION_RECENTS", comment: "table section header for section containing recent conversations")
-        static let signalContactsSection = NSLocalizedString("CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS", comment: "table section header for section containing contacts")
-        static let groupsSection = NSLocalizedString("CONVERSATION_PICKER_SECTION_GROUPS", comment: "table section header for section containing groups")
+        static let title = OWSLocalizedString("CONVERSATION_PICKER_TITLE", comment: "navbar header")
+        static let recentsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_RECENTS", comment: "table section header for section containing recent conversations")
+        static let signalContactsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS", comment: "table section header for section containing contacts")
+        static let groupsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_GROUPS", comment: "table section header for section containing groups")
     }
 }
 

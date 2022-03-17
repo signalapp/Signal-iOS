@@ -18,7 +18,7 @@ NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...)
     OWSCFailDebug(@"Assertion failed: %@", description);
     return
         [OWSError withError:OWSErrorCodeAssertionFailure
-                description:NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message")
+                description:OWSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message")
                 isRetryable:NO];
 }
 
@@ -31,7 +31,7 @@ NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...)
     OWSLogWarn(@"%@", description);
     return
         [OWSError withError:OWSErrorCodeGenericFailure
-                description:NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message")
+                description:OWSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message")
                 isRetryable:NO];
 }
 

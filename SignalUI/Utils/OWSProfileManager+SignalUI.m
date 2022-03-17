@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ActionSheetController *actionSheet = [[ActionSheetController alloc] init];
 
-    NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
+    NSString *shareTitle = OWSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
         @"Button to confirm that user wants to share their profile with a user or group.");
     [actionSheet
         addAction:[[ActionSheetAction alloc] initWithTitle:shareTitle

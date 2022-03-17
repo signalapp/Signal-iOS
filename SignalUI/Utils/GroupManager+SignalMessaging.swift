@@ -28,7 +28,7 @@ public extension GroupManager {
             }.catch { error in
                 owsFailDebug("Leave group failed: \(error)")
                 modalView.dismiss {
-                    OWSActionSheets.showActionSheet(title: NSLocalizedString("LEAVE_GROUP_FAILED",
+                    OWSActionSheets.showActionSheet(title: OWSLocalizedString("LEAVE_GROUP_FAILED",
                                                                              comment: "Error indicating that a group could not be left."))
                 }
             }
@@ -50,7 +50,7 @@ public extension GroupManager {
                                                             owsFailDebug("Error: \(error)")
 
                                                             modalActivityIndicator.dismiss {
-                                                                let title = NSLocalizedString("GROUPS_INVITE_ACCEPT_INVITE_FAILED",
+                                                                let title = OWSLocalizedString("GROUPS_INVITE_ACCEPT_INVITE_FAILED",
                                                                                               comment: "Error indicating that an error occurred while accepting an invite.")
                                                                 OWSActionSheets.showActionSheet(title: title)
                                                             }

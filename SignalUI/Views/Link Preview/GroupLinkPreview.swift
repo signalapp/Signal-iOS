@@ -118,7 +118,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
             Logger.warn("Missing groupInviteLinkPreview.")
             return nil
         }
-        let groupIndicator = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR",
+        let groupIndicator = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR",
                                                comment: "Indicator for group conversations in the 'group invite link' action sheet.")
         let memberCount = GroupViewUtils.formatGroupMembersLabel(memberCount: Int(groupInviteLinkPreview.memberCount))
         return groupIndicator + " | " + memberCount

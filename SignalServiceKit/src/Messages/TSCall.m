@@ -154,14 +154,14 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncoming:
         case RPRecentCallTypeIncomingIncomplete:
         case RPRecentCallTypeIncomingAnsweredElsewhere: {
-            NSString *format = NSLocalizedString(
+            NSString *format = OWSLocalizedString(
                 @"INCOMING_CALL_FORMAT", @"info message text in conversation view. {embeds callee name}");
             return [NSString stringWithFormat:format, shortName];
         }
         case RPRecentCallTypeOutgoing:
         case RPRecentCallTypeOutgoingIncomplete:
         case RPRecentCallTypeOutgoingMissed: {
-            NSString *format = NSLocalizedString(
+            NSString *format = OWSLocalizedString(
                 @"OUTGOING_CALL_FORMAT", @"info message text in conversation view. {embeds callee name}");
             return [NSString stringWithFormat:format, shortName];
         }
@@ -170,7 +170,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncomingBusyElsewhere:
         case RPRecentCallTypeIncomingDeclined:
         case RPRecentCallTypeIncomingDeclinedElsewhere:
-            return NSLocalizedString(@"MISSED_CALL", @"info message text in conversation view");
+            return OWSLocalizedString(@"MISSED_CALL", @"info message text in conversation view");
     }
 }
 
