@@ -211,7 +211,7 @@ public final class OpenGroupManager: NSObject {
     ) {
         // Create the open group model and get or create the thread
         let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
-        let userPublicKey: String = getUserHexEncodedPublicKey()
+        let userPublicKey: String = getUserHexEncodedPublicKey(using: dependencies)
         let initialModel: TSGroupModel = TSGroupModel(
             title: (pollInfo.details?.name ?? ""),
             memberIds: [ userPublicKey ],
@@ -374,8 +374,6 @@ public final class OpenGroupManager: NSObject {
     
     internal static func handleDirectMessages(
         _ messages: [OpenGroupAPI.DirectMessage],
-        // We could infer where the messages come from based on their sender/recipient values but being since they
-        // are different endpoints being explicit here reduces the chance a future change will break things
         fromOutbox: Bool,
         on server: String,
         isBackgroundPoll: Bool,
@@ -393,7 +391,7 @@ public final class OpenGroupManager: NSObject {
         // that quote older messages can't find those older messages
         let sortedMessages: [OpenGroupAPI.DirectMessage] = messages
             .sorted { lhs, rhs in lhs.id < rhs.id }
-        let latestMessageId: Int64 = (sortedMessages.last?.id ?? 0)
+        let latestMessageId: Int64 = sortedMessages[sortedMessages.count - 1].id
         var mappingCache: [String: BlindedIdMapping] = [:]  // Only want this cache to exist for the current loop
         
         // Update the 'latestMessageId' value
@@ -442,7 +440,7 @@ public final class OpenGroupManager: NSObject {
                     if let result: BlindedIdMapping = mappingCache[message.recipient] {
                         mapping = result
                     }
-                    else if let result: BlindedIdMapping = ContactUtilities.mapping(for: message.recipient, serverPublicKey: serverPublicKey, using: transaction) {
+                    else if let result: BlindedIdMapping = ContactUtilities.mapping(for: message.recipient, serverPublicKey: serverPublicKey, using: transaction, dependencies: dependencies) {
                         mapping = result
                     }
                     else {
@@ -497,7 +495,7 @@ public final class OpenGroupManager: NSObject {
         // case with only minor efficiency losses
         switch sessionId.prefix {
             case .standard:
-                guard publicKey == getUserHexEncodedPublicKey() else { return false }
+                guard publicKey == getUserHexEncodedPublicKey(using: dependencies) else { return false }
                 fallthrough
                 
             case .unblinded:
@@ -523,7 +521,7 @@ public final class OpenGroupManager: NSObject {
                 // users 'standard', 'unblinded' or 'blinded' keys and as such we should check if any
                 // of them exist in the `modsAndAminKeys` Set
                 let possibleKeys: Set<String> = Set([
-                    getUserHexEncodedPublicKey(),
+                    getUserHexEncodedPublicKey(using: dependencies),
                     SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString,
                     SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
                 ])
@@ -698,6 +696,7 @@ extension OpenGroupManager {
         public init(
             cache: Atomic<OGMCacheType>? = nil,
             onionApi: OnionRequestAPIType.Type? = nil,
+            identityManager: IdentityManagerProtocol? = nil,
             storage: SessionMessagingKitStorageProtocol? = nil,
             sodium: SodiumType? = nil,
             aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
@@ -713,6 +712,7 @@ extension OpenGroupManager {
             
             super.init(
                 onionApi: onionApi,
+                identityManager: identityManager,
                 storage: storage,
                 sodium: sodium,
                 aeadXChaCha20Poly1305Ietf: aeadXChaCha20Poly1305Ietf,

@@ -8,6 +8,7 @@ import SessionSnodeKit
 extension Dependencies {
     public func with(
         onionApi: OnionRequestAPIType.Type? = nil,
+        identityManager: IdentityManagerProtocol? = nil,
         storage: SessionMessagingKitStorageProtocol? = nil,
         sodium: SodiumType? = nil,
         aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
@@ -21,6 +22,7 @@ extension Dependencies {
     ) -> Dependencies {
         return Dependencies(
             onionApi: (onionApi ?? self._onionApi),
+            identityManager: (identityManager ?? self._identityManager),
             storage: (storage ?? self._storage),
             sodium: (sodium ?? self._sodium),
             aeadXChaCha20Poly1305Ietf: (aeadXChaCha20Poly1305Ietf ?? self._aeadXChaCha20Poly1305Ietf),

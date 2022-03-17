@@ -3,7 +3,7 @@
 import Foundation
 
 @objc(SNBlindedIdMapping)
-public class BlindedIdMapping: NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+public final class BlindedIdMapping: NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     @objc public let blindedId: String
     @objc public let sessionId: String
     @objc public let serverPublicKey: String

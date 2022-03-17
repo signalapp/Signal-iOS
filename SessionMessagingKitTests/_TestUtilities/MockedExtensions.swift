@@ -25,3 +25,11 @@ extension OpenGroupAPI.Server: Mocked {
 extension VisibleMessage: Mocked {
     static var mockValue: VisibleMessage = VisibleMessage()
 }
+
+extension BlindedIdMapping: Mocked {
+    static var mockValue: BlindedIdMapping = BlindedIdMapping(
+        blindedId: any(),
+        sessionId: any(),
+        serverPublicKey: any()
+    )
+}

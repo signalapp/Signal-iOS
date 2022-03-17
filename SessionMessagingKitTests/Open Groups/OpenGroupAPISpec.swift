@@ -10,18 +10,6 @@ import Nimble
 @testable import SessionMessagingKit
 
 class OpenGroupAPISpec: QuickSpec {
-    struct TestNonce16Generator: NonceGenerator16ByteType {
-        var NonceBytes: Int = 16
-        
-        func nonce() -> Array<UInt8> { return Data(base64Encoded: "pK6YRtQApl4NhECGizF0Cg==")!.bytes }
-    }
-    
-    struct TestNonce24Generator: NonceGenerator24ByteType {
-        var NonceBytes: Int = 24
-        
-        func nonce() -> Array<UInt8> { return Data(base64Encoded: "pbTUizreT0sqJ2R2LloseQDyVL2RYztD")!.bytes }
-    }
-
     // MARK: - Spec
 
     override func spec() {
@@ -31,6 +19,8 @@ class OpenGroupAPISpec: QuickSpec {
         var mockSign: MockSign!
         var mockGenericHash: MockGenericHash!
         var mockEd25519: MockEd25519!
+        var mockNonce16Generator: MockNonce16Generator!
+        var mockNonce24Generator: MockNonce24Generator!
         var dependencies: Dependencies!
         
         var response: (OnionRequestResponseInfoType, Codable)? = nil
@@ -46,6 +36,8 @@ class OpenGroupAPISpec: QuickSpec {
                 mockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
                 mockSign = MockSign()
                 mockGenericHash = MockGenericHash()
+                mockNonce16Generator = MockNonce16Generator()
+                mockNonce24Generator = MockNonce24Generator()
                 mockEd25519 = MockEd25519()
                 dependencies = Dependencies(
                     onionApi: TestOnionRequestAPI.self,
@@ -55,8 +47,8 @@ class OpenGroupAPISpec: QuickSpec {
                     sign: mockSign,
                     genericHash: mockGenericHash,
                     ed25519: mockEd25519,
-                    nonceGenerator16: TestNonce16Generator(),
-                    nonceGenerator24: TestNonce24Generator(),
+                    nonceGenerator16: mockNonce16Generator,
+                    nonceGenerator24: mockNonce24Generator,
                     date: Date(timeIntervalSince1970: 1234567890)
                 )
                 
@@ -137,6 +129,13 @@ class OpenGroupAPISpec: QuickSpec {
                     .thenReturn("TestSogsSignature".bytes)
                 mockSign.when { $0.signature(message: anyArray(), secretKey: anyArray()) }.thenReturn("TestSignature".bytes)
                 mockEd25519.when { try $0.sign(data: anyArray(), keyPair: any()) }.thenReturn("TestStandardSignature".bytes)
+                
+                mockNonce16Generator
+                    .when { $0.nonce() }
+                    .thenReturn(Data(base64Encoded: "pK6YRtQApl4NhECGizF0Cg==")!.bytes)
+                mockNonce24Generator
+                    .when { $0.nonce() }
+                    .thenReturn(Data(base64Encoded: "pbTUizreT0sqJ2R2LloseQDyVL2RYztD")!.bytes)
             }
 
             afterEach {

@@ -28,6 +28,8 @@ extension MessageReceiver {
     }
     
     internal static func decryptWithSessionBlindingProtocol(data: Data, isOutgoing: Bool, otherBlindedPublicKey: String, with openGroupPublicKey: String, userEd25519KeyPair: Box.KeyPair, using dependencies: Dependencies = Dependencies()) throws -> (plaintext: Data, senderX25519PublicKey: String) {
+        /// Ensure the data is at least long enough to have the required components
+        guard data.count > dependencies.nonceGenerator24.NonceBytes + 2 else { throw Error.decryptionFailed }
         guard let blindedKeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroupPublicKey, edKeyPair: userEd25519KeyPair, genericHash: dependencies.genericHash) else {
             throw Error.decryptionFailed
         }

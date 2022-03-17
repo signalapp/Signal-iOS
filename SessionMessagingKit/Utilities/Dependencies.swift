@@ -12,6 +12,12 @@ public class Dependencies {
         set { _onionApi = newValue }
     }
     
+    internal var _identityManager: IdentityManagerProtocol?
+    public var identityManager: IdentityManagerProtocol {
+        get { Dependencies.getValueSettingIfNull(&_identityManager) { OWSIdentityManager.shared() } }
+        set { _identityManager = newValue }
+    }
+    
     internal var _storage: SessionMessagingKitStorageProtocol?
     public var storage: SessionMessagingKitStorageProtocol {
         get { Dependencies.getValueSettingIfNull(&_storage) { SNMessagingKitConfiguration.shared.storage } }
@@ -76,6 +82,7 @@ public class Dependencies {
     
     public init(
         onionApi: OnionRequestAPIType.Type? = nil,
+        identityManager: IdentityManagerProtocol? = nil,
         storage: SessionMessagingKitStorageProtocol? = nil,
         sodium: SodiumType? = nil,
         aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
@@ -88,6 +95,7 @@ public class Dependencies {
         date: Date? = nil
     ) {
         _onionApi = onionApi
+        _identityManager = identityManager
         _storage = storage
         _sodium = sodium
         _aeadXChaCha20Poly1305Ietf = aeadXChaCha20Poly1305Ietf

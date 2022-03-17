@@ -70,21 +70,26 @@ class OpenGroupManagerSpec: QuickSpec {
 
     override func spec() {
         var mockOGMCache: MockOGMCache!
+        var mockIdentityManager: MockIdentityManager!
         var mockStorage: MockStorage!
         var mockSodium: MockSodium!
         var mockAeadXChaCha20Poly1305Ietf: MockAeadXChaCha20Poly1305Ietf!
         var mockGenericHash: MockGenericHash!
         var mockSign: MockSign!
+        var mockNonce16Generator: MockNonce16Generator!
+        var mockNonce24Generator: MockNonce24Generator!
         var mockUserDefaults: MockUserDefaults!
         var dependencies: OpenGroupManager.OGMDependencies!
         
         var testInteraction: TestInteraction!
         var testIncomingMessage: TestIncomingMessage!
         var testGroupThread: TestGroupThread!
+        var testContactThread: TestContactThread!
         var testTransaction: TestTransaction!
         var testOpenGroup: OpenGroup!
         var testPollInfo: OpenGroupAPI.RoomPollInfo!
         var testMessage: OpenGroupAPI.Message!
+        var testDirectMessage: OpenGroupAPI.DirectMessage!
         
         var cache: OpenGroupManager.Cache!
         var openGroupManager: OpenGroupManager!
@@ -94,23 +99,27 @@ class OpenGroupManagerSpec: QuickSpec {
             
             beforeEach {
                 mockOGMCache = MockOGMCache()
+                mockIdentityManager = MockIdentityManager()
                 mockStorage = MockStorage()
                 mockSodium = MockSodium()
                 mockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
                 mockGenericHash = MockGenericHash()
                 mockSign = MockSign()
+                mockNonce16Generator = MockNonce16Generator()
+                mockNonce24Generator = MockNonce24Generator()
                 mockUserDefaults = MockUserDefaults()
                 dependencies = OpenGroupManager.OGMDependencies(
                     cache: Atomic(mockOGMCache),
                     onionApi: TestCapabilitiesAndRoomApi.self,
+                    identityManager: mockIdentityManager,
                     storage: mockStorage,
                     sodium: mockSodium,
                     aeadXChaCha20Poly1305Ietf: mockAeadXChaCha20Poly1305Ietf,
                     sign: mockSign,
                     genericHash: mockGenericHash,
                     ed25519: MockEd25519(),
-                    nonceGenerator16: OpenGroupAPISpec.TestNonce16Generator(),
-                    nonceGenerator24: OpenGroupAPISpec.TestNonce24Generator(),
+                    nonceGenerator16: mockNonce16Generator,
+                    nonceGenerator24: mockNonce24Generator,
                     standardUserDefaults: mockUserDefaults,
                     date: Date(timeIntervalSince1970: 1234567890)
                 )
@@ -133,6 +142,10 @@ class OpenGroupManagerSpec: QuickSpec {
                     moderatorIds: []
                 )
                 testGroupThread.mockData[.interactions] = [testInteraction, testIncomingMessage]
+                
+                testContactThread = TestContactThread()
+                testContactThread.mockData[.uniqueId] = "TestContactId"
+                testContactThread.mockData[.interactions] = [testInteraction, testIncomingMessage]
                 
                 testTransaction = TestTransaction()
                 testTransaction.mockData[.objectForKey] = testGroupThread
@@ -186,7 +199,27 @@ class OpenGroupManagerSpec: QuickSpec {
                     ].joined(),
                     base64EncodedSignature: nil
                 )
+                testDirectMessage = OpenGroupAPI.DirectMessage(
+                    id: 128,
+                    sender: "15\(TestConstants.publicKey)",
+                    recipient: "15\(TestConstants.publicKey)",
+                    posted: 1234567890,
+                    expires: 1234567990,
+                    base64EncodedMessage: Data(
+                        Bytes(arrayLiteral: 0) +
+                        "TestMessage".bytes +
+                        Data(base64Encoded: "pbTUizreT0sqJ2R2LloseQDyVL2RYztD")!.bytes
+                    ).base64EncodedString()
+                )
                 
+                mockIdentityManager
+                    .when { $0.identityKeyPair() }
+                    .thenReturn(
+                        try! ECKeyPair(
+                            publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
+                            privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                        )
+                    )
                 mockStorage
                     .when { $0.write(with: { _ in }) }
                     .then { args in (args.first as? ((Any) -> Void))?(testTransaction as Any) }
@@ -255,6 +288,13 @@ class OpenGroupManagerSpec: QuickSpec {
                     .thenReturn("TestSogsSignature".bytes)
                 mockSign.when { $0.signature(message: anyArray(), secretKey: anyArray()) }.thenReturn("TestSignature".bytes)
                 
+                mockNonce16Generator
+                    .when { $0.nonce() }
+                    .thenReturn(Data(base64Encoded: "pK6YRtQApl4NhECGizF0Cg==")!.bytes)
+                mockNonce24Generator
+                    .when { $0.nonce() }
+                    .thenReturn(Data(base64Encoded: "pbTUizreT0sqJ2R2LloseQDyVL2RYztD")!.bytes)
+                
                 cache = OpenGroupManager.Cache()
                 openGroupManager = OpenGroupManager()
             }
@@ -274,6 +314,7 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 testInteraction = nil
                 testGroupThread = nil
+                testContactThread = nil
                 testTransaction = nil
                 testOpenGroup = nil
                 
@@ -2051,6 +2092,922 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                 }
             }
+            
+            // MARK: - --handleDirectMessages
+            
+            context("when handling direct messages") {
+                beforeEach {
+                    testTransaction.mockData[.objectForKey] = testContactThread
+                    
+                    mockStorage
+                        .when { $0.setOpenGroupInboxLatestMessageId(for: any(), to: any(), using: testTransaction as Any) }
+                        .thenReturn(())
+                    
+                    mockStorage
+                        .when { $0.setOpenGroupOutboxLatestMessageId(for: any(), to: any(), using: testTransaction as Any) }
+                        .thenReturn(())
+                    mockStorage.when { $0.getUserPublicKey() }.thenReturn("05\(TestConstants.publicKey)")
+                    mockStorage.when { $0.getReceivedMessageTimestamps(using: testTransaction as Any) }.thenReturn([])
+                    mockStorage.when { $0.addReceivedMessageTimestamp(any(), using: testTransaction as Any) }.thenReturn(())
+                    mockSodium
+                        .when {
+                            $0.sharedBlindedEncryptionKey(
+                                secretKey: anyArray(),
+                                otherBlindedPublicKey: anyArray(),
+                                fromBlindedPublicKey: anyArray(),
+                                toBlindedPublicKey: anyArray(),
+                                genericHash: mockGenericHash
+                            )
+                        }
+                        .thenReturn([])
+                    mockSodium
+                        .when { $0.generateBlindingFactor(serverPublicKey: any()) }
+                        .thenReturn([])
+                    mockAeadXChaCha20Poly1305Ietf
+                        .when {
+                            $0.decrypt(
+                                authenticatedCipherText: anyArray(),
+                                secretKey: anyArray(),
+                                nonce: anyArray()
+                            )
+                        }
+                        .thenReturn(
+                            Data(base64Encoded:"ChQKC1Rlc3RNZXNzYWdlONCI7I/3Iw==")!.bytes +
+                            [UInt8](repeating: 0, count: 32)
+                        )
+                    mockSign
+                        .when { $0.toX25519(ed25519PublicKey: anyArray()) }
+                        .thenReturn(Data(hex: TestConstants.publicKey).bytes)
+                    mockStorage.when { $0.persist(anyArray(), using: testTransaction as Any) }.thenReturn([])
+                    mockStorage
+                        .when {
+                            $0.getOrCreateThread(
+                                for: any(),
+                                groupPublicKey: any(),
+                                openGroupID: any(),
+                                using: testTransaction as Any
+                            )
+                        }
+                        .thenReturn("TestContactId")
+                    mockStorage
+                        .when {
+                            $0.persist(
+                                any(),
+                                quotedMessage: nil,
+                                linkPreview: nil,
+                                groupPublicKey: any(),
+                                openGroupID: any(),
+                                using: testTransaction as Any
+                            )
+                        }
+                        .thenReturn("TestMessageId")
+                    mockStorage.when { $0.getContact(with: any()) }.thenReturn(nil)
+                    mockStorage
+                        .when { $0.getBlindedIdMapping(with: any(), using: testTransaction) }
+                        .thenReturn(nil)
+                    mockStorage
+                        .when { $0.enumerateBlindedIdMapping(using: testTransaction, with: { _, _ in }) }
+                        .then { args in
+                            guard let block = args.first as? (BlindedIdMapping, UnsafeMutablePointer<ObjCBool>) -> () else {
+                                return
+                            }
+                            
+                            var stop: ObjCBool = false
+                            block(any(), &stop)
+                        }
+                        .thenReturn(())
+                }
+                
+                it("does nothing if there are no messages") {
+                    OpenGroupManager.handleDirectMessages(
+                        [],
+                        fromOutbox: false,
+                        on: "testServer",
+                        isBackgroundPoll: false,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    )
+                    
+                    expect(testContactThread.numSaveCalls).to(equal(0))
+                    expect(mockStorage)
+                        .toNot(call {
+                            $0.setOpenGroupInboxLatestMessageId(
+                                for: any(),
+                                to: any(),
+                                using: testTransaction! as Any
+                            )
+                        })
+                    expect(mockStorage)
+                        .toNot(call {
+                            $0.setOpenGroupOutboxLatestMessageId(
+                                for: any(),
+                                to: any(),
+                                using: testTransaction! as Any
+                            )
+                        })
+                }
+                
+                it("does nothing if it cannot get the open group public key") {
+                    mockStorage
+                        .when { $0.getOpenGroupPublicKey(for: any()) }
+                        .thenReturn(nil)
+                    
+                    OpenGroupManager.handleDirectMessages(
+                        [testDirectMessage],
+                        fromOutbox: false,
+                        on: "testServer",
+                        isBackgroundPoll: false,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    )
+                    
+                    expect(testContactThread.numSaveCalls).to(equal(0))
+                    expect(mockStorage)
+                        .toNot(call {
+                            $0.setOpenGroupInboxLatestMessageId(
+                                for: any(),
+                                to: any(),
+                                using: testTransaction! as Any
+                            )
+                        })
+                    expect(mockStorage)
+                        .toNot(call {
+                            $0.setOpenGroupOutboxLatestMessageId(
+                                for: any(),
+                                to: any(),
+                                using: testTransaction! as Any
+                            )
+                        })
+                }
+                
+                it("ignores messages with non base64 encoded data") {
+                    testDirectMessage = OpenGroupAPI.DirectMessage(
+                        id: testDirectMessage.id,
+                        sender: testDirectMessage.sender,
+                        recipient: testDirectMessage.recipient,
+                        posted: testDirectMessage.posted,
+                        expires: testDirectMessage.expires,
+                        base64EncodedMessage: "TestMessage%%%"
+                    )
+                    
+                    OpenGroupManager.handleDirectMessages(
+                        [testDirectMessage],
+                        fromOutbox: false,
+                        on: "testServer",
+                        isBackgroundPoll: false,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    )
+                    
+                    expect(testContactThread.numSaveCalls).to(equal(0))
+                }
+                
+                context("for the inbox") {
+                    beforeEach {
+                        mockSodium
+                            .when { $0.combineKeys(lhsKeyBytes: anyArray(), rhsKeyBytes: anyArray()) }
+                            .thenReturn(Data(hex: testDirectMessage.sender.removingIdPrefixIfNeeded()).bytes)
+                    }
+                    
+                    it("updates the inbox latest message id") {
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: false,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(mockStorage)
+                            .to(call(matchingParameters: true) {
+                                $0.setOpenGroupInboxLatestMessageId(
+                                    for: "testServer",
+                                    to: 128,
+                                    using: testTransaction! as Any
+                                )
+                            })
+                    }
+                    
+                    it("ignores a message with invalid data") {
+                        testDirectMessage = OpenGroupAPI.DirectMessage(
+                            id: testDirectMessage.id,
+                            sender: testDirectMessage.sender,
+                            recipient: testDirectMessage.recipient,
+                            posted: testDirectMessage.posted,
+                            expires: testDirectMessage.expires,
+                            base64EncodedMessage: Data([1, 2, 3]).base64EncodedString()
+                        )
+                        
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: false,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(testContactThread.numSaveCalls).to(equal(0))
+                    }
+                    
+                    it("processes a message with valid data") {
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: false,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        // Saved once per valid inbox message
+                        expect(testContactThread.numSaveCalls).to(equal(1))
+                    }
+                    
+                    it("processes valid messages when combined with invalid ones") {
+                        OpenGroupManager.handleDirectMessages(
+                            [
+                                OpenGroupAPI.DirectMessage(
+                                    id: testDirectMessage.id,
+                                    sender: testDirectMessage.sender,
+                                    recipient: testDirectMessage.recipient,
+                                    posted: testDirectMessage.posted,
+                                    expires: testDirectMessage.expires,
+                                    base64EncodedMessage: Data([1, 2, 3]).base64EncodedString()
+                                ),
+                                testDirectMessage
+                            ],
+                            fromOutbox: false,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        // Saved once per valid inbox message
+                        expect(testContactThread.numSaveCalls).to(equal(1))
+                    }
+                }
+                
+                context("for the outbox") {
+                    beforeEach {
+                        mockSodium
+                            .when { $0.combineKeys(lhsKeyBytes: anyArray(), rhsKeyBytes: anyArray()) }
+                            .thenReturn(Data(hex: testDirectMessage.recipient.removingIdPrefixIfNeeded()).bytes)
+                    }
+                    
+                    it("updates the outbox latest message id") {
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: true,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(mockStorage)
+                            .to(call {
+                                $0.setOpenGroupOutboxLatestMessageId(
+                                    for: "testServer",
+                                    to: 128,
+                                    using: testTransaction! as Any
+                                )
+                            })
+                    }
+                    
+                    it("retrieves an existing blinded id mapping") {
+                        mockStorage
+                            .when { $0.getBlindedIdMapping(with: any(), using: testTransaction) }
+                            .thenReturn(
+                                BlindedIdMapping(
+                                    blindedId: "15\(TestConstants.publicKey)",
+                                    sessionId: "TestSessionId",
+                                    serverPublicKey: "05\(TestConstants.publicKey)"
+                                )
+                            )
+                        
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: true,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(mockStorage)
+                            .to(call(.exactly(times: 1)) {
+                                $0.getBlindedIdMapping(with: any(), using: testTransaction)
+                            })
+                        expect(mockStorage)
+                            .to(call(matchingParameters: true) {
+                                $0.getOrCreateThread(
+                                    for: "TestSessionId",
+                                    groupPublicKey: nil,
+                                    openGroupID: nil,
+                                    using: testTransaction! as Any
+                                )
+                            })
+                        
+                        // Saved twice per valid outbox message
+                        expect(testContactThread.numSaveCalls).to(equal(2))
+                    }
+                    
+                    it("locally caches blinded id mappings for the same recipient") {
+                        mockStorage
+                            .when { $0.getBlindedIdMapping(with: any(), using: testTransaction) }
+                            .thenReturn(
+                                BlindedIdMapping(
+                                    blindedId: "15\(TestConstants.publicKey)",
+                                    sessionId: "TestSessionId",
+                                    serverPublicKey: "05\(TestConstants.publicKey)"
+                                )
+                            )
+                        
+                        OpenGroupManager.handleDirectMessages(
+                            [
+                                testDirectMessage,
+                                OpenGroupAPI.DirectMessage(
+                                    id: testDirectMessage.id + 1,
+                                    sender: testDirectMessage.sender,
+                                    recipient: testDirectMessage.recipient,
+                                    posted: testDirectMessage.posted + 1,
+                                    expires: testDirectMessage.expires + 1,
+                                    base64EncodedMessage: testDirectMessage.base64EncodedMessage
+                                )
+                            ],
+                            fromOutbox: true,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(mockStorage)
+                            .to(call(.exactly(times: 1)) {
+                                $0.getBlindedIdMapping(with: any(), using: testTransaction)
+                            })
+                        
+                        // Saved twice per valid outbox message
+                        expect(testContactThread.numSaveCalls).to(equal(4))
+                    }
+                    
+                    it("falls back to using the blinded id if no mapping is found") {
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: true,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(mockStorage)
+                            .to(call(.exactly(times: 1)) {
+                                $0.getBlindedIdMapping(with: any(), using: testTransaction)
+                            })
+                        expect(mockStorage)
+                            .to(call(matchingParameters: true) {
+                                $0.getOrCreateThread(
+                                    for: "15\(TestConstants.publicKey)",
+                                    groupPublicKey: nil,
+                                    openGroupID: nil,
+                                    using: testTransaction! as Any
+                                )
+                            })
+                        
+                        // Saved twice per valid outbox message
+                        expect(testContactThread.numSaveCalls).to(equal(2))
+                    }
+                    
+                    it("ignores a message with invalid data") {
+                        testDirectMessage = OpenGroupAPI.DirectMessage(
+                            id: testDirectMessage.id,
+                            sender: testDirectMessage.sender,
+                            recipient: testDirectMessage.recipient,
+                            posted: testDirectMessage.posted,
+                            expires: testDirectMessage.expires,
+                            base64EncodedMessage: Data([1, 2, 3]).base64EncodedString()
+                        )
+                        
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: true,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(testContactThread.numSaveCalls).to(equal(0))
+                    }
+                    
+                    it("processes a message with valid data") {
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: true,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        // Saved twice per valid outbox message
+                        expect(testContactThread.numSaveCalls).to(equal(2))
+                    }
+                    
+                    it("processes valid messages when combined with invalid ones") {
+                        OpenGroupManager.handleDirectMessages(
+                            [
+                                OpenGroupAPI.DirectMessage(
+                                    id: testDirectMessage.id,
+                                    sender: testDirectMessage.sender,
+                                    recipient: testDirectMessage.recipient,
+                                    posted: testDirectMessage.posted,
+                                    expires: testDirectMessage.expires,
+                                    base64EncodedMessage: Data([1, 2, 3]).base64EncodedString()
+                                ),
+                                testDirectMessage
+                            ],
+                            fromOutbox: true,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        // Saved twice per valid outbox message
+                        expect(testContactThread.numSaveCalls).to(equal(2))
+                    }
+                    
+                    it("updates the contact thread with the open group information") {
+                        expect(testContactThread.originalOpenGroupServer).to(beNil())
+                        expect(testContactThread.originalOpenGroupPublicKey).to(beNil())
+                        
+                        OpenGroupManager.handleDirectMessages(
+                            [testDirectMessage],
+                            fromOutbox: true,
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(testContactThread.originalOpenGroupServer).to(equal("testServer"))
+                        expect(testContactThread.originalOpenGroupPublicKey).to(equal(TestConstants.publicKey))
+                    }
+                }
+            }
+            
+            // MARK: - Convenience
+            
+            // MARK: - --isUserModeratorOrAdmin
+            
+            context("when determining if a user is a moderator or an admin") {
+                beforeEach {
+                    mockOGMCache.when { $0.moderators }.thenReturn([:])
+                    mockOGMCache.when { $0.admins }.thenReturn([:])
+                }
+                
+                it("uses an empty set for moderators by default") {
+                    expect(
+                        OpenGroupManager.isUserModeratorOrAdmin(
+                            "05\(TestConstants.publicKey)",
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    ).to(beFalse())
+                }
+                
+                it("uses an empty set for admins by default") {
+                    expect(
+                        OpenGroupManager.isUserModeratorOrAdmin(
+                            "05\(TestConstants.publicKey)",
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    ).to(beFalse())
+                }
+                
+                it("returns true if the key is in the moderator set") {
+                    mockOGMCache.when { $0.moderators }
+                        .thenReturn([
+                            "testServer": [
+                                "testRoom": Set(arrayLiteral: "05\(TestConstants.publicKey)")
+                            ]
+                        ])
+                    
+                    expect(
+                        OpenGroupManager.isUserModeratorOrAdmin(
+                            "05\(TestConstants.publicKey)",
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    ).to(beTrue())
+                }
+                
+                it("returns true if the key is in the admin set") {
+                    mockOGMCache.when { $0.admins }
+                        .thenReturn([
+                            "testServer": [
+                                "testRoom": Set(arrayLiteral: "05\(TestConstants.publicKey)")
+                            ]
+                        ])
+                    
+                    expect(
+                        OpenGroupManager.isUserModeratorOrAdmin(
+                            "05\(TestConstants.publicKey)",
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    ).to(beTrue())
+                }
+                
+                it("returns false if the key is not a valid session id") {
+                    expect(
+                        OpenGroupManager.isUserModeratorOrAdmin(
+                            "InvalidValue",
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    ).to(beFalse())
+                }
+                
+                context("and the key is a standard session id") {
+                    it("returns false if the key is not the users session id") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockIdentityManager
+                            .when { $0.identityKeyPair() }
+                            .thenReturn(
+                                try! ECKeyPair(
+                                    publicKeyData: Data.data(fromHex: otherKey)!,
+                                    privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "05\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beFalse())
+                    }
+                    
+                    it("returns true if the key is the current users and the users unblinded id is a moderator or admin") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockOGMCache.when { $0.moderators }
+                            .thenReturn([
+                                "testServer": [
+                                    "testRoom": Set(arrayLiteral: "00\(otherKey)")
+                                ]
+                            ])
+                        mockStorage
+                            .when { $0.getUserED25519KeyPair() }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: otherKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "05\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beTrue())
+                    }
+                    
+                    it("returns true if the key is the current users and the users blinded id is a moderator or admin") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockOGMCache.when { $0.moderators }
+                            .thenReturn([
+                                "testServer": [
+                                    "testRoom": Set(arrayLiteral: "15\(otherKey)")
+                                ]
+                            ])
+                        mockSodium
+                            .when {
+                                $0.blindedKeyPair(
+                                    serverPublicKey: any(),
+                                    edKeyPair: any(),
+                                    genericHash: mockGenericHash
+                                )
+                            }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: otherKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "05\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beTrue())
+                    }
+                }
+                
+                context("and the key is unblinded") {
+                    it("returns false if unable to retrieve the user ed25519 key") {
+                        mockStorage
+                            .when { $0.getUserED25519KeyPair() }
+                            .thenReturn(nil)
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "00\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beFalse())
+                    }
+                    
+                    it("returns false if the key is not the users unblinded id") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockStorage
+                            .when { $0.getUserED25519KeyPair() }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: otherKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "00\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beFalse())
+                    }
+                    
+                    it("returns true if the key is the current users and the users session id is a moderator or admin") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockOGMCache.when { $0.moderators }
+                            .thenReturn([
+                                "testServer": [
+                                    "testRoom": Set(arrayLiteral: "05\(otherKey)")
+                                ]
+                            ])
+                        mockIdentityManager
+                            .when { $0.identityKeyPair() }
+                            .thenReturn(
+                                try! ECKeyPair(
+                                    publicKeyData: Data.data(fromHex: otherKey)!,
+                                    privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                                )
+                            )
+                        mockStorage
+                            .when { $0.getUserED25519KeyPair() }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "00\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beTrue())
+                    }
+                    
+                    it("returns true if the key is the current users and the users blinded id is a moderator or admin") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockOGMCache.when { $0.moderators }
+                            .thenReturn([
+                                "testServer": [
+                                    "testRoom": Set(arrayLiteral: "15\(otherKey)")
+                                ]
+                            ])
+                        mockSodium
+                            .when {
+                                $0.blindedKeyPair(
+                                    serverPublicKey: any(),
+                                    edKeyPair: any(),
+                                    genericHash: mockGenericHash
+                                )
+                            }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: otherKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "00\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beTrue())
+                    }
+                }
+                
+                context("and the key is blinded") {
+                    it("returns false if unable to retrieve the user ed25519 key") {
+                        mockStorage
+                            .when { $0.getUserED25519KeyPair() }
+                            .thenReturn(nil)
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "15\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beFalse())
+                    }
+                    
+                    it("returns false if unable to retrieve the public key for the open group server") {
+                        mockStorage
+                            .when { $0.getOpenGroupPublicKey(for: any()) }
+                            .thenReturn(nil)
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "15\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beFalse())
+                    }
+                    
+                    it("returns false if unable generate a blinded key") {
+                        mockSodium
+                            .when {
+                                $0.blindedKeyPair(
+                                    serverPublicKey: any(),
+                                    edKeyPair: any(),
+                                    genericHash: mockGenericHash
+                                )
+                            }
+                            .thenReturn(nil)
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "15\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beFalse())
+                    }
+                    
+                    it("returns false if the key is not the users blinded id") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockSodium
+                            .when {
+                                $0.blindedKeyPair(
+                                    serverPublicKey: any(),
+                                    edKeyPair: any(),
+                                    genericHash: mockGenericHash
+                                )
+                            }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: otherKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "15\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beFalse())
+                    }
+                    
+                    it("returns true if the key is the current users and the users session id is a moderator or admin") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockOGMCache.when { $0.moderators }
+                            .thenReturn([
+                                "testServer": [
+                                    "testRoom": Set(arrayLiteral: "05\(otherKey)")
+                                ]
+                            ])
+                        mockIdentityManager
+                            .when { $0.identityKeyPair() }
+                            .thenReturn(
+                                try! ECKeyPair(
+                                    publicKeyData: Data.data(fromHex: otherKey)!,
+                                    privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                                )
+                            )
+                        mockStorage
+                            .when { $0.getUserED25519KeyPair() }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        mockSodium
+                            .when {
+                                $0.blindedKeyPair(
+                                    serverPublicKey: any(),
+                                    edKeyPair: any(),
+                                    genericHash: mockGenericHash
+                                )
+                            }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "15\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beTrue())
+                    }
+                    
+                    it("returns true if the key is the current users and the users unblinded id is a moderator or admin") {
+                        let otherKey: String = TestConstants.publicKey.replacingOccurrences(of: "7", with: "6")
+                        mockOGMCache.when { $0.moderators }
+                            .thenReturn([
+                                "testServer": [
+                                    "testRoom": Set(arrayLiteral: "00\(otherKey)")
+                                ]
+                            ])
+                        mockIdentityManager
+                            .when { $0.identityKeyPair() }
+                            .thenReturn(
+                                try! ECKeyPair(
+                                    publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
+                                    privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+                                )
+                            )
+                        mockStorage
+                            .when { $0.getUserED25519KeyPair() }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: otherKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        mockSodium
+                            .when {
+                                $0.blindedKeyPair(
+                                    serverPublicKey: any(),
+                                    edKeyPair: any(),
+                                    genericHash: mockGenericHash
+                                )
+                            }
+                            .thenReturn(
+                                Box.KeyPair(
+                                    publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
+                                    secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+                                )
+                            )
+                        
+                        expect(
+                            OpenGroupManager.isUserModeratorOrAdmin(
+                                "15\(TestConstants.publicKey)",
+                                for: "testRoom",
+                                on: "testServer",
+                                using: dependencies
+                            )
+                        ).to(beTrue())
+                    }
+                }
+            }
+            
             }
         }
     }
