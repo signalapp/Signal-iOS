@@ -50,12 +50,19 @@ class StoryContextViewController: OWSViewController {
     }
 
     func resetForPresentation() {
-        // Start on the first unviewed story. If there are no
-        // unviewed stories, start on the newest story.
-        currentItem = items.first { item in
-            guard case .incoming(_, let viewedTimestamp) = item.message.manifest else { return false }
-            return viewedTimestamp == nil
-        } ?? items.last
+
+        if let currentItemMediaView = currentItemMediaView {
+            // Restart playback for the current item
+            currentItemMediaView.reset()
+            updateProgressState()
+        } else {
+            // Start on the first unviewed story. If there are no
+            // unviewed stories, start on the newest story.
+            currentItem = items.first { item in
+                guard case .incoming(_, let viewedTimestamp) = item.message.manifest else { return false }
+                return viewedTimestamp == nil
+            } ?? items.last
+        }
 
         playbackProgressView.alpha = 1
         closeButton.alpha = 1
