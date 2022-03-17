@@ -10,49 +10,60 @@ public final class OWSDeviceProvisioner: NSObject {
     public static var provisioningVersion: UInt32 { 1 }
     internal static var userAgent: String { "OWI" }
 
-    private let myIdentityKeyPair: IdentityKeyPair
+    private let myAciIdentityKeyPair: IdentityKeyPair
+    private let myPniIdentityKeyPair: IdentityKeyPair?
     private let theirPublicKey: Data
     private let ephemeralDeviceId: String
     private let accountAddress: SignalServiceAddress
+    private let pni: UUID
     private let profileKey: Data
     private let readReceiptsEnabled: Bool
 
     private let provisioningCodeService: OWSDeviceProvisioningCodeService
     private let provisioningService: OWSDeviceProvisioningService
 
-    init(myIdentityKeyPair: IdentityKeyPair,
+#if TESTABLE_BUILD
+    init(myAciIdentityKeyPair: IdentityKeyPair,
          theirPublicKey: Data,
          theirEphemeralDeviceId: String,
          accountAddress: SignalServiceAddress,
+         pni: UUID,
          profileKey: Data,
          readReceiptsEnabled: Bool,
          provisioningCodeService: OWSDeviceProvisioningCodeService,
          provisioningService: OWSDeviceProvisioningService) {
-        self.myIdentityKeyPair = myIdentityKeyPair
+        self.myAciIdentityKeyPair = myAciIdentityKeyPair
+        self.myPniIdentityKeyPair = nil
         self.theirPublicKey = theirPublicKey
         self.ephemeralDeviceId = theirEphemeralDeviceId
         self.accountAddress = accountAddress
+        self.pni = pni
         self.profileKey = profileKey
         self.readReceiptsEnabled = readReceiptsEnabled
         self.provisioningCodeService = provisioningCodeService
         self.provisioningService = provisioningService
     }
+#endif
 
     @objc
-    public convenience init(myIdentityKeyPair: ECKeyPair,
-                            theirPublicKey: Data,
-                            theirEphemeralDeviceId: String,
-                            accountAddress: SignalServiceAddress,
-                            profileKey: Data,
-                            readReceiptsEnabled: Bool) {
-        self.init(myIdentityKeyPair: myIdentityKeyPair.identityKeyPair,
-                  theirPublicKey: theirPublicKey,
-                  theirEphemeralDeviceId: theirEphemeralDeviceId,
-                  accountAddress: accountAddress,
-                  profileKey: profileKey,
-                  readReceiptsEnabled: readReceiptsEnabled,
-                  provisioningCodeService: OWSDeviceProvisioningCodeService(),
-                  provisioningService: OWSDeviceProvisioningService())
+    public init(myAciIdentityKeyPair: ECKeyPair,
+                myPniIdentityKeyPair: ECKeyPair?,
+                theirPublicKey: Data,
+                theirEphemeralDeviceId: String,
+                accountAddress: SignalServiceAddress,
+                pni: UUID,
+                profileKey: Data,
+                readReceiptsEnabled: Bool) {
+        self.myAciIdentityKeyPair = myAciIdentityKeyPair.identityKeyPair
+        self.myPniIdentityKeyPair = myPniIdentityKeyPair?.identityKeyPair
+        self.theirPublicKey = theirPublicKey
+        self.ephemeralDeviceId = theirEphemeralDeviceId
+        self.accountAddress = accountAddress
+        self.pni = pni
+        self.profileKey = profileKey
+        self.readReceiptsEnabled = readReceiptsEnabled
+        self.provisioningCodeService = OWSDeviceProvisioningCodeService()
+        self.provisioningService = OWSDeviceProvisioningService()
     }
 
     @objc(provisionWithSuccess:failure:)
@@ -94,8 +105,8 @@ public final class OWSDeviceProvisioner: NSObject {
 
     private func buildEncryptedMessageBody(withCode provisioningCode: String) throws -> Data {
         let messageBuilder = ProvisioningProtoProvisionMessage.builder(
-            identityKeyPublic: Data(myIdentityKeyPair.publicKey.serialize()),
-            identityKeyPrivate: Data(myIdentityKeyPair.privateKey.serialize()),
+            aciIdentityKeyPublic: Data(myAciIdentityKeyPair.publicKey.serialize()),
+            aciIdentityKeyPrivate: Data(myAciIdentityKeyPair.privateKey.serialize()),
             provisioningCode: provisioningCode,
             profileKey: profileKey)
         messageBuilder.setUserAgent(Self.userAgent)
@@ -110,7 +121,14 @@ public final class OWSDeviceProvisioner: NSObject {
         guard let uuidString = accountAddress.uuidString else {
             throw OWSAssertionError("UUID unexpectedly missing")
         }
-        messageBuilder.setUuid(uuidString)
+        messageBuilder.setAci(uuidString)
+
+        if let myPniIdentityKeyPair = myPniIdentityKeyPair {
+            // Note that we don't set a PNI at all if we don't have an identity key.
+            messageBuilder.setPni(pni.uuidString)
+            messageBuilder.setPniIdentityKeyPublic(Data(myPniIdentityKeyPair.publicKey.serialize()))
+            messageBuilder.setPniIdentityKeyPrivate(Data(myPniIdentityKeyPair.privateKey.serialize()))
+        }
 
         let plainTextProvisionMessage = try messageBuilder.buildSerializedData()
         let cipher = OWSProvisioningCipher(theirPublicKey: theirPublicKey)

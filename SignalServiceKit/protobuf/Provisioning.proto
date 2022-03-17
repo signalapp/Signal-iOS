@@ -27,16 +27,19 @@ message ProvisionEnvelope {
 
 message ProvisionMessage {
   // @required
-  optional bytes  identityKeyPublic   = 1;
+  optional bytes aciIdentityKeyPublic = 1;
   // @required
-  optional bytes  identityKeyPrivate  = 2;
-  optional string number              = 3;
-  optional string uuid                = 8;
+  optional bytes aciIdentityKeyPrivate = 2;
+  optional bytes pniIdentityKeyPublic = 11;
+  optional bytes pniIdentityKeyPrivate = 12;
+  optional string aci = 8;
+  optional string pni = 10;
+  optional string number = 3;
   // @required
-  optional string provisioningCode    = 4;
-  optional string userAgent           = 5;
+  optional string provisioningCode = 4;
+  optional string userAgent = 5;
   // @required
-  optional bytes  profileKey          = 6;
-  optional bool   readReceipts        = 7;
+  optional bytes profileKey = 6;
+  optional bool readReceipts = 7;
   optional uint32 provisioningVersion = 9;
 }

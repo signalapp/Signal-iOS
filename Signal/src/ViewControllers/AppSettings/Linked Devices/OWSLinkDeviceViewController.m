@@ -193,18 +193,22 @@ NS_ASSUME_NONNULL_BEGIN
     // Optimistically set this flag.
     [OWSDeviceManager.shared setMayHaveLinkedDevices];
 
-    ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityACI];
-    OWSAssertDebug(identityKeyPair);
+    ECKeyPair *_Nullable aciIdentityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityACI];
+    OWSAssertDebug(aciIdentityKeyPair);
+    ECKeyPair *_Nullable pniIdentityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityPNI];
     SignalServiceAddress *accountAddress = [TSAccountManager localAddress];
+    NSUUID *_Nullable pni = [TSAccountManager shared].localPni;
     NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
     BOOL areReadReceiptsEnabled = self.receiptManager.areReadReceiptsEnabled;
 
-    OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyIdentityKeyPair:identityKeyPair
-                                                                                 theirPublicKey:parser.publicKey
-                                                                         theirEphemeralDeviceId:parser.ephemeralDeviceId
-                                                                                 accountAddress:accountAddress
-                                                                                     profileKey:myProfileKeyData
-                                                                            readReceiptsEnabled:areReadReceiptsEnabled];
+    OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyAciIdentityKeyPair:aciIdentityKeyPair
+                                                                              myPniIdentityKeyPair:pniIdentityKeyPair
+                                                                                    theirPublicKey:parser.publicKey
+                                                                            theirEphemeralDeviceId:parser.ephemeralDeviceId
+                                                                                    accountAddress:accountAddress
+                                                                                               pni:pni
+                                                                                        profileKey:myProfileKeyData
+                                                                               readReceiptsEnabled:areReadReceiptsEnabled];
 
     [provisioner
         provisionWithSuccess:^{

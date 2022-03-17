@@ -271,7 +271,7 @@ public class AccountManager: NSObject {
         if tsAccountManager.isReregistering {
             var canChangePhoneNumbers = false
             if let oldUUID = tsAccountManager.reregistrationUUID(),
-               let newUUID = provisionMessage.uuid {
+               let newUUID = provisionMessage.aci {
                 if !tsAccountManager.isPrimaryDevice,
                    oldUUID != newUUID {
                     Logger.verbose("oldUUID: \(oldUUID)")
@@ -298,26 +298,31 @@ public class AccountManager: NSObject {
         }
 
         tsAccountManager.phoneNumberAwaitingVerification = provisionMessage.phoneNumber
-        tsAccountManager.uuidAwaitingVerification = provisionMessage.uuid
+        tsAccountManager.uuidAwaitingVerification = provisionMessage.aci
+        tsAccountManager.pniAwaitingVerification = provisionMessage.pni
 
         let serverAuthToken = generateServerAuthToken()
 
         return firstly { () throws -> Promise<VerifySecondaryDeviceResponse> in
-            let encryptedDeviceName = try DeviceNames.encryptDeviceName(plaintext: deviceName,
-                                                                        identityKeyPair: provisionMessage.identityKeyPair)
+            let encryptedDeviceName = try DeviceNames.encryptDeviceName(
+                plaintext: deviceName,
+                identityKeyPair: provisionMessage.aciIdentityKeyPair)
 
             return accountServiceClient.verifySecondaryDevice(verificationCode: provisionMessage.provisioningCode,
                                                               phoneNumber: provisionMessage.phoneNumber,
                                                               authKey: serverAuthToken,
                                                               encryptedDeviceName: encryptedDeviceName)
         }.done { (response: VerifySecondaryDeviceResponse) in
-            self.tsAccountManager.pniAwaitingVerification = response.pni
+            owsAssertDebug(self.tsAccountManager.pniAwaitingVerification == response.pni)
 
             self.databaseStorage.write { transaction in
-                // PNI TODO: set our PNI identity key as well.
-                self.identityManager.storeIdentityKeyPair(provisionMessage.identityKeyPair,
+                self.identityManager.storeIdentityKeyPair(provisionMessage.aciIdentityKeyPair,
                                                           for: .aci,
                                                           transaction: transaction)
+
+                if let pniIdentityKeyPair = provisionMessage.pniIdentityKeyPair {
+                    self.identityManager.storeIdentityKeyPair(pniIdentityKeyPair, for: .pni, transaction: transaction)
+                }
 
                 self.profileManagerImpl.setLocalProfileKey(provisionMessage.profileKey,
                                                            userProfileWriter: .linking,

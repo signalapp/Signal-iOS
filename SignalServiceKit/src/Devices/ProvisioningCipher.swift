@@ -8,9 +8,11 @@ import SignalClient
 import CommonCrypto
 
 public struct ProvisionMessage {
-    public let uuid: UUID?
+    public let aci: UUID?
     public let phoneNumber: String
-    public let identityKeyPair: ECKeyPair
+    public let pni: UUID?
+    public let aciIdentityKeyPair: ECKeyPair
+    public let pniIdentityKeyPair: ECKeyPair?
     public let profileKey: OWSAES256Key
     public let areReadReceiptsEnabled: Bool?
     public let primaryUserAgent: String?
@@ -104,8 +106,18 @@ public class ProvisioningCipher {
         let plaintext = Data(plaintextBuffer.prefix(upTo: bytesDecrypted))
         let proto = try ProvisioningProtoProvisionMessage(serializedData: plaintext)
 
-        let identityKeyPair = try IdentityKeyPair(publicKey: PublicKey(proto.identityKeyPublic),
-                                                  privateKey: PrivateKey(proto.identityKeyPrivate))
+        let aciIdentityKeyPair = try IdentityKeyPair(publicKey: PublicKey(proto.aciIdentityKeyPublic),
+                                                     privateKey: PrivateKey(proto.aciIdentityKeyPrivate))
+        let pniIdentityKeyPair: IdentityKeyPair?
+        if proto.hasPni {
+            guard let pubKey = proto.pniIdentityKeyPublic, let privKey = proto.pniIdentityKeyPrivate else {
+                throw ProvisioningError.invalidProvisionMessage("has PNI, but missing PNI identity key")
+            }
+            pniIdentityKeyPair = try IdentityKeyPair(publicKey: PublicKey(pubKey), privateKey: PrivateKey(privKey))
+        } else {
+            pniIdentityKeyPair = nil
+        }
+
         guard let profileKey = OWSAES256Key(data: proto.profileKey) else {
             throw ProvisioningError.invalidProvisionMessage("invalid profileKey - count: \(proto.profileKey.count)")
         }
@@ -118,17 +130,27 @@ public class ProvisioningCipher {
             throw ProvisioningError.invalidProvisionMessage("missing number from provisioning message")
         }
 
-        let uuid: UUID? = try {
-            guard proto.hasUuid, let uuidString = proto.uuid else { return nil }
-            guard let uuid = UUID(uuidString: uuidString) else {
-                throw ProvisioningError.invalidProvisionMessage("invalid uuid from provisioning message")
+        let aci: UUID? = try {
+            guard proto.hasAci, let aciString = proto.aci else { return nil }
+            guard let aci = UUID(uuidString: aciString) else {
+                throw ProvisioningError.invalidProvisionMessage("invalid ACI from provisioning message")
             }
-            return uuid
+            return aci
         }()
 
-        return ProvisionMessage(uuid: uuid,
+        let pni: UUID? = try {
+            guard proto.hasPni, let pniString = proto.pni else { return nil }
+            guard let pni = UUID(uuidString: pniString) else {
+                throw ProvisioningError.invalidProvisionMessage("invalid PNI from provisioning message")
+            }
+            return pni
+        }()
+
+        return ProvisionMessage(aci: aci,
                                 phoneNumber: phoneNumber,
-                                identityKeyPair: ECKeyPair(identityKeyPair),
+                                pni: pni,
+                                aciIdentityKeyPair: ECKeyPair(aciIdentityKeyPair),
+                                pniIdentityKeyPair: pniIdentityKeyPair.map { ECKeyPair($0) },
                                 profileKey: profileKey,
                                 areReadReceiptsEnabled: areReadReceiptsEnabled,
                                 primaryUserAgent: primaryUserAgent,

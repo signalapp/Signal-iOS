@@ -84,24 +84,60 @@ struct ProvisioningProtos_ProvisionMessage {
   // methods supported on all messages.
 
   /// @required
-  var identityKeyPublic: Data {
-    get {return _identityKeyPublic ?? Data()}
-    set {_identityKeyPublic = newValue}
+  var aciIdentityKeyPublic: Data {
+    get {return _aciIdentityKeyPublic ?? Data()}
+    set {_aciIdentityKeyPublic = newValue}
   }
-  /// Returns true if `identityKeyPublic` has been explicitly set.
-  var hasIdentityKeyPublic: Bool {return self._identityKeyPublic != nil}
-  /// Clears the value of `identityKeyPublic`. Subsequent reads from it will return its default value.
-  mutating func clearIdentityKeyPublic() {self._identityKeyPublic = nil}
+  /// Returns true if `aciIdentityKeyPublic` has been explicitly set.
+  var hasAciIdentityKeyPublic: Bool {return self._aciIdentityKeyPublic != nil}
+  /// Clears the value of `aciIdentityKeyPublic`. Subsequent reads from it will return its default value.
+  mutating func clearAciIdentityKeyPublic() {self._aciIdentityKeyPublic = nil}
 
   /// @required
-  var identityKeyPrivate: Data {
-    get {return _identityKeyPrivate ?? Data()}
-    set {_identityKeyPrivate = newValue}
+  var aciIdentityKeyPrivate: Data {
+    get {return _aciIdentityKeyPrivate ?? Data()}
+    set {_aciIdentityKeyPrivate = newValue}
   }
-  /// Returns true if `identityKeyPrivate` has been explicitly set.
-  var hasIdentityKeyPrivate: Bool {return self._identityKeyPrivate != nil}
-  /// Clears the value of `identityKeyPrivate`. Subsequent reads from it will return its default value.
-  mutating func clearIdentityKeyPrivate() {self._identityKeyPrivate = nil}
+  /// Returns true if `aciIdentityKeyPrivate` has been explicitly set.
+  var hasAciIdentityKeyPrivate: Bool {return self._aciIdentityKeyPrivate != nil}
+  /// Clears the value of `aciIdentityKeyPrivate`. Subsequent reads from it will return its default value.
+  mutating func clearAciIdentityKeyPrivate() {self._aciIdentityKeyPrivate = nil}
+
+  var pniIdentityKeyPublic: Data {
+    get {return _pniIdentityKeyPublic ?? Data()}
+    set {_pniIdentityKeyPublic = newValue}
+  }
+  /// Returns true if `pniIdentityKeyPublic` has been explicitly set.
+  var hasPniIdentityKeyPublic: Bool {return self._pniIdentityKeyPublic != nil}
+  /// Clears the value of `pniIdentityKeyPublic`. Subsequent reads from it will return its default value.
+  mutating func clearPniIdentityKeyPublic() {self._pniIdentityKeyPublic = nil}
+
+  var pniIdentityKeyPrivate: Data {
+    get {return _pniIdentityKeyPrivate ?? Data()}
+    set {_pniIdentityKeyPrivate = newValue}
+  }
+  /// Returns true if `pniIdentityKeyPrivate` has been explicitly set.
+  var hasPniIdentityKeyPrivate: Bool {return self._pniIdentityKeyPrivate != nil}
+  /// Clears the value of `pniIdentityKeyPrivate`. Subsequent reads from it will return its default value.
+  mutating func clearPniIdentityKeyPrivate() {self._pniIdentityKeyPrivate = nil}
+
+  var aci: String {
+    get {return _aci ?? String()}
+    set {_aci = newValue}
+  }
+  /// Returns true if `aci` has been explicitly set.
+  var hasAci: Bool {return self._aci != nil}
+  /// Clears the value of `aci`. Subsequent reads from it will return its default value.
+  mutating func clearAci() {self._aci = nil}
+
+  var pni: String {
+    get {return _pni ?? String()}
+    set {_pni = newValue}
+  }
+  /// Returns true if `pni` has been explicitly set.
+  var hasPni: Bool {return self._pni != nil}
+  /// Clears the value of `pni`. Subsequent reads from it will return its default value.
+  mutating func clearPni() {self._pni = nil}
 
   var number: String {
     get {return _number ?? String()}
@@ -111,15 +147,6 @@ struct ProvisioningProtos_ProvisionMessage {
   var hasNumber: Bool {return self._number != nil}
   /// Clears the value of `number`. Subsequent reads from it will return its default value.
   mutating func clearNumber() {self._number = nil}
-
-  var uuid: String {
-    get {return _uuid ?? String()}
-    set {_uuid = newValue}
-  }
-  /// Returns true if `uuid` has been explicitly set.
-  var hasUuid: Bool {return self._uuid != nil}
-  /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
-  mutating func clearUuid() {self._uuid = nil}
 
   /// @required
   var provisioningCode: String {
@@ -172,16 +199,25 @@ struct ProvisioningProtos_ProvisionMessage {
 
   init() {}
 
-  fileprivate var _identityKeyPublic: Data?
-  fileprivate var _identityKeyPrivate: Data?
+  fileprivate var _aciIdentityKeyPublic: Data?
+  fileprivate var _aciIdentityKeyPrivate: Data?
+  fileprivate var _pniIdentityKeyPublic: Data?
+  fileprivate var _pniIdentityKeyPrivate: Data?
+  fileprivate var _aci: String?
+  fileprivate var _pni: String?
   fileprivate var _number: String?
-  fileprivate var _uuid: String?
   fileprivate var _provisioningCode: String?
   fileprivate var _userAgent: String?
   fileprivate var _profileKey: Data?
   fileprivate var _readReceipts: Bool?
   fileprivate var _provisioningVersion: UInt32?
 }
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension ProvisioningProtos_ProvisioningUuid: @unchecked Sendable {}
+extension ProvisioningProtos_ProvisionEnvelope: @unchecked Sendable {}
+extension ProvisioningProtos_ProvisionMessage: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
@@ -268,10 +304,13 @@ extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProt
 extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisionMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "identityKeyPublic"),
-    2: .same(proto: "identityKeyPrivate"),
+    1: .same(proto: "aciIdentityKeyPublic"),
+    2: .same(proto: "aciIdentityKeyPrivate"),
+    11: .same(proto: "pniIdentityKeyPublic"),
+    12: .same(proto: "pniIdentityKeyPrivate"),
+    8: .same(proto: "aci"),
+    10: .same(proto: "pni"),
     3: .same(proto: "number"),
-    8: .same(proto: "uuid"),
     4: .same(proto: "provisioningCode"),
     5: .same(proto: "userAgent"),
     6: .same(proto: "profileKey"),
@@ -285,15 +324,18 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self._identityKeyPublic) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self._identityKeyPrivate) }()
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._aciIdentityKeyPublic) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._aciIdentityKeyPrivate) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._number) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._provisioningCode) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._userAgent) }()
       case 6: try { try decoder.decodeSingularBytesField(value: &self._profileKey) }()
       case 7: try { try decoder.decodeSingularBoolField(value: &self._readReceipts) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self._uuid) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self._aci) }()
       case 9: try { try decoder.decodeSingularUInt32Field(value: &self._provisioningVersion) }()
+      case 10: try { try decoder.decodeSingularStringField(value: &self._pni) }()
+      case 11: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPublic) }()
+      case 12: try { try decoder.decodeSingularBytesField(value: &self._pniIdentityKeyPrivate) }()
       default: break
       }
     }
@@ -304,10 +346,10 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._identityKeyPublic {
+    try { if let v = self._aciIdentityKeyPublic {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
     } }()
-    try { if let v = self._identityKeyPrivate {
+    try { if let v = self._aciIdentityKeyPrivate {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     } }()
     try { if let v = self._number {
@@ -325,20 +367,32 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     try { if let v = self._readReceipts {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
     } }()
-    try { if let v = self._uuid {
+    try { if let v = self._aci {
       try visitor.visitSingularStringField(value: v, fieldNumber: 8)
     } }()
     try { if let v = self._provisioningVersion {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
     } }()
+    try { if let v = self._pni {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 10)
+    } }()
+    try { if let v = self._pniIdentityKeyPublic {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 11)
+    } }()
+    try { if let v = self._pniIdentityKeyPrivate {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 12)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: ProvisioningProtos_ProvisionMessage, rhs: ProvisioningProtos_ProvisionMessage) -> Bool {
-    if lhs._identityKeyPublic != rhs._identityKeyPublic {return false}
-    if lhs._identityKeyPrivate != rhs._identityKeyPrivate {return false}
+    if lhs._aciIdentityKeyPublic != rhs._aciIdentityKeyPublic {return false}
+    if lhs._aciIdentityKeyPrivate != rhs._aciIdentityKeyPrivate {return false}
+    if lhs._pniIdentityKeyPublic != rhs._pniIdentityKeyPublic {return false}
+    if lhs._pniIdentityKeyPrivate != rhs._pniIdentityKeyPrivate {return false}
+    if lhs._aci != rhs._aci {return false}
+    if lhs._pni != rhs._pni {return false}
     if lhs._number != rhs._number {return false}
-    if lhs._uuid != rhs._uuid {return false}
     if lhs._provisioningCode != rhs._provisioningCode {return false}
     if lhs._userAgent != rhs._userAgent {return false}
     if lhs._profileKey != rhs._profileKey {return false}

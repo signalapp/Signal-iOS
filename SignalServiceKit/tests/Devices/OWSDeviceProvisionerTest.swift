@@ -47,21 +47,23 @@ class OWSDeviceProvisionerTest: SSKBaseTestSwift {
         let profileKey = nullKey
         let accountAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "13213214321")
 
-        let provisioner = OWSDeviceProvisioner(myIdentityKeyPair: IdentityKeyPair.generate(),
+        let provisioner = OWSDeviceProvisioner(myAciIdentityKeyPair: IdentityKeyPair.generate(),
                                                theirPublicKey: theirPublicKey,
                                                theirEphemeralDeviceId: "",
                                                accountAddress: accountAddress,
+                                               pni: UUID(),
                                                profileKey: profileKey,
                                                readReceiptsEnabled: true,
                                                provisioningCodeService: OWSFakeDeviceProvisioningCodeService(),
                                                provisioningService: OWSFakeDeviceProvisioningService())
 
-        provisioner.provision(success: {
-            expectation.fulfill()
-        },
-        failure: { error in
-            XCTFail("Failed to provision with error: \(error)")
-        })
+        provisioner.provision(
+            success: {
+                expectation.fulfill()
+            },
+            failure: { error in
+                XCTFail("Failed to provision with error: \(error)")
+            })
 
         self.waitForExpectations(timeout: 5.0, handler: nil)
     }
