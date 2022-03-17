@@ -590,10 +590,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     navigationController!.present(shareVC, animated: true, completion: nil)
                 }
             case .textOnlyMessage:
-                if let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) {
-                    // Open the link preview URL
-                    openURL(url)
-                } else if let reply = viewItem.quotedReply {
+                if let reply = viewItem.quotedReply {
                     // Scroll to the source of the reply
                     guard let indexPath = viewModel.ensureLoadWindowContainsQuotedReply(reply) else { return }
                     messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)

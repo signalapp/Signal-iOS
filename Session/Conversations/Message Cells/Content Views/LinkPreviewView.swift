@@ -58,6 +58,8 @@ final class LinkPreviewView : UIView {
         result.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
         return result
     }()
+    
+    var bodyTextView: UITextView?
 
     // MARK: Settings
     private static let loaderSize: CGFloat = 24
@@ -145,6 +147,7 @@ final class LinkPreviewView : UIView {
         bodyTextViewContainer.subviews.forEach { $0.removeFromSuperview() }
         if let viewItem = viewItem {
             let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: sentLinkPreviewTextColor, searchText: delegate.lastSearchedText, delegate: delegate)
+            self.bodyTextView = bodyTextView
             bodyTextViewContainer.addSubview(bodyTextView)
             bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
         }
