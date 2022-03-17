@@ -149,6 +149,8 @@ class StoryItemMediaView: UIView {
         authorRow.axis = .horizontal
         authorRow.alignment = .center
 
+        timestampLabel.setCompressionResistanceHorizontalHigh()
+        timestampLabel.setContentHuggingHorizontalHigh()
         timestampLabel.font = .ows_dynamicTypeFootnote
         timestampLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
         updateTimestampText()
