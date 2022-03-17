@@ -18,15 +18,14 @@ public class OWSProvisioningCipher: NSObject {
     private static let cipherKeyLength: Int = 32
     private static let macKeyLength: Int = 32
 
-    private let theirPublicKey: PublicKey
+    private let theirPublicKeyData: Data
     private let ourKeyPair: IdentityKeyPair
     private let initializationVector: Data
 
     @objc
     public convenience init(theirPublicKey: Data) {
-        // FIXME: Are these try!s appropriate? We don't really have a guarantee that 'theirPublicKey' is valid.
         self.init(
-            theirPublicKey: try! ECPublicKey(keyData: theirPublicKey).key,
+            theirPublicKey: theirPublicKey,
             ourKeyPair: IdentityKeyPair.generate(),
             initializationVector: Cryptography.generateRandomBytes(UInt(kCCBlockSizeAES128)))
     }
@@ -35,27 +34,27 @@ public class OWSProvisioningCipher: NSObject {
     @objc
     private convenience init(theirPublicKey: Data, ourKeyPair: ECKeyPair, initializationVector: Data) {
         self.init(
-            theirPublicKey: try! ECPublicKey(keyData: theirPublicKey).key,
+            theirPublicKey: theirPublicKey,
             ourKeyPair: ourKeyPair.identityKeyPair,
             initializationVector: initializationVector)
     }
     #endif
 
-    private init(theirPublicKey: PublicKey, ourKeyPair: IdentityKeyPair, initializationVector: Data) {
-        self.theirPublicKey = theirPublicKey
+    private init(theirPublicKey: Data, ourKeyPair: IdentityKeyPair, initializationVector: Data) {
+        self.theirPublicKeyData = theirPublicKey
         self.ourKeyPair = ourKeyPair
         self.initializationVector = initializationVector
     }
 
-    @objc
-    public var ourPublicKey: Data { Data(self.ourKeyPair.publicKey.keyBytes) }
+    public var ourPublicKey: PublicKey { self.ourKeyPair.publicKey }
 
     // FIXME: propagate errors from here instead of just returning nil.
     // This means auditing all of the places we throw OR deciding it's okay to throw arbitrary errors.
     @objc
     public func encrypt(_ data: Data) -> Data? {
         do {
-            let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: self.theirPublicKey)
+            let theirPublicKey = try! ECPublicKey(keyData: theirPublicKeyData).key
+            let sharedSecret = self.ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
 
             let infoData = ProvisioningCipher.messageInfo
             let derivedSecret: [UInt8] = try infoData.utf8.withContiguousStorageIfAvailable {

@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import XCTest
 
+import SignalClient
 @testable import SignalServiceKit
 
 class OWSDeviceProvisionerTest: SSKBaseTestSwift {
@@ -42,14 +43,11 @@ class OWSDeviceProvisionerTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "Provisioning Success")
 
         let nullKey = Data(repeating: 0, count: 32)
-        let myPublicKey = nullKey
-        let myPrivateKey = nullKey
         let theirPublicKey = nullKey
         let profileKey = nullKey
-        let accountAddress = SignalServiceAddress(phoneNumber: "13213214321")
+        let accountAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: "13213214321")
 
-        let provisioner = OWSDeviceProvisioner(myPublicKey: myPublicKey,
-                                               myPrivateKey: myPrivateKey,
+        let provisioner = OWSDeviceProvisioner(myIdentityKeyPair: IdentityKeyPair.generate(),
                                                theirPublicKey: theirPublicKey,
                                                theirEphemeralDeviceId: "",
                                                accountAddress: accountAddress,

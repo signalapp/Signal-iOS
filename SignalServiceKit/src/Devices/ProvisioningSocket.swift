@@ -21,7 +21,7 @@ public class ProvisioningSocket {
         // TODO: Will this work with censorship circumvention?
         // TODO: Should we (sometimes?) use the unidentified service?
         let serviceBaseURL = URL(string: TSConstants.mainServiceWebSocketAPI_identified)!
-        let socketURL = URL(string: "/v1/websocket/provisioning/?agent=\(OWSUserAgent)",
+        let socketURL = URL(string: "/v1/websocket/provisioning/?agent=\(OWSDeviceProvisioner.userAgent)",
                             relativeTo: serviceBaseURL)!
 
         let request = URLRequest(url: socketURL)

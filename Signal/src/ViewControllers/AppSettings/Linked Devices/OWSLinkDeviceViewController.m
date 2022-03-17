@@ -8,9 +8,9 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -195,19 +195,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:OWSIdentityACI];
     OWSAssertDebug(identityKeyPair);
-    NSData *myPublicKey = identityKeyPair.publicKey;
-    NSData *myPrivateKey = identityKeyPair.privateKey;
     SignalServiceAddress *accountAddress = [TSAccountManager localAddress];
     NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
     BOOL areReadReceiptsEnabled = self.receiptManager.areReadReceiptsEnabled;
 
-    OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyPublicKey:myPublicKey
-                                                                             myPrivateKey:myPrivateKey
-                                                                           theirPublicKey:parser.publicKey
-                                                                   theirEphemeralDeviceId:parser.ephemeralDeviceId
-                                                                           accountAddress:accountAddress
-                                                                               profileKey:myProfileKeyData
-                                                                      readReceiptsEnabled:areReadReceiptsEnabled];
+    OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyIdentityKeyPair:identityKeyPair
+                                                                                 theirPublicKey:parser.publicKey
+                                                                         theirEphemeralDeviceId:parser.ephemeralDeviceId
+                                                                                 accountAddress:accountAddress
+                                                                                     profileKey:myProfileKeyData
+                                                                            readReceiptsEnabled:areReadReceiptsEnabled];
 
     [provisioner
         provisionWithSuccess:^{
