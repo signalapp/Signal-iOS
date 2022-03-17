@@ -93,8 +93,7 @@ class TextAttachmentView: UIView {
             self.linkPreviewTooltipView = nil
 
             return true
-        } else if linkPreviewTooltipView == nil,
-                  let linkPreviewView = linkPreviewView,
+        } else if let linkPreviewView = linkPreviewView,
                   let urlString = textAttachment.preview?.urlString,
                   let container = linkPreviewView.superview,
                   linkPreviewView.frame.contains(gesture.location(in: container)) {
@@ -253,17 +252,17 @@ class TextAttachmentView: UIView {
 }
 
 private extension CAGradientLayer {
-    /// Set's the `startPoint` and `endPoint` of the layer to reflect an angle in degrees
-    /// where 0º starts at 12 o'clock and proceeds in a clockwise direction.
+    /// Sets the `startPoint` and `endPoint` of the layer to reflect an angle in degrees
+    /// where 0° starts at 12 o'clock and proceeds in a clockwise direction.
     func setAngle(_ angle: UInt32) {
-        // While design provides gradients with 0º at 12 o'clock, core animation's
-        // coordinate system works with 0º at 3 o'clock moving in a counter clockwise
+        // While design provides gradients with 0° at 12 o'clock, core animation's
+        // coordinate system works with 0° at 3 o'clock moving in a counter clockwise
         // direction. We need to convert the provided angle accordingly before
         // calculating the gradient's start and end points.
 
         let caAngle =
             (360 - angle) // Invert to counter clockwise direction
-            + 45 // Rotate 45º counter clockwise to shift the start from 3 o'clock to 12 o'clock
+            + 90 // Rotate 90° counter clockwise to shift the start from 3 o'clock to 12 o'clock
 
         let radians = CGFloat(caAngle) * .pi / 180.0
 
@@ -281,7 +280,7 @@ private extension CAGradientLayer {
 
         // The signed unit square is a coordinate space from:
         // (-1,-1) to (1,1), but the gradient coordinate space
-        // ranges from (0,0) to (1,1) with 0 being the bottom
+        // ranges from (0,0) to (1,1) with 0 being the top
         // left. Convert each point accordingly to calculate
         // the final points.
         func convertPointToGradientSpace(_ point: CGPoint) -> CGPoint {

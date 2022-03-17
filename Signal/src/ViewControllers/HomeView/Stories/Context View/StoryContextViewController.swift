@@ -10,11 +10,11 @@ import SignalUI
 protocol StoryContextViewControllerDelegate: AnyObject {
     func storyContextViewControllerWantsTransitionToNextContext(
         _ storyContextViewController: StoryContextViewController,
-        loadPosition: StoryContextViewController.LoadPosition
+        loadPositionIfRead: StoryContextViewController.LoadPosition
     )
     func storyContextViewControllerWantsTransitionToPreviousContext(
         _ storyContextViewController: StoryContextViewController,
-        loadPosition: StoryContextViewController.LoadPosition
+        loadPositionIfRead: StoryContextViewController.LoadPosition
     )
     func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController)
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController)
@@ -49,11 +49,11 @@ class StoryContextViewController: OWSViewController {
         case newest
         case oldest
     }
-    private(set) var loadPosition: LoadPosition
+    private(set) var loadPositionIfRead: LoadPosition
 
-    required init(context: StoryContext, loadPosition: LoadPosition = .default, delegate: StoryContextViewControllerDelegate) {
+    required init(context: StoryContext, loadPositionIfRead: LoadPosition = .default, delegate: StoryContextViewControllerDelegate) {
         self.context = context
-        self.loadPosition = loadPosition
+        self.loadPositionIfRead = loadPositionIfRead
         super.init()
         self.delegate = delegate
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -76,7 +76,7 @@ class StoryContextViewController: OWSViewController {
             }) {
                 currentItem = firstUnviewedStory
             } else {
-                switch loadPosition {
+                switch loadPositionIfRead {
                 case .newest, .default:
                     currentItem = items.last
                 case .oldest:
@@ -85,29 +85,29 @@ class StoryContextViewController: OWSViewController {
             }
 
             // For subsequent loads, use the default position.
-            loadPosition = .default
+            loadPositionIfRead = .default
         }
 
         playbackProgressView.alpha = 1
         closeButton.alpha = 1
     }
 
-    func transitionToNextItem(nextContextLoadPosition: LoadPosition = .default) {
+    func transitionToNextItem(nextContextLoadPositionIfRead: LoadPosition = .default) {
         guard let currentItem = currentItem,
               let currentItemIndex = items.firstIndex(of: currentItem),
               let itemAfter = items[safe: currentItemIndex.advanced(by: 1)] else {
-                  delegate?.storyContextViewControllerWantsTransitionToNextContext(self, loadPosition: nextContextLoadPosition)
+                  delegate?.storyContextViewControllerWantsTransitionToNextContext(self, loadPositionIfRead: nextContextLoadPositionIfRead)
                   return
               }
 
         self.currentItem = itemAfter
     }
 
-    func transitionToPreviousItem(previousContextLoadPosition: LoadPosition = .default) {
+    func transitionToPreviousItem(previousContextLoadPositionIfRead: LoadPosition = .default) {
         guard let currentItem = currentItem,
               let currentItemIndex = items.firstIndex(of: currentItem),
               let itemBefore = items[safe: currentItemIndex.advanced(by: -1)] else {
-                  delegate?.storyContextViewControllerWantsTransitionToPreviousContext(self, loadPosition: previousContextLoadPosition)
+                  delegate?.storyContextViewControllerWantsTransitionToPreviousContext(self, loadPositionIfRead: previousContextLoadPositionIfRead)
                   return
               }
 
@@ -347,16 +347,16 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     func didTapLeft() {
         guard currentItemMediaView?.willHandleTapGesture(leftTapGestureRecognizer) != true else { return }
         CurrentAppContext().isRTL
-            ? transitionToNextItem(nextContextLoadPosition: .oldest)
-            : transitionToPreviousItem(previousContextLoadPosition: .newest)
+            ? transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
+            : transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
     }
 
     @objc
     func didTapRight() {
         guard currentItemMediaView?.willHandleTapGesture(rightTapGestureRecognizer) != true else { return }
         CurrentAppContext().isRTL
-            ? transitionToPreviousItem(previousContextLoadPosition: .newest)
-            : transitionToNextItem(nextContextLoadPosition: .oldest)
+            ? transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
+            : transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
     }
 
     @objc

@@ -86,7 +86,7 @@ class StoryCell: UITableViewCell {
             // We render the textView at a large 3:2 size (matching the aspect of
             // the thumbnail container), so the fonts and gradients all render properly
             // for the preview. We then scale it down to render a "thumbnail" view.
-            let textViewRenderSize = CGSize(width: 375, height: 562.5)
+            let textViewRenderSize = CGSize(width: 375, height: 563)
             textView.frame = CGRect(origin: .zero, size: textViewRenderSize)
 
             let layerView = OWSLayerView(frame: .zero) { view in
