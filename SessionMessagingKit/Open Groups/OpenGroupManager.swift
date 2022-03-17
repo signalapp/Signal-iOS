@@ -646,7 +646,7 @@ public final class OpenGroupManager: NSObject {
         let useTLS = (url.scheme == "https")
         
         // If there is no scheme then the host is included in the path (so handle that case)
-        let hostFreePath = (url.host != nil ? url.path : url.path.substring(from: host.count))
+        let hostFreePath = (url.host != nil || !url.path.starts(with: host) ? url.path : url.path.substring(from: host.count))
         let updatedPath = (hostFreePath.starts(with: "/r/") ? hostFreePath.substring(from: 2) : hostFreePath)
         let room = String(updatedPath.dropFirst()) // Drop the leading slash
         let queryParts = query.split(separator: "=")
