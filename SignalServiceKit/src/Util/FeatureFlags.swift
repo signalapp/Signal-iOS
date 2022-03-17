@@ -88,6 +88,7 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let groupRings = false
 
+    @objc
     public static let stories = build.includes(.qa)
 
     @objc
