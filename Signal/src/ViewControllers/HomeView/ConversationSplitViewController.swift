@@ -85,7 +85,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     @objc func applyTheme() {
         view.backgroundColor = Theme.secondaryBackgroundColor
-        applyNavBarStyle(collapsed: isCollapsed)
+        applyBarStyle(collapsed: isCollapsed)
     }
 
     @objc func orientationDidChange() {
@@ -99,11 +99,24 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
     }
 
-    func applyNavBarStyle(collapsed: Bool) {
-        guard let owsNavBar = chatListNavController.navigationBar as? OWSNavigationBar else {
-            return owsFailDebug("unexpected nav bar")
+    func applyBarStyle(collapsed: Bool) {
+        if let owsNavBar = chatListNavController.navigationBar as? OWSNavigationBar {
+            owsNavBar.switchToStyle(collapsed ? .default : .secondaryBar)
+        } else {
+            owsFailDebug("unexpected nav bar")
         }
-        owsNavBar.switchToStyle(collapsed ? .default : .secondaryBar)
+
+        if let owsNavBar = homeVC.storiesNavController.navigationBar as? OWSNavigationBar {
+            owsNavBar.switchToStyle(collapsed ? .default : .secondaryBar)
+        } else {
+            owsFailDebug("unexpected nav bar")
+        }
+
+        if let owsTabBar = homeVC.tabBar as? OWSTabBar {
+            owsTabBar.switchToStyle(collapsed ? .default : .secondaryBar)
+        } else {
+            owsFailDebug("unexpected tab bar")
+        }
     }
 
     private var hasHiddenExtraSubivew = false
@@ -506,7 +519,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
 extension ConversationSplitViewController: UISplitViewControllerDelegate {
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
-        applyNavBarStyle(collapsed: true)
+        applyBarStyle(collapsed: true)
 
         // If we're currently showing the placeholder view, we want to do nothing with in
         // when collapsing into a signle nav controller without a side panel.
@@ -523,7 +536,7 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
     func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
         assert(primaryViewController == homeVC)
 
-        applyNavBarStyle(collapsed: false)
+        applyBarStyle(collapsed: false)
 
         // See if the current conversation is currently in the view hierarchy. If not,
         // show the placeholder view as no conversation is selected. The conversation

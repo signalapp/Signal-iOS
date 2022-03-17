@@ -159,8 +159,8 @@ class StoryContextViewController: OWSViewController {
         closeButton.imageEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 16)
         view.addSubview(closeButton)
         closeButton.autoSetDimensions(to: CGSize(square: 56))
-        closeButton.autoPinEdge(.top, to: .top, of: mediaViewContainer)
-        closeButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
+        closeButton.autoPinEdge(toSuperviewSafeArea: .top)
+        closeButton.autoPinEdge(toSuperviewSafeArea: .leading)
 
         view.addSubview(playbackProgressView)
         playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
