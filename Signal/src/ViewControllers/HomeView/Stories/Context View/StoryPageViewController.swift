@@ -15,9 +15,10 @@ class StoryPageViewController: UIPageViewController {
         set {
             setViewControllers([StoryContextViewController(context: newValue, delegate: self)], direction: .forward, animated: false)
         }
-        get {
-            (viewControllers!.first as! StoryContextViewController).context
-        }
+        get { currentContextViewController.context }
+    }
+    var currentContextViewController: StoryContextViewController {
+        viewControllers!.first as! StoryContextViewController
     }
     weak var contextDataSource: StoryPageViewControllerDataSource?
 
@@ -50,6 +51,39 @@ class StoryPageViewController: UIPageViewController {
         if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
+    }
+
+    private var displayLink: CADisplayLink?
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let displayLink = displayLink {
+            displayLink.isPaused = false
+        } else {
+            let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkStep))
+            displayLink.add(to: .main, forMode: .common)
+            self.displayLink = displayLink
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        displayLink?.isPaused = true
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if isBeingDismissed {
+            displayLink?.invalidate()
+            displayLink = nil
+        }
+    }
+
+    @objc
+    func displayLinkStep(_ displayLink: CADisplayLink) {
+        currentContextViewController.displayLinkStep(displayLink)
     }
 }
 
@@ -103,5 +137,13 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
             direction: .reverse,
             animated: true
         )
+    }
+
+    func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController) {
+        displayLink?.isPaused = true
+    }
+
+    func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController) {
+        displayLink?.isPaused = false
     }
 }

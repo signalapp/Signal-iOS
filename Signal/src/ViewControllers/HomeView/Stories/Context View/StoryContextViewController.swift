@@ -10,6 +10,8 @@ import SignalUI
 protocol StoryContextViewControllerDelegate: AnyObject {
     func storyContextViewControllerWantsTransitionToNextContext(_ storyContextViewController: StoryContextViewController)
     func storyContextViewControllerWantsTransitionToPreviousContext(_ storyContextViewController: StoryContextViewController)
+    func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController)
+    func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController)
 }
 
 class StoryContextViewController: OWSViewController {
@@ -81,12 +83,6 @@ class StoryContextViewController: OWSViewController {
               }
 
         self.currentItem = itemBefore
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        displayLink?.invalidate()
-        displayLink = nil
     }
 
     private lazy var leftTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapLeft))
@@ -201,19 +197,10 @@ class StoryContextViewController: OWSViewController {
     }
 
     private var pauseTime: CFTimeInterval?
-    private var displayLink: CADisplayLink?
     private var lastTransitionTime: CFTimeInterval?
     private static let transitionDuration: CFTimeInterval = 5
     private func updateProgressState() {
-        AssertIsOnMainThread()
         lastTransitionTime = CACurrentMediaTime()
-        if let displayLink = displayLink {
-            displayLink.isPaused = false
-        } else {
-            let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkStep))
-            displayLink.add(to: .main, forMode: .common)
-            self.displayLink = displayLink
-        }
     }
 
     @objc
@@ -248,15 +235,12 @@ class StoryContextViewController: OWSViewController {
                 playbackProgressView.itemState = .init(index: idx, value: value)
 
                 if value >= 1 {
-                    displayLink.isPaused = true
                     transitionToNextItem()
                 }
             } else {
-                displayLink.isPaused = true
                 playbackProgressView.itemState = .init(index: idx, value: 0)
             }
         } else {
-            displayLink.isPaused = true
             playbackProgressView.itemState = .init(index: 0, value: 0)
         }
     }
@@ -347,7 +331,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         switch pauseGestureRecognizer.state {
         case .began:
             pauseTime = CACurrentMediaTime()
-            displayLink?.isPaused = true
+            delegate?.storyContextViewControllerDidPause(self)
             currentItemMediaView?.pause {
                 self.playbackProgressView.alpha = 0
                 self.closeButton.alpha = 0
@@ -362,7 +346,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
                 self.playbackProgressView.alpha = 1
                 self.closeButton.alpha = 1
             }
-            displayLink?.isPaused = false
+            delegate?.storyContextViewControllerDidResume(self)
         default:
             break
         }
