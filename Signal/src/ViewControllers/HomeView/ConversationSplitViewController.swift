@@ -158,6 +158,9 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             return
         }
 
+        // Ensure the tab bar is on the chat list.
+        homeVC.selectedTab = .chatList
+
         guard selectedThread?.uniqueId != thread.uniqueId else {
             // If this thread is already selected, pop to the thread if
             // anything else has been presented above the view.

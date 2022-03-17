@@ -29,7 +29,10 @@ class HomeTabBarController: UITabBarController {
         selectedImage: #imageLiteral(resourceName: "stories-solid-24")
     )
 
-    var selectedTab: Tabs { Tabs(rawValue: selectedIndex) ?? .chatList }
+    var selectedTab: Tabs {
+        get { Tabs(rawValue: selectedIndex) ?? .chatList }
+        set { selectedIndex = newValue.rawValue }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
