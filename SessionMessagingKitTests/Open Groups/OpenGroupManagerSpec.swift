@@ -114,9 +114,9 @@ class OpenGroupManagerSpec: QuickSpec {
                     identityManager: mockIdentityManager,
                     storage: mockStorage,
                     sodium: mockSodium,
-                    aeadXChaCha20Poly1305Ietf: mockAeadXChaCha20Poly1305Ietf,
-                    sign: mockSign,
                     genericHash: mockGenericHash,
+                    sign: mockSign,
+                    aeadXChaCha20Poly1305Ietf: mockAeadXChaCha20Poly1305Ietf,
                     ed25519: MockEd25519(),
                     nonceGenerator16: mockNonce16Generator,
                     nonceGenerator24: mockNonce24Generator,
@@ -1600,7 +1600,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         
                         expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
                         expect(mockStorage)
-                            .to(call(matchingParameters: true) {
+                            .toEventually(call(matchingParameters: true) {
                                 $0.setOpenGroup(
                                     OpenGroup(
                                         server: "testServer",
@@ -1618,6 +1618,11 @@ class OpenGroupManagerSpec: QuickSpec {
                         expect(testGroupThread.groupModel.groupImage)
                             .toEventuallyNot(
                                 beNil(),
+                                timeout: .milliseconds(50)
+                            )
+                        expect(mockOGMCache)
+                            .toEventually(
+                                call(.exactly(times: 1)) { $0.groupImagePromises },
                                 timeout: .milliseconds(50)
                             )
                         expect(testGroupThread.numSaveCalls)
@@ -2121,7 +2126,7 @@ class OpenGroupManagerSpec: QuickSpec {
                         }
                         .thenReturn([])
                     mockSodium
-                        .when { $0.generateBlindingFactor(serverPublicKey: any()) }
+                        .when { $0.generateBlindingFactor(serverPublicKey: any(), genericHash: mockGenericHash) }
                         .thenReturn([])
                     mockAeadXChaCha20Poly1305Ietf
                         .when {

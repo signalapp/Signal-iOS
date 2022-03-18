@@ -21,12 +21,6 @@ public protocol OGMCacheType {
     func getTimeSinceLastOpen(using dependencies: Dependencies) -> TimeInterval
 }
 
-extension OGMCacheType {
-    func getTimeSinceLastOpen() -> TimeInterval {
-        return getTimeSinceLastOpen(using: Dependencies())
-    }
-}
-
 // MARK: - OpenGroupManager
 
 @objc(SNOpenGroupManager)
@@ -49,7 +43,7 @@ public final class OpenGroupManager: NSObject {
         public var timeSinceLastPoll: [String: TimeInterval] = [:]
 
         fileprivate var _timeSinceLastOpen: TimeInterval?
-        public func getTimeSinceLastOpen(using dependencies: Dependencies = Dependencies()) -> TimeInterval {
+        public func getTimeSinceLastOpen(using dependencies: Dependencies) -> TimeInterval {
             if let storedTimeSinceLastOpen: TimeInterval = _timeSinceLastOpen {
                 return storedTimeSinceLastOpen
             }
@@ -702,9 +696,10 @@ extension OpenGroupManager {
             identityManager: IdentityManagerProtocol? = nil,
             storage: SessionMessagingKitStorageProtocol? = nil,
             sodium: SodiumType? = nil,
-            aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
-            sign: SignType? = nil,
+            box: BoxType? = nil,
             genericHash: GenericHashType? = nil,
+            sign: SignType? = nil,
+            aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
             ed25519: Ed25519Type? = nil,
             nonceGenerator16: NonceGenerator16ByteType? = nil,
             nonceGenerator24: NonceGenerator24ByteType? = nil,
@@ -718,9 +713,10 @@ extension OpenGroupManager {
                 identityManager: identityManager,
                 storage: storage,
                 sodium: sodium,
-                aeadXChaCha20Poly1305Ietf: aeadXChaCha20Poly1305Ietf,
-                sign: sign,
+                box: box,
                 genericHash: genericHash,
+                sign: sign,
+                aeadXChaCha20Poly1305Ietf: aeadXChaCha20Poly1305Ietf,
                 ed25519: ed25519,
                 nonceGenerator16: nonceGenerator16,
                 nonceGenerator24: nonceGenerator24,

@@ -2,22 +2,20 @@ import SessionUtilitiesKit
 import Sodium
 
 extension MessageSender {
-
-    internal static func encryptWithSessionProtocol(_ plaintext: Data, for recipientHexEncodedX25519PublicKey: String) throws -> Data {
-        guard let userED25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserED25519KeyPair() else {
+    internal static func encryptWithSessionProtocol(_ plaintext: Data, for recipientHexEncodedX25519PublicKey: String, using dependencies: Dependencies = Dependencies()) throws -> Data {
+        guard let userED25519KeyPair = dependencies.storage.getUserED25519KeyPair() else {
             throw Error.noUserED25519KeyPair
         }
         
         let recipientX25519PublicKey = Data(hex: recipientHexEncodedX25519PublicKey.removingIdPrefixIfNeeded())
-        let sodium = Sodium()
         
         let verificationData = plaintext + Data(userED25519KeyPair.publicKey) + recipientX25519PublicKey
-        guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else {
+        guard let signature = dependencies.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else {
             throw Error.signingFailed
         }
         
         let plaintextWithMetadata = plaintext + Data(userED25519KeyPair.publicKey) + Data(signature)
-        guard let ciphertext = sodium.box.seal(message: Bytes(plaintextWithMetadata), recipientPublicKey: Bytes(recipientX25519PublicKey)) else {
+        guard let ciphertext = dependencies.box.seal(message: Bytes(plaintextWithMetadata), recipientPublicKey: Bytes(recipientX25519PublicKey)) else {
             throw Error.encryptionFailed
         }
         
@@ -26,7 +24,7 @@ extension MessageSender {
     
     internal static func encryptWithSessionBlindingProtocol(_ plaintext: Data, for recipientBlindedId: String, openGroupPublicKey: String, using dependencies: Dependencies = Dependencies()) throws -> Data {
         guard SessionId.Prefix(from: recipientBlindedId) == .blinded else { throw Error.signingFailed }
-        guard let userEd25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserED25519KeyPair() else {
+        guard let userEd25519KeyPair = dependencies.storage.getUserED25519KeyPair() else {
             throw Error.noUserED25519KeyPair
         }
         guard let blindedKeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroupPublicKey, edKeyPair: userEd25519KeyPair, genericHash: dependencies.genericHash) else {

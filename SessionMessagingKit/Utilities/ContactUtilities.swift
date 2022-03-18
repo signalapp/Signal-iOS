@@ -73,7 +73,7 @@ public enum ContactUtilities {
         
         // Then we try loop through all approved contact threads to see if one of those contacts can be blinded to match
         ContactUtilities.enumerateApprovedContactThreads(using: transaction) { contactThread, contact, stop in
-            guard dependencies.sodium.sessionId(contact.sessionID, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey) else {
+            guard dependencies.sodium.sessionId(contact.sessionID, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey, genericHash: dependencies.genericHash) else {
                 return
             }
             
@@ -91,7 +91,7 @@ public enum ContactUtilities {
         // a thread with this contact in a different SOGS and had cached the mapping)
         dependencies.storage.enumerateBlindedIdMapping(using: transaction) { mapping, stop in
             guard mapping.serverPublicKey != serverPublicKey else { return }
-            guard dependencies.sodium.sessionId(mapping.sessionId, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey) else {
+            guard dependencies.sodium.sessionId(mapping.sessionId, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey, genericHash: dependencies.genericHash) else {
                 return
             }
             

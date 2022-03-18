@@ -7,6 +7,7 @@ import Sodium
 @testable import SessionMessagingKit
 
 class MockSign: Mock<SignType>, SignType {
+    var Bytes: Int = 64
     var PublicKeyBytes: Int = 32
     
     func signature(message: Bytes, secretKey: Bytes) -> Bytes? {

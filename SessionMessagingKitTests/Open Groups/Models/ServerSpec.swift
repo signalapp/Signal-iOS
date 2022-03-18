@@ -24,7 +24,7 @@ class ServerSpec: QuickSpec {
             }
             
             context("when NSCoding") {
-                // Note: Unit testing NSCoder is horrible so we won't do it - wait until we refactor it to Codable
+                // Note: Unit testing NSCoder is horrible so we won't do it properly - wait until we refactor it to Codable
                 it("successfully encodes and decodes") {
                     let serverToEncode: OpenGroupAPI.Server = OpenGroupAPI.Server(
                         name: "test",

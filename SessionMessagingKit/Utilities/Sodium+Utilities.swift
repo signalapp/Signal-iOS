@@ -41,6 +41,15 @@ extension Sign {
     }
 }
 
+/// These extenion methods are used to generate a sign "blinded" messages
+///
+/// According to the Swift engineers the only situation when `UnsafeRawBufferPointer.baseAddress` is nil is when it's an
+/// empty collection; as such our guard cases wihch return `-1` when unwrapping this value should never be hit and we can ignore
+/// them as possible results.
+///
+/// For more information see:
+/// https://forums.swift.org/t/when-is-unsafemutablebufferpointer-baseaddress-nil/32136/5
+/// https://github.com/apple/swift-evolution/blob/master/proposals/0055-optional-unsafe-pointers.md#unsafebufferpointer
 extension Sodium {
     private static let scalarLength: Int = Int(crypto_core_ed25519_scalarbytes())   // 32
     private static let noClampLength: Int = Int(crypto_scalarmult_ed25519_bytes())  // 32
@@ -49,7 +58,7 @@ extension Sodium {
     private static let secretKeyLength: Int = Int(crypto_sign_secretkeybytes())     // 64
     
     /// 64-byte blake2b hash then reduce to get the blinding factor
-    public func generateBlindingFactor(serverPublicKey: String) -> Bytes? {
+    public func generateBlindingFactor(serverPublicKey: String, genericHash: GenericHashType) -> Bytes? {
         /// k = salt.crypto_core_ed25519_scalar_reduce(blake2b(server_pk, digest_size=64).digest())
         guard let serverPubKeyData: Data = serverPublicKey.dataFromHex() else { return nil }
         guard let serverPublicKeyHashBytes: Bytes = genericHash.hash(message: [UInt8](serverPubKeyData), outputLength: 64) else {
@@ -59,17 +68,14 @@ extension Sodium {
         /// Reduce the server public key into an ed25519 scalar (`k`)
         let kPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.scalarLength)
         
-        let kResult = serverPublicKeyHashBytes.withUnsafeBytes { (serverPublicKeyHashPtr: UnsafeRawBufferPointer) -> Int32 in
+        _ = serverPublicKeyHashBytes.withUnsafeBytes { (serverPublicKeyHashPtr: UnsafeRawBufferPointer) -> Int32 in
             guard let serverPublicKeyHashBaseAddress: UnsafePointer<UInt8> = serverPublicKeyHashPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                return -1
+                return -1   // Impossible case (refer to comments at top of extension)
             }
             
             crypto_core_ed25519_scalar_reduce(kPtr, serverPublicKeyHashBaseAddress)
             return 0
         }
-        
-        /// Ensure the above worked
-        guard kResult == 0 else { return nil }
         
         return Data(bytes: kPtr, count: Sodium.scalarLength).bytes
     }
@@ -78,20 +84,19 @@ extension Sodium {
     /// convert to an *x* secret key, which seems wrong--but isn't because converted keys use the
     /// same secret scalar secret (and so this is just the most convenient way to get 'a' out of
     /// a sodium Ed25519 secret key)
-    private func generatePrivateKeyScalar(secretKey: Bytes) -> Bytes? {
+    func generatePrivateKeyScalar(secretKey: Bytes) -> Bytes {
         /// a = s.to_curve25519_private_key().encode()
         let aPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.scalarMultLength)
         
-        let aResult = secretKey.withUnsafeBytes { (secretKeyPtr: UnsafeRawBufferPointer) -> Int32 in
+        /// Looks like the `crypto_sign_ed25519_sk_to_curve25519` function can't actually fail so no need to verify the result
+        /// See: https://github.com/jedisct1/libsodium/blob/master/src/libsodium/crypto_sign/ed25519/ref10/keypair.c#L70
+        _ = secretKey.withUnsafeBytes { (secretKeyPtr: UnsafeRawBufferPointer) -> Int32 in
             guard let secretKeyBaseAddress: UnsafePointer<UInt8> = secretKeyPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                return -1
+                return -1   // Impossible case (refer to comments at top of extension)
             }
             
             return crypto_sign_ed25519_sk_to_curve25519(aPtr, secretKeyBaseAddress)
         }
-        
-        /// Ensure the above worked
-        guard aResult == 0 else { return nil }
         
         return Data(bytes: aPtr, count: Sodium.scalarMultLength).bytes
     }
@@ -101,29 +106,28 @@ extension Sodium {
         guard edKeyPair.publicKey.count == Sodium.publicKeyLength && edKeyPair.secretKey.count == Sodium.secretKeyLength else {
             return nil
         }
-        guard let kBytes: Bytes = generateBlindingFactor(serverPublicKey: serverPublicKey) else { return nil }
-        guard let aBytes: Bytes = generatePrivateKeyScalar(secretKey: edKeyPair.secretKey) else { return nil }
+        guard let kBytes: Bytes = generateBlindingFactor(serverPublicKey: serverPublicKey, genericHash: genericHash) else {
+            return nil
+        }
+        let aBytes: Bytes = generatePrivateKeyScalar(secretKey: edKeyPair.secretKey)
         
         /// Generate the blinded key pair `ka`, `kA`
         let kaPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.secretKeyLength)
         let kAPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.publicKeyLength)
         
-        let kaResult = aBytes.withUnsafeBytes { (aPtr: UnsafeRawBufferPointer) -> Int32 in
+        _ = aBytes.withUnsafeBytes { (aPtr: UnsafeRawBufferPointer) -> Int32 in
             return kBytes.withUnsafeBytes { (kPtr: UnsafeRawBufferPointer) -> Int32 in
                 guard let kBaseAddress: UnsafePointer<UInt8> = kPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                    return -1
+                    return -1   // Impossible case (refer to comments at top of extension)
                 }
                 guard let aBaseAddress: UnsafePointer<UInt8> = aPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                    return -1
+                    return -1   // Impossible case (refer to comments at top of extension)
                 }
                 
                 crypto_core_ed25519_scalar_mul(kaPtr, kBaseAddress, aBaseAddress)
                 return 0
             }
         }
-        
-        /// Ensure the above worked
-        guard kaResult == 0 else { return nil }
         
         guard crypto_scalarmult_ed25519_base_noclamp(kAPtr, kaPtr) == 0 else { return nil }
         
@@ -144,17 +148,14 @@ extension Sodium {
         let combinedHashBytes: Bytes = (H_rh + kA + message).sha512()
         let rPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.scalarLength)
         
-        let rResult = combinedHashBytes.withUnsafeBytes { (combinedHashPtr: UnsafeRawBufferPointer) -> Int32 in
+        _ = combinedHashBytes.withUnsafeBytes { (combinedHashPtr: UnsafeRawBufferPointer) -> Int32 in
             guard let combinedHashBaseAddress: UnsafePointer<UInt8> = combinedHashPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                return -1
+                return -1   // Impossible case (refer to comments at top of extension)
             }
             
             crypto_core_ed25519_scalar_reduce(rPtr, combinedHashBaseAddress)
             return 0
         }
-        
-        /// Ensure the above worked
-        guard rResult == 0 else { return nil }
         
         /// sig_R = salt.crypto_scalarmult_ed25519_base_noclamp(r)
         let sig_RPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.noClampLength)
@@ -165,33 +166,28 @@ extension Sodium {
         let HRAMHashBytes: Bytes = (sig_RBytes + kA + message).sha512()
         let HRAMPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.scalarLength)
         
-        let HRAMResult = HRAMHashBytes.withUnsafeBytes { (HRAMHashPtr: UnsafeRawBufferPointer) -> Int32 in
+        _ = HRAMHashBytes.withUnsafeBytes { (HRAMHashPtr: UnsafeRawBufferPointer) -> Int32 in
             guard let HRAMHashBaseAddress: UnsafePointer<UInt8> = HRAMHashPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                return -1
+                return -1   // Impossible case (refer to comments at top of extension)
             }
             
             crypto_core_ed25519_scalar_reduce(HRAMPtr, HRAMHashBaseAddress)
             return 0
         }
         
-        /// Ensure the above worked
-        guard HRAMResult == 0 else { return nil }
-        
         /// sig_s = salt.crypto_core_ed25519_scalar_add(r, salt.crypto_core_ed25519_scalar_mul(HRAM, ka))
         let sig_sMulPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.scalarLength)
         let sig_sPtr: UnsafeMutablePointer<UInt8> = UnsafeMutablePointer<UInt8>.allocate(capacity: Sodium.scalarLength)
         
-        let sig_sResult = ka.withUnsafeBytes { (kaPtr: UnsafeRawBufferPointer) -> Int32 in
+        _ = ka.withUnsafeBytes { (kaPtr: UnsafeRawBufferPointer) -> Int32 in
             guard let kaBaseAddress: UnsafePointer<UInt8> = kaPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                return -1
+                return -1   // Impossible case (refer to comments at top of extension)
             }
             
             crypto_core_ed25519_scalar_mul(sig_sMulPtr, HRAMPtr, kaBaseAddress)
             crypto_core_ed25519_scalar_add(sig_sPtr, rPtr, sig_sMulPtr)
             return 0
         }
-        
-        guard sig_sResult == 0 else { return nil }
         
         /// full_sig = sig_R + sig_s
         return (Data(bytes: sig_RPtr, count: Sodium.noClampLength).bytes + Data(bytes: sig_sPtr, count: Sodium.scalarLength).bytes)
@@ -204,10 +200,10 @@ extension Sodium {
         let result = rhsKeyBytes.withUnsafeBytes { (rhsKeyBytesPtr: UnsafeRawBufferPointer) -> Int32 in
             return lhsKeyBytes.withUnsafeBytes { (lhsKeyBytesPtr: UnsafeRawBufferPointer) -> Int32 in
                 guard let lhsKeyBytesBaseAddress: UnsafePointer<UInt8> = lhsKeyBytesPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                    return -1
+                    return -1   // Impossible case (refer to comments at top of extension)
                 }
                 guard let rhsKeyBytesBaseAddress: UnsafePointer<UInt8> = rhsKeyBytesPtr.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
-                    return -1
+                    return -1   // Impossible case (refer to comments at top of extension)
                 }
                 
                 return crypto_scalarmult_ed25519_noclamp(combinedPtr, lhsKeyBytesBaseAddress, rhsKeyBytesBaseAddress)
@@ -228,18 +224,23 @@ extension Sodium {
     ///
     /// BLAKE2b(b kA || kA || kB)
     public func sharedBlindedEncryptionKey(secretKey: Bytes, otherBlindedPublicKey: Bytes, fromBlindedPublicKey kA: Bytes, toBlindedPublicKey kB: Bytes, genericHash: GenericHashType) -> Bytes? {
-        guard let aBytes: Bytes = generatePrivateKeyScalar(secretKey: secretKey) else { return nil }
-        guard let combinedKeyBytes: Bytes = combineKeys(lhsKeyBytes: aBytes, rhsKeyBytes: otherBlindedPublicKey) else { return nil }
+        let aBytes: Bytes = generatePrivateKeyScalar(secretKey: secretKey)
+        
+        guard let combinedKeyBytes: Bytes = combineKeys(lhsKeyBytes: aBytes, rhsKeyBytes: otherBlindedPublicKey) else {
+            return nil
+        }
         
         return genericHash.hash(message: (combinedKeyBytes + kA + kB), outputLength: 32)
     }
     
     /// This method should be used to check if a users standard sessionId matches a blinded one
-    public func sessionId(_ standardSessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String) -> Bool {
+    public func sessionId(_ standardSessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String, genericHash: GenericHashType) -> Bool {
         // Only support generating blinded keys for standard session ids
         guard let sessionId: SessionId = SessionId(from: standardSessionId), sessionId.prefix == .standard else { return false }
         guard let blindedId: SessionId = SessionId(from: blindedSessionId), blindedId.prefix == .blinded else { return false }
-        guard let kBytes: Bytes = generateBlindingFactor(serverPublicKey: serverPublicKey) else { return false }
+        guard let kBytes: Bytes = generateBlindingFactor(serverPublicKey: serverPublicKey, genericHash: genericHash) else {
+            return false
+        }
 
         /// From the session id (ignoring 05 prefix) we have two possible ed25519 pubkeys; the first is the positive (which is what
         /// Signal's XEd25519 conversion always uses)

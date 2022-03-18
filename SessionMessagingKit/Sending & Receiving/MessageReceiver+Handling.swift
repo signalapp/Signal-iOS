@@ -18,7 +18,7 @@ extension MessageReceiver {
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
         case let message as UnsendRequest: handleUnsendRequest(message, using: transaction)
-        case let message as MessageRequestResponse: handleMessageRequestResponse(message, using: transaction)
+        case let message as MessageRequestResponse: handleMessageRequestResponse(message, using: transaction, dependencies: dependencies)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction, dependencies: dependencies)
         default: fatalError()
         }
@@ -839,7 +839,7 @@ extension MessageReceiver {
         }
     }
     
-    public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {
+    public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any, dependencies: Dependencies) {
         let userPublicKey = getUserHexEncodedPublicKey()
         var hadBlindedContact: Bool = false
         var blindedThreadIds: [String] = []
@@ -870,7 +870,7 @@ extension MessageReceiver {
                 
                 // If the sessionId matches the blindedId then this thread needs to be converted to an un-blinded thread
                 guard let serverPublicKey: String = blindedThread.originalOpenGroupPublicKey else { continue }
-                guard Sodium().sessionId(senderId, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey) else { continue }
+                guard dependencies.sodium.sessionId(senderId, matchesBlindedId: blindedId, serverPublicKey: serverPublicKey, genericHash: dependencies.genericHash) else { continue }
                 guard let blindedThreadId: String = blindedThread.uniqueId else { continue }
                 guard let view: YapDatabaseAutoViewTransaction = transaction.ext(TSMessageDatabaseViewExtensionName) as? YapDatabaseAutoViewTransaction else {
                     continue
@@ -878,7 +878,7 @@ extension MessageReceiver {
                 
                 // Cache the mapping
                 let mapping: BlindedIdMapping = BlindedIdMapping(blindedId: blindedId, sessionId: senderId, serverPublicKey: serverPublicKey)
-                Storage.shared.cacheBlindedIdMapping(mapping, using: transaction)
+                dependencies.storage.cacheBlindedIdMapping(mapping, using: transaction)
                 
                 // Flag that we had a blinded contact and add the `blindedThreadId` to an array so we can remove
                 // them at the end of processing

@@ -30,10 +30,16 @@ public class Dependencies {
         set { _sodium = newValue }
     }
     
-    internal var _aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType?
-    public var aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {
-        get { Dependencies.getValueSettingIfNull(&_aeadXChaCha20Poly1305Ietf) { sodium.getAeadXChaCha20Poly1305Ietf() } }
-        set { _aeadXChaCha20Poly1305Ietf = newValue }
+    internal var _box: BoxType?
+    public var box: BoxType {
+        get { Dependencies.getValueSettingIfNull(&_box) { sodium.getBox() } }
+        set { _box = newValue }
+    }
+    
+    internal var _genericHash: GenericHashType?
+    public var genericHash: GenericHashType {
+        get { Dependencies.getValueSettingIfNull(&_genericHash) { sodium.getGenericHash() } }
+        set { _genericHash = newValue }
     }
     
     internal var _sign: SignType?
@@ -42,10 +48,10 @@ public class Dependencies {
         set { _sign = newValue }
     }
     
-    internal var _genericHash: GenericHashType?
-    public var genericHash: GenericHashType {
-        get { Dependencies.getValueSettingIfNull(&_genericHash) { sodium.getGenericHash() } }
-        set { _genericHash = newValue }
+    internal var _aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType?
+    public var aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {
+        get { Dependencies.getValueSettingIfNull(&_aeadXChaCha20Poly1305Ietf) { sodium.getAeadXChaCha20Poly1305Ietf() } }
+        set { _aeadXChaCha20Poly1305Ietf = newValue }
     }
     
     internal var _ed25519: Ed25519Type?
@@ -85,9 +91,10 @@ public class Dependencies {
         identityManager: IdentityManagerProtocol? = nil,
         storage: SessionMessagingKitStorageProtocol? = nil,
         sodium: SodiumType? = nil,
-        aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
-        sign: SignType? = nil,
+        box: BoxType? = nil,
         genericHash: GenericHashType? = nil,
+        sign: SignType? = nil,
+        aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType? = nil,
         ed25519: Ed25519Type? = nil,
         nonceGenerator16: NonceGenerator16ByteType? = nil,
         nonceGenerator24: NonceGenerator24ByteType? = nil,
@@ -98,9 +105,10 @@ public class Dependencies {
         _identityManager = identityManager
         _storage = storage
         _sodium = sodium
-        _aeadXChaCha20Poly1305Ietf = aeadXChaCha20Poly1305Ietf
-        _sign = sign
+        _box = box
         _genericHash = genericHash
+        _sign = sign
+        _aeadXChaCha20Poly1305Ietf = aeadXChaCha20Poly1305Ietf
         _ed25519 = ed25519
         _nonceGenerator16 = nonceGenerator16
         _nonceGenerator24 = nonceGenerator24

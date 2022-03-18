@@ -43,9 +43,9 @@ class OpenGroupAPISpec: QuickSpec {
                     onionApi: TestOnionRequestAPI.self,
                     storage: mockStorage,
                     sodium: mockSodium,
-                    aeadXChaCha20Poly1305Ietf: mockAeadXChaCha20Poly1305Ietf,
-                    sign: mockSign,
                     genericHash: mockGenericHash,
+                    sign: mockSign,
+                    aeadXChaCha20Poly1305Ietf: mockAeadXChaCha20Poly1305Ietf,
                     ed25519: mockEd25519,
                     nonceGenerator16: mockNonce16Generator,
                     nonceGenerator24: mockNonce24Generator,
@@ -229,7 +229,7 @@ class OpenGroupAPISpec: QuickSpec {
                         expect(requestData?.urlString).to(equal("testServer/batch"))
                         expect(requestData?.httpMethod).to(equal("POST"))
                         expect(requestData?.server).to(equal("testServer"))
-                        expect(requestData?.publicKey).to(equal("7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
+                        expect(requestData?.publicKey).to(equal("88672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
                     }
                     
                     it("retrieves recent messages if there was no last message") {
@@ -2663,10 +2663,10 @@ class OpenGroupAPISpec: QuickSpec {
                         expect(requestData?.urlString).to(equal("testServer/rooms"))
                         expect(requestData?.httpMethod).to(equal("GET"))
                         expect(requestData?.server).to(equal("testServer"))
-                        expect(requestData?.publicKey).to(equal("7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
+                        expect(requestData?.publicKey).to(equal("88672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
                         expect(requestData?.headers).to(haveCount(4))
                         expect(requestData?.headers[Header.sogsPubKey.rawValue])
-                            .to(equal("007aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
+                            .to(equal("0088672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
                         expect(requestData?.headers[Header.sogsTimestamp.rawValue]).to(equal("1234567890"))
                         expect(requestData?.headers[Header.sogsNonce.rawValue]).to(equal("pK6YRtQApl4NhECGizF0Cg=="))
                         expect(requestData?.headers[Header.sogsSignature.rawValue]).to(equal("TestSignature".bytes.toBase64()))
@@ -2720,9 +2720,9 @@ class OpenGroupAPISpec: QuickSpec {
                         expect(requestData?.urlString).to(equal("testServer/rooms"))
                         expect(requestData?.httpMethod).to(equal("GET"))
                         expect(requestData?.server).to(equal("testServer"))
-                        expect(requestData?.publicKey).to(equal("7aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
+                        expect(requestData?.publicKey).to(equal("88672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
                         expect(requestData?.headers).to(haveCount(4))
-                        expect(requestData?.headers[Header.sogsPubKey.rawValue]).to(equal("157aecdcade88d881d2327ab011afd2e04c2ec6acffc9e9df45aaf78a151bd2f7d"))
+                        expect(requestData?.headers[Header.sogsPubKey.rawValue]).to(equal("1588672ccb97f40bb57238989226cf429b575ba355443f47bc76c5ab144a96c65b"))
                         expect(requestData?.headers[Header.sogsTimestamp.rawValue]).to(equal("1234567890"))
                         expect(requestData?.headers[Header.sogsNonce.rawValue]).to(equal("pK6YRtQApl4NhECGizF0Cg=="))
                         expect(requestData?.headers[Header.sogsSignature.rawValue]).to(equal("TestSogsSignature".bytes.toBase64()))

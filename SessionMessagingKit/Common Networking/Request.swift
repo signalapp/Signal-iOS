@@ -96,3 +96,5 @@ struct Request<T: Encodable, Endpoint: EndpointType> {
         return urlRequest
     }
 }
+
+extension Request: Equatable where T: Equatable {}

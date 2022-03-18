@@ -7,12 +7,13 @@ import Sodium
 @testable import SessionMessagingKit
 
 class MockSodium: Mock<SodiumType>, SodiumType {
+    func getBox() -> BoxType { return accept() as! BoxType }
     func getGenericHash() -> GenericHashType { return accept() as! GenericHashType }
-    func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return accept() as! AeadXChaCha20Poly1305IetfType }
     func getSign() -> SignType { return accept() as! SignType }
+    func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return accept() as! AeadXChaCha20Poly1305IetfType }
     
-    func generateBlindingFactor(serverPublicKey: String) -> Bytes? {
-        return accept(args: [serverPublicKey]) as? Bytes
+    func generateBlindingFactor(serverPublicKey: String, genericHash: GenericHashType) -> Bytes? {
+        return accept(args: [serverPublicKey, genericHash]) as? Bytes
     }
     
     func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair? {
@@ -31,7 +32,7 @@ class MockSodium: Mock<SodiumType>, SodiumType {
         return accept(args: [a, otherBlindedPublicKey, kA, kB, genericHash]) as? Bytes
     }
     
-    func sessionId(_ sessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String) -> Bool {
-        return accept(args: [sessionId, blindedSessionId, serverPublicKey]) as! Bool
+    func sessionId(_ sessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String, genericHash: GenericHashType) -> Bool {
+        return accept(args: [sessionId, blindedSessionId, serverPublicKey, genericHash]) as! Bool
     }
 }

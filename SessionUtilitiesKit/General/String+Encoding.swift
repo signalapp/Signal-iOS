@@ -11,6 +11,7 @@ extension String {
             .map { index -> String in String(chars[index]) + String(chars[index + 1]) }
             .compactMap { (str: String) -> UInt8? in UInt8(str, radix: 16) }
         
+        guard bytes.count > 0 else { return nil }
         guard (self.count / bytes.count) == 2 else { return nil }
         
         return Data(bytes)

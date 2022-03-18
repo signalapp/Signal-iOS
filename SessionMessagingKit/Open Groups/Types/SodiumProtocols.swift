@@ -5,18 +5,19 @@ import Sodium
 import Curve25519Kit
 
 public protocol SodiumType {
+    func getBox() -> BoxType
     func getGenericHash() -> GenericHashType
-    func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType
     func getSign() -> SignType
+    func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType
     
-    func generateBlindingFactor(serverPublicKey: String) -> Bytes?
+    func generateBlindingFactor(serverPublicKey: String, genericHash: GenericHashType) -> Bytes?
     func blindedKeyPair(serverPublicKey: String, edKeyPair: Box.KeyPair, genericHash: GenericHashType) -> Box.KeyPair?
     func sogsSignature(message: Bytes, secretKey: Bytes, blindedSecretKey ka: Bytes, blindedPublicKey kA: Bytes) -> Bytes?
     
     func combineKeys(lhsKeyBytes: Bytes, rhsKeyBytes: Bytes) -> Bytes?
     func sharedBlindedEncryptionKey(secretKey a: Bytes, otherBlindedPublicKey: Bytes, fromBlindedPublicKey kA: Bytes, toBlindedPublicKey kB: Bytes, genericHash: GenericHashType) -> Bytes?
     
-    func sessionId(_ sessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String) -> Bool
+    func sessionId(_ sessionId: String, matchesBlindedId blindedSessionId: String, serverPublicKey: String, genericHash: GenericHashType) -> Bool
 }
 
 public protocol AeadXChaCha20Poly1305IetfType {
@@ -32,12 +33,9 @@ public protocol Ed25519Type {
     func verifySignature(_ signature: Data, publicKey: Data, data: Data) throws -> Bool
 }
 
-public protocol SignType {
-    var PublicKeyBytes: Int { get }
-    
-    func toX25519(ed25519PublicKey: Bytes) -> Bytes?
-    func signature(message: Bytes, secretKey: Bytes) -> Bytes?
-    func verify(message: Bytes, publicKey: Bytes, signature: Bytes) -> Bool
+public protocol BoxType {
+    func seal(message: Bytes, recipientPublicKey: Bytes) -> Bytes?
+    func open(anonymousCipherText: Bytes, recipientPublicKey: Bytes, recipientSecretKey: Bytes) -> Bytes?
 }
 
 public protocol GenericHashType {
@@ -46,7 +44,24 @@ public protocol GenericHashType {
     func hashSaltPersonal(message: Bytes, outputLength: Int, key: Bytes?, salt: Bytes, personal: Bytes) -> Bytes?
 }
 
+public protocol SignType {
+    var Bytes: Int { get }
+    var PublicKeyBytes: Int { get }
+    
+    func toX25519(ed25519PublicKey: Bytes) -> Bytes?
+    func signature(message: Bytes, secretKey: Bytes) -> Bytes?
+    func verify(message: Bytes, publicKey: Bytes, signature: Bytes) -> Bool
+}
+
 // MARK: - Default Values
+
+extension GenericHashType {
+    func hash(message: Bytes) -> Bytes? { return hash(message: message, key: nil) }
+    
+    func hashSaltPersonal(message: Bytes, outputLength: Int, salt: Bytes, personal: Bytes) -> Bytes? {
+        return hashSaltPersonal(message: message, outputLength: outputLength, key: nil, salt: salt, personal: personal)
+    }
+}
 
 extension AeadXChaCha20Poly1305IetfType {
     func encrypt(message: Bytes, secretKey: Bytes, nonce: Bytes) -> Bytes? {
@@ -58,17 +73,10 @@ extension AeadXChaCha20Poly1305IetfType {
     }
 }
 
-extension GenericHashType {
-    func hash(message: Bytes) -> Bytes? { return hash(message: message, key: nil) }
-    
-    func hashSaltPersonal(message: Bytes, outputLength: Int, salt: Bytes, personal: Bytes) -> Bytes? {
-        return hashSaltPersonal(message: message, outputLength: outputLength, key: nil, salt: salt, personal: personal)
-    }
-}
-
 // MARK: - Conformance
 
 extension Sodium: SodiumType {
+    public func getBox() -> BoxType { return box }
     public func getGenericHash() -> GenericHashType { return genericHash }
     public func getSign() -> SignType { return sign }
     public func getAeadXChaCha20Poly1305Ietf() -> AeadXChaCha20Poly1305IetfType { return aead.xchacha20poly1305ietf }
@@ -78,9 +86,10 @@ extension Sodium: SodiumType {
     }
 }
 
-extension Aead.XChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {}
-extension Sign: SignType {}
+extension Box: BoxType {}
 extension GenericHash: GenericHashType {}
+extension Sign: SignType {}
+extension Aead.XChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {}
 
 struct Ed25519Wrapper: Ed25519Type {
     func sign(data: Bytes, keyPair: ECKeyPair) throws -> Bytes? {
