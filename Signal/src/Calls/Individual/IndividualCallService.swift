@@ -757,6 +757,44 @@ import CallKit
             call.individualCall.state = .localHangup
             callService.terminate(call: call)
 
+        case .endedRemoteReCall:
+            guard call === callService.currentCall else {
+                callService.cleanupStaleCall(call)
+                return
+            }
+
+            if let callRecord = call.individualCall.callRecord {
+                switch callRecord.callType {
+                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
+                    // already handled and ended, don't update the call record.
+                    break
+                case .incomingIncomplete, .incoming:
+                    callRecord.updateCallType(.incomingMissed)
+                    callUIAdapter.reportMissedCall(call)
+                case .outgoingIncomplete:
+                    callRecord.updateCallType(.outgoingMissed)
+                    callUIAdapter.remoteBusy(call)
+                case .outgoing:
+                    callRecord.updateCallType(.outgoingMissed)
+                    callUIAdapter.reportMissedCall(call)
+                @unknown default:
+                    owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
+                }
+            } else {
+                assert(call.individualCall.direction == .incoming)
+                let callRecord = TSCall(
+                    callType: .incomingMissed,
+                    offerType: call.individualCall.offerMediaType,
+                    thread: call.individualCall.thread,
+                    sentAtTimestamp: call.individualCall.sentAtTimestamp
+                )
+                databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
+                call.individualCall.callRecord = callRecord
+                callUIAdapter.reportMissedCall(call)
+            }
+            call.individualCall.state = .localHangup
+            callService.terminate(call: call)
+
         case .endedTimeout:
             let description: String
 
@@ -769,6 +807,9 @@ import CallKit
             handleFailedCall(failedCall: call, error: SignalCall.CallError.timeout(description: description), shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedSignalingFailure:
+            handleFailedCall(failedCall: call, error: SignalCall.CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
+
+        case .endedGlareHandlingFailure:
             handleFailedCall(failedCall: call, error: SignalCall.CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedInternalFailure:
