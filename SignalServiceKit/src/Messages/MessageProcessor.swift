@@ -499,6 +499,13 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     }
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
+        // PNI TODO: actually handle destinationUuid, don't just use it as a filter.
+        if let destinationUuidString = encryptedEnvelope.destinationUuid,
+           let localAci = self.tsAccountManager.localUuid,
+           localAci != UUID(uuidString: destinationUuidString) {
+            return .failure(MessageProcessingError.wrongDestinationUuid)
+        }
+
         let result = Self.messageDecrypter.decryptEnvelope(
             encryptedEnvelope,
             envelopeData: encryptedEnvelopeData,
@@ -670,6 +677,7 @@ public class PendingEnvelopes {
 // MARK: -
 
 public enum MessageProcessingError: Error {
+    case wrongDestinationUuid
     case duplicatePendingEnvelope
     case blockedSender
 }

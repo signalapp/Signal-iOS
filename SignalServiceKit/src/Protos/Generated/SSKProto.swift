@@ -77,6 +77,9 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
         if hasSourceDevice {
             builder.setSourceDevice(sourceDevice)
         }
+        if let _value = destinationUuid {
+            builder.setDestinationUuid(_value)
+        }
         if let _value = relay {
             builder.setRelay(_value)
         }
@@ -143,6 +146,17 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
         @objc
         public func setSourceDevice(_ valueParam: UInt32) {
             proto.sourceDevice = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDestinationUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.destinationUuid = valueParam
+        }
+
+        public func setDestinationUuid(_ valueParam: String) {
+            proto.destinationUuid = valueParam
         }
 
         @objc
@@ -269,6 +283,18 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     @objc
     public var hasSourceDevice: Bool {
         return proto.hasSourceDevice
+    }
+
+    @objc
+    public var destinationUuid: String? {
+        guard hasDestinationUuid else {
+            return nil
+        }
+        return proto.destinationUuid
+    }
+    @objc
+    public var hasDestinationUuid: Bool {
+        return proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
     }
 
     @objc

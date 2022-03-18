@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -481,6 +481,10 @@ public class MessageFetcherJob: NSObject {
 
             if let sourceDevice: UInt32 = try params.optional(key: "sourceDevice") {
                 builder.setSourceDevice(sourceDevice)
+            }
+
+            if let destinationUuid: String = try params.optional(key: "destinationUuid") {
+                builder.setDestinationUuid(destinationUuid)
             }
 
             if let legacyMessage = try params.optionalBase64EncodedData(key: "message") {

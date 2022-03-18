@@ -194,6 +194,41 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         }
         waitForExpectations(timeout: 1.0)
     }
+
+    func testWrongDestinationUuid() {
+        write { transaction in
+            try! self.runner.initialize(senderClient: self.bobClient,
+                                        recipientClient: self.localClient,
+                                        transaction: transaction)
+        }
+
+        // Wait until message processing has completed, otherwise future
+        // tests may break as we try and drain the processing queue.
+        let expectFlushNotification = expectation(description: "queue flushed")
+        NotificationCenter.default.observe(once: MessageProcessor.messageProcessorDidFlushQueue).done { _ in
+            expectFlushNotification.fulfill()
+        }
+
+        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
+        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
+        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
+        envelopeBuilder.setServerGuid(UUID().uuidString)
+        envelopeBuilder.setDestinationUuid(UUID().uuidString)
+        let envelopeData = try! envelopeBuilder.buildSerializedData()
+        messageProcessor.processEncryptedEnvelopeData(envelopeData,
+                                                      serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                                      envelopeSource: .tests) { error in
+            switch error {
+            case MessageProcessingError.wrongDestinationUuid?:
+                break
+            case let error?:
+                XCTFail("unexpected error \(error)")
+            case nil:
+                XCTFail("should have failed")
+            }
+        }
+        waitForExpectations(timeout: 1.0)
+    }
 }
 
 // MARK: - Helpers

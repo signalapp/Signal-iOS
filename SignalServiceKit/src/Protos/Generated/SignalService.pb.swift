@@ -55,6 +55,15 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `sourceDevice`. Subsequent reads from it will return its default value.
   mutating func clearSourceDevice() {self._sourceDevice = nil}
 
+  var destinationUuid: String {
+    get {return _destinationUuid ?? String()}
+    set {_destinationUuid = newValue}
+  }
+  /// Returns true if `destinationUuid` has been explicitly set.
+  var hasDestinationUuid: Bool {return self._destinationUuid != nil}
+  /// Clears the value of `destinationUuid`. Subsequent reads from it will return its default value.
+  mutating func clearDestinationUuid() {self._destinationUuid = nil}
+
   var relay: String {
     get {return _relay ?? String()}
     set {_relay = newValue}
@@ -175,6 +184,7 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _type: SignalServiceProtos_Envelope.TypeEnum?
   fileprivate var _sourceE164: String?
   fileprivate var _sourceDevice: UInt32?
+  fileprivate var _destinationUuid: String?
   fileprivate var _relay: String?
   fileprivate var _timestamp: UInt64?
   fileprivate var _legacyMessage: Data?
@@ -4433,6 +4443,100 @@ struct SignalServiceProtos_DecryptionErrorMessage {
   fileprivate var _deviceID: UInt32?
 }
 
+#if swift(>=5.5) && canImport(_Concurrency)
+extension SignalServiceProtos_Envelope: @unchecked Sendable {}
+extension SignalServiceProtos_Envelope.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_TypingMessage: @unchecked Sendable {}
+extension SignalServiceProtos_TypingMessage.Action: @unchecked Sendable {}
+extension SignalServiceProtos_StoryMessage: @unchecked Sendable {}
+extension SignalServiceProtos_Preview: @unchecked Sendable {}
+extension SignalServiceProtos_TextAttachment: @unchecked Sendable {}
+extension SignalServiceProtos_TextAttachment.Style: @unchecked Sendable {}
+extension SignalServiceProtos_TextAttachment.Gradient: @unchecked Sendable {}
+extension SignalServiceProtos_Content: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.Offer: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.Offer.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.Answer: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.IceUpdate: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.Busy: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.Hangup: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.Opaque: @unchecked Sendable {}
+extension SignalServiceProtos_CallMessage.Opaque.Urgency: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Flags: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.ProtocolVersion: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Quote: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact.Name: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact.Phone: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact.Email: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact.Email.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact.PostalAddress: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Contact.Avatar: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Sticker: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Reaction: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Delete: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.BodyRange: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.GroupCallUpdate: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.Amount: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.RequestId: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.Request: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.Notification: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.Payment.Cancellation: @unchecked Sendable {}
+extension SignalServiceProtos_DataMessage.StoryContext: @unchecked Sendable {}
+extension SignalServiceProtos_NullMessage: @unchecked Sendable {}
+extension SignalServiceProtos_ReceiptMessage: @unchecked Sendable {}
+extension SignalServiceProtos_ReceiptMessage.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_Verified: @unchecked Sendable {}
+extension SignalServiceProtos_Verified.State: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Sent: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Contacts: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Groups: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Blocked: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Request: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Request.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Read: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Viewed: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Configuration: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.StickerPackOperation: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.ViewOnceOpen: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.FetchLatest: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.Keys: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.MessageRequestResponse: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.OutgoingPayment: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: @unchecked Sendable {}
+extension SignalServiceProtos_AttachmentPointer: @unchecked Sendable {}
+extension SignalServiceProtos_AttachmentPointer.Flags: @unchecked Sendable {}
+extension SignalServiceProtos_GroupContext: @unchecked Sendable {}
+extension SignalServiceProtos_GroupContext.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_GroupContext.Member: @unchecked Sendable {}
+extension SignalServiceProtos_GroupContextV2: @unchecked Sendable {}
+extension SignalServiceProtos_ContactDetails: @unchecked Sendable {}
+extension SignalServiceProtos_ContactDetails.Avatar: @unchecked Sendable {}
+extension SignalServiceProtos_GroupDetails: @unchecked Sendable {}
+extension SignalServiceProtos_GroupDetails.Avatar: @unchecked Sendable {}
+extension SignalServiceProtos_GroupDetails.Member: @unchecked Sendable {}
+extension SignalServiceProtos_Pack: @unchecked Sendable {}
+extension SignalServiceProtos_Pack.Sticker: @unchecked Sendable {}
+extension SignalServiceProtos_PaymentAddress: @unchecked Sendable {}
+extension SignalServiceProtos_PaymentAddress.MobileCoin: @unchecked Sendable {}
+extension SignalServiceProtos_DecryptionErrorMessage: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 private let _protobuf_package = "SignalServiceProtos"
@@ -4443,6 +4547,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     1: .same(proto: "type"),
     2: .same(proto: "sourceE164"),
     7: .same(proto: "sourceDevice"),
+    13: .same(proto: "destinationUuid"),
     3: .same(proto: "relay"),
     5: .same(proto: "timestamp"),
     6: .same(proto: "legacyMessage"),
@@ -4468,6 +4573,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 9: try { try decoder.decodeSingularStringField(value: &self._serverGuid) }()
       case 10: try { try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp) }()
       case 11: try { try decoder.decodeSingularStringField(value: &self._sourceUuid) }()
+      case 13: try { try decoder.decodeSingularStringField(value: &self._destinationUuid) }()
       default: break
       }
     }
@@ -4508,6 +4614,9 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     try { if let v = self._sourceUuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 11)
     } }()
+    try { if let v = self._destinationUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 13)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4515,6 +4624,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._type != rhs._type {return false}
     if lhs._sourceE164 != rhs._sourceE164 {return false}
     if lhs._sourceDevice != rhs._sourceDevice {return false}
+    if lhs._destinationUuid != rhs._destinationUuid {return false}
     if lhs._relay != rhs._relay {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs._legacyMessage != rhs._legacyMessage {return false}

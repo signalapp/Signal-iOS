@@ -29,6 +29,7 @@ message Envelope {
   optional Type   type            = 1;
   optional string sourceE164      = 2;
   optional uint32 sourceDevice    = 7;
+  optional string destinationUuid = 13;
   optional string relay           = 3;
   // @required
   optional uint64 timestamp       = 5;
