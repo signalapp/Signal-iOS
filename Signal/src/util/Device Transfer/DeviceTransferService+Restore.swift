@@ -166,7 +166,7 @@ extension DeviceTransferService {
             // We could be receiving a database in any of the directory modes,
             // so we force the restore path to be the "primary" database since
             // that is generally what we desire. If we're hotswapping, this
-            // path will be later overriden with the hotswap path.
+            // path will be later overridden with the hotswap path.
             let newFilePath: String
             if DeviceTransferService.databaseIdentifier == file.identifier {
                 newFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .primary).path

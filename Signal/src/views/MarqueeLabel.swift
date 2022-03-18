@@ -312,7 +312,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     /**
      The length of transparency fade at the left and right edges of the frame.
      
-     This propery sets the size (in points) of the view edge transparency fades on the left and right edges of a `MarqueeLabel`. The
+     This property sets the size (in points) of the view edge transparency fades on the left and right edges of a `MarqueeLabel`. The
      transparency fades from an alpha of 1.0 (fully visible) to 0.0 (fully transparent) over this distance. Values set to this property
      will be sanitized to prevent a fade length greater than 1/2 of the frame width.
      
@@ -569,7 +569,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         returnLabelToHome()
 
         // Check if label should scroll
-        // Note that the holdScrolling propery does not affect this
+        // Note that the holdScrolling property does not affect this
         if !labelShouldScroll() {
             // Set text alignment and break mode to act like a normal label
             sublabel.textAlignment = super.textAlignment

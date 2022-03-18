@@ -182,7 +182,7 @@ extension TSOutgoingMessage {
     /// Returns a groupId relevant to the message. This is included in the envelope, outside the content encryption.
     ///
     /// Usually, this will be the groupId of the target thread. However, there's a special case here where message resend
-    /// responses will inherit the groupId of the original message. This probably shouldn't be overriden by anything except
+    /// responses will inherit the groupId of the original message. This probably shouldn't be overridden by anything except
     /// OWSOutgoingMessageResendResponse
     @objc
     func envelopeGroupIdWithTransaction(_ transaction: SDSAnyReadTransaction) -> Data? {

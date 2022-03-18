@@ -1036,7 +1036,7 @@ NS_ASSUME_NONNULL_BEGIN
     // must be handled sync if we're already on the main thread.  This includes "offer"
     // and "urgent opaque" call messages.  Otherwise we violate this constraint:
     //
-    // (PushKit) Apps receving VoIP pushes must post an incoming call via CallKit in the same run loop as
+    // (PushKit) Apps receiving VoIP pushes must post an incoming call via CallKit in the same run loop as
     // pushRegistry:didReceiveIncomingPushWithPayload:forType:[withCompletionHandler:] without delay.
     //
     // Which can result in the main app being terminated with 0xBAADCA11:
@@ -1184,7 +1184,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!thread) {
-        // This isn't neccesarily an error.  We might not yet know about the thread,
+        // This isn't necessarily an error.  We might not yet know about the thread,
         // in which case we don't need to display the typing indicators.
         OWSLogWarn(@"Could not locate thread for typingMessage.");
         return;
@@ -1311,7 +1311,7 @@ NS_ASSUME_NONNULL_BEGIN
             // the group to the person that re-added us to the group.
             //
             // But we do want to attribute re-adding us to the user who
-            // did it.  Therefore we do two seperate group upserts.  The
+            // did it.  Therefore we do two separate group upserts.  The
             // first ensures that the group exists and that the other
             // changes are _not_ attributed (groupUpdateSourceAddress == nil).
             //

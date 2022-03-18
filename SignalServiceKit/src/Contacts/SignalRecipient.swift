@@ -224,7 +224,7 @@ extension SignalRecipient {
 
         transaction.addAsyncCompletion(queue: .global()) {
             // Evacuate caches again once the transaction completes, in case
-            // some kind of race occured.
+            // some kind of race occurred.
             ModelReadCaches.shared.evacuateAllCaches()
         }
     }

@@ -169,7 +169,7 @@ public class OnboardingTransferQRCodeViewController: OnboardingBaseViewControlle
     }
 
     override func shouldShowBackButton() -> Bool {
-        // Never show the back buton here
+        // Never show the back button here
         return false
     }
 }

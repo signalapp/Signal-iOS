@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # When we make a hotfix, we need to reverse integrate our hotfix back into
-# master. After commiting to master, this script audits that all tags have been
+# master. After committing to master, this script audits that all tags have been
 # reverse integrated.
 import subprocess
 from distutils.version import LooseVersion
@@ -132,7 +132,7 @@ def main():
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
 
-    # Interal Builds
+    # Internal Builds
     #
     # If you want to tag a build which is not intended to be reverse
     # integrated, include the text "internal" somewhere in the tag name, such as

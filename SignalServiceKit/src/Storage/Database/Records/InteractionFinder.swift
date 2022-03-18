@@ -1361,7 +1361,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         // All of these message types could have been triggered by anyone in
         // the conversation. So, if one of them exists we have to assume the conversation
         // *might* have received messages. At some point it'd be nice to refactor this to
-        // be more explict, but not all our interaction types allow for that level of
+        // be more explicit, but not all our interaction types allow for that level of
         // granularity presently.
 
         let interactionTypes: [SDSRecordType] = [

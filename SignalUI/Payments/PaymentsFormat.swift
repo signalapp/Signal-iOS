@@ -51,7 +51,7 @@ public extension PaymentsFormat {
     // Used for formatting decimal numbers in the
     // send payment flow.  _NOT_ used for display.
     // The format is convenient to parse into an "input string"
-    // the correponds to our custom keyboard.
+    // the corresponds to our custom keyboard.
     private static var doubleFormat: NumberFormatter = {
         // For formatting numbers as arabic numerals without
         // any commas, etc. 1234567.890123

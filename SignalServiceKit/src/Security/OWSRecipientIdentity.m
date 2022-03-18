@@ -51,7 +51,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
     verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);
 
     if (paddingBytesLength > 0) {
-        // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so
+        // We add the same amount of padding in the VerificationStateSync message and it's corresponding NullMessage so
         // that the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage.
         // We pad the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be
         // *additionally* padded by the superclass while being sent. The end result is we send a NullMessage of a
@@ -81,7 +81,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
  * Record for a recipients identity key and some meta data around it used to make trust decisions.
  *
  * NOTE: Instances of this class MUST only be retrieved/persisted via it's internal `dbConnection`,
- *       which makes some special accomodations to enforce consistency.
+ *       which makes some special accommodations to enforce consistency.
  */
 @implementation OWSRecipientIdentity
 

@@ -433,7 +433,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Delete message1.
             MessageSendLog.deleteAllPayloadsForInteraction(message1, transaction: writeTx)
 
-            // We expect that the read receipt message is deleted because it relates to the deleted mesage
+            // We expect that the read receipt message is deleted because it relates to the deleted message
             // We expect message2's payload to stick around, because none of its content is dependent on message1
             XCTAssertFalse(isPayloadAlive(index: index1, transaction: writeTx))
             XCTAssertTrue(isPayloadAlive(index: index2, transaction: writeTx))

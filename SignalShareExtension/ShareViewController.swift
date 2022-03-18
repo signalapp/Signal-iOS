@@ -514,7 +514,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // If we have a pre-selected thread, we wait to show the approval view
         // until the attachments have been built. Otherwise, we'll present it
-        // immeidately and tell it what attachments we're sharing once we've
+        // immediately and tell it what attachments we're sharing once we've
         // finished building them.
         if selectedThread == nil { showPrimaryViewController(conversationPicker) }
 

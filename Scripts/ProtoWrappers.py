@@ -87,7 +87,7 @@ def swift_type_for_proto_primitive_type(proto_type):
 def is_swift_primitive_type(proto_type):
     return proto_type in ('String', 'UInt64', 'UInt32', 'UInt64', 'Bool', 'Data')
 
-# Provides conext for writing an indented block surrounded by braces.
+# Provides context for writing an indented block surrounded by braces.
 #
 # e.g.
 #

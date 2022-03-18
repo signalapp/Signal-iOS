@@ -278,7 +278,7 @@ public class CVMessageMapping: NSObject {
                 return newLoadBounds
             }
 
-            // Merge as much as possible of the two regions, with two contraints:
+            // Merge as much as possible of the two regions, with two constraints:
             //
             // * The merged region cannot be larger than maxInteractionCount.
             // * The merged region must contain all of newLoadBounds.

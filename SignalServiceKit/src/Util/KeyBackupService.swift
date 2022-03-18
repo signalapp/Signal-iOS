@@ -775,7 +775,7 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("Failed to delete keys from previous enclave during migration \(error)")
             }
         }.done {
-            Logger.info("Successfuly migrated KBS enclave")
+            Logger.info("Successfully migrated KBS enclave")
         }.catch { error in
             owsFailDebug("Failed to migrate KBS enclave \(error)")
         }

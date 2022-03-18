@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We add these gestures to mediaView rather than
     // the root view so that interacting with the video player
-    // progres bar doesn't trigger any of these gestures.
+    // progress bar doesn't trigger any of these gestures.
     [self addGestureRecognizersToView:self.mediaView];
 
     [scrollView addSubview:self.mediaView];

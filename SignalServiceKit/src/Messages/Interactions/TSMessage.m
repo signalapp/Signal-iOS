@@ -206,7 +206,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     if (_schemaVersion < 4) {
         // Wipe out the body field on these legacy attachment messages.
         //
-        // Explantion: Historically, a message sent from iOS could be an attachment XOR a text message,
+        // Explanation: Historically, a message sent from iOS could be an attachment XOR a text message,
         // but now we support sending an attachment+caption as a single message.
         //
         // Other clients have supported sending attachment+caption in a single message for a long time.

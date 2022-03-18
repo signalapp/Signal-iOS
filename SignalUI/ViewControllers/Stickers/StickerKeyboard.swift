@@ -266,7 +266,7 @@ public class StickerKeyboard: CustomKeyboard {
     private var numberOfPages: CGFloat { return CGFloat(stickerPackCollectionViews.count) }
 
     // These thresholds indicate the offset at which we update the next / previous page.
-    // They're not exactly half way through the transition, to avoid us continously
+    // They're not exactly half way through the transition, to avoid us continuously
     // bouncing back and forth between pages.
     private var previousPageThreshold: CGFloat { return pageWidth * 0.45 }
     private var nextPageThreshold: CGFloat { return pageWidth + previousPageThreshold }
@@ -440,7 +440,7 @@ public class StickerKeyboard: CustomKeyboard {
 
             // We're about to cross the threshold into a new page, execute any pending updates.
             // We wait to execute these until we're sure we're going to cross over as it
-            // can cause some UI jitter that interupts scrolling.
+            // can cause some UI jitter that interrupts scrolling.
         } else if offsetX >= pageWidth * 0.95 && offsetX <= pageWidth * 1.05 {
             applyPendingPageChangeUpdates()
         }

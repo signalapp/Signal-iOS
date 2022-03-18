@@ -34,14 +34,14 @@ void showDebugUI(TSThread *thread, UIViewController *fromViewController)
 
 - (NSString *)name
 {
-    OWSFailDebug(@"This method should be overriden in subclasses.");
+    OWSFailDebug(@"This method should be overridden in subclasses.");
 
     return @"";
 }
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
-    OWSFailDebug(@"This method should be overriden in subclasses.");
+    OWSFailDebug(@"This method should be overridden in subclasses.");
 
     return nil;
 }

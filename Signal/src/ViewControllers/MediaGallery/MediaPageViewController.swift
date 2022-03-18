@@ -150,7 +150,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         mediaInteractiveDismiss = MediaInteractiveDismiss(targetViewController: self)
         mediaInteractiveDismiss.addGestureRecognizer(to: view)
 
-        // Even though bars are opaque, we want content to be layed out behind them.
+        // Even though bars are opaque, we want content to be laid out behind them.
         // The bars might obscure part of the content, but they can easily be hidden by tapping
         // The alternative would be that content would shift when the navbars hide.
         self.extendedLayoutIncludesOpaqueBars = true

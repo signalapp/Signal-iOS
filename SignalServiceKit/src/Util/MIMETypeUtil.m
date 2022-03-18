@@ -1544,7 +1544,7 @@ NSString *const kLottieStickerFileExtension = @"lottiesticker";
             @"text/x-script.lisp" : @"lsp",
             @"text/x-script.perl" : @"pl",
             @"text/x-script.perl-module" : @"pm",
-            @"text/x-script.phyton" : @"py",
+            @"text/x-script.python" : @"py",
             @"text/x-script.rexx" : @"rexx",
             @"text/x-script.scheme" : @"scm",
             @"text/x-script.sh" : @"sh",

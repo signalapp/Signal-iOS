@@ -544,7 +544,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(AppReadiness.isAppReady);
 
     if (!self.tsAccountManager.isRegistered) {
-        OWSFailDebug(@"tsAccountManager.isRegistered was unexpectely false");
+        OWSFailDebug(@"tsAccountManager.isRegistered was unexpectedly false");
         success();
         return;
     }

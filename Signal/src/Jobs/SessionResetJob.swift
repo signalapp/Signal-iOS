@@ -124,7 +124,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             self.databaseStorage.write { transaction in
                 // Archive the just-created session since the recipient should delete their corresponding
                 // session upon receiving and decrypting our EndSession message.
-                // Otherwise if we send another message before them, they wont have the session to decrypt it.
+                // Otherwise if we send another message before them, they won't have the session to decrypt it.
                 // PNI TODO: same as above
                 self.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(for: self.recipientAddress,
                                                                                     transaction: transaction)
@@ -164,7 +164,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
             // Even though this is the failure handler - which means probably the recipient didn't receive the message
-            // there's a chance that our send did succeed and the server just timed out our repsonse or something.
+            // there's a chance that our send did succeed and the server just timed out our response or something.
             // Since the cost of sending a future message using a session the recipient doesn't have is so high,
             // we archive the session just in case.
             //

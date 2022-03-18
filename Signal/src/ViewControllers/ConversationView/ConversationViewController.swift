@@ -206,7 +206,7 @@ public class ConversationViewController: OWSViewController {
         // If we become the first responder, it means that the
         // input toolbar is not the first responder. As such,
         // we should clear out the desired keyboard since an
-        // interactive dismissal may have just occured and we
+        // interactive dismissal may have just occurred and we
         // need to update the UI to reflect that fact. We don't
         // actually ever want to be the first responder, so resign
         // immediately. We just want to know when the responder
@@ -455,7 +455,7 @@ public class ConversationViewController: OWSViewController {
         // However it's possible this draft-text is set before the inputToolbar (an inputAccessoryView) is mounted
         // in the view hierarchy. Since it's not in the view hierarchy, it hasn't been laid out and has no width,
         // which is used to determine height.
-        // So here we unsure the proper height once we know everything's been layed out.
+        // So here we unsure the proper height once we know everything's been laid out.
         self.inputToolbar?.ensureTextViewHeight()
 
         self.positionGroupCallTooltip()

@@ -1235,13 +1235,13 @@ private extension SaveableAsset {
     init(attachment: SignalAttachment) throws {
         if attachment.isValidImage {
             guard let imageUrl = attachment.dataUrl else {
-                throw OWSAssertionError("imageUrl was unexpetedly nil")
+                throw OWSAssertionError("imageUrl was unexpectedly nil")
             }
 
             self = .imageUrl(imageUrl)
         } else if attachment.isValidVideo {
             guard let videoUrl = attachment.dataUrl else {
-                throw OWSAssertionError("videoUrl was unexpetedly nil")
+                throw OWSAssertionError("videoUrl was unexpectedly nil")
             }
 
             self = .videoUrl(videoUrl)

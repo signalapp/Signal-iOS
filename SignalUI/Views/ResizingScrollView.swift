@@ -32,7 +32,7 @@ public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrol
     // interaction happens with the scrollView directly, instead we translate
     // its movement onto the view that is being resized. Doing this allows us
     // to get all the properties around tracking, bouncing, and decelerating
-    // of an actuall scrollView in contexts that aren't achievable with a
+    // of an actual scrollView in contexts that aren't achievable with a
     // scrollView directly.
     private let gestureScrollView = UIScrollView()
     private lazy var heightConstraint = gestureScrollView.autoSetDimension(.height, toSize: 0, relation: .lessThanOrEqual)
@@ -117,7 +117,7 @@ public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrol
             newHeight = min(currentHeight + (new.maximumHeight - current.maximumHeight), new.maximumHeight)
         } else {
             // If the amount of space we can take up is shrinking,
-            // shrink to accomdate the new space.
+            // shrink to accommodate the new space.
             newHeight = max(currentHeight - (current.maximumHeight - new.maximumHeight), new.minimumHeight)
         }
 

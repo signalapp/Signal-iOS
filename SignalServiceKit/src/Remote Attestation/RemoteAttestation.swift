@@ -133,7 +133,7 @@ public extension RemoteAttestation {
             }
 
             guard let password = authParamsDict["password"] as? String, !password.isEmpty else {
-                throw attestationError(reason: "missing or empty pasword")
+                throw attestationError(reason: "missing or empty password")
             }
 
             guard let username = authParamsDict["username"] as? String, !username.isEmpty else {

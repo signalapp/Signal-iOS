@@ -67,7 +67,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         Logger.debug("")
 
         // Only complete on dismissal if we're ready to do so. This is by
-        // default always true, but can be overriden on an individual basis.
+        // default always true, but can be overridden on an individual basis.
         guard isReadyToComplete, !isDismissWithoutCompleting else { return }
 
         markAsComplete()

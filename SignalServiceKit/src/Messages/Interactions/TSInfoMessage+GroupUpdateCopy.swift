@@ -1431,7 +1431,7 @@ extension GroupUpdateCopy {
                 // If the adder was an admin, we treat this as "approved".
                 if oldGroupMembership.isFullMemberAndAdministrator(updaterAddress) {
                     let format = OWSLocalizedString("GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT",
-                                                   comment: "Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}.")
+                                                   comment: "Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}.")
                     addItem(.userMembershipState, address: address, format: format, updaterName)
                 } else {
                     addItem(.userMembershipState_added,

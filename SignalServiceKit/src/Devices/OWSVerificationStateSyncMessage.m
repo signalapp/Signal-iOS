@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssertDebug(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    // We add the same amount of padding in the VerificationStateSync message and it's coresponding NullMessage so that
+    // We add the same amount of padding in the VerificationStateSync message and it's corresponding NullMessage so that
     // the sync message is indistinguishable from an outgoing Sent transcript corresponding to the NullMessage. We pad
     // the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be *additionally*
     // padded by the superclass while being sent. The end result is we send a NullMessage of a non-distinct size, and a

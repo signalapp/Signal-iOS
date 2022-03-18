@@ -742,7 +742,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     TSContactThread *contactThread =
         [TSContactThread getOrCreateThreadWithContactAddress:message.verificationForRecipientAddress];
 
-    // Send null message to appear as though we're sending a normal message to cover the sync messsage sent
+    // Send null message to appear as though we're sending a normal message to cover the sync message sent
     // subsequently
     OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
                                                                    verificationStateSyncMessage:message];

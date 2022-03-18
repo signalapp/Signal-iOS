@@ -63,7 +63,7 @@ public class StickerPackViewController: OWSViewController {
             return
         }
 
-        // Pre-iOS 13, or without the iOS 13 SDK, we need to manualy setup the
+        // Pre-iOS 13, or without the iOS 13 SDK, we need to manually setup the
         // form sheet in order to allow it to blur and show through the background.
 
         modalPresentationStyle = .custom

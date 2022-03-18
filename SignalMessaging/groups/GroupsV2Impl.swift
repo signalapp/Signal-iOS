@@ -602,7 +602,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
             let pattern = try! NSRegularExpression(pattern: #"^versions (\d+)-(\d+)/(\d+)$"#)
             guard let match = pattern.firstMatch(in: header, range: header.entireRange) else {
-                OWSLogger.warn("Unparseable Content-Range for group update request: \(header)")
+                OWSLogger.warn("Unparsable Content-Range for group update request: \(header)")
                 return nil
             }
 
@@ -1719,7 +1719,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
             // The PATCH request that adds us to the group (as a full or requesting member)
             // only return the "change actions" proto data, but not a full snapshot
-            // so we need to seperately GET the latest group state and update the database.
+            // so we need to separately GET the latest group state and update the database.
             //
             // Download and update database with the group state.
             return firstly {

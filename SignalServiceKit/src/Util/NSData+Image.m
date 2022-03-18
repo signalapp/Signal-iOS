@@ -537,7 +537,7 @@ typedef struct {
 - (CGSize)sizeForLottieStickerData
 {
     // This method is expensive and we don't currently need it.
-    OWSFailDebug(@"Deprecated mthod.");
+    OWSFailDebug(@"Deprecated method.");
 
     NSError *_Nullable error;
     NSDictionary<NSString *, id> *_Nullable json = [NSJSONSerialization JSONObjectWithData:self options:0 error:&error];

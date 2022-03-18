@@ -781,7 +781,7 @@ private class OWSUploadFormV3: NSObject {
 // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
 fileprivate extension OWSUploadFormV2 {
     var asOrderedDictionary: OrderedDictionary<String, String> {
-        // We have to build up the form manually vs. simply passing in a paramaters dict
+        // We have to build up the form manually vs. simply passing in a parameters dict
         // because AWS is sensitive to the order of the form params (at least the "key"
         // field must occur early on).
         var result = OrderedDictionary<String, String>()

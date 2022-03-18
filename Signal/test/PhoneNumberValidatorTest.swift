@@ -10,7 +10,7 @@ class PhoneNumberValidatorTest: SignalBaseTest {
     func assertValid(e164: String, file: StaticString = #file, line: UInt = #line) {
         let validator = PhoneNumberValidator()
         guard let phoneNumber = PhoneNumber(fromE164: e164) else {
-            XCTFail("unparseable phone number", file: file, line: line)
+            XCTFail("unparsable phone number", file: file, line: line)
             return
         }
         let isValid = validator.isValidForRegistration(phoneNumber: phoneNumber)
@@ -20,7 +20,7 @@ class PhoneNumberValidatorTest: SignalBaseTest {
     func assertInvalid(e164: String, file: StaticString = #file, line: UInt = #line) {
         let validator = PhoneNumberValidator()
         guard let phoneNumber = PhoneNumber(fromUserSpecifiedText: e164) else {
-            // number wasn't even parseable
+            // number wasn't even parsable
             return
         }
         let isValid = validator.isValidForRegistration(phoneNumber: phoneNumber)

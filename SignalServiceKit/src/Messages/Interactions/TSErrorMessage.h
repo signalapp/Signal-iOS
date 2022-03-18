@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_CLOSED_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
     // DEPRECATED: We no longer create TSErrorMessageWrongTrustedIdentityKey, but
-    // persisted legacy messages could exist indefinitly.
+    // persisted legacy messages could exist indefinitely.
     TSErrorMessageWrongTrustedIdentityKey,
     TSErrorMessageInvalidKeyException,
     // unused

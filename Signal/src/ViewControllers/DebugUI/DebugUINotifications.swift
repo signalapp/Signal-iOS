@@ -68,7 +68,7 @@ class DebugUINotifications: DebugUIPage {
 
     // MARK: Helpers
 
-    // After enqueing the notification you may want to background the app or lock the screen before it triggers, so
+    // After enqueuing the notification you may want to background the app or lock the screen before it triggers, so
     // we give a little delay.
     let kNotificationDelay: TimeInterval = 5
 

@@ -465,7 +465,7 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
     }
 
     func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
-        // Current design dicates we'll go "back" to the single thing before us.
+        // Current design dictates we'll go "back" to the single thing before us.
         owsAssertDebug(viewControllers.count == 2)
 
         if let cameraViewController = viewControllers.first as? PhotoCaptureViewController {

@@ -43,7 +43,7 @@ open class CDNDownloadOperation: OWSOperation {
             throw StickerError.corruptData
         }
 
-        // We use a seperate promise so that we can cancel from the progress block.
+        // We use a separate promise so that we can cancel from the progress block.
         let (promise, future) = Promise<URL>.pending()
 
         let hasCheckedContentLength = AtomicBool(false)

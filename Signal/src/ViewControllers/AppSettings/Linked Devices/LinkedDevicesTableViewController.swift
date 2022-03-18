@@ -368,7 +368,7 @@ extension LinkedDevicesTableViewController: OWSLinkDeviceViewControllerDelegate 
             }
             self.refreshControl.attributedTitle = progressTitle
             self.refreshControl.beginRefreshing()
-            // Needed to show refresh control programatically
+            // Needed to show refresh control programmatically
             self.tableView.setContentOffset(CGPoint(x: 0, y: -self.refreshControl.height),
                                             animated: false)
         }

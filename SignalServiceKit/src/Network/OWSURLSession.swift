@@ -539,7 +539,7 @@ public class OWSURLSession: NSObject {
         finalComponents.scheme = baseUrl.scheme
         finalComponents.host = baseUrl.host
 
-        // Use query and fragement from the request.
+        // Use query and fragment from the request.
         finalComponents.query = requestComponents.query
         finalComponents.fragment = requestComponents.fragment
 
