@@ -48,7 +48,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
 
         for (index, emoji) in reactionPicker.currentEmojiSet().enumerated() {
             if let newEmoji = emojiSet[safe: index]?.rawValue {
-                reactionPicker.replaceEmojiReaction(emoji, newEmoji: newEmoji)
+                reactionPicker.replaceEmojiReaction(emoji, newEmoji: newEmoji, inPosition: index)
             }
         }
     }
@@ -66,7 +66,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
 }
 
 extension EmojiReactionPickerConfigViewController: MessageReactionPickerDelegate {
-    func didSelectReaction(reaction: String, isRemoving: Bool) {
+    func didSelectReaction(reaction: String, isRemoving: Bool, inPosition position: Int) {
 
         if presentedViewController != nil {
             self.reactionPicker.endReplaceAnimation()
@@ -82,12 +82,12 @@ extension EmojiReactionPickerConfigViewController: MessageReactionPickerDelegate
                 return
             }
 
-            self.reactionPicker.replaceEmojiReaction(reaction, newEmoji: emojiString)
+            self.reactionPicker.replaceEmojiReaction(reaction, newEmoji: emojiString, inPosition: position)
             self.reactionPicker.endReplaceAnimation()
         }
         picker.backdropColor = .clear
 
-        reactionPicker.startReplaceAnimation(focusedEmoji: reaction)
+        reactionPicker.startReplaceAnimation(focusedEmoji: reaction, inPosition: position)
         present(picker, animated: true)
     }
 
