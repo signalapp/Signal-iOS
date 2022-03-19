@@ -2264,7 +2264,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ 已改咗個谷嘅設定，淨係俾話事人傳送訊息。";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "您用條谷拎加入唔到呢個谷，因為話事人已經踢咗您出谷。";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "呢條谷拎已經失效。";
@@ -2606,7 +2606,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "請求與邀請";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ 畀 %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "更新咗呢個谷。";
@@ -6092,7 +6092,10 @@
 "STICKERS_UNINSTALL_BUTTON" = "解除安裝";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "榕樹台";
+
+/* Tooltip prompting the user to visit a story link. */
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "打開條拎去睇";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "襟章";

@@ -6094,6 +6094,9 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "Stories";
 
+/* Tooltip prompting the user to visit a story link. */
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Huy hiệu";
 

@@ -377,13 +377,13 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal ला बूस्ट करा";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "आपला बूस्ट बॅज कालबाह्य झाला आहे, आणि तो यापुढे आपल्या प्रोफाइलवर दिसणार नाही.\n\nआपन Signal वापरणे सुरू ठेवू शकता परंतु आपल्यासाठी तयार केलेल्या तंत्रज्ञानाचे समर्थन करण्यासाठी, कृपया मासिक सस्टेनर बनण्याचा विचार करा.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "आपला बूस्ट बॅज कालबाह्य झाला आहे, आणि तो यापुढे आपल्या प्रोफाइलवर दिसणार नाही.\n\nआपन आपला बूस्ट बॅज आणखी ३० दिवसांसाठी एक-वेळच्या योगदानासह पुन्हा सक्रिय करू शकता.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "आपले सस्टेनर सब्स्क्रिप्शन आपोआप रद्द झाले कारण आपन खूप काळ निष्क्रिय होता. आपला %@ बॅज यापुढे आपल्या प्रोफाईलवर दिसणार नाही.\n\nआपन Signal वापरणे सुरू ठेवू शकता परंतु अॅपला सपोर्ट करण्यासाठी आणि आपला बॅज पुन्हा सक्रिय करण्यासाठी, आता नूतनीकरण करा.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "सस्टेनर बना";
@@ -395,7 +395,7 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "बिल्ल्याची मुदत समाप्त";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = " सब्स्क्रिप्शन नूतनीकरण करा";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "सदस्यत्व रद्द झाले";
@@ -2264,7 +2264,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "फक्त प्रशासकांना संदेश पाठवण्याची अनुमती देण्यासाठी %@ ने गट सेटिंग बदलल्या.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "आपन ग्रुप लिंकद्वारे या ग्रुपमध्ये सामील होऊ शकत नाही कारण अॅडमिनने आपल्याला काढून टाकले आहे.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "ही गट लिंक आता वैध नाही.";
@@ -5258,7 +5258,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ सत्यापित करत आहे";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "तुमचा वर्तमान फोन नंबर नवीन फोन नंबरवर बदलण्यासाठी याचा वापर करा.आपण हा बदल पूर्ववत करु शकत नाही.\n\nपुढे जाण्यापूर्वी, तुमच्या नवीन नंबरवर SMS किंवा कॉल मिळू शकतील याची खात्री करा.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "फोन क्रमांक बदला";
@@ -5696,7 +5696,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "रिकव्हरी फ्रेझ पेस्ट करा";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "आपली रिकव्हरी फ्रेझ २४-शब्दांची फ्रेझ आपल्यासाठी ऐकमेव आहे. आपले पेमेंट खाते पुनर्स्थापित करण्यासाठी ती वापरा.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "रिकव्हरी फ्रेझ प्रविष्ट करा";
@@ -6092,7 +6092,10 @@
 "STICKERS_UNINSTALL_BUTTON" = "अस्थापना";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "स्टोरीज्";
+
+/* Tooltip prompting the user to visit a story link. */
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "लिंकला भेट द्या";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "बॅजेस्";

@@ -1,3 +1,3 @@
-• The size of the Signal app is now almost 25% smaller 💪
-• More performance improvements to make opening group chats faster
-• Squashed several bugs including one that might cause you to lose your profile photo
+• Signal 應用程式的大小現在縮小了近 25% 💪
+• 更多的性能改進，使打開群組聊天更快速
+• 修復了一些錯誤，包括一個可能導致你遺失個人資料照片的錯誤

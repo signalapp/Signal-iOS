@@ -2264,7 +2264,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ zmenil(a) nastavenia skupiny, aby len administrátori mohli posielať správy.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "K tejto skupine sa nemôžete pripojiť prostredníctvom odkazu na skupinu, pretože vás odstránil správca.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Tento odkaz do skupiny už nie je platný.";
@@ -2606,7 +2606,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Žiadosti a pozvánky";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ až %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Skupina aktualizovaná.";
@@ -6093,6 +6093,9 @@
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Príbehy";
+
+/* Tooltip prompting the user to visit a story link. */
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Navštívte odkaz";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Odznaky";

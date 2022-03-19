@@ -392,13 +392,13 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "أضف دعماً";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "انتهت صلاحية الشارة";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "تجديد الاشتراك";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "أُلغيَ الاشتراك";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "شكراً على الدعم!";
@@ -767,7 +767,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يُمكِنُك مَنح حقّ الوُصُول إلى جِهات الاِتصال مِن خِلال تَطبيق إعدادات iOS لِرُؤيَة جِهات الاِتِّصال التي تَستخدِم Signal.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Configure Reactions";
+"CONFIGURE_REACTIONS" = "ضبط ردود الفعل";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "سَوفَ يُؤدِّي هَذَا إلى إعادة تَعيِين التَّطبيق عَن طَريق حَذف رَسائِلك. سَوفَ يَتِمّ إغلاق التَّطبيق بَعدَ اِكتِمال هَذِهِ العَمَليَّة.";
@@ -1787,7 +1787,7 @@
 "ERROR_MESSAGE_INVALID_VERSION" = "تلقيت رسالة غير مُتوافقة مع هذا الإصدار.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "لا توجد جلسة مُتاحة للتواصل.";
+"ERROR_MESSAGE_NO_SESSION" = "لا توجد جلسة متاحة للتواصل.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "تمّ تغيير رقم اﻷمان.";
@@ -2264,7 +2264,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "لقد غيَّر العضو %@ إعدادات المجموعة للسماح للمشرفين فقط بإرسال الرسائل.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "لا يمكنك الانضمام لهذه المجموعة من خلال الرابط لأن أحد المشرفين أزالك.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "لم يعُد رابط المجموعة هذا صالحاً.";
@@ -2606,10 +2606,10 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "الطلبات و الدعوات";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ إلى %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
-"GROUP_UPDATED" = "تمَّ تحديث المجموعة.";
+"GROUP_UPDATED" = "تم تحديث المجموعة.";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED" = "تمَّ إزالة صورة المجموعة.";
@@ -2996,7 +2996,7 @@
 "IN_CALL_RECONNECTING" = "يَجري إعادة الاِتصال..";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "هاتف المُتَلَقِّي يَرِنّ…";
+"IN_CALL_RINGING" = "رنين…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "مُكالمة صوتية...";
@@ -3107,7 +3107,7 @@
 "LEARN_MORE" = "أعرف المزيد";
 
 /* Confirmation button within contextual alert */
-"LEAVE_BUTTON_TITLE" = "غادِر";
+"LEAVE_BUTTON_TITLE" = "مغادرة";
 
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "مُغادرة المجموعة";
@@ -3530,7 +3530,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "رَسائل جديدة";
 
 /* info message text in conversation view */
-"MISSED_CALL" = "مُكالمة فائتة";
+"MISSED_CALL" = "مكالمة فائتة";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "يُمكنك إتاحة الوصول إلى الكاميرا من خلال تطبيق إعدادات iOS للقيام بمكالمة فيديو في Signal.";
@@ -4709,7 +4709,7 @@
 "REGISTER_CONTACTS_WELCOME" = "مَرحبًا!";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "أنتَ قد حاولتَ كثيرًا. يُرجى الانتظار لمُدة دقيقة واحدة قبل المُحاولة مرة أُخرى.";
+"REGISTER_RATE_LIMITING_BODY" = "حاولت كثيرًا. فضلًا انتظر دقيقة واحدة قبل إعادة المحاولة.";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "أنتَ قد حاولتَ كثيرًا. يُرجى الانتظار لمُدة دقيقة واحدة قبل المُحاولة مرة أُخرى.";
@@ -5006,7 +5006,7 @@
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "اسم، اسم مُستخدم، أو رقم";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "البحث باستخدام الاسم أو الرقم";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "البحث بالاسم أو الرقم";
 
 /* placeholder text in an empty search field */
 "SEARCH_FIELD_PLACE_HOLDER_TEXT" = "البحث";
@@ -5270,10 +5270,10 @@
 "SETTINGS_CHATS" = "المُحادثات";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "مَحوُ تاريخ المُحادثة";
+"SETTINGS_CLEAR_HISTORY" = "مسح تاريخ المحادثات";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "الحُقوق Signal Messenger\nمُرخَّص بِمُوجَب الـ GPLv3";
+"SETTINGS_COPYRIGHT" = "حقوق النشر Signal Messenger\nمُرخَّص بِمُوجَب الـ GPLv3";
 
 /* Title for the 'Subscription' link in settings. */
 "SETTINGS_CURRENT_SUBSCRIPTION" = "الاشتراك";
@@ -5333,7 +5333,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "حذف كافة البيانات";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل أنت مُتأكد من أنّكَ تُريد حذف كُل التأريخ (الرسائل، المُرفقات، المُكالمات، إلخ.)؟ إنَّ هذا إجراء لا يُمكن التراجُع عنه.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل أنت متأكد من أنك تريد حذف كل التاريخ (الرسائل، المرفقات، المكالمات، إلخ.)؟ لا يمكن التراجع عن هذا الإجراء.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "حذف كل شيء";
@@ -5354,7 +5354,7 @@
 "SETTINGS_INVITE_TITLE" = "اُدعُ الأصدِقاء";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "يُمكِنك التواصل معي عبر استخدام Signal. احصل عليه الآن: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "يمكنك التواصل معي باستخدام @signalapp. احصل عليه الآن: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "لون المحادثة والخلفية";
@@ -5894,7 +5894,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "قفل الشاشة";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "إخفَاءُ الشَّاشَةِ فِي مُبَدِّلِ التَّطبِيقَات";
+"SETTINGS_SCREEN_SECURITY" = "إخفاء الشاشة في مبدل التطبيقات";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "إظهار المُكالمات في \"الحديثة\" في قائمة تطبيق هاتِف iOS.";
@@ -5918,7 +5918,7 @@
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "اِستِخدامُ Touch ID لِفَكّ فقل Signal.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "أمنُ التَّطبِيق";
+"SETTINGS_SECURITY_TITLE" = "حماية التطبيق";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "إن إرسال وسائط بجودة عالية سوف يستخدم كما أكبر من البيانات.";
@@ -6092,7 +6092,10 @@
 "STICKERS_UNINSTALL_BUTTON" = "إلغاء التثبيت";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "القِصَص";
+
+/* Tooltip prompting the user to visit a story link. */
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "زيارة الرابط";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "شارات";
