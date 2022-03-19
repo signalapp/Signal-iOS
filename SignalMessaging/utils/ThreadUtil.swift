@@ -158,23 +158,34 @@ extension TSThread {
 
         let senderAddress: SignalServiceAddress
         let message: TSMessage?
+        let recipients: [INPerson]?
         switch context {
         case .outgoingMessage(let outgoingMessage):
             senderAddress = localAddress
             message = outgoingMessage
+
+            // For 1:1 outgoing messages, we must populate the recipient of the message,
+            // otherwise sharing suggestions won't be populated correctly.
+            if !isGroupThread {
+                recipients = outgoingMessage.recipientAddresses().map { inPersonForRecipient($0, transaction: transaction) }
+            } else {
+                recipients = nil
+            }
         case .incomingMessage(let incomingMessage):
             senderAddress = incomingMessage.authorAddress
             message = incomingMessage
+            recipients = nil
         case .senderAddress(let address):
             senderAddress = address
             message = nil
+            recipients = nil
         }
 
         let threadName = contactsManager.displayName(for: self, transaction: transaction)
         let inSender = inPersonForRecipient(senderAddress, transaction: transaction)
 
         let sendMessageIntent = INSendMessageIntent(
-            recipients: nil,
+            recipients: recipients,
             outgoingMessageType: .outgoingMessageText,
             content: nil,
             speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
