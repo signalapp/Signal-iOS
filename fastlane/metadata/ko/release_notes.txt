@@ -1,3 +1,2 @@
-• The size of the Signal app is now almost 25% smaller 💪
-• More performance improvements to make opening group chats faster
-• Squashed several bugs including one that might cause you to lose your profile photo
+• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
+• More improvements to make opening group chats super snappy.

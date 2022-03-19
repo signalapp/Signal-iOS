@@ -1,3 +1,2 @@
-• Størrelsen på Signal-appen er nu næsten 25 % mindre 💪
-• Flere forbedringer af ydeevnen for at gøre det hurtigere at åbne gruppesamtaler
-• Vi har rettet flere fejl, herunder en, der kan få dig til at miste dit profilbillede
+• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
+• More improvements to make opening group chats super snappy.

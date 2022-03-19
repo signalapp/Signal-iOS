@@ -1,3 +1,2 @@
-• Signal Appのサイズが25%も小さくなりました 💪
-• グループチャットが改善され、グループチャットをより早く始められるようになりました。
-• プロフィール画像が消えてしまうバグを含む、いくつかのバグを修正しました。
+• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
+• More improvements to make opening group chats super snappy.

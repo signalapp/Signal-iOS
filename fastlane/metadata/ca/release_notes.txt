@@ -1,3 +1,2 @@
-• La mida de l'aplicació Signal és gairebé un 25% més petita 💪
-• Més millores de rendiment per fer més ràpida l'obertura de converses de grup
-• S'han corregit diversos errors, inclòs un que podria fer-vos perdre la foto del perfil.
+• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
+• More improvements to make opening group chats super snappy.
