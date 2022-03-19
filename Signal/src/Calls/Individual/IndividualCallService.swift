@@ -719,7 +719,7 @@ import CallKit
 
             callService.terminate(call: call)
 
-        case .endedRemoteGlare:
+        case .endedRemoteGlare, .endedRemoteReCall:
             guard call === callService.currentCall else {
                 callService.cleanupStaleCall(call)
                 return
@@ -768,7 +768,7 @@ import CallKit
 
             handleFailedCall(failedCall: call, error: SignalCall.CallError.timeout(description: description), shouldResetUI: true, shouldResetRingRTC: false)
 
-        case .endedSignalingFailure:
+        case .endedSignalingFailure, .endedGlareHandlingFailure:
             handleFailedCall(failedCall: call, error: SignalCall.CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedInternalFailure:
