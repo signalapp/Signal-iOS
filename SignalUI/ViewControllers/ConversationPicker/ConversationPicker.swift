@@ -529,6 +529,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         let conversations = selection.conversations
         let labelText = conversations.map { $0.title }.joined(separator: ", ")
         footerView.setNamesText(labelText, animated: animated)
+        footerView.proceedButton.isEnabled = !conversations.isEmpty
     }
 
     private func showTooManySelectedToast() {
