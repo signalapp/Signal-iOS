@@ -70,6 +70,7 @@ extension OpenGroupAPI {
                             cache.timeSinceLastPoll[server] = Date().timeIntervalSince1970
                             UserDefaults.standard[.lastOpen] = Date()
                         }
+                        SNLog("Open group polling finished for \(server).")
                         seal.fulfill(())
                     }
                     .catch(on: OpenGroupAPI.workQueue) { [weak self] error in

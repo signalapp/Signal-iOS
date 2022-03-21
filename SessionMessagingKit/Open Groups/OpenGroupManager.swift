@@ -94,11 +94,52 @@ public final class OpenGroupManager: NSObject {
 
     // MARK: - Adding & Removing
     
+    public func hasExistingOpenGroup(roomToken: String, server: String, publicKey: String, using transaction: YapDatabaseReadWriteTransaction, dependencies: OGMDependencies = OGMDependencies()) -> Bool {
+        guard let serverUrl: URL = URL(string: server) else { return false }
+        
+        let schemeFreeServer: String = (serverUrl.host ?? server)
+        let schemeFreeDefaultServer: String = OpenGroupAPI.defaultServer.substring(from: "http://".count)
+        var serverOptions: Set<String> = Set([
+            schemeFreeServer,
+            "http://\(schemeFreeServer)",
+            "https://\(schemeFreeServer)"
+        ])
+        
+        if schemeFreeServer == OpenGroupAPI.legacyDefaultServerDNS {
+            let defaultServerOptions: Set<String> = Set([
+                schemeFreeDefaultServer,
+                OpenGroupAPI.defaultServer,
+                "https://\(schemeFreeDefaultServer)"
+            ])
+            serverOptions = serverOptions.union(defaultServerOptions)
+        }
+        else if schemeFreeServer == schemeFreeDefaultServer {
+            let legacyServerOptions: Set<String> = Set([
+                OpenGroupAPI.legacyDefaultServerDNS,
+                "http://\(OpenGroupAPI.legacyDefaultServerDNS)",
+                "https://\(OpenGroupAPI.legacyDefaultServerDNS)"
+            ])
+            serverOptions = serverOptions.union(legacyServerOptions)
+        }
+        
+        // First check if there is no poller for the specified server
+        if serverOptions.first(where: { dependencies.cache.pollers[$0] != nil }) == nil {
+            return false
+        }
+        
+        // Then check if there is an existing open group thread
+        let hasExistingThread: Bool = serverOptions.contains(where: { serverName in
+            let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(serverName).\(roomToken)")
+            
+            return (TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil)
+        })
+                                                                  
+        return hasExistingThread
+    }
+    
     public func add(roomToken: String, server: String, publicKey: String, isConfigMessage: Bool, using transaction: YapDatabaseReadWriteTransaction, dependencies: OGMDependencies = OGMDependencies()) -> Promise<Void> {
         // If we are currently polling for this server and already have a TSGroupThread for this room the do nothing
-        let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(roomToken)")
-        
-        if dependencies.cache.pollers[server] != nil && TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil {
+        if hasExistingOpenGroup(roomToken: roomToken, server: server, publicKey: publicKey, using: transaction, dependencies: dependencies) {
             SNLog("Ignoring join open group attempt (already joined), user initiated: \(!isConfigMessage)")
             return Promise.value(())
         }

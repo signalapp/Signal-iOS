@@ -477,6 +477,235 @@ class OpenGroupManagerSpec: QuickSpec {
             
             // MARK: - Adding & Removing
             
+            // MARK: - --hasExistingOpenGroup
+            
+            context("when checking it has an existing open group") {
+                context("when there is a thread for the room and the cache has a poller") {
+                    beforeEach {
+                        testTransaction.mockData[.objectForKey] = testGroupThread
+                    }
+                    
+                    context("for the no-scheme variant") {
+                        beforeEach {
+                            mockOGMCache.when { $0.pollers }.thenReturn(["testServer": OpenGroupAPI.Poller(for: "testServer")])
+                        }
+                        
+                        it("returns true when no scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                        
+                        it("returns true when a http scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "http://testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                        
+                        it("returns true when a https scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "https://testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                    }
+                    
+                    context("for the http variant") {
+                        beforeEach {
+                            mockOGMCache.when { $0.pollers }.thenReturn(["http://testServer": OpenGroupAPI.Poller(for: "http://testServer")])
+                        }
+                        
+                        it("returns true when no scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                        
+                        it("returns true when a http scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "http://testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                        
+                        it("returns true when a https scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "https://testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                    }
+                    
+                    context("for the https variant") {
+                        beforeEach {
+                            mockOGMCache.when { $0.pollers }.thenReturn(["https://testServer": OpenGroupAPI.Poller(for: "https://testServer")])
+                        }
+                        
+                        it("returns true when no scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                        
+                        it("returns true when a http scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "http://testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                        
+                        it("returns true when a https scheme is provided") {
+                            expect(
+                                openGroupManager
+                                    .hasExistingOpenGroup(
+                                        roomToken: "testRoom",
+                                        server: "https://testServer",
+                                        publicKey: "testKey",
+                                        using: testTransaction,
+                                        dependencies: dependencies
+                                    )
+                            ).to(beTrue())
+                        }
+                    }
+                }
+                
+                context("when given the legacy DNS host and there is a cached poller for the default server") {
+                    it("returns true") {
+                        mockOGMCache.when { $0.pollers }.thenReturn(["http://116.203.70.33": OpenGroupAPI.Poller(for: "http://116.203.70.33")])
+                        testTransaction.mockData[.objectForKey] = testGroupThread
+                        
+                        expect(
+                            openGroupManager
+                                .hasExistingOpenGroup(
+                                    roomToken: "testRoom",
+                                    server: "http://open.getsession.org",
+                                    publicKey: "testKey",
+                                    using: testTransaction,
+                                    dependencies: dependencies
+                                )
+                        ).to(beTrue())
+                    }
+                }
+                
+                context("when given the default server and there is a cached poller for the legacy DNS host") {
+                    it("returns true") {
+                        mockOGMCache.when { $0.pollers }.thenReturn(["http://open.getsession.org": OpenGroupAPI.Poller(for: "http://open.getsession.org")])
+                        testTransaction.mockData[.objectForKey] = testGroupThread
+                        
+                        expect(
+                            openGroupManager
+                                .hasExistingOpenGroup(
+                                    roomToken: "testRoom",
+                                    server: "http://116.203.70.33",
+                                    publicKey: "testKey",
+                                    using: testTransaction,
+                                    dependencies: dependencies
+                                )
+                        ).to(beTrue())
+                    }
+                }
+                
+                it("returns false when given an invalid server") {
+                    mockOGMCache.when { $0.pollers }.thenReturn(["testServer": OpenGroupAPI.Poller(for: "testServer")])
+                    testTransaction.mockData[.objectForKey] = testGroupThread
+                    
+                    expect(
+                        openGroupManager
+                            .hasExistingOpenGroup(
+                                roomToken: "testRoom",
+                                server: "%%%",
+                                publicKey: "testKey",
+                                using: testTransaction,
+                                dependencies: dependencies
+                            )
+                    ).to(beFalse())
+                }
+                
+                it("returns false if there is not a poller for the server in the cache") {
+                    mockOGMCache.when { $0.pollers }.thenReturn([:])
+                    testTransaction.mockData[.objectForKey] = testGroupThread
+                    
+                    expect(
+                        openGroupManager
+                            .hasExistingOpenGroup(
+                                roomToken: "testRoom",
+                                server: "testServer",
+                                publicKey: "testKey",
+                                using: testTransaction,
+                                dependencies: dependencies
+                            )
+                    ).to(beFalse())
+                }
+                
+                it("returns false if there is a poller for the server in the cache but no thread for the room") {
+                    mockOGMCache.when { $0.pollers }.thenReturn(["testServer": OpenGroupAPI.Poller(for: "testServer")])
+                    testTransaction.mockData[.objectForKey] = nil
+                    
+                    expect(
+                        openGroupManager
+                            .hasExistingOpenGroup(
+                                roomToken: "testRoom",
+                                server: "testServer",
+                                publicKey: "testKey",
+                                using: testTransaction,
+                                dependencies: dependencies
+                            )
+                    ).to(beFalse())
+                }
+            }
+            
             // MARK: - --add
             
             context("when adding") {
