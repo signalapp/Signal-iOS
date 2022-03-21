@@ -56,8 +56,10 @@ public final class OpenGroupManagerV2 : NSObject {
             serverOptions = serverOptions.union(legacyServerOptions)
         }
         
-        // First check if there is an existing poller for the given server options
-        guard serverOptions.first(where: { OpenGroupManagerV2.shared.pollers[$0] != nil }) == nil else { return true }
+        // First check if there is no poller for the specified server
+        if serverOptions.first(where: { OpenGroupManagerV2.shared.pollers[$0] != nil }) == nil {
+            return false
+        }
         
         // Then check if there is an existing open group thread
         let hasExistingThread: Bool = serverOptions.contains(where: { serverName in
