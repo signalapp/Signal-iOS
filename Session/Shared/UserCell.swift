@@ -83,16 +83,22 @@ final class UserCell : UITableViewCell {
         profilePictureView.publicKey = publicKey
         profilePictureView.update()
         displayNameLabel.text = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+        
         switch accessory {
-        case .none: accessoryImageView.isHidden = true
-        case .lock:
-            accessoryImageView.isHidden = false
-            accessoryImageView.image = #imageLiteral(resourceName: "ic_lock_outline").asTintedImage(color: Colors.text.withAlphaComponent(Values.mediumOpacity))!
-        case .tick(let isSelected):
-            accessoryImageView.isHidden = false
-            let icon = isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle")
-            accessoryImageView.image = isDarkMode ? icon : icon.asTintedImage(color: Colors.text)!
+            case .none: accessoryImageView.isHidden = true
+            
+            case .lock:
+                accessoryImageView.isHidden = false
+                accessoryImageView.image = #imageLiteral(resourceName: "ic_lock_outline").withRenderingMode(.alwaysTemplate)
+                accessoryImageView.tintColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+                
+            case .tick(let isSelected):
+                let icon: UIImage = (isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle"))
+                accessoryImageView.isHidden = false
+                accessoryImageView.image = icon.withRenderingMode(.alwaysTemplate)
+                accessoryImageView.tintColor = Colors.text
         }
+        
         let alpha: CGFloat = isZombie ? 0.5 : 1
         [ profilePictureView, displayNameLabel, accessoryImageView ].forEach { $0.alpha = alpha }
     }
