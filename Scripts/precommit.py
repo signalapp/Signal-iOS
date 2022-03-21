@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -6,10 +6,12 @@ import sys
 import subprocess
 import datetime
 import argparse
-import commands
+import subprocess
 
 
-git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
+git_repo_path = os.path.abspath(
+    subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True).strip()
+)
 
 
 
@@ -56,7 +58,7 @@ def parse_include(line):
     elif not remainder:
         return None
     else:
-        print ('Unexpected import or include: '+ line)
+        print('Unexpected import or include: ' + line)
         sys.exit(1)
 
     comment = None
@@ -64,7 +66,7 @@ def parse_include(line):
         isQuote = True
         endIndex = remainder.find('"', 1)
         if endIndex < 0:
-            print ('Unexpected import or include: '+ line)
+            print('Unexpected import or include: ' + line)
             sys.exit(1)
         body = remainder[1:endIndex]
         comment = remainder[endIndex+1:]
@@ -72,12 +74,12 @@ def parse_include(line):
         isQuote = False
         endIndex = remainder.find('>', 1)
         if endIndex < 0:
-            print ('Unexpected import or include: '+ line)
+            print('Unexpected import or include: ' + line)
             sys.exit(1)
         body = remainder[1:endIndex]
         comment = remainder[endIndex+1:]
     else:
-        print ('Unexpected import or include: '+ remainder)
+        print('Unexpected import or include: ' + remainder)
         sys.exit(1)
 
     return include(isInclude, isQuote, body, comment)
@@ -256,7 +258,7 @@ def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, ma
             break
 
     if text != processed:
-        print sort_name, filepath
+        print(sort_name, filepath)
     return processed
 
 
@@ -327,7 +329,7 @@ def process(filepath):
 
     filename = os.path.basename(filepath)
     if filename.startswith('.'):
-        raise "shouldn't call process with dotfile"
+        raise Exception("shouldn't call process with dotfile")
     file_ext = os.path.splitext(filename)[1]
     if file_ext in ('.swift'):
         env_copy = os.environ.copy()
@@ -335,14 +337,14 @@ def process(filepath):
         env_copy["SCRIPT_INPUT_FILE_0"] = '%s' % ( short_filepath, )
         try:
             lint_output = subprocess.check_output(['swiftlint', '--fix', '--use-script-input-files'], env=env_copy)
-        except subprocess.CalledProcessError, e:
+        except subprocess.CalledProcessError as e:
             lint_output = e.output
-        print lint_output
+        print(lint_output)
         try:
             lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
-        except subprocess.CalledProcessError, e:
+        except subprocess.CalledProcessError as e:
             lint_output = e.output
-        print lint_output
+        print(lint_output)
 
     with open(filepath, 'rt') as f:
         text = f.read()
@@ -377,7 +379,7 @@ def process(filepath):
     if original_text == text:
         return
 
-    print 'Updating:', short_filepath
+    print('Updating:', short_filepath)
 
     with open(filepath, 'wt') as f:
         f.write(text)
@@ -439,7 +441,7 @@ def check_diff_for_keywords():
     command_line = 'git diff --staged | grep --color=always -C 3 -E "%s"' % matching_expression
     try:
         output = subprocess.check_output(command_line, shell=True)
-    except subprocess.CalledProcessError, e:
+    except subprocess.CalledProcessError as e:
         # > man grep
         #  EXIT STATUS
         #  The grep utility exits with one of the following values:
@@ -480,7 +482,7 @@ if __name__ == "__main__":
     elif args.ref:
         filepaths = []
 
-        output = commands.getoutput('git diff --name-only --diff-filter=ACMR %s HEAD' % args.ref)
+        output = subprocess.getoutput('git diff --name-only --diff-filter=ACMR %s HEAD' % args.ref)
         filepaths.extend([line.strip() for line in output.split('\n')])
 
         # Only process each path once.
@@ -496,11 +498,11 @@ if __name__ == "__main__":
         filepaths = []
 
         # Staging
-        output = commands.getoutput('git diff --cached --name-only --diff-filter=ACMR')
+        output = subprocess.getoutput('git diff --cached --name-only --diff-filter=ACMR')
         filepaths.extend([line.strip() for line in output.split('\n')])
 
         # Working
-        output = commands.getoutput('git diff --name-only --diff-filter=ACMR')
+        output = subprocess.getoutput('git diff --name-only --diff-filter=ACMR')
         filepaths.extend([line.strip() for line in output.split('\n')])
 
         # Only process each path once.
@@ -510,8 +512,8 @@ if __name__ == "__main__":
             filepath = os.path.abspath(os.path.join(git_repo_path, filepath))
             process_if_appropriate(filepath)
 
-    print 'git clang-format...'
+    print('git clang-format...')
     # we don't want to format .proto files, so we specify every other supported extension
-    print commands.getoutput('git clang-format --extensions "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs" --commit %s' % clang_format_commit)
+    print(subprocess.getoutput('git clang-format --extensions "c,h,m,mm,cc,cp,cpp,c++,cxx,hh,hxx,cu,java,js,ts,cs" --commit %s' % clang_format_commit))
  
     check_diff_for_keywords()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import feature_flags_common
 
 if __name__ == '__main__':

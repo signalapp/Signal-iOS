@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -6,7 +6,6 @@ import sys
 import subprocess
 import datetime
 import argparse
-import commands
 import re
 import json
 import sds_common
@@ -97,7 +96,7 @@ def process_file(file_path, namespace, intermediates):
     if exit_code != 0:
         fail('Missing sourcekitten. Install with homebrew?')
 
-    print 'Extracting Swift Bridging Info For:', file_path
+    print('Extracting Swift Bridging Info For:', file_path)
     command = [
         'sourcekitten',
         'structure',
@@ -114,9 +113,9 @@ def process_file(file_path, namespace, intermediates):
     # print 'command', command
     exit_code, output, error_output = ows_getoutput(command)
     if exit_code != 0:
-        print 'exit_code:', exit_code
+        print('exit_code:', exit_code)
     if len(error_output.strip()) > 0:
-        print 'error_output:', error_output
+        print('error_output:', error_output)
     # print 'output:', len(output)
 
     # exit(1)
@@ -127,7 +126,7 @@ def process_file(file_path, namespace, intermediates):
 
     if intermediates:
         intermediate_file_path = file_path + '.ast'
-        print 'Writing intermediate:', intermediate_file_path
+        print('Writing intermediate:', intermediate_file_path)
         with open(intermediate_file_path, 'wt') as f:
             f.write(output)
 
@@ -181,7 +180,7 @@ def generate_swift_bridging_header(namespace, swift_bridging_path):
     if not os.path.exists(parent_dir_path):
         os.makedirs(parent_dir_path)
 
-    print 'Writing:', swift_bridging_path
+    print('Writing:', swift_bridging_path)
     with open(swift_bridging_path, 'wt') as f:
         f.write(output)
 
@@ -193,7 +192,7 @@ def process_dir(src_dir_path, dir_name, dst_dir_path):
 
     dir_path = os.path.abspath(os.path.join(src_dir_path, dir_name))
 
-    print 'Searching:', dir_path
+    print('Searching:', dir_path)
 
     for rootdir, dirnames, filenames in os.walk(dir_path):
         for filename in filenames:

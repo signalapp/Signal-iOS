@@ -117,11 +117,11 @@ jobs:
         run: git fetch origin --depth 1 ${{ github.base_ref }}
 
       - name: Install Dependencies
-        run: brew install clang-format
+        run: brew install clang-format python3
 
       - name: Lint files changed in the PR
         run: |
-          python Scripts/precommit.py --ref origin/${{ github.base_ref }}
+          python3 Scripts/precommit.py --ref origin/${{ github.base_ref }}
 
           # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
           git diff --name-only | sed -E 's|(.*)|::error file=\1::Incorrectly formatted (Scripts/precommit.py)|'

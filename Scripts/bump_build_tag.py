@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import os
 import re
-import commands
 import subprocess
 import argparse
 import inspect
@@ -13,19 +12,19 @@ def fail(message):
     file_name = __file__
     current_line_no = inspect.stack()[1][2]
     current_function_name = inspect.stack()[1][3]
-    print 'Failure in:', file_name, current_line_no, current_function_name
-    print message
+    print('Failure in:', file_name, current_line_no, current_function_name)
+    print(message)
     sys.exit(1)
 
 
 def execute_command(command):
     try:
-        print ' '.join(command)
+        print(' '.join(command))
         output = subprocess.check_output(command)
         if output:
-            print output
+            print(output)
     except subprocess.CalledProcessError as e:
-        print e.output
+        print(e.output)
         sys.exit(1)
 
 
@@ -229,14 +228,14 @@ def get_versions(plist_file_path):
         fail('Could not parse .plist')
 
     release_version_str = release_version_match.group(1)
-    print 'CFBundleShortVersionString:', release_version_str
+    print('CFBundleShortVersionString:', release_version_str)
     release_version = parse_version_4(release_version_str).asVersion3()
-    print 'old_release_version:', release_version.formatted()
+    print('old_release_version:', release_version.formatted())
 
     build_version_1_str = build_version_1_match.group(1)
-    print 'CFBundleVersion:', build_version_1_str
+    print('CFBundleVersion:', build_version_1_str)
     build_version_1 = parse_version_1(build_version_1_str)
-    print 'old_build_version_1:', build_version_1.formatted()
+    print('old_build_version_1:', build_version_1.formatted())
 
     return release_version, build_version_1
 
@@ -261,7 +260,7 @@ def get_tag_variant(args):
     elif current_flag in ["production"]:
         feature_flag_tag = ""
     else:
-        print "Unrecognized feature flag: " + current_flag
+        print("Unrecognized feature flag: " + current_flag)
         feature_flag_tag = None
 
 
@@ -278,8 +277,8 @@ def get_tag_variant(args):
         argument_tag_string = argument_tag if len(argument_tag) > 0 else "production"
         feature_flag_tag_string = feature_flag_tag if len(feature_flag_tag) > 0 else "production"
 
-        print "Feature flag mismatch! Arguments specify a " + argument_tag_string + " tag but the current feature flag indicates a " + feature_flag_tag_string + " tag may be more appropriate."
-        prefer_feature_flag = raw_input("Proceed with a " + feature_flag_tag_string + " instead? (Y/n) ")
+        print("Feature flag mismatch! Arguments specify a " + argument_tag_string + " tag but the current feature flag indicates a " + feature_flag_tag_string + " tag may be more appropriate.")
+        prefer_feature_flag = input("Proceed with a " + feature_flag_tag_string + " instead? (Y/n) ")
 
         if len(prefer_feature_flag) == 0 or prefer_feature_flag[0] in "Yy":
             return feature_flag_tag
@@ -315,11 +314,11 @@ if __name__ == '__main__':
 
     output = subprocess.check_output(['git', 'status', '--porcelain'])
     if len(output.strip()) > 0:
-        print output
+        print(output)
         fail('Git repository has untracked files.')
     output = subprocess.check_output(['git', 'diff', '--shortstat'])
     if len(output.strip()) > 0:
-        print output
+        print(output)
         fail('Git repository has untracked files.')
 
     # Ensure .plist is in xml format, not binary.
@@ -329,7 +328,7 @@ if __name__ == '__main__':
         nse_plist_path,
     ]
     for plist_path in plist_paths:
-        print 'plist_path:', plist_path
+        print('plist_path:', plist_path)
             
         output = subprocess.check_output(['plutil', '-convert', 'xml1', plist_path])
         # print 'output', output
@@ -371,9 +370,9 @@ if __name__ == '__main__':
     # new_release_version_3: 5.19.0
     # new_build_version_1: 43
     # new_build_version_4: 5.19.0.43
-    print 'new_release_version_3:', new_release_version_3
-    print 'new_build_version_1:', new_build_version_1
-    print 'new_build_version_4:', new_build_version_4
+    print('new_release_version_3:', new_release_version_3)
+    print('new_build_version_1:', new_build_version_1)
+    print('new_build_version_4:', new_build_version_4)
 
     for plist_path in plist_paths:
         set_versions(plist_path, new_release_version_3, new_build_version_1, new_build_version_4)
