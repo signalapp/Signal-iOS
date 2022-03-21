@@ -31,23 +31,27 @@ public final class OpenGroupManagerV2 : NSObject {
     // MARK: Adding & Removing
     
     public func hasExistingOpenGroup(room: String, server: String, publicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Bool {
-        let schemeFreeServer: String = (server.starts(with: "https://") ? server.substring(from: "https://".count) : server.substring(from: "http://".count))
-        let schemeFreeDefaultServer: String = OpenGroupAPIV2.defaultServer.substring(from: "http://".count)
+        guard let serverUrl: URL = URL(string: server) else { return false }
+        
+        let serverHost: String = (serverUrl.host ?? server)
+        let serverPort: String = (serverUrl.port.map { ":\($0)" } ?? "")
+        let defaultServerHost: String = OpenGroupAPIV2.defaultServer.substring(from: "http://".count)
         var serverOptions: Set<String> = Set([
-            schemeFreeServer,
-            "http://\(schemeFreeServer)",
-            "https://\(schemeFreeServer)"
+            server,
+            "\(serverHost)\(serverPort)",
+            "http://\(serverHost)\(serverPort)",
+            "https://\(serverHost)\(serverPort)"
         ])
         
-        if schemeFreeServer == OpenGroupAPIV2.legacyDefaultServerDNS {
+        if serverHost == OpenGroupAPIV2.legacyDefaultServerDNS {
             let defaultServerOptions: Set<String> = Set([
-                schemeFreeDefaultServer,
+                defaultServerHost,
                 OpenGroupAPIV2.defaultServer,
-                "https://\(schemeFreeDefaultServer)"
+                "https://\(defaultServerHost)"
             ])
             serverOptions = serverOptions.union(defaultServerOptions)
         }
-        else if schemeFreeServer == schemeFreeDefaultServer {
+        else if serverHost == defaultServerHost {
             let legacyServerOptions: Set<String> = Set([
                 OpenGroupAPIV2.legacyDefaultServerDNS,
                 "http://\(OpenGroupAPIV2.legacyDefaultServerDNS)",
