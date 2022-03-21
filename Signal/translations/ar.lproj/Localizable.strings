@@ -686,10 +686,10 @@
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "إنَّ رَقم الهَاتِف الَّذِي أدخَلتَه لَا يَتَطَابَقُ مَعَ الرَّقم الخاصّ بِحِسَابك.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "الرقم الجديد غير صالح, فضلًا أدخل رقم هاتف صالح.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "الرقم الجديد غير صالح، فضلًا أدخل رقم هاتف صالح.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "الرقم القديم غير صالح, فضلًا أدخل رقم هاتف صالح.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "الرقم القديم غير صالح، فضلًا أدخل رقم هاتف صالح.";
 
 /* Title of the 'change phone number PIN' view. */
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
@@ -1775,16 +1775,16 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "لقد تعذر توصيل الرسالة";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "لقد تلقيت رسالة مُكرّرة.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "تلقيت رسالة مكررة.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "المفتاح الخاص بالمُستلم غير صالح.";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "مفتاح المستلِم غير صالح.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "الرسالة المُستلمة كانت غير متزامنة.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "الرسالة المستلمة لم تكن متزامنة.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "تلقيت رسالة غير مُتوافقة مع هذا الإصدار.";
+"ERROR_MESSAGE_INVALID_VERSION" = "تلقيت رسالة غير متوافقة مع هذا الإصدار.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "لا توجد جلسة متاحة للتواصل.";
@@ -1799,10 +1799,10 @@
 "ERROR_MESSAGE_SESSION_REFRESH" = "تمَّ إنعاش جلسة المحادثة";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "حدث خلل مجهول.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "حدث خطأ مجهول.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "تمّ تغيير رقم اﻷمان.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "تغيَّر رقم اﻷمان.";
 
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "خلل في الشبكة";
@@ -2693,7 +2693,7 @@
 "GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "تعذّر إضافة عدد %@ عضو إلى المجموعة الجديدة وقد تم دعوتهم للانضمام.";
 
 /* Message indicating that the local user left the group. */
-"GROUP_YOU_LEFT" = "أنت قد غادرت المجموعة.";
+"GROUP_YOU_LEFT" = "غادرتَ المجموعة.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "المُشرِفون";
@@ -3299,7 +3299,7 @@
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "رسالة";
 
 /* Title for the compose view. */
-"MESSAGE_COMPOSEVIEW_TITLE" = "رِسالة جديدة";
+"MESSAGE_COMPOSEVIEW_TITLE" = "رسالة جديدة";
 
 /* Toast indicating that the user has copied the sent timestamp. */
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "تمَّ نسخ وقت الإرسال";
@@ -3569,7 +3569,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "تخطي";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "يُرجى التأكد من اتصالك بالانترنت ثم حاول مرة أُخرى.";
+"NETWORK_ERROR_RECOVERY" = "فضلًا تأكد من اتصالك بالإنترنت وحاول مجددًا.";
 
 /* String representing only the cellular interface */
 "NETWORK_INTERFACE_SET_CELLULAR" = "الخلوية فقط";
@@ -3698,10 +3698,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "تفعيل الإشعارات؟";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "تتضمن الإجراءات \"تعليم كمقروء\"، \"الرَّدّ\"، و \"إعادة الاتِّصال.\"";
+"NOTIFICATIONS_FOOTER_WARNING" = "تتضمن الإجراءات \"مقروءة\"، \"رد\"، و \"إعادة الاتصال.\"";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "لا اسم ولا مُحتوى";
+"NOTIFICATIONS_NONE" = "لا اسم ولا محتوى";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "التشغيل أثناء فتح التطبيق";
@@ -3710,10 +3710,10 @@
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "إضافة صوت مُخصصة…";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاِسم، المُحتَوَى والإجراءات";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "الاسم، المحتوى، والإجراءات";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "الاِسمُ فَقَط";
+"NOTIFICATIONS_SENDER_ONLY" = "الاسم فقط";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "إظهار";
@@ -4577,7 +4577,7 @@
 "PUSH_MANAGER_REACT_WITH_THUMBS_UP" = "👍";
 
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "الرَّدّ";
+"PUSH_MANAGER_REPLY" = "رد";
 
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "تمَّت إعادة الاشتراك بنجاح في الإشعارات اللحظية.";
@@ -4706,7 +4706,7 @@
 "REGISTER_2FA_SUBMIT_BUTTON" = "تسليم";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "مَرحبًا!";
+"REGISTER_CONTACTS_WELCOME" = "مرحبًا!";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "حاولت كثيرًا. فضلًا انتظر دقيقة واحدة قبل إعادة المحاولة.";
@@ -4736,13 +4736,13 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "تأكَّد مِنَ الاِتِّصال";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "تنسيق رقم هذا الهاتف غير مدعوم، يُرجى التواصُل مع الدَّعم.";
+"REGISTRATION_NON_VALID_NUMBER" = "صيغة رقم الهاتف هذه غير مدعومة، فضلًا تواصل مع الدعم.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "رقم الهاتف";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "تحتاج إلى التسجيل قبل أن تتمكن من إرسال رسالة.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "يجب عليك التسجيل قبل أن تتمكن من إرسال رسالة.";
 
 /* Error message indicating that device transfer from another device might be possible. */
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "هناك مسبقا حساب مسجل برقم الهاتف هذا، والذي هو متاح للنقل.";
@@ -4784,7 +4784,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "رفض";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "إنَّ رقم الهاتف الذي تُحاول تسجيله قد تمَّ تسجيله بالفعل على خادم آخر, يُرجى إلغاء التسجيل من هُناك ثم حاول مرة أُخرى.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "رقم الهاتف الذي تحاول تسجيله سُجِّل مسبقًا على خادم آخر, فضلًا ألغ التسجيل من هناك وحاول مجددًا.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "إزالة المعاينة";
@@ -5087,7 +5087,7 @@
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "شَغِّل Signal على جهاز الـiPad القديم الخاص بك لكي تنقل الحساب الخاص بك";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "لقد تمَّ إعادة تعيين الجلسة الآمنة.";
+"SECURE_SESSION_RESET" = "أُعيدَ ضبط الجلسة الآمنة.";
 
 /* Label for the 'see all' button. */
 "SEE_ALL_BUTTON" = "إظهارُ الجَميع";
@@ -6452,7 +6452,7 @@
 "UNREAD_ACTION" = "غير مقروءة";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "تمَّ استلام مُرفق مِن نوع غير مدعوم.";
+"UNSUPPORTED_ATTACHMENT" = "تلقيت مرفق من نوع غير مدعوم.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "جهازك لا يدعم هذه الميزة.";

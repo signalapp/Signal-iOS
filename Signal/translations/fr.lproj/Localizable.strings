@@ -374,7 +374,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Devenir un soutien";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Donnez un coup de pouce à Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Donnez un Coup de pouce à Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Votre macaron Encouragement a expiré et n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal mais pour supporter une technologie faite pour vous, s'il vous plait envisagez de devenir un donateur mensuel.";
@@ -389,7 +389,7 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Devenir donateur mensuel";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Donner un coup de pouce";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Donner un Coup de pouce";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Macaron expiré";
@@ -401,7 +401,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Abonnement annulé";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Merci pour le coup de pouce !";
+"BADGE_THANKS_BOOST_TITLE" = "Merci pour le Coup de pouce !";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Afficher sur le profil";
@@ -497,7 +497,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Définir la devise";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Dites « Merci ! » et gagnez le macaron Encouragement pour 30 jours.   ";
+"BOOST_VIEW_BODY" = "Dites « Merci ! » et gagnez le macaron Encouragement pour 30 jours.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Votre macaron Encouragement expirera le %@.";
@@ -518,7 +518,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Sélectionnez le montant du don";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Donnez un coup de pouce à Signal";
+"BOOST_VIEW_TITLE" = "Donnez un Coup de pouce à Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Ajouter";
@@ -734,7 +734,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Cette couleur est utilisée dans %@ conversations. Voulez-vous enregistrer les changements pour toutes les conversations ?";
 
 /* Tooltip highlighting the auto chat color option. */
-"CHAT_COLORS_AUTO_TOOLTIP" = "Adapter automatiquement la couleur au fond d’écran";
+"CHAT_COLORS_AUTO_TOOLTIP" = "Adaptez automatiquement la couleur au fond d’écran";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Conversations";
@@ -941,10 +941,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Quelque chose ne fonctionne pas";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Donateurs mensuels et coup de pouce à Signal";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Donateurs mensuels et Coup de pouce à Signal";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Donateurs mensuels et coup de pouce";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Donateurs mensuels et Coup de pouce";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal n’a pas réussi à terminer votre demande d’assistance.";
@@ -2264,7 +2264,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ a changé les paramètres du groupe afin de n’autoriser que les administrateurs à envoyer des messages.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Vous ne pouvez pas vous joindre au groupe avec le lien du groupe car un administrateur vous a supprimé.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ce lien de groupe n’est plus valide.";
@@ -2606,7 +2606,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Demandes et invitations";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ à %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Le groupe a été mis à jour.";
@@ -6095,7 +6095,7 @@
 "STORIES_TITLE" = "Stories";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visitez le lien";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Macarons";
@@ -6191,7 +6191,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "En cours de traitement";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Donner un coup de pouce à Signal";
+"SUSTAINER_VIEW_ADD_BOOST" = "Donner un Coup de pouce à Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obtenez un macaron %@";

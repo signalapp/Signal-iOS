@@ -2264,7 +2264,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ がグループ設定を変更し、メッセージ送信を管理者に限定しました。";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "管理者があなたを削除したため、グループリンクからこのグループに参加することができません。";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "管理者があなたを削除したため、グループリンクからはこのグループに参加できません。";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "このグループリンクはすでに無効です。";
@@ -2606,7 +2606,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "申請と招待";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ (%2$@)";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ から %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "グループが更新されました。";
@@ -3857,7 +3857,7 @@
 "ONBOARDING_SPLASH_TITLE" = "あなたにプライバシーを。\nすべてのメッセージで自分らしく。";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "番号が違いますか？";
+"ONBOARDING_VERIFICATION_BACK_LINK" = "電話番号を訂正";
 
 /* Label for button to perform verification with a phone call. */
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "電話してください";
@@ -6095,7 +6095,7 @@
 "STORIES_TITLE" = "ストーリー";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "表示";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "表示する";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "バッジ";
