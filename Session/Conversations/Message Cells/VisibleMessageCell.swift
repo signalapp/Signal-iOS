@@ -4,7 +4,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private var previousX: CGFloat = 0
     var albumView: MediaAlbumView?
     var bodyTextView: UITextView?
-    var mediaTextOverlayView: MediaTextOverlayView?
     // Constraints
     private lazy var headerViewTopConstraint = headerView.pin(.top, to: .top, of: self, withInset: 1)
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
@@ -313,7 +312,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         }
         albumView = nil
         bodyTextView = nil
-        mediaTextOverlayView = nil
         let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
         switch viewItem.messageCellType {
         case .textOnlyMessage:
@@ -325,6 +323,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
                 linkPreviewView.layer.mask = bubbleViewMaskLayer
+                self.bodyTextView = linkPreviewView.bodyTextView
             } else if let openGroupInvitationName = message.openGroupInvitationName, let openGroupInvitationURL = message.openGroupInvitationURL {
                 let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor, isOutgoing: isOutgoing)
                 snContentView.addSubview(openGroupInvitationView)
@@ -373,11 +372,12 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 albumView.layer.mask = bubbleViewMaskLayer
                 stackView.addArrangedSubview(albumView)
                 // Body text view
-                if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0,
-                    let delegate = delegate { // delegate should always be set at this point
-                    let overlayView = MediaTextOverlayView(viewItem: viewItem, albumViewWidth: size.width, textColor: bodyLabelTextColor, delegate: delegate)
-                    self.mediaTextOverlayView = overlayView
-                    stackView.addArrangedSubview(overlayView)
+                if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0 {
+                    let inset: CGFloat = 12
+                    let maxWidth = size.width - 2 * inset
+                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, searchText: delegate?.lastSearchedText, delegate: self)
+                    self.bodyTextView = bodyTextView
+                    stackView.addArrangedSubview(UIView(wrapping: bodyTextView, withInsets: UIEdgeInsets(top: 0, left: inset, bottom: inset, right: inset)))
                 }
                 unloadContent = { albumView.unloadMedia() }
                 // Constraints
