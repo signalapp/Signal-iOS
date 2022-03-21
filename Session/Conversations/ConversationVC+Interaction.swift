@@ -564,14 +564,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 } else {
                     guard let albumView = cell.albumView else { return }
                     let locationInCell = gestureRecognizer.location(in: cell)
-                    // Figure out whether the "read more" button was tapped
-                    if let overlayView = cell.mediaTextOverlayView {
-                        let locationInOverlayView = cell.convert(locationInCell, to: overlayView)
-                        if let readMoreButton = overlayView.readMoreButton, readMoreButton.frame.contains(locationInOverlayView) {
-                            return showFullText(viewItem) // HACK: This is a dirty way to do this
-                        }
-                    }
-                    // Otherwise, figure out which of the media views was tapped
+                    // Figure out which of the media views was tapped
                     let locationInAlbumView = cell.convert(locationInCell, to: albumView)
                     guard let mediaView = albumView.mediaView(forLocation: locationInAlbumView) else { return }
                     if albumView.isMoreItemsView(mediaView: mediaView) && viewItem.mediaAlbumHasFailedAttachment() {
@@ -616,10 +609,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     navigationController!.present(shareVC, animated: true, completion: nil)
                 }
             case .textOnlyMessage:
-                if let preview = viewItem.linkPreview, let urlAsString = preview.urlString, let url = URL(string: urlAsString) {
-                    // Open the link preview URL
-                    openURL(url)
-                } else if let reply = viewItem.quotedReply {
+                if let reply = viewItem.quotedReply {
                     // Scroll to the source of the reply
                     guard let indexPath = viewModel.ensureLoadWindowContainsQuotedReply(reply) else { return }
                     messagesTableView.scrollToRow(at: indexPath, at: UITableView.ScrollPosition.middle, animated: true)

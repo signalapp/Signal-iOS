@@ -43,7 +43,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 let envelope = try? MessageWrapper.unwrap(data: data), let envelopeAsData = try? envelope.serializedData() else {
                 return self.handleFailure(for: notificationContent)
             }
-            Storage.write { transaction in // Intentionally capture self
+            // HACK: It is important to use writeSync() here to avoid a race condition
+            // where the completeSilenty() is called before the local notification request
+            // is added to notification center.
+            Storage.writeSync { transaction in // Intentionally capture self
                 do {
                     let (message, proto) = try MessageReceiver.parse(envelopeAsData, openGroupMessageServerID: nil, using: transaction)
                     switch message {

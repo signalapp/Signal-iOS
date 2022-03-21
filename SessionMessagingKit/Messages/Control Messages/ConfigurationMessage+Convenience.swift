@@ -82,7 +82,7 @@ extension ConfigurationMessage {
                         hasIsApproved: true,
                         isApproved: contact.isApproved,
                         hasIsBlocked: true,
-                        isBlocked: contact.isBlocked,
+                        isBlocked: SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID),
                         hasDidApproveMe: true,
                         didApproveMe: contact.didApproveMe
                     )
