@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 # When we make a hotfix, we need to reverse integrate our hotfix back into
 # master. After committing to master, this script audits that all tags have been
