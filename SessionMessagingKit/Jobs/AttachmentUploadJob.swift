@@ -66,7 +66,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         guard let stream = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentStream else {
             return handleFailure(error: Error.noAttachment)
         }
-        guard !stream.isUploaded else { return handleSuccess(stream.serverId) } // Should never occur
+        guard !stream.isUploaded else { return handleSuccess("\(stream.serverId)") } // Should never occur
         
         let storage = SNMessagingKitConfiguration.shared.storage
         if let openGroup = storage.getOpenGroup(for: threadID) {
@@ -124,8 +124,13 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         stream.isUploaded = false
         stream.save()
         upload(data).done(on: DispatchQueue.global(qos: .userInitiated)) { fileId in
+            guard let intFileId: UInt64 = UInt64(fileId) else {
+                onFailure?(HTTP.Error.parsingFailed)
+                return
+            }
+            
             let downloadURL = "\(FileServerAPI.server)/files/\(fileId)"
-            stream.serverId = fileId
+            stream.serverId = intFileId
             stream.isUploaded = true
             stream.downloadURL = downloadURL
             stream.save()

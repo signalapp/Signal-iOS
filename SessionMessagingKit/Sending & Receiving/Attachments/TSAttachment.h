@@ -23,7 +23,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // The attachmentSchemaVersion and serverId properties only apply to
 // TSAttachmentPointer, which can be distinguished by the isDownloaded
 // property.
-@property (atomic, readwrite) NSString *serverId;
+@property (atomic, readwrite) UInt64 serverId;
 @property (atomic, readwrite, nullable) NSData *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
 @property (atomic, readwrite) BOOL isDownloaded;

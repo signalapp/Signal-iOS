@@ -170,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
     // uniqueId.
     if (attachmentSchemaVersion < 2 && self.serverId == 0) {
         // For legacy instances, try to parse the serverId from the uniqueId.
-        self.serverId = self.uniqueId;
+        self.serverId = (UInt64)[self.uniqueId integerValue];
     }
 }
 
