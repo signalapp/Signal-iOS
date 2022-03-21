@@ -204,7 +204,11 @@ public enum OnionRequestAPI {
         } else {
             return buildPaths(reusing: []).map2 { paths in
                 if let snode = snode {
-                    return paths.filter { !$0.contains(snode) }.randomElement()!
+                    if let path = paths.filter({ !$0.contains(snode) }).randomElement() {
+                        return path
+                    } else {
+                        throw Error.insufficientSnodes
+                    }
                 } else {
                     return paths.randomElement()!
                 }

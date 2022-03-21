@@ -18,6 +18,7 @@ public final class OpenGroupAPIV2 : NSObject {
     }()
 
     // MARK: Settings
+    public static let legacyDefaultServerDNS = "open.getsession.org"
     public static let defaultServer = "http://116.203.70.33"
     public static let defaultServerPublicKey = "a03c383cf63c3c4efe67acc52112a6dd734b3a946b9545f488aaa93da7991238"
     

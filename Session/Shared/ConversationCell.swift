@@ -321,19 +321,30 @@ final class ConversationCell : UITableViewCell {
         statusIndicatorView.backgroundColor = nil
         let lastMessage = threadViewModel.lastMessageForInbox
         if let lastMessage = lastMessage as? TSOutgoingMessage {
-            let image: UIImage
             let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: lastMessage)
+            
             switch status {
-            case .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot").asTintedImage(color: Colors.text)!
-            case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck").asTintedImage(color: Colors.text)!
-            case .read:
-                statusIndicatorView.backgroundColor = isLightMode ? .black : .white
-                image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
-            case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.text)!
+                case .uploading, .sending:
+                    statusIndicatorView.image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
+                    statusIndicatorView.tintColor = Colors.text
+                    
+                case .sent, .skipped, .delivered:
+                    statusIndicatorView.image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
+                    statusIndicatorView.tintColor = Colors.text
+                    
+                case .read:
+                    statusIndicatorView.image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
+                    statusIndicatorView.tintColor = nil
+                    statusIndicatorView.backgroundColor = (isLightMode ? .black : .white)
+                    
+                case .failed:
+                    statusIndicatorView.image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
+                    statusIndicatorView.tintColor = Colors.destructive
             }
-            statusIndicatorView.image = image
+            
             statusIndicatorView.isHidden = false
-        } else {
+        }
+        else {
             statusIndicatorView.isHidden = true
         }
     }
