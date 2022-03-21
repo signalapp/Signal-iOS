@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 This script can be used to grep the source to tree to see which localized strings are in use. 
 
@@ -41,5 +41,5 @@ if __name__ == '__main__':
 	for item in open(strings_file).readlines():
 		grep_for = item.strip().split(' = ')[0].replace('"','')
 		if rgrep_match(src_dir_name, grep_for):
-			print item.strip()
+			print(item.strip())
 

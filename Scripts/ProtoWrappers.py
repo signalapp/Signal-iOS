@@ -1557,7 +1557,7 @@ class LineParser:
         self.lines.reverse()
         self.next_line_comments = []
 
-    def next(self):
+    def __next__(self):
         # lineParser = LineParser(text.split('\n'))
 
         self.next_line_comments = []
@@ -1598,7 +1598,7 @@ def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
     allow_alias = False
     while True:
         try:
-            line = parser.next()
+            line = next(parser)
         except StopIteration:
             raise Exception('Incomplete enum: %s' % proto_file_path)
 
@@ -1650,7 +1650,7 @@ def parse_oneof(args, proto_file_path, parser, parent_context, oneof_name):
 
     while True:
         try:
-            line = parser.next()
+            line = next(parser)
         except StopIteration:
             raise Exception('Incomplete oneof: %s' % proto_file_path)
 
@@ -1701,7 +1701,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
     sort_index = 0
     while True:
         try:
-            line = parser.next()
+            line = next(parser)
         except StopIteration:
             raise Exception('Incomplete message: %s' % proto_file_path)
 
@@ -1864,7 +1864,7 @@ def process_proto_file(args, proto_file_path, dst_file_path):
 
     while True:
         try:
-            line = parser.next()
+            line = next(parser)
         except StopIteration:
             break
 

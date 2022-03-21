@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -6,7 +6,6 @@ import sys
 import subprocess
 import datetime
 import argparse
-import commands
 import re
 import json
 import sds_common
@@ -28,7 +27,7 @@ def ows_getoutput(cmd):
 
 
 def process_file(file_path):
-    print 'Scanning:', file_path
+    print('Scanning:', file_path)
 
     with open(file_path, 'rt') as f:
         src_text = f.read()
@@ -46,7 +45,7 @@ def process_file(file_path):
             # Ignore this framework.
             continue
 
-        print '\t', 'Fixing:', import_name
+        print('\t', 'Fixing:', import_name)
         new_import = '#import <%s/%s.h>' % ( import_name, import_name, )
         text = text[:match.start(1)] + new_import + text[match.end(1):]
 

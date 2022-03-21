@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # When we make a hotfix, we need to reverse integrate our hotfix back into
