@@ -2264,7 +2264,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ је променио/ла подешавања групе како би се омогућили да само админи шаљу поруке.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "You can't join this group via the group link because an admin removed you.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Не можете да се придружите овој групи преко везе групе јер вас је администратор уклонио.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Веза до групе није више активна.";
@@ -2606,7 +2606,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Захтеви & позиве";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
-"GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+"GROUP_STORY_NAME_FORMAT" = "%1$@ за %2$@";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Група ажурирана.";
@@ -3023,7 +3023,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Поруке можете синхронизовано слати и примати са вашег телефона и iPad-а.\nЗбог додатне безбедности, историја ћаскања се не преноси на новоповезане уређаје.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ је променио свој број телефона.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ је на Signal-у!";
@@ -6092,10 +6092,10 @@
 "STICKERS_UNINSTALL_BUTTON" = "Уклони";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "Приче";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Посетите везу";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Значке";

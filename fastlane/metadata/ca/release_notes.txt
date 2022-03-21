@@ -1,2 +1,2 @@
-• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
-• More improvements to make opening group chats super snappy.
+• Hem ajustat una mica les coses per reduir la mida de l'aplicació Signal un 25% més petita.
+• Més millores per fer que l'obertura de converes de grups sigui molt ràpida.

@@ -1,2 +1,2 @@
-• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
-• More improvements to make opening group chats super snappy.
+• Olemme vähän tiivistäneet asioita: sovellus vie nyt 25 % vähemmän tilaa!
+• Ryhmäkeskusteluiden avaaminen on tehty mutkattomammaksi.

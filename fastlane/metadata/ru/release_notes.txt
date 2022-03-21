@@ -1,2 +1,2 @@
-• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
-• More improvements to make opening group chats super snappy.
+• Мы немного затянули некоторые вещи, чтобы размер приложения Signal стал на 25% меньше.
+• Больше улучшений для того, чтобы групповые чаты открывались очень быстро.
