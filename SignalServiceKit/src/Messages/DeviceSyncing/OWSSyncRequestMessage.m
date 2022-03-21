@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncRequestMessage.h"
@@ -9,13 +9,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSyncRequestMessage ()
 
-@property (nonatomic, readonly) OWSSyncRequestType requestType;
+@property (nonatomic, readonly) SSKProtoSyncMessageRequestType requestType;
 
 @end
 
 @implementation OWSSyncRequestMessage
 
-- (instancetype)initWithThread:(TSThread *)thread requestType:(OWSSyncRequestType)requestType
+- (instancetype)initWithThread:(TSThread *)thread requestType:(SSKProtoSyncMessageRequestType)requestType
 {
     self = [super initWithThread:thread];
 
@@ -24,28 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (SSKProtoSyncMessageRequestType)protoRequestType
-{
-    switch (self.requestType) {
-        case OWSSyncRequestType_Unknown:
-            return SSKProtoSyncMessageRequestTypeUnknown;
-        case OWSSyncRequestType_Contacts:
-            return SSKProtoSyncMessageRequestTypeContacts;
-        case OWSSyncRequestType_Groups:
-            return SSKProtoSyncMessageRequestTypeGroups;
-        case OWSSyncRequestType_Blocked:
-            return SSKProtoSyncMessageRequestTypeBlocked;
-        case OWSSyncRequestType_Configuration:
-            return SSKProtoSyncMessageRequestTypeConfiguration;
-        case OWSSyncRequestType_Keys:
-            return SSKProtoSyncMessageRequestTypeKeys;
-    }
-}
-
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoSyncMessageRequestBuilder *requestBuilder = [SSKProtoSyncMessageRequest builder];
-    requestBuilder.type = self.protoRequestType;
+    requestBuilder.type = self.requestType;
 
     NSError *error;
     SSKProtoSyncMessageRequest *_Nullable messageRequest = [requestBuilder buildAndReturnError:&error];

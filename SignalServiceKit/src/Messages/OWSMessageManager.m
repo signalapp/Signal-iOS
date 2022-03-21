@@ -1689,36 +1689,49 @@ NS_ASSUME_NONNULL_BEGIN
             // Don't respond to sync requests from a linked device.
             return;
         }
-        if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeContacts) {
-            // We respond asynchronously because populating the sync message will
-            // create transactions and it's not practical (due to locking in the OWSIdentityManager)
-            // to plumb our transaction through.
-            //
-            // In rare cases this means we won't respond to the sync request, but that's
-            // acceptable.
-            PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncAllContacts"];
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self.syncManager syncAllContacts]
-                    .catchInBackground(^(NSError *error) { OWSLogError(@"Error: %@", error); })
-                    .ensureOn(
-                        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ [pendingTask complete]; });
-            });
-        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeGroups) {
-            PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncGroups"];
-            [self.syncManager syncGroupsWithTransaction:transaction completion:^{ [pendingTask complete]; }];
-        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeBlocked) {
-            OWSLogInfo(@"Received request for block list");
-            PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncBlockList"];
-            [self.blockingManager syncBlockListWithCompletion:^{ [pendingTask complete]; }];
-        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeConfiguration) {
-            [self.syncManager sendConfigurationSyncMessage];
+        switch (syncMessage.request.unwrappedType) {
+            case SSKProtoSyncMessageRequestTypeContacts: {
+                // We respond asynchronously because populating the sync message will
+                // create transactions and it's not practical (due to locking in the OWSIdentityManager)
+                // to plumb our transaction through.
+                //
+                // In rare cases this means we won't respond to the sync request, but that's
+                // acceptable.
+                PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncAllContacts"];
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    [self.syncManager syncAllContacts]
+                        .catchInBackground(^(NSError *error) { OWSLogError(@"Error: %@", error); })
+                        .ensureOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                            ^{ [pendingTask complete]; });
+                });
+                break;
+            }
+            case SSKProtoSyncMessageRequestTypeGroups: {
+                PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncGroups"];
+                [self.syncManager syncGroupsWithTransaction:transaction completion:^{ [pendingTask complete]; }];
+                break;
+            }
+            case SSKProtoSyncMessageRequestTypeBlocked: {
+                OWSLogInfo(@"Received request for block list");
+                PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncBlockList"];
+                [self.blockingManager syncBlockListWithCompletion:^{ [pendingTask complete]; }];
+                break;
+            }
+            case SSKProtoSyncMessageRequestTypeConfiguration:
+                [self.syncManager sendConfigurationSyncMessage];
 
-            // We send _two_ responses to the "configuration request".
-            [StickerManager syncAllInstalledPacksWithTransaction:transaction];
-        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeKeys) {
-            [self.syncManager sendKeysSyncMessage];
-        } else {
-            OWSLogWarn(@"ignoring unsupported sync request message");
+                // We send _two_ responses to the "configuration request".
+                [StickerManager syncAllInstalledPacksWithTransaction:transaction];
+                break;
+            case SSKProtoSyncMessageRequestTypeKeys:
+                [self.syncManager sendKeysSyncMessage];
+                break;
+            case SSKProtoSyncMessageRequestTypePniIdentity:
+                [self.syncManager sendPniIdentitySyncMessage];
+                break;
+            case SSKProtoSyncMessageRequestTypeUnknown:
+                OWSLogWarn(@"ignoring unsupported sync request message");
+                break;
         }
     } else if (syncMessage.blocked) {
         OWSLogInfo(@"Received blocked sync message.");
@@ -1798,6 +1811,9 @@ NS_ASSUME_NONNULL_BEGIN
         [self.paymentsHelper processIncomingPaymentSyncMessage:syncMessage.outgoingPayment
                                               messageTimestamp:serverDeliveryTimestamp
                                                    transaction:transaction];
+    } else if (syncMessage.pniIdentity) {
+        OWSLogInfo(@"Received PNI identity");
+        [self.identityManager processIncomingPniIdentityProto:syncMessage.pniIdentity transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }

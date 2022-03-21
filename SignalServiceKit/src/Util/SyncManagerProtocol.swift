@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,13 +34,14 @@ public protocol SyncManagerProtocolObjc {
 
 @objc
 public protocol SyncManagerProtocolSwift {
-    func sendKeysSyncMessage()
-
     func sendAllSyncRequestMessages() -> AnyPromise
     func sendAllSyncRequestMessages(timeout: TimeInterval) -> AnyPromise
 
+    func sendKeysSyncMessage()
     func processIncomingKeysSyncMessage(_ syncMessage: SSKProtoSyncMessageKeys, transaction: SDSAnyWriteTransaction)
     func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction)
+
+    func sendPniIdentitySyncMessage()
 
     func processIncomingMessageRequestResponseSyncMessage(
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,

@@ -498,6 +498,7 @@ message SyncMessage {
       BLOCKED       = 3;
       CONFIGURATION = 4;
       KEYS          = 5;
+      PNI_IDENTITY  = 6;
     }
 
     optional Type type = 1;
@@ -560,6 +561,11 @@ message SyncMessage {
     optional bytes storageService = 1;
   }
 
+  message PniIdentity {
+    optional bytes publicKey  = 1;
+    optional bytes privateKey = 2;
+  }
+
   message MessageRequestResponse {
     enum Type {
       UNKNOWN          = 0;
@@ -612,6 +618,7 @@ message SyncMessage {
   optional MessageRequestResponse messageRequestResponse = 14;
   optional OutgoingPayment        outgoingPayment        = 15;
   repeated Viewed                 viewed                 = 16;
+  optional PniIdentity            pniIdentity            = 17;
 }
 
 message AttachmentPointer {

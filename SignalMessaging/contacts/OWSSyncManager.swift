@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -83,6 +83,37 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
     @objc
     public func sendKeysSyncRequestMessage(transaction: SDSAnyWriteTransaction) {
         sendSyncRequestMessage(.keys, transaction: transaction)
+    }
+
+    @objc
+    public func sendPniIdentitySyncMessage() {
+        Logger.info("")
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return owsFailDebug("Unexpectedly tried to send sync message before registration.")
+        }
+
+        guard tsAccountManager.isRegisteredPrimaryDevice else {
+            return owsFailDebug("PNI identity sync should only be initiated from the primary device")
+        }
+
+        databaseStorage.asyncWrite { transaction in
+            guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+                return owsFailDebug("Missing thread")
+            }
+
+            guard let keyPair = self.identityKeyStore.identityKeyPair(for: .pni) else {
+                Logger.warn("no PNI identity key yet; ignoring request")
+                return
+            }
+            let syncMessage = OWSSyncPniIdentityMessage(thread: thread, keyPair: keyPair)
+            self.messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
+        }
+    }
+
+    @objc(sendPniIdentitySyncRequestMessageWithTransaction:)
+    public func sendPniIdentitySyncRequestMessage(transaction: SDSAnyWriteTransaction) {
+        sendSyncRequestMessage(.pniIdentity, transaction: transaction)
     }
 
     @objc
@@ -198,7 +229,8 @@ public extension OWSSyncManager {
         }
     }
 
-    fileprivate func sendSyncRequestMessage(_ requestType: OWSSyncRequestType, transaction: SDSAnyWriteTransaction) {
+    fileprivate func sendSyncRequestMessage(_ requestType: SSKProtoSyncMessageRequestType,
+                                            transaction: SDSAnyWriteTransaction) {
         Logger.info("")
 
         guard tsAccountManager.isRegisteredAndReady else {

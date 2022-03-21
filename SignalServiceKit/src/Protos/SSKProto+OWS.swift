@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,3 +17,5 @@ public extension SSKProtoGroupContext {
         return membersE164.map { SignalServiceAddress(phoneNumber: $0) }
     }
 }
+
+extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder: SSKProtoSyncMessageBuilderProtocol {}

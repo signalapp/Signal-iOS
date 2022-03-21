@@ -1,19 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncRequestType) {
-    OWSSyncRequestType_Unknown,
-    OWSSyncRequestType_Contacts,
-    OWSSyncRequestType_Groups,
-    OWSSyncRequestType_Blocked,
-    OWSSyncRequestType_Configuration,
-    OWSSyncRequestType_Keys
-};
+typedef NS_CLOSED_ENUM(int32_t, SSKProtoSyncMessageRequestType);
 
 @interface OWSSyncRequestMessage : OWSOutgoingSyncMessage
 
@@ -22,7 +15,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncRequestType) {
 - (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(TSThread *)thread requestType:(OWSSyncRequestType)requestType NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread:(TSThread *)thread
+                   requestType:(SSKProtoSyncMessageRequestType)requestType NS_DESIGNATED_INITIALIZER;
 
 @end
 

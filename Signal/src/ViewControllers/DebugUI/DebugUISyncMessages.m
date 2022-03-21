@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUISyncMessages.h"
@@ -35,25 +35,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<OWSTableItem *> *items = [@[
         [OWSTableItem itemWithTitle:@"Send Contacts Sync Message"
-                        actionBlock:^{
-                            [DebugUISyncMessages sendContactsSyncMessage];
-                        }],
+                        actionBlock:^{ [DebugUISyncMessages sendContactsSyncMessage]; }],
         [OWSTableItem itemWithTitle:@"Send Groups Sync Message"
-                        actionBlock:^{
-                            [DebugUISyncMessages sendGroupSyncMessage];
-                        }],
+                        actionBlock:^{ [DebugUISyncMessages sendGroupSyncMessage]; }],
         [OWSTableItem itemWithTitle:@"Send Blocklist Sync Message"
-                        actionBlock:^{
-                            [DebugUISyncMessages sendBlockListSyncMessage];
-                        }],
+                        actionBlock:^{ [DebugUISyncMessages sendBlockListSyncMessage]; }],
         [OWSTableItem itemWithTitle:@"Send Configuration Sync Message"
-                        actionBlock:^{
-                            [DebugUISyncMessages sendConfigurationSyncMessage];
-                        }],
+                        actionBlock:^{ [DebugUISyncMessages sendConfigurationSyncMessage]; }],
         [OWSTableItem itemWithTitle:@"Send Verification Sync Message"
-                        actionBlock:^{
-                            [DebugUISyncMessages sendVerificationSyncMessage];
-                        }],
+                        actionBlock:^{ [DebugUISyncMessages sendVerificationSyncMessage]; }],
+        [OWSTableItem itemWithTitle:@"Send PNI Identity Request"
+                        actionBlock:^{ [DebugUISyncMessages sendPniIdentityRequest]; }],
     ] mutableCopy];
 
     if (thread != nil) {
@@ -125,6 +117,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendVerificationSyncMessage
 {
     [OWSIdentityManager.shared tryToSyncQueuedVerificationStates];
+}
+
++ (void)sendPniIdentityRequest
+{
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [(OWSSyncManager *)self.syncManager sendPniIdentitySyncRequestMessageWithTransaction:transaction];
+    })
 }
 
 + (void)syncConversationSettingsWithThread:(TSThread *)thread

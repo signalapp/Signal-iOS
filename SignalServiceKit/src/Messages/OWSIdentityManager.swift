@@ -70,3 +70,22 @@ extension OWSIdentityManager: IdentityKeyStore {
         return OWSRecipientIdentity.groupContainsUnverifiedMember(groupUniqueID, transaction: transaction)
     }
 }
+
+extension OWSIdentityManager {
+    @objc
+    public func processIncomingPniIdentityProto(_ pniIdentity: SSKProtoSyncMessagePniIdentity,
+                                                transaction: SDSAnyWriteTransaction) {
+        do {
+            guard let publicKeyData = pniIdentity.publicKey, let privateKeyData = pniIdentity.privateKey else {
+                throw OWSAssertionError("missing key data in PniIdentity message")
+            }
+            let publicKey = try PublicKey(publicKeyData)
+            let privateKey = try PrivateKey(privateKeyData)
+            let keyPair = ECKeyPair(IdentityKeyPair(publicKey: publicKey, privateKey: privateKey))
+            storeIdentityKeyPair(keyPair, for: .pni, transaction: transaction)
+            // PNI TODO: Immediately rotate PNI pre-keys (signed and one-time)
+        } catch {
+            owsFailDebug("Invalid PNI identity data: \(error)")
+        }
+    }
+}

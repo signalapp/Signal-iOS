@@ -212,12 +212,16 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             return @"ConfigurationRequest";
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeKeys) {
             return @"KeysRequest";
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypePniIdentity) {
+            return @"PniIdentityRequest";
         } else {
             OWSFailDebug(@"Unknown sync message request type");
             return @"UnknownRequest";
         }
     } else if (syncMessage.blocked) {
         return @"Blocked";
+    } else if (syncMessage.pniIdentity) {
+        return @"PniIdentity";
     } else if (syncMessage.read.count > 0) {
         return @"ReadReceipt";
     } else if (syncMessage.verified) {
