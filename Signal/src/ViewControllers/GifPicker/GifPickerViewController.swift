@@ -249,13 +249,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             : Theme.backgroundColor)
         self.view.backgroundColor = backgroundColor
 
-        // Block UIKit from adjust insets of collection view which screws up
-        // min/max scroll positions.
-        self.automaticallyAdjustsScrollViewInsets = false
-
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.backgroundColor = backgroundColor
+        self.collectionView.contentInsetAdjustmentBehavior = .never
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
         view.addSubview(self.collectionView)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .leading)
