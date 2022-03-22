@@ -127,21 +127,6 @@ public extension GroupsV2Migration {
             : .autoMigrationPolite)
     }
 
-    static func doesUserHaveBothCapabilities(address: SignalServiceAddress,
-                                             transaction: SDSAnyReadTransaction) -> Bool {
-        if !GroupManager.doesUserHaveGroupsV2Capability(address: address,
-                                                        transaction: transaction) {
-            Logger.warn("Member without Groups v2 capability: \(address).")
-            return false
-        }
-        if !GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address,
-                                                                 transaction: transaction) {
-            Logger.warn("Member without migration capability: \(address).")
-            return false
-        }
-        return true
-    }
-
     static func tryToAutoMigrateAllGroups(shouldLimitBatchSize: Bool) {
         AssertIsOnMainThread()
 
@@ -411,14 +396,21 @@ fileprivate extension GroupsV2Migration {
                 return Promise.value(())
             }
         }.then(on: .global()) { () -> Promise<Void> in
-            var membersToFetchProfiles = Set<SignalServiceAddress>()
-            Self.databaseStorage.read { transaction in
-                for address in membersToMigrate {
-                    if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
-                        membersToFetchProfiles.insert(address)
-                    } else if !groupsV2.hasProfileKeyCredential(for: address, transaction: transaction) {
-                        membersToFetchProfiles.insert(address)
-                    }
+            let membersToFetchProfiles = Self.databaseStorage.read { transaction in
+                // Both the capability and a profile key are required to migrate
+                // If a user doesn't have both, we need to refetch their profile
+                membersToMigrate.filter { address in
+                    let hasCapability = GroupManager.doesUserHaveGroupsV2MigrationCapability(
+                        address: address,
+                        transaction: transaction)
+                    guard hasCapability else { return true }
+
+                    let hasProfileKey = groupsV2.hasProfileKeyCredential(
+                        for: address,
+                        transaction: transaction)
+                    guard hasProfileKey else { return true }
+
+                    return false
                 }
             }
             guard !membersToFetchProfiles.isEmpty else {
@@ -680,7 +672,7 @@ fileprivate extension GroupsV2Migration {
                 continue
             }
 
-            if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
+            if !GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address, transaction: transaction) {
                 owsAssertDebug(migrationMode.canSkipMembersWithoutCapabilities)
                 continue
             }
@@ -799,7 +791,7 @@ fileprivate extension GroupsV2Migration {
                 continue
             }
 
-            if !doesUserHaveBothCapabilities(address: address, transaction: transaction) {
+            if !GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address, transaction: transaction) {
                 membersWithoutCapabilities.append(address)
                 continue
             }
