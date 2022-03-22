@@ -186,6 +186,10 @@ public class OWSHttpHeaders: NSObject {
         request.replace(httpHeaders: httpHeaders)
         return request
     }
+
+    // MARK: - NSObject Overrides
+
+    override public var description: String { "<\(super.description): \(headers)>" }
 }
 
 // MARK: - HTTP Headers
