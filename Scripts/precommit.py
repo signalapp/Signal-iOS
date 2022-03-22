@@ -130,26 +130,8 @@ def sort_include_block(text, filepath, filename, file_extension):
     includes = other_includes
 
     def formatBlock(includes):
-        lines = [include.format() for include in includes]
-        lines = list(set(lines))
-        def include_sorter(a, b):
-            # return cmp(a.lower(), b.lower())
-            return cmp(a, b)
-        # print 'before'
-        # for line in lines:
-        #     print '\t', line
-        # print
-        lines.sort(include_sorter)
-        # print 'after'
-        # for line in lines:
-        #     print '\t', line
-        # print
-        # print
-        # print 'filepath'
-        # for line in lines:
-        #     print '\t', line
-        # print
-        return '\n'.join(lines)
+        lines = set([include.format() for include in includes])
+        return "\n".join(sorted(lines))
 
     includeAngles = [include for include in includes if include.isInclude and not include.isQuote]
     includeQuotes = [include for include in includes if include.isInclude and include.isQuote]
