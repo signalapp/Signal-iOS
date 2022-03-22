@@ -13,14 +13,14 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         // to check if this is the only message request thread (group threads can't be message requests
         // so just ignore those and if the user has hidden message requests then we want to show the
         // notification regardless of how many message requests there are)
-        if !thread.isGroupThread() && thread.isMessageRequest() && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+        if !thread.isGroupThread() && thread.isMessageRequest(using: transaction) && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
             let threads = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
             let numMessageRequests = threads.numberOfItems(inGroup: TSMessageRequestGroup)
             
             // Allow this to show a notification if there are no message requests (ie. this is the first one)
             guard numMessageRequests == 0 else { return }
         }
-        else if thread.isMessageRequest() && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
+        else if thread.isMessageRequest(using: transaction) && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
             // If there are other interactions on this thread already then don't show the notification
             if thread.numberOfInteractions(with: transaction) > 1 { return }
             
@@ -28,7 +28,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         }
         
         let senderPublicKey = incomingMessage.authorId
-        let userPublicKey = SNGeneralUtilities.getUserPublicKey()
+        let userPublicKey = GeneralUtilities.getUserPublicKey()
         guard senderPublicKey != userPublicKey else {
             // Ignore PNs for messages sent by the current user
             // after handling the message. Otherwise the closed
@@ -37,7 +37,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         }
         
         let context = Contact.context(for: thread)
-        let senderName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: context) ?? senderPublicKey
+        let senderName = Storage.shared.getContact(with: senderPublicKey, using: transaction)?.displayName(for: context) ?? senderPublicKey
         
         var notificationTitle = senderName
         if let group = thread as? TSGroupThread {
@@ -85,7 +85,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         
         // If it's a message request then overwrite the body to be something generic (only show a notification
         // when receiving a new message request if there aren't any others or the user had hidden them)
-        if thread.isMessageRequest() {
+        if thread.isMessageRequest(using: transaction) {
             notificationContent.title = "Session"
             notificationContent.body = "MESSAGE_REQUESTS_NOTIFICATION".localized()
         }
@@ -93,8 +93,16 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         // Add request
         let identifier = incomingMessage.notificationIdentifier ?? UUID().uuidString
         let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
-        SNLog("Add remote notification request")
-        UNUserNotificationCenter.current().add(request)
+        SNLog("Add remote notification request: \(notificationContent.body)")
+        let semaphore = DispatchSemaphore(value: 0)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                SNLog("Failed to add notification request due to error:\(error)")
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
+        SNLog("Finish adding remote notification request")
     }
     
     public func cancelNotification(_ identifier: String) {

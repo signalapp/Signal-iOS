@@ -48,6 +48,7 @@ public final class OpenGroupPollerV2 : NSObject {
                 guard let self = self else { return }
                 self.isPolling = false
                 bodies.forEach { self.handleCompactPollBody($0, isBackgroundPoll: isBackgroundPoll) }
+                SNLog("Open group polling finished for \(self.server).")
                 seal.fulfill(())
             }.catch(on: OpenGroupAPIV2.workQueue) { error in
                 SNLog("Open group polling failed due to error: \(error).")

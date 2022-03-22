@@ -29,12 +29,57 @@ public final class OpenGroupManagerV2 : NSObject {
     }
 
     // MARK: Adding & Removing
+    
+    public func hasExistingOpenGroup(room: String, server: String, publicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Bool {
+        guard let serverUrl: URL = URL(string: server) else { return false }
+        
+        let serverHost: String = (serverUrl.host ?? server)
+        let serverPort: String = (serverUrl.port.map { ":\($0)" } ?? "")
+        let defaultServerHost: String = OpenGroupAPIV2.defaultServer.substring(from: "http://".count)
+        var serverOptions: Set<String> = Set([
+            server,
+            "\(serverHost)\(serverPort)",
+            "http://\(serverHost)\(serverPort)",
+            "https://\(serverHost)\(serverPort)"
+        ])
+        
+        if serverHost == OpenGroupAPIV2.legacyDefaultServerDNS {
+            let defaultServerOptions: Set<String> = Set([
+                defaultServerHost,
+                OpenGroupAPIV2.defaultServer,
+                "https://\(defaultServerHost)"
+            ])
+            serverOptions = serverOptions.union(defaultServerOptions)
+        }
+        else if serverHost == defaultServerHost {
+            let legacyServerOptions: Set<String> = Set([
+                OpenGroupAPIV2.legacyDefaultServerDNS,
+                "http://\(OpenGroupAPIV2.legacyDefaultServerDNS)",
+                "https://\(OpenGroupAPIV2.legacyDefaultServerDNS)"
+            ])
+            serverOptions = serverOptions.union(legacyServerOptions)
+        }
+        
+        // First check if there is no poller for the specified server
+        if serverOptions.first(where: { OpenGroupManagerV2.shared.pollers[$0] != nil }) == nil {
+            return false
+        }
+        
+        // Then check if there is an existing open group thread
+        let hasExistingThread: Bool = serverOptions.contains(where: { serverName in
+            let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(serverName).\(room)")
+            
+            return (TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil)
+        })
+                                                                  
+        return hasExistingThread
+    }
+    
     public func add(room: String, server: String, publicKey: String, using transaction: Any) -> Promise<Void> {
         // If we are currently polling for this server and already have a TSGroupThread for this room the do nothing
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let groupId: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData("\(server).\(room)")
-        
-        if OpenGroupManagerV2.shared.pollers[server] != nil && TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil {
+
+        if hasExistingOpenGroup(room: room, server: server, publicKey: publicKey, using: transaction) {
             SNLog("Ignoring join open group attempt (already joined)")
             return Promise.value(())
         }
@@ -126,7 +171,10 @@ public final class OpenGroupManagerV2 : NSObject {
         // https://143.198.213.225:443/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         // 143.198.213.255:80/main?public_key=658d29b91892a2389505596b135e76a53db6e11d613a51dbd3d0816adffb231c
         let useTLS = (url.scheme == "https")
-        let updatedPath = (url.path.starts(with: "/r/") ? url.path.substring(from: 2) : url.path)
+        
+        // If there is no scheme then the host is included in the path (so handle that case)
+        let hostFreePath = (url.host != nil || !url.path.starts(with: host) ? url.path : url.path.substring(from: host.count))
+        let updatedPath = (hostFreePath.starts(with: "/r/") ? hostFreePath.substring(from: 2) : hostFreePath)
         let room = String(updatedPath.dropFirst()) // Drop the leading slash
         let queryParts = query.split(separator: "=")
         guard !room.isEmpty && !room.contains("/"), queryParts.count == 2, queryParts[0] == "public_key" else { return nil }
