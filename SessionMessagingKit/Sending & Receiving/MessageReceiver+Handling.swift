@@ -3,10 +3,6 @@ import SessionSnodeKit
 
 extension MessageReceiver {
 
-    internal static func isBlocked(_ publicKey: String) -> Bool {
-        return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
-    }
-
     public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
@@ -212,6 +208,7 @@ extension MessageReceiver {
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
                 let contact = (Storage.shared.getContact(with: sessionID, using: transaction) ?? Contact(sessionID: sessionID))
+                let contactWasBlocked: Bool = contact.isBlocked
                 if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
@@ -231,28 +228,12 @@ extension MessageReceiver {
                     // associated with them that is a message request thread then delete it (assume
                     // that the current user had deleted that message request)
                     if
-                        contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID),
+                        contactInfo.isBlocked != contactWasBlocked,
                         let thread: TSContactThread = TSContactThread.getWithContactSessionID(sessionID, transaction: transaction),
                         thread.isMessageRequest(using: transaction)
                     {
                         thread.removeAllThreadInteractions(with: transaction)
                         thread.remove(with: transaction)
-                    }
-                }
-            }
-            
-            // FIXME: 'OWSBlockingManager' manages it's own dbConnection and transactions so we have to dispatch this to prevent deadlocks
-            DispatchQueue.global().async {
-                for contactInfo in message.contacts {
-                    let sessionID = contactInfo.publicKey!
-                    
-                    if contactInfo.hasIsBlocked && contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID) {
-                        if contactInfo.isBlocked {
-                            OWSBlockingManager.shared().addBlockedPhoneNumber(sessionID)
-                        }
-                        else {
-                            OWSBlockingManager.shared().removeBlockedPhoneNumber(sessionID)
-                        }
                     }
                 }
             }

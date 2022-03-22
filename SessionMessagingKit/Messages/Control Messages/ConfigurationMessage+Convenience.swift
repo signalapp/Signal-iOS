@@ -64,7 +64,8 @@ extension ConfigurationMessage {
                             contact.didApproveMe ||
                             
                             // Sync blocked contacts
-                            SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID)
+                            contact.isBlocked ||
+                            contact.hasBeenBlocked
                         )
                     )
                 }
@@ -82,7 +83,7 @@ extension ConfigurationMessage {
                         hasIsApproved: true,
                         isApproved: contact.isApproved,
                         hasIsBlocked: true,
-                        isBlocked: SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID),
+                        isBlocked: contact.isBlocked,
                         hasDidApproveMe: true,
                         didApproveMe: contact.didApproveMe
                     )

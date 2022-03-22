@@ -348,16 +348,20 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                                 needsSync = true
                             }
                         }
+                        
+                        // Block the contact
+                        if
+                            let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
+                            !thread.isBlocked(),
+                            let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
+                        {
+                            contact.isBlocked = true
+                            Storage.shared.setContact(contact, using: transaction)
+                            needsSync = true
+                        }
                     }
                 },
                 completion: {
-                    // Block all the contacts
-                    threads.forEach { thread in
-                        if let sessionId: String = (thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                            OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                        }
-                    }
-                    
                     // Force a config sync (must run on the main thread)
                     if needsSync {
                         DispatchQueue.main.async {
@@ -382,13 +386,18 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 with: { [weak self] transaction in
                     Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
                     self?.updateContactAndThread(thread: thread, with: transaction)
+                    
+                    // Block the contact
+                    if
+                        let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
+                        !thread.isBlocked(),
+                        let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
+                    {
+                        contact.isBlocked = true
+                        Storage.shared.setContact(contact, using: transaction)
+                    }
                 },
                 completion: {
-                    // Block the contact
-                    if let sessionId: String = (thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                        OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                    }
-                    
                     // Force a config sync (must run on the main thread)
                     DispatchQueue.main.async {
                         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {

@@ -48,21 +48,27 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             self.blockedBanner.alpha = 0
         }, completion: { _ in
             if let contact: Contact = Storage.shared.getContact(with: publicKey) {
-                Storage.shared.write { transaction in
-                    contact.isBlocked = false
-                    Storage.shared.setContact(contact, using: transaction)
-                }
+                Storage.shared.write(
+                    with: { transaction in
+                        contact.isBlocked = false
+                        Storage.shared.setContact(contact, using: transaction)
+                    },
+                    completion: {
+                        DispatchQueue.main.async {
+                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+                            }
+                        }
+                    }
+                )
             }
-            
-            OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
         })
     }
 
     func showBlockedModalIfNeeded() -> Bool {
-        guard let thread = thread as? TSContactThread else { return false }
-        let publicKey = thread.contactSessionID()
-        guard OWSBlockingManager.shared().isRecipientIdBlocked(publicKey) else { return false }
-        let blockedModal = BlockedModal(publicKey: publicKey)
+        guard let thread = thread as? TSContactThread, thread.isBlocked() else { return false }
+        
+        let blockedModal = BlockedModal(publicKey: thread.contactSessionID())
         blockedModal.modalPresentationStyle = .overFullScreen
         blockedModal.modalTransitionStyle = .crossDissolve
         present(blockedModal, animated: true, completion: nil)
@@ -1224,6 +1230,12 @@ extension ConversationVC {
                         let sessionId: String = contactThread.contactSessionID()
                         
                         if let contact: Contact = Storage.shared.getContact(with: sessionId) {
+                            // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
+                            // so showing the banner just looks buggy)
+                            if let strongSelf = self {
+                                NotificationCenter.default.removeObserver(strongSelf, name: .contactBlockedStateChanged, object: nil)
+                            }
+                            
                             contact.isApproved = false
                             contact.isBlocked = true
                             
@@ -1241,18 +1253,6 @@ extension ConversationVC {
                     self?.thread.remove(with: transaction)
                 },
                 completion: { [weak self] in
-                    // Block the contact
-                    if let sessionId: String = (self?.thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                        
-                        // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
-                        // so showing the banner just looks buggy)
-                        if let strongSelf = self {
-                            NotificationCenter.default.removeObserver(strongSelf, name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
-                        }
-                        
-                        OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                    }
-                    
                     // Force a config sync and pop to the previous screen (both must run on the main thread)
                     DispatchQueue.main.async {
                         if let appDelegate = UIApplication.shared.delegate as? AppDelegate {

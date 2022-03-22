@@ -48,3 +48,10 @@ extension AppDelegate {
         ClosedGroupPoller.shared.stop()
     }
 }
+
+extension AppDelegate {
+    @objc(forceSyncConfigurationNowIfNeeded)
+    func objc_forceSyncConfigurationNowIfNeeded() {
+        return forceSyncConfigurationNowIfNeeded(with: nil).retainUntilComplete()
+    }
+}

@@ -63,7 +63,26 @@ final class BlockedModal : Modal {
     
     // MARK: Interaction
     @objc private func unblock() {
-        OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
+        let publicKey: String = self.publicKey
+        
+        Storage.shared.write(
+            with: { transaction in
+                guard let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
+                    return
+                }
+                
+                contact.isBlocked = false
+                Storage.shared.setContact(contact, using: transaction)
+            },
+            completion: {
+                DispatchQueue.main.async {
+                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+                    }
+                }
+            }
+        )
+        
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

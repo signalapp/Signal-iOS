@@ -52,7 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSPreferences *preferences = [OWSPreferences new];
 
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
         TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSDisappearingMessagesJob *disappearingMessagesJob =
@@ -77,7 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithProfileManager:profileManager
                                                                   primaryStorage:primaryStorage
-                                                                 blockingManager:blockingManager
                                                                  identityManager:identityManager
                                                                 tsAccountManager:tsAccountManager
                                                          disappearingMessagesJob:disappearingMessagesJob

@@ -27,7 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return @[
         [SNMessageRequestsMigration new],
-        [SNContactsMigration new]
+        [SNContactsMigration new],
+        [SNBlockingManagerRemovalMigration new]
     ];
 }
 
