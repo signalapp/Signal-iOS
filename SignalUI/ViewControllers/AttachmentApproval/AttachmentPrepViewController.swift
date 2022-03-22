@@ -119,7 +119,7 @@ public class AttachmentPrepViewController: OWSViewController {
             imageEditorViewConstraintsLandscape = [
                 imageEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 imageEditorView.topAnchor.constraint(equalTo: view.topAnchor),
-                imageEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                imageEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 imageEditorView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]
 
             self.imageEditorView = imageEditorView
@@ -143,7 +143,7 @@ public class AttachmentPrepViewController: OWSViewController {
             videoEditorViewConstraintsLandscape = [
                 videoEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 videoEditorView.topAnchor.constraint(equalTo: view.topAnchor),
-                videoEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                videoEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 videoEditorView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]
 
             self.videoEditorView = videoEditorView
