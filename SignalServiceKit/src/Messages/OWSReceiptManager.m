@@ -438,14 +438,16 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
         SignalServiceAddress *_Nullable senderAddress = viewedReceiptProto.senderAddress;
         uint64_t messageIdTimestamp = viewedReceiptProto.timestamp;
 
-        OWSAssertDebug(senderAddress.isValid);
-
         if (messageIdTimestamp == 0) {
             OWSFailDebug(@"messageIdTimestamp was unexpectedly 0");
             continue;
         }
         if (![SDS fitsInInt64:messageIdTimestamp]) {
             OWSFailDebug(@"Invalid messageIdTimestamp.");
+            continue;
+        }
+        if (!senderAddress.isValid) {
+            OWSFailDebug(@"senderAddress was unexpectedly %@", senderAddress != nil ? @"invalid" : @"nil");
             continue;
         }
 
