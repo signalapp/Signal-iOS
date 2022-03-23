@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,6 +35,14 @@ public class TSMessageBuilder: NSObject {
     public var messageSticker: MessageSticker?
     @objc
     public var isViewOnceMessage = false
+    @objc
+    public var storyAuthorAddress: SignalServiceAddress?
+    @objc
+    public var storyTimestamp: NSNumber?
+    @objc
+    public var isGroupStoryReply: Bool {
+        storyAuthorAddress != nil && storyTimestamp != nil && thread.isGroupThread
+    }
 
     init(thread: TSThread,
          timestamp: UInt64? = nil,
@@ -47,7 +55,9 @@ public class TSMessageBuilder: NSObject {
          contactShare: OWSContact? = nil,
          linkPreview: OWSLinkPreview? = nil,
          messageSticker: MessageSticker? = nil,
-         isViewOnceMessage: Bool = false) {
+         isViewOnceMessage: Bool = false,
+         storyAuthorAddress: SignalServiceAddress? = nil,
+         storyTimestamp: UInt64? = nil) {
         self.thread = thread
 
         if let timestamp = timestamp {
@@ -65,6 +75,8 @@ public class TSMessageBuilder: NSObject {
         self.linkPreview = linkPreview
         self.messageSticker = messageSticker
         self.isViewOnceMessage = isViewOnceMessage
+        self.storyAuthorAddress = storyAuthorAddress
+        self.storyTimestamp = storyTimestamp.map { NSNumber(value: $0) }
     }
 
     @objc

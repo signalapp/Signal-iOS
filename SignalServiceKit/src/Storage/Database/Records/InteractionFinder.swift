@@ -38,6 +38,8 @@ protocol InteractionFinderAdapter {
 
     static func interactions(withInteractionIds interactionIds: Set<String>, transaction: ReadTransaction) -> Set<TSInteraction>
 
+    static func enumerateReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
+
     // MARK: - instance methods
 
     func latestInteraction(from address: SignalServiceAddress, transaction: ReadTransaction) -> TSInteraction?
@@ -152,7 +154,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             }
 
             unreadInteractionQuery += " WHERE \(sqlClauseForUnreadInteractionCounts(interactionsAlias: "interaction")) "
-            unreadInteractionQuery += " \(GRDBInteractionFinder.filterStoryRepliesClause(for: .excludeGroupReplies, interactionsAlias: "interaction")) "
 
             guard let unreadInteractionCount = try UInt.fetchOne(transaction.database, sql: unreadInteractionQuery) else {
                 owsFailDebug("unreadInteractionCount was unexpectedly nil")
@@ -210,6 +211,13 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return GRDBInteractionFinder.interactions(withInteractionIds: interactionIds, transaction: grdbRead)
+        }
+    }
+
+    static func enumerateReplies(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            GRDBInteractionFinder.enumerateReplies(for: storyMessage, transaction: grdbRead, block: block)
         }
     }
 
@@ -388,7 +396,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(sqlClauseForAllUnreadInteractions)
-            \(GRDBInteractionFinder.filterStoryRepliesClause(for: .excludeGroupReplies))
             ORDER BY \(interactionColumn: .id)
         """
 
@@ -407,7 +414,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     @objc
-    public func countUnreadMessages(beforeSortId: UInt64, storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies, transaction: GRDBReadTransaction) -> UInt {
+    public func countUnreadMessages(beforeSortId: UInt64, transaction: GRDBReadTransaction) -> UInt {
         do {
             let sql = """
                 SELECT COUNT(*)
@@ -415,7 +422,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .id) <= ?
                 AND \(sqlClauseForAllUnreadInteractions)
-                \(GRDBInteractionFinder.filterStoryRepliesClause(for: storyReplyQueryMode))
             """
 
             guard let count = try UInt.fetchOne(transaction.database,
@@ -585,6 +591,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         return """
         (
             \(interactionColumn: .read) IS 0
+            \(GRDBInteractionFinder.filterStoryRepliesClause(for: .excludeGroupReplies))
             AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
         """
@@ -600,6 +607,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
         return """
         \(columnPrefix)\(interactionColumn: .read) IS 0
+        \(GRDBInteractionFinder.filterStoryRepliesClause(for: .excludeGroupReplies, interactionsAlias: interactionsAlias))
         AND (
             \(columnPrefix)\(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
             OR (
@@ -892,6 +900,35 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return interactions
     }
 
+    static func enumerateReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .storyTimestamp) = ?
+        AND \(interactionColumn: .storyAuthorUuidString) = ?
+        """
+        let cursor = TSInteraction.grdbFetchCursor(
+            sql: sql,
+            arguments: [storyMessage.timestamp, storyMessage.authorUuid.uuidString],
+            transaction: transaction
+        )
+        do {
+            while let interaction = try cursor.next() {
+                guard let message = interaction as? TSMessage else {
+                    owsFailDebug("Unexpected object: \(type(of: interaction))")
+                    return
+                }
+                var stop: ObjCBool = false
+                block(message, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
     static func oldestPlaceholderInteraction(transaction: GRDBReadTransaction) -> OWSRecoverableDecryptionPlaceholder? {
         let sql = """
             SELECT *
@@ -1000,6 +1037,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
+                \(Self.filterStoryRepliesClause(for: .excludeGroupReplies))
                 AND \(interactionColumn: .errorType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?

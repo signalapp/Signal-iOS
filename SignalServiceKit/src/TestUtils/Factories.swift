@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -288,7 +288,9 @@ public class IncomingMessageFactory: NSObject, Factory {
                                                        serverDeliveryTimestamp: serverDeliveryTimestampBuilder(),
                                                        serverGuid: serverGuidBuilder(),
                                                        wasReceivedByUD: wasReceivedByUDBuilder(),
-                                                       isViewOnceMessage: isViewOnceMessageBuilder())
+                                                       isViewOnceMessage: isViewOnceMessageBuilder(),
+                                                       storyAuthorAddress: storyAuthorAddressBuilder(),
+                                                       storyTimestamp: storyTimestampBuilder())
         let item = builder.build()
         item.anyInsert(transaction: transaction)
         return item
@@ -390,6 +392,16 @@ public class IncomingMessageFactory: NSObject, Factory {
     @objc
     public var isViewOnceMessageBuilder: () -> Bool = {
         return false
+    }
+
+    @objc
+    public var storyAuthorAddressBuilder: () -> SignalServiceAddress? = {
+        nil
+    }
+
+    @objc
+    public var storyTimestampBuilder: () -> NSNumber? = {
+        nil
     }
 }
 

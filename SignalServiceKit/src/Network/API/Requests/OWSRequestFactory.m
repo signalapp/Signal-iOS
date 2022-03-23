@@ -487,6 +487,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"gv1-migration"] = @(YES);
     capabilities[@"senderKey"] = @(YES);
 
+    if (SSKFeatureFlags.stories) {
+        capabilities[@"stories"] = @(YES);
+    }
+
     // If the storage service requires (or will require) secondary devices
     // to have a capability in order to be linked, we might need to always
     // set that capability here if isSecondaryDevice is true.

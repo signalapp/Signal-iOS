@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,9 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          serverDeliveryTimestamp: UInt64 = 0,
                          serverGuid: String? = nil,
                          wasReceivedByUD: Bool = false,
-                         isViewOnceMessage: Bool = false) {
+                         isViewOnceMessage: Bool = false,
+                         storyAuthorAddress: SignalServiceAddress? = nil,
+                         storyTimestamp: UInt64? = nil) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -48,12 +50,14 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    attachmentIds: attachmentIds,
                    expiresInSeconds: expiresInSeconds,
                    // expireStartedAt is always initialized to zero for incoming messages.
-            expireStartedAt: 0,
-            quotedMessage: quotedMessage,
-            contactShare: contactShare,
-            linkPreview: linkPreview,
-            messageSticker: messageSticker,
-            isViewOnceMessage: isViewOnceMessage)
+                   expireStartedAt: 0,
+                   quotedMessage: quotedMessage,
+                   contactShare: contactShare,
+                   linkPreview: linkPreview,
+                   messageSticker: messageSticker,
+                   isViewOnceMessage: isViewOnceMessage,
+                   storyAuthorAddress: storyAuthorAddress,
+                   storyTimestamp: storyTimestamp)
 
         self.authorAddress = authorAddress
         self.sourceDeviceId = sourceDeviceId
@@ -95,7 +99,9 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               serverDeliveryTimestamp: UInt64,
                               serverGuid: String?,
                               wasReceivedByUD: Bool,
-                              isViewOnceMessage: Bool) -> TSIncomingMessageBuilder {
+                              isViewOnceMessage: Bool,
+                              storyAuthorAddress: SignalServiceAddress?,
+                              storyTimestamp: NSNumber?) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         authorAddress: authorAddress,
@@ -112,7 +118,9 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                                         serverDeliveryTimestamp: serverDeliveryTimestamp,
                                         serverGuid: serverGuid,
                                         wasReceivedByUD: wasReceivedByUD,
-                                        isViewOnceMessage: isViewOnceMessage)
+                                        isViewOnceMessage: isViewOnceMessage,
+                                        storyAuthorAddress: storyAuthorAddress,
+                                        storyTimestamp: storyTimestamp?.uint64Value)
     }
 
     private var hasBuilt = false

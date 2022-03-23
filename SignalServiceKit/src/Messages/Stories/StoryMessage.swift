@@ -162,7 +162,19 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     // MARK: -
 
     public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
-        // TODO: Cleanup associated records
+        // Delete all replies for the message.
+        InteractionFinder.enumerateReplies(for: self, transaction: transaction) { reply, _ in
+            reply.anyRemove(transaction: transaction)
+        }
+
+        // Delete all attachments for the message.
+        for id in allAttachmentIds {
+            guard let attachment = TSAttachment.anyFetch(uniqueId: id, transaction: transaction) else {
+                owsFailDebug("Missing attachment for StoryMessage \(id)")
+                continue
+            }
+            attachment.anyRemove(transaction: transaction)
+        }
     }
 
     @objc

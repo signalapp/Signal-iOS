@@ -577,7 +577,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (dataMessage.storyContext != nil) {
+    if (!SSKFeatureFlags.stories && dataMessage.storyContext != nil) {
         OWSLogInfo(@"Ignoring message (author: %@, timestamp: %llu) related to story (author: %@, timestamp: %llu)",
             envelope.sourceAddress,
             dataMessage.timestamp,
@@ -2105,6 +2105,23 @@ NS_ASSUME_NONNULL_BEGIN
                                                       thread:thread
                                                  transaction:transaction];
 
+    NSNumber *_Nullable storyTimestamp;
+    SignalServiceAddress *_Nullable storyAuthorAddress;
+    if (dataMessage.storyContext != nil && dataMessage.storyContext.hasSentTimestamp
+        && dataMessage.storyContext.hasAuthorUuid) {
+        OWSLogInfo(
+            @"Processing storyContext for message with timestamp: %llu, storyTimestamp: %llu, and author uuid: %@",
+            envelope.timestamp,
+            dataMessage.storyContext.sentTimestamp,
+            dataMessage.storyContext.authorUuid);
+        SignalServiceAddress *address =
+            [[SignalServiceAddress alloc] initWithUuidString:dataMessage.storyContext.authorUuid];
+        if (address.isValid) {
+            storyTimestamp = @(dataMessage.storyContext.sentTimestamp);
+            storyAuthorAddress = address;
+        }
+    }
+
     // Legit usage of senderTimestamp when creating an incoming group message record
     //
     // The builder() factory method requires us to specify every
@@ -2126,7 +2143,9 @@ NS_ASSUME_NONNULL_BEGIN
                             serverDeliveryTimestamp:serverDeliveryTimestamp
                                          serverGuid:serverGuid
                                     wasReceivedByUD:wasReceivedByUD
-                                  isViewOnceMessage:isViewOnceMessage];
+                                  isViewOnceMessage:isViewOnceMessage
+                                 storyAuthorAddress:storyAuthorAddress
+                                     storyTimestamp:storyTimestamp];
     TSIncomingMessage *message = [incomingMessageBuilder build];
     if (!message) {
         OWSFailDebug(@"Missing incomingMessage.");

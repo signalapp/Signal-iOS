@@ -92,6 +92,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _messageSticker = messageBuilder.messageSticker;
     _isViewOnceMessage = messageBuilder.isViewOnceMessage;
     _isViewOnceComplete = NO;
+    _storyTimestamp = messageBuilder.storyTimestamp;
+    _storyAuthorUuidString = messageBuilder.storyAuthorAddress.uuidString;
+    _isGroupStoryReply = messageBuilder.isGroupStoryReply;
 
 #ifdef DEBUG
     [self verifyPerConversationExpiration];
