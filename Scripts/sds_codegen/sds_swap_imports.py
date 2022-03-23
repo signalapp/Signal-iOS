@@ -12,7 +12,9 @@ from sds_common import fail
 import tempfile
 import shutil
 
-git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
+git_repo_path = os.path.abspath(
+    subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
+)
 
 
 def ows_getoutput(cmd):

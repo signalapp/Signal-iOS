@@ -5,7 +5,9 @@ import os
 import subprocess 
 import sys
 
-git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
+git_repo_path = os.path.abspath(
+    subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
+)
 
 file = fileinput.FileInput(git_repo_path + '/Signal.xcodeproj/project.pbxproj', inplace=True)
 
