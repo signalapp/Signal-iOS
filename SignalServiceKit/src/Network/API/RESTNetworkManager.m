@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "RESTNetworkManager.h"
@@ -176,7 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
         dispatch_async(NetworkManagerQueue(), ^{
             [sessionManagerPool returnToPool:sessionManager];
         });
-        
+
         dispatch_async(completionQueue, ^{
             OWSLogInfo(@"%@ succeeded (%ld) : %@", label, response.responseStatusCode, request);
 
