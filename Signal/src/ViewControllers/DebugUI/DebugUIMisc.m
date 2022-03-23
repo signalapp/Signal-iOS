@@ -68,6 +68,18 @@ NS_ASSUME_NONNULL_BEGIN
                                });
                            }]];
 
+    __block __weak OWSTableItem *makeNextAppLaunchFailItemRef;
+    [items addObject:[OWSTableItem itemWithTitle:@"Make next app launch fail"
+                                     actionBlock:^{
+                                         [[CurrentAppContext() appUserDefaults]
+                                             setBool:YES
+                                              forKey:kShouldFailNextLaunchForTestingPurposesKey];
+                                         [makeNextAppLaunchFailItemRef.tableViewController
+                                             presentToastWithText:@"Okay, the next app launch will fail!"
+                                                      extraVInset:0];
+                                     }]];
+    makeNextAppLaunchFailItemRef = items.lastObject;
+
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Re-register"
                            actionBlock:^{

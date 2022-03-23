@@ -44,6 +44,7 @@
 #import <WebRTC/WebRTC.h>
 
 NSString *const AppDelegateStoryboardMain = @"Main";
+NSString *const kShouldFailNextLaunchForTestingPurposesKey = @"ShouldFailNextLaunchForTestingPurposes";
 
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
 NSString *const kURLSchemeSGNLKey = @"sgnl";
@@ -59,11 +60,11 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
     LaunchFailure_CouldNotLoadDatabase,
     LaunchFailure_UnknownDatabaseVersion,
     LaunchFailure_CouldNotRestoreTransferredData,
-    LaunchFailure_DatabaseUnrecoverablyCorrupted
+    LaunchFailure_DatabaseUnrecoverablyCorrupted,
+    LaunchFailure_PretendFailureForTestingPurposes,
 };
 
-NSString *NSStringForLaunchFailure(LaunchFailure launchFailure);
-NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
+static NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 {
     switch (launchFailure) {
         case LaunchFailure_None:
@@ -76,6 +77,8 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             return @"LaunchFailure_CouldNotRestoreTransferredData";
         case LaunchFailure_DatabaseUnrecoverablyCorrupted:
             return @"LaunchFailure_DatabaseUnrecoverablyCorrupted";
+        case LaunchFailure_PretendFailureForTestingPurposes:
+            return @"LaunchFailure_PretendFailureForTestingPurposes";
     }
 }
 
@@ -224,6 +227,9 @@ static void uncaughtExceptionHandler(NSException *exception)
         launchFailure = LaunchFailure_UnknownDatabaseVersion;
     } else if ([SSKPreferences hasGrdbDatabaseCorruption]) {
         launchFailure = LaunchFailure_DatabaseUnrecoverablyCorrupted;
+    } else if ([[CurrentAppContext() appUserDefaults] boolForKey:kShouldFailNextLaunchForTestingPurposesKey]) {
+        [[CurrentAppContext() appUserDefaults] removeObjectForKey:kShouldFailNextLaunchForTestingPurposesKey];
+        launchFailure = LaunchFailure_PretendFailureForTestingPurposes;
     }
     if (launchFailure != LaunchFailure_None) {
         [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
