@@ -60,14 +60,32 @@ class EmojiPickerCollectionView: UICollectionView {
         layout.sectionInset = UIEdgeInsets(top: 0, leading: EmojiPickerCollectionView.margins, bottom: 0, trailing: EmojiPickerCollectionView.margins)
 
         (recentEmoji, allAvailableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
-            let rawEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
+            let rawRecentEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
                 forKey: EmojiPickerCollectionView.recentEmojiKey,
                 transaction: transaction
             ) as? [String] ?? []
-            let recentEmoji = rawEmoji.compactMap { EmojiWithSkinTones(rawValue: $0) }
+
+            var recentEmoji = rawRecentEmoji.compactMap { EmojiWithSkinTones(rawValue: $0) }
+
+            // Some emoji have two different code points but identical appearances. Let's remove them!
+            // If we normalize to a different emoji than the one currently in our array, we want to drop
+            // the non-normalized variant if the normalized variant already exists. Otherwise, map to the
+            // normalized variant.
+            for (idx, emoji) in recentEmoji.enumerated().reversed() {
+                if !emoji.isNormalized {
+                    if recentEmoji.contains(emoji.normalized) {
+                        recentEmoji.remove(at: idx)
+                    } else {
+                        recentEmoji[idx] = emoji.normalized
+                    }
+                }
+            }
+
             let allAvailableEmojiByCategory = Emoji.allAvailableEmojiByCategoryWithPreferredSkinTones(
                 transaction: transaction
-            )
+            ).mapValues { categoryArray in
+                categoryArray.filter { $0.isNormalized }
+            }
             return (recentEmoji, allAvailableEmojiByCategory)
         }
 
@@ -149,6 +167,10 @@ class EmojiPickerCollectionView: UICollectionView {
 
     func recordRecentEmoji(_ emoji: EmojiWithSkinTones, transaction: SDSAnyWriteTransaction) {
         guard recentEmoji.first != emoji else { return }
+        guard emoji.isNormalized else {
+            recordRecentEmoji(emoji.normalized, transaction: transaction)
+            return
+        }
 
         var newRecentEmoji = recentEmoji
 
@@ -593,4 +615,37 @@ private class EmojiSearchIndex: NSObject {
 
         return index
     }
+}
+
+fileprivate extension Emoji {
+
+    /// Both the US and USMI flags are identical in appearance. As far as I'm aware, these are the only two that are consistently identical
+    /// We only want to show one of these in the sheet, so we map the USMI flag to the US flag
+    /// If this ever expands in the future we might want to embed this in the EmojiGenerator script but I doubt that's likely.
+    var normalized: Emoji {
+        switch self {
+        case .flagUm:
+            return .us
+        default:
+            return self
+        }
+    }
+
+    var isNormalized: Bool { self == normalized }
+
+}
+
+fileprivate extension EmojiWithSkinTones {
+
+    var normalized: EmojiWithSkinTones {
+        switch (baseEmoji, skinTones) {
+        case (let base, nil) where base.normalized != base:
+            return EmojiWithSkinTones(baseEmoji: base.normalized)
+        default:
+            return self
+        }
+    }
+
+    var isNormalized: Bool { self == normalized }
+
 }
