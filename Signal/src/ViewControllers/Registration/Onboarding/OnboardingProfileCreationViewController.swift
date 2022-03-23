@@ -345,14 +345,22 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
                 profileAvatarData: avatarData,
                 visibleBadgeIds: [],
                 userProfileWriter: .registration)
-        }.recover { error in
-            owsFailDebug("Error: \(error)")
         }.done {
             self.profileCompleted()
             UIView.animate(withDuration: 0.15) {
                 spinner.alpha = 0
             } completion: { _ in
                 spinner.removeFromSuperview()
+            }
+        }.recover { error in
+            if error.isNetworkConnectivityFailure {
+                OWSActionSheets.showErrorAlert(
+                    message: NSLocalizedString(
+                        "PROFILE_VIEW_NO_CONNECTION",
+                        comment: "Error shown when the user tries to update their profile when the app is not connected to the internet.")
+                )
+            } else {
+                OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
             }
         }
     }
