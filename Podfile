@@ -9,6 +9,10 @@ abstract_target 'GlobalDependencies' do
   pod 'PromiseKit'
   pod 'CryptoSwift'
   pod 'Sodium', '~> 0.9.1'
+  pod 'GRDB.swift/SQLCipher'
+  pod 'SQLCipher', '~> 4.0'
+
+  # FIXME: We want to remove this once it's been long enough since the migration to GRDB
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/oxen-io/session-ios-yap-database.git', branch: 'signal-release'
   
   target 'Session' do
@@ -19,6 +23,7 @@ abstract_target 'GlobalDependencies' do
     pod 'YYImage', git: 'https://github.com/signalapp/YYImage'
     pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
     pod 'ZXingObjC'
+    pod 'DifferenceKit'
   end
   
   # Dependencies to be included only in all extensions/frameworks
@@ -67,6 +72,7 @@ target 'SessionUIKit'
 post_install do |installer|
   enable_whole_module_optimization_for_crypto_swift(installer)
   set_minimum_deployment_target(installer)
+  enable_fts5_support(installer)
 end
 
 def enable_whole_module_optimization_for_crypto_swift(installer)
@@ -84,6 +90,16 @@ def set_minimum_deployment_target(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |build_configuration|
       build_configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+    end
+  end
+end
+
+# This is to ensure we enable support for FastTextSearch5 (might not be enabled by default)
+# For more info see https://github.com/groue/GRDB.swift/blob/master/Documentation/FullTextSearch.md#enabling-fts5-support
+def enable_fts5_support(installer)
+  installer.pods_project.targets.select { |target| target.name == "GRDB.swift" }.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['OTHER_SWIFT_FLAGS'] = "$(inherited) -D SQLITE_ENABLE_FTS5"
     end
   end
 end

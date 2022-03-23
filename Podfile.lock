@@ -21,6 +21,14 @@ PODS:
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
+  - DifferenceKit (1.2.0):
+    - DifferenceKit/Core (= 1.2.0)
+    - DifferenceKit/UIKitExtension (= 1.2.0)
+  - DifferenceKit/Core (1.2.0)
+  - DifferenceKit/UIKitExtension (1.2.0):
+    - DifferenceKit/Core
+  - GRDB.swift/SQLCipher (5.19.0):
+    - SQLCipher (>= 3.4.0)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -123,6 +131,8 @@ DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
+  - DifferenceKit
+  - GRDB.swift/SQLCipher
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView
   - PromiseKit
@@ -131,6 +141,7 @@ DEPENDENCIES:
   - SAMKeychain
   - SignalCoreKit (from `https://github.com/oxen-io/session-ios-core-kit`, branch `session-version`)
   - Sodium (~> 0.9.1)
+  - SQLCipher (~> 4.0)
   - SwiftProtobuf (~> 1.5.0)
   - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
@@ -141,6 +152,8 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
+    - DifferenceKit
+    - GRDB.swift
     - NVActivityIndicatorView
     - OpenSSL-Universal
     - PromiseKit
@@ -189,6 +202,8 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
+  DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
+  GRDB.swift: c00ff42d3cffbe90145fb4e364e26a099f997142
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
@@ -204,6 +219,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 19ce2820c263e8f3c114817f7ca2da73a9382b6a
+PODFILE CHECKSUM: 33a5ecfe231383831bf212de4ff6c99c047c344a
 
 COCOAPODS: 1.11.2
