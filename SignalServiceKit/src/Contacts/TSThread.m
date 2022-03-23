@@ -357,8 +357,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 - (NSUInteger)numberOfInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countExcludingPlaceholders:NO
-                                                                                            transaction:transaction];
+    return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId]
+        countExcludingPlaceholders:NO
+               storyReplyQueryMode:StoryReplyQueryModeInclude
+                       transaction:transaction];
 }
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction

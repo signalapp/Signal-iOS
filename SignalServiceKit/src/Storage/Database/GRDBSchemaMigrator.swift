@@ -124,6 +124,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createSubscriptionDurableJob
         case addReceiptPresentationToSubscriptionDurableJob
         case createStoryMessageTable
+        case addColumnsForStoryContext
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -166,7 +167,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 33
+    public static let grdbSchemaVersionLatest: UInt = 34
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1559,6 +1560,37 @@ public class GRDBSchemaMigrator: NSObject {
                             )
                         )
                     ;
+                """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addColumnsForStoryContext.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "storyAuthorUuidString", .text)
+                    table.add(column: "storyTimestamp", .integer)
+                    table.add(column: "isGroupStoryReply", .boolean)
+                }
+
+                try db.execute(sql: "UPDATE model_TSInteraction SET isGroupStoryReply = 0")
+
+                try db.execute(sql: """
+                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
+                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
+                    DROP INDEX index_interactions_unread_counts;
+
+                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+                    ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
+                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+
+                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+                    ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
+                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+
+                    CREATE INDEX index_model_TSInteraction_UnreadCount
+                    ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
                 """)
             } catch {
                 owsFail("Error: \(error)")

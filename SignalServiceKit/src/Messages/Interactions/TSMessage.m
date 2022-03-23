@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
@@ -296,6 +296,18 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else {
         _expiresAt = 0;
     }
+}
+
+#pragma mark - Story Context
+
+- (nullable SignalServiceAddress *)storyAuthorAddress
+{
+    return [[SignalServiceAddress alloc] initWithUuidString:self.storyAuthorUuidString];
+}
+
+- (BOOL)isStoryReply
+{
+    return self.storyAuthorUuidString != nil && self.storyTimestamp != nil;
 }
 
 #pragma mark - Attachments

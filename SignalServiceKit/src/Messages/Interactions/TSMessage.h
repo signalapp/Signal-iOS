@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSContact.h>
@@ -45,6 +45,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
 @property (nonatomic, readonly) BOOL isViewOnceComplete;
 @property (nonatomic, readonly) BOOL wasRemotelyDeleted;
+
+// Story Context
+@property (nonatomic, readonly, nullable) NSNumber *storyTimestamp;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *storyAuthorAddress;
+@property (nonatomic, readonly, nullable) NSString *storyAuthorUuidString;
+@property (nonatomic, readonly) BOOL isGroupStoryReply;
+@property (nonatomic, readonly) BOOL isStoryReply;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
