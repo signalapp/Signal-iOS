@@ -44,7 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self removeUnknownMigrations];
 
-    [self runMigrations:[self.allMigrations mutableCopy] completion:completion];
+    [self runMigrations:[self.allMigrations mutableCopy]
+      prevWasSuccessful: true
+     prevNeedsConfigSync:false
+             completion:completion];
 }
 
 // Some users (especially internal users) will move back and forth between
@@ -77,6 +80,8 @@ NS_ASSUME_NONNULL_BEGIN
 // * Ensure predictable ordering.
 // * Prevent them from interfering with each other (e.g. deadlock).
 - (void)runMigrations:(NSMutableArray<OWSDatabaseMigration *> *)migrations
+    prevWasSuccessful:(BOOL)prevWasSuccessful
+  prevNeedsConfigSync:(BOOL)prevNeedsConfigSync
            completion:(OWSDatabaseMigrationCompletion)completion
 {
     OWSAssertDebug(migrations);
@@ -85,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     // If there are no more migrations to run, complete.
     if (migrations.count < 1) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            completion();
+            completion(prevWasSuccessful, prevNeedsConfigSync);
         });
         return;
     }
@@ -96,14 +101,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     // If migration has already been run, skip it.
     if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId] != nil) {
-        [self runMigrations:migrations completion:completion];
+        [self runMigrations:migrations
+          prevWasSuccessful:prevWasSuccessful
+        prevNeedsConfigSync:prevNeedsConfigSync
+                 completion:completion];
         return;
     }
 
     OWSLogInfo(@"Running migration: %@", migration);
-    [migration runUpWithCompletion:^{
+    [migration runUpWithCompletion:^(BOOL successful, BOOL needsConfigSync){
         OWSLogInfo(@"Migration complete: %@", migration);
-        [self runMigrations:migrations completion:completion];
+        [self runMigrations:migrations
+          prevWasSuccessful:(prevWasSuccessful && successful)
+        prevNeedsConfigSync:(prevNeedsConfigSync || needsConfigSync)
+                 completion:completion];
     }];
 }
 

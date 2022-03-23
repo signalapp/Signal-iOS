@@ -75,11 +75,7 @@ final class BlockedModal : Modal {
                 Storage.shared.setContact(contact, using: transaction)
             },
             completion: {
-                DispatchQueue.main.async {
-                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                    }
-                }
+                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
             }
         )
         

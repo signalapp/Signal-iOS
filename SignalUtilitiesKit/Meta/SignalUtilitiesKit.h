@@ -42,7 +42,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
 #import <SignalUtilitiesKit/ScreenLockViewController.h>
-#import <SignalUtilitiesKit/SelectRecipientViewController.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/Theme.h>

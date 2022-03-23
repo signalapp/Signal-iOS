@@ -144,8 +144,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
                 OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
                 .done(on: DispatchQueue.main) { [weak self] _ in
                     self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                 }
                 .catch(on: DispatchQueue.main) { [weak self] error in
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader

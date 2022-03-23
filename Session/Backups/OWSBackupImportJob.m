@@ -622,7 +622,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     // complete, they'll be run the next time the app launches.
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
+            [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^(BOOL successful, BOOL needsConfigSync){
                     resolve(@(1));
                 }];
         });

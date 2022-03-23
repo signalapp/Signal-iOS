@@ -521,11 +521,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                             completion: {
                                 DispatchQueue.main.async {
                                     tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-                                    
-                                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                                    }
                                 }
+                                
+                                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                             }
                         )
                     }
@@ -543,11 +541,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                             completion: {
                                 DispatchQueue.main.async {
                                     tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
-                                    
-                                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                                    }
                                 }
+                                
+                                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                             }
                         )
                     }

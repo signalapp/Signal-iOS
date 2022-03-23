@@ -104,4 +104,46 @@ extension MessageSender {
         }
         return promise
     }
+    
+    public static func syncConfiguration(forceSyncNow: Bool = true, with transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Void> {
+        guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
+            return Promise.value(())
+        }
+        
+        let (promise, seal) = Promise<Void>.pending()
+        let sendMessage: (YapDatabaseReadTransaction) -> () = { transaction in
+            let destination: Message.Destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
+            
+            if forceSyncNow {
+                MessageSender.send(configurationMessage, to: destination, using: transaction).done {
+                    seal.fulfill(())
+                }.catch { _ in
+                    seal.fulfill(()) // Fulfill even if this failed; the configuration in the swarm should be at most 2 days old
+                }.retainUntilComplete()
+            }
+            else {
+                let job = MessageSendJob(message: configurationMessage, destination: destination)
+                JobQueue.shared.add(job, using: transaction)
+                seal.fulfill(())
+            }
+        }
+        
+        // If we are provided with a transaction then read the data based on the state of the database
+        // from within the transaction rather than the state in disk
+        if let transaction: YapDatabaseReadWriteTransaction = transaction {
+            sendMessage(transaction)
+        }
+        else {
+            Storage.writeSync { transaction in sendMessage(transaction) }
+        }
+        
+        return promise
+    }
+}
+
+extension MessageSender {
+    @objc(forceSyncConfigurationNow)
+    public static func objc_forceSyncConfigurationNow() {
+        return syncConfiguration(forceSyncNow: true, with: nil).retainUntilComplete()
+    }
 }

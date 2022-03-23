@@ -883,10 +883,7 @@ CGFloat kIconViewLength = 24;
             
                                          // If we successfully blocked then force a config sync
                                          if (isBlocked) {
-                                             if ([[UIApplication sharedApplication].delegate isKindOfClass:[AppDelegate class]]) {
-                                                 AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-                                                 [appDelegate forceSyncConfigurationNowIfNeeded];
-                                             }
+                                             [SNMessageSender forceSyncConfigurationNow];
                                          }
 
                                          [weakSelf updateTableContents];
@@ -905,10 +902,7 @@ CGFloat kIconViewLength = 24;
             
                                            // If we successfully unblocked then force a config sync
                                            if (!isBlocked) {
-                                               if ([[UIApplication sharedApplication].delegate isKindOfClass:[AppDelegate class]]) {
-                                                   AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-                                                   [appDelegate forceSyncConfigurationNowIfNeeded];
-                                               }
+                                               [SNMessageSender forceSyncConfigurationNow];
                                            }
 
                                            [weakSelf updateTableContents];

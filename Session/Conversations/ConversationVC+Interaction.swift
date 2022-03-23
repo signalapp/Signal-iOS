@@ -54,11 +54,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                         Storage.shared.setContact(contact, using: transaction)
                     },
                     completion: {
-                        DispatchQueue.main.async {
-                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                            }
-                        }
+                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                     }
                 )
             }
@@ -1188,9 +1184,7 @@ extension ConversationVC {
                     }
                 
                     // Send a sync message with the details of the contact
-                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                        appDelegate.forceSyncConfigurationNowIfNeeded(with: transaction).retainUntilComplete()
-                    }
+                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                 }
             }
     }
@@ -1254,11 +1248,9 @@ extension ConversationVC {
                 },
                 completion: { [weak self] in
                     // Force a config sync and pop to the previous screen (both must run on the main thread)
+                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                    
                     DispatchQueue.main.async {
-                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                            appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                        }
-                        
                         self?.navigationController?.popViewController(animated: true)
                     }
                 }

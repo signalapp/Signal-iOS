@@ -800,21 +800,10 @@ extension MessageReceiver {
             Storage.shared.setContact(contact, using: transaction)
         }
         
-        // Force a config sync to ensure all devices know the contact approval state if desired (Note: This logic
-        // should match the behaviour in AppDelegate.forceSyncConfigurationNowIfNeeded())
+        // Force a config sync to ensure all devices know the contact approval state if desired
         guard forceConfigSync else { return }
         
-        // Note: We MUST run this async as we need to ensure the database `transaction` has finished before we generate
-        // a new configuration message (otherwise the `contact` will be loaded direct from the database and the
-        // `didApproveMe` value won't have been updated)
-        DispatchQueue.global(qos: .background).async {
-            guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
-                return
-            }
-            
-            let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
-            MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
-        }
+        MessageSender.syncConfiguration(forceSyncNow: true, with: transaction).retainUntilComplete()
     }
     
     public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {

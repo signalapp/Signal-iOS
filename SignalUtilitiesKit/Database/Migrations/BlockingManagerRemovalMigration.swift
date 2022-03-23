@@ -40,8 +40,7 @@ public class BlockingManagerRemovalMigration: OWSDatabaseMigration {
                 self.save(with: transaction) // Intentionally capture self
             },
             completion: {
-                // FIXME: Need to force a config sync after this migration
-                completion()
+                completion(true, true)
             }
         )
     }

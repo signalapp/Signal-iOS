@@ -362,13 +362,9 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                     }
                 },
                 completion: {
-                    // Force a config sync (must run on the main thread)
+                    // Force a config sync
                     if needsSync {
-                        DispatchQueue.main.async {
-                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                            }
-                        }
+                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                     }
                 }
             )
@@ -398,12 +394,8 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                     }
                 },
                 completion: {
-                    // Force a config sync (must run on the main thread)
-                    DispatchQueue.main.async {
-                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                            appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                        }
-                    }
+                    // Force a config sync
+                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                 }
             )
         })
