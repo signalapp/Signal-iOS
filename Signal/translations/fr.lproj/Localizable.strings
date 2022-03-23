@@ -377,10 +377,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Donnez un Coup de pouce à Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Votre macaron Encouragement a expiré et n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal mais pour supporter une technologie faite pour vous, s'il vous plait envisagez de devenir un donateur mensuel.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Votre macaron Coup de pouce est expiré et n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal, mais pour soutenir une technologie conçue pour vous, veuillez envisager de devenir donateur mensuel.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Votre macaron Encouragement a expiré et n’est plus visible sur votre profil.\n\nVous pouvez réactiver votre macaron Encouragement pour 30 nouveaux jours avec une contribution ponctuelle.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Votre macaron Coup de pouce est expiré et n’est plus visible sur votre profil.\n\nVous pouvez réactiver votre macaron Coup de pouce pour 30 jours en versant une somme unique.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
 "BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Votre abonnement de donateur mensuel a automatiquement été résilié en raison d’une inaction trop longue. Votre macaron %@ n’est plus visible sur votre profil.\n\nVous pouvez continuer à utiliser Signal mais pour supporter l'appli et réactiver votre macaron, renouvellez maintenant.";
@@ -392,13 +392,13 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Donner un Coup de pouce";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Macaron expiré";
+"BADGE_EXPIRED_BOOST_TITLE" = "Le macaron est expiré";
 
 /* Button title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renouveler l’abonnement";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Abonnement annulé";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "L’abonnement est annulé";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Merci pour le Coup de pouce !";
@@ -497,10 +497,10 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Définir la devise";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Dites « Merci ! » et gagnez le macaron Encouragement pour 30 jours.";
+"BOOST_VIEW_BODY" = "Dites « Merci ! » et gagnez le macaron Coup de pouce pour 30 jours.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Votre macaron Encouragement expirera le %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Votre macaron Coup de pouce expirera le %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Saisissez un montant personnalisé";
@@ -1483,7 +1483,7 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Si vous poursuivez, Signal sera désactivée sur les autres appareils actuellement inscrits avec le même numéro de téléphone.";
 
-/* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
+/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Impossible de confirmer votre nouvel appareil, veuillez réessayer plus tard";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
@@ -1987,10 +1987,10 @@
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ est bloqué";
 
-/* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Seuls les administrateurs de ce groupe peuvent démarrer un appel.";
 
-/* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Impossible de démarrer l’appel de groupe";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
@@ -2410,7 +2410,7 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Vous avez été supprimé du groupe.";
 
-/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
+/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ a approuvé votre demande de vous joindre au groupe.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
@@ -3131,10 +3131,10 @@
 "LINK_DEVICE_RESTART" = "Réessayer";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Balayez le code QR affiché sur l’appareil que vous souhaitez relier.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Lisez le code QR affiché sur l’appareil que vous souhaitez relier.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Balayez le code QR pour relier un nouvel appareil.";
+"LINK_NEW_DEVICE_SUBTITLE" = "Lisez le code QR pour relier un nouvel appareil.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Relier un nouvel appareil";
@@ -4481,7 +4481,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Votre partenaire utilise une ancienne version de Signal. Il doit la mettre à jour avant que vous puissiez confirmer son numéro de sécurité. ";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Le code balayé ne semble pas être un numéro de sécurité. Utilisez-vous tous les deux une version à jour de Signal ?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Le code lu ne semble pas être un numéro de sécurité. Utilisez-vous tous les deux une version à jour de Signal ?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si vous souhaitez confirmer la sécurité du chiffrement de bout en bout avec %@, comparez les numéros ci-dessus avec ceux sur son appareil.\n\nVous pouvez aussi lire le code sur son appareil ou lui demander de lire le vôtre.";
@@ -4832,7 +4832,7 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Votre numéro de sécurité avec %@ a changé. Vous devriez peut-être le confirmer.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Balayez le code QR sur l’appareil de votre contact.";
+"SCAN_CODE_INSTRUCTIONS" = "Lisez le code QR sur l’appareil de votre contact.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Lire le code QR";
@@ -5042,10 +5042,10 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Version non prise en charge";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Votre autre appareil exécute une version patrimoniale de Signal qui ne prend pas en charge le balayage des codes QR d’iPad. Veuillez installer la dernière version de Signal et réessayer.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Votre autre appareil exécute une version patrimoniale de Signal qui ne prend pas en charge la lecture de codes QR d’iPad. Veuillez installer la dernière version de Signal et réessayer.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Mettre à jour l’appareil de balayage";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Mettre à jour l’appareil de lecture";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Échec de liaison de votre appareil";
@@ -6092,7 +6092,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "Désinstaller";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "Histoires";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visitez le lien";
@@ -6229,7 +6229,7 @@
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Mon soutien";
 
-/* Payment error occured text, embeds {{link to contact support}} */
+/* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Erreur de traitement du paiement. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
