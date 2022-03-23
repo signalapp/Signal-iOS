@@ -1483,7 +1483,7 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "തുടർന്നാൽ, ഇതേ ഫോൺ നമ്പർ നിലവിൽ രജിസ്റ്റർ ചെയ്തിരിക്കുന്ന മറ്റ് ഡിവൈസുകളിൽ  Signal നെ  സജീവമല്ലാതാക്കും.";
 
-/* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
+/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "നിങ്ങളുടെ പുതിയ ഡിവൈസ് പരിശോധിക്കാൻ കഴിയുന്നില്ല, ദയവായി വീണ്ടും ശ്രമിക്കുക";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
@@ -1987,10 +1987,10 @@
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@- - നെ തടഞ്ഞിരിക്കുന്നു";
 
-/* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "ഈ ഗ്രൂപ്പിന്റെ അഡ്മിൻമാർക്ക് മാത്രമേ ഒരു കോൾ ആരംഭിക്കാൻ കഴിയൂ.";
 
-/* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "ഗ്രൂപ്പ് കോൾ ആരംഭിക്കാനാകില്ല";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
@@ -2410,7 +2410,7 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "നിങ്ങളെ ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്തിരിക്കുന്നു.";
 
-/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
+/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "ഗ്രൂപ്പിൽ ചേരാനുള്ള നിങ്ങളുടെ അഭ്യർത്ഥന %@ അംഗീകരിച്ചു.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
@@ -6229,7 +6229,7 @@
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
 
-/* Payment error occured text, embeds {{link to contact support}} */
+/* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */

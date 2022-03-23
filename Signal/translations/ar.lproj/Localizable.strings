@@ -1483,7 +1483,7 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "الاستمرار سوف يُعطل Signal على الأجهزة الأُخرى المُسجلة بنفس رقم الهاتف.";
 
-/* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
+/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "تعذَّر التَّحقُّق مِن جِهازك الجَديد، مِن فَضلِك حاوِل مُجددًا";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
@@ -1987,10 +1987,10 @@
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "تم حَظر %@";
 
-/* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "يمكنك للمشرفين على المجموعة فقط بدء المكالمات.";
 
-/* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "تعذر بدء المكالمة الجماعية";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
@@ -2410,7 +2410,7 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "أُزلتَ من المجموعة.";
 
-/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
+/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "لَقَد وافق %@ على طلب انضمامك إلى المجموعة.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
@@ -4286,10 +4286,10 @@
 "PIN_ACTION" = "تثبيت";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Couldn't create your new PIN. Your existing PIN has been disabled. Check your connection and try again.";
+"PIN_CHANGE_ERROR_MESSAGE" = "تعذر إنشاء رقم تعريفك الشخصي الجديد. عُطِّل رقم تعريفك الشخصي الحالي. تحقق من اتصالك وحاول مجددًا.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "PIN Change Failed";
+"PIN_CHANGE_ERROR_TITLE" = "فشل تغيير رقم التعريف الشخصي";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "الـPIN يجب أن يحوي اربعة رموز على الأقل";
@@ -4361,10 +4361,10 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "هل تُريد تعطيل قفل التسجيل؟";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN creation succeeded, but registration lock could not be enabled. Check your connection and try again.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "أُنشئَ رقم التعريف الشخصي بنجاح، لكن قفل التسجيل تعذر تفعيله. تحقق من اتصالك وحاول مجددًا.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Enable Registration Lock Failed";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "فشل تفعيل قفل التسجيل";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "تعطيل الـPIN";
@@ -4385,7 +4385,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "فشل إنشاء الـPIN";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
+"PIN_RECRETION_ERROR_MESSAGE" = "تعذر إنشاء رقم التعريف الشخصي. تحقق من اتصالك وحاول مجددًا. ";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "لمُساعدتك في حفظ الـPIN الخاص بك، سوف نسألك لإدخاله من حين لآخر. سنسألك عنه بشكل أقل مع مرور الزمن.";
@@ -6229,7 +6229,7 @@
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "دعمي";
 
-/* Payment error occured text, embeds {{link to contact support}} */
+/* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "حدث خطأ أثناء معالجة عملية الدفع الخاصة بك. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */

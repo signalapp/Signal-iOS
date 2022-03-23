@@ -1483,7 +1483,7 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "계속하면 같은 전화번호로 등록한 다른 모든 기기의 Signal을 비활성화합니다.";
 
-/* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
+/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "새 기기를 검증할 수 없습니다. 다시 시도해 주세요.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
@@ -1987,10 +1987,10 @@
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ 차단됨";
 
-/* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "이 그룹의 관리자만 통화를 시작할 수 있습니다.";
 
-/* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "그룹 통화를 시작할 수 없음";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
@@ -2410,7 +2410,7 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "그룹에서 제외되었습니다.";
 
-/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
+/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ 님이 내 그룹 참가 요청을 승인했습니다.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
@@ -6229,7 +6229,7 @@
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
 
-/* Payment error occured text, embeds {{link to contact support}} */
+/* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */

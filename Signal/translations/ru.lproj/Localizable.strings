@@ -1483,7 +1483,7 @@
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Продолжая, вы отключите Signal на других устройствах, где он зарегистрирован на тот же номер телефона.";
 
-/* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
+/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Не удалось проверить ваше новое устройство. Пожалуйста, попробуйте ещё раз";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
@@ -1987,10 +1987,10 @@
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ заблокирован(-а)";
 
-/* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Только администраторы этой группы могут начать звонок.";
 
-/* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
+/* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Невозможно начать групповой звонок";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
@@ -2410,7 +2410,7 @@
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Вы были удалены из группы.";
 
-/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the reuqest }}. */
+/* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ принял(-а) ваш запрос на присоединение к группе.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
@@ -6229,7 +6229,7 @@
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Моя поддержка";
 
-/* Payment error occured text, embeds {{link to contact support}} */
+/* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Ошибка обработки платежа. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */

@@ -1,2 +1,2 @@
-• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
-• More improvements to make opening group chats super snappy.
+• 我們稍微精簡了一些內容，使 Signal 應用程式的大小縮小了 25%。
+• 更多改善，使開啟群組聊天變得更快速。
