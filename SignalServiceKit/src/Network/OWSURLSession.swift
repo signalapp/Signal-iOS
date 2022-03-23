@@ -450,8 +450,8 @@ public class OWSURLSession: NSObject {
 
         request = OWSHttpHeaders.fillInMissingDefaultHeaders(request: request)
 
-        if signalService.isCensorshipCircumventionActive,
-           let frontingInfo = self.frontingInfo,
+        if let frontingInfo = self.frontingInfo,
+           signalService.isCensorshipCircumventionActive,
            let urlString = request.url?.absoluteString.nilIfEmpty {
             // Only requests to Signal services require CC.
             // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
@@ -476,8 +476,8 @@ public class OWSURLSession: NSObject {
     private func buildUrl(_ urlString: String) -> URL? {
 
         let baseUrl: URL? = {
-            if signalService.isCensorshipCircumventionActive,
-               let frontingInfo = self.frontingInfo {
+            if let frontingInfo = self.frontingInfo,
+               signalService.isCensorshipCircumventionActive {
 
                 // Never apply fronting twice; if urlString already contains a fronted
                 // URL, baseUrl should be nil.
@@ -885,16 +885,21 @@ public extension OWSURLSession {
 
     func uploadTaskPromise(request: URLRequest,
                            fileUrl: URL,
+                           ignoreAppExpiry: Bool = false,
                            progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
         let uploadTaskBuilder = UploadTaskBuilderFileUrl(fileUrl: fileUrl)
-        return uploadTaskPromise(request: request, uploadTaskBuilder: uploadTaskBuilder, progress: progressBlock)
+        return uploadTaskPromise(request: request,
+                                 uploadTaskBuilder: uploadTaskBuilder,
+                                 ignoreAppExpiry: ignoreAppExpiry,
+                                 progress: progressBlock)
     }
 
     private func uploadTaskPromise(request: URLRequest,
                                    uploadTaskBuilder: UploadTaskBuilder,
+                                   ignoreAppExpiry: Bool = false,
                                    progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
 
-        guard !Self.appExpiry.isExpired else {
+        guard ignoreAppExpiry || !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
@@ -951,16 +956,17 @@ public extension OWSURLSession {
     func dataTaskPromise(_ urlString: String,
                          method: HTTPMethod,
                          headers: [String: String]? = nil,
-                         body: Data? = nil) -> Promise<HTTPResponse> {
+                         body: Data? = nil,
+                         ignoreAppExpiry: Bool = false) -> Promise<HTTPResponse> {
         firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = try self.buildRequest(urlString, method: method, headers: headers, body: body)
-            return self.dataTaskPromise(request: request)
+            return self.dataTaskPromise(request: request, ignoreAppExpiry: ignoreAppExpiry)
         }
     }
 
-    func dataTaskPromise(request: URLRequest) -> Promise<HTTPResponse> {
+    func dataTaskPromise(request: URLRequest, ignoreAppExpiry: Bool = false) -> Promise<HTTPResponse> {
 
-        guard !Self.appExpiry.isExpired else {
+        guard ignoreAppExpiry || !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
@@ -1333,6 +1339,7 @@ extension OWSURLSession {
                                            fileName: String,
                                            mimeType: String,
                                            textParts textPartsDictionary: OrderedDictionary<String, String>,
+                                           ignoreAppExpiry: Bool = false,
                                            progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
         do {
             let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
@@ -1364,6 +1371,7 @@ extension OWSURLSession {
             return firstly {
                 uploadTaskPromise(request: request,
                                   fileUrl: multipartBodyFileURL,
+                                  ignoreAppExpiry: ignoreAppExpiry,
                                   progress: progressBlock)
             }.ensure(on: .global()) {
                 do {

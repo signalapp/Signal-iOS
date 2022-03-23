@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -49,7 +49,7 @@ public class DebugLogUploader: NSObject {
     private func getUploadParameters(fileUrl: URL) -> Promise<UploadParameters> {
         let url = URL(string: "https://debuglogs.org/")!
         return firstly(on: .global()) { () -> Promise<(HTTPResponse)> in
-            self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
+            self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get, ignoreAppExpiry: true)
         }.map(on: .global()) { (response: HTTPResponse) -> (UploadParameters) in
             guard let responseObject = response.responseBodyJson else {
                 throw OWSAssertionError("Invalid response.")
@@ -113,6 +113,7 @@ public class DebugLogUploader: NSObject {
                                                          fileName: fileUrl.lastPathComponent,
                                                          mimeType: mimeType,
                                                          textParts: textParts,
+                                                         ignoreAppExpiry: true,
                                                          progress: nil)
         }.map(on: .global()) { (response: HTTPResponse) -> URL in
             let statusCode = response.responseStatusCode
