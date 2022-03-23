@@ -178,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
         });
         
         dispatch_async(completionQueue, ^{
-            OWSLogInfo(@"%@ succeeded : %@", label, request);
+            OWSLogInfo(@"%@ succeeded (%ld) : %@", label, response.responseStatusCode, request);
 
             if (request.canUseAuth && request.shouldHaveAuthorizationHeaders) {
                 [RESTNetworkManager.tsAccountManager setIsDeregistered:NO];
