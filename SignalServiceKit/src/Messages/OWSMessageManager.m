@@ -2114,11 +2114,13 @@ NS_ASSUME_NONNULL_BEGIN
             envelope.timestamp,
             dataMessage.storyContext.sentTimestamp,
             dataMessage.storyContext.authorUuid);
-        SignalServiceAddress *address =
-            [[SignalServiceAddress alloc] initWithUuidString:dataMessage.storyContext.authorUuid];
-        if (address.isValid) {
-            storyTimestamp = @(dataMessage.storyContext.sentTimestamp);
-            storyAuthorAddress = address;
+
+        storyTimestamp = @(dataMessage.storyContext.sentTimestamp);
+        storyAuthorAddress = [[SignalServiceAddress alloc] initWithUuidString:dataMessage.storyContext.authorUuid];
+
+        if (!storyAuthorAddress.isValid) {
+            OWSFailDebug(@"Discarding story reply with invalid address %@", storyAuthorAddress);
+            return nil;
         }
     }
 
@@ -2158,8 +2160,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
     // But since the message is partially built and doesn't have the attachments yet, we check
-    // for attachments explicitly.
-    if (!message.hasRenderableContent && dataMessage.attachments.count == 0) {
+    // for attachments explicitly. Story replies cannot have attachments, so we can bail on them here immediately.
+    if (!message.hasRenderableContent && (dataMessage.attachments.count == 0 || message.isStoryReply)) {
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);
         OWSLogVerbose(@"Ignoring empty message(envelope): %@", envelope.debugDescription);
         OWSLogVerbose(@"Ignoring empty message(dataMessage): %@", dataMessage.debugDescription);
