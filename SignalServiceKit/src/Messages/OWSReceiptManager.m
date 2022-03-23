@@ -476,9 +476,13 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                      transaction:transaction];
             }
         } else {
-            StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:messageIdTimestamp
-                                                                            author:senderAddress
-                                                                       transaction:transaction];
+            StoryMessage *_Nullable storyMessage = nil;
+            if (senderAddress) {
+                storyMessage = [StoryFinder storyWithTimestamp:messageIdTimestamp
+                                                        author:senderAddress
+                                                   transaction:transaction];
+            }
+
             if (storyMessage) {
                 [storyMessage markAsViewedAt:viewedTimestamp
                                 circumstance:OWSReceiptCircumstanceOnLinkedDevice
