@@ -119,12 +119,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+               isGroupStoryReply:(BOOL)isGroupStoryReply
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+           storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+                  storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
 {
     self = [super initWithGrdbId:grdbId
@@ -145,12 +148,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expireStartedAt = expireStartedAt;
     _expiresAt = expiresAt;
     _expiresInSeconds = expiresInSeconds;
+    _isGroupStoryReply = isGroupStoryReply;
     _isViewOnceComplete = isViewOnceComplete;
     _isViewOnceMessage = isViewOnceMessage;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
     _quotedMessage = quotedMessage;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
+    _storyAuthorUuidString = storyAuthorUuidString;
+    _storyTimestamp = storyTimestamp;
     _wasRemotelyDeleted = wasRemotelyDeleted;
 
     [self sdsFinalizeMessage];
