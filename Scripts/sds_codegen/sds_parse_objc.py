@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import subprocess
-import datetime
 import argparse
 import re
 import json
@@ -12,13 +10,16 @@ from sds_common import fail
 import tempfile
 import shutil
 
-git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
+git_repo_path = os.path.abspath(
+    subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
+)
 
 
-def ows_getoutput(cmd):
+def ows_getoutput(cmd: list[str]) -> tuple[int, str, str]:
     proc = subprocess.Popen(cmd,
         stdout = subprocess.PIPE,
         stderr = subprocess.PIPE,
+        text = True
     )
     stdout, stderr = proc.communicate()
 
@@ -165,7 +166,7 @@ def split_objc_ast_prefix(line):
     return prefix, remainder
 
 
-def process_objc_ast(namespace, file_path, raw_ast):
+def process_objc_ast(namespace: Namespace, file_path: str, raw_ast: str) -> None:
     m_filename = os.path.basename(file_path)
     print('m_filename:', m_filename)
     file_base, file_extension = os.path.splitext(m_filename)
@@ -288,7 +289,7 @@ def process_objc_type_declaration(namespace, file_path, lines, prefix, remainder
 # | |-super ObjCInterface 0x10f5d2c10 'ObjCBaseModel'
 # | |-ObjCImplementation 0x10f5d3f20 'ObjCMessage'
 # | |-ObjCPropertyDecl 0x10f5d35d0 <line:16:1, col:43> col:43 body 'NSString * _Nonnull':'NSString *' readonly nonatomic strong
-def process_objc_interface(namespace, file_path, lines, decl_prefix, decl_remainder):
+def process_objc_interface(namespace: Namespace, file_path: str, lines, decl_prefix, decl_remainder):
     # print '\t', 'interface'
 
     # |-ObjCInterfaceDecl 0x10ab2fd58 </Users/matthew/code/workspace/ows/Signal-iOS-2/SignalDataStore/SignalDataStoreCommon/ObjCMessageWAuthor.h:13:1, line:26:2> line:13:12 ObjCMessageWAuthor
@@ -296,7 +297,7 @@ def process_objc_interface(namespace, file_path, lines, decl_prefix, decl_remain
 
     super_class_name = None
     if lines.hasNext():
-        line = next(lines)
+        line = lines.next()
         prefix, remainder = split_objc_ast_prefix(line)
         if len(prefix) > len(decl_prefix):
             splits = remainder.split(' ')
@@ -323,7 +324,7 @@ def process_objc_category(namespace, file_path, lines, decl_prefix, decl_remaind
     # | `-ObjCMethodDecl 0x1092f8580 <col:53> col:53 implicit - fakeProperty2 'NSString * _Nullable':'NSString *'
     if not lines.hasNext():
         fail('Category missing interface.')
-    line = next(lines)
+    line = lines.next()
     prefix, remainder = split_objc_ast_prefix(line)
     if len(prefix) <= len(decl_prefix):
         fail('Category missing interface.')
@@ -369,7 +370,7 @@ def process_objc_class(namespace, file_path, lines, decl_prefix, decl_remainder,
             fail("super_class_name does not match:", clazz.super_class_name, super_class_name)
 
     while lines.hasNext():
-        line = next(lines)
+        line = lines.next()
         prefix, remainder = split_objc_ast_prefix(line)
         if len(prefix) <= len(decl_prefix):
             # Declaration is over.
@@ -730,7 +731,7 @@ def get_pch_include(file_path):
 # --- Processing
 
 
-def process_objc(file_path, swift_bridging_path, intermediates):
+def process_objc(file_path: str, swift_bridging_path: str, intermediates: bool) -> None:
     module_header_dir_path = gather_module_headers('Pods')
     pch_include = get_pch_include(file_path)
 
@@ -825,7 +826,7 @@ def process_file(file_path, swift_bridging_path, intermediates):
     _, file_extension = os.path.splitext(filename)
     if file_extension == '.m':
         # print 'filename:', filename
-        process_objc(file_path, swift_bridging_path, args.intermediates)
+        process_objc(file_path, swift_bridging_path, intermediates)
 
 
 # ---
