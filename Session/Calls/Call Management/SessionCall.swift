@@ -135,6 +135,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         set { endDate = newValue ? Date() : nil }
     }
     
+    var timeOutTimer: Timer? = nil
     var didTimeout = false
 
     var duration: TimeInterval {
@@ -304,5 +305,20 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         } else {
             webRTCSession.turnOffVideo()
         }
+    }
+    
+    // MARK: Timeout
+    public func setupTimeoutTimer() {
+        timeOutTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { _ in
+            self.didTimeout = true
+            AppEnvironment.shared.callManager.endCall(self) { error in
+                self.timeOutTimer = nil
+            }
+        }
+    }
+    
+    public func invalidateTimeoutTimer() {
+        timeOutTimer?.invalidate()
+        timeOutTimer = nil
     }
 }

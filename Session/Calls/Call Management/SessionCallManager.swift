@@ -4,7 +4,6 @@ import SessionMessagingKit
 public final class SessionCallManager: NSObject {
     let provider: CXProvider
     let callController = CXCallController()
-    var callTimeOutTimer: Timer? = nil
     var currentCall: SessionCall? = nil {
         willSet {
             if (newValue != nil) {
@@ -69,13 +68,6 @@ public final class SessionCallManager: NSObject {
                 self.provider.reportOutgoingCall(with: call.callID, connectedAt: call.connectedDate)
             }
         }
-        callTimeOutTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { _ in
-            guard let currentCall = self.currentCall else { return }
-            currentCall.didTimeout = true
-            self.endCall(currentCall) { error in
-                self.callTimeOutTimer = nil
-            }
-        }
     }
     
     public func reportIncomingCall(_ call: SessionCall, callerName: String, completion: @escaping (Error?) -> Void) {
@@ -102,7 +94,6 @@ public final class SessionCallManager: NSObject {
     
     public func reportCurrentCallEnded(reason: CXCallEndedReason?) {
         guard let call = currentCall else { return }
-        invalidateTimeoutTimer()
         if let reason = reason {
             self.provider.reportCall(with: call.callID, endedAt: nil, reason: reason)
             switch (reason) {
@@ -145,9 +136,6 @@ public final class SessionCallManager: NSObject {
         infoMessage.updateCallInfoMessage(.missed, using: transaction)
     }
     
-    public func invalidateTimeoutTimer() {
-        callTimeOutTimer?.invalidate()
-        callTimeOutTimer = nil
-    }
+    
 }
 
