@@ -36,17 +36,21 @@ extension Storage {
     }
 
     @objc public func getUser() -> Contact? {
-        var result: Contact?
-        
-        Storage.read { transaction in
-            result = self.getUser(using: transaction)
-        }
-        
-        return result
+        return getUser(using: nil)
     }
     
-    public func getUser(using transaction: Any) -> Contact? {
+    public func getUser(using transaction: YapDatabaseReadTransaction?) -> Contact? {
         guard let userPublicKey = getUserPublicKey() else { return nil }
-        return Storage.shared.getContact(with: userPublicKey, using: transaction)
+        var result: Contact?
+        
+        if let transaction = transaction {
+            result = Storage.shared.getContact(with: userPublicKey, using: transaction)
+        }
+        else {
+            Storage.read { transaction in
+                result = Storage.shared.getContact(with: userPublicKey, using: transaction)
+            }
+        }
+        return result
     }
 }
