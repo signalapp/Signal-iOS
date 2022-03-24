@@ -40,7 +40,7 @@ extension Storage {
     }
     
     public func getUser(using transaction: YapDatabaseReadTransaction?) -> Contact? {
-        guard let userPublicKey = getUserPublicKey() else { return nil }
+        let userPublicKey = getUserHexEncodedPublicKey()
         var result: Contact?
         
         if let transaction = transaction {
