@@ -29,7 +29,7 @@ extension AppDelegate {
         
         // Note: SQLite only supports a single write thread so we can be sure this will retrieve the most up-to-date data
         Storage.writeSync { transaction in
-            guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
+            guard Storage.shared.getUser(using: transaction)?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
                 seal.fulfill(())
                 return
             }
