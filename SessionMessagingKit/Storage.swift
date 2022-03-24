@@ -17,7 +17,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUserKeyPair() -> ECKeyPair?
     func getUserED25519KeyPair() -> Box.KeyPair?
     func getUser() -> Contact?
-    func getUser(using transaction: Any?) -> Contact?
+    func getUser(using transaction: Any) -> Contact?
     func getAllContacts() -> Set<Contact>
     func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact>
 
