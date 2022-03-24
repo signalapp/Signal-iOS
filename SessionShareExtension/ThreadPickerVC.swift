@@ -162,7 +162,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         message.sentTimestamp = NSDate.millisecondTimestamp()
         message.text = (isSharingUrl && (messageText?.isEmpty == true || attachments[0].linkPreviewDraft == nil) ?
             (
-                (messageText?.isEmpty == true ?
+                (messageText?.isEmpty == true || (attachments[0].text() == messageText) ?
                     attachments[0].text() :
                     "\(attachments[0].text() ?? "")\n\n\(messageText ?? "")"
                 )
