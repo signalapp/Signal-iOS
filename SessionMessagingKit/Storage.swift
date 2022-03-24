@@ -17,15 +17,18 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUserKeyPair() -> ECKeyPair?
     func getUserED25519KeyPair() -> Box.KeyPair?
     func getUser() -> Contact?
+    func getUser(using transaction: Any?) -> Contact?
     func getAllContacts() -> Set<Contact>
     func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact>
 
     // MARK: - Closed Groups
 
     func getUserClosedGroupPublicKeys() -> Set<String>
+    func getUserClosedGroupPublicKeys(using transaction: YapDatabaseReadTransaction) -> Set<String>
     func getZombieMembers(for groupPublicKey: String) -> Set<String>
     func setZombieMembers(for groupPublicKey: String, to zombies: Set<String>, using transaction: Any)
     func isClosedGroup(_ publicKey: String) -> Bool
+    func isClosedGroup(_ publicKey: String, using transaction: YapDatabaseReadTransaction) -> Bool
 
     // MARK: - Jobs
 

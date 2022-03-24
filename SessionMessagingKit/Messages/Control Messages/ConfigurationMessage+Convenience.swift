@@ -4,7 +4,7 @@ extension ConfigurationMessage {
 
     public static func getCurrent(with transaction: YapDatabaseReadWriteTransaction? = nil) -> ConfigurationMessage? {
         let storage = Storage.shared
-        guard let user = storage.getUser() else { return nil }
+        guard let user = storage.getUser(using: transaction) else { return nil }
         
         let displayName = user.name
         let profilePictureURL = user.profilePictureURL
@@ -24,13 +24,16 @@ extension ConfigurationMessage {
                         let groupID = thread.groupModel.groupId
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
                         
-                        guard storage.isClosedGroup(groupPublicKey), let encryptionKeyPair = storage.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else {
+                        guard
+                            storage.isClosedGroup(groupPublicKey, using: transaction),
+                            let encryptionKeyPair = storage.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey, using: transaction)
+                        else {
                             return
                         }
                         
                         let closedGroup = ClosedGroup(
                             publicKey: groupPublicKey,
-                            name: thread.groupModel.groupName!,
+                            name: (thread.groupModel.groupName ?? ""),
                             encryptionKeyPair: encryptionKeyPair,
                             members: Set(thread.groupModel.groupMemberIds),
                             admins: Set(thread.groupModel.groupAdminIds),
@@ -39,7 +42,7 @@ extension ConfigurationMessage {
                         closedGroups.insert(closedGroup)
                         
                     case .openGroup:
-                        if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
+                        if let threadId: String = thread.uniqueId, let v2OpenGroup = storage.getV2OpenGroup(for: threadId) {
                             openGroups.insert("\(v2OpenGroup.server)/\(v2OpenGroup.room)?public_key=\(v2OpenGroup.publicKey)")
                         }
                         
