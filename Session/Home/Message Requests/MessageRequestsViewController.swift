@@ -336,38 +336,35 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE", comment: ""), message: nil, preferredStyle: .actionSheet)
         alertVC.addAction(UIAlertAction(title: NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON", comment: ""), style: .destructive) { _ in
             // Clear the requests
-            Storage.write(
-                with: { [weak self] transaction in
-                    threads.forEach { thread in
-                        if let uniqueId: String = thread.uniqueId {
-                            Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                        }
-                        
-                        self?.updateContactAndThread(thread: thread, with: transaction) { threadNeedsSync in
-                            if threadNeedsSync {
-                                needsSync = true
-                            }
-                        }
-                        
-                        // Block the contact
-                        if
-                            let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
-                            !thread.isBlocked(),
-                            let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
-                        {
-                            contact.isBlocked = true
-                            Storage.shared.setContact(contact, using: transaction)
+            Storage.write { [weak self] transaction in
+                threads.forEach { thread in
+                    if let uniqueId: String = thread.uniqueId {
+                        Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+                    }
+                    
+                    self?.updateContactAndThread(thread: thread, with: transaction) { threadNeedsSync in
+                        if threadNeedsSync {
                             needsSync = true
                         }
                     }
-                },
-                completion: {
-                    // Force a config sync
-                    if needsSync {
-                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                    
+                    // Block the contact
+                    if
+                        let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
+                        !thread.isBlocked(),
+                        let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
+                    {
+                        contact.isBlocked = true
+                        Storage.shared.setContact(contact, using: transaction)
+                        needsSync = true
                     }
                 }
-            )
+                
+                // Force a config sync
+                if needsSync {
+                    MessageSender.syncConfiguration(forceSyncNow: true, with: transaction).retainUntilComplete()
+                }
+            }
         })
         alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
         self.present(alertVC, animated: true, completion: nil)
@@ -378,26 +375,23 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON", comment: ""), message: nil, preferredStyle: .actionSheet)
         alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
-            Storage.write(
-                with: { [weak self] transaction in
-                    Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                    self?.updateContactAndThread(thread: thread, with: transaction)
-                    
-                    // Block the contact
-                    if
-                        let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
-                        !thread.isBlocked(),
-                        let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
-                    {
-                        contact.isBlocked = true
-                        Storage.shared.setContact(contact, using: transaction)
-                    }
-                },
-                completion: {
-                    // Force a config sync
-                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+            Storage.write { [weak self] transaction in
+                Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+                self?.updateContactAndThread(thread: thread, with: transaction)
+                
+                // Block the contact
+                if
+                    let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
+                    !thread.isBlocked(),
+                    let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
+                {
+                    contact.isBlocked = true
+                    Storage.shared.setContact(contact, using: transaction)
                 }
-            )
+                
+                // Force a config sync
+                MessageSender.syncConfiguration(forceSyncNow: true, with: transaction).retainUntilComplete()
+            }
         })
         alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
         self.present(alertVC, animated: true, completion: nil)

@@ -511,19 +511,19 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                     let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in
                         Storage.shared.write(
                             with: { transaction in
-                                guard let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
+                                guard  let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
                                     return
                                 }
                                 
                                 contact.isBlocked = true
-                                Storage.shared.setContact(contact, using: transaction)
+                                Storage.shared.setContact(contact, using: transaction as Any)
+                                
+                                MessageSender.syncConfiguration(forceSyncNow: true, with: transaction).retainUntilComplete()
                             },
                             completion: {
                                 DispatchQueue.main.async {
                                     tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
                                 }
-                                
-                                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                             }
                         )
                     }
@@ -531,19 +531,19 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                     let unblock = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "")) { _, _ in
                         Storage.shared.write(
                             with: { transaction in
-                                guard let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
+                                guard  let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
                                     return
                                 }
                                 
                                 contact.isBlocked = false
-                                Storage.shared.setContact(contact, using: transaction)
+                                Storage.shared.setContact(contact, using: transaction as Any)
+                                
+                                MessageSender.syncConfiguration(forceSyncNow: true, with: transaction).retainUntilComplete()
                             },
                             completion: {
                                 DispatchQueue.main.async {
                                     tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
                                 }
-                                
-                                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                             }
                         )
                     }

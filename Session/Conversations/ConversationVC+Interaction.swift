@@ -48,15 +48,14 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             self.blockedBanner.alpha = 0
         }, completion: { _ in
             if let contact: Contact = Storage.shared.getContact(with: publicKey) {
-                Storage.shared.write(
-                    with: { transaction in
-                        contact.isBlocked = false
-                        Storage.shared.setContact(contact, using: transaction)
-                    },
-                    completion: {
-                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                    }
-                )
+                Storage.shared.write { transaction in
+                    guard let transaction = transaction as? YapDatabaseReadWriteTransaction else { return }
+                    
+                    contact.isBlocked = false
+                    Storage.shared.setContact(contact, using: transaction)
+                    
+                    MessageSender.syncConfiguration(forceSyncNow: true, with: transaction).retainUntilComplete()
+                }
             }
         })
     }
@@ -1149,6 +1148,9 @@ extension ConversationVC {
                 contact.didApproveMe = (contact.didApproveMe || !isNewThread)
                 Storage.shared.setContact(contact, using: transaction)
                 
+                // Send a sync message with the details of the contact
+                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                
                 // Hide the 'messageRequestView' since the request has been approved and force a config
                 // sync to propagate the contact approval state (both must run on the main thread)
                 DispatchQueue.main.async { [weak self] in
@@ -1182,9 +1184,6 @@ extension ConversationVC {
                         newViewControllers.remove(at: messageRequestsIndex)
                         self?.navigationController?.setViewControllers(newViewControllers, animated: false)
                     }
-                
-                    // Send a sync message with the details of the contact
-                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                 }
             }
     }
@@ -1245,11 +1244,11 @@ extension ConversationVC {
                     // Delete all thread content
                     self?.thread.removeAllThreadInteractions(with: transaction)
                     self?.thread.remove(with: transaction)
+                    
+                    // Force a config sync and pop to the previous screen (both must run on the main thread)
+                    MessageSender.syncConfiguration(forceSyncNow: true, with: transaction).retainUntilComplete()
                 },
                 completion: { [weak self] in
-                    // Force a config sync and pop to the previous screen (both must run on the main thread)
-                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                    
                     DispatchQueue.main.async {
                         self?.navigationController?.popViewController(animated: true)
                     }
