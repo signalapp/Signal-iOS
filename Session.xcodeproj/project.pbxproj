@@ -778,6 +778,7 @@
 		FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */; };
 		FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */; };
 		FDC4389E27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
+		FDFD645827EC1F4000808CA1 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645727EC1F4000808CA1 /* Atomic.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1811,6 +1812,7 @@
 		FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsCell.swift; sourceTree = "<group>"; };
 		FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
 		FD9039443F7CB729CF71350E /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		FDFD645727EC1F4000808CA1 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2321,6 +2323,7 @@
 				C33FDB8A255A581200E217F9 /* AppContext.h */,
 				C33FDB85255A581100E217F9 /* AppContext.m */,
 				C3C2A5D12553860800C340D1 /* Array+Utilities.swift */,
+				FDFD645727EC1F4000808CA1 /* Atomic.swift */,
 				C33FDAA8255A57FF00E217F9 /* BuildConfiguration.swift */,
 				B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */,
 				B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */,
@@ -4629,6 +4632,7 @@
 				C32C5DDB256DD9FF003C73A2 /* ContentProxy.swift in Sources */,
 				C3A71F892558BA9F0043A11F /* Mnemonic.swift in Sources */,
 				B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */,
+				FDFD645827EC1F4000808CA1 /* Atomic.swift in Sources */,
 				C33FDEF8255A656D00E217F9 /* Promise+Delaying.swift in Sources */,
 				B8BC00C0257D90E30032E807 /* General.swift in Sources */,
 				C32C5A24256DB7DB003C73A2 /* SNUserDefaults.swift in Sources */,

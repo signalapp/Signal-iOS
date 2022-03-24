@@ -803,7 +803,7 @@ extension MessageReceiver {
         // Force a config sync to ensure all devices know the contact approval state if desired
         guard forceConfigSync else { return }
         
-        MessageSender.syncConfiguration(forceSyncNow: true, with: transaction).retainUntilComplete()
+        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
     }
     
     public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {
