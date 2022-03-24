@@ -52,10 +52,10 @@ extension ConfigurationMessage {
         let currentUserPublicKey: String = getUserHexEncodedPublicKey()
         
         contacts = storage.getAllContacts(with: transaction)
-            .filter { contact -> Bool in
+            .compactMap { contact -> ConfigurationMessage.Contact? in
                 let threadID = TSContactThread.threadID(fromContactSessionID: contact.sessionID)
                 
-                return (
+                guard
                     // Skip the current user
                     contact.sessionID != currentUserPublicKey &&
                     // Contacts which have visible threads
@@ -68,9 +68,10 @@ extension ConfigurationMessage {
                         // Sync blocked contacts
                         SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID)
                     )
-                )
-            }
-            .map { contact -> ConfigurationMessage.Contact in
+                else {
+                    return nil
+                }
+                
                 // Can just default the 'hasX' values to true as they will be set to this
                 // when converting to proto anyway
                 let profilePictureURL = contact.profilePictureURL
