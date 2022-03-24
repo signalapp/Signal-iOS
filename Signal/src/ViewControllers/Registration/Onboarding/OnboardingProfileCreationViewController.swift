@@ -335,6 +335,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         primaryView.addSubview(spinner)
         spinner.autoCenterInSuperviewMargins()
         spinner.startAnimating()
+        saveButton.setEnabled(false)
 
         firstly(on: .sharedUserInitiated) {
             OWSProfileManager.updateLocalProfilePromise(
@@ -351,10 +352,12 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
                 spinner.alpha = 0
             } completion: { _ in
                 spinner.removeFromSuperview()
+                self.saveButton.setEnabled(self.isValidProfile)
             }
         }.catch { error in
             spinner.stopAnimating(success: false) {
                 spinner.removeFromSuperview()
+                self.saveButton.setEnabled(self.isValidProfile)
 
                 if error.isNetworkConnectivityFailure {
                     OWSActionSheets.showErrorAlert(
