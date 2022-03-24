@@ -4,7 +4,6 @@
 
 #import "AppDelegate.h"
 #import "MainAppContext.h"
-#import "OWSBackup.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
 #import "Session-Swift.h"
@@ -99,11 +98,6 @@ static NSTimeInterval launchStartedAt;
 - (OWSWindowManager *)windowManager
 {
     return Environment.shared.windowManager;
-}
-
-- (OWSBackup *)backup
-{
-    return AppEnvironment.shared.backup;
 }
 
 - (OWSNotificationPresenter *)notificationPresenter
@@ -552,11 +546,7 @@ static NSTimeInterval launchStartedAt;
     UIViewController *rootViewController;
     BOOL navigationBarHidden = NO;
     if ([self.tsAccountManager isRegistered]) {
-        if (self.backup.hasPendingRestoreDecision) {
-            rootViewController = [BackupRestoreViewController new];
-        } else {
-            rootViewController = [HomeVC new];
-        }
+        rootViewController = [HomeVC new];
     } else {
         rootViewController = [LandingVC new];
         navigationBarHidden = NO;
