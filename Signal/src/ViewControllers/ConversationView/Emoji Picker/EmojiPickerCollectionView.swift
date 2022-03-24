@@ -24,9 +24,9 @@ class EmojiPickerCollectionView: UICollectionView {
     private let recentEmoji: [EmojiWithSkinTones]
     var hasRecentEmoji: Bool { !recentEmoji.isEmpty }
 
-    private let allAvailableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
-    private lazy var allAvailableEmoji: [EmojiWithSkinTones] = {
-        return Array(allAvailableEmojiByCategory.values).flatMap({$0})
+    private let allSendableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
+    private lazy var allSendableEmoji: [EmojiWithSkinTones] = {
+        return Array(allSendableEmojiByCategory.values).flatMap({$0})
     }()
 
     static let emojiWidth: CGFloat = 38
@@ -59,7 +59,7 @@ class EmojiPickerCollectionView: UICollectionView {
         layout.minimumInteritemSpacing = EmojiPickerCollectionView.minimumSpacing
         layout.sectionInset = UIEdgeInsets(top: 0, leading: EmojiPickerCollectionView.margins, bottom: 0, trailing: EmojiPickerCollectionView.margins)
 
-        (recentEmoji, allAvailableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
+        (recentEmoji, allSendableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
             let rawRecentEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
                 forKey: EmojiPickerCollectionView.recentEmojiKey,
                 transaction: transaction
@@ -81,12 +81,10 @@ class EmojiPickerCollectionView: UICollectionView {
                 }
             }
 
-            let allAvailableEmojiByCategory = Emoji.allAvailableEmojiByCategoryWithPreferredSkinTones(
+            let allSendableEmojiByCategory = Emoji.allSendableEmojiByCategoryWithPreferredSkinTones(
                 transaction: transaction
-            ).mapValues { categoryArray in
-                categoryArray.filter { $0.isNormalized }
-            }
-            return (recentEmoji, allAvailableEmojiByCategory)
+            )
+            return (recentEmoji, allSendableEmojiByCategory)
         }
 
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -139,7 +137,7 @@ class EmojiPickerCollectionView: UICollectionView {
             return []
         }
 
-        guard let categoryEmoji = allAvailableEmojiByCategory[category] else {
+        guard let categoryEmoji = allSendableEmojiByCategory[category] else {
             owsFailDebug("Unexpectedly missing emoji for category \(category)")
             return []
         }
@@ -214,7 +212,7 @@ class EmojiPickerCollectionView: UICollectionView {
     func searchWithText(_ searchText: String?) {
         if let searchText = searchText {
             if let emojiSearchIndex = emojiSearchIndex {
-                emojiSearchResults = allAvailableEmoji.filter { emoji in
+                emojiSearchResults = allSendableEmoji.filter { emoji in
                     let rawEmoji = emoji.baseEmoji.rawValue
                     if let terms = emojiSearchIndex[rawEmoji] {
                         for term in terms {
@@ -226,7 +224,7 @@ class EmojiPickerCollectionView: UICollectionView {
                     return false
                 }
             } else { // Search on raw emoji name if no index is available
-                emojiSearchResults = allAvailableEmoji.filter { emoji in
+                emojiSearchResults = allSendableEmoji.filter { emoji in
                     return emoji.baseEmoji.name.range(of: searchText, options: [.caseInsensitive, .anchored]) != nil
                 }
             }
@@ -615,24 +613,6 @@ private class EmojiSearchIndex: NSObject {
 
         return index
     }
-}
-
-fileprivate extension Emoji {
-
-    /// Both the US and USMI flags are identical in appearance. As far as I'm aware, these are the only two that are consistently identical
-    /// We only want to show one of these in the sheet, so we map the USMI flag to the US flag
-    /// If this ever expands in the future we might want to embed this in the EmojiGenerator script but I doubt that's likely.
-    var normalized: Emoji {
-        switch self {
-        case .flagUm:
-            return .us
-        default:
-            return self
-        }
-    }
-
-    var isNormalized: Bool { self == normalized }
-
 }
 
 fileprivate extension EmojiWithSkinTones {

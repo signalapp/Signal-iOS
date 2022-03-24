@@ -36,7 +36,7 @@ extension Emoji {
             }
         }
 
-        var emoji: [Emoji] {
+        var normalizedEmoji: [Emoji] {
             switch self {
             case .smileysAndPeople:
                 return [
@@ -1887,7 +1887,6 @@ extension Emoji {
                     .flagTz,
                     .flagUa,
                     .flagUg,
-                    .flagUm,
                     .flagUn,
                     .us,
                     .flagUy,
@@ -3767,6 +3766,14 @@ extension Emoji {
         case .flagScotland: return .flags
         case .flagWales: return .flags
         default: fatalError("Unexpected case \(self)")
+        }
+    }
+
+    var isNormalized: Bool { normalized == self }
+    var normalized: Emoji {
+        switch self {
+        case .flagUm: return .us
+        default: return self
         }
     }
 }
