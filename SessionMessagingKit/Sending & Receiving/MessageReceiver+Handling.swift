@@ -827,12 +827,14 @@ extension MessageReceiver {
         // a new configuration message (otherwise the `contact` will be loaded direct from the database and the
         // `didApproveMe` value won't have been updated)
         DispatchQueue.global(qos: .background).async {
-            guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
-                return
+            Storage.write { transaction in
+                guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
+                    return
+                }
+                
+                let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
+                MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
             }
-            
-            let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
-            MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
         }
     }
     
