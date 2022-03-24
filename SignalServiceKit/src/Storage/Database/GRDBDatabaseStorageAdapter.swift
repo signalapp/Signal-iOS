@@ -174,6 +174,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             MessageSendLog.Message.self,
             ProfileBadge.self,
             StoryMessage.self,
+            DonationReceipt.self,
             OWSReaction.self,
             TSGroupMember.self,
             TSMention.self

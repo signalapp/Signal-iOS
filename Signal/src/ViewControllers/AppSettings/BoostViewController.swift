@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -655,7 +655,9 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
             SubscriptionManager.terminateTransactionIfPossible = false
 
             do {
-                try SubscriptionManager.createAndRedeemBoostReceipt(for: intentId)
+                try SubscriptionManager.createAndRedeemBoostReceipt(for: intentId,
+                                                                    amount: donationAmount as Decimal,
+                                                                    currencyCode: self.currencyCode)
             } catch {
 
             }

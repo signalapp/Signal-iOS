@@ -130,6 +130,8 @@ public class GRDBSchemaMigrator: NSObject {
         case updateConversationLoadInteractionCountIndex
         case updateConversationLoadInteractionDistanceIndex
         case updateConversationUnreadCountIndex
+        case createDonationReceiptTable
+        case addBoostAmountToSubscriptionDurableJob
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -172,7 +174,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 35
+    public static let grdbSchemaVersionLatest: UInt = 36
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1599,6 +1601,38 @@ public class GRDBSchemaMigrator: NSObject {
                 }
 
                 try db.execute(sql: "ALTER TABLE model_OWSUserProfile DROP COLUMN isUuidCapable")
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.createDonationReceiptTable.rawValue) { db in
+            do {
+                try db.create(table: "model_DonationReceipt") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column("timestamp", .integer)
+                        .notNull()
+                    table.column("subscriptionLevel", .integer)
+                    table.column("amount", .numeric)
+                        .notNull()
+                    table.column("currencyCode", .text)
+                        .notNull()
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addBoostAmountToSubscriptionDurableJob.rawValue) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "amount", .numeric)
+                    table.add(column: "currencyCode", .text)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }

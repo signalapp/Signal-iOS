@@ -1029,7 +1029,10 @@
 		F0CA67FA2728A89A002B9DFE /* SubscriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0CA67F92728A89A002B9DFE /* SubscriptionViewController.swift */; };
 		F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */; };
 		F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */; };
+		F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */; };
+		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
+		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
@@ -2379,7 +2382,10 @@
 		F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuReactionBarAccessory.swift; sourceTree = "<group>"; };
 		F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuController.swift; sourceTree = "<group>"; };
 		F1F5EEB86B2B807C24D790CC /* Pods-SignalPerformanceTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.profiling.xcconfig"; sourceTree = "<group>"; };
+		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
+		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
+		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppSettingsViewsUtil.swift; path = Signal/src/ViewControllers/AppSettings/AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FD351756BE688D00B63E00CD /* Pods-SignalMessaging.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.testable release.xcconfig"; sourceTree = "<group>"; };
@@ -2637,6 +2643,8 @@
 		340FC87A204DAC8C007AEB0F /* AppSettings */ = {
 			isa = PBXGroup;
 			children = (
+				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
+				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
 				88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */,
 				887B6DCA25F6C3F500E677D4 /* Account */,
 				887B6DCB25F6C40500E677D4 /* Appearance */,
@@ -4566,6 +4574,7 @@
 		D221A07E169C9E5E00537ABF = {
 			isa = PBXGroup;
 			children = (
+				F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */,
 				D221A093169C9E5E00537ABF /* Signal */,
 				453518931FC63DBF00210559 /* SignalMessaging */,
 				342FFE8927245850000AC89F /* SignalNSE */,
@@ -6097,6 +6106,7 @@
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
 				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
+				F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				34D3E57B245A189D00F5E4A1 /* DebugUIScreenshots.swift in Sources */,
@@ -6168,6 +6178,7 @@
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
 				348815CE25545B1000D4F4C4 /* CVComponentGenericAttachment.swift in Sources */,
 				3426A368255D7BCA0036407F /* ConversationViewController+MessageActionsDelegate.swift in Sources */,
+				F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */,
 				34A4D8872678F24300A794E7 /* ConversationViewController+Delegates.swift in Sources */,
 				887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */,
 				8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */,
@@ -6440,6 +6451,7 @@
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */,
 				F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */,
+				F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				F02564D8274EDF4600D7B48A /* BadgeExpirationSheet.swift in Sources */,
 				34ACA7E82733159600E47AD4 /* ChangePhoneNumberController.swift in Sources */,
