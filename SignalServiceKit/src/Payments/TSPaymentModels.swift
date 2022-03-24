@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalClient
+import LibSignalClient
 
 @objc
 public protocol TSPaymentBaseModel: AnyObject {
@@ -132,7 +132,7 @@ extension TSPaymentAddress: TSPaymentBaseModel {
     }
 
     static func sign(identityKeyPair: ECKeyPair, publicAddressData: Data) throws -> Data {
-        let privateKey: SignalClient.PrivateKey = identityKeyPair.identityKeyPair.privateKey
+        let privateKey: LibSignalClient.PrivateKey = identityKeyPair.identityKeyPair.privateKey
         return Data(privateKey.generateSignature(message: publicAddressData))
     }
 

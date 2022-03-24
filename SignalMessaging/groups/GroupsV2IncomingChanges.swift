@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalServiceKit
-import SignalClient
+import LibSignalClient
 
 public struct ChangedGroupModel {
     public let oldGroupModel: TSGroupModelV2

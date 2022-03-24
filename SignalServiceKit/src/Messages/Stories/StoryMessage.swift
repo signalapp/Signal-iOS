@@ -4,7 +4,7 @@
 
 import Foundation
 import GRDB
-import SignalClient
+import LibSignalClient
 import UIKit
 
 @objc

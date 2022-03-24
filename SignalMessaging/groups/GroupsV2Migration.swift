@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalClient
+import LibSignalClient
 
 @objc
 public class GroupsV2Migration: NSObject {

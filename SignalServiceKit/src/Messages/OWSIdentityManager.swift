@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import SignalClient
+import LibSignalClient
 
 extension TSMessageDirection {
     fileprivate init(_ direction: Direction) {
@@ -15,7 +15,7 @@ extension TSMessageDirection {
     }
 }
 
-extension SignalClient.IdentityKey {
+extension LibSignalClient.IdentityKey {
     fileprivate func serializeAsData() -> Data {
         return Data(publicKey.keyBytes)
     }
@@ -38,7 +38,7 @@ extension OWSIdentityManager: IdentityKeyStore {
         return UInt32(bitPattern: self.localRegistrationId(with: context.asTransaction))
     }
 
-    public func saveIdentity(_ identity: SignalClient.IdentityKey,
+    public func saveIdentity(_ identity: LibSignalClient.IdentityKey,
                              for address: ProtocolAddress,
                              context: StoreContext) throws -> Bool {
         self.saveRemoteIdentity(identity.serializeAsData(),
@@ -46,7 +46,7 @@ extension OWSIdentityManager: IdentityKeyStore {
                                 transaction: context.asTransaction)
     }
 
-    public func isTrustedIdentity(_ identity: SignalClient.IdentityKey,
+    public func isTrustedIdentity(_ identity: LibSignalClient.IdentityKey,
                                   for address: ProtocolAddress,
                                   direction: Direction,
                                   context: StoreContext) throws -> Bool {
@@ -56,12 +56,12 @@ extension OWSIdentityManager: IdentityKeyStore {
                                   transaction: context.asTransaction)
     }
 
-    public func identity(for address: ProtocolAddress, context: StoreContext) throws -> SignalClient.IdentityKey? {
+    public func identity(for address: ProtocolAddress, context: StoreContext) throws -> LibSignalClient.IdentityKey? {
         guard let data = self.identityKey(for: SignalServiceAddress(from: address),
                                           transaction: context.asTransaction) else {
             return nil
         }
-        return try SignalClient.IdentityKey(publicKey: ECPublicKey(keyData: data).key)
+        return try LibSignalClient.IdentityKey(publicKey: ECPublicKey(keyData: data).key)
     }
 
     @objc

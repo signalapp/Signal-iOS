@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalClient
+import LibSignalClient
 
 public enum CDSHResult {
     case completed

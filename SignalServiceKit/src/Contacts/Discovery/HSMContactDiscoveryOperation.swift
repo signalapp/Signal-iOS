@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalCoreKit
-import SignalClient
+import LibSignalClient
 
 class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, Dependencies {
     static let batchSize = 5000

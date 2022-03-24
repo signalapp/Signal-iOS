@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import SignalClient
+import LibSignalClient
 
 public class SSKSessionStore: NSObject {
     fileprivate typealias SessionsByDeviceDictionary = [Int32: AnyObject]

@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalServiceKit
-import SignalClient
+import LibSignalClient
 
 @objc
 public class GroupsV2Impl: NSObject, GroupsV2Swift {

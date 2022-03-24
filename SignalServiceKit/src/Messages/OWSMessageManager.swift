@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import SignalClient
+import LibSignalClient
 
 /// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint
 @objc

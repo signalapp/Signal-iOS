@@ -4,7 +4,7 @@
 
 import Foundation
 
-import SignalClient
+import LibSignalClient
 import CommonCrypto
 
 public struct ProvisionMessage {

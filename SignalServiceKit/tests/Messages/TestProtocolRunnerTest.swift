@@ -3,7 +3,7 @@
 //
 
 import XCTest
-import SignalClient
+import LibSignalClient
 import SignalServiceKit
 
 class TestProtocolRunnerTest: SSKBaseTestSwift {

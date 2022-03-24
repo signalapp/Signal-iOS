@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
-import SignalClient
+import LibSignalClient
 
 class MockClient {
 
@@ -65,14 +65,14 @@ class MockClient {
                                           senderKeyStore: senderKeyStore)
     }
 
-    func generateMockPreKey() -> SignalClient.PreKeyRecord {
+    func generateMockPreKey() -> LibSignalClient.PreKeyRecord {
         let preKeyId = UInt32(Int32.random(in: 0...Int32.max))
         let preKey = try! PreKeyRecord(id: preKeyId, privateKey: PrivateKey.generate())
         try! self.preKeyStore.storePreKey(preKey, id: preKeyId, context: NullContext())
         return preKey
     }
 
-    func generateMockSignedPreKey() -> SignalClient.SignedPreKeyRecord {
+    func generateMockSignedPreKey() -> LibSignalClient.SignedPreKeyRecord {
         let signedPreKeyId = UInt32(Int32.random(in: 0...Int32.max))
         let keyPair = IdentityKeyPair.generate()
         let generatedAt = Date()

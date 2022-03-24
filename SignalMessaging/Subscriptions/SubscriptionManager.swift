@@ -4,7 +4,7 @@
 
 import Foundation
 import PassKit
-import SignalClient
+import LibSignalClient
 import SignalServiceKit
 
 public enum SubscriptionBadgeIds: String, CaseIterable {

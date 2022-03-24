@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalClient
+import LibSignalClient
 
 @objc
 public extension MessageSender {
@@ -289,17 +289,17 @@ public extension MessageSender {
             return
         }
 
-        let bundle: SignalClient.PreKeyBundle
+        let bundle: LibSignalClient.PreKeyBundle
         if preKeyBundle.preKeyPublic.isEmpty {
-            bundle = try SignalClient.PreKeyBundle(
+            bundle = try LibSignalClient.PreKeyBundle(
                 registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                 deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
                 signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
                 signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
                 signedPrekeySignature: preKeyBundle.signedPreKeySignature,
-                identity: try SignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+                identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
         } else {
-            bundle = try SignalClient.PreKeyBundle(
+            bundle = try LibSignalClient.PreKeyBundle(
                 registrationId: UInt32(bitPattern: preKeyBundle.registrationId),
                 deviceId: UInt32(bitPattern: preKeyBundle.deviceId),
                 prekeyId: UInt32(bitPattern: preKeyBundle.preKeyId),
@@ -307,7 +307,7 @@ public extension MessageSender {
                 signedPrekeyId: UInt32(bitPattern: preKeyBundle.signedPreKeyId),
                 signedPrekey: try PublicKey(preKeyBundle.signedPreKeyPublic),
                 signedPrekeySignature: preKeyBundle.signedPreKeySignature,
-                identity: try SignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
+                identity: try LibSignalClient.IdentityKey(bytes: preKeyBundle.identityKey))
         }
 
         do {

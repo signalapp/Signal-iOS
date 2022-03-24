@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import SignalClient
+import LibSignalClient
 
 @objc
 public final class OWSDeviceProvisioner: NSObject {

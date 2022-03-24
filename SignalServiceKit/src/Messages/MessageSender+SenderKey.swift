@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import SignalClient
+import LibSignalClient
 
 extension MessageSender {
     private var senderKeyQueue: DispatchQueue { .global(qos: .utility) }
@@ -772,7 +772,7 @@ fileprivate extension SignalServiceAddress {
     // We shouldn't send a SenderKey message to addresses with a session record with
     // an invalid registrationId.
     //
-    // SignalClient expects registrationIds to fit in 15 bits for multiRecipientEncrypt,
+    // LibSignalClient expects registrationIds to fit in 15 bits for multiRecipientEncrypt,
     // but there are some reports of clients having larger registrationIds.
     //
     // For now, let's perform a check to filter out invalid registrationIds. An

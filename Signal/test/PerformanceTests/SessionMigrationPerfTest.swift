@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import XCTest
 import SignalServiceKit
-import SignalClient
+import LibSignalClient
 
 class SessionMigrationPerfTest: PerformanceBaseTest {
     static let newlyInitializedSessionStateData: Data = {

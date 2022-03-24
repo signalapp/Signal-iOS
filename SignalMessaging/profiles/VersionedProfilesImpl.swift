@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalServiceKit
-import SignalClient
+import LibSignalClient
 
 public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
     public let request: TSRequest

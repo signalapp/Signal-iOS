@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
-import SignalClient
+import LibSignalClient
 
 // Every time we add a new property to TSOutgoingMessage, we should:
 //

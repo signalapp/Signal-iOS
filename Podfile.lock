@@ -1,22 +1,26 @@
 PODS:
   - blurhash (0.0.1)
   - BonMot (6.0.0)
-  - CocoaLumberjack (3.7.0):
-    - CocoaLumberjack/Core (= 3.7.0)
-  - CocoaLumberjack/Core (3.7.0)
+  - CocoaLumberjack (3.7.4):
+    - CocoaLumberjack/Core (= 3.7.4)
+  - CocoaLumberjack/Core (3.7.4)
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
-    - SignalClient
+    - LibSignalClient (>= 0.15.0)
     - SignalCoreKit
   - Curve25519Kit/Tests (2.1.0):
     - CocoaLumberjack
-    - SignalClient
+    - LibSignalClient (>= 0.15.0)
     - SignalCoreKit
   - GRDB.swift/SQLCipher (4.3.0):
     - SQLCipher (>= 3.4.0)
   - LibMobileCoin/CoreHTTP (1.2.0-pre10):
     - SwiftProtobuf (~> 1.5)
   - libPhoneNumber-iOS (0.9.15)
+  - LibSignalClient (0.15.0):
+    - SignalCoreKit
+  - LibSignalClient/Tests (0.15.0):
+    - SignalCoreKit
   - libwebp (1.0.2):
     - libwebp/core (= 1.0.2)
     - libwebp/dec (= 1.0.2)
@@ -63,10 +67,6 @@ PODS:
   - SAMKeychain (1.5.3)
   - SignalArgon2 (1.3.2)
   - SignalArgon2/Tests (1.3.2)
-  - SignalClient (0.13.0):
-    - SignalCoreKit
-  - SignalClient/Tests (0.13.0):
-    - SignalCoreKit
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
     - OpenSSL-Universal
@@ -84,13 +84,13 @@ PODS:
     - Curve25519Kit
     - GRDB.swift/SQLCipher
     - libPhoneNumber-iOS
+    - LibSignalClient
     - libwebp
     - Mantle
     - OpenSSL-Universal
     - Reachability
     - SAMKeychain
     - SignalArgon2
-    - SignalClient
     - SignalCoreKit
     - SwiftProtobuf
     - YYImage/WebP
@@ -100,13 +100,13 @@ PODS:
     - Curve25519Kit
     - GRDB.swift/SQLCipher
     - libPhoneNumber-iOS
+    - LibSignalClient
     - libwebp
     - Mantle
     - OpenSSL-Universal
     - Reachability
     - SAMKeychain
     - SignalArgon2
-    - SignalClient
     - SignalCoreKit
     - SwiftProtobuf
     - YYImage/WebP
@@ -135,6 +135,8 @@ DEPENDENCIES:
   - GRDB.swift/SQLCipher
   - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, branch `signal/1.2.0-pre10`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
+  - LibSignalClient (from `https://github.com/signalapp/libsignal-client.git`)
+  - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, tag `v1.2.0-pre10`)
@@ -145,8 +147,6 @@ DEPENDENCIES:
   - Reachability
   - SignalArgon2 (from `https://github.com/signalapp/Argon2.git`)
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
-  - SignalClient (from `https://github.com/signalapp/libsignal-client.git`)
-  - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
   - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit`)"
   - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
@@ -187,6 +187,8 @@ EXTERNAL SOURCES:
   libPhoneNumber-iOS:
     :branch: signal-master
     :git: https://github.com/signalapp/libPhoneNumber-iOS
+  LibSignalClient:
+    :git: https://github.com/signalapp/libsignal-client.git
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
@@ -201,8 +203,6 @@ EXTERNAL SOURCES:
   SignalArgon2:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
-  SignalClient:
-    :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
     :git: "git@github.com:signalapp/SignalCoreKit"
   SignalRingRTC:
@@ -220,7 +220,7 @@ CHECKOUT OPTIONS:
     :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
     :git: https://github.com/signalapp/blurhash
   Curve25519Kit:
-    :commit: 87bfaf0748ecbac417fe90219b529d4f6f0eb272
+    :commit: 459674cfb4292a2de3425fb00bd92217883cf448
     :git: "ssh://git@github.com/signalapp/Curve25519Kit"
   LibMobileCoin:
     :commit: 0563ad5d2780777ef9685dcee1af2f0255dc1ae4
@@ -228,6 +228,9 @@ CHECKOUT OPTIONS:
   libPhoneNumber-iOS:
     :commit: 4c4341c5b89040559810a3e38c7a47c77eeaeabb
     :git: https://github.com/signalapp/libPhoneNumber-iOS
+  LibSignalClient:
+    :commit: b5d48df116c6f0dfb1fb8ab2365a0be63c44be3f
+    :git: https://github.com/signalapp/libsignal-client.git
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
@@ -244,9 +247,6 @@ CHECKOUT OPTIONS:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
-  SignalClient:
-    :commit: 613338d54a4bb7eca9e78d643243cff74545d3b9
-    :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
     :commit: 543d3bfa0dca47f46ae84b2bac83b88169d66ea6
     :git: "git@github.com:signalapp/SignalCoreKit"
@@ -260,11 +260,12 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
   BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
-  CocoaLumberjack: e8955b9d337ac307103b0a34fd141c32f27e53c5
-  Curve25519Kit: 4b6cddbe2d44be0ccb37e15ba719a145edab8aff
+  CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
+  Curve25519Kit: 1b98dc2d6e7e3d5b6756b05b96758f6161e6d58d
   GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
   LibMobileCoin: 40d2d7d685321a6128871b6c6b4bb7cba25e848f
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
+  LibSignalClient: b2bff77a92088045aa587843834102e01e8b3caf
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
@@ -276,16 +277,15 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalClient: b48eefe7b0164675189a660c21713296b0f76b7a
   SignalCoreKit: 87da14c58d57760793b892ff03838c5ef2ce1167
   SignalRingRTC: 8f1b90a580505a8305e10c7b53727d0acfc3bc4b
-  SignalServiceKit: 25ca5d50484d3883990bd18a4825ec3d57bbe798
+  SignalServiceKit: d598fa75d9f6c2137a5e016fdc117f94c7ac3ef7
   SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
   SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 56fae7590b665c210975e1bd69130efd984f5321
+PODFILE CHECKSUM: 906027fb1ff6c4771d482ab23d2e35ab2eee46ef
 
 COCOAPODS: 1.10.1

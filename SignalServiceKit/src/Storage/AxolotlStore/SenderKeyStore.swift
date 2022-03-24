@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import SignalClient
+import LibSignalClient
 
 @objc
 public class SenderKeyStore: NSObject {
@@ -170,9 +170,9 @@ public class SenderKeyStore: NSObject {
     }
 }
 
-// MARK: - <SignalClient.SenderKeyStore>
+// MARK: - <LibSignalClient.SenderKeyStore>
 
-extension SenderKeyStore: SignalClient.SenderKeyStore {
+extension SenderKeyStore: LibSignalClient.SenderKeyStore {
     public func storeSenderKey(
         from sender: ProtocolAddress,
         distributionId: UUID,

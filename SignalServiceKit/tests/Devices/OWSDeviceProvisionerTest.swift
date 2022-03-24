@@ -5,7 +5,7 @@
 import Foundation
 import XCTest
 
-import SignalClient
+import LibSignalClient
 @testable import SignalServiceKit
 
 class OWSDeviceProvisionerTest: SSKBaseTestSwift {

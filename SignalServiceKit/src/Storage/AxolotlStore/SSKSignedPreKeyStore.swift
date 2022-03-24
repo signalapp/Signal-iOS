@@ -1,15 +1,15 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import SignalClient
+import LibSignalClient
 
 extension SSKSignedPreKeyStore: SignedPreKeyStore {
     enum Error: Swift.Error {
         case noPreKeyWithId(UInt32)
     }
 
-    public func loadSignedPreKey(id: UInt32, context: StoreContext) throws -> SignalClient.SignedPreKeyRecord {
+    public func loadSignedPreKey(id: UInt32, context: StoreContext) throws -> LibSignalClient.SignedPreKeyRecord {
         guard let preKey = self.loadSignedPreKey(Int32(bitPattern: id), transaction: context.asTransaction) else {
             throw Error.noPreKeyWithId(id)
         }
@@ -20,7 +20,7 @@ extension SSKSignedPreKeyStore: SignedPreKeyStore {
             signature: preKey.signature)
     }
 
-    public func storeSignedPreKey(_ record: SignalClient.SignedPreKeyRecord, id: UInt32, context: StoreContext) throws {
+    public func storeSignedPreKey(_ record: LibSignalClient.SignedPreKeyRecord, id: UInt32, context: StoreContext) throws {
         let keyPair = IdentityKeyPair(publicKey: record.publicKey, privateKey: record.privateKey)
         let axolotlRecord = SignalServiceKit.SignedPreKeyRecord(
             id: Int32(bitPattern: id),

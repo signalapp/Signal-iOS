@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 @testable import SignalServiceKit
-@testable import SignalClient
+@testable import LibSignalClient
 import Curve25519Kit
 import SignalCoreKit
 
@@ -344,7 +344,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // Setup: Alice creates a sender key
         // Test: Bob intentionally does not process Alice's SKDM to simulate an unsent key
         let distributionId = UUID()
-        let _ = try! SenderKeyDistributionMessage(
+        _ = try! SenderKeyDistributionMessage(
             from: aliceMockClient.protocolAddress,
             distributionId: distributionId,
             store: aliceMockClient.senderKeyStore,

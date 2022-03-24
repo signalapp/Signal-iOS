@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import Curve25519Kit
 import SignalCoreKit
-import SignalClient
+import LibSignalClient
 
 public struct SecretSessionKnownSenderError: Error {
     public let senderAddress: SignalServiceAddress
@@ -115,14 +115,14 @@ fileprivate extension SMKMessageType {
     private let currentPreKeyStore: PreKeyStore
     private let currentSignedPreKeyStore: SignedPreKeyStore
     private let currentIdentityStore: IdentityKeyStore
-    private let currentSenderKeyStore: SignalClient.SenderKeyStore
+    private let currentSenderKeyStore: LibSignalClient.SenderKeyStore
 
     // public SecretSessionCipher(SignalProtocolStore signalProtocolStore) {
     public init(sessionStore: SessionStore,
                 preKeyStore: PreKeyStore,
                 signedPreKeyStore: SignedPreKeyStore,
                 identityStore: IdentityKeyStore,
-                senderKeyStore: SignalClient.SenderKeyStore) throws {
+                senderKeyStore: LibSignalClient.SenderKeyStore) throws {
 
         self.currentSessionStore = sessionStore
         self.currentPreKeyStore = preKeyStore
@@ -147,7 +147,6 @@ fileprivate extension SMKMessageType {
             throw SMKError.assertionError(description: "\(logTag) invalid deviceId")
         }
         let recipientAddress = try ProtocolAddress(from: recipient, deviceId: UInt32(bitPattern: deviceId))
-
 
         let ciphertextMessage = try signalEncrypt(
             message: paddedPlaintext,

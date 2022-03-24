@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalClient
+import LibSignalClient
 
 @objc
 public enum MessageSenderError: Int, Error, IsRetryableProvider, UserErrorDescriptionProvider {

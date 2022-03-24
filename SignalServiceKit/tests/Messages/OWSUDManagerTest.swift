@@ -6,7 +6,7 @@ import XCTest
 import Foundation
 import Curve25519Kit
 import SignalCoreKit
-import SignalClient
+import LibSignalClient
 @testable import SignalServiceKit
 
 class OWSUDManagerTest: SSKBaseTestSwift {

@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalClient
+import LibSignalClient
 
 #if TESTABLE_BUILD
 /// A helper for tests which can initializes Signal Protocol sessions

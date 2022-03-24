@@ -3,7 +3,7 @@
 //
 
 import CommonCrypto
-import SignalClient
+import LibSignalClient
 
 public class OWSProvisioningCipher: NSObject {
     // Local errors for logging purposes only.

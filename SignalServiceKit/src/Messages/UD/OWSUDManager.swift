@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalCoreKit
-import SignalClient
+import LibSignalClient
 
 public enum OWSUDError: Error {
     case assertionError(description: String)
