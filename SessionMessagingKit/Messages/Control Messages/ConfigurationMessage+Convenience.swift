@@ -2,9 +2,9 @@ import SessionUtilitiesKit
 
 extension ConfigurationMessage {
 
-    public static func getCurrent(with transaction: YapDatabaseReadWriteTransaction? = nil) -> ConfigurationMessage? {
+    public static func getCurrent() -> ConfigurationMessage? {
         let storage = Storage.shared
-        guard let user = storage.getUser(using: transaction) else { return nil }
+        guard let user = storage.getUser() else { return nil }
         
         let displayName = user.name
         let profilePictureURL = user.profilePictureURL
@@ -13,7 +13,7 @@ extension ConfigurationMessage {
         var openGroups: Set<String> = []
         var contacts: Set<ConfigurationMessage.Contact> = []
         
-        let populateDataClosure: (YapDatabaseReadTransaction) -> () = { transaction in
+        Storage.read { transaction in
             TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
                 guard let thread = object as? TSGroupThread else { return }
                 
@@ -24,10 +24,7 @@ extension ConfigurationMessage {
                         let groupID = thread.groupModel.groupId
                         let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
                         
-                        guard
-                            storage.isClosedGroup(groupPublicKey, using: transaction),
-                            let encryptionKeyPair = storage.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey, using: transaction)
-                        else {
+                        guard storage.isClosedGroup(groupPublicKey), let encryptionKeyPair = storage.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else {
                             return
                         }
                         
@@ -91,15 +88,6 @@ extension ConfigurationMessage {
                     )
                 }
                 .asSet()
-            }
-        
-        // If we are provided with a transaction then read the data based on the state of the database
-        // from within the transaction rather than the state in disk
-        if let transaction: YapDatabaseReadWriteTransaction = transaction {
-            populateDataClosure(transaction)
-        }
-        else {
-            Storage.read { transaction in populateDataClosure(transaction) }
         }
         
         return ConfigurationMessage(

@@ -22,14 +22,17 @@ extension AppDelegate {
         }
     }
 
-    func forceSyncConfigurationNowIfNeeded(with transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Void> {
-        guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
-            return Promise.value(())
-        }
-        
+    func forceSyncConfigurationNowIfNeeded() -> Promise<Void> {
         let destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
         let (promise, seal) = Promise<Void>.pending()
+        
+        // Note: SQLite only supports a single write thread so we can be sure this will retrieve the most up-to-date data
         Storage.writeSync { transaction in
+            guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
+                seal.fulfill(())
+                return
+            }
+            
             MessageSender.send(configurationMessage, to: destination, using: transaction).done {
                 seal.fulfill(())
             }.catch { _ in

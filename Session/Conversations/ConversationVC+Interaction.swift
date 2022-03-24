@@ -1183,7 +1183,7 @@ extension ConversationVC {
                 
                     // Send a sync message with the details of the contact
                     if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                        appDelegate.forceSyncConfigurationNowIfNeeded(with: transaction).retainUntilComplete()
+                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
                     }
                 }
             }
