@@ -84,6 +84,12 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Note: This is a hack to ensure `isRTL` is initially gets run on the main thread so the value is cached (it gets
+        // called on background threads and if it hasn't cached the value then it can cause odd performance issues since
+        // it accesses UIKit)
+        _ = CurrentAppContext().isRTL
+        
         // Threads (part 1)
         dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
         // Preparation
