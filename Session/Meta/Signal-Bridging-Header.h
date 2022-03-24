@@ -19,8 +19,6 @@
 #import "NotificationSettingsViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioPlayer.h"
-#import "OWSBackup.h"
-#import "OWSBackupIO.h"
 #import "OWSBezierPathView.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSDatabaseMigration.h"

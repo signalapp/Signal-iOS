@@ -35,9 +35,6 @@ import SignalUtilitiesKit
     public var pushRegistrationManager: PushRegistrationManager
 
     @objc
-    public var backup: OWSBackup
-    
-    @objc
     public var fileLogger: DDFileLogger
 
     // Stored properties cannot be marked as `@available`, only classes and functions.
@@ -49,15 +46,10 @@ import SignalUtilitiesKit
         return _userNotificationActionHandler as! UserNotificationActionHandler
     }
 
-    @objc
-    public var backupLazyRestore: BackupLazyRestore
-
     private override init() {
         self.accountManager = AccountManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
-        self.backup = OWSBackup()
-        self.backupLazyRestore = BackupLazyRestore()
         self._userNotificationActionHandler = UserNotificationActionHandler()
         self.fileLogger = DDFileLogger()
 
