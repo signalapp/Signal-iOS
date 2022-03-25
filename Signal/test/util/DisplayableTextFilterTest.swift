@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -160,5 +160,21 @@ class DisplayableTextTest: SignalBaseTest {
         assertLinkifies("кц.рф/some/path")
         assertLinkifies("https://кц.рф/some/path")
         assertNotLinkifies("http://foo.кц.рф")
+
+        // Forbidden bidi characters anywhere in the string
+        assertNotLinkifies("hello \u{202C} https://google.com")
+        assertNotLinkifies("hello \u{202D} https://google.com")
+        assertNotLinkifies("hello \u{202E} https://google.com")
+        assertNotLinkifies("hello https://google.com \u{202C} goodbye")
+        assertNotLinkifies("hello https://google.com \u{202D} goodbye")
+        assertNotLinkifies("hello https://google.com \u{202E} goodbye")
+
+        // Forbidden box drawing characters anywhere in the string
+        assertNotLinkifies("hello ┋ https://google.com")
+        assertNotLinkifies("hello ▛ https://google.com")
+        assertNotLinkifies("hello ◷ https://google.com")
+        assertNotLinkifies("hello https://google.com ┋ goodbye")
+        assertNotLinkifies("hello https://google.com ▛ goodbye")
+        assertNotLinkifies("hello https://google.com ◷ goodbye")
     }
 }
