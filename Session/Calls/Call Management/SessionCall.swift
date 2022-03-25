@@ -282,6 +282,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     // MARK: Delegate
     public func webRTCIsConnected() {
+        self.reconnectTimer?.invalidate()
         guard !self.hasConnected else { return }
         self.hasConnected = true
         self.answerCallAction?.fulfill()
