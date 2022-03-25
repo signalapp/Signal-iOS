@@ -721,7 +721,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.isViewVisible = YES;
 
     // Ensure the tabBar is always hidden if stories is disabled.
-    self.tabBarController.tabBar.hidden = !SSKFeatureFlags.stories;
+    BOOL shouldHideTabBar = !SSKFeatureFlags.stories;
+    if (shouldHideTabBar) {
+        self.tabBarController.tabBar.hidden = YES;
+        self.extendedLayoutIncludesOpaqueBars = YES;
+    }
 
     BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
     if (isShowingSearchResults) {
