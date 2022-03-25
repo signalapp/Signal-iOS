@@ -149,6 +149,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         return Date().timeIntervalSince(connectedDate)
     }
     
+    var reconnectTimer: Timer? = nil
+    
     // MARK: Initialization
     init(for sessionID: String, uuid: String, mode: Mode, outgoing: Bool = false) {
         self.sessionID = sessionID
@@ -205,6 +207,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
                 Storage.shared.write { transaction in
                     self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).retainUntilComplete()
                 }
+                self?.setupTimeoutTimer()
             }
         })
     }
@@ -307,9 +310,27 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         }
     }
     
+    public func reconnectIfNeeded() {
+        guard isOutgoing else { return }
+        tryToReconnect()
+    }
+    
+    private func tryToReconnect() {
+        reconnectTimer?.invalidate()
+        if SSKEnvironment.shared.reachabilityManager.isReachable {
+            Storage.write { transaction in
+                self.webRTCSession.sendOffer(to: self.sessionID, using: transaction, isRestartingICEConnection: true).retainUntilComplete()
+            }
+        } else {
+            reconnectTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: 5, repeats: false) { _ in
+                self.tryToReconnect()
+            }
+        }
+    }
+    
     // MARK: Timeout
     public func setupTimeoutTimer() {
-        timeOutTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { _ in
+        timeOutTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: 30, repeats: false) { _ in
             self.didTimeout = true
             AppEnvironment.shared.callManager.endCall(self) { error in
                 self.timeOutTimer = nil
