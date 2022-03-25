@@ -84,7 +84,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     }
 
     @objc func applyTheme() {
-        view.backgroundColor = Theme.secondaryBackgroundColor
+        view.backgroundColor = Theme.backgroundColor
         applyBarStyle(collapsed: isCollapsed)
     }
 
