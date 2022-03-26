@@ -6,6 +6,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 import SignalUI
+import BonMot
 
 protocol StoryContextViewControllerDelegate: AnyObject {
     func storyContextViewControllerWantsTransitionToNextContext(
@@ -29,18 +30,7 @@ class StoryContextViewController: OWSViewController {
 
     private var items = [StoryItem]()
     var currentItem: StoryItem? {
-        didSet {
-            currentItemMediaView?.removeFromSuperview()
-
-            if let currentItem = currentItem {
-                let itemView = StoryItemMediaView(item: currentItem)
-                self.currentItemMediaView = itemView
-                mediaViewContainer.addSubview(itemView)
-                itemView.autoPinEdgesToSuperviewEdges()
-            }
-
-            updateProgressState()
-        }
+        didSet { currentItemWasUpdated() }
     }
     var currentItemMediaView: StoryItemMediaView?
 
@@ -121,6 +111,7 @@ class StoryContextViewController: OWSViewController {
     private lazy var closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white)
 
     private lazy var mediaViewContainer = UIView()
+    private lazy var replyButton = OWSFlatButton()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -138,10 +129,29 @@ class StoryContextViewController: OWSViewController {
 
         view.addSubview(mediaViewContainer)
 
+        replyButton.setBackgroundColors(upColor: .clear)
+        replyButton.autoSetDimension(.height, toSize: 64)
+        replyButton.setTitleColor(Theme.darkThemePrimaryColor)
+        view.addSubview(replyButton)
+        replyButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
+        replyButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
+
+        view.addSubview(playbackProgressView)
+        playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
+        playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
+        playbackProgressView.autoSetDimension(.height, toSize: 2)
+        playbackProgressView.isUserInteractionEnabled = false
+
         if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
             mediaViewContainer.layer.cornerRadius = 18
             mediaViewContainer.clipsToBounds = true
+            replyButton.autoPinEdge(.top, to: .bottom, of: mediaViewContainer)
+            playbackProgressView.autoPinEdge(.bottom, to: .top, of: replyButton, withOffset: -OWSTableViewController2.defaultHOuterMargin)
         } else {
+            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
+            replyButton.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer)
+            playbackProgressView.autoPinEdge(.bottom, to: .top, of: replyButton)
             mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .bottom)
         }
 
@@ -162,13 +172,6 @@ class StoryContextViewController: OWSViewController {
         closeButton.autoPinEdge(toSuperviewSafeArea: .top)
         closeButton.autoPinEdge(toSuperviewSafeArea: .leading)
 
-        view.addSubview(playbackProgressView)
-        playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
-        playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
-        playbackProgressView.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
-        playbackProgressView.autoSetDimension(.height, toSize: 2)
-        playbackProgressView.isUserInteractionEnabled = false
-
         loadStoryItems { [weak self] storyItems in
             // If there are no stories for this context, dismiss.
             guard !storyItems.isEmpty else {
@@ -188,6 +191,8 @@ class StoryContextViewController: OWSViewController {
         }
     }
 
+    private var groupThreadId: String?
+
     private static let maxItemsToRender = 100
     private func loadStoryItems(completion: @escaping ([StoryItem]) -> Void) {
         var storyItems = [StoryItem]()
@@ -199,13 +204,26 @@ class StoryContextViewController: OWSViewController {
                 if storyItems.count >= Self.maxItemsToRender { stop.pointee = true }
             }
 
+            let groupThreadId: String?
+            if case .groupId(let groupId) = self.context {
+                groupThreadId = TSGroupThread.threadId(
+                    forGroupId: groupId,
+                    transaction: transaction
+                )
+            } else {
+                groupThreadId = nil
+            }
+
             DispatchQueue.main.async {
+                self.groupThreadId = groupThreadId
                 completion(storyItems)
             }
         }
     }
 
     private func buildStoryItem(for message: StoryMessage, transaction: SDSAnyReadTransaction) -> StoryItem? {
+        let replyCount = InteractionFinder.countReplies(for: message, transaction: transaction)
+
         switch message.attachment {
         case .file(let attachmentId):
             guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
@@ -213,16 +231,54 @@ class StoryContextViewController: OWSViewController {
                 return nil
             }
             if let attachment = attachment as? TSAttachmentPointer {
-                return .init(message: message, attachment: .pointer(attachment))
+                return .init(message: message, numberOfReplies: replyCount, attachment: .pointer(attachment))
             } else if let attachment = attachment as? TSAttachmentStream {
-                return .init(message: message, attachment: .stream(attachment))
+                return .init(message: message, numberOfReplies: replyCount, attachment: .stream(attachment))
             } else {
                 owsFailDebug("Unexpected attachment type \(type(of: attachment))")
                 return nil
             }
         case .text(let attachment):
-            return .init(message: message, attachment: .text(attachment))
+            return .init(message: message, numberOfReplies: replyCount, attachment: .text(attachment))
         }
+    }
+
+    private func currentItemWasUpdated() {
+        currentItemMediaView?.removeFromSuperview()
+
+        if let currentItem = currentItem {
+            let itemView = StoryItemMediaView(item: currentItem)
+            self.currentItemMediaView = itemView
+            mediaViewContainer.addSubview(itemView)
+            itemView.autoPinEdgesToSuperviewEdges()
+
+            replyButton.isHidden = false
+
+            "test"
+
+            let replyButtonText: String
+            switch currentItem.numberOfReplies {
+            case 0:
+                replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_NO_REPLIES", comment: "Button for replying to a story with no existing replies.")
+            case 1:
+                replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_1_REPLY", comment: "Button for replying to a story with a single existing reply.")
+            default:
+                let format = NSLocalizedString("STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT", comment: "Button for replying to a story with N existing replies. {embeds the number of replies}")
+                replyButtonText = String(format: format, "\(currentItem.numberOfReplies)")
+            }
+
+            let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
+            let attributedReplyButtonText = replyButtonText.styled(
+                with: .font(.systemFont(ofSize: 17, weight: .regular)),
+                .xmlRules([.style("bold", semiboldStyle)])
+            )
+            replyButton.setAttributedTitle(attributedReplyButtonText)
+        } else {
+            replyButton.isHidden = true
+        }
+
+        updateProgressState()
+
     }
 
     private var pauseTime: CFTimeInterval?

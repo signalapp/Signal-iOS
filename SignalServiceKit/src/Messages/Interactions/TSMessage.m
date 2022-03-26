@@ -606,6 +606,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyDidInsertWithTransaction:transaction];
 
     [self ensurePerConversationExpirationWithTransaction:transaction];
+
+    [self touchStoryMessageIfNecessaryWithTransaction:transaction];
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -624,6 +626,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyDidUpdateWithTransaction:transaction];
 
     [self ensurePerConversationExpirationWithTransaction:transaction];
+
+    [self touchStoryMessageIfNecessaryWithTransaction:transaction];
 }
 
 - (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -671,6 +675,22 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self removeAllReactionsWithTransaction:transaction];
 
     [self removeAllMentionsWithTransaction:transaction];
+
+    [self touchStoryMessageIfNecessaryWithTransaction:transaction];
+}
+
+- (void)touchStoryMessageIfNecessaryWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!self.isStoryReply) {
+        return;
+    }
+
+    StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:self.storyTimestamp.unsignedLongLongValue
+                                                                    author:self.storyAuthorAddress
+                                                               transaction:transaction];
+    if (storyMessage) {
+        [self.databaseStorage touchStoryMessage:storyMessage transaction:transaction];
+    }
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction

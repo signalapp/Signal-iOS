@@ -157,7 +157,14 @@ class StoryItemMediaView: UIView {
 
         addSubview(authorRow)
         authorRow.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
-        authorRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
+
+        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
+            authorRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
+        } else {
+            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
+            authorRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: 80)
+        }
     }
 
     private func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
@@ -406,6 +413,7 @@ class StoryItemMediaView: UIView {
 
 class StoryItem: NSObject {
     let message: StoryMessage
+    let numberOfReplies: UInt
     enum Attachment {
         case pointer(TSAttachmentPointer)
         case stream(TSAttachmentStream)
@@ -413,8 +421,9 @@ class StoryItem: NSObject {
     }
     var attachment: Attachment
 
-    init(message: StoryMessage, attachment: Attachment) {
+    init(message: StoryMessage, numberOfReplies: UInt, attachment: Attachment) {
         self.message = message
+        self.numberOfReplies = numberOfReplies
         self.attachment = attachment
     }
 }

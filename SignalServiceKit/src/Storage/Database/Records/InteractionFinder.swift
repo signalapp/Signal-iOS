@@ -5,11 +5,10 @@
 import Foundation
 import GRDB
 
-@objc
-public enum StoryReplyQueryMode: UInt {
-    case include = 0
-    case excludeGroupReplies = 1
-    case onlyGroupReplies = 2
+public enum StoryReplyQueryMode {
+    case includeAllReplies
+    case excludeGroupReplies
+    case onlyGroupReplies(storyTimestamp: UInt64)
 }
 
 protocol InteractionFinderAdapter {
@@ -38,7 +37,9 @@ protocol InteractionFinderAdapter {
 
     static func interactions(withInteractionIds interactionIds: Set<String>, transaction: ReadTransaction) -> Set<TSInteraction>
 
-    static func enumerateReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
+    static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
+    static func countReplies(for storyMessage: StoryMessage, transaction: ReadTransaction) -> UInt
+    static func hasReplies(for storyContext: StoryContext, transaction: ReadTransaction) -> Bool
 
     // MARK: - instance methods
 
@@ -214,10 +215,24 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    static func enumerateReplies(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            GRDBInteractionFinder.enumerateReplies(for: storyMessage, transaction: grdbRead, block: block)
+            GRDBInteractionFinder.enumerateGroupReplies(for: storyMessage, transaction: grdbRead, block: block)
+        }
+    }
+
+    public static func countReplies(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinder.countReplies(for: storyMessage, transaction: grdbRead)
+        }
+    }
+
+    public static func hasReplies(for storyContext: StoryContext, transaction: SDSAnyReadTransaction) -> Bool {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinder.hasReplies(for: storyContext, transaction: grdbRead)
         }
     }
 
@@ -312,7 +327,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    @objc(countExcludingPlaceholders:storyReplyQueryMode:transaction:)
     public func count(excludingPlaceholders excludePlaceholders: Bool = true, storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies, transaction: SDSAnyReadTransaction) -> UInt {
         return Bench(title: "InteractionFinder.countExcludingPlaceholders_\(excludePlaceholders)_StoryReplyQueryMode_\(storyReplyQueryMode)") {
             switch transaction.readTransaction {
@@ -395,7 +409,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(sqlClauseForAllUnreadInteractions)
+            AND \(sqlClauseForAllUnreadInteractions())
             ORDER BY \(interactionColumn: .id)
         """
 
@@ -421,7 +435,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 AND \(interactionColumn: .id) <= ?
-                AND \(sqlClauseForAllUnreadInteractions)
+                AND \(sqlClauseForAllUnreadInteractions())
             """
 
             guard let count = try UInt.fetchOne(transaction.database,
@@ -448,7 +462,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) <= ?
-            AND \(sqlClauseForAllUnreadInteractions)
+            AND \(sqlClauseForAllUnreadInteractions())
             ORDER BY \(interactionColumn: .id)
         """
 
@@ -516,12 +530,12 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         return cursor.compactMap { $0 as? TSOutgoingMessage }
     }
 
-    public func oldestUnreadInteraction(transaction: GRDBReadTransaction) throws -> TSInteraction? {
+    public func oldestUnreadInteraction(storyReplyQueryMode: StoryReplyQueryMode, transaction: GRDBReadTransaction) throws -> TSInteraction? {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(sqlClauseForAllUnreadInteractions)
+            AND \(sqlClauseForAllUnreadInteractions(for: storyReplyQueryMode))
             ORDER BY \(interactionColumn: .id)
         """
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
@@ -571,7 +585,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     // MARK: - Unread
 
-    private let sqlClauseForAllUnreadInteractions: String = {
+    private func sqlClauseForAllUnreadInteractions(for storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies) -> String {
         let recordTypes: [SDSRecordType] = [
             .disappearingConfigurationUpdateInfoMessage,
             .unknownProtocolVersionMessage,
@@ -591,11 +605,11 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         return """
         (
             \(interactionColumn: .read) IS 0
-            \(GRDBInteractionFinder.filterStoryRepliesClause(for: .excludeGroupReplies))
+            \(GRDBInteractionFinder.filterStoryRepliesClause(for: storyReplyQueryMode))
             AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
         """
-    }()
+    }
 
     private static func sqlClauseForUnreadInteractionCounts(interactionsAlias: String? = nil) -> String {
         let columnPrefix: String
@@ -900,12 +914,13 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return interactions
     }
 
-    static func enumerateReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .storyTimestamp) = ?
         AND \(interactionColumn: .storyAuthorUuidString) = ?
+        AND \(interactionColumn: .isGroupStoryReply) = 1
         """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
@@ -924,6 +939,62 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                     return
                 }
             }
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    static func countReplies(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> UInt {
+        do {
+            let sql: String = """
+                SELECT COUNT(*)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .storyTimestamp) = ?
+                AND \(interactionColumn: .storyAuthorUuidString) = ?
+            """
+            guard let count = try UInt.fetchOne(
+                transaction.database,
+                sql: sql,
+                arguments: [storyMessage.timestamp, storyMessage.authorUuid.uuidString]
+            ) else {
+                throw OWSAssertionError("count was unexpectedly nil")
+            }
+            return count
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    static func hasReplies(for storyContext: StoryContext, transaction: GRDBReadTransaction) -> Bool {
+        let threadUniqueId: String
+        switch storyContext {
+        case .groupId(let data):
+            threadUniqueId = TSGroupThread.threadId(
+                forGroupId: data,
+                transaction: transaction.asAnyRead
+            )
+        case .authorUuid(let uuid):
+            guard let contactThread = TSContactThread.getWithContactAddress(
+                SignalServiceAddress(uuid: uuid),
+                transaction: transaction.asAnyRead
+            ) else { return false }
+            threadUniqueId = contactThread.uniqueId
+        case .none:
+            return false
+        }
+
+        let sql = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .threadUniqueId) = ?
+                AND \(interactionColumn: .storyTimestamp) IS NOT NULL
+                AND \(interactionColumn: .storyAuthorUuidString) IS NOT NULL
+                LIMIT 1
+            )
+        """
+        do {
+            return try Bool.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId]) ?? false
         } catch {
             owsFail("error: \(error)")
         }
@@ -1106,9 +1177,9 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         switch queryMode {
         case .excludeGroupReplies:
             return "AND \(columnPrefix)\(interactionColumn: .isGroupStoryReply) = 0"
-        case .onlyGroupReplies:
-            return "AND \(columnPrefix)\(interactionColumn: .isGroupStoryReply) = 1"
-        case .include:
+        case .onlyGroupReplies(let storyTimestamp):
+            return "AND \(columnPrefix)\(interactionColumn: .isGroupStoryReply) = 1 AND \(columnPrefix)\(interactionColumn: .storyTimestamp) = \(storyTimestamp)"
+        case .includeAllReplies:
             return ""
         }
     }

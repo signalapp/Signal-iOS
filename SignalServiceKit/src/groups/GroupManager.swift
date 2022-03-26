@@ -1157,7 +1157,7 @@ public class GroupManager: NSObject {
 
             sendGroupQuitMessage(inThread: groupThread, transaction: transaction)
 
-            let hasMessages = groupThread.numberOfInteractions(with: transaction) > 0
+            let hasMessages = groupThread.numberOfInteractions(transaction: transaction) > 0
             let infoMessagePolicy: InfoMessagePolicy = hasMessages ? .always : .never
 
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder

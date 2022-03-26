@@ -161,7 +161,9 @@ public class CVLoader: NSObject {
                 self.benchSteps.step("messageMapping")
 
                 let thread = threadViewModel.threadRecord
-                let threadInteractionCount = thread.numberOfInteractions(with: transaction)
+                let threadInteractionCount = thread.numberOfInteractions(
+                    with: messageMapping.storyReplyQueryMode,
+                    transaction: transaction)
 
                 self.benchSteps.step("threadInteractionCount")
 

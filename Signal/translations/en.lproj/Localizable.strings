@@ -6097,6 +6097,15 @@
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
 
+/* Button for replying to a story with a single existing reply. */
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+
+/* Button for replying to a story with N existing replies. {embeds the number of replies} */
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+
+/* Button for replying to a story with no existing replies. */
+"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Reply";
+
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Badges";
 

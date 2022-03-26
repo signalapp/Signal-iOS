@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 public class CVMessageMapping: NSObject {
 
@@ -18,11 +19,15 @@ public class CVMessageMapping: NSObject {
 
     public var canLoadNewer = false
 
-    private let thread: TSThread
+    public let storyReplyQueryMode: StoryReplyQueryMode
 
-    public required init(thread: TSThread) {
-        self.thread = thread
-        self.interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
+    public convenience init(thread: TSThread, storyReplyQueryMode: StoryReplyQueryMode = .excludeGroupReplies) {
+        self.init(threadUniqueId: thread.uniqueId, storyReplyQueryMode: storyReplyQueryMode)
+    }
+
+    public required init(threadUniqueId: String, storyReplyQueryMode: StoryReplyQueryMode) {
+        self.interactionFinder = InteractionFinder(threadUniqueId: threadUniqueId)
+        self.storyReplyQueryMode = storyReplyQueryMode
     }
 
     // The smaller this number is, the faster the conversation can display.
@@ -167,7 +172,10 @@ public class CVMessageMapping: NSObject {
         let count = max(1, min(count, maxInteractionCount))
 
         // The number of visible interactions currently in the conversation.
-        let conversationSize = interactionFinder.count(excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(), transaction: transaction)
+        let conversationSize = interactionFinder.count(
+            excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
+            storyReplyQueryMode: storyReplyQueryMode,
+            transaction: transaction)
         guard conversationSize > 0 else {
             self.loadedInteractions = []
             updateCanLoadMore(fetchIndexSet: IndexSet(), conversationSize: conversationSize)
@@ -196,6 +204,7 @@ public class CVMessageMapping: NSObject {
             guard let distanceFromLatest = try self.interactionFinder.distanceFromLatest(
                     interactionUniqueId: interactionUniqueId,
                     excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
+                    storyReplyQueryMode: self.storyReplyQueryMode,
                     transaction: transaction) else {
                 throw OWSAssertionError("viewIndex was unexpectedly nil")
             }
@@ -481,6 +490,7 @@ public class CVMessageMapping: NSObject {
             var newItems: [TSInteraction] = []
             try self.interactionFinder.enumerateInteractions(range: nsRange,
                                                              excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
+                                                             storyReplyQueryMode: self.storyReplyQueryMode,
                                                              transaction: transaction) { (interaction: TSInteraction, _) in
                 newItems.append(interaction)
             }
@@ -493,6 +503,7 @@ public class CVMessageMapping: NSObject {
         let interactionIds = try interactionFinder.interactionIds(
             inRange: nsRange,
             excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
+            storyReplyQueryMode: storyReplyQueryMode,
             transaction: transaction)
         guard !interactionIds.isEmpty else {
             return []
@@ -572,7 +583,9 @@ public class CVMessageMapping: NSObject {
     var oldestUnreadInteraction: TSInteraction?
 
     private func updateOldestUnreadInteraction(transaction: SDSAnyReadTransaction) throws {
-        self.oldestUnreadInteraction = try interactionFinder.oldestUnreadInteraction(transaction: transaction.unwrapGrdbRead)
+        self.oldestUnreadInteraction = try interactionFinder.oldestUnreadInteraction(
+            storyReplyQueryMode: storyReplyQueryMode,
+            transaction: transaction.unwrapGrdbRead)
     }
 
     public var debugInteractions: String {

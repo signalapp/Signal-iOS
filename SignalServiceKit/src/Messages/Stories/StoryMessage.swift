@@ -162,8 +162,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     // MARK: -
 
     public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
-        // Delete all replies for the message.
-        InteractionFinder.enumerateReplies(for: self, transaction: transaction) { reply, _ in
+        // Delete all group replies for the message.
+        InteractionFinder.enumerateGroupReplies(for: self, transaction: transaction) { reply, _ in
             reply.anyRemove(transaction: transaction)
         }
 

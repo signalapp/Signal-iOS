@@ -13,14 +13,19 @@ class StoryCell: UITableViewCell {
     let timestampLabel = UILabel()
     let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
     let attachmentThumbnail = UIView()
+    let replyImageView = UIImageView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         backgroundColor = .clear
 
-        let vStack = UIStackView(arrangedSubviews: [nameLabel, timestampLabel])
+        replyImageView.autoSetDimensions(to: CGSize(square: 20))
+        replyImageView.contentMode = .scaleAspectFit
+
+        let vStack = UIStackView(arrangedSubviews: [nameLabel, timestampLabel, replyImageView])
         vStack.axis = .vertical
+        vStack.alignment = .leading
 
         let hStack = UIStackView(arrangedSubviews: [avatarView, vStack, .hStretchingSpacer(), attachmentThumbnail])
         hStack.axis = .horizontal
@@ -41,6 +46,18 @@ class StoryCell: UITableViewCell {
 
     func configure(with model: IncomingStoryViewModel) {
         configureTimestamp(with: model)
+
+        switch model.context {
+        case .authorUuid:
+            replyImageView.image = #imageLiteral(resourceName: "reply-solid-20").withRenderingMode(.alwaysTemplate)
+        case .groupId:
+            replyImageView.image = #imageLiteral(resourceName: "messages-solid-20").withRenderingMode(.alwaysTemplate)
+        case .none:
+            owsFailDebug("Unexpected context")
+        }
+
+        replyImageView.isHidden = !model.hasReplies
+        replyImageView.tintColor = Theme.secondaryTextAndIconColor
 
         nameLabel.font = .ows_dynamicTypeHeadline
         nameLabel.textColor = Theme.primaryTextColor

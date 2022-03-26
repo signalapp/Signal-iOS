@@ -861,6 +861,7 @@
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */; };
+		8864072827EEA658009916B6 /* StoryReplySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072727EEA658009916B6 /* StoryReplySheet.swift */; };
 		886A58CA276A760600A1099B /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C8276A760600A1099B /* SubscriptionManager.swift */; };
 		886A58CB276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */; };
 		886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
@@ -2087,6 +2088,7 @@
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
 		885C354F2370DFD50004BA35 /* OWSSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncManager.swift; sourceTree = "<group>"; };
 		8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalSettingsViewController.swift; sourceTree = "<group>"; };
+		8864072727EEA658009916B6 /* StoryReplySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReplySheet.swift; sourceTree = "<group>"; };
 		886A58C8276A760600A1099B /* SubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionJob.swift; sourceTree = "<group>"; };
 		886CB07724E77E5B00753909 /* silence.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = silence.aiff; sourceTree = "<group>"; };
@@ -4047,6 +4049,7 @@
 				884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */,
 				884DB95127DE67D900C6A309 /* StoryItemMediaView.swift */,
 				884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */,
+				8864072727EEA658009916B6 /* StoryReplySheet.swift */,
 			);
 			path = "Context View";
 			sourceTree = "<group>";
@@ -6289,6 +6292,7 @@
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				3497971525D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift in Sources */,
 				884DB94F27DE67BB00C6A309 /* StoryPageViewController.swift in Sources */,
+				8864072827EEA658009916B6 /* StoryReplySheet.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* DeviceTransferQRScanningViewController.swift in Sources */,
 				34E95C24269F4F4F004807EC /* CLVViewState.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
