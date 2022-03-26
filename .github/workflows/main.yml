@@ -87,7 +87,7 @@ jobs:
 
       - name: Set up Rust
         run: rustup target install x86_64-apple-ios
-        working-directory: Pods/SignalClient
+        working-directory: Pods/LibSignalClient
 
       - name: Build and Test
         run: |
