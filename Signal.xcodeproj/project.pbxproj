@@ -861,7 +861,10 @@
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */; };
-		8864072827EEA658009916B6 /* StoryReplySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072727EEA658009916B6 /* StoryReplySheet.swift */; };
+		8864072827EEA658009916B6 /* StoryGroupReplySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */; };
+		8864072A27F0D426009916B6 /* StoryGroupReplyLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */; };
+		8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */; };
+		8864072E27F0E8DF009916B6 /* StoryGroupReplyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */; };
 		886A58CA276A760600A1099B /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C8276A760600A1099B /* SubscriptionManager.swift */; };
 		886A58CB276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */; };
 		886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
@@ -2088,7 +2091,10 @@
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
 		885C354F2370DFD50004BA35 /* OWSSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncManager.swift; sourceTree = "<group>"; };
 		8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalSettingsViewController.swift; sourceTree = "<group>"; };
-		8864072727EEA658009916B6 /* StoryReplySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReplySheet.swift; sourceTree = "<group>"; };
+		8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplySheet.swift; sourceTree = "<group>"; };
+		8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyLoader.swift; sourceTree = "<group>"; };
+		8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewItem.swift; sourceTree = "<group>"; };
+		8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyCell.swift; sourceTree = "<group>"; };
 		886A58C8276A760600A1099B /* SubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionJob.swift; sourceTree = "<group>"; };
 		886CB07724E77E5B00753909 /* silence.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = silence.aiff; sourceTree = "<group>"; };
@@ -4049,7 +4055,10 @@
 				884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */,
 				884DB95127DE67D900C6A309 /* StoryItemMediaView.swift */,
 				884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */,
-				8864072727EEA658009916B6 /* StoryReplySheet.swift */,
+				8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */,
+				8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */,
+				8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */,
+				8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */,
 			);
 			path = "Context View";
 			sourceTree = "<group>";
@@ -6177,6 +6186,7 @@
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
 				349767E325B8744700ECE1B0 /* ManageStickersViewController.swift in Sources */,
 				34A8B3512190A40E00218A25 /* CVMediaAlbumView.swift in Sources */,
+				8864072A27F0D426009916B6 /* StoryGroupReplyLoader.swift in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MessageActionsToolbar.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
@@ -6238,6 +6248,7 @@
 				34ACA7EA2733159600E47AD4 /* ChangePhoneNumberCaptchaViewController.swift in Sources */,
 				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,
 				34404271273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift in Sources */,
+				8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				88D23D1223CEBFB200B0E74B /* NotificationActionHandler.swift in Sources */,
 				880C2E02262A19DE006650B6 /* InteractiveSheetViewController.swift in Sources */,
@@ -6281,6 +6292,7 @@
 				3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */,
 				327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */,
 				34ACA7DF2733159600E47AD4 /* Onboarding2FAViewController.swift in Sources */,
+				8864072E27F0E8DF009916B6 /* StoryGroupReplyCell.swift in Sources */,
 				8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */,
 				88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */,
 				342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */,
@@ -6292,7 +6304,7 @@
 				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				3497971525D6D55400E99FA4 /* PaymentsSendRecipientViewController.swift in Sources */,
 				884DB94F27DE67BB00C6A309 /* StoryPageViewController.swift in Sources */,
-				8864072827EEA658009916B6 /* StoryReplySheet.swift in Sources */,
+				8864072827EEA658009916B6 /* StoryGroupReplySheet.swift in Sources */,
 				88A4CC1B246CEC8B0082211F /* DeviceTransferQRScanningViewController.swift in Sources */,
 				34E95C24269F4F4F004807EC /* CLVViewState.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,

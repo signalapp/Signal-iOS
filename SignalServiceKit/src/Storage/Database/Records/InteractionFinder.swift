@@ -40,6 +40,7 @@ protocol InteractionFinderAdapter {
     static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     static func countReplies(for storyMessage: StoryMessage, transaction: ReadTransaction) -> UInt
     static func hasReplies(for storyContext: StoryContext, transaction: ReadTransaction) -> Bool
+    static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: ReadTransaction) -> [String]
 
     // MARK: - instance methods
 
@@ -233,6 +234,13 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             return GRDBInteractionFinder.hasReplies(for: storyContext, transaction: grdbRead)
+        }
+    }
+
+    public static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> [String] {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinder.groupReplyUniqueIds(for: storyMessage, transaction: grdbRead)
         }
     }
 
@@ -995,6 +1003,26 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         """
         do {
             return try Bool.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId]) ?? false
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> [String] {
+        do {
+            let sql: String = """
+                SELECT \(interactionColumn: .uniqueId)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .storyTimestamp) = ?
+                AND \(interactionColumn: .storyAuthorUuidString) = ?
+                AND \(interactionColumn: .isGroupStoryReply) = 1
+                ORDER BY \(interactionColumn: .id) ASC
+            """
+            return try String.fetchAll(
+                transaction.database,
+                sql: sql,
+                arguments: [storyMessage.timestamp, storyMessage.authorUuid.uuidString]
+            )
         } catch {
             owsFail("error: \(error)")
         }

@@ -30,7 +30,9 @@ class StoryContextViewController: OWSViewController {
 
     private var items = [StoryItem]()
     var currentItem: StoryItem? {
-        didSet { currentItemWasUpdated() }
+        didSet {
+            currentItemWasUpdated(messageDidChange: oldValue?.message.uniqueId != currentItem?.message.uniqueId)
+        }
     }
     var currentItemMediaView: StoryItemMediaView?
 
@@ -129,6 +131,21 @@ class StoryContextViewController: OWSViewController {
 
         view.addSubview(mediaViewContainer)
 
+        replyButton.setPressedBlock { [weak self] in
+            guard let self = self, let currentItem = self.currentItem else { return }
+            switch self.context {
+            case .groupId:
+                let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
+                groupReplyVC.dismissHandler = { [weak self] in self?.play() }
+                self.pause()
+                self.present(groupReplyVC, animated: true)
+            case .authorUuid:
+                // todo: 1:1 replies
+                break
+            case .none:
+                owsFailDebug("Unexpected context")
+            }
+        }
         replyButton.setBackgroundColors(upColor: .clear)
         replyButton.autoSetDimension(.height, toSize: 64)
         replyButton.setTitleColor(Theme.darkThemePrimaryColor)
@@ -191,8 +208,6 @@ class StoryContextViewController: OWSViewController {
         }
     }
 
-    private var groupThreadId: String?
-
     private static let maxItemsToRender = 100
     private func loadStoryItems(completion: @escaping ([StoryItem]) -> Void) {
         var storyItems = [StoryItem]()
@@ -204,18 +219,7 @@ class StoryContextViewController: OWSViewController {
                 if storyItems.count >= Self.maxItemsToRender { stop.pointee = true }
             }
 
-            let groupThreadId: String?
-            if case .groupId(let groupId) = self.context {
-                groupThreadId = TSGroupThread.threadId(
-                    forGroupId: groupId,
-                    transaction: transaction
-                )
-            } else {
-                groupThreadId = nil
-            }
-
             DispatchQueue.main.async {
-                self.groupThreadId = groupThreadId
                 completion(storyItems)
             }
         }
@@ -243,7 +247,7 @@ class StoryContextViewController: OWSViewController {
         }
     }
 
-    private func currentItemWasUpdated() {
+    private func currentItemWasUpdated(messageDidChange: Bool) {
         currentItemMediaView?.removeFromSuperview()
 
         if let currentItem = currentItem {
@@ -253,8 +257,6 @@ class StoryContextViewController: OWSViewController {
             itemView.autoPinEdgesToSuperviewEdges()
 
             replyButton.isHidden = false
-
-            "test"
 
             let replyButtonText: String
             switch currentItem.numberOfReplies {
@@ -277,8 +279,7 @@ class StoryContextViewController: OWSViewController {
             replyButton.isHidden = true
         }
 
-        updateProgressState()
-
+        if messageDidChange { updateProgressState() }
     }
 
     private var pauseTime: CFTimeInterval?
@@ -419,26 +420,37 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     func handleLongPress() {
         switch pauseGestureRecognizer.state {
         case .began:
-            pauseTime = CACurrentMediaTime()
-            delegate?.storyContextViewControllerDidPause(self)
-            currentItemMediaView?.pause {
-                self.playbackProgressView.alpha = 0
-                self.closeButton.alpha = 0
-            }
+            pause(hideChrome: true)
         case .ended:
-            if let lastTransitionTime = lastTransitionTime, let pauseTime = pauseTime {
-                let pauseDuration = CACurrentMediaTime() - pauseTime
-                self.lastTransitionTime = lastTransitionTime + pauseDuration
-                self.pauseTime = nil
-            }
-            currentItemMediaView?.play {
-                self.playbackProgressView.alpha = 1
-                self.closeButton.alpha = 1
-            }
-            delegate?.storyContextViewControllerDidResume(self)
+            play()
         default:
             break
         }
+    }
+
+    func pause(hideChrome: Bool = false) {
+        guard pauseTime == nil else { return }
+        pauseTime = CACurrentMediaTime()
+        delegate?.storyContextViewControllerDidPause(self)
+        currentItemMediaView?.pause(hideChrome: hideChrome) {
+            if hideChrome {
+                self.playbackProgressView.alpha = 0
+                self.closeButton.alpha = 0
+            }
+        }
+    }
+
+    func play() {
+        if let lastTransitionTime = lastTransitionTime, let pauseTime = pauseTime {
+            let pauseDuration = CACurrentMediaTime() - pauseTime
+            self.lastTransitionTime = lastTransitionTime + pauseDuration
+            self.pauseTime = nil
+        }
+        currentItemMediaView?.play {
+            self.playbackProgressView.alpha = 1
+            self.closeButton.alpha = 1
+        }
+        delegate?.storyContextViewControllerDidResume(self)
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -492,7 +504,7 @@ extension StoryContextViewController: DatabaseChangeDelegate {
             }
             DispatchQueue.main.async {
                 if shouldDismiss {
-                    self.dismiss(animated: true)
+                    self.presentingViewController?.dismiss(animated: true)
                 } else {
                     self.items = newItems
                     self.currentItem = currentItem

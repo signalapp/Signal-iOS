@@ -45,15 +45,17 @@ class StoryItemMediaView: UIView {
         gradientProtectionView.alpha = 1
     }
 
-    func pause(animateAlongside: @escaping () -> Void) {
+    func pause(hideChrome: Bool = false, animateAlongside: @escaping () -> Void) {
         videoPlayer?.pause()
 
-        UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
-            self.authorRow.alpha = 0
-            self.gradientProtectionView.alpha = 0
+        if hideChrome {
+            UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+                self.authorRow.alpha = 0
+                self.gradientProtectionView.alpha = 0
+                animateAlongside()
+            } completion: { _ in }
+        } else {
             animateAlongside()
-        } completion: { _ in
-
         }
     }
 
