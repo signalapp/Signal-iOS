@@ -27,6 +27,9 @@ class MockStorage: Mock<SessionMessagingKitStorageProtocol>, SessionMessagingKit
     func getUserKeyPair() -> ECKeyPair? { return accept() as? ECKeyPair }
     func getUserED25519KeyPair() -> Box.KeyPair? { return accept() as? Box.KeyPair }
     func getUser() -> Contact? { return accept() as? Contact }
+    func getUser(using transaction: YapDatabaseReadTransaction?) -> Contact? {
+        return accept(args: [transaction]) as? Contact
+    }
     
     // MARK: - Contacts
     
@@ -74,11 +77,17 @@ class MockStorage: Mock<SessionMessagingKitStorageProtocol>, SessionMessagingKit
         accept(args: [groupPublicKey, transaction])
     }
     func getUserClosedGroupPublicKeys() -> Set<String> { return accept() as! Set<String> }
-    func getZombieMembers(for groupPublicKey: String) -> Set<String> { return accept() as! Set<String> }
+    func getUserClosedGroupPublicKeys(using transaction: YapDatabaseReadTransaction) -> Set<String> {
+        return accept(args: [transaction]) as! Set<String>
+    }
+    func getZombieMembers(for groupPublicKey: String) -> Set<String> { return accept(args: [groupPublicKey]) as! Set<String> }
     func setZombieMembers(for groupPublicKey: String, to zombies: Set<String>, using transaction: Any) {
         accept(args: [groupPublicKey, zombies, transaction])
     }
-    func isClosedGroup(_ publicKey: String) -> Bool { return accept() as! Bool }
+    func isClosedGroup(_ publicKey: String) -> Bool { return accept(args: [publicKey]) as! Bool }
+    func isClosedGroup(_ publicKey: String, using transaction: YapDatabaseReadTransaction) -> Bool {
+        return accept(args: [publicKey, transaction]) as! Bool
+    }
 
     // MARK: - Jobs
 
@@ -139,6 +148,19 @@ class MockStorage: Mock<SessionMessagingKitStorageProtocol>, SessionMessagingKit
     }
     func removeOpenGroupSequenceNumber(for room: String, on server: String, using transaction: Any) {
         accept(args: [room, server, transaction])
+    }
+
+    func getOpenGroupServerIdLookup(_ serverId: UInt64, in room: String, on server: String, using transaction: YapDatabaseReadTransaction) -> OpenGroupServerIdLookup? {
+        return accept(args: [serverId, room, server, transaction]) as? OpenGroupServerIdLookup
+    }
+    func addOpenGroupServerIdLookup(_ serverId: UInt64?, tsMessageId: String?, in room: String, on server: String, using transaction: YapDatabaseReadWriteTransaction) {
+        accept(args: [serverId, tsMessageId, room, server, transaction])
+    }
+    func addOpenGroupServerIdLookup(_ lookup: OpenGroupServerIdLookup, using transaction: YapDatabaseReadWriteTransaction) {
+        accept(args: [lookup, transaction])
+    }
+    func removeOpenGroupServerIdLookup(_ serverId: UInt64, in room: String, on server: String, using transaction: YapDatabaseReadWriteTransaction) {
+        accept(args: [serverId, room, server, transaction])
     }
 
     func getOpenGroupInboxLatestMessageId(for server: String) -> Int64? { return accept(args: [server]) as? Int64 }

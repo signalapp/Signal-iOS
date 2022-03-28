@@ -742,6 +742,7 @@ extension OpenGroupManager {
             cache: Atomic<OGMCacheType>? = nil,
             onionApi: OnionRequestAPIType.Type? = nil,
             identityManager: IdentityManagerProtocol? = nil,
+            generalCache: Atomic<GeneralCacheType>? = nil,
             storage: SessionMessagingKitStorageProtocol? = nil,
             sodium: SodiumType? = nil,
             box: BoxType? = nil,
@@ -759,6 +760,7 @@ extension OpenGroupManager {
             super.init(
                 onionApi: onionApi,
                 identityManager: identityManager,
+                generalCache: generalCache,
                 storage: storage,
                 sodium: sodium,
                 box: box,

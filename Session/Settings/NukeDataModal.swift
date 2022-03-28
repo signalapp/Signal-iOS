@@ -128,7 +128,7 @@ final class NukeDataModal : Modal {
             appDelegate.forceSyncConfigurationNowIfNeeded().ensure(on: DispatchQueue.main) {
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                 UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
-                General.Cache.cachedEncodedPublicKey.mutate { $0 = nil } // Remove the cached key so it gets re-cached on next access
+                General.cache.mutate { $0.encodedPublicKey = nil } // Remove the cached key so it gets re-cached on next access
                 NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
             }.retainUntilComplete()
         }
@@ -140,7 +140,7 @@ final class NukeDataModal : Modal {
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                 let potentiallyMaliciousSnodes = confirmations.compactMap { $0.value == false ? $0.key : nil }
                 if potentiallyMaliciousSnodes.isEmpty {
-                    General.Cache.cachedEncodedPublicKey.mutate { $0 = nil } // Remove the cached key so it gets re-cached on next access
+                    General.cache.mutate { $0.encodedPublicKey = nil } // Remove the cached key so it gets re-cached on next access
                     UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
                     NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
                 } else {

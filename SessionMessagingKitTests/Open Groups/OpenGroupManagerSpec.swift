@@ -71,6 +71,7 @@ class OpenGroupManagerSpec: QuickSpec {
     override func spec() {
         var mockOGMCache: MockOGMCache!
         var mockIdentityManager: MockIdentityManager!
+        var mockGeneralCache: MockGeneralCache!
         var mockStorage: MockStorage!
         var mockSodium: MockSodium!
         var mockAeadXChaCha20Poly1305Ietf: MockAeadXChaCha20Poly1305Ietf!
@@ -100,6 +101,7 @@ class OpenGroupManagerSpec: QuickSpec {
             beforeEach {
                 mockOGMCache = MockOGMCache()
                 mockIdentityManager = MockIdentityManager()
+                mockGeneralCache = MockGeneralCache()
                 mockStorage = MockStorage()
                 mockSodium = MockSodium()
                 mockAeadXChaCha20Poly1305Ietf = MockAeadXChaCha20Poly1305Ietf()
@@ -112,6 +114,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     cache: Atomic(mockOGMCache),
                     onionApi: TestCapabilitiesAndRoomApi.self,
                     identityManager: mockIdentityManager,
+                    generalCache: Atomic(mockGeneralCache),
                     storage: mockStorage,
                     sodium: mockSodium,
                     genericHash: mockGenericHash,
@@ -220,6 +223,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
                         )
                     )
+                mockGeneralCache.when { $0.encodedPublicKey }.thenReturn("05\(TestConstants.publicKey)")
                 mockStorage
                     .when { $0.write(with: { _ in }) }
                     .then { [testTransaction] args in (args.first as? ((Any) -> Void))?(testTransaction! as Any) }
@@ -2046,6 +2050,23 @@ class OpenGroupManagerSpec: QuickSpec {
                             )
                         }
                         .thenReturn(())
+                    mockStorage
+                        .when {
+                            $0.addOpenGroupServerIdLookup(
+                                any(),
+                                tsMessageId: any(),
+                                in: any(),
+                                on: any(),
+                                using: testTransaction
+                            )
+                        }
+                        .thenReturn(())
+                    mockStorage
+                        .when { $0.getOpenGroupServerIdLookup(any(), in: any(), on: any(), using: testTransaction) }
+                        .thenReturn(nil)
+                    mockStorage
+                        .when { $0.removeOpenGroupServerIdLookup(any(), in: any(), on: any(), using: testTransaction) }
+                        .thenReturn(nil)
                     mockStorage.when { $0.getUserPublicKey() }.thenReturn("05\(TestConstants.publicKey)")
                     mockStorage.when { $0.getReceivedMessageTimestamps(using: testTransaction as Any) }.thenReturn([])
                     mockStorage.when { $0.addReceivedMessageTimestamp(any(), using: testTransaction as Any) }.thenReturn(())
@@ -2196,6 +2217,31 @@ class OpenGroupManagerSpec: QuickSpec {
                         )
                 }
                 
+                it("adds the open group server id lookup") {
+                    OpenGroupManager.handleMessages(
+                        [testMessage],
+                        for: "testRoom",
+                        on: "testServer",
+                        isBackgroundPoll: false,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    )
+                    
+                    expect(mockStorage)
+                        .toEventually(
+                            call(matchingParameters: true) {
+                                $0.addOpenGroupServerIdLookup(
+                                    127,
+                                    tsMessageId: "TestMessageId",
+                                    in: "testRoom",
+                                    on: "testserver",
+                                    using: testTransaction
+                                )
+                            },
+                            timeout: .milliseconds(50)
+                        )
+                }
+                
                 it("processes valid messages when combined with invalid ones") {
                     OpenGroupManager.handleMessages(
                         [
@@ -2229,7 +2275,16 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 context("with no data") {
                     it("deletes the message if we have the message") {
-                        testTransaction.mockData[.objectForKey] = testGroupThread
+                        mockStorage
+                            .when { $0.getOpenGroupServerIdLookup(any(), in: any(), on: any(), using: testTransaction) }
+                            .thenReturn(
+                                OpenGroupServerIdLookup(
+                                    server: "testServer",
+                                    room: "testRoom",
+                                    serverId: 127,
+                                    tsMessageId: "TestMessageId"
+                                )
+                            )
                         
                         OpenGroupManager.handleMessages(
                             [
@@ -2260,13 +2315,63 @@ class OpenGroupManagerSpec: QuickSpec {
                             )
                     }
                     
-                    it("does nothing if we do not have the thread") {
-                        testTransaction.mockData[.objectForKey] = nil
+                    it("deletes the open group server lookup id if we have the message") {
+                        mockStorage
+                            .when { $0.getOpenGroupServerIdLookup(any(), in: any(), on: any(), using: testTransaction) }
+                            .thenReturn(
+                                OpenGroupServerIdLookup(
+                                    server: "testServer",
+                                    room: "testRoom",
+                                    serverId: 127,
+                                    tsMessageId: "TestMessageId"
+                                )
+                            )
                         
                         OpenGroupManager.handleMessages(
                             [
                                 OpenGroupAPI.Message(
-                                    id: 1,
+                                    id: 127,
+                                    sender: "05\(TestConstants.publicKey)",
+                                    posted: 123,
+                                    edited: nil,
+                                    seqNo: 123,
+                                    whisper: false,
+                                    whisperMods: false,
+                                    whisperTo: nil,
+                                    base64EncodedData: nil,
+                                    base64EncodedSignature: nil
+                                )
+                            ],
+                            for: "testRoom",
+                            on: "testServer",
+                            isBackgroundPoll: false,
+                            using: testTransaction,
+                            dependencies: dependencies
+                        )
+                        
+                        expect(mockStorage)
+                            .toEventually(
+                                call(matchingParameters: true) {
+                                    $0.removeOpenGroupServerIdLookup(
+                                        127,
+                                        in: "testRoom",
+                                        on: "testServer",
+                                        using: testTransaction
+                                    )
+                                },
+                                timeout: .milliseconds(50)
+                            )
+                    }
+                    
+                    it("does nothing if we do not have the lookup") {
+                        mockStorage
+                            .when { $0.getOpenGroupServerIdLookup(any(), in: any(), on: any(), using: testTransaction) }
+                            .thenReturn(nil)
+                        
+                        OpenGroupManager.handleMessages(
+                            [
+                                OpenGroupAPI.Message(
+                                    id: 127,
                                     sender: "05\(TestConstants.publicKey)",
                                     posted: 123,
                                     edited: nil,
@@ -2293,8 +2398,17 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("does nothing if we do not have the message") {
-                        testGroupThread.mockData[.interactions] = [testInteraction]
-                        testTransaction.mockData[.objectForKey] = testGroupThread
+                        mockStorage
+                            .when { $0.getOpenGroupServerIdLookup(any(), in: any(), on: any(), using: testTransaction) }
+                            .thenReturn(
+                                OpenGroupServerIdLookup(
+                                    server: "testServer",
+                                    room: "testRoom",
+                                    serverId: 127,
+                                    tsMessageId: "TestMessageId"
+                                )
+                            )
+                        testTransaction.mockData[.objectForKey] = nil
                         
                         OpenGroupManager.handleMessages(
                             [
@@ -3010,6 +3124,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
                                 )
                             )
+                        mockGeneralCache.when { $0.encodedPublicKey }.thenReturn("05\(otherKey)")
                         mockStorage
                             .when { $0.getUserED25519KeyPair() }
                             .thenReturn(
@@ -3158,6 +3273,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
                                 )
                             )
+                        mockGeneralCache.when { $0.encodedPublicKey }.thenReturn("05\(otherKey)")
                         mockStorage
                             .when { $0.getUserED25519KeyPair() }
                             .thenReturn(

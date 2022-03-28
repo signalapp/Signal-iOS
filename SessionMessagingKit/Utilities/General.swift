@@ -1,9 +1,16 @@
 import Foundation
+import SessionUtilitiesKit
+
+public protocol GeneralCacheType {
+    var encodedPublicKey: String? { get set }
+}
 
 public enum General {
-    public enum Cache {
-        public static var cachedEncodedPublicKey: Atomic<String?> = Atomic(nil)
+    public class Cache: GeneralCacheType {
+        public var encodedPublicKey: String? = nil
     }
+    
+    public static var cache: Atomic<GeneralCacheType> = Atomic(Cache())
 }
 
 @objc(SNGeneralUtilities)
@@ -14,10 +21,10 @@ public class GeneralUtilities: NSObject {
 }
 
 public func getUserHexEncodedPublicKey(using dependencies: Dependencies = Dependencies()) -> String {
-    if let cachedKey: String = General.Cache.cachedEncodedPublicKey.wrappedValue { return cachedKey }
+    if let cachedKey: String = dependencies.generalCache.wrappedValue.encodedPublicKey { return cachedKey }
     
     if let keyPair = dependencies.identityManager.identityKeyPair() { // Can be nil under some circumstances
-        General.Cache.cachedEncodedPublicKey.mutate { $0 = keyPair.hexEncodedPublicKey }
+        dependencies.generalCache.mutate { $0.encodedPublicKey = keyPair.hexEncodedPublicKey }
         return keyPair.hexEncodedPublicKey
     }
     

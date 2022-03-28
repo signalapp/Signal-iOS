@@ -18,6 +18,12 @@ public class Dependencies {
         set { _identityManager = newValue }
     }
     
+    internal var _generalCache: Atomic<GeneralCacheType>?
+    public var generalCache: Atomic<GeneralCacheType> {
+        get { Dependencies.getValueSettingIfNull(&_generalCache) { General.cache } }
+        set { _generalCache = newValue }
+    }
+    
     internal var _storage: SessionMessagingKitStorageProtocol?
     public var storage: SessionMessagingKitStorageProtocol {
         get { Dependencies.getValueSettingIfNull(&_storage) { SNMessagingKitConfiguration.shared.storage } }
@@ -89,6 +95,7 @@ public class Dependencies {
     public init(
         onionApi: OnionRequestAPIType.Type? = nil,
         identityManager: IdentityManagerProtocol? = nil,
+        generalCache: Atomic<GeneralCacheType>? = nil,
         storage: SessionMessagingKitStorageProtocol? = nil,
         sodium: SodiumType? = nil,
         box: BoxType? = nil,
@@ -103,6 +110,7 @@ public class Dependencies {
     ) {
         _onionApi = onionApi
         _identityManager = identityManager
+        _generalCache = generalCache
         _storage = storage
         _sodium = sodium
         _box = box

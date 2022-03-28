@@ -890,6 +890,7 @@
 		FDC438CF27BCA45400C60D73 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438CE27BCA45400C60D73 /* Server.swift */; };
 		FDFD645927F26C6800808CA1 /* Array+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Utilities.swift */; };
 		FDFD645B27F26D4600808CA1 /* Data+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645A27F26D4600808CA1 /* Data+Utilities.swift */; };
+		FDFD645D27F273F300808CA1 /* MockGeneralCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -2049,6 +2050,7 @@
 		FDC438CC27BC641200C60D73 /* Set+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+Utilities.swift"; sourceTree = "<group>"; };
 		FDC438CE27BCA45400C60D73 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		FDFD645A27F26D4600808CA1 /* Data+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Utilities.swift"; sourceTree = "<group>"; };
+		FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockGeneralCache.swift; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -4122,6 +4124,7 @@
 			children = (
 				FDC438BC27BB2AB400C60D73 /* Mockable.swift */,
 				FD078E5F27E2BB36000769AF /* MockIdentityManager.swift */,
+				FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */,
 				FDC4389C27BA01F000C60D73 /* MockStorage.swift */,
 				FD859EF327C2F49200510D0C /* MockSodium.swift */,
 				FD3C906E27E43E8700CD579F /* MockBox.swift */,
@@ -5775,6 +5778,7 @@
 				FDC438BD27BB2AB400C60D73 /* Mockable.swift in Sources */,
 				FD859EF627C2F52C00510D0C /* MockSign.swift in Sources */,
 				FDC2908927D70656005DAE71 /* RoomPollInfoSpec.swift in Sources */,
+				FDFD645D27F273F300808CA1 /* MockGeneralCache.swift in Sources */,
 				FD078E5A27E29F09000769AF /* MockNonce16Generator.swift in Sources */,
 				FD3C906D27E43C4B00CD579F /* MessageSenderEncryptionSpec.swift in Sources */,
 				FDC2908D27D70905005DAE71 /* UpdateMessageRequestSpec.swift in Sources */,
