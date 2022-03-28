@@ -157,13 +157,22 @@ class StoryGroupReplyCell: UITableViewCell {
     }
 
     func configureTextAndTimestamp(for item: StoryGroupReplyViewItem) {
-        guard let displayableText = item.displayableText else { return }
-
-        let messageText = displayableText.displayAttributedText.styled(
-            with: .font(.ows_dynamicTypeBodyClamped),
-            .color(.ows_gray05),
-            .alignment(displayableText.displayTextNaturalAlignment)
-        )
+        guard let messageText: NSAttributedString = {
+            if let displayableText = item.displayableText {
+                return displayableText.displayAttributedText.styled(
+                    with: .font(.ows_dynamicTypeBodyClamped),
+                    .color(.ows_gray05),
+                    .alignment(displayableText.displayTextNaturalAlignment)
+                )
+            } else if item.wasRemotelyDeleted {
+                return NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
+                    with: .font(UIFont.ows_dynamicTypeBodyClamped.ows_italic),
+                    .color(.ows_gray05)
+                )
+            } else {
+                return nil
+            }
+        }() else { return }
 
         switch cellType {
         case .standalone, .bottom:
@@ -182,7 +191,7 @@ class StoryGroupReplyCell: UITableViewCell {
             let lastLineFreeSpace = maxMessageWidth - timestampSpacer - messageMeasurement.lastLineRect.width
 
             let textDirectionMatchesAppDirection: Bool
-            switch displayableText.displayTextNaturalAlignment {
+            switch item.displayableText?.displayTextNaturalAlignment ?? .natural {
             case .left:
                 textDirectionMatchesAppDirection = !CurrentAppContext().isRTL
             case .right:
