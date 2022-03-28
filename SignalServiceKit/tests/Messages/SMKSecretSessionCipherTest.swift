@@ -392,7 +392,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
                 )
             )
 
-            if case SignalError.invalidState(_) = knownSenderError.underlyingError {
+            if case SignalError.sessionNotFound(_) = knownSenderError.underlyingError {
                 // Expected
             } else {
                 XCTFail()
