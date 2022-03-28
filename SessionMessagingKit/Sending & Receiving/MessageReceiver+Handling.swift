@@ -427,7 +427,15 @@ extension MessageReceiver {
         }
         if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) {
             // Keep track of the open group server message ID ↔ message ID relationship
-            if let serverID = message.openGroupServerMessageID { tsMessage.openGroupServerMessageID = serverID }
+            if let serverID = message.openGroupServerMessageID {
+                tsMessage.openGroupServerMessageID = serverID
+                
+                // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
+                if let openGroup: OpenGroupV2 = storage.getV2OpenGroup(for: threadID) {
+                    storage.addOpenGroupServerIdLookup(serverID, tsMessageId: tsMessageID, in: openGroup.room, on: openGroup.server, using: transaction)
+                }
+            }
+            
             // Keep track of server hash
             if let serverHash = message.serverHash { tsMessage.serverHash = serverHash }
              tsMessage.save(with: transaction)

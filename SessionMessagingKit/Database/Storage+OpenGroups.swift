@@ -152,8 +152,31 @@ extension Storage {
         let key = "\(server).\(room)"
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: collection)
     }
+    
+    // MARK: - OpenGroupServerIdToUniqueIdLookup
 
+    public static let openGroupServerIdToUniqueIdLookupCollection = "SNOpenGroupServerIdToUniqueIdLookup"
 
+    public func getOpenGroupServerIdLookup(_ serverId: UInt64, in room: String, on server: String, using transaction: YapDatabaseReadTransaction) -> OpenGroupServerIdLookup? {
+        let key: String = OpenGroupServerIdLookup.id(serverId: serverId, in: room, on: server)
+        return transaction.object(forKey: key, inCollection: Storage.openGroupServerIdToUniqueIdLookupCollection) as? OpenGroupServerIdLookup
+    }
+
+    public func addOpenGroupServerIdLookup(_ serverId: UInt64?, tsMessageId: String?, in room: String, on server: String, using transaction: YapDatabaseReadWriteTransaction) {
+        guard let serverId: UInt64 = serverId, let tsMessageId: String = tsMessageId else { return }
+        
+        let lookup: OpenGroupServerIdLookup = OpenGroupServerIdLookup(server: server, room: room, serverId: serverId, tsMessageId: tsMessageId)
+        addOpenGroupServerIdLookup(lookup, using: transaction)
+    }
+    
+    public func addOpenGroupServerIdLookup(_ lookup: OpenGroupServerIdLookup, using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setObject(lookup, forKey: lookup.id, inCollection: Storage.openGroupServerIdToUniqueIdLookupCollection)
+    }
+
+    public func removeOpenGroupServerIdLookup(_ serverId: UInt64, in room: String, on server: String, using transaction: YapDatabaseReadWriteTransaction) {
+        let key: String = OpenGroupServerIdLookup.id(serverId: serverId, in: room, on: server)
+        transaction.removeObject(forKey: key, inCollection: Storage.openGroupServerIdToUniqueIdLookupCollection)
+    }
 
     // MARK: - Metadata
 

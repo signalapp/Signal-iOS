@@ -178,6 +178,8 @@
 		7BC707F227290ACB002817AD /* SessionCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC707F127290ACB002817AD /* SessionCallManager.swift */; };
 		7BCD116C27016062006330F1 /* WebRTCSession+DataChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD116B27016062006330F1 /* WebRTCSession+DataChannel.swift */; };
 		7BD477A827EC39F5004E2822 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD477A727EC39F5004E2822 /* Atomic.swift */; };
+		7BD477AA27F15F24004E2822 /* OpenGroupServerIdLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD477A927F15F24004E2822 /* OpenGroupServerIdLookup.swift */; };
+		7BD477AC27F15F41004E2822 /* OpenGroupServerIdLookupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BD477AB27F15F41004E2822 /* OpenGroupServerIdLookupMigration.swift */; };
 		7BDCFC08242186E700641C39 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */; };
 		7BDCFC0B2421EB7600641C39 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		7BFD1A8A2745C4F000FB91B9 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFD1A892745C4F000FB91B9 /* Permissions.swift */; };
@@ -1200,6 +1202,8 @@
 		7BC707F127290ACB002817AD /* SessionCallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCallManager.swift; sourceTree = "<group>"; };
 		7BCD116B27016062006330F1 /* WebRTCSession+DataChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebRTCSession+DataChannel.swift"; sourceTree = "<group>"; };
 		7BD477A727EC39F5004E2822 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
+		7BD477A927F15F24004E2822 /* OpenGroupServerIdLookup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroupServerIdLookup.swift; sourceTree = "<group>"; };
+		7BD477AB27F15F41004E2822 /* OpenGroupServerIdLookupMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenGroupServerIdLookupMigration.swift; sourceTree = "<group>"; };
 		7BDCFC0424206E7300641C39 /* SessionNotificationServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SessionNotificationServiceExtension.entitlements; sourceTree = "<group>"; };
 		7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtensionContext.swift; sourceTree = "<group>"; };
 		7BFD1A892745C4F000FB91B9 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
@@ -3188,6 +3192,7 @@
 		C379DCE82567330E0002D4EB /* Migrations */ = {
 			isa = PBXGroup;
 			children = (
+				7BD477AB27F15F41004E2822 /* OpenGroupServerIdLookupMigration.swift */,
 				7B93D07227CF19C800811CB6 /* MessageRequestsMigration.swift */,
 				B8B32044258C117C0020074B /* ContactsMigration.swift */,
 				C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */,
@@ -3318,6 +3323,7 @@
 		C3A721332558BDDF0043A11F /* Open Groups */ = {
 			isa = PBXGroup;
 			children = (
+				7BD477A927F15F24004E2822 /* OpenGroupServerIdLookup.swift */,
 				C3DB6694260AC923001EFC55 /* OpenGroupV2.swift */,
 				B88FA7B726045D100049422F /* OpenGroupAPIV2.swift */,
 				C3DB66CB260AF1F3001EFC55 /* OpenGroupAPIV2+ObjC.swift */,
@@ -4709,6 +4715,7 @@
 				C38EF3B9255B6DE7007E1867 /* ImageEditorPinchGestureRecognizer.swift in Sources */,
 				C33FDC98255A582000E217F9 /* SwiftSingletons.swift in Sources */,
 				C33FDC27255A581F00E217F9 /* YapDatabase+Promise.swift in Sources */,
+				7BD477AC27F15F41004E2822 /* OpenGroupServerIdLookupMigration.swift in Sources */,
 				C33FDCD3255A582000E217F9 /* GroupUtilities.swift in Sources */,
 				7B93D07327CF19C800811CB6 /* MessageRequestsMigration.swift in Sources */,
 				C38EF326255B6DBF007E1867 /* ConversationStyle.swift in Sources */,
@@ -4839,6 +4846,7 @@
 				C32C5AAD256DBE8F003C73A2 /* TSInfoMessage.m in Sources */,
 				C32C5A13256DB7A5003C73A2 /* PushNotificationAPI.swift in Sources */,
 				7BFD1A8C2747150E00FB91B9 /* TurnServerInfo.swift in Sources */,
+				7BD477AA27F15F24004E2822 /* OpenGroupServerIdLookup.swift in Sources */,
 				C32A026325A801AA000ED5D4 /* NSData+messagePadding.m in Sources */,
 				C352A3932557883D00338F3E /* JobDelegate.swift in Sources */,
 				C32C5B84256DC54F003C73A2 /* SSKEnvironment.m in Sources */,
