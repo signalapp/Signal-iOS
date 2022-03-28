@@ -1093,6 +1093,25 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     // Story Context
     if (self.storyTimestamp && self.storyAuthorUuidString) {
+        if (self.storyReactionEmoji) {
+            SSKProtoDataMessageReactionBuilder *reactionBuilder =
+                [SSKProtoDataMessageReaction builderWithEmoji:self.storyReactionEmoji
+                                                    timestamp:self.storyTimestamp.longLongValue];
+            [reactionBuilder setAuthorUuid:self.storyAuthorUuidString];
+
+            NSError *error;
+            SSKProtoDataMessageReaction *_Nullable reaction = [reactionBuilder buildAndReturnError:&error];
+            if (error || !reaction) {
+                OWSFailDebug(@"Could not build story reaction protobuf: %@.", error);
+            } else {
+                [builder setReaction:reaction];
+
+                if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionReactions) {
+                    requiredProtocolVersion = SSKProtoDataMessageProtocolVersionReactions;
+                }
+            }
+        }
+
         SSKProtoDataMessageStoryContextBuilder *storyContextBuilder = [SSKProtoDataMessageStoryContext builder];
         [storyContextBuilder setAuthorUuid:self.storyAuthorUuidString];
         [storyContextBuilder setSentTimestamp:self.storyTimestamp.longLongValue];

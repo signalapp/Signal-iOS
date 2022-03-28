@@ -254,7 +254,8 @@ class StoryGroupReplyLoader: Dependencies {
             if let previousItem = previousItem {
                 if previousItem.authorAddress == authorAddress
                     && previousItem.timeString == replyItem.timeString
-                    && replyItem.cellType != .reaction {
+                    && replyItem.cellType != .reaction
+                    && previousItem.cellType != .reaction {
                     switch previousItem.cellType {
                     case .standalone:
                         previousItem.cellType = .top
