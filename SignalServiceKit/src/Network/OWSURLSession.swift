@@ -633,7 +633,7 @@ public class OWSURLSession: NSObject {
             Logger.warn("Missing TaskState.")
             return
         }
-        taskState.reject(error: error)
+        taskState.reject(error: error, task: task)
         task.cancel()
     }
 
@@ -830,7 +830,7 @@ extension OWSURLSession: URLSessionDownloadDelegate {
 
 extension OWSURLSession: URLSessionWebSocketDelegate {
     @available(iOS 13, *)
-    public func webSocketTask(request: URLRequest, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (URLSessionWebSocketTask.CloseCode, Data?) -> Void) -> URLSessionWebSocketTask {
+    public func webSocketTask(request: URLRequest, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (SSKWebSocketNativeError) -> Void) -> URLSessionWebSocketTask {
         let task = session.webSocketTask(with: request)
         addTask(task, taskState: WebSocketTaskState(openBlock: didOpenBlock, closeBlock: didCloseBlock))
         return task
@@ -844,7 +844,7 @@ extension OWSURLSession: URLSessionWebSocketDelegate {
     @available(iOS 13, *)
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         guard let webSocketState = removeCompletedTaskState(webSocketTask) as? WebSocketTaskState else { return }
-        webSocketState.closeBlock(closeCode, reason)
+        webSocketState.closeBlock(.remoteClosed(closeCode.rawValue, reason))
     }
 }
 
@@ -1073,7 +1073,7 @@ private protocol TaskState {
     typealias ProgressBlock = (URLSessionTask, Progress) -> Void
     var progressBlock: ProgressBlock? { get }
 
-    func reject(error: Error)
+    func reject(error: Error, task: URLSessionTask)
 }
 
 // MARK: - TaskState
@@ -1091,7 +1091,7 @@ private class DownloadTaskState: TaskState {
         self.future = future
     }
 
-    func reject(error: Error) {
+    func reject(error: Error, task: URLSessionTask) {
         future.reject(error)
     }
 }
@@ -1111,7 +1111,7 @@ private class UploadOrDataTaskState: TaskState {
         self.future = future
     }
 
-    func reject(error: Error) {
+    func reject(error: Error, task: URLSessionTask) {
         future.reject(error)
     }
 }
@@ -1121,7 +1121,7 @@ private class UploadOrDataTaskState: TaskState {
 @available(iOS 13, *)
 private class WebSocketTaskState: TaskState {
     typealias OpenBlock = (String?) -> Void
-    typealias CloseBlock = (URLSessionWebSocketTask.CloseCode, Data?) -> Void
+    typealias CloseBlock = (SSKWebSocketNativeError) -> Void
 
     var progressBlock: ProgressBlock? { nil }
     let openBlock: OpenBlock
@@ -1132,7 +1132,15 @@ private class WebSocketTaskState: TaskState {
         self.closeBlock = closeBlock
     }
 
-    func reject(error: Error) {}
+    func reject(error: Error, task: URLSessionTask) {
+        guard let httpResponse = task.response as? HTTPURLResponse else {
+            // We shouldn't have non-HTTP responses, but we might not have a response at all.
+            owsAssertDebug(task.response == nil)
+            self.closeBlock(.failedToConnect(nil))
+            return
+        }
+        self.closeBlock(.failedToConnect(httpResponse.statusCode))
+    }
 }
 
 // NSURLSession maintains a strong reference to its delegate until explicitly invalidated

@@ -132,6 +132,8 @@ public class WebSocketFactoryNative: NSObject, WebSocketFactory {
 
     public func statusCode(forError error: Error) -> Int {
         switch error {
+        case SSKWebSocketNativeError.failedToConnect(let statusCode?):
+            return statusCode
         case SSKWebSocketNativeError.remoteClosed(let statusCode, _):
             return statusCode
         default:
@@ -196,11 +198,11 @@ public class SSKWebSocketNative: SSKWebSocket {
             self.callbackQueue.async {
                 self.delegate?.websocketDidConnect(socket: self)
             }
-        }, didCloseBlock: { [weak self] closeCode, reason in
+        }, didCloseBlock: { [weak self] error in
             guard let self = self else { return }
             self.isConnected.set(false)
             self.webSocketTask.set(nil)
-            self.reportError(SSKWebSocketNativeError.remoteClosed(closeCode.rawValue, reason))
+            self.reportError(error)
         })
         webSocketTask.set(task)
         task.resume()
@@ -282,10 +284,15 @@ public class SSKWebSocketNative: SSKWebSocket {
 }
 
 public enum SSKWebSocketNativeError: Error {
+    case failedToConnect(Int?)
     case remoteClosed(Int, Data?)
 
     var description: String {
         switch self {
+        case .failedToConnect(let code?):
+            return "WebSocket failed to connect with HTTP status \(code)"
+        case .failedToConnect(nil):
+            return "WebSocket failed to connect (did not get a response)"
         case .remoteClosed(let code, _):
             return "WebSocket remotely closed with code \(code)"
         }
