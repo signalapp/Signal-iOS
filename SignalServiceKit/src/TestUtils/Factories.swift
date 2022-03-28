@@ -141,7 +141,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 changeActionsProtoData: changeActionsProtoDataBuilder(),
                                                 additionalRecipients: additionalRecipientsBuilder(),
                                                 storyAuthorAddress: storyAuthorAddressBuilder(),
-                                                storyTimestamp: storyTimestampBuilder()).build()
+                                                storyTimestamp: storyTimestampBuilder(),
+                                                storyReactionEmoji: storyReactionEmojiBuilder()).build()
     }
 
     @objc
@@ -246,6 +247,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return nil
     }
 
+    @objc
+    public var storyReactionEmojiBuilder: () -> String? = {
+        return nil
+    }
+
     // MARK: Delivery Receipts
 
     @objc
@@ -302,7 +308,8 @@ public class IncomingMessageFactory: NSObject, Factory {
                                                        wasReceivedByUD: wasReceivedByUDBuilder(),
                                                        isViewOnceMessage: isViewOnceMessageBuilder(),
                                                        storyAuthorAddress: storyAuthorAddressBuilder(),
-                                                       storyTimestamp: storyTimestampBuilder())
+                                                       storyTimestamp: storyTimestampBuilder(),
+                                                       storyReactionEmoji: storyReactionEmojiBuilder())
         let item = builder.build()
         item.anyInsert(transaction: transaction)
         return item
@@ -414,6 +421,11 @@ public class IncomingMessageFactory: NSObject, Factory {
     @objc
     public var storyTimestampBuilder: () -> NSNumber? = {
         nil
+    }
+
+    @objc
+    public var storyReactionEmojiBuilder: () -> String? = {
+        return nil
     }
 }
 

@@ -40,6 +40,8 @@ public class TSMessageBuilder: NSObject {
     @objc
     public var storyTimestamp: NSNumber?
     @objc
+    public var storyReactionEmoji: String?
+    @objc
     public var isGroupStoryReply: Bool {
         storyAuthorAddress != nil && storyTimestamp != nil && thread.isGroupThread
     }
@@ -57,7 +59,8 @@ public class TSMessageBuilder: NSObject {
          messageSticker: MessageSticker? = nil,
          isViewOnceMessage: Bool = false,
          storyAuthorAddress: SignalServiceAddress? = nil,
-         storyTimestamp: UInt64? = nil) {
+         storyTimestamp: UInt64? = nil,
+         storyReactionEmoji: String? = nil) {
         self.thread = thread
 
         if let timestamp = timestamp {
@@ -77,6 +80,7 @@ public class TSMessageBuilder: NSObject {
         self.isViewOnceMessage = isViewOnceMessage
         self.storyAuthorAddress = storyAuthorAddress
         self.storyTimestamp = storyTimestamp.map { NSNumber(value: $0) }
+        self.storyReactionEmoji = storyReactionEmoji
     }
 
     @objc

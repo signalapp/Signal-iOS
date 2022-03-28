@@ -18,10 +18,9 @@ class StoryGroupReplyCell: UITableViewCell {
         label.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold
         return label
     }()
-    lazy var timestampLabel: UILabel = {
+    lazy var reactionLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.ows_dynamicTypeCaption1Clamped
-        label.textColor = .ows_gray25
+        label.font = .systemFont(ofSize: 28)
         label.textAlignment = .trailing
         return label
     }()
@@ -121,7 +120,17 @@ class StoryGroupReplyCell: UITableViewCell {
 
             vStack.addArrangedSubview(messageLabel)
         case .reaction:
-            break
+            hStack.alignment = .center
+            hStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 6)
+            avatarView.autoSetDimensions(to: CGSize(square: 28))
+            hStack.addArrangedSubview(avatarView)
+            hStack.addArrangedSubview(.spacer(withWidth: 20))
+            hStack.addArrangedSubview(vStack)
+            hStack.addArrangedSubview(.hStretchingSpacer())
+            hStack.addArrangedSubview(reactionLabel)
+
+            vStack.addArrangedSubview(authorNameLabel)
+            vStack.addArrangedSubview(messageLabel)
         }
 
         contentView.addSubview(hStack)
@@ -150,7 +159,12 @@ class StoryGroupReplyCell: UITableViewCell {
         case .middle:
             break
         case .reaction:
-            break
+            authorNameLabel.textColor = item.authorColor
+            authorNameLabel.text = item.authorDisplayName
+            reactionLabel.text = item.reactionEmoji
+            avatarView.updateWithSneakyTransactionIfNecessary { config in
+                config.dataSource = .address(item.authorAddress)
+            }
         }
 
         configureTextAndTimestamp(for: item)
@@ -158,16 +172,22 @@ class StoryGroupReplyCell: UITableViewCell {
 
     func configureTextAndTimestamp(for item: StoryGroupReplyViewItem) {
         guard let messageText: NSAttributedString = {
-            if let displayableText = item.displayableText {
+            if item.wasRemotelyDeleted {
+                return NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
+                    with: .font(UIFont.ows_dynamicTypeBodyClamped.ows_italic),
+                    .color(.ows_gray05)
+                )
+            } else if cellType == .reaction {
+                return NSLocalizedString("STORY_REPLY_REACTION", comment: "Text indicating a story has been reacted to").styled(
+                    with: .font(.ows_dynamicTypeBodyClamped),
+                    .color(.ows_gray05),
+                    .alignment(.natural)
+                )
+            } else if let displayableText = item.displayableText {
                 return displayableText.displayAttributedText.styled(
                     with: .font(.ows_dynamicTypeBodyClamped),
                     .color(.ows_gray05),
                     .alignment(displayableText.displayTextNaturalAlignment)
-                )
-            } else if item.wasRemotelyDeleted {
-                return NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
-                    with: .font(UIFont.ows_dynamicTypeBodyClamped.ows_italic),
-                    .color(.ows_gray05)
                 )
             } else {
                 return nil
@@ -175,7 +195,7 @@ class StoryGroupReplyCell: UITableViewCell {
         }() else { return }
 
         switch cellType {
-        case .standalone, .bottom:
+        case .standalone, .bottom, .reaction:
             // Append timestamp to attributed text
             let timestampText = item.timeString.styled(
                 with: .font(.ows_dynamicTypeCaption1Clamped),
@@ -251,8 +271,6 @@ class StoryGroupReplyCell: UITableViewCell {
             break
         case .top, .middle:
             messageLabel.attributedText = messageText
-        case .reaction:
-            timestampLabel.text = item.timeString
         }
     }
 

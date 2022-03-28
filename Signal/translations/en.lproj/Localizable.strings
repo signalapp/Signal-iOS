@@ -6115,6 +6115,9 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "You";
 
+/* Text indicating a story has been reacted to */
+"STORY_REPLY_REACTION" = "Reacted to the story";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
 

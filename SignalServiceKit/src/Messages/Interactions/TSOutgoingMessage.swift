@@ -38,7 +38,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                          changeActionsProtoData: Data? = nil,
                          additionalRecipients: [SignalServiceAddress]? = nil,
                          storyAuthorAddress: SignalServiceAddress? = nil,
-                         storyTimestamp: UInt64? = nil) {
+                         storyTimestamp: UInt64? = nil,
+                         storyReactionEmoji: String? = nil) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -53,7 +54,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                    messageSticker: messageSticker,
                    isViewOnceMessage: isViewOnceMessage,
                    storyAuthorAddress: storyAuthorAddress,
-                   storyTimestamp: storyTimestamp)
+                   storyTimestamp: storyTimestamp,
+                   storyReactionEmoji: storyReactionEmoji)
 
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
@@ -94,7 +96,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               changeActionsProtoData: Data?,
                               additionalRecipients: [SignalServiceAddress]?,
                               storyAuthorAddress: SignalServiceAddress?,
-                              storyTimestamp: NSNumber?) -> TSOutgoingMessageBuilder {
+                              storyTimestamp: NSNumber?,
+                              storyReactionEmoji: String?) -> TSOutgoingMessageBuilder {
         return TSOutgoingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         messageBody: messageBody,
@@ -112,7 +115,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         changeActionsProtoData: changeActionsProtoData,
                                         additionalRecipients: additionalRecipients,
                                         storyAuthorAddress: storyAuthorAddress,
-                                        storyTimestamp: storyTimestamp?.uint64Value)
+                                        storyTimestamp: storyTimestamp?.uint64Value,
+                                        storyReactionEmoji: storyReactionEmoji)
     }
 
     private var hasBuilt = false

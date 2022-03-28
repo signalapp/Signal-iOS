@@ -1605,7 +1605,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                                                    threadId:thread.uniqueId
+                                                                                    thread:thread
                                                                                      reactor:envelope.sourceAddress
                                                                                    timestamp:syncMessage.sent.timestamp
                                                                                  transaction:transaction];
@@ -1956,7 +1956,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Reaction: %@", messageDescription);
         }
         OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                                                threadId:thread.uniqueId
+                                                                                thread:thread
                                                                                  reactor:envelope.sourceAddress
                                                                                timestamp:timestamp
                                                                              transaction:transaction];
@@ -2147,7 +2147,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     wasReceivedByUD:wasReceivedByUD
                                   isViewOnceMessage:isViewOnceMessage
                                  storyAuthorAddress:storyAuthorAddress
-                                     storyTimestamp:storyTimestamp];
+                                     storyTimestamp:storyTimestamp
+                                 storyReactionEmoji:nil];
     TSIncomingMessage *message = [incomingMessageBuilder build];
     if (!message) {
         OWSFailDebug(@"Missing incomingMessage.");

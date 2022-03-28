@@ -94,6 +94,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _isViewOnceComplete = NO;
     _storyTimestamp = messageBuilder.storyTimestamp;
     _storyAuthorUuidString = messageBuilder.storyAuthorAddress.uuidString;
+    _storyReactionEmoji = messageBuilder.storyReactionEmoji;
     _isGroupStoryReply = messageBuilder.isGroupStoryReply;
 
 #ifdef DEBUG

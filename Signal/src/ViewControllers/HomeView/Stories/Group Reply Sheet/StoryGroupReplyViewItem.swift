@@ -8,6 +8,7 @@ import UIKit
 
 class StoryGroupReplyViewItem: Dependencies {
     let displayableText: DisplayableText?
+    let reactionEmoji: String?
     let wasRemotelyDeleted: Bool
     let receivedAtTimestamp: UInt64
     let authorDisplayName: String?
@@ -41,6 +42,12 @@ class StoryGroupReplyViewItem: Dependencies {
         self.authorDisplayName = authorDisplayName
         self.authorColor = authorColor
 
-        self.cellType = .standalone
+        if let reactionEmoji = message.storyReactionEmoji {
+            self.cellType = .reaction
+            self.reactionEmoji = reactionEmoji
+        } else {
+            self.cellType = .standalone
+            self.reactionEmoji = nil
+        }
     }
 }

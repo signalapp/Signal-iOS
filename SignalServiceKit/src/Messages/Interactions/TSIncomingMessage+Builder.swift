@@ -41,7 +41,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                          wasReceivedByUD: Bool = false,
                          isViewOnceMessage: Bool = false,
                          storyAuthorAddress: SignalServiceAddress? = nil,
-                         storyTimestamp: UInt64? = nil) {
+                         storyTimestamp: UInt64? = nil,
+                         storyReactionEmoji: String? = nil) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -57,7 +58,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                    messageSticker: messageSticker,
                    isViewOnceMessage: isViewOnceMessage,
                    storyAuthorAddress: storyAuthorAddress,
-                   storyTimestamp: storyTimestamp)
+                   storyTimestamp: storyTimestamp,
+                   storyReactionEmoji: storyReactionEmoji)
 
         self.authorAddress = authorAddress
         self.sourceDeviceId = sourceDeviceId
@@ -101,7 +103,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                               wasReceivedByUD: Bool,
                               isViewOnceMessage: Bool,
                               storyAuthorAddress: SignalServiceAddress?,
-                              storyTimestamp: NSNumber?) -> TSIncomingMessageBuilder {
+                              storyTimestamp: NSNumber?,
+                              storyReactionEmoji: String?) -> TSIncomingMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         authorAddress: authorAddress,
@@ -120,7 +123,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
                                         wasReceivedByUD: wasReceivedByUD,
                                         isViewOnceMessage: isViewOnceMessage,
                                         storyAuthorAddress: storyAuthorAddress,
-                                        storyTimestamp: storyTimestamp?.uint64Value)
+                                        storyTimestamp: storyTimestamp?.uint64Value,
+                                        storyReactionEmoji: storyReactionEmoji)
     }
 
     private var hasBuilt = false

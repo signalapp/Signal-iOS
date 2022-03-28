@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIncomingSentMessageTranscript.h"
@@ -222,6 +222,17 @@ NS_ASSUME_NONNULL_BEGIN
         _paymentRequest = paymentModels.request;
         _paymentNotification = paymentModels.notification;
         _paymentCancellation = paymentModels.cancellation;
+
+        if (_dataMessage.storyContext != nil && _dataMessage.storyContext.hasSentTimestamp
+            && _dataMessage.storyContext.hasAuthorUuid) {
+            _storyTimestamp = @(_dataMessage.storyContext.sentTimestamp);
+            _storyAuthorAddress = [[SignalServiceAddress alloc] initWithUuidString:_dataMessage.storyContext.authorUuid];
+
+            if (!_storyAuthorAddress.isValid) {
+                OWSFailDebug(@"Discarding story reply transcript with invalid address %@", _storyAuthorAddress);
+                return nil;
+            }
+        }
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {
