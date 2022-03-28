@@ -1,2 +1,2 @@
-• We’ve tightened things up a bit to make the size of the Signal app 25% smaller.
-• More improvements to make opening group chats super snappy.
+• Nos hemos apretado el cinturón para reducir el peso de la aplicación un 25 %.
+• Mejoras para que esos grupos con tantos mensajes se abran en un visto y no visto.

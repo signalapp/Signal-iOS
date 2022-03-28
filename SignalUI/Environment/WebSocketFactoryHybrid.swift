@@ -26,6 +26,8 @@ public class WebSocketFactoryHybrid: NSObject, WebSocketFactory {
         switch error {
         case let error as StarscreamError:
             return error.code
+        case SSKWebSocketNativeError.failedToConnect(let statusCode):
+            return statusCode ?? 0
         case SSKWebSocketNativeError.remoteClosed(let statusCode, _):
             return statusCode
         default:

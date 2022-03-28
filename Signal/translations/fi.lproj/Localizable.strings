@@ -503,7 +503,7 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Kunniamerkkisi Boostaus erääntyy %@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Syötä muu summa";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Syötä uusi summa";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "Enemmän maksuvaihtoehtoja";
@@ -1592,7 +1592,7 @@
 "DONATION_VIEW_AMOUNT_LABEL" = "Lahjoitussumma";
 
 /* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Syöltä muu summa";
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Syötä uusi summa";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Lahjoita Signalille";

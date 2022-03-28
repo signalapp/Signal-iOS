@@ -1616,7 +1616,7 @@
 "DONATION_VIEW_TITLE" = "Signal wordt onder andere gefinancierd door donaties van mensen zoals jij.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "Het Signal-team heeft als missie om privacy-technologie met een open broncode te ontwikkelen waarmee vrijheid van expressie wordt beschermd en beveiligde communicatie over de hele wereld beschikbaar wordt gemaakt. Dit alles zonder advertenties en zonder dat je gedrag wordt gevolgd. Jouw bijdrage helpt dit mogelijk te maken.\n\nMet je donatie betalen we voor de ontwikkeling van Signal en voor de servers en de bandbreedte die nodig zijn voor een app waarmee miljoenen mensen over de hele wereld direct en in privé met elkaar kunnen communiceren.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Het Signal-team heeft als missie om open-broncode privacy-technologieën te ontwikkelen waarmee vrijheid van expressie wordt gewaarborgd en beveiligde communicatie over de hele wereld mogelijk wordt gemaakt. Dit alles zonder advertenties en zonder dat je gedrag wordt gevolgd. Jouw bijdrage helpt dit mogelijk te maken.\n\nMet je donatie betalen we voor de ontwikkeling van Signal en voor de servers en de bandbreedte die nodig zijn voor een app waarmee miljoenen mensen over de hele wereld direct en in privé met elkaar kunnen communiceren.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Waarom zou ik doneren?";
@@ -6179,7 +6179,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is een organisatie zonder winstoogmerk zonder adverteerders en zonder investeerders, uitsluitend mogelijk gemaakt door mensen die de app gebruiken en die er waarde aan hechten. Geef een maandelijkse donatie en ontvang een profiel-badge die je—als je dat wilt—kunt weergeven op je profiel om te laten zien dat je Signal ondersteunt.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Het Signal-team heeft als missie om privacy-technologie met een open broncode te ontwikkelen waarmee vrijheid van expressie wordt beschermd en beveiligde communicatie over de hele wereld beschikbaar wordt gemaakt. Dit alles zonder advertenties en zonder dat je gedrag wordt gevolgd. Jouw bijdrage helpt dit mogelijk te maken.\n\nMet je donatie betalen we voor de ontwikkeling van Signal en de servers en bandbreedte die nodig zijn voor een app door miljoenen mensen wordt gebruikt voor privécommunicatie. Geen advertenties, geen volgers, geen grapje.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Het Signal-team heeft als missie om open-broncode privacy-technologieën te ontwikkelen waarmee vrijheid van expressie wordt gewaarborgd en waarmee beveiligde communicatie over de hele wereld mogelijk wordt gemaakt. Dit alles zonder advertenties en zonder dat je gedrag wordt gevolgd. Jouw bijdrage helpt dit mogelijk te maken.\n\nMet je donatie betalen we voor de ontwikkeling van Signal en de servers en bandbreedte die nodig zijn voor een app door miljoenen mensen wordt gebruikt voor privécommunicatie. Geen advertenties, geen volgers, geen grapje.";
 
 /* Title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_TITLE" = "Ondersteun technologie die is gemaakt voor jou, niet voor het verzamelen van je gegevens, door één van de donateurs te worden die Signal mogelijk maken.";

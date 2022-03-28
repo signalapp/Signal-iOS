@@ -17,7 +17,7 @@ Miljontals människor använder Signal varje dag för kostnadsfri och ögonblick
 • Ha bilden klar för dig – Använd de inbyggda bildredigeringsfunktionerna för att skissa, beskära och vända på de foton du ska skicka. Det finns till och med ett textverktyg så att du kan lägga till fler ord än de 1 000 som din bild redan säger.
 
 
-För support, frågor eller mer information, vänligen besök:
+För support, frågor eller mer information, besök:
 https://support.signal.org
 
 Källkod:
