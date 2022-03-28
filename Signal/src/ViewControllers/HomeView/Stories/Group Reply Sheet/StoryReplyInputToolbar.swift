@@ -155,8 +155,8 @@ class StoryReplyInputToolbar: UIView {
     }()
 
     private let placeholderText = OWSLocalizedString(
-        "MESSAGE_TEXT_FIELD_PLACEHOLDER",
-        comment: "placeholder text for the editable message field"
+        "STORY_REPLY_TEXT_FIELD_PLACEHOLDER",
+        comment: "placeholder text for replying to a story"
     )
 
     private lazy var placeholderTextView: UITextView = {

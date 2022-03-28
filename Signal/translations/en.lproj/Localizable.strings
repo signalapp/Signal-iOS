@@ -6115,6 +6115,9 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "You";
 
+/* placeholder text for replying to a story */
+"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
+
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Badges";
 
