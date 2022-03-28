@@ -377,13 +377,13 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "دعم Signal ";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "انتهت صلاحية شارة التعزيز، ولم تعد ظاهرة في ملفك الشخصي.\n\nيمكنك الاستمرار في استخدام Signal لكن لتدعم التقنية التي بُنيت من أجلك، فضلًا فكر في أن تصبح داعمًا شهريًا.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "انتهت صلاحية شارة التعزيز، ولم تعد ظاهرة في ملفك الشخصي.\n\nيمكنك إعادة تنشيطها لمدة 30 يومًا بالمساهمة لمرة واحدة.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "أُلغيَ اشتراكك في الداعم لعدم نشاطك لمدة طويلة. لم تعد شارة %@ ظاهرة في ملفك الشخصي.\n\nيمكنك الاستمرار في استخدام Signal لكن لتدعم التطبيق وتعيد تنشيط شارتك، جدد الآن.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "كن من الداعمين";
@@ -692,7 +692,7 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "الرقم القديم غير صالح، فضلًا أدخل رقم هاتف صالح.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Enter the PIN for the new phone number. This is different from your SMS verification code.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "أَدخل رقم التعريف الشخصي لرقم الهاتف الجديد. هذا مختلف عن رمز التحقق عبر الرسالة القصيرة.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "إليك معاينة لون المحادثة.";
@@ -3143,7 +3143,7 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "مُعاينة الرابط";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "اﻷجهزة المُرتبطة";
+"LINKED_DEVICES_TITLE" = "اﻷجهزة المرتبطة";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "فشل ربط الجهاز";
@@ -3554,10 +3554,10 @@
 "MISSING_VALUE" = "لا شيء ";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "لا يمكنك ربط أي أجهزة أُخرى إضافية.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "لا يمكنك ربط المزيد من الأجهزة.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "لقد وصلتَ للحد الأقصى المسموح به للأجهزة المُرتبطة بحسابك حالياً. يُرجى إزالة أحد الأجهزة ثم المُحاولة مرة أُخرى.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "بلغت الحد الأقصى لِما يمكنك ربطه من أجهزة بحسابك. فضلًا أزل جهازًا وحاول مجددًا.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "مكتوم";
@@ -5696,7 +5696,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "لصق جملة الاستعادة";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 24-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "جملة الاستعادة هي جملة مكونة من 24 كلمة فريدة خاصة بك فقط. استخدمها لاستعادة حساب مدفوعاتك.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "إدخال جملة الاستعادة";
@@ -6380,7 +6380,7 @@
 "TXT_DELETE_TITLE" = "حذف";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "الإخراج من اﻷرشيف";
+"UNARCHIVE_ACTION" = "إخراج من اﻷرشيف";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "إن المُستخدم ليس ضمن جهات اتصالك. هل أقوم بحظر هذا المُستخدم؟";

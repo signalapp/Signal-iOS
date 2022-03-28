@@ -227,7 +227,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Lent, plus lourd";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Rapide, plus léger";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Plus rapide, moins de données";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Qualité du média";
@@ -1616,7 +1616,7 @@
 "DONATION_VIEW_TITLE" = "Signal est propulsée par des personnes telles que vous.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "Chez Signal, l’équipe s’est donné comme mission de développer une technologie à code source ouvert de protection de la vie privée et des données personnelles, qui protège la liberté d’expression et permet une communication sécurisée à l’échelle planétaire. Votre contribution alimente cette cause. Aucune publicité, aucun traqueur, vraiment.\n\nVotre don aide à financer le développement, les serveurs et la bande passante d’une appli utilisée par des millions de personnes dans le monde entier pour des communications confidentielles, protégées et instantanées.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Chez Signal, l’équipe s’est donné comme mission de développer une technologie ouverte de protection de la vie privée et des données personnelles, qui protège la liberté d’expression et permet une communication sécurisée à l’échelle planétaire. Votre contribution alimente cette cause. Aucune publicité, aucun traqueur, vraiment.\n\nVotre don aide à financer le développement, les serveurs et la bande passante d’une appli utilisée par des millions de personnes dans le monde entier pour des communications confidentielles, protégées et instantanées.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Pourquoi faire un don ?";
@@ -2132,7 +2132,7 @@
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Ajouter une description au groupe…";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Les descriptions de gruope seront visibles aux membres de ce groupe et aux personnes qui ont été invitées.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Les descriptions de groupe seront visibles aux membres de ce groupe et aux personnes qui ont été invitées.";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Description du groupe";
@@ -5510,7 +5510,7 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Autoriser les paiements";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin est une nouvelle monnaie numérique centrée sur la protection des renseignements personnels.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin est une nouvelle monnaie numérique axée sur la protection des données personnelles.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "À propos de MobileCoin";
@@ -6179,7 +6179,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal est un organisme sans but lucratif, sans annonceurs ni investisseurs, soutenue uniquement par les gens qui l’utilisent et l’apprécient. Faites un don mensuel récurrent et recevez un macaron de profil pour afficher votre soutien.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal s’engage à développer une technologie à code source ouvert de protection de la vie privée et des données personnelles, qui protège la liberté d'expression et permet une communication sécurisée à l’échelle planétaire.\n\nVotre contribution alimente cette cause et permet de financer le développement et le fonctionnement d’une appli utilisée par des millions de personnes pour des communications confidentielles et protégées. Aucune publicité, aucun traqueur, vraiment.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal s’engage à développer une technologie ouverte de protection de la vie privée et des données personnelles, qui protège la liberté d'expression et permet une communication sécurisée à l’échelle planétaire.\n\nVotre contribution alimente cette cause et permet de financer le développement et le fonctionnement d’une appli utilisée par des millions de personnes pour des communications confidentielles et protégées. Aucune publicité, aucun traqueur, vraiment.";
 
 /* Title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_TITLE" = "Soutenez une technologie conçue pour vous – pas pour vos données – en rejoignant la communauté qui porte Signal.";

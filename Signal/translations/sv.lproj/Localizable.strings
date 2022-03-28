@@ -149,7 +149,7 @@
 "APN_Message" = "Du kanske har nya meddelanden";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan inte startas. Vänligen skicka en felsökningslogg till support@signal.org så att vi kan felsöka problemet.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan inte startas. Skicka en felsökningslogg till support@signal.org så att vi kan felsöka problemet.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fel";
@@ -158,13 +158,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Det gick inte att läsa in databasen";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Vänligen uppgradera till den senaste versionen av Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Uppgradera till den senaste versionen av Signal.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Okänd databasversion.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data som överförts från din gamla enhet kunde inte återställas. Vänligen skicka en felsökningslogg till support@signal.org så att vi kan felsöka problemet. Om du installerar om Signal kan din meddelandehistorik försvinna.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data som överförts från din gamla enhet kunde inte återställas. Skicka en felsökningslogg till support@signal.org så att vi kan felsöka problemet. Om du installerar om Signal kan din meddelandehistorik försvinna.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Det gick inte att slutföra överföringen";
@@ -305,7 +305,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Det gick inte att välja dokument.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Vänligen skapa ett komprimerat arkiv av denna fil eller katalogen och försök att skicka den istället.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Skapa ett komprimerat arkiv av denna fil eller katalogen och försök att skicka den istället.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Filen stöds inte";
@@ -680,16 +680,16 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Ändra foto";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Ditt nya nummer kan inte vara detsamma som ditt gamla. Vänligen ange ett nytt telefonnummer för att ändra ditt nummer.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Ditt nya nummer kan inte vara detsamma som ditt gamla. Ange ett nytt telefonnummer för att ändra ditt nummer.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Telefonnumret du angav matchar inte dina kontons nummer.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Ogiltigt nytt telefonnummer. Vänligen ange ett giltigt telefonnummer för att ändra ditt nummer.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Ogiltigt nytt telefonnummer. Ange ett giltigt telefonnummer för att ändra ditt nummer.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Ogiltigt gammalt telefonnummer. Vänligen ange ett giltigt telefonnummer för att ändra ditt nummer.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Ogiltigt gammalt telefonnummer. Ange ett giltigt telefonnummer för att ändra ditt nummer.";
 
 /* Title of the 'change phone number PIN' view. */
 "CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Ange PIN-koden för det nya telefonnumret. Denna skiljer sig från din SMS-verifieringskod.";
@@ -1484,10 +1484,10 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Om du fortsätter kommer det att inaktivera Signal på andra enheter som för närvarande är registrerade med samma telefonnummer.";
 
 /* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Det gick inte att verifiera din nya enhet, vänligen försök igen";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Det gick inte att verifiera din nya enhet, försök igen";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "Överföringen kunde inte slutföras, vänligen se till att dina enheter är nära varandra och försök igen";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Överföringen kunde inte slutföras, se till att dina enheter är nära varandra och försök igen";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Om du vill ställa in denna iPad som en länkad enhet måste du skanna med din gamla iPad";
@@ -1736,7 +1736,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Det gick inte att skicka meddelande eftersom du har blockerat användaren.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal kunde inte ansluta till Internet. Vänligen försök igen.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal kunde inte ansluta till Internet. Försök igen.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Det gick inte att skicka meddelandet då det saknas giltiga mottagare.";
@@ -1751,10 +1751,10 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ogiltigt svar från tjänsten.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denna enhet är inte längre registrerad med ditt telefonnummer. Vänligen installera om Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Denna enhet är inte längre registrerad med ditt telefonnummer. Installera om Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfel. Vänligen försök igen senare.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfel. Försök igen senare.";
 
 /* Description for errors returned from the server due to suspected spam. */
 "ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server kräver användarverifiering innan meddelandet skickas.";
@@ -1808,19 +1808,19 @@
 "ERROR_NETWORK_FAILURE" = "Nätverksfel";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Vänligen hjälp oss att förbättra Signal genom att rapportera detta fel tillsammans med felsökningsloggar från din enhet till support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Hjälp oss att förbättra Signal genom att rapportera detta fel tillsammans med felsökningsloggar från din enhet till support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal Beta: Ett fel uppstod";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Din enhet är inte längre länkad. Vänligen länka igen för att skicka ytterligare meddelanden.";
+"ERROR_SENDING_DELINKED" = "Din enhet är inte längre länkad. Länka igen för att skicka ytterligare meddelanden.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Din enhet är inte längre registrerad. Vänligen registrera dig igen för att skicka ytterligare meddelanden.";
+"ERROR_SENDING_DEREGISTERED" = "Din enhet är inte längre registrerad. Registrera dig igen för att skicka ytterligare meddelanden.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Din version av Signal har upphört att gälla. Vänligen uppdatera för att skicka fler meddelanden.";
+"ERROR_SENDING_EXPIRED" = "Din version av Signal har upphört att gälla. Uppdatera för att skicka fler meddelanden.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Oregistrerad kontakt: %@";
@@ -1835,7 +1835,7 @@
 "EXPIRATION_WARNING_TODAY" = "Din version av Signal upphör att gälla i dag. Tryck för att uppdatera till den senaste versionen.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "För många misslyckanden med denna kontakt. Vänligen försök igen senare.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "För många misslyckanden med denna kontakt. Försök igen senare.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ditt säkerhetsnummer med %@ har nyligen ändrats. Du vill nog verifiera innan du skickar detta meddelande igen.";
@@ -1919,7 +1919,7 @@
 "GET_STARTED_CARD_NEW_GROUP" = "Ny grupp";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Det gick inte att hämta den begärda GIF-bilden. Vänligen kontrollera att du är ansluten.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Det gick inte att hämta den begärda GIF-bilden. Kontrollera att du är ansluten.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Ett okänt fel uppstod.";
@@ -1928,7 +1928,7 @@
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Det går inte att välja GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Vänligen ange din sökning.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Ange din sökning.";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "GIF-sökning";
@@ -2285,10 +2285,10 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Vill du gå med i denna grupp och dela ditt namn och foto med dess medlemmar?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Vänligen kontrollera att du är ansluten och försök igen.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Kontrollera att du är ansluten och försök igen.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Vänligen försök igen.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Försök igen.";
 
 /* Message for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Detta är inte en giltig grupplänk. Se till att hela länken är intakt och korrekt innan du försöker gå med.";
@@ -3116,7 +3116,7 @@
 "LEAVE_GROUP_FAILED" = "Ett fel uppstod när gruppen lämnades.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Denna QR-kod är inte giltig. Vänligen se till att du skannar QR-koden som visas på enheten som du vill länka.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Denna QR-kod är inte giltig. Se till att du skannar QR-koden som visas på enheten som du vill länka.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Det gick inte att länka enhet";
@@ -3557,7 +3557,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan inte länka fler enheter.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nått det högsta antalet enheter som du för närvarande kan länka till med ditt konto. Vänligen ta bort en enhet och försök igen.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nått det högsta antalet enheter som du för närvarande kan länka till med ditt konto. Ta bort en enhet och försök igen.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Tystad";
@@ -3569,7 +3569,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Hoppa över";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Vänligen kontrollera att du är ansluten och försök igen.";
+"NETWORK_ERROR_RECOVERY" = "Kontrollera att du är ansluten och försök igen.";
 
 /* String representing only the cellular interface */
 "NETWORK_INTERFACE_SET_CELLULAR" = "Endast mobildata";
@@ -3806,7 +3806,7 @@
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Ditt telefonnummer";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Vänligen vänta några minuter innan du försöker igen. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Vänta några minuter innan du försöker igen. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Ange ditt telefonnummer";
@@ -3815,7 +3815,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Ditt telefonnummer";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ogiltigt telefonnummer. Vänligen ange ett giltigt telefonnummer för att registrera dig.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ogiltigt telefonnummer. Ange ett giltigt telefonnummer för att registrera dig.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Du har slut på gissningar av PIN-koden men du kan fortfarande komma åt ditt Signal-konto genom att skapa en ny PIN-kod. För din integritet och säkerhet kommer ditt konto kommer att återställas utan några sparade profilinformation eller inställningar.";
@@ -4709,10 +4709,10 @@
 "REGISTER_CONTACTS_WELCOME" = "Välkommen!";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "Du har provat för ofta. Vänligen vänta en minut innan du provar igen.";
+"REGISTER_RATE_LIMITING_BODY" = "Du har provat för ofta. Vänta en minut innan du provar igen.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "Du har provat för ofta. Vänligen vänta en minut innan du provar igen.";
+"REGISTER_RATE_LIMITING_ERROR" = "Du har provat för ofta. Vänta en minut innan du provar igen.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Det gick inte att omregistrera för pushnotiser.";
@@ -4736,7 +4736,7 @@
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Kontrollera anslutningen";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Formatet på telefonnumret stöds inte, vänligen kontaktar supporten.";
+"REGISTRATION_NON_VALID_NUMBER" = "Formatet på telefonnumret stöds inte, kontaktar supporten.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonnummer";
@@ -4757,13 +4757,13 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Felaktig PIN-kod för registreringslåset.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Vänligen ange ett giltigt telefonnummer för att registrera dig.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Ange ett giltigt telefonnummer för att registrera dig.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Ogiltigt telefonnummer";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Vänligen ange ett telefonnummer för att registrera dig.";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Ange ett telefonnummer för att registrera dig.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Inget telefonnummer";
@@ -4784,7 +4784,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Avvisa";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonnumret som du försöker registrera finns redan på en annan server, vänligen avregistrera dig därifrån och försök igen.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonnumret som du försöker registrera finns redan på en annan server, avregistrera dig därifrån och försök igen.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Ta bort förhandsgranskning";
@@ -4847,7 +4847,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Autentisering misslyckades.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "För många misslyckade autentiseringsförsök. Vänligen försök igen senare.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "För många misslyckade autentiseringsförsök. Försök igen senare.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Du måste aktivera en lösenkod i dina iOS-inställningar för att använda Skärmlås.";
@@ -5042,7 +5042,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versionen stöds inte";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Din andra enhet kör en äldre version av Signal som inte stöder skanning av iPad-QR-koder. Vänligen installera den senaste utgåvan av Signal och försök igen.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Din andra enhet kör en äldre version av Signal som inte stöder skanning av iPad-QR-koder. Installera den senaste utgåvan av Signal och försök igen.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Uppdatera skanningsenhet";
@@ -5102,7 +5102,7 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "Det gick inte att skicka ditt meddelande.";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Det gick inte att skicka inbjudan, vänligen försök igen senare.";
+"SEND_INVITE_FAILURE" = "Det gick inte att skicka inbjudan, försök igen senare.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Du bjöd in din vän att använda Signal!";
@@ -6038,7 +6038,7 @@
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Fortsätt utan att verifiera?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "För att förhindra skräppost på Signal, vänligen slutför verifieringen. \n\nEfter verifiering kan du fortsätta skicka meddelanden. Alla pausade meddelanden skickas automatiskt.";
+"SPAM_CAPTCHA_SHEET_BODY" = "För att förhindra skräppost på Signal, slutför verifieringen. \n\nEfter verifiering kan du fortsätta skicka meddelanden. Alla pausade meddelanden skickas automatiskt.";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "Verifiera för att fortsätta skicka meddelanden";
@@ -6134,7 +6134,7 @@
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Beskriv problemet för oss: ";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Vänligen skicka din supportförfrågan via e-post till support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Skicka din supportförfrågan via e-post till support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
 "SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
@@ -6212,13 +6212,13 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Det gick inte att lägga till märket. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Ditt märke kunde inte läggas till ditt konto. Vänligen kontakta supporten.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Ditt märke kunde inte läggas till ditt konto. Kontakta supporten.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Det gick inte att lägga till märke";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Vänligen kontakta supporten.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Kontakta supporten.";
 
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Ställ in valuta";
@@ -6479,7 +6479,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Användarnamn får endast innehålla a-z, 0-9 och _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Ett fel uppstod när användarnamnet letades upp. Vänligen försök igen senare.";
+"USERNAME_LOOKUP_ERROR" = "Ett fel uppstod när användarnamnet letades upp. Försök igen senare.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ är inte en Signal-användare. Se till att du har angett det fullständiga användarnamnet.";
@@ -6596,10 +6596,10 @@
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Mörkt tema dämpar bakgrunden";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Bakgrunden kunde inte rensas, vänligen försök igen senare eller kontakta support om felet kvarstår.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Bakgrunden kunde inte rensas, försök igen senare eller kontakta support om felet kvarstår.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Alla bakgrunder kunde inte återställa, vänligen försök igen senare eller kontakta support om felet kvarstår.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Alla bakgrunder kunde inte återställa, försök igen senare eller kontakta support om felet kvarstår.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Återställ alla färger";
