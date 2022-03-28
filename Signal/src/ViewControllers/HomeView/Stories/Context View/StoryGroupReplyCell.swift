@@ -157,19 +157,17 @@ class StoryGroupReplyCell: UITableViewCell {
     }
 
     func configureTextAndTimestamp(for item: StoryGroupReplyViewItem) {
-        if let displayableText = item.displayableText {
-            messageLabel.attributedText = displayableText.displayAttributedText.styled(
-                with: .font(.ows_dynamicTypeBodyClamped),
-                .color(.ows_gray05),
-                .alignment(displayableText.displayTextNaturalAlignment)
-            )
-        }
+        guard let displayableText = item.displayableText else { return }
+
+        let messageText = displayableText.displayAttributedText.styled(
+            with: .font(.ows_dynamicTypeBodyClamped),
+            .color(.ows_gray05),
+            .alignment(displayableText.displayTextNaturalAlignment)
+        )
 
         switch cellType {
         case .standalone, .bottom:
             // Append timestamp to attributed text
-            guard let messageText = messageLabel.attributedText else { break }
-
             let timestampText = item.timeString.styled(
                 with: .font(.ows_dynamicTypeCaption1Clamped),
                 .color(.ows_gray25)
@@ -178,16 +176,31 @@ class StoryGroupReplyCell: UITableViewCell {
             let maxMessageWidth = min(512, CurrentAppContext().frame.width) - 92
             let timestampSpacer: CGFloat = 6
 
-            let (messageSize, messageLastLineSize) = size(for: messageText, maxWidth: maxMessageWidth)
-            let (timestampSize, _) = size(for: timestampText, maxWidth: maxMessageWidth)
+            let messageMeasurement = measure(messageText, maxWidth: maxMessageWidth)
+            let timestampMeasurement = measure(timestampText, maxWidth: maxMessageWidth)
 
-            let lastLineFreeSpace = maxMessageWidth - timestampSpacer - messageLastLineSize.width
-            let shouldRenderTimestampOnLastMessageLine = lastLineFreeSpace >= timestampSize.width
+            let lastLineFreeSpace = maxMessageWidth - timestampSpacer - messageMeasurement.lastLineRect.width
+
+            let textDirectionMatchesAppDirection: Bool
+            switch displayableText.displayTextNaturalAlignment {
+            case .left:
+                textDirectionMatchesAppDirection = !CurrentAppContext().isRTL
+            case .right:
+                textDirectionMatchesAppDirection = CurrentAppContext().isRTL
+            case .natural:
+                textDirectionMatchesAppDirection = true
+            default:
+                owsFailDebug("Unexpected text alignment")
+                textDirectionMatchesAppDirection = true
+            }
+
+            let hasSpacedForTimestampOnLastMessageLine = lastLineFreeSpace >= timestampMeasurement.rect.width
+            let shouldRenderTimestampOnLastMessageLine = hasSpacedForTimestampOnLastMessageLine && textDirectionMatchesAppDirection
 
             if shouldRenderTimestampOnLastMessageLine {
                 var possibleMessageBubbleWidths = [
-                    messageSize.width,
-                    messageLastLineSize.width + timestampSpacer + timestampSize.width
+                    messageMeasurement.rect.width,
+                    messageMeasurement.lastLineRect.width + timestampSpacer + timestampMeasurement.rect.width
                 ]
                 if cellType == .standalone {
                     contentView.layoutIfNeeded()
@@ -200,14 +213,14 @@ class StoryGroupReplyCell: UITableViewCell {
                     messageText,
                     "\n",
                     timestampText.styled(
-                        with: .paragraphSpacingBefore(-timestampSize.height),
-                        .firstLineHeadIndent(finalMessageLabelWidth - timestampSize.width)
+                        with: .paragraphSpacingBefore(-timestampMeasurement.rect.height),
+                        .firstLineHeadIndent(finalMessageLabelWidth - timestampMeasurement.rect.width)
                     )
                 ])
             } else {
                 var possibleMessageBubbleWidths = [
-                    messageSize.width,
-                    timestampSize.width
+                    messageMeasurement.rect.width,
+                    timestampMeasurement.rect.width
                 ]
                 if cellType == .standalone {
                     contentView.layoutIfNeeded()
@@ -220,19 +233,21 @@ class StoryGroupReplyCell: UITableViewCell {
                     messageText,
                     "\n",
                     timestampText.styled(
-                        with: .firstLineHeadIndent(finalMessageLabelWidth - timestampSize.width)
+                        with: textDirectionMatchesAppDirection
+                            ? .firstLineHeadIndent(finalMessageLabelWidth - timestampMeasurement.rect.width)
+                            : .alignment(.trailing)
                     )
                 ])
             }
             break
         case .top, .middle:
-            break // No timestamp
+            messageLabel.attributedText = messageText
         case .reaction:
             timestampLabel.text = item.timeString
         }
     }
 
-    private func size(for attributedString: NSAttributedString, maxWidth: CGFloat) -> (size: CGSize, lastLineSize: CGSize) {
+    private func measure(_ attributedString: NSAttributedString, maxWidth: CGFloat) -> (rect: CGRect, lastLineRect: CGRect) {
         guard !attributedString.isEmpty else { return (.zero, .zero) }
 
         let layoutManager = NSLayoutManager()
@@ -255,7 +270,7 @@ class StoryGroupReplyCell: UITableViewCell {
 
         let fullTextRect = layoutManager.usedRect(for: textContainer)
 
-        return (fullTextRect.size, lastLineFragmentRect.size)
+        return (fullTextRect, lastLineFragmentRect)
     }
 
     override func layoutSubviews() {
@@ -268,11 +283,11 @@ class StoryGroupReplyCell: UITableViewCell {
             // No special corner rounding to apply
             return
         case .middle:
-            sharpCorners = [.bottomLeft, .topLeft]
+            sharpCorners = CurrentAppContext().isRTL ? [.bottomRight, .topRight] : [.bottomLeft, .topLeft]
         case .top:
-            sharpCorners = .bottomLeft
+            sharpCorners = CurrentAppContext().isRTL ? .bottomRight : .bottomLeft
         case .bottom:
-            sharpCorners = .topLeft
+            sharpCorners = CurrentAppContext().isRTL ? .topRight : .topLeft
         }
 
         bubbleView.layoutIfNeeded()
