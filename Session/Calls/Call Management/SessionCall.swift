@@ -135,6 +135,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         set { endDate = newValue ? Date() : nil }
     }
     
+    var timeOutTimer: Timer? = nil
     var didTimeout = false
 
     var duration: TimeInterval {
@@ -147,6 +148,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
 
         return Date().timeIntervalSince(connectedDate)
     }
+    
+    var reconnectTimer: Timer? = nil
     
     // MARK: Initialization
     init(for sessionID: String, uuid: String, mode: Mode, outgoing: Bool = false) {
@@ -204,6 +207,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
                 Storage.shared.write { transaction in
                     self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).retainUntilComplete()
                 }
+                self?.setupTimeoutTimer()
             }
         })
     }
@@ -278,6 +282,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     // MARK: Delegate
     public func webRTCIsConnected() {
+        self.reconnectTimer?.invalidate()
         guard !self.hasConnected else { return }
         self.hasConnected = true
         self.answerCallAction?.fulfill()
@@ -304,5 +309,38 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         } else {
             webRTCSession.turnOffVideo()
         }
+    }
+    
+    public func reconnectIfNeeded() {
+        guard isOutgoing else { return }
+        tryToReconnect()
+    }
+    
+    private func tryToReconnect() {
+        reconnectTimer?.invalidate()
+        if SSKEnvironment.shared.reachabilityManager.isReachable {
+            Storage.write { transaction in
+                self.webRTCSession.sendOffer(to: self.sessionID, using: transaction, isRestartingICEConnection: true).retainUntilComplete()
+            }
+        } else {
+            reconnectTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: 5, repeats: false) { _ in
+                self.tryToReconnect()
+            }
+        }
+    }
+    
+    // MARK: Timeout
+    public func setupTimeoutTimer() {
+        timeOutTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: 30, repeats: false) { _ in
+            self.didTimeout = true
+            AppEnvironment.shared.callManager.endCall(self) { error in
+                self.timeOutTimer = nil
+            }
+        }
+    }
+    
+    public func invalidateTimeoutTimer() {
+        timeOutTimer?.invalidate()
+        timeOutTimer = nil
     }
 }

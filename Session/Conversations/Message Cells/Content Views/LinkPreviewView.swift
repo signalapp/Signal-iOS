@@ -9,7 +9,7 @@ final class LinkPreviewView : UIView {
     private lazy var imageViewContainerHeightConstraint = imageView.set(.height, to: 100)
 
     private lazy var sentLinkPreviewTextColor: UIColor = {
-        let isOutgoing = (viewItem!.interaction.interactionType() == .outgoingMessage)
+        let isOutgoing = (viewItem?.interaction.interactionType() == .outgoingMessage)
         switch (isOutgoing, AppModeManager.shared.currentAppMode) {
         case (true, .dark), (false, .light): return .black
         case (true, .light): return Colors.grey

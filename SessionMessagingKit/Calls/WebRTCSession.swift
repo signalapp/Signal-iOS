@@ -8,6 +8,7 @@ public protocol WebRTCSessionDelegate : AnyObject {
     func isRemoteVideoDidChange(isEnabled: Bool)
     func dataChannelDidOpen()
     func didReceiveHangUpSignal()
+    func reconnectIfNeeded()
 }
 
 /// See https://webrtc.org/getting-started/overview for more information.
@@ -102,16 +103,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         if let dataChannel = createDataChannel() {
             dataChannel.delegate = self
             self.dataChannel = dataChannel
-        }
-        
-        // Network reachability
-        NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { _ in
-            print("[Calls] Reachability did change.")
-            if self.peerConnection.signalingState == .stable {
-                Storage.write { transaction in
-                    self.sendOffer(to: self.contactSessionID, using: transaction, isRestartingICEConnection: true).retainUntilComplete()
-                }
-            }
         }
     }
     
@@ -271,6 +262,10 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         print("[Calls] ICE connection state changed to: \(state).")
         if state == .connected {
             delegate?.webRTCIsConnected()
+        } else if state == .disconnected {
+            if self.peerConnection.signalingState == .stable {
+                delegate?.reconnectIfNeeded()
+            }
         }
     }
     
