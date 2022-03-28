@@ -1605,7 +1605,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                                                    thread:thread
+                                                                                      thread:thread
                                                                                      reactor:envelope.sourceAddress
                                                                                    timestamp:syncMessage.sent.timestamp
                                                                                  transaction:transaction];
@@ -1956,7 +1956,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Reaction: %@", messageDescription);
         }
         OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                                                thread:thread
+                                                                                  thread:thread
                                                                                  reactor:envelope.sourceAddress
                                                                                timestamp:timestamp
                                                                              transaction:transaction];

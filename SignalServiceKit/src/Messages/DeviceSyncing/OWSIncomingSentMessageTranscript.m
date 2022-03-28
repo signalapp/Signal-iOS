@@ -226,7 +226,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (_dataMessage.storyContext != nil && _dataMessage.storyContext.hasSentTimestamp
             && _dataMessage.storyContext.hasAuthorUuid) {
             _storyTimestamp = @(_dataMessage.storyContext.sentTimestamp);
-            _storyAuthorAddress = [[SignalServiceAddress alloc] initWithUuidString:_dataMessage.storyContext.authorUuid];
+            _storyAuthorAddress =
+                [[SignalServiceAddress alloc] initWithUuidString:_dataMessage.storyContext.authorUuid];
 
             if (!_storyAuthorAddress.isValid) {
                 OWSFailDebug(@"Discarding story reply transcript with invalid address %@", _storyAuthorAddress);
