@@ -82,6 +82,7 @@ public final class OpenGroupPollerV2 : NSObject {
                 }
             }
         }
+        
         // - Moderators
         if var x = OpenGroupAPIV2.moderators[server] {
             x[body.room] = Set(body.moderators)
@@ -89,18 +90,23 @@ public final class OpenGroupPollerV2 : NSObject {
         } else {
             OpenGroupAPIV2.moderators[server] = [ body.room : Set(body.moderators) ]
         }
+        
         // - Deletions
+        guard !body.deletions.isEmpty else { return }
+        
         let deletedMessageServerIDs = Set(body.deletions.map { UInt64($0.deletedMessageID) })
         storage.write { transaction in
-            let transaction = transaction as! YapDatabaseReadWriteTransaction
-            guard let threadID = storage.v2GetThreadID(for: openGroupID),
-                let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
-            var messagesToRemove: [TSMessage] = []
-            thread.enumerateInteractions(with: transaction) { interaction, stop in
-                guard let message = interaction as? TSMessage, deletedMessageServerIDs.contains(message.openGroupServerMessageID) else { return }
-                messagesToRemove.append(message)
+            guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else { return }
+            
+            deletedMessageServerIDs.forEach { openGroupServerMessageId in
+                guard let messageLookup: OpenGroupServerIdLookup = storage.getOpenGroupServerIdLookup(openGroupServerMessageId, in: body.room, on: self.server, using: transaction) else {
+                    return
+                }
+                guard let tsMessage: TSMessage = TSMessage.fetch(uniqueId: messageLookup.tsMessageId, transaction: transaction) else { return }
+                
+                tsMessage.remove(with: transaction)
+                storage.removeOpenGroupServerIdLookup(openGroupServerMessageId, in: body.room, on: self.server, using: transaction)
             }
-            messagesToRemove.forEach { $0.remove(with: transaction) }
         }
     }
 }

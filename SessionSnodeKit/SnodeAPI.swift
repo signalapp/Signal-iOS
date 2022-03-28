@@ -398,20 +398,6 @@ public final class SnodeAPI : NSObject {
         return promise
     }
 
-    public static func getMessages(for publicKey: String) -> Promise<Set<MessageListPromise>> {
-        let (promise, seal) = Promise<Set<MessageListPromise>>.pending()
-        Threading.workQueue.async {
-            attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
-                getTargetSnodes(for: publicKey).mapValues2 { targetSnode in
-                    return getMessagesInternal(from: targetSnode, associatedWith: publicKey).map2 { rawResponse in
-                        parseRawMessagesResponse(rawResponse, from: targetSnode, associatedWith: publicKey)
-                    }
-                }.map2 { Set($0) }
-            }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
-        }
-        return promise
-    }
-    
     private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
         
@@ -573,20 +559,23 @@ public final class SnodeAPI : NSObject {
         })
     }
 
-    public static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Snode, associatedWith publicKey: String) -> [JSON] {
-        guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
-        updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: rawMessages)
-        return removeDuplicates(from: rawMessages, associatedWith: publicKey)
+    public static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Snode, associatedWith publicKey: String) -> (messages: [JSON], lastRawMessage: JSON?) {
+        guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return ([], nil) }
+
+        return (
+            removeDuplicates(from: rawMessages, associatedWith: publicKey),
+            rawMessages.last
+        )
     }
     
-    private static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from rawMessages: [JSON]) {
-        if let lastMessage = rawMessages.last, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
+    public static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from lastRawMessage: JSON?) {
+        if let lastMessage = lastRawMessage, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
             SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                 SNSnodeKitConfiguration.shared.storage.setLastMessageHashInfo(for: snode, associatedWith: publicKey,
                     to: [ "hash" : lastHash, "expirationDate" : NSNumber(value: expirationDate) ], using: transaction)
             }
-        } else if (!rawMessages.isEmpty) {
-            SNLog("Failed to update last message hash value from: \(rawMessages).")
+        } else if (lastRawMessage != nil) {
+            SNLog("Failed to update last message hash value from: \(String(describing: lastRawMessage)).")
         }
     }
     

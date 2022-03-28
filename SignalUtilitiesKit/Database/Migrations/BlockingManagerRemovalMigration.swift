@@ -6,7 +6,7 @@ import Foundation
 public class BlockingManagerRemovalMigration: OWSDatabaseMigration {
     @objc
     class func migrationId() -> String {
-        return "003"    // FIXME: MigrationId needs to be updated based on other PRs
+        return "004"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
