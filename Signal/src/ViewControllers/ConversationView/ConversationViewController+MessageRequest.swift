@@ -121,8 +121,8 @@ extension ConversationViewController: MessageRequestDelegate {
             return owsFailDebug("Unexpected thread type for reporting spam \(type(of: thread))")
         }
 
-        guard let senderPhoneNumber = contactThread.contactAddress.phoneNumber else {
-            return owsFailDebug("Missing phone number for reporting spam from \(contactThread.contactAddress)")
+        guard let senderUuid = contactThread.contactAddress.uuid else {
+            return owsFailDebug("Missing uuid for reporting spam from \(contactThread.contactAddress)")
         }
 
         // We only report a selection of the N most recent messages
@@ -157,18 +157,18 @@ extension ConversationViewController: MessageRequestDelegate {
             return
         }
 
-        Logger.info("Reporting \(guidsToReport.count) message(s) from \(senderPhoneNumber) as spam.")
+        Logger.info("Reporting \(guidsToReport.count) message(s) from \(senderUuid) as spam.")
 
         var promises = [Promise<Void>]()
         for guid in guidsToReport {
-            let request = OWSRequestFactory.reportSpam(fromPhoneNumber: senderPhoneNumber, withServerGuid: guid)
+            let request = OWSRequestFactory.reportSpam(from: senderUuid, withServerGuid: guid)
             promises.append(networkManager.makePromise(request: request).asVoid())
         }
 
         Promise.when(fulfilled: promises).done {
-            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(senderPhoneNumber) as spam.")
+            Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(senderUuid) as spam.")
         }.catch { error in
-            owsFailDebug("Failed to report message(s) from \(senderPhoneNumber) as spam with error: \(error)")
+            owsFailDebug("Failed to report message(s) from \(senderUuid) as spam with error: \(error)")
         }
     }
 
