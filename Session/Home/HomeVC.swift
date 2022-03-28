@@ -7,7 +7,18 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
     private var tableViewTopConstraint: NSLayoutConstraint!
     private var unreadMessageRequestCount: UInt {
-        OWSMessageUtils.sharedManager().unreadMessageRequestCount()
+        var count: UInt = 0
+        
+        dbConnection.read { transaction in
+            let ext = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+            ext.enumerateRows(inGroup: TSMessageRequestGroup) { _, _, object, _, _, _ in
+                if ((object as? TSThread)?.unreadMessageCount(transaction: transaction) ?? 0) > 0 {
+                    count += 1
+                }
+            }
+        }
+        
+        return count
     }
     
     private var threadCount: UInt {

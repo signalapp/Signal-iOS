@@ -93,27 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
     return count;
 }
 
-- (NSUInteger)unreadMessageRequestCount {
-    __block NSUInteger count = 0;
-
-    [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
-        NSArray<NSString *> *allGroups = [unreadMessages allGroups];
-        // FIXME: Confusingly, `allGroups` includes contact threads as well
-        for (NSString *groupID in allGroups) {
-            TSThread *thread = [TSThread fetchObjectWithUniqueID:groupID transaction:transaction];
-            
-            // Only increase the count for message requests
-            if (![thread isMessageRequestUsingTransaction:transaction]) { continue; }
-            if ([unreadMessages numberOfItemsInGroup:groupID] > 0) {
-                count += 1;
-            }
-        }
-    }];
-
-    return count;
-}
-
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread
 {
     __block NSUInteger numberOfItems;
