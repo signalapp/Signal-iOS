@@ -7,7 +7,7 @@ public class SOGSV4Migration: OWSDatabaseMigration {
 
     @objc
     class func migrationId() -> String {
-        return "003"
+        return "005"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
