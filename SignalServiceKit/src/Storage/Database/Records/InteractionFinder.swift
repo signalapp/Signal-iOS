@@ -1519,6 +1519,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                     AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
                 ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
             )
+            \(Self.filterStoryRepliesClause(for: .excludeGroupReplies))
             LIMIT 1
         )
         """

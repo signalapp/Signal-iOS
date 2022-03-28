@@ -1089,6 +1089,21 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
     }
 
+    // Story Context
+    if (self.storyTimestamp && self.storyAuthorUuidString) {
+        SSKProtoDataMessageStoryContextBuilder *storyContextBuilder = [SSKProtoDataMessageStoryContext builder];
+        [storyContextBuilder setAuthorUuid:self.storyAuthorUuidString];
+        [storyContextBuilder setSentTimestamp:self.storyTimestamp.longLongValue];
+
+        NSError *error;
+        SSKProtoDataMessageStoryContext *_Nullable storyContext = [storyContextBuilder buildAndReturnError:&error];
+        if (error || !storyContext) {
+            OWSFailDebug(@"Could not build storyContext protobuf: %@.", error);
+        } else {
+            [builder setStoryContext:storyContext];
+        }
+    }
+
     [builder setExpireTimer:self.expiresInSeconds];
     
     // Group Messages

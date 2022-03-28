@@ -36,7 +36,9 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                          messageSticker: MessageSticker? = nil,
                          isViewOnceMessage: Bool = false,
                          changeActionsProtoData: Data? = nil,
-                         additionalRecipients: [SignalServiceAddress]? = nil) {
+                         additionalRecipients: [SignalServiceAddress]? = nil,
+                         storyAuthorAddress: SignalServiceAddress? = nil,
+                         storyTimestamp: UInt64? = nil) {
 
         super.init(thread: thread,
                    timestamp: timestamp,
@@ -49,7 +51,9 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                    contactShare: contactShare,
                    linkPreview: linkPreview,
                    messageSticker: messageSticker,
-                   isViewOnceMessage: isViewOnceMessage)
+                   isViewOnceMessage: isViewOnceMessage,
+                   storyAuthorAddress: storyAuthorAddress,
+                   storyTimestamp: storyTimestamp)
 
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
@@ -88,7 +92,9 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               messageSticker: MessageSticker?,
                               isViewOnceMessage: Bool,
                               changeActionsProtoData: Data?,
-                              additionalRecipients: [SignalServiceAddress]?) -> TSOutgoingMessageBuilder {
+                              additionalRecipients: [SignalServiceAddress]?,
+                              storyAuthorAddress: SignalServiceAddress?,
+                              storyTimestamp: NSNumber?) -> TSOutgoingMessageBuilder {
         return TSOutgoingMessageBuilder(thread: thread,
                                         timestamp: timestamp,
                                         messageBody: messageBody,
@@ -104,7 +110,9 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         messageSticker: messageSticker,
                                         isViewOnceMessage: isViewOnceMessage,
                                         changeActionsProtoData: changeActionsProtoData,
-                                        additionalRecipients: additionalRecipients)
+                                        additionalRecipients: additionalRecipients,
+                                        storyAuthorAddress: storyAuthorAddress,
+                                        storyTimestamp: storyTimestamp?.uint64Value)
     }
 
     private var hasBuilt = false

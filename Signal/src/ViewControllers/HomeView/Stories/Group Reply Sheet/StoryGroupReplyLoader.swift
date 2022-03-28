@@ -8,7 +8,7 @@ import SignalCoreKit
 class StoryGroupReplyLoader: Dependencies {
     private let loadingLock = UnfairLock()
     private var messageMapping: CVMessageMapping!
-    private var threadUniqueId: String!
+    private let threadUniqueId: String
     private let storyMessage: StoryMessage
     private weak var tableView: UITableView?
     private var replyUniqueIds = [String]() {
@@ -37,18 +37,18 @@ class StoryGroupReplyLoader: Dependencies {
         return tableView?.indexPathsForVisibleRows?.lazy.map { $0.row }.contains(replyUniqueIds.count - 1) ?? false
     }
 
-    init?(storyMessage: StoryMessage, tableView: UITableView) {
-        guard case .groupId(let groupId) = storyMessage.context else {
-            owsFailDebug("Unexpected story message context")
+    init?(storyMessage: StoryMessage, threadUniqueId: String?, tableView: UITableView) {
+        guard let threadUniqueId = threadUniqueId else {
+            owsFailDebug("Unexpectedly missing threadUniqueId")
             return nil
         }
 
+        self.threadUniqueId = threadUniqueId
         self.storyMessage = storyMessage
         self.tableView = tableView
 
         // Load the first page synchronously.
         databaseStorage.read { transaction in
-            threadUniqueId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
             messageMapping = CVMessageMapping(
                 threadUniqueId: threadUniqueId,
                 storyReplyQueryMode: .onlyGroupReplies(storyTimestamp: storyMessage.timestamp)

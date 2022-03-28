@@ -865,6 +865,7 @@
 		8864072A27F0D426009916B6 /* StoryGroupReplyLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */; };
 		8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */; };
 		8864072E27F0E8DF009916B6 /* StoryGroupReplyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */; };
+		8864073127F21AD7009916B6 /* StoryReplyInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */; };
 		886A58CA276A760600A1099B /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C8276A760600A1099B /* SubscriptionManager.swift */; };
 		886A58CB276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */; };
 		886BB3D225BA0C9D00079781 /* PreviewWallpaperViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABAB8E25B8BE3F0008C78A /* PreviewWallpaperViewController.swift */; };
@@ -2095,6 +2096,7 @@
 		8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyLoader.swift; sourceTree = "<group>"; };
 		8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewItem.swift; sourceTree = "<group>"; };
 		8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyCell.swift; sourceTree = "<group>"; };
+		8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReplyInputToolbar.swift; sourceTree = "<group>"; };
 		886A58C8276A760600A1099B /* SubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		886A58C9276A760600A1099B /* SubscriptionReceiptCredentialRedemptionJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionJob.swift; sourceTree = "<group>"; };
 		886CB07724E77E5B00753909 /* silence.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = silence.aiff; sourceTree = "<group>"; };
@@ -4055,10 +4057,6 @@
 				884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */,
 				884DB95127DE67D900C6A309 /* StoryItemMediaView.swift */,
 				884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */,
-				8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */,
-				8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */,
-				8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */,
-				8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */,
 			);
 			path = "Context View";
 			sourceTree = "<group>";
@@ -4070,6 +4068,7 @@
 				884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */,
 				884DB94627DD754700C6A309 /* StoryCell.swift */,
 				885275BF27E26775003F2F9B /* TextAttachmentView.swift */,
+				8864072F27F21AA7009916B6 /* Group Reply Sheet */,
 				884DB94A27DE66E000C6A309 /* Context View */,
 			);
 			path = Stories;
@@ -4145,6 +4144,18 @@
 				88D23D1C23CEC0C700B0E74B /* CallUIAdapter.swift */,
 			);
 			path = Individual;
+			sourceTree = "<group>";
+		};
+		8864072F27F21AA7009916B6 /* Group Reply Sheet */ = {
+			isa = PBXGroup;
+			children = (
+				8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */,
+				8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */,
+				8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */,
+				8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */,
+				8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */,
+			);
+			path = "Group Reply Sheet";
 			sourceTree = "<group>";
 		};
 		8871B16D25F007CE00D4E070 /* Profile */ = {
@@ -6158,6 +6169,7 @@
 				8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
+				8864073127F21AD7009916B6 /* StoryReplyInputToolbar.swift in Sources */,
 				326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */,
 				34ACA7D92733159600E47AD4 /* OnboardingController.swift in Sources */,
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
