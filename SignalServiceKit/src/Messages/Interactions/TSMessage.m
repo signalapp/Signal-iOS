@@ -130,6 +130,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
            storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
 {
@@ -159,6 +160,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
     _storyAuthorUuidString = storyAuthorUuidString;
+    _storyReactionEmoji = storyReactionEmoji;
     _storyTimestamp = storyTimestamp;
     _wasRemotelyDeleted = wasRemotelyDeleted;
 

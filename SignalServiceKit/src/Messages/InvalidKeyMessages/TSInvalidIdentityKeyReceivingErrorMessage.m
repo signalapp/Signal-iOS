@@ -107,6 +107,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
            storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                        errorType:(TSErrorMessageType)errorType
@@ -138,6 +139,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
              storyAuthorUuidString:storyAuthorUuidString
+                storyReactionEmoji:storyReactionEmoji
                     storyTimestamp:storyTimestamp
                 wasRemotelyDeleted:wasRemotelyDeleted
                          errorType:errorType

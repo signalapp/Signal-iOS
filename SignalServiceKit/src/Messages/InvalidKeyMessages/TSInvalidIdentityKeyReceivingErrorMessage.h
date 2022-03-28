@@ -46,6 +46,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
            storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                        errorType:(TSErrorMessageType)errorType
@@ -55,7 +56,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
              wasIdentityVerified:(BOOL)wasIdentityVerified
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:authorId:envelopeData:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:authorId:envelopeData:));
 
 // clang-format on
 

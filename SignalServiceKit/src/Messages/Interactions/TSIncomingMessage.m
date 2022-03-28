@@ -99,6 +99,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
            storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
@@ -132,6 +133,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
              storyAuthorUuidString:storyAuthorUuidString
+                storyReactionEmoji:storyReactionEmoji
                     storyTimestamp:storyTimestamp
                 wasRemotelyDeleted:wasRemotelyDeleted];
 

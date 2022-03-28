@@ -115,6 +115,7 @@
     "InteractionRecord.storedMessageState": 45,
     "InteractionRecord.storedShouldStartExpireTimer": 46,
     "InteractionRecord.storyAuthorUuidString": 65,
+    "InteractionRecord.storyReactionEmoji": 68,
     "InteractionRecord.storyTimestamp": 66,
     "InteractionRecord.timestamp": 2,
     "InteractionRecord.uniqueThreadId": 3,

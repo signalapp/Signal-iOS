@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
            storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                    customMessage:(nullable NSString *)customMessage
@@ -108,6 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
              storyAuthorUuidString:storyAuthorUuidString
+                storyReactionEmoji:storyReactionEmoji
                     storyTimestamp:storyTimestamp
                 wasRemotelyDeleted:wasRemotelyDeleted
                      customMessage:customMessage

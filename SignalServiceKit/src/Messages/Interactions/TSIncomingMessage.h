@@ -75,6 +75,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(incomingMessageWithBuilder:));
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
            storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
@@ -86,7 +87,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(incomingMessageWithBuilder:));
                   sourceDeviceId:(unsigned int)sourceDeviceId
                           viewed:(BOOL)viewed
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyTimestamp:wasRemotelyDeleted:authorPhoneNumber:authorUUID:read:serverDeliveryTimestamp:serverGuid:serverTimestamp:sourceDeviceId:viewed:wasReceivedByUD:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:authorPhoneNumber:authorUUID:read:serverDeliveryTimestamp:serverGuid:serverTimestamp:sourceDeviceId:viewed:wasReceivedByUD:));
 
 // clang-format on
 

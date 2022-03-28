@@ -97,6 +97,7 @@ public struct InteractionRecord: SDSRecord {
     public let storyAuthorUuidString: String?
     public let storyTimestamp: UInt64?
     public let isGroupStoryReply: Bool?
+    public let storyReactionEmoji: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -169,6 +170,7 @@ public struct InteractionRecord: SDSRecord {
         case storyAuthorUuidString
         case storyTimestamp
         case isGroupStoryReply
+        case storyReactionEmoji
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -262,6 +264,7 @@ public extension InteractionRecord {
         storyAuthorUuidString = row[67]
         storyTimestamp = row[68]
         isGroupStoryReply = row[69]
+        storyReactionEmoji = row[70]
     }
 }
 
@@ -318,6 +321,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
@@ -351,6 +355,7 @@ extension TSInteraction {
                                                 quotedMessage: quotedMessage,
                                                 storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                 storyAuthorUuidString: storyAuthorUuidString,
+                                                storyReactionEmoji: storyReactionEmoji,
                                                 storyTimestamp: storyTimestamp,
                                                 wasRemotelyDeleted: wasRemotelyDeleted,
                                                 customMessage: customMessage,
@@ -387,6 +392,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
@@ -420,6 +426,7 @@ extension TSInteraction {
                                                         quotedMessage: quotedMessage,
                                                         storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                         storyAuthorUuidString: storyAuthorUuidString,
+                                                        storyReactionEmoji: storyReactionEmoji,
                                                         storyTimestamp: storyTimestamp,
                                                         wasRemotelyDeleted: wasRemotelyDeleted,
                                                         customMessage: customMessage,
@@ -456,6 +463,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
@@ -493,6 +501,7 @@ extension TSInteraction {
                                                                  quotedMessage: quotedMessage,
                                                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                                  storyAuthorUuidString: storyAuthorUuidString,
+                                                                 storyReactionEmoji: storyReactionEmoji,
                                                                  storyTimestamp: storyTimestamp,
                                                                  wasRemotelyDeleted: wasRemotelyDeleted,
                                                                  customMessage: customMessage,
@@ -559,6 +568,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
@@ -607,6 +617,7 @@ extension TSInteraction {
                                              quotedMessage: quotedMessage,
                                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                              storyAuthorUuidString: storyAuthorUuidString,
+                                             storyReactionEmoji: storyReactionEmoji,
                                              storyTimestamp: storyTimestamp,
                                              wasRemotelyDeleted: wasRemotelyDeleted,
                                              customMessage: customMessage,
@@ -652,6 +663,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
@@ -685,6 +697,7 @@ extension TSInteraction {
                                                        quotedMessage: quotedMessage,
                                                        storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                        storyAuthorUuidString: storyAuthorUuidString,
+                                                       storyReactionEmoji: storyReactionEmoji,
                                                        storyTimestamp: storyTimestamp,
                                                        wasRemotelyDeleted: wasRemotelyDeleted,
                                                        errorType: errorType,
@@ -721,6 +734,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
@@ -754,6 +768,7 @@ extension TSInteraction {
                                                       quotedMessage: quotedMessage,
                                                       storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                       storyAuthorUuidString: storyAuthorUuidString,
+                                                      storyReactionEmoji: storyReactionEmoji,
                                                       storyTimestamp: storyTimestamp,
                                                       wasRemotelyDeleted: wasRemotelyDeleted,
                                                       errorType: errorType,
@@ -790,6 +805,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
@@ -826,6 +842,7 @@ extension TSInteraction {
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     storyAuthorUuidString: storyAuthorUuidString,
+                                                    storyReactionEmoji: storyReactionEmoji,
                                                     storyTimestamp: storyTimestamp,
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                                     customMessage: customMessage,
@@ -864,6 +881,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
@@ -903,6 +921,7 @@ extension TSInteraction {
                                                      quotedMessage: quotedMessage,
                                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                      storyAuthorUuidString: storyAuthorUuidString,
+                                                     storyReactionEmoji: storyReactionEmoji,
                                                      storyTimestamp: storyTimestamp,
                                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                                      customMessage: customMessage,
@@ -967,6 +986,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
@@ -1000,6 +1020,7 @@ extension TSInteraction {
                                   quotedMessage: quotedMessage,
                                   storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                   storyAuthorUuidString: storyAuthorUuidString,
+                                  storyReactionEmoji: storyReactionEmoji,
                                   storyTimestamp: storyTimestamp,
                                   wasRemotelyDeleted: wasRemotelyDeleted,
                                   errorType: errorType,
@@ -1036,6 +1057,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let authorPhoneNumber: String? = record.authorPhoneNumber
@@ -1069,6 +1091,7 @@ extension TSInteraction {
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      storyAuthorUuidString: storyAuthorUuidString,
+                                     storyReactionEmoji: storyReactionEmoji,
                                      storyTimestamp: storyTimestamp,
                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                      authorPhoneNumber: authorPhoneNumber,
@@ -1109,6 +1132,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
@@ -1142,6 +1166,7 @@ extension TSInteraction {
                                  quotedMessage: quotedMessage,
                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                  storyAuthorUuidString: storyAuthorUuidString,
+                                 storyReactionEmoji: storyReactionEmoji,
                                  storyTimestamp: storyTimestamp,
                                  wasRemotelyDeleted: wasRemotelyDeleted,
                                  customMessage: customMessage,
@@ -1193,6 +1218,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
@@ -1226,6 +1252,7 @@ extension TSInteraction {
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     storyAuthorUuidString: storyAuthorUuidString,
+                                                    storyReactionEmoji: storyReactionEmoji,
                                                     storyTimestamp: storyTimestamp,
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                                     errorType: errorType,
@@ -1262,6 +1289,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
@@ -1297,6 +1325,7 @@ extension TSInteraction {
                                                              quotedMessage: quotedMessage,
                                                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                              storyAuthorUuidString: storyAuthorUuidString,
+                                                             storyReactionEmoji: storyReactionEmoji,
                                                              storyTimestamp: storyTimestamp,
                                                              wasRemotelyDeleted: wasRemotelyDeleted,
                                                              errorType: errorType,
@@ -1335,6 +1364,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
@@ -1371,6 +1401,7 @@ extension TSInteraction {
                                                            quotedMessage: quotedMessage,
                                                            storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                            storyAuthorUuidString: storyAuthorUuidString,
+                                                           storyReactionEmoji: storyReactionEmoji,
                                                            storyTimestamp: storyTimestamp,
                                                            wasRemotelyDeleted: wasRemotelyDeleted,
                                                            errorType: errorType,
@@ -1409,6 +1440,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
 
@@ -1433,6 +1465,7 @@ extension TSInteraction {
                              quotedMessage: quotedMessage,
                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                              storyAuthorUuidString: storyAuthorUuidString,
+                             storyReactionEmoji: storyReactionEmoji,
                              storyTimestamp: storyTimestamp,
                              wasRemotelyDeleted: wasRemotelyDeleted)
 
@@ -1464,6 +1497,7 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
             let storyAuthorUuidString: String? = record.storyAuthorUuidString
+            let storyReactionEmoji: String? = record.storyReactionEmoji
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
@@ -1506,6 +1540,7 @@ extension TSInteraction {
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      storyAuthorUuidString: storyAuthorUuidString,
+                                     storyReactionEmoji: storyReactionEmoji,
                                      storyTimestamp: storyTimestamp,
                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                      customMessage: customMessage,
@@ -1737,6 +1772,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
@@ -1823,6 +1859,7 @@ extension TSInteraction: DeepCopyable {
                                              quotedMessage: quotedMessage,
                                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                              storyAuthorUuidString: storyAuthorUuidString,
+                                             storyReactionEmoji: storyReactionEmoji,
                                              storyTimestamp: storyTimestamp,
                                              wasRemotelyDeleted: wasRemotelyDeleted,
                                              customMessage: customMessage,
@@ -1925,6 +1962,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
@@ -1972,6 +2010,7 @@ extension TSInteraction: DeepCopyable {
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      storyAuthorUuidString: storyAuthorUuidString,
+                                     storyReactionEmoji: storyReactionEmoji,
                                      storyTimestamp: storyTimestamp,
                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                      customMessage: customMessage,
@@ -2071,6 +2110,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
@@ -2129,6 +2169,7 @@ extension TSInteraction: DeepCopyable {
                                                      quotedMessage: quotedMessage,
                                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                      storyAuthorUuidString: storyAuthorUuidString,
+                                                     storyReactionEmoji: storyReactionEmoji,
                                                      storyTimestamp: storyTimestamp,
                                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                                      customMessage: customMessage,
@@ -2225,6 +2266,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
@@ -2292,6 +2334,7 @@ extension TSInteraction: DeepCopyable {
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     storyAuthorUuidString: storyAuthorUuidString,
+                                                    storyReactionEmoji: storyReactionEmoji,
                                                     storyTimestamp: storyTimestamp,
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                                     customMessage: customMessage,
@@ -2387,6 +2430,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
@@ -2444,6 +2488,7 @@ extension TSInteraction: DeepCopyable {
                                                                  quotedMessage: quotedMessage,
                                                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                                  storyAuthorUuidString: storyAuthorUuidString,
+                                                                 storyReactionEmoji: storyReactionEmoji,
                                                                  storyTimestamp: storyTimestamp,
                                                                  wasRemotelyDeleted: wasRemotelyDeleted,
                                                                  customMessage: customMessage,
@@ -2541,6 +2586,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
@@ -2594,6 +2640,7 @@ extension TSInteraction: DeepCopyable {
                                                         quotedMessage: quotedMessage,
                                                         storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                         storyAuthorUuidString: storyAuthorUuidString,
+                                                        storyReactionEmoji: storyReactionEmoji,
                                                         storyTimestamp: storyTimestamp,
                                                         wasRemotelyDeleted: wasRemotelyDeleted,
                                                         customMessage: customMessage,
@@ -2687,6 +2734,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
@@ -2740,6 +2788,7 @@ extension TSInteraction: DeepCopyable {
                                                 quotedMessage: quotedMessage,
                                                 storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                 storyAuthorUuidString: storyAuthorUuidString,
+                                                storyReactionEmoji: storyReactionEmoji,
                                                 storyTimestamp: storyTimestamp,
                                                 wasRemotelyDeleted: wasRemotelyDeleted,
                                                 customMessage: customMessage,
@@ -2833,6 +2882,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let customMessage: String? = modelToCopy.customMessage
@@ -2886,6 +2936,7 @@ extension TSInteraction: DeepCopyable {
                                  quotedMessage: quotedMessage,
                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                  storyAuthorUuidString: storyAuthorUuidString,
+                                 storyReactionEmoji: storyReactionEmoji,
                                  storyTimestamp: storyTimestamp,
                                  wasRemotelyDeleted: wasRemotelyDeleted,
                                  customMessage: customMessage,
@@ -2979,6 +3030,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let authorPhoneNumber: String? = modelToCopy.authorPhoneNumber
@@ -3012,6 +3064,7 @@ extension TSInteraction: DeepCopyable {
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                      storyAuthorUuidString: storyAuthorUuidString,
+                                     storyReactionEmoji: storyReactionEmoji,
                                      storyTimestamp: storyTimestamp,
                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                      authorPhoneNumber: authorPhoneNumber,
@@ -3109,6 +3162,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
@@ -3166,6 +3220,7 @@ extension TSInteraction: DeepCopyable {
                                                            quotedMessage: quotedMessage,
                                                            storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                            storyAuthorUuidString: storyAuthorUuidString,
+                                                           storyReactionEmoji: storyReactionEmoji,
                                                            storyTimestamp: storyTimestamp,
                                                            wasRemotelyDeleted: wasRemotelyDeleted,
                                                            errorType: errorType,
@@ -3261,6 +3316,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
@@ -3316,6 +3372,7 @@ extension TSInteraction: DeepCopyable {
                                                              quotedMessage: quotedMessage,
                                                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                              storyAuthorUuidString: storyAuthorUuidString,
+                                                             storyReactionEmoji: storyReactionEmoji,
                                                              storyTimestamp: storyTimestamp,
                                                              wasRemotelyDeleted: wasRemotelyDeleted,
                                                              errorType: errorType,
@@ -3411,6 +3468,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
@@ -3464,6 +3522,7 @@ extension TSInteraction: DeepCopyable {
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                     storyAuthorUuidString: storyAuthorUuidString,
+                                                    storyReactionEmoji: storyReactionEmoji,
                                                     storyTimestamp: storyTimestamp,
                                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                                     errorType: errorType,
@@ -3557,6 +3616,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
@@ -3610,6 +3670,7 @@ extension TSInteraction: DeepCopyable {
                                                       quotedMessage: quotedMessage,
                                                       storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                       storyAuthorUuidString: storyAuthorUuidString,
+                                                      storyReactionEmoji: storyReactionEmoji,
                                                       storyTimestamp: storyTimestamp,
                                                       wasRemotelyDeleted: wasRemotelyDeleted,
                                                       errorType: errorType,
@@ -3703,6 +3764,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
@@ -3756,6 +3818,7 @@ extension TSInteraction: DeepCopyable {
                                                        quotedMessage: quotedMessage,
                                                        storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                                        storyAuthorUuidString: storyAuthorUuidString,
+                                                       storyReactionEmoji: storyReactionEmoji,
                                                        storyTimestamp: storyTimestamp,
                                                        wasRemotelyDeleted: wasRemotelyDeleted,
                                                        errorType: errorType,
@@ -3849,6 +3912,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
             let errorType: TSErrorMessageType = modelToCopy.errorType
@@ -3902,6 +3966,7 @@ extension TSInteraction: DeepCopyable {
                                   quotedMessage: quotedMessage,
                                   storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                                   storyAuthorUuidString: storyAuthorUuidString,
+                                  storyReactionEmoji: storyReactionEmoji,
                                   storyTimestamp: storyTimestamp,
                                   wasRemotelyDeleted: wasRemotelyDeleted,
                                   errorType: errorType,
@@ -3995,6 +4060,7 @@ extension TSInteraction: DeepCopyable {
             }
             let storedShouldStartExpireTimer: Bool = modelToCopy.storedShouldStartExpireTimer
             let storyAuthorUuidString: String? = modelToCopy.storyAuthorUuidString
+            let storyReactionEmoji: String? = modelToCopy.storyReactionEmoji
             let storyTimestamp: NSNumber? = modelToCopy.storyTimestamp
             let wasRemotelyDeleted: Bool = modelToCopy.wasRemotelyDeleted
 
@@ -4019,6 +4085,7 @@ extension TSInteraction: DeepCopyable {
                              quotedMessage: quotedMessage,
                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
                              storyAuthorUuidString: storyAuthorUuidString,
+                             storyReactionEmoji: storyReactionEmoji,
                              storyTimestamp: storyTimestamp,
                              wasRemotelyDeleted: wasRemotelyDeleted)
         }
@@ -4180,6 +4247,7 @@ extension TSInteractionSerializer {
     static var storyAuthorUuidStringColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storyAuthorUuidString", columnType: .unicodeString, isOptional: true) }
     static var storyTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storyTimestamp", columnType: .int64, isOptional: true) }
     static var isGroupStoryReplyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isGroupStoryReply", columnType: .int, isOptional: true) }
+    static var storyReactionEmojiColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storyReactionEmoji", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -4256,7 +4324,8 @@ extension TSInteractionSerializer {
         serverGuidColumn,
         storyAuthorUuidStringColumn,
         storyTimestampColumn,
-        isGroupStoryReplyColumn
+        isGroupStoryReplyColumn,
+        storyReactionEmojiColumn
         ])
     }
 }
@@ -4730,8 +4799,9 @@ class TSInteractionSerializer: SDSSerializer {
         let storyAuthorUuidString: String? = nil
         let storyTimestamp: UInt64? = nil
         let isGroupStoryReply: Bool? = nil
+        let storyReactionEmoji: String? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji)
     }
 }
 

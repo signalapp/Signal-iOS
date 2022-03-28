@@ -96,6 +96,7 @@ extern NSUInteger TSErrorMessageSchemaVersion;
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
            storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
                   storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                        errorType:(TSErrorMessageType)errorType
@@ -103,7 +104,7 @@ extern NSUInteger TSErrorMessageSchemaVersion;
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                           sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isGroupStoryReply:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:storyAuthorUuidString:storyReactionEmoji:storyTimestamp:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:));
 
 // clang-format on
 
