@@ -118,6 +118,7 @@ CREATE
             ,"storyAuthorUuidString" TEXT
             ,"storyTimestamp" INTEGER
             ,"isGroupStoryReply" BOOLEAN
+            ,"storyReactionEmoji" TEXT
         )
 ;
 

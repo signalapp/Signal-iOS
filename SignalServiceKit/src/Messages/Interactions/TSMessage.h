@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *storyAuthorUuidString;
 @property (nonatomic, readonly) BOOL isGroupStoryReply;
 @property (nonatomic, readonly) BOOL isStoryReply;
+@property (nonatomic, readonly, nullable) NSString *storyReactionEmoji;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp

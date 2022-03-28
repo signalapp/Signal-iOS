@@ -1572,6 +1572,7 @@ public class GRDBSchemaMigrator: NSObject {
                     table.add(column: "storyAuthorUuidString", .text)
                     table.add(column: "storyTimestamp", .integer)
                     table.add(column: "isGroupStoryReply", .boolean)
+                    table.add(column: "storyReactionEmoji", .text)
                 }
 
                 try db.execute(sql: "UPDATE model_TSInteraction SET isGroupStoryReply = 0")

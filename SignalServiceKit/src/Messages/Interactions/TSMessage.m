@@ -834,7 +834,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)hasRenderableStoryReplyContent
 {
-    return self.body.length > 0;
+    return self.body.length > 0 || self.storyReactionEmoji.isSingleEmoji;
 }
 
 #pragma mark - View Once
