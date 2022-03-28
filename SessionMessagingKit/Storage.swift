@@ -70,6 +70,13 @@ public protocol SessionMessagingKitStorageProtocol {
     func getLastDeletionServerID(for room: String, on server: String) -> Int64?
     func setLastDeletionServerID(for room: String, on server: String, to newValue: Int64, using transaction: Any)
     func removeLastDeletionServerID(for room: String, on server: String, using transaction: Any)
+    
+    // MARK: - OpenGroupServerIdToUniqueIdLookup
+
+    func getOpenGroupServerIdLookup(_ serverId: UInt64, in room: String, on server: String, using transaction: YapDatabaseReadTransaction) -> OpenGroupServerIdLookup?
+    func addOpenGroupServerIdLookup(_ serverId: UInt64?, tsMessageId: String?, in room: String, on server: String, using transaction: YapDatabaseReadWriteTransaction)
+    func addOpenGroupServerIdLookup(_ lookup: OpenGroupServerIdLookup, using transaction: YapDatabaseReadWriteTransaction)
+    func removeOpenGroupServerIdLookup(_ serverId: UInt64, in room: String, on server: String, using transaction: YapDatabaseReadWriteTransaction)
 
     // MARK: - Open Group Metadata
 
