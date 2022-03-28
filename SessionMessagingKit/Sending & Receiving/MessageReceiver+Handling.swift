@@ -388,8 +388,8 @@ extension MessageReceiver {
                 tsMessage.openGroupServerMessageID = serverID
                 
                 // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
-                if let openGroup: OpenGroupV2 = storage.getV2OpenGroup(for: threadID) {
-                    storage.addOpenGroupServerIdLookup(serverID, tsMessageId: tsMessageID, in: openGroup.room, on: openGroup.server, using: transaction)
+                if let openGroup: OpenGroup = dependencies.storage.getOpenGroup(for: threadID) {
+                    dependencies.storage.addOpenGroupServerIdLookup(serverID, tsMessageId: tsMessageID, in: openGroup.room, on: openGroup.server, using: transaction)
                 }
             }
             

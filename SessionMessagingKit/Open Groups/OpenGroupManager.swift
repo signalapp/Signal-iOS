@@ -358,7 +358,6 @@ public final class OpenGroupManager: NSObject {
         // Sorting the messages by server ID before importing them fixes an issue where messages
         // that quote older messages can't find those older messages
         let openGroupID = "\(server).\(roomToken)"
-        let openGroupIdData: Data = LKGroupUtilities.getEncodedOpenGroupIDAsData(openGroupID)
         let sortedMessages: [OpenGroupAPI.Message] = messages
             .sorted { lhs, rhs in lhs.id < rhs.id }
         let seqNo: Int64? = sortedMessages.map { $0.seqNo }.max()
