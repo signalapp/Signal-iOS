@@ -14,12 +14,12 @@ import Foundation
 public class Atomic<Value> {
     private let queue: DispatchQueue = DispatchQueue(label: "io.oxen.\(UUID().uuidString)")
     private var value: Value
-    
+
     /// In order to change the value you **must** use the `mutate` function
     public var wrappedValue: Value {
         return queue.sync { return value }
     }
-    
+
     /// For more information see https://github.com/apple/swift-evolution/blob/master/proposals/0258-property-wrappers.md#projections
     public var projectedValue: Atomic<Value> {
         return self

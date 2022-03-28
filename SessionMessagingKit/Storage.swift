@@ -18,7 +18,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func getUserPublicKey() -> String?
     func getUserKeyPair() -> ECKeyPair?
     func getUserED25519KeyPair() -> Box.KeyPair?
-    func getUser() -> Contact?
+    func getUser(using transaction: YapDatabaseReadTransaction?) -> Contact?
     
     // MARK: - Contacts
     
@@ -44,9 +44,11 @@ public protocol SessionMessagingKitStorageProtocol {
     func addClosedGroupEncryptionKeyPair(_ keyPair: ECKeyPair, for groupPublicKey: String, using transaction: Any)
     func removeAllClosedGroupEncryptionKeyPairs(for groupPublicKey: String, using transaction: Any)
     func getUserClosedGroupPublicKeys() -> Set<String>
+    func getUserClosedGroupPublicKeys(using transaction: YapDatabaseReadTransaction) -> Set<String>
     func getZombieMembers(for groupPublicKey: String) -> Set<String>
     func setZombieMembers(for groupPublicKey: String, to zombies: Set<String>, using transaction: Any)
     func isClosedGroup(_ publicKey: String) -> Bool
+    func isClosedGroup(_ publicKey: String, using transaction: YapDatabaseReadTransaction) -> Bool
 
     // MARK: - Jobs
 
@@ -91,6 +93,13 @@ public protocol SessionMessagingKitStorageProtocol {
     func getOpenGroupSequenceNumber(for room: String, on server: String) -> Int64?
     func setOpenGroupSequenceNumber(for room: String, on server: String, to newValue: Int64, using transaction: Any)
     func removeOpenGroupSequenceNumber(for room: String, on server: String, using transaction: Any)
+    
+    // MARK: - OpenGroupServerIdToUniqueIdLookup
+
+    func getOpenGroupServerIdLookup(_ serverId: UInt64, in room: String, on server: String, using transaction: YapDatabaseReadTransaction) -> OpenGroupServerIdLookup?
+    func addOpenGroupServerIdLookup(_ serverId: UInt64?, tsMessageId: String?, in room: String, on server: String, using transaction: YapDatabaseReadWriteTransaction)
+    func addOpenGroupServerIdLookup(_ lookup: OpenGroupServerIdLookup, using transaction: YapDatabaseReadWriteTransaction)
+    func removeOpenGroupServerIdLookup(_ serverId: UInt64, in room: String, on server: String, using transaction: YapDatabaseReadWriteTransaction)
     
     // MARK: - -- Open Group Inbox Latest Message Id
 

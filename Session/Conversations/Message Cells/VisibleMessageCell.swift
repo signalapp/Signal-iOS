@@ -4,7 +4,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private var previousX: CGFloat = 0
     var albumView: MediaAlbumView?
     var bodyTextView: UITextView?
-    var mediaTextOverlayView: MediaTextOverlayView?
     // Constraints
     private lazy var headerViewTopConstraint = headerView.pin(.top, to: .top, of: self, withInset: 1)
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
@@ -254,8 +253,9 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let authorLabelSize = authorLabel.sizeThatFits(authorLabelAvailableSpace)
         authorLabelHeightConstraint.constant = (viewItem.senderName != nil) ? authorLabelSize.height : 0
         // Message status image view
-        let (image, backgroundColor) = getMessageStatusImage(for: message)
+        let (image, tintColor, backgroundColor) = getMessageStatusImage(for: message)
         messageStatusImageView.image = image
+        messageStatusImageView.tintColor = tintColor
         messageStatusImageView.backgroundColor = backgroundColor
         if let message = message as? TSOutgoingMessage {
             messageStatusImageView.isHidden = (message.messageState == .sent && thread?.lastInteraction != message)
@@ -312,7 +312,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         }
         albumView = nil
         bodyTextView = nil
-        mediaTextOverlayView = nil
         let isOutgoing = (viewItem.interaction.interactionType() == .outgoingMessage)
         switch viewItem.messageCellType {
         case .textOnlyMessage:
@@ -324,6 +323,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
                 linkPreviewView.layer.mask = bubbleViewMaskLayer
+                self.bodyTextView = linkPreviewView.bodyTextView
             } else if let openGroupInvitationName = message.openGroupInvitationName, let openGroupInvitationURL = message.openGroupInvitationURL {
                 let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor, isOutgoing: isOutgoing)
                 snContentView.addSubview(openGroupInvitationView)
@@ -372,11 +372,12 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 albumView.layer.mask = bubbleViewMaskLayer
                 stackView.addArrangedSubview(albumView)
                 // Body text view
-                if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0,
-                    let delegate = delegate { // delegate should always be set at this point
-                    let overlayView = MediaTextOverlayView(viewItem: viewItem, albumViewWidth: size.width, textColor: bodyLabelTextColor, delegate: delegate)
-                    self.mediaTextOverlayView = overlayView
-                    stackView.addArrangedSubview(overlayView)
+                if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0 {
+                    let inset: CGFloat = 12
+                    let maxWidth = size.width - 2 * inset
+                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, searchText: delegate?.lastSearchedText, delegate: self)
+                    self.bodyTextView = bodyTextView
+                    stackView.addArrangedSubview(UIView(wrapping: bodyTextView, withInsets: UIEdgeInsets(top: 0, left: inset, bottom: inset, right: inset)))
                 }
                 unloadContent = { albumView.unloadMedia() }
                 // Constraints
@@ -627,20 +628,33 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         }
     }
     
-    private func getMessageStatusImage(for message: TSMessage) -> (image: UIImage?, backgroundColor: UIColor?) {
-        guard let message = message as? TSOutgoingMessage else { return (nil, nil) }
+    private func getMessageStatusImage(for message: TSMessage) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
+        guard let message = message as? TSOutgoingMessage else { return (nil, nil, nil) }
+        
         let image: UIImage
+        var tintColor: UIColor? = nil
         var backgroundColor: UIColor? = nil
         let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: message)
+        
         switch status {
-        case .uploading, .sending: image = #imageLiteral(resourceName: "CircleDotDotDot").asTintedImage(color: Colors.text)!
-        case .sent, .skipped, .delivered: image = #imageLiteral(resourceName: "CircleCheck").asTintedImage(color: Colors.text)!
-        case .read:
-            backgroundColor = isLightMode ? .black : .white
-            image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
-        case .failed: image = #imageLiteral(resourceName: "message_status_failed").asTintedImage(color: Colors.destructive)!
+            case .uploading, .sending:
+                image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
+                tintColor = Colors.text
+                
+            case .sent, .skipped, .delivered:
+                image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
+                tintColor = Colors.text
+                
+            case .read:
+                image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
+                backgroundColor = isLightMode ? .black : .white
+                
+            case .failed:
+                image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
+                tintColor = Colors.destructive
         }
-        return (image, backgroundColor)
+        
+        return (image, tintColor, backgroundColor)
     }
     
     private func getSize(for viewItem: ConversationViewItem) -> CGSize {

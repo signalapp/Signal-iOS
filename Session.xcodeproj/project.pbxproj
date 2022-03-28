@@ -198,7 +198,6 @@
 		B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2D1255B6DAF007E1867 /* OWSUserProfile.m */; };
 		B8566C7D256F62030045A0B9 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8569AC325CB5D2900DBA3DB /* ConversationVC+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8569AC225CB5D2900DBA3DB /* ConversationVC+Interaction.swift */; };
-		B8569AD325CBA13D00DBA3DB /* MediaTextOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8569AD225CBA13D00DBA3DB /* MediaTextOverlayView.swift */; };
 		B8569AE325CBB19A00DBA3DB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8569AE225CBB19A00DBA3DB /* DocumentView.swift */; };
 		B866CE112581C1A900535CC4 /* Sodium+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Utilities.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
@@ -242,9 +241,7 @@
 		B893063F2383961A005EAA8E /* ScanQRCodeWrapperVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */; };
 		B894D0752339EDCF00B4D94D /* NukeDataModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B894D0742339EDCF00B4D94D /* NukeDataModal.swift */; };
 		B897621C25D201F7004F83B2 /* ScrollToBottomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B897621B25D201F7004F83B2 /* ScrollToBottomButton.swift */; };
-		B8AE75A425A6C6A6001A84D2 /* Data+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AE75A325A6C6A6001A84D2 /* Data+Utilities.swift */; };
-		B8AE760B25ABFB5A001A84D2 /* GeneralUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */; };
-		B8AE761425ABFBB9001A84D2 /* GeneralUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B8AE75A425A6C6A6001A84D2 /* Data+Trimming.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */; };
 		B8AF4BB426A5204600583500 /* SendSeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8AF4BB326A5204600583500 /* SendSeedModal.swift */; };
 		B8B32021258B1A650020074B /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32020258B1A650020074B /* Contact.swift */; };
 		B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32032258B235D0020074B /* Storage+Contacts.swift */; };
@@ -797,6 +794,8 @@
 		FD3C906D27E43C4B00CD579F /* MessageSenderEncryptionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906C27E43C4B00CD579F /* MessageSenderEncryptionSpec.swift */; };
 		FD3C906F27E43E8700CD579F /* MockBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906E27E43E8700CD579F /* MockBox.swift */; };
 		FD3C907127E445E500CD579F /* MessageReceiverDecryptionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C907027E445E500CD579F /* MessageReceiverDecryptionSpec.swift */; };
+		FD3C907327E8387300CD579F /* OpenGroupServerIdLookupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C907227E8387300CD579F /* OpenGroupServerIdLookupMigration.swift */; };
+		FD3C907527E83AC200CD579F /* OpenGroupServerIdLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C907427E83AC200CD579F /* OpenGroupServerIdLookup.swift */; };
 		FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */; };
 		FD5D201127AA331F00FEA984 /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */; };
 		FD5D201E27B0D87C00FEA984 /* SessionId.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201D27B0D87C00FEA984 /* SessionId.swift */; };
@@ -891,6 +890,7 @@
 		FDC438CB27BB7DB100C60D73 /* UpdateMessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438CA27BB7DB100C60D73 /* UpdateMessageRequest.swift */; };
 		FDC438CD27BC641200C60D73 /* Set+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438CC27BC641200C60D73 /* Set+Utilities.swift */; };
 		FDC438CF27BCA45400C60D73 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC438CE27BCA45400C60D73 /* Server.swift */; };
+		FDFD645827EC1F4000808CA1 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645727EC1F4000808CA1 /* Atomic.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1341,7 +1341,6 @@
 		B8544E3223D50E4900299F14 /* SNAppearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SNAppearance.swift; sourceTree = "<group>"; };
 		B8566C62256F55930045A0B9 /* OWSLinkPreview+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSLinkPreview+Conversion.swift"; sourceTree = "<group>"; };
 		B8569AC225CB5D2900DBA3DB /* ConversationVC+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationVC+Interaction.swift"; sourceTree = "<group>"; };
-		B8569AD225CBA13D00DBA3DB /* MediaTextOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTextOverlayView.swift; sourceTree = "<group>"; };
 		B8569AE225CBB19A00DBA3DB /* DocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
 		B86BD08323399ACF000F5AE3 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
 		B86BD08523399CEF000F5AE3 /* SeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedModal.swift; sourceTree = "<group>"; };
@@ -1363,9 +1362,7 @@
 		B893063E2383961A005EAA8E /* ScanQRCodeWrapperVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanQRCodeWrapperVC.swift; sourceTree = "<group>"; };
 		B894D0742339EDCF00B4D94D /* NukeDataModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NukeDataModal.swift; sourceTree = "<group>"; };
 		B897621B25D201F7004F83B2 /* ScrollToBottomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollToBottomButton.swift; sourceTree = "<group>"; };
-		B8AE75A325A6C6A6001A84D2 /* Data+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Utilities.swift"; sourceTree = "<group>"; };
-		B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneralUtilities.h; sourceTree = "<group>"; };
-		B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GeneralUtilities.m; sourceTree = "<group>"; };
+		B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Trimming.swift"; sourceTree = "<group>"; };
 		B8AF4BB326A5204600583500 /* SendSeedModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendSeedModal.swift; sourceTree = "<group>"; };
 		B8B32020258B1A650020074B /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		B8B32032258B235D0020074B /* Storage+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Contacts.swift"; sourceTree = "<group>"; };
@@ -1956,6 +1953,8 @@
 		FD3C906C27E43C4B00CD579F /* MessageSenderEncryptionSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSenderEncryptionSpec.swift; sourceTree = "<group>"; };
 		FD3C906E27E43E8700CD579F /* MockBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockBox.swift; sourceTree = "<group>"; };
 		FD3C907027E445E500CD579F /* MessageReceiverDecryptionSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReceiverDecryptionSpec.swift; sourceTree = "<group>"; };
+		FD3C907227E8387300CD579F /* OpenGroupServerIdLookupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupServerIdLookupMigration.swift; sourceTree = "<group>"; };
+		FD3C907427E83AC200CD579F /* OpenGroupServerIdLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupServerIdLookup.swift; sourceTree = "<group>"; };
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
 		FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
 		FD5D201D27B0D87C00FEA984 /* SessionId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionId.swift; sourceTree = "<group>"; };
@@ -2051,6 +2050,7 @@
 		FDC438CA27BB7DB100C60D73 /* UpdateMessageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateMessageRequest.swift; sourceTree = "<group>"; };
 		FDC438CC27BC641200C60D73 /* Set+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+Utilities.swift"; sourceTree = "<group>"; };
 		FDC438CE27BCA45400C60D73 /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
+		FDFD645727EC1F4000808CA1 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -2416,7 +2416,6 @@
 			isa = PBXGroup;
 			children = (
 				34A8B3502190A40E00218A25 /* MediaAlbumView.swift */,
-				B8569AD225CBA13D00DBA3DB /* MediaTextOverlayView.swift */,
 				3488F9352191CC4000E524CC /* MediaView.swift */,
 				B8041A9425C8FA1D003C2166 /* MediaLoaderView.swift */,
 				B8F5F71925F1B35C003BF8D4 /* MediaPlaceholderView.swift */,
@@ -2588,9 +2587,10 @@
 				C3C2A5D12553860800C340D1 /* Array+Utilities.swift */,
 				FDC4383D27B4708600C60D73 /* Atomic.swift */,
 				FDC438CC27BC641200C60D73 /* Set+Utilities.swift */,
+				FDFD645727EC1F4000808CA1 /* Atomic.swift */,
 				C33FDAA8255A57FF00E217F9 /* BuildConfiguration.swift */,
 				B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */,
-				B8AE75A325A6C6A6001A84D2 /* Data+Utilities.swift */,
+				B8AE75A325A6C6A6001A84D2 /* Data+Trimming.swift */,
 				C3C2A5D52553860A00C340D1 /* Dictionary+Utilities.swift */,
 				B87EF18026377A1D00124B3C /* Features.swift */,
 				B8BC00BF257D90E30032E807 /* General.swift */,
@@ -3315,6 +3315,7 @@
 			children = (
 				B8B32044258C117C0020074B /* ContactsMigration.swift */,
 				FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */,
+				FD3C907227E8387300CD579F /* OpenGroupServerIdLookupMigration.swift */,
 				FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */,
 				C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */,
 				C38EF270255B6D79007E1867 /* OWSDatabaseMigration.m */,
@@ -3446,6 +3447,7 @@
 			children = (
 				FDC4381827B34EAD00C60D73 /* Models */,
 				FDC4380727B31D3A00C60D73 /* Types */,
+				FD3C907427E83AC200CD579F /* OpenGroupServerIdLookup.swift */,
 				B88FA7B726045D100049422F /* OpenGroupAPI.swift */,
 				C3DB66AB260ACA42001EFC55 /* OpenGroupManager.swift */,
 			);
@@ -3477,8 +3479,6 @@
 				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
 				C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */,
 				C33FDBC1255A581700E217F9 /* General.swift */,
-				B8AE760925ABFB00001A84D2 /* GeneralUtilities.h */,
-				B8AE760A25ABFB5A001A84D2 /* GeneralUtilities.m */,
 				B82A0C3726B9098200C1BCE3 /* MessageInvalidator.swift */,
 				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
 				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
@@ -4298,7 +4298,6 @@
 				C32C5BF8256DC8F6003C73A2 /* OWSDisappearingMessagesJob.h in Headers */,
 				C32C5AAA256DBE8F003C73A2 /* TSIncomingMessage.h in Headers */,
 				B8856D72256F1421001CE70E /* OWSWindowManager.h in Headers */,
-				B8AE761425ABFBB9001A84D2 /* GeneralUtilities.h in Headers */,
 				C32C5B6B256DC357003C73A2 /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */,
 				C32C5BBA256DC7E3003C73A2 /* ProfileManagerProtocol.h in Headers */,
 				C3A3A193256E20D4004D228D /* SignalRecipient.h in Headers */,
@@ -5188,6 +5187,7 @@
 				C38EF407255B6DF7007E1867 /* Toast.swift in Sources */,
 				C38EF38C255B6DD2007E1867 /* ApprovalRailCellView.swift in Sources */,
 				C38EF409255B6DF7007E1867 /* ContactTableViewCell.m in Sources */,
+				FD3C907327E8387300CD579F /* OpenGroupServerIdLookupMigration.swift in Sources */,
 				C38EF32A255B6DBF007E1867 /* UIUtil.m in Sources */,
 				C38EF335255B6DBF007E1867 /* BlockListCache.swift in Sources */,
 				C38EF2A6255B6D93007E1867 /* PlaceholderIcon.swift in Sources */,
@@ -5339,12 +5339,13 @@
 				FDC438CD27BC641200C60D73 /* Set+Utilities.swift in Sources */,
 				C3D9E3C925676AF30040E4F3 /* TSYapDatabaseObject.m in Sources */,
 				FD705A92278D051200F16121 /* ReusableView.swift in Sources */,
-				B8AE75A425A6C6A6001A84D2 /* Data+Utilities.swift in Sources */,
+				B8AE75A425A6C6A6001A84D2 /* Data+Trimming.swift in Sources */,
 				B8856DE6256F15F2001CE70E /* String+SSK.swift in Sources */,
 				C3471ED42555386B00297E91 /* AESGCM.swift in Sources */,
 				C32C5DDB256DD9FF003C73A2 /* ContentProxy.swift in Sources */,
 				C3A71F892558BA9F0043A11F /* Mnemonic.swift in Sources */,
 				B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */,
+				FDFD645827EC1F4000808CA1 /* Atomic.swift in Sources */,
 				C33FDEF8255A656D00E217F9 /* Promise+Delaying.swift in Sources */,
 				B8BC00C0257D90E30032E807 /* General.swift in Sources */,
 				FD078E4627E02406000769AF /* Atomic.swift in Sources */,
@@ -5445,6 +5446,7 @@
 				FDC4386327B4D94E00C60D73 /* SOGSMessage.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
+				FD3C907527E83AC200CD579F /* OpenGroupServerIdLookup.swift in Sources */,
 				C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */,
 				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
 				FD83B9CC27D179BC005E1583 /* FSEndpoint.swift in Sources */,
@@ -5453,7 +5455,6 @@
 				C32C5E15256DDC78003C73A2 /* SSKPreferences.swift in Sources */,
 				FDC438C727BB6DF000C60D73 /* DirectMessage.swift in Sources */,
 				C32C5D9C256DD6DC003C73A2 /* OWSOutgoingReceiptManager.m in Sources */,
-				B8AE760B25ABFB5A001A84D2 /* GeneralUtilities.m in Sources */,
 				C32C5C4F256DCC36003C73A2 /* Storage+OpenGroups.swift in Sources */,
 				FDC4384F27B4804F00C60D73 /* Header.swift in Sources */,
 				C3DA9C0725AE7396008F7C7E /* ConfigurationMessage.swift in Sources */,
@@ -5640,7 +5641,6 @@
 				341341EF2187467A00192D59 /* ConversationViewModel.m in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				C331FFF32558FF0300070591 /* PathStatusView.swift in Sources */,
-				B8569AD325CBA13D00DBA3DB /* MediaTextOverlayView.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				B848A4C5269EAAA200617031 /* UserDetailsSheet.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
@@ -5951,7 +5951,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 327;
+				CURRENT_PROJECT_VERSION = 332;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -5976,7 +5976,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.22;
+				MARKETING_VERSION = 1.11.24;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6024,7 +6024,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 327;
+				CURRENT_PROJECT_VERSION = 332;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6054,7 +6054,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.22;
+				MARKETING_VERSION = 1.11.24;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.ShareExtension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6090,7 +6090,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 327;
+				CURRENT_PROJECT_VERSION = 332;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -6113,7 +6113,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.22;
+				MARKETING_VERSION = 1.11.24;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.NotificationServiceExtension";
@@ -6164,7 +6164,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 327;
+				CURRENT_PROJECT_VERSION = 332;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6192,7 +6192,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.11.22;
+				MARKETING_VERSION = 1.11.24;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.NotificationServiceExtension";
@@ -7100,7 +7100,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 327;
+				CURRENT_PROJECT_VERSION = 332;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7139,7 +7139,7 @@
 					"$(SRCROOT)",
 				);
 				LLVM_LTO = NO;
-				MARKETING_VERSION = 1.11.22;
+				MARKETING_VERSION = 1.11.24;
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
@@ -7171,7 +7171,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 327;
+				CURRENT_PROJECT_VERSION = 332;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7210,7 +7210,7 @@
 					"$(SRCROOT)",
 				);
 				LLVM_LTO = NO;
-				MARKETING_VERSION = 1.11.22;
+				MARKETING_VERSION = 1.11.24;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
 				PRODUCT_NAME = Session;

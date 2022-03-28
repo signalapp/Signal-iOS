@@ -384,7 +384,15 @@ extension MessageReceiver {
         }
         if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) {
             // Keep track of the open group server message ID ↔ message ID relationship
-            if let serverID = message.openGroupServerMessageID { tsMessage.openGroupServerMessageID = serverID }
+            if let serverID = message.openGroupServerMessageID {
+                tsMessage.openGroupServerMessageID = serverID
+                
+                // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
+                if let openGroup: OpenGroupV2 = storage.getV2OpenGroup(for: threadID) {
+                    storage.addOpenGroupServerIdLookup(serverID, tsMessageId: tsMessageID, in: openGroup.room, on: openGroup.server, using: transaction)
+                }
+            }
+            
             // Keep track of server hash
             if let serverHash = message.serverHash { tsMessage.serverHash = serverHash }
              tsMessage.save(with: transaction)
@@ -830,12 +838,14 @@ extension MessageReceiver {
         // a new configuration message (otherwise the `contact` will be loaded direct from the database and the
         // `didApproveMe` value won't have been updated)
         DispatchQueue.global(qos: .background).async {
-            guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
-                return
+            Storage.write { transaction in
+                guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
+                    return
+                }
+                
+                let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
+                MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
             }
-            
-            let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
-            MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
         }
     }
     

@@ -231,12 +231,12 @@ public final class MessageSender : NSObject {
             let promiseCount = promises.count
             var errorCount = 0
             promises.forEach {
-                let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { rawResponse in
+                let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { responseData in
                     guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
                     isSuccess = true
                     storage.write(with: { transaction in
-                        let json = rawResponse as? JSON
-                        let hash = json?["hash"] as? String
+                        let responseJson: JSON? = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON
+                        let hash = responseJson?["hash"] as? String
                         message.serverHash = hash
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
                         var shouldNotify = ((message is VisibleMessage || message is UnsendRequest) && !isSyncMessage)
@@ -520,6 +520,20 @@ public final class MessageSender : NSObject {
                 // Otherwise the quote messages may not be able
                 // to be found by the timestamp on other devices
                 tsMessage.updateOpenGroupServerID(openGroupServerMessageID, serverTimeStamp: timestamp)
+                
+                // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
+                switch destination {
+                    case .openGroup(let room, let server, _, _, _):
+                        Storage.shared.addOpenGroupServerIdLookup(
+                            openGroupServerMessageID,
+                            tsMessageId: tsMessage.uniqueId,
+                            in: room,
+                            on: server,
+                            using: transaction
+                        )
+                        
+                    default: break
+                }
             }
             // Mark the message as sent
             var recipients = [ message.recipient! ]

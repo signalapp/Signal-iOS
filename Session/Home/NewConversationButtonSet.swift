@@ -25,7 +25,7 @@ final class NewConversationButtonSet : UIView {
     private lazy var newDMLabel: UILabel = {
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize)
+        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize, weight: .bold)
         result.text = NSLocalizedString("NEW_CONVERSATION_MENU_DIRECT_MESSAGE", comment: "").uppercased()
         result.textColor = Colors.grey
         result.textAlignment = .center
@@ -36,7 +36,7 @@ final class NewConversationButtonSet : UIView {
     private lazy var createClosedGroupLabel: UILabel = {
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize)
+        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize, weight: .bold)
         result.text = NSLocalizedString("NEW_CONVERSATION_MENU_CLOSED_GROUP", comment: "").uppercased()
         result.textColor = Colors.grey
         result.textAlignment = .center
@@ -47,7 +47,7 @@ final class NewConversationButtonSet : UIView {
     private lazy var joinOpenGroupLabel: UILabel = {
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize)
+        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize, weight: .bold)
         result.text = NSLocalizedString("NEW_CONVERSATION_MENU_OPEN_GROUP", comment: "").uppercased()
         result.textColor = Colors.grey
         result.textAlignment = .center

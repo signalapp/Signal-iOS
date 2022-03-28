@@ -10,19 +10,29 @@ extension Storage {
     private static let closedGroupZombieMembersCollection = "SNClosedGroupZombieMembersCollection"
 
     public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [ECKeyPair] {
+        var result: [ECKeyPair] = []
+        Storage.read { transaction in
+            result = self.getClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
+        }
+        return result
+    }
+    
+    public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String, using transaction: YapDatabaseReadTransaction) -> [ECKeyPair] {
         let collection = Storage.getClosedGroupEncryptionKeyPairCollection(for: groupPublicKey)
         var timestampsAndKeyPairs: [(timestamp: Double, keyPair: ECKeyPair)] = []
-        Storage.read { transaction in
-            transaction.enumerateKeysAndObjects(inCollection: collection) { key, object, _ in
-                guard let timestamp = Double(key), let keyPair = object as? ECKeyPair else { return }
-                timestampsAndKeyPairs.append((timestamp, keyPair))
-            }
+        transaction.enumerateKeysAndObjects(inCollection: collection) { key, object, _ in
+            guard let timestamp = Double(key), let keyPair = object as? ECKeyPair else { return }
+            timestampsAndKeyPairs.append((timestamp, keyPair))
         }
         return timestampsAndKeyPairs.sorted { $0.timestamp < $1.timestamp }.map { $0.keyPair }
     }
 
     public func getLatestClosedGroupEncryptionKeyPair(for groupPublicKey: String) -> ECKeyPair? {
         return getClosedGroupEncryptionKeyPairs(for: groupPublicKey).last
+    }
+    
+    public func getLatestClosedGroupEncryptionKeyPair(for groupPublicKey: String, using transaction: YapDatabaseReadTransaction) -> ECKeyPair? {
+        return getClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction).last
     }
 
     public func addClosedGroupEncryptionKeyPair(_ keyPair: ECKeyPair, for groupPublicKey: String, using transaction: Any) {
@@ -39,9 +49,13 @@ extension Storage {
     public func getUserClosedGroupPublicKeys() -> Set<String> {
         var result: Set<String> = []
         Storage.read { transaction in
-            result = Set(transaction.allKeys(inCollection: Storage.closedGroupPublicKeyCollection))
+            result = self.getUserClosedGroupPublicKeys(using: transaction)
         }
         return result
+    }
+    
+    public func getUserClosedGroupPublicKeys(using transaction: YapDatabaseReadTransaction) -> Set<String> {
+        return Set(transaction.allKeys(inCollection: Storage.closedGroupPublicKeyCollection))
     }
 
     public func addClosedGroupPublicKey(_ groupPublicKey: String, using transaction: Any) {
@@ -80,5 +94,9 @@ extension Storage {
 
     public func isClosedGroup(_ publicKey: String) -> Bool {
         getUserClosedGroupPublicKeys().contains(publicKey)
+    }
+    
+    public func isClosedGroup(_ publicKey: String, using transaction: YapDatabaseReadTransaction) -> Bool {
+        getUserClosedGroupPublicKeys(using: transaction).contains(publicKey)
     }
 }

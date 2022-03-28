@@ -590,23 +590,26 @@ public final class SnodeAPI : NSObject {
         })
     }
 
-    public static func parseRawMessagesResponse(_ responseData: Data, from snode: Snode, associatedWith publicKey: String) -> [JSON] {
+    public static func parseRawMessagesResponse(_ responseData: Data, from snode: Snode, associatedWith publicKey: String) -> (messages: [JSON], lastRawMessage: JSON?) {
         guard let responseJson: JSON = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON else {
-            return []
+            return ([], nil)
         }
-        guard let rawMessages = responseJson["messages"] as? [JSON] else { return [] }
-        updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: rawMessages)
-        return removeDuplicates(from: rawMessages, associatedWith: publicKey)
+        guard let rawMessages = responseJson["messages"] as? [JSON] else { return ([], nil) }
+        
+        return (
+            removeDuplicates(from: rawMessages, associatedWith: publicKey),
+            rawMessages.last
+        )
     }
     
-    private static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from rawMessages: [JSON]) {
-        if let lastMessage = rawMessages.last, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
+    public static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from lastRawMessage: JSON?) {
+        if let lastMessage = lastRawMessage, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
             SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                 SNSnodeKitConfiguration.shared.storage.setLastMessageHashInfo(for: snode, associatedWith: publicKey,
                     to: [ "hash" : lastHash, "expirationDate" : NSNumber(value: expirationDate) ], using: transaction)
             }
-        } else if (!rawMessages.isEmpty) {
-            SNLog("Failed to update last message hash value from: \(rawMessages).")
+        } else if (lastRawMessage != nil) {
+            SNLog("Failed to update last message hash value from: \(String(describing: lastRawMessage)).")
         }
     }
     

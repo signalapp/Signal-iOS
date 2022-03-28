@@ -34,7 +34,7 @@ public final class BackgroundPoller: NSObject {
     }
     
     private static func pollForMessages() -> Promise<Void> {
-        let userPublicKey = getUserHexEncodedPublicKey()
+        let userPublicKey: String = getUserHexEncodedPublicKey()
         return getMessages(for: userPublicKey)
     }
     
@@ -51,7 +51,7 @@ public final class BackgroundPoller: NSObject {
                 return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
                     return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey)
                         .then(on: DispatchQueue.main) { responseData -> Promise<Void> in
-                            let messages = SnodeAPI.parseRawMessagesResponse(responseData, from: snode, associatedWith: publicKey)
+                            let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(responseData, from: snode, associatedWith: publicKey)
                             let promises = messages
                                 .compactMap { json -> Promise<Void>? in
                                     // Use a best attempt approach here; we don't want to fail
@@ -64,6 +64,9 @@ public final class BackgroundPoller: NSObject {
                                     
                                     return job.execute()
                                 }
+                            
+                            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+                            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: lastRawMessage)
                             
                             return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                         }

@@ -100,15 +100,17 @@ public final class ClosedGroupPoller : NSObject {
 
     private func poll(_ groupPublicKey: String) -> Promise<Void> {
         guard isPolling(for: groupPublicKey) else { return Promise.value(()) }
-        let promise = SnodeAPI.getSwarm(for: groupPublicKey).then2 { [weak self] swarm -> Promise<[JSON]> in
+        let promise = SnodeAPI.getSwarm(for: groupPublicKey).then2 { [weak self] swarm -> Promise<(Snode, [JSON], JSON?)> in
             // randomElement() uses the system's default random generator, which is cryptographically secure
             guard let snode = swarm.randomElement() else { return Promise(error: Error.insufficientSnodes) }
             guard let self = self, self.isPolling(for: groupPublicKey) else { return Promise(error: Error.pollingCanceled) }
             return SnodeAPI.getRawMessages(from: snode, associatedWith: groupPublicKey).map2 {
-                SnodeAPI.parseRawMessagesResponse($0, from: snode, associatedWith: groupPublicKey)
+                let (rawMessages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse($0, from: snode, associatedWith: groupPublicKey)
+                
+                return (snode, rawMessages, lastRawMessage)
             }
         }
-        promise.done2 { [weak self] rawMessages in
+        promise.done2 { [weak self] snode, rawMessages, lastRawMessage in
             guard let self = self, self.isPolling(for: groupPublicKey) else { return }
             if !rawMessages.isEmpty {
                 SNLog("Received \(rawMessages.count) new message(s) in closed group with public key: \(groupPublicKey).")
@@ -125,6 +127,9 @@ public final class ClosedGroupPoller : NSObject {
                     SNLog("Failed to deserialize envelope due to error: \(error).")
                 }
             }
+            
+            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: groupPublicKey, from: lastRawMessage)
         }
         promise.catch2 { error in
             SNLog("Polling failed for closed group with public key: \(groupPublicKey) due to error: \(error).")

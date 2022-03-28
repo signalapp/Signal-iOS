@@ -395,18 +395,24 @@ public final class OpenGroupManager: NSObject {
 
         // Handle any deletions that are needed
         guard !messageServerIDsToRemove.isEmpty else { return }
-        guard let thread = TSGroupThread.fetch(groupId: openGroupIdData, transaction: transaction) else { return }
         
-        var messagesToRemove: [TSMessage] = []
-        
-        thread.enumerateInteractions(with: transaction) { interaction, stop in
-            guard let message: TSMessage = interaction as? TSMessage, messageServerIDsToRemove.contains(message.openGroupServerMessageID) else {
+        dependencies.storage.write { transaction in
+            guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else {
                 return
             }
-            messagesToRemove.append(message)
+            
+            messageServerIDsToRemove.forEach { openGroupServerMessageId in
+                guard let messageLookup: OpenGroupServerIdLookup = dependencies.storage.getOpenGroupServerIdLookup(openGroupServerMessageId, in: roomToken, on: server, using: transaction) else {
+                    return
+                }
+                guard let tsMessage: TSMessage = TSMessage.fetch(uniqueId: messageLookup.tsMessageId, transaction: transaction) else {
+                    return
+                }
+                
+                tsMessage.remove(with: transaction)
+                dependencies.storage.removeOpenGroupServerIdLookup(openGroupServerMessageId, in: roomToken, on: server, using: transaction)
+            }
         }
-        
-        messagesToRemove.forEach { $0.remove(with: transaction) }
     }
     
     internal static func handleDirectMessages(
