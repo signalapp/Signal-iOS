@@ -313,6 +313,7 @@ public final class MessageSender : NSObject {
             base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
         OpenGroupAPIV2.send(openGroupMessage, to: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
+
             storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: openGroupMessage.sentTimestamp, using: transaction)
                 seal.fulfill(())
@@ -341,6 +342,20 @@ public final class MessageSender : NSObject {
                 // Otherwise the quote messages may not be able
                 // to be found by the timestamp on other devices
                 tsMessage.updateOpenGroupServerID(openGroupServerMessageID, serverTimeStamp: timestamp)
+                
+                // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
+                switch destination {
+                    case .openGroupV2(let room, let server):
+                        Storage.shared.addOpenGroupServerIdLookup(
+                            openGroupServerMessageID,
+                            tsMessageId: tsMessage.uniqueId,
+                            in: room,
+                            on: server,
+                            using: transaction
+                        )
+                        
+                    default: break
+                }
             }
             // Mark the message as sent
             var recipients = [ message.recipient! ]
