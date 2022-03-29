@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -137,13 +137,21 @@ public class ContextMenuTargetedPreview {
         case left
         case center
         case right
+
+        public static var leading: Alignment {
+            CurrentAppContext().isRTL ? .right : .left
+        }
+
+        public static var trailing: Alignment {
+            CurrentAppContext().isRTL ? .left : .right
+        }
     }
 
     public let view: UIView
     public var auxiliaryView: UIView? {
         didSet {
             if let auxView = auxiliaryView {
-                if let snapshot = auxView.snapshotView(afterScreenUpdates: false) {
+                if let snapshot = auxView.snapshotView(afterScreenUpdates: true) {
                     self.auxiliarySnapshot = snapshot
                 }
             }
@@ -170,7 +178,7 @@ public class ContextMenuTargetedPreview {
         owsAssertDebug(view.window != nil, "View must be in a window")
         self.view = view
 
-        if let snapshot = view.snapshotView(afterScreenUpdates: false) {
+        if let snapshot = view.snapshotView(afterScreenUpdates: true) {
             self.snapshot = snapshot
         } else {
             self.snapshot = nil

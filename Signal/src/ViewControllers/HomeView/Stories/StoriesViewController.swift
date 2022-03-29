@@ -4,10 +4,15 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
+import SignalUI
 
 class StoriesViewController: OWSViewController {
     let tableView = UITableView()
     private var models = [IncomingStoryViewModel]()
+
+    private lazy var contextMenu = ContextMenuInteraction(delegate: self)
+    private weak var contextMenuPreviewView: UIView?
 
     override func loadView() {
         view = tableView
@@ -29,6 +34,8 @@ class StoriesViewController: OWSViewController {
 
         reloadStories()
         updateNavigationBar()
+
+        tableView.addInteraction(contextMenu)
     }
 
     private var timestampUpdateTimer: Timer?
@@ -40,7 +47,7 @@ class StoriesViewController: OWSViewController {
 
             for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
-                guard let model = self.models[safe: indexPath.row] else { continue }
+                guard let model = self.model(for: indexPath) else { continue }
                 cell.configureTimestamp(with: model)
             }
         }
@@ -79,9 +86,11 @@ class StoriesViewController: OWSViewController {
     override func applyTheme() {
         super.applyTheme()
 
+        contextMenu.dismissMenu(animated: true) {}
+
         for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {
             guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
-            guard let model = self.models[safe: indexPath.row] else { continue }
+            guard let model = self.model(for: indexPath) else { continue }
             cell.configure(with: model)
         }
 
@@ -255,7 +264,7 @@ extension StoriesViewController: DatabaseChangeDelegate {
 extension StoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let model = models[safe: indexPath.row] else {
+        guard let model = model(for: indexPath) else {
             owsFailDebug("Missing model for story")
             return
         }
@@ -266,9 +275,13 @@ extension StoriesViewController: UITableViewDelegate {
 }
 
 extension StoriesViewController: UITableViewDataSource {
+    func model(for indexPath: IndexPath) -> IncomingStoryViewModel? {
+        models[safe: indexPath.row]
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: StoryCell.reuseIdentifier) as! StoryCell
-        guard let model = models[safe: indexPath.row] else {
+        guard let model = model(for: indexPath) else {
             owsFailDebug("Missing model for story")
             return cell
         }
@@ -300,5 +313,164 @@ extension StoriesViewController: StoryPageViewControllerDataSource {
                   return nil
               }
         return contextAfter
+    }
+}
+
+extension StoriesViewController: ContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
+        guard let indexPath = tableView.indexPathForRow(at: location),
+                let model = model(for: indexPath) else { return nil }
+
+        return .init(identifier: indexPath as NSCopying) { _ in
+
+            var actions = [ContextMenuAction]()
+
+            actions.append(.init(
+                title: NSLocalizedString(
+                    "STORIES_HIDE_STORY_ACTION",
+                    comment: "Context menu action to hide the selected story"),
+                image: Theme.iconImage(.xCircle24),
+                handler: { _ in
+                    OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Hiding stories is not yet implemented."))
+                }))
+
+            func appendForwardAction() {
+                actions.append(.init(
+                    title: NSLocalizedString(
+                        "STORIES_FORWARD_STORY_ACTION",
+                        comment: "Context menu action to forward the selected story"),
+                    image: Theme.iconImage(.messageActionForward),
+                    handler: { [weak self] _ in
+                        guard let self = self else { return }
+                        switch model.latestMessageAttachment {
+                        case .file(let attachment):
+                            ForwardMessageViewController.present([attachment], from: self, delegate: self)
+                        case .text:
+                            OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Forwarding text stories is not yet implemented."))
+                        case .missing:
+                            owsFailDebug("Unexpectedly missing attachment for story.")
+                        }
+                    }))
+            }
+
+            func appendShareAction() {
+                actions.append(.init(
+                    title: NSLocalizedString(
+                        "STORIES_SHARE_STORY_ACTION",
+                        comment: "Context menu action to share the selected story"),
+                    image: Theme.iconImage(.messageActionShare),
+                    handler: { [weak self] _ in
+                        guard let self = self else { return }
+                        guard let cell = self.tableView.cellForRow(at: indexPath) else { return }
+
+                        switch model.latestMessageAttachment {
+                        case .file(let attachment):
+                            guard let attachment = attachment as? TSAttachmentStream else {
+                                return owsFailDebug("Unexpectedly tried to share undownloaded attachment")
+                            }
+                            AttachmentSharing.showShareUI(forAttachment: attachment, sender: cell)
+                        case .text(let attachment):
+                            AttachmentSharing.showShareUI(forText: attachment.text, sender: cell)
+                        case .missing:
+                            owsFailDebug("Unexpectedly missing attachment for story.")
+                        }
+                    }))
+            }
+
+            switch model.latestMessageAttachment {
+            case .file(let attachment):
+                guard attachment is TSAttachmentStream else { break }
+                appendForwardAction()
+                appendShareAction()
+            case .text:
+                appendForwardAction()
+                appendShareAction()
+            case .missing:
+                owsFailDebug("Unexpectedly missing attachment for story.")
+                break
+            }
+
+            actions.append(.init(
+                title: NSLocalizedString(
+                    "STORIES_GO_TO_CHAT_ACTION",
+                    comment: "Context menu action to open the chat associated with the selected story"),
+                image: Theme.iconImage(.open24),
+                handler: { _ in
+                    switch model.context {
+                    case .groupId(let groupId):
+                        guard let thread = Self.databaseStorage.read(block: { TSGroupThread.fetch(groupId: groupId, transaction: $0) }) else {
+                            return owsFailDebug("Unexpectedly missing thread for group story")
+                        }
+                        Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
+                    case .authorUuid(let authorUuid):
+                        guard let thread = Self.databaseStorage.read(
+                            block: { TSContactThread.getWithContactAddress(SignalServiceAddress(uuid: authorUuid), transaction: $0) }
+                        ) else {
+                            return owsFailDebug("Unexpectedly missing thread for 1:1 story")
+                        }
+                        Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
+                    case .none:
+                        owsFailDebug("Unexpectedly missing context for story")
+                    }
+                }))
+
+            return .init(actions)
+        }
+    }
+
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
+        guard let indexPath = configuration.identifier as? IndexPath else { return nil }
+
+        guard let cell = tableView.cellForRow(at: indexPath) as? StoryCell,
+            let cellSnapshot = cell.contentHStackView.snapshotView(afterScreenUpdates: false) else { return nil }
+
+        // Build a custom preview that wraps the cell contents in a bubble.
+        // Normally, our context menus just present the cell row full width.
+
+        let previewView = UIView()
+        previewView.frame = cell.contentHStackView.frame.insetBy(dx: -12, dy: -12)
+        previewView.layer.cornerRadius = 18
+        previewView.backgroundColor = Theme.backgroundColor
+        previewView.clipsToBounds = true
+
+        previewView.addSubview(cellSnapshot)
+        cellSnapshot.frame.origin = CGPoint(x: 12, y: 12)
+
+        cell.contentHStackView.superview!.addSubview(previewView)
+
+        self.contextMenuPreviewView?.removeFromSuperview()
+        self.contextMenuPreviewView = previewView
+
+        return .init(
+            view: previewView,
+            alignment: .leading,
+            accessoryViews: nil
+        )
+    }
+
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {}
+
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
+
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {
+        self.contextMenuPreviewView?.removeFromSuperview()
+        self.contextMenuPreviewView = nil
+    }
+}
+
+extension StoriesViewController: ForwardMessageDelegate {
+    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
+                                              recipientThreads: [TSThread]) {
+        AssertIsOnMainThread()
+
+        self.dismiss(animated: true) {
+            ForwardMessageViewController.finalizeForward(items: items,
+                                                         recipientThreads: recipientThreads,
+                                                         fromViewController: self)
+        }
+    }
+
+    public func forwardMessageFlowDidCancel() {
+        self.dismiss(animated: true)
     }
 }

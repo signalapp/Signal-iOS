@@ -83,6 +83,19 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         }
     }
 
+    public class func present(_ attachments: [TSAttachment],
+                              from fromViewController: UIViewController,
+                              delegate: ForwardMessageDelegate) {
+        do {
+            let content: Content = try Self.databaseStorage.read { transaction in
+                try Content.build(attachments: attachments, transaction: transaction)
+            }
+            present(content: content, from: fromViewController, delegate: delegate)
+        } catch {
+            ForwardMessageViewController.showAlertForForwardError(error: error, forwardedInteractionCount: 1)
+        }
+    }
+
     private class func present(content: Content,
                                from fromViewController: UIViewController,
                                delegate: ForwardMessageDelegate) {
@@ -266,7 +279,7 @@ extension ForwardMessageViewController {
 
                 // Make sure the message and its content haven't been deleted (view-once
                 // messages, remove delete, disappearing messages, manual deletion, etc.).
-                for item in content.allItems {
+                for item in content.allItems where !item.isUnsavedInteraction {
                     let interactionId = item.interaction.uniqueId
                     guard let latestInteraction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction),
                           hasRenderableContent(interaction: latestInteraction) else {
@@ -562,6 +575,7 @@ public struct ForwardMessageItem {
     fileprivate typealias Item = ForwardMessageItem
 
     let interaction: TSInteraction
+    let isUnsavedInteraction: Bool
     let componentState: CVComponentState
 
     let attachments: [SignalAttachment]?
@@ -572,6 +586,7 @@ public struct ForwardMessageItem {
 
     fileprivate class Builder {
         let interaction: TSInteraction
+        let isUnsavedInteraction: Bool
         let componentState: CVComponentState
 
         var attachments: [SignalAttachment]?
@@ -580,13 +595,15 @@ public struct ForwardMessageItem {
         var linkPreviewDraft: OWSLinkPreviewDraft?
         var stickerMetadata: StickerMetadata?
 
-        init(interaction: TSInteraction, componentState: CVComponentState) {
+        init(interaction: TSInteraction, isUnsavedInteraction: Bool, componentState: CVComponentState) {
             self.interaction = interaction
+            self.isUnsavedInteraction = isUnsavedInteraction
             self.componentState = componentState
         }
 
         func build() -> ForwardMessageItem {
             ForwardMessageItem(interaction: interaction,
+                               isUnsavedInteraction: isUnsavedInteraction,
                                componentState: componentState,
                                attachments: attachments,
                                contactShare: contactShare,
@@ -597,7 +614,7 @@ public struct ForwardMessageItem {
     }
 
     fileprivate var asBuilder: Builder {
-        let builder = Builder(interaction: interaction, componentState: componentState)
+        let builder = Builder(interaction: interaction, isUnsavedInteraction: isUnsavedInteraction, componentState: componentState)
         builder.attachments = attachments
         builder.contactShare = contactShare
         builder.messageBody = messageBody
@@ -620,11 +637,12 @@ public struct ForwardMessageItem {
     }
 
     fileprivate static func build(interaction: TSInteraction,
+                                  isUnsavedInteraction: Bool = false,
                                   componentState: CVComponentState,
                                   selectionType: CVSelectionType,
                                   transaction: SDSAnyReadTransaction) throws -> Item {
 
-        let builder = Builder(interaction: interaction, componentState: componentState)
+        let builder = Builder(interaction: interaction, isUnsavedInteraction: isUnsavedInteraction, componentState: componentState)
 
         let shouldHaveText = (selectionType == .allContent ||
                                 selectionType == .secondaryContent)
@@ -769,9 +787,9 @@ private enum ForwardMessageContent {
             let interactionId = selectionItem.interactionId
             guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
                                                            transaction: transaction) else {
-                throw ForwardError.invalidInteraction
+                throw ForwardError.missingInteraction
             }
-            let componentState = try buildComponentState(interactionId: interactionId,
+            let componentState = try buildComponentState(interaction: interaction,
                                                          transaction: transaction)
             return try Item.build(interaction: interaction,
                                   componentState: componentState,
@@ -781,12 +799,35 @@ private enum ForwardMessageContent {
         return build(items: items)
     }
 
-    private static func buildComponentState(interactionId: String,
-                                            transaction: SDSAnyReadTransaction) throws -> CVComponentState {
-        guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
-                                                       transaction: transaction) else {
-            throw ForwardError.missingInteraction
+    static func build(attachments: [TSAttachment], transaction: SDSAnyReadTransaction) throws -> ForwardMessageContent {
+        // The forwarding mechanism all operates on "interactions", so create a dummy unsaved interaction
+        // to wrap each attachment we're trying to forward.
+        guard let localThread = TSContactThread.getWithContactAddress(
+            TSAccountManager.shared.localAddress!,
+            transaction: transaction
+        ) else {
+            throw ForwardError.missingThread
         }
+
+        let items: [Item] = try attachments.map { attachment in
+            let builder = TSOutgoingMessageBuilder(thread: localThread)
+            builder.attachmentIds = [attachment.uniqueId]
+            let interaction = builder.build()
+
+            let componentState = try buildComponentState(interaction: interaction,
+                                                         transaction: transaction)
+
+            return try Item.build(interaction: interaction,
+                                  isUnsavedInteraction: true,
+                                  componentState: componentState,
+                                  selectionType: .allContent,
+                                  transaction: transaction)
+        }
+        return build(items: items)
+    }
+
+    private static func buildComponentState(interaction: TSInteraction,
+                                            transaction: SDSAnyReadTransaction) throws -> CVComponentState {
         guard let componentState = CVLoader.buildStandaloneComponentState(interaction: interaction,
                                                                           transaction: transaction) else {
             throw ForwardError.invalidInteraction
