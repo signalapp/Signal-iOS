@@ -4,6 +4,7 @@
 
 import UIKit
 import PromiseKit
+import SessionUIKit
 
 // Objc wrapper for the MediaGalleryItem struct
 @objc
@@ -280,7 +281,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy var shareBarButton: UIBarButtonItem = {
         let shareBarButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShare))
-        shareBarButton.tintColor = Theme.darkThemePrimaryColor
+        shareBarButton.tintColor = Colors.text
         return shareBarButton
     }()
 
@@ -288,7 +289,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let deleteBarButton = UIBarButtonItem(barButtonSystemItem: .trash,
                                               target: self,
                                               action: #selector(didPressDelete))
-        deleteBarButton.tintColor = Theme.darkThemePrimaryColor
+        deleteBarButton.tintColor = Colors.text
         return deleteBarButton
     }()
 
@@ -298,14 +299,14 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy var videoPlayBarButton: UIBarButtonItem = {
         let videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
-        videoPlayBarButton.tintColor = Theme.darkThemePrimaryColor
+        videoPlayBarButton.tintColor = Colors.text
         return videoPlayBarButton
     }()
 
     lazy var videoPauseBarButton: UIBarButtonItem = {
         let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action:
             #selector(didPressPauseBarButton))
-        videoPauseBarButton.tintColor = Theme.darkThemePrimaryColor
+        videoPauseBarButton.tintColor = Colors.text
         return videoPauseBarButton
     }()
 

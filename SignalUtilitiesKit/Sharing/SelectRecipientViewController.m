@@ -14,6 +14,7 @@
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SignalUtilitiesKit/OWSTextField.h>
+#import <SessionUIKit/SessionUIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,7 +48,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     [super loadView];
 
-    self.view.backgroundColor = [Theme backgroundColor];
+    self.view.backgroundColor = LKColors.navigationBarBackground;
 
     [self createViews];
 
@@ -86,7 +87,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
-    _tableViewController.view.backgroundColor = [Theme backgroundColor];
+    _tableViewController.view.backgroundColor = LKColors.navigationBarBackground;
 
     [self updateTableContents];
 }
@@ -95,7 +96,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     UILabel *countryCodeLabel = [UILabel new];
     countryCodeLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-    countryCodeLabel.textColor = [Theme primaryColor];
+    countryCodeLabel.textColor = LKColors.text;
     countryCodeLabel.text
         = NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"Label for the country code field");
     return countryCodeLabel;
@@ -121,7 +122,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     UILabel *phoneNumberLabel = [UILabel new];
     phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-    phoneNumberLabel.textColor = [Theme primaryColor];
+    phoneNumberLabel.textColor = LKColors.text;
     phoneNumberLabel.text
         = NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"Label for the phone number textfield");
     return phoneNumberLabel;
@@ -137,7 +138,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     if (!_examplePhoneNumberLabel) {
         _examplePhoneNumberLabel = [UILabel new];
         _examplePhoneNumberLabel.font = [self examplePhoneNumberFont];
-        _examplePhoneNumberLabel.textColor = [Theme secondaryColor];
+        _examplePhoneNumberLabel.textColor = LKColors.separator;
         SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _examplePhoneNumberLabel);
     }
 

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUIKit
 
 @objc
 public class ToastController: NSObject, ToastViewDelegate {
@@ -116,11 +117,11 @@ class ToastView: UIView {
         super.init(frame: frame)
 
         self.layer.cornerRadius = 4
-        self.backgroundColor = Theme.toastBackgroundColor
+        self.backgroundColor = (isDarkMode ? UIColor.ows_gray75 : UIColor.ows_gray60)
         self.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 
         label.textAlignment = .center
-        label.textColor = Theme.toastForegroundColor
+        label.textColor = (isDarkMode ? UIColor.ows_white : UIColor.ows_white)
         label.font = UIFont.ows_dynamicTypeBody
         label.numberOfLines = 0
         self.addSubview(label)

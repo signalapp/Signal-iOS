@@ -55,15 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)themeDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    self.navigationBar.barTintColor = [UINavigationBar appearance].barTintColor;
-    self.navigationBar.tintColor = [UINavigationBar appearance].tintColor;
-    self.navigationBar.titleTextAttributes = [UINavigationBar appearance].titleTextAttributes;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -90,11 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSNavigationBar *navbar = (OWSNavigationBar *)self.navigationBar;
     navbar.navBarLayoutDelegate = self;
     [self updateLayoutForNavbar:navbar];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
 }
 
 // All OWSNavigationController serve as the UINavigationBarDelegate for their navbar.

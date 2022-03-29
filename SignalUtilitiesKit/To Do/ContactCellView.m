@@ -114,10 +114,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.accessoryLabel.font = [UIFont ows_mediumFontWithSize:13.f];
 
-    self.nameLabel.textColor = [Theme primaryColor];
-    self.profileNameLabel.textColor = [Theme secondaryColor];
-    self.subtitleLabel.textColor = [Theme secondaryColor];
-    self.accessoryLabel.textColor = Theme.middleGrayColor;
+    self.nameLabel.textColor = LKColors.text;
+    self.profileNameLabel.textColor = LKColors.separator;
+    self.subtitleLabel.textColor = LKColors.separator;
+    self.accessoryLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
 }
 
 - (void)configureWithRecipientId:(NSString *)recipientId

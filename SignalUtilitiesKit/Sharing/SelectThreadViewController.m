@@ -4,7 +4,6 @@
 
 #import "SelectThreadViewController.h"
 #import "ContactTableViewCell.h"
-#import "OWSSearchBar.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
 #import "UIColor+OWS.h"

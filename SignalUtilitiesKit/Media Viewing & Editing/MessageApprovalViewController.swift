@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUIKit
 
 @objc
 public protocol MessageApprovalViewControllerDelegate: class {
@@ -70,7 +71,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     public override func loadView() {
 
         self.view = UIView.container()
-        self.view.backgroundColor = Theme.backgroundColor
+        self.view.backgroundColor = Colors.navigationBarBackground
 
         // Recipient Row
         let recipientRow = createRecipientRow()
@@ -82,8 +83,8 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         // Text View
         textView = OWSTextView()
         textView.delegate = self
-        textView.backgroundColor = Theme.backgroundColor
-        textView.textColor = Theme.primaryColor
+        textView.backgroundColor = Colors.navigationBarBackground
+        textView.textColor = Colors.text
         textView.font = UIFont.ows_dynamicTypeBody
         textView.text = self.initialMessageText
         textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
@@ -97,11 +98,11 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     private func createRecipientRow() -> UIView {
         let recipientRow = UIView.container()
-        recipientRow.backgroundColor = Theme.toolbarBackgroundColor
+        recipientRow.backgroundColor = UIColor.lokiDarkestGray()
 
         // Hairline borders should be 1 pixel, not 1 point.
         let borderThickness = 1.0 / UIScreen.main.scale
-        let borderColor = Theme.middleGrayColor
+        let borderColor = UIColor(white: 0.5, alpha: 1)
 
         let topBorder = UIView.container()
         topBorder.backgroundColor = borderColor
@@ -126,12 +127,12 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         let toLabel = UILabel()
         toLabel.text = NSLocalizedString("MESSAGE_APPROVAL_RECIPIENT_LABEL",
                                          comment: "Label for the recipient name in the 'message approval' dialog.")
-        toLabel.textColor = Theme.secondaryColor
+        toLabel.textColor = Colors.separator
         toLabel.font = font
         recipientRow.addSubview(toLabel)
 
         let nameLabel = UILabel()
-        nameLabel.textColor = Theme.primaryColor
+        nameLabel.textColor = Colors.text
         nameLabel.font = font
         nameLabel.lineBreakMode = .byTruncatingTail
         recipientRow.addSubview(nameLabel)
@@ -164,12 +165,12 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
         let publicKey = contactThread.contactSessionID()
         nameLabel.text = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
-        nameLabel.textColor = Theme.primaryColor
+        nameLabel.textColor = Colors.text
 
         if let profileName = self.profileName(contactThread: contactThread) {
             // If there's a profile name worth showing, add it as a second line below the name.
             let profileNameLabel = UILabel()
-            profileNameLabel.textColor = Theme.secondaryColor
+            profileNameLabel.textColor = Colors.separator
             profileNameLabel.font = font
             profileNameLabel.text = profileName
             profileNameLabel.lineBreakMode = .byTruncatingTail

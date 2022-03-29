@@ -4,7 +4,6 @@
 
 #import "AppDelegate.h"
 #import "MainAppContext.h"
-#import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
 #import "Session-Swift.h"
 #import "SignalApp.h"
