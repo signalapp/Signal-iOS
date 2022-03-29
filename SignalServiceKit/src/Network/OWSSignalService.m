@@ -106,7 +106,7 @@ NSNotificationName const NSNotificationNameIsCensorshipCircumventionActiveDidCha
         result = [self.keyValueStore getBool:kisCensorshipCircumventionManuallyActivatedKey
                                 defaultValue:NO
                                  transaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
     return result;
 }
 
@@ -126,7 +126,7 @@ NSNotificationName const NSNotificationNameIsCensorshipCircumventionActiveDidCha
         result = [self.keyValueStore getBool:kisCensorshipCircumventionManuallyDisabledKey
                                 defaultValue:NO
                                  transaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
     return result;
 }
 

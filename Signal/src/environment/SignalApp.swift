@@ -8,13 +8,12 @@ import UIKit
 extension SignalApp {
     @objc
     func warmCachesAsync() {
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.sharedBackground.async {
             InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmEmojiCache") {
                 Emoji.warmAvailableCache()
             }
         }
-
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.sharedBackground.async {
             InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmWallpaperCaches") {
                 Wallpaper.warmCaches()
             }

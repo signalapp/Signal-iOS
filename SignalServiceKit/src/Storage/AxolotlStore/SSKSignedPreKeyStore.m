@@ -167,7 +167,7 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     __block NSNumber *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         result = [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
     return result;
 }
 

@@ -164,7 +164,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             localUserProfile = [OWSUserProfile getUserProfileForAddress:OWSUserProfile.localProfileAddress
                                                             transaction:transaction];
-        }];
+        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
         [self logLocalAvatarStatus:localUserProfile label:@"database copy"];
     });
 }
@@ -590,7 +590,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                 // group members to whitelistedUUIDS and whitelistedPhoneNumbers would
                 // include Alice, and we'd rotate our profile key every time this method is called.
             }
-        }];
+        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
         SignalServiceAddress *_Nullable localAddress = [self.tsAccountManager localAddress];
         NSString *_Nullable localNumber = localAddress.phoneNumber;

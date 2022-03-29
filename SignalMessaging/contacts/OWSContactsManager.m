@@ -74,10 +74,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         ContactsManagerCacheSummary *contactsManagerCacheSummary = [self.contactsManagerCache warmCachesWithTransaction:transaction];
         OWSLogInfo(@"Loaded %lu contacts, %lu signal accounts from cache.",
-                   (unsigned long)contactsManagerCacheSummary.contactCount,
-                   (unsigned long)contactsManagerCacheSummary.signalAccountCount);
+            (unsigned long)contactsManagerCacheSummary.contactCount,
+            (unsigned long)contactsManagerCacheSummary.signalAccountCount);
     } file:__FILE__ function:__FUNCTION__ line:__LINE__];
-    
+
     self.isSetup = YES;
 }
 

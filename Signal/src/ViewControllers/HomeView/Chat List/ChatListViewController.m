@@ -447,7 +447,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.searchResultsController.view.hidden = YES;
 
     [self updateReminderViews];
-    [self updateBarButtonItems];
 
     [self applyTheme];
 }
@@ -458,6 +457,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [BenchManager completeEventWithEventId:@"AppStart" logIfAbsent:NO];
     [InstrumentsMonitor trackEventWithName:@"ChatListViewController.viewDidAppear"];
+    [AppReadiness setUIIsReady];
 
     if (!self.getStartedBanner && !self.hasEverPresentedExperienceUpgrade &&
         [ExperienceUpgradeManager presentNextFromViewController:self]) {

@@ -194,7 +194,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
     __block NSDictionary<SignalServiceAddress *, MessageReceiptSet *> *queuedReceiptMap;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         queuedReceiptMap = [self fetchAllReceiptSetsWithType:receiptType transaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
     NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
 

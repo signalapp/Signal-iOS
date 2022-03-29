@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,12 +18,28 @@ public class AppReadiness: NSObject {
     }
 
     private let readyFlag = ReadyFlag(name: "AppReadiness", queueMode: .mainThread)
+    private let readyFlagUI = ReadyFlag(name: "AppReadinessUI", queueMode: .mainThread)
 
     @objc
     public static var isAppReady: Bool { shared.readyFlag.isSet }
 
     @objc
+    public static var isUIReady: Bool { shared.readyFlagUI.isSet }
+
+    @objc
     public static func setAppIsReady() {
+        AssertIsOnMainThread()
+        owsAssertDebug(!shared.readyFlag.isSet)
+        owsAssertDebug(!shared.readyFlagUI.isSet)
+
+        Logger.info("")
+
+        shared.readyFlag.setIsReady()
+        shared.readyFlagUI.setIsReady()
+    }
+
+    @objc
+    public static func setAppIsReadyUIStillPending() {
         AssertIsOnMainThread()
         owsAssertDebug(!shared.readyFlag.isSet)
 
@@ -32,10 +48,19 @@ public class AppReadiness: NSObject {
         shared.readyFlag.setIsReady()
     }
 
+    @objc
+    public static func setUIIsReady() {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        shared.readyFlagUI.setIsReady()
+    }
+
     // MARK: - Readiness Blocks
 
-    // If the app is ready, the block is called immediately;
-    // otherwise it is called when the app becomes ready.
+    // If the app and it's UI is ready, the block is called immediately;
+    // otherwise it is called when the app and the UI becomes ready.
     //
     // The block will always be called on the main thread.
     //
@@ -103,6 +128,19 @@ public class AppReadiness: NSObject {
         let priority = Self.defaultPriority
         DispatchMainThreadSafe {
             shared.runNowOrWhenAppDidBecomeReadySync(block,
+                                                     flag: shared.readyFlag,
+                                                     label: label,
+                                                     priority: priority)
+        }
+    }
+
+    @objc
+    static func runNowOrWhenUIDidBecomeReadySync(_ block: @escaping BlockType,
+                                                 label: String) {
+        let priority = Self.defaultPriority
+        DispatchMainThreadSafe {
+            shared.runNowOrWhenAppDidBecomeReadySync(block,
+                                                     flag: shared.readyFlagUI,
                                                      label: label,
                                                      priority: priority)
         }
@@ -115,12 +153,14 @@ public class AppReadiness: NSObject {
         let priority = Self.defaultPriority
         DispatchMainThreadSafe {
             shared.runNowOrWhenAppDidBecomeReadySync(block,
+                                                     flag: shared.readyFlag,
                                                      label: label,
                                                      priority: priority)
         }
     }
 
     private func runNowOrWhenAppDidBecomeReadySync(_ block: @escaping BlockType,
+                                                   flag: ReadyFlag,
                                                    label: String,
                                                    priority: ReadyFlag.Priority) {
         AssertIsOnMainThread()
@@ -130,7 +170,7 @@ public class AppReadiness: NSObject {
             return
         }
 
-        readyFlag.runNowOrWhenDidBecomeReadySync(block, label: label, priority: priority)
+        flag.runNowOrWhenDidBecomeReadySync(block, label: label, priority: priority)
     }
 
     // MARK: -

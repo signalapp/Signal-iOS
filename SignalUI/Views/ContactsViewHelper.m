@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsViewHelper.h"
@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _observers = [NSHashTable weakObjectsHashTable];
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+    AppReadinessRunNowOrWhenUIDidBecomeReadySync(^{
         // setup() - especially updateContacts() - can
         // be expensive, so we don't want to run that
         // directly in runNowOrWhenAppDidBecomeReadySync().
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
         // the app becomes ready.
         //
         // Therefore we dispatch async to the main queue.
-        // We'll run very soon after app becomes ready,
+        // We'll run very soon after app UI becomes ready,
         // without introducing the risk of a 0x8badf00d
         // crash.
         dispatch_async(dispatch_get_main_queue(), ^{ [self setup]; });
@@ -237,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
         allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
         whitelistedAddresses = [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
         contactsMaps = [self.contactsManagerImpl contactsMapsWithTransaction:transaction];
-    }];
+    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
     NSMutableArray<SignalAccount *> *accountsToProcess = [allSignalAccounts mutableCopy];
     for (SignalServiceAddress *address in whitelistedAddresses) {

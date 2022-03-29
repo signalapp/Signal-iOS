@@ -1224,10 +1224,11 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     // Note that this does much more than set a flag;
     // it will also run all deferred blocks.
-    [AppReadiness setAppIsReady];
+    [AppReadiness setAppIsReadyUIStillPending];
 
     if (CurrentAppContext().isRunningTests) {
         OWSLogVerbose(@"Skipping post-launch logic in tests.");
+        [AppReadiness setUIIsReady];
         return;
     }
 

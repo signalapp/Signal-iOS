@@ -50,7 +50,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
     [self handleCrashDetection];
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self warmCachesAsync]; });
+    AppReadinessRunNowOrWhenUIDidBecomeReadySync(^{ [self warmCachesAsync]; });
 
     return self;
 }
@@ -320,6 +320,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
         [self showConversationSplitView];
     } else {
         [self showOnboardingView:onboarding];
+        [AppReadiness setUIIsReady];
     }
 
     [AppUpdateNag.shared showAppUpgradeNagIfNecessary];

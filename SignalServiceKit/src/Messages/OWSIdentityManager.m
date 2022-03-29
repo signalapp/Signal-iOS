@@ -101,7 +101,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (void)readWithUnfairLock:(void(^ _Nonnull)(SDSAnyReadTransaction *transaction))block
 {
     [self.unfairLock withLockObjc:^{
-        [self.databaseStorage readWithBlock:block];
+        [self.databaseStorage readWithBlock:block file:__FILE__ function:__FUNCTION__ line:__LINE__];
     }];
 }
 
