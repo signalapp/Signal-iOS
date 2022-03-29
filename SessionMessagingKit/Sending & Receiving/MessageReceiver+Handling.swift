@@ -221,9 +221,15 @@ extension MessageReceiver {
                 // Note: We only update these values if the proto actually has values for them (this is to
                 // prevent an edge case where an old client could override the values with default values
                 // since they aren't included)
-                if contactInfo.hasIsApproved { contact.isApproved = contactInfo.isApproved }
+                //
+                // Note: Since message requests has no reverse, the only case we need to process is a
+                // config message setting *isApproved* and *didApproveMe* to true. This may prevent some
+                // weird edge cases where a config message swapping *isApproved* and *didApproveMe* to
+                // false.
+                if contactInfo.hasIsApproved && contactInfo.isApproved { contact.isApproved = true }
+                if contactInfo.hasDidApproveMe && contactInfo.didApproveMe { contact.didApproveMe = true }
+                
                 if contactInfo.hasIsBlocked { contact.isBlocked = contactInfo.isBlocked }
-                if contactInfo.hasDidApproveMe { contact.didApproveMe = contactInfo.didApproveMe }
                 
                 Storage.shared.setContact(contact, using: transaction)
                 
