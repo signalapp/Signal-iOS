@@ -547,7 +547,6 @@
 		C38EF30C255B6DBF007E1867 /* OWSScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E2255B6DB9007E1867 /* OWSScreenLock.swift */; };
 		C38EF30D255B6DBF007E1867 /* OWSUnreadIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */; };
 		C38EF30E255B6DBF007E1867 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E4255B6DB9007E1867 /* FullTextSearcher.swift */; };
-		C38EF30F255B6DBF007E1867 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2E5255B6DB9007E1867 /* AppPreferences.swift */; };
 		C38EF313255B6DBF007E1867 /* OWSUnreadIndicator.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2E9255B6DBA007E1867 /* OWSUnreadIndicator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF317255B6DBF007E1867 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2ED255B6DBB007E1867 /* DisplayableText.swift */; };
 		C38EF31A255B6DBF007E1867 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2F0255B6DBB007E1867 /* OWSAnyTouchGestureRecognizer.m */; };
@@ -1556,7 +1555,6 @@
 		C38EF2E2255B6DB9007E1867 /* OWSScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSScreenLock.swift; path = "SignalUtilitiesKit/Screen Lock/OWSScreenLock.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSUnreadIndicator.m; path = SignalUtilitiesKit/Messaging/OWSUnreadIndicator.m; sourceTree = SOURCE_ROOT; };
 		C38EF2E4255B6DB9007E1867 /* FullTextSearcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FullTextSearcher.swift; path = SignalUtilitiesKit/Messaging/FullTextSearcher.swift; sourceTree = SOURCE_ROOT; };
-		C38EF2E5255B6DB9007E1867 /* AppPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppPreferences.swift; path = SignalUtilitiesKit/Database/AppPreferences.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2E9255B6DBA007E1867 /* OWSUnreadIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSUnreadIndicator.h; path = SignalUtilitiesKit/Messaging/OWSUnreadIndicator.h; sourceTree = SOURCE_ROOT; };
 		C38EF2EC255B6DBA007E1867 /* ProximityMonitoringManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProximityMonitoringManager.swift; path = SessionMessagingKit/Utilities/ProximityMonitoringManager.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2ED255B6DBB007E1867 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DisplayableText.swift; path = SignalUtilitiesKit/Utilities/DisplayableText.swift; sourceTree = SOURCE_ROOT; };
@@ -3109,7 +3107,6 @@
 			isa = PBXGroup;
 			children = (
 				C379DCE82567330E0002D4EB /* Migrations */,
-				C38EF2E5255B6DB9007E1867 /* AppPreferences.swift */,
 				C33FDBBA255A581600E217F9 /* OWSPrimaryStorage+keyFromIntLong.h */,
 				C33FDB99255A581300E217F9 /* OWSPrimaryStorage+keyFromIntLong.m */,
 				C38EF3D2255B6DEE007E1867 /* ThreadViewHelper.h */,
@@ -4409,7 +4406,6 @@
 				C38EF3FD255B6DF7007E1867 /* OWSTextView.m in Sources */,
 				C38EF3C6255B6DE7007E1867 /* ImageEditorModel.swift in Sources */,
 				C38EF317255B6DBF007E1867 /* DisplayableText.swift in Sources */,
-				C38EF30F255B6DBF007E1867 /* AppPreferences.swift in Sources */,
 				C38EF3C3255B6DE7007E1867 /* ImageEditorTextItem.swift in Sources */,
 				C33FDC7D255A582000E217F9 /* OWSDispatch.m in Sources */,
 				C38EF247255B6D67007E1867 /* NSAttributedString+OWS.m in Sources */,
