@@ -73,8 +73,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     _dbConnection = primaryStorage.newDatabaseConnection;
     self.dbConnection.objectCacheEnabled = NO;
 
-    [self observeNotifications];
-
     return self;
 }
 
@@ -84,14 +82,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 }
 
 #pragma mark -
-
-- (void)observeNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification
-                                               object:nil];
-}
 
 - (void)generateNewIdentityKeyPair
 {
