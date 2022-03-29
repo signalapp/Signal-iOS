@@ -155,7 +155,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
     public func presentMenu(window: UIWindow, contextMenuConfiguration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview, presentImmediately: Bool) {
 
-        let menuAccessory = menuAccessory(configuration: contextMenuConfiguration, previewAlignment: targetedPreview.alignment)
+        let menuAccessory = menuAccessory(configuration: contextMenuConfiguration, targetedPreview: targetedPreview)
         let contextMenuController = ContextMenuController(configuration: contextMenuConfiguration, preview: targetedPreview, initiatingGestureRecognizer: initiatingGestureRecognizer(), menuAccessory: menuAccessory, presentImmediately: presentImmediately)
         contextMenuController.delegate = self
         self.contextMenuController = contextMenuController
@@ -171,11 +171,11 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         return longPressGestureRecognizer
     }
 
-    public func menuAccessory(configuration: ContextMenuConfiguration, previewAlignment: ContextMenuTargetedPreview.Alignment) -> ContextMenuActionsAccessory {
+    public func menuAccessory(configuration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) -> ContextMenuActionsAccessory {
 
         var alignments: [(ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge, ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Origin)] = [(.bottom, .exterior)]
 
-        switch previewAlignment {
+        switch targetedPreview.alignment {
         case .left:
             alignments.append((CurrentAppContext().isRTL ? .trailing : .leading, .interior))
         case .right:
@@ -185,8 +185,8 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         }
 
         let menu = configuration.actionProvider?([]) ?? ContextMenu([])
-        let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: alignments, alignmentOffset: CGPoint(x: 0, y: 12))
-        let accessory = ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)
+        let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: alignments, alignmentOffset: targetedPreview.alignmentOffset ?? CGPoint(x: 0, y: 12))
+        let accessory = ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment, forceDarkTheme: configuration.forceDarkTheme)
         accessory.delegate = self
         return accessory
     }
@@ -327,7 +327,7 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
         return chatHistoryLongPressGesture
     }
 
-    public override func menuAccessory(configuration: ContextMenuConfiguration, previewAlignment: ContextMenuTargetedPreview.Alignment) -> ContextMenuActionsAccessory {
+    public override func menuAccessory(configuration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) -> ContextMenuActionsAccessory {
         let isRTL = CurrentAppContext().isRTL
         let menu = configuration.actionProvider?([]) ?? ContextMenu([])
         let isIncomingMessage = itemViewModel.interaction.interactionType == .incomingMessage

@@ -386,6 +386,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         self.menuAccessory = menuAccessory
         self.presentImmediately = presentImmediately
         super.init(nibName: nil, bundle: nil)
+        if #available(iOS 13, *), configuration.forceDarkTheme { overrideUserInterfaceStyle = .dark }
     }
 
     required init?(coder: NSCoder) {
@@ -448,7 +449,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         UIView.animate(withDuration: animationDuration / 2.0) {
             if !UIDevice.current.isIPad {
                 self.blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
-                self.blurView.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_blackAlpha20
+                self.blurView.backgroundColor = self.contextMenuConfiguration.forceDarkTheme || Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_blackAlpha20
             } else {
                 self.blurView.backgroundColor = UIColor.ows_blackAlpha40
             }

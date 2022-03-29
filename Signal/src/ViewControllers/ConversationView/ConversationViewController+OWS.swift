@@ -236,42 +236,6 @@ extension ConversationViewController: ForwardMessageDelegate {
     }
 }
 
-// MARK: -
-
-extension ConversationViewController {
-
-    // A message can be remotely deleted iff:
-    //  * the feature flag is enabled
-    //  * you sent this message
-    //  * you haven't already remotely deleted this message
-    //  * it has been less than 3 hours since you sent the message
-    func canBeRemotelyDeleted(item: CVItemViewModel) -> Bool {
-        guard let outgoingMessage = item.interaction as? TSOutgoingMessage else { return false }
-        guard !outgoingMessage.wasRemotelyDeleted else { return false }
-        guard Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= (kHourInMs * 3) else { return false }
-
-        return true
-    }
-
-    func showDeleteForEveryoneConfirmationIfNecessary(completion: @escaping () -> Void) {
-        guard !Self.preferences.wasDeleteForEveryoneConfirmationShown() else { return completion() }
-
-        OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString(
-                "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION",
-                comment: "A one-time confirmation that you want to delete for everyone"
-            ),
-            proceedTitle: NSLocalizedString(
-                "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
-                comment: "The title for the action that deletes a message for all users in the conversation."
-            ),
-            proceedStyle: .destructive) { _ in
-            Self.preferences.setWasDeleteForEveryoneConfirmationShown()
-            completion()
-        }
-    }
-}
-
 // MARK: - MessageActionsToolbarDelegate
 
 extension ConversationViewController: MessageActionsToolbarDelegate {

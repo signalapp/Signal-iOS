@@ -160,6 +160,7 @@ public class ContextMenuTargetedPreview {
     public let snapshot: UIView?
     public var auxiliarySnapshot: UIView?
     public let alignment: Alignment
+    public var alignmentOffset: CGPoint?
     public let accessoryViews: [ContextMenuTargetedPreviewAccessory]
 
     /// Default targeted preview initializer
@@ -196,9 +197,11 @@ public typealias ContextMenuActionProvider = ([ContextMenuAction]) -> ContextMen
 public class ContextMenuConfiguration {
     public let identifier: NSCopying
     public let actionProvider: ContextMenuActionProvider?
+    public let forceDarkTheme: Bool
 
     public init (
         identifier: NSCopying?,
+        forceDarkTheme: Bool = false,
         actionProvider: ContextMenuActionProvider?
     ) {
         if let ident = identifier {
@@ -207,6 +210,7 @@ public class ContextMenuConfiguration {
             self.identifier = UUID() as NSCopying
         }
 
+        self.forceDarkTheme = forceDarkTheme
         self.actionProvider = actionProvider
     }
 }

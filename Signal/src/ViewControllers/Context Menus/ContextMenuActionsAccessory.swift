@@ -17,11 +17,12 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
 
     public init(
         menu: ContextMenu,
-        accessoryAlignment: AccessoryAlignment
+        accessoryAlignment: AccessoryAlignment,
+        forceDarkTheme: Bool = false
     ) {
         self.menu = menu
 
-        menuView = ContextMenuActionsView(menu: menu)
+        menuView = ContextMenuActionsView(menu: menu, forceDarkTheme: forceDarkTheme)
         menuView.isHidden = true
         super.init(accessoryView: menuView, accessoryAlignment: accessoryAlignment)
         menuView.delegate = self
@@ -134,6 +135,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
     private class ContextMenuActionRow: UIView {
         let attributes: ContextMenuAction.Attributes
         let hostEffect: UIBlurEffect
+        let forceDarkTheme: Bool
         let titleLabel: UILabel
         let iconView: UIImageView
         let separatorView: UIVisualEffectView
@@ -147,8 +149,8 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
                             vibrancyView.frame = bounds
                             let view = UIView(frame: bounds)
                             view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                            view.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray12
-                            if Theme.isDarkThemeEnabled {
+                            view.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray12
+                            if forceDarkTheme || Theme.isDarkThemeEnabled {
                                 vibrancyView.backgroundColor = UIColor.ows_whiteAlpha20
                             }
                             view.alpha = 0.3
@@ -175,7 +177,8 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             title: String,
             icon: UIImage?,
             attributes: ContextMenuAction.Attributes,
-            hostBlurEffect: UIBlurEffect
+            hostBlurEffect: UIBlurEffect,
+            forceDarkTheme: Bool
         ) {
             titleLabel = UILabel(frame: CGRect.zero)
             titleLabel.text = title
@@ -184,13 +187,14 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
 
             self.attributes = attributes
             hostEffect = hostBlurEffect
+            self.forceDarkTheme = forceDarkTheme
 
             if attributes.contains(.destructive) {
                 titleLabel.textColor = Theme.ActionSheet.default.destructiveButtonTextColor
             } else if attributes.contains(.disabled) {
-                titleLabel.textColor = Theme.secondaryTextAndIconColor
+                titleLabel.textColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
             } else {
-                titleLabel.textColor = Theme.primaryTextColor
+                titleLabel.textColor = forceDarkTheme ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
             }
 
             iconView = UIImageView(image: icon)
@@ -198,12 +202,12 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
             iconView.tintColor = titleLabel.textColor
 
             separatorView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
-            if Theme.isDarkThemeEnabled {
+            if forceDarkTheme || Theme.isDarkThemeEnabled {
                 separatorView.backgroundColor = UIColor.ows_whiteAlpha20
             }
 
             let separator = UIView(frame: separatorView.bounds)
-            separator.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray22
+            separator.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray22
             separator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             separatorView.contentView.addSubview(separator)
             isHighlighted = false
@@ -263,6 +267,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
 
     weak var delegate: ContextMenuActionsViewDelegate?
     public let menu: ContextMenu
+    public let forceDarkTheme: Bool
 
     private let actionViews: [ContextMenuActionRow]
     private let scrollView: UIScrollView
@@ -284,9 +289,11 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
     let cornerRadius: CGFloat = 12
 
     public init(
-        menu: ContextMenu
+        menu: ContextMenu,
+        forceDarkTheme: Bool = false
     ) {
         self.menu = menu
+        self.forceDarkTheme = forceDarkTheme
 
         scrollView = UIScrollView(frame: CGRect.zero)
         let effect = UIBlurEffect(style: UIBlurEffect.Style.prominent)
@@ -294,7 +301,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
 
         var actionViews: [ContextMenuActionRow] = []
         for action in menu.children {
-            let actionView = ContextMenuActionRow(title: action.title, icon: action.image, attributes: action.attributes, hostBlurEffect: effect)
+            let actionView = ContextMenuActionRow(title: action.title, icon: action.image, attributes: action.attributes, hostBlurEffect: effect, forceDarkTheme: forceDarkTheme)
             actionViews.append(actionView)
         }
 
