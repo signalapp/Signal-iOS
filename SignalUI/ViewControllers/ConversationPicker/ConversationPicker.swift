@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalMessaging
+import UIKit
 
 public protocol ConversationPickerDelegate: AnyObject {
     func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController)
@@ -702,19 +703,16 @@ private class ConversationPickerCell: ContactTableViewCell {
 
     // MARK: - Subviews
 
-    static let selectedBadgeImage = #imageLiteral(resourceName: "image_editor_checkmark_full").withRenderingMode(.alwaysTemplate)
+    let selectionBadgeSize = CGSize(square: 24)
 
-    let selectionBadgeSize = CGSize(square: 20)
     lazy var selectionView: UIView = {
         let container = UIView()
-        container.layoutMargins = .zero
-        container.autoSetDimensions(to: selectionBadgeSize)
 
         container.addSubview(unselectedBadgeView)
-        unselectedBadgeView.autoPinEdgesToSuperviewMargins()
+        unselectedBadgeView.autoPinEdgesToSuperviewEdges()
 
         container.addSubview(selectedBadgeView)
-        selectedBadgeView.autoPinEdgesToSuperviewMargins()
+        selectedBadgeView.autoPinEdgesToSuperviewEdges()
 
         return container
     }()
@@ -750,18 +748,14 @@ private class ConversationPickerCell: ContactTableViewCell {
     }
 
     lazy var unselectedBadgeView: UIView = {
-        let circleView = CircleView()
-        circleView.autoSetDimensions(to: selectionBadgeSize)
-        circleView.layer.borderWidth = 1.0
-        circleView.layer.borderColor = Theme.primaryIconColor.cgColor
-        return circleView
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "empty-circle-outline-24").withRenderingMode(.alwaysTemplate))
+        imageView.tintColor = .ows_gray25
+        return imageView
     }()
 
     lazy var selectedBadgeView: UIView = {
-        let imageView = UIImageView()
-        imageView.autoSetDimensions(to: selectionBadgeSize)
-        imageView.image = ConversationPickerCell.selectedBadgeImage
-        imageView.tintColor = .ows_accentBlue
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "check-circle-solid-24").withRenderingMode(.alwaysTemplate))
+        imageView.tintColor = Theme.accentBlueColor
         return imageView
     }()
 }
