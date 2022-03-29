@@ -166,6 +166,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (BOOL)isRTL
 {
+    // FIXME: We should try to remove this as we've had to add a hack to ensure the first call to this runs on the main thread
     static BOOL isRTL = NO;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

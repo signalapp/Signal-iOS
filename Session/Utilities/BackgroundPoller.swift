@@ -42,7 +42,7 @@ public final class BackgroundPoller : NSObject {
             guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
             return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
                 return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
-                    let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                    let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
                     let promises = messages.compactMap { json -> Promise<Void>? in
                         // Use a best attempt approach here; we don't want to fail the entire process if one of the
                         // messages failed to parse.
@@ -51,6 +51,10 @@ public final class BackgroundPoller : NSObject {
                         let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
                         return job.execute()
                     }
+                    
+                    // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+                    SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: lastRawMessage)
+                    
                     return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                 }
             }
