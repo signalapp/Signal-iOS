@@ -1121,15 +1121,10 @@ public extension CVComponentState {
                                     ranges: MessageBodyRanges?,
                                     interaction: TSInteraction,
                                     transaction: SDSAnyReadTransaction) -> DisplayableText {
-
-        let cacheKey = "body-\(interaction.uniqueId)"
-
         let mentionStyle: Mention.Style = (interaction as? TSOutgoingMessage != nil) ? .outgoing : .incoming
-        return Self.displayableText(cacheKey: cacheKey,
-                                    mentionStyle: mentionStyle,
-                                    transaction: transaction) {
-            MessageBody(text: text, ranges: ranges ?? .empty)
-        }
+        return DisplayableText.displayableText(withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+                                               mentionStyle: mentionStyle,
+                                               transaction: transaction)
     }
 
     static func displayableBodyText(oversizeTextAttachment attachmentStream: TSAttachmentStream,
@@ -1137,31 +1132,28 @@ public extension CVComponentState {
                                     interaction: TSInteraction,
                                     transaction: SDSAnyReadTransaction) -> DisplayableText {
 
-        let cacheKey = "oversize-body-\(interaction.uniqueId)"
-
-        let mentionStyle: Mention.Style = (interaction as? TSOutgoingMessage != nil) ? .outgoing : .incoming
-        return Self.displayableText(cacheKey: cacheKey,
-                                    mentionStyle: mentionStyle,
-                                    transaction: transaction) {
-            let text = { () -> String in
-                do {
-                    guard let url = attachmentStream.originalMediaURL else {
-                        owsFailDebug("Missing originalMediaURL.")
-                        return ""
-                    }
-                    let data = try Data(contentsOf: url)
-                    guard let string = String(data: data, encoding: .utf8) else {
-                        owsFailDebug("Couldn't parse oversize text.")
-                        return ""
-                    }
-                    return string
-                } catch {
-                    owsFailDebug("Couldn't load oversize text: \(error).")
+        let text = { () -> String in
+            do {
+                guard let url = attachmentStream.originalMediaURL else {
+                    owsFailDebug("Missing originalMediaURL.")
                     return ""
                 }
-            }()
-            return MessageBody(text: text, ranges: ranges ?? .empty)
-        }
+                let data = try Data(contentsOf: url)
+                guard let string = String(data: data, encoding: .utf8) else {
+                    owsFailDebug("Couldn't parse oversize text.")
+                    return ""
+                }
+                return string
+            } catch {
+                owsFailDebug("Couldn't load oversize text: \(error).")
+                return ""
+            }
+        }()
+
+        let mentionStyle: Mention.Style = (interaction as? TSOutgoingMessage != nil) ? .outgoing : .incoming
+        return DisplayableText.displayableText(withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+                                               mentionStyle: mentionStyle,
+                                               transaction: transaction)
     }
 }
 
@@ -1173,52 +1165,17 @@ fileprivate extension CVComponentState {
                                       ranges: MessageBodyRanges?,
                                       interaction: TSInteraction,
                                       transaction: SDSAnyReadTransaction) -> DisplayableText {
-
-        let cacheKey = "quoted-\(interaction.uniqueId)"
-
-        let mentionStyle: Mention.Style = .quotedReply
-        return Self.displayableText(cacheKey: cacheKey,
-                                    mentionStyle: mentionStyle,
-                                    transaction: transaction) {
-            MessageBody(text: text, ranges: ranges ?? .empty)
-        }
+        return DisplayableText.displayableText(withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+                                               mentionStyle: .quotedReply,
+                                               transaction: transaction)
     }
 
     static func displayableCaption(text: String,
                                    attachmentId: String,
                                    transaction: SDSAnyReadTransaction) -> DisplayableText {
-
-        let cacheKey = "attachment-caption-\(attachmentId)"
-
-        let mentionStyle: Mention.Style = .incoming
-        return CVComponentState.displayableText(cacheKey: cacheKey,
-                                                mentionStyle: mentionStyle,
-                                                transaction: transaction) {
-            MessageBody(text: text, ranges: .empty)
-        }
-    }
-
-    // TODO: Now that we're caching the displayable text on the view items,
-    //       I'm not sure if we still need this cache.
-    //
-    // Cache the results for up to 1,000 messages.
-    private static let displayableTextCache = LRUCache<String, DisplayableText>(maxSize: 1000)
-
-    static func displayableText(cacheKey: String,
-                                mentionStyle: Mention.Style,
-                                transaction: SDSAnyReadTransaction,
-                                messageBodyBlock: () -> MessageBody) -> DisplayableText {
-        owsAssertDebug(!cacheKey.isEmpty)
-
-        if let displayableText = displayableTextCache.object(forKey: cacheKey) {
-            return displayableText
-        }
-        let messageBody = messageBodyBlock()
-        let displayableText = DisplayableText.displayableText(withMessageBody: messageBody,
-                                                              mentionStyle: mentionStyle,
-                                                              transaction: transaction)
-        displayableTextCache.setObject(displayableText, forKey: cacheKey)
-        return displayableText
+        return DisplayableText.displayableText(withMessageBody: MessageBody(text: text, ranges: .empty),
+                                               mentionStyle: .incoming,
+                                               transaction: transaction)
     }
 }
 
