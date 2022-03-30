@@ -463,16 +463,29 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let nextFrameWidth = mediaViewContainer.width * 0.8
+        let previousFrameWidth = mediaViewContainer.width * 0.2
+
+        let leftFrameWidth: CGFloat
+        let rightFrameWidth: CGFloat
+        if CurrentAppContext().isRTL {
+            leftFrameWidth = nextFrameWidth
+            rightFrameWidth = previousFrameWidth
+        } else {
+            leftFrameWidth = previousFrameWidth
+            rightFrameWidth = nextFrameWidth
+        }
+
         let touchLocation = gestureRecognizer.location(in: view)
         if gestureRecognizer == leftTapGestureRecognizer {
-            var previousFrame = mediaViewContainer.frame
-            previousFrame.width = previousFrame.width / 2
-            return previousFrame.contains(touchLocation)
+            var leftFrame = mediaViewContainer.frame
+            leftFrame.width = leftFrameWidth
+            return leftFrame.contains(touchLocation)
         } else if gestureRecognizer == rightTapGestureRecognizer {
-            var nextFrame = mediaViewContainer.frame
-            nextFrame.width = nextFrame.width / 2
-            nextFrame.x += nextFrame.width
-            return nextFrame.contains(touchLocation)
+            var rightFrame = mediaViewContainer.frame
+            rightFrame.width = rightFrameWidth
+            rightFrame.x += leftFrameWidth
+            return rightFrame.contains(touchLocation)
         } else {
             return true
         }
