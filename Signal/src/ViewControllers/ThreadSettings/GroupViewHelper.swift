@@ -54,7 +54,7 @@ class GroupViewHelper: NSObject {
         guard !isBlockedByMigration else {
             return false
         }
-        guard !blockingManager.isThreadBlocked(groupThread) else {
+        guard !threadViewModel.isBlocked else {
             return false
         }
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {

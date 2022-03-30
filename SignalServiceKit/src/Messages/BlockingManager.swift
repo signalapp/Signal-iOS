@@ -623,7 +623,7 @@ public class BlockingManager: NSObject {
     // MARK: - Thread Blocking
 
     @objc
-    public func isThreadBlocked(_ thread: TSThread) -> Bool {
+    public func isThreadBlocked(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         if let contactThread = thread as? TSContactThread {
             return isAddressBlocked(contactThread.contactAddress)
         } else if let groupThread = thread as? TSGroupThread {

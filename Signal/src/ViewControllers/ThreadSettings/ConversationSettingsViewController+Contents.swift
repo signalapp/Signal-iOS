@@ -363,8 +363,6 @@ extension ConversationSettingsViewController {
             }))
         }
 
-        let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
-
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
                 owsFailDebug("Missing self")
@@ -373,7 +371,7 @@ extension ConversationSettingsViewController {
 
             let cellTitle: String
             var customColor: UIColor?
-            if isCurrentlyBlocked {
+            if self.threadViewModel.isBlocked {
                 cellTitle =
                     (self.thread.isGroupThread
                         ? NSLocalizedString("CONVERSATION_SETTINGS_UNBLOCK_GROUP",
@@ -396,7 +394,7 @@ extension ConversationSettingsViewController {
             return cell
         },
         actionBlock: { [weak self] in
-            if isCurrentlyBlocked {
+            if self?.threadViewModel.isBlocked == true {
                 self?.didTapUnblockThread()
             } else {
                 self?.didTapBlockThread()

@@ -185,7 +185,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 
     func buildGroupItem(_ groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> GroupConversationItem {
-        let isBlocked = self.blockingManager.isThreadBlocked(groupThread)
+        let isBlocked = self.blockingManager.isThreadBlocked(groupThread, transaction: transaction)
         let dmConfig = groupThread.disappearingMessagesConfiguration(with: transaction)
         return GroupConversationItem(groupThreadId: groupThread.uniqueId,
                                      isBlocked: isBlocked,

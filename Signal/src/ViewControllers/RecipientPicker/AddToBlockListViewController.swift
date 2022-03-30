@@ -80,7 +80,8 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
             }
             return .canBeSelected
         case .group(let thread):
-            guard !blockingManager.isThreadBlocked(thread) else {
+            let isThreadBlocked = databaseStorage.read { blockingManager.isThreadBlocked(thread, transaction: $0) }
+            guard !isThreadBlocked else {
                 return .conversationAlreadyInBlocklist
             }
             return .canBeSelected
@@ -125,7 +126,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
             guard blockingManager.isAddressBlocked(address) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
-            guard blockingManager.isThreadBlocked(thread) else { return nil }
+            guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

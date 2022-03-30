@@ -151,7 +151,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
             guard blockingManager.isAddressBlocked(address) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
-            guard blockingManager.isThreadBlocked(thread) else { return nil }
+            guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

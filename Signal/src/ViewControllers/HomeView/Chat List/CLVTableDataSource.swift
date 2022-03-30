@@ -817,11 +817,9 @@ extension CLVTableDataSource {
                                                lastReloadDate: Date?,
                                                isSplitViewControllerExpanded: Bool) -> ChatListCell.Configuration {
         owsAssertDebug(threadViewModel.chatListInfo != nil)
-
-        let isBlocked = threadViewModel.chatListInfo?.isBlocked == true
         let configuration = ChatListCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,
-                                                       isBlocked: isBlocked,
+                                                       isBlocked: threadViewModel.isBlocked,
                                                        isSplitViewControllerExpanded: isSplitViewControllerExpanded)
         return configuration
     }

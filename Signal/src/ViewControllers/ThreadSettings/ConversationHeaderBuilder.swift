@@ -575,7 +575,7 @@ extension ConversationHeaderDelegate {
             return owsFailDebug("Tried to start an audio only group call")
         }
 
-        guard !blockingManager.isThreadBlocked(thread) else {
+        guard !threadViewModel.isBlocked else {
             didTapUnblockThread { [weak self] in
                 self?.startCall(withVideo: withVideo)
             }

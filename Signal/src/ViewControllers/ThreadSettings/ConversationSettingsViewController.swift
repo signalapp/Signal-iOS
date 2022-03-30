@@ -96,6 +96,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
                                                name: .profileWhitelistDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(blocklistDidChange(notification:)),
+                                               name: BlockingManager.blockListDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateTableContents),
                                                name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
@@ -659,29 +663,19 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func didTapUnblockThread(completion: @escaping () -> Void = {}) {
-        let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
-        if !isCurrentlyBlocked {
-            owsFailDebug("Not blocked.")
-            return
-        }
         BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] _ in
-            self?.updateTableContents()
+            self?.reloadThreadAndUpdateContent()
             completion()
         }
     }
 
     func didTapBlockThread() {
-        let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
-        if isCurrentlyBlocked {
-            owsFailDebug("Already blocked.")
-            return
-        }
         guard canLocalUserLeaveThreadWithoutChoosingNewAdmin else {
             showReplaceAdminAlert()
             return
         }
         BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] _ in
-            self?.updateTableContents()
+            self?.reloadThreadAndUpdateContent()
         }
     }
 
@@ -899,6 +893,12 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     // MARK: - Notifications
+
+    @objc
+    private func blocklistDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+        reloadThreadAndUpdateContent()
+    }
 
     @objc
     private func identityStateDidChange(notification: Notification) {
