@@ -76,7 +76,7 @@ class StoryItemMediaView: UIView {
     }
 
     func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
-        if startAttachmentDownloadIfNecessary() { return true }
+        if startAttachmentDownloadIfNecessary(gesture) { return true }
 
         if let textAttachmentView = mediaView as? TextAttachmentView {
             return textAttachmentView.willHandleTapGesture(gesture)
@@ -85,8 +85,16 @@ class StoryItemMediaView: UIView {
         return false
     }
 
-    private func startAttachmentDownloadIfNecessary() -> Bool {
+    private func startAttachmentDownloadIfNecessary(_ gesture: UITapGestureRecognizer) -> Bool {
         guard case .pointer(let pointer) = item.attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
+
+        // Only start downloads when the user taps in the center of the view.
+        let downloadHitRegion = CGRect(
+            origin: CGPoint(x: frame.center.x - 30, y: frame.center.y - 30),
+            size: CGSize(square: 60)
+        )
+        guard downloadHitRegion.contains(gesture.location(in: self)) else { return false }
+
         attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: item.message.uniqueId,
             attachmentGroup: .allAttachmentsIncoming,
@@ -98,12 +106,13 @@ class StoryItemMediaView: UIView {
                 Logger.warn("Failed to redownload attachment with error: \(error)")
                 DispatchQueue.main.async { self?.updateMediaView() }
             }
+
         return true
     }
 
-    var isDownloading: Bool {
-        guard case .pointer(let pointer) = item.attachment else { return false }
-        return [.enqueued, .downloading].contains(pointer.state)
+    var isPendingDownload: Bool {
+        guard case .pointer = item.attachment else { return false }
+        return true
     }
 
     var duration: CFTimeInterval {

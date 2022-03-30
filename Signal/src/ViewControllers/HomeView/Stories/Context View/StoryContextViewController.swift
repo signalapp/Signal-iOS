@@ -293,15 +293,17 @@ class StoryContextViewController: OWSViewController {
         AssertIsOnMainThread()
         playbackProgressView.numberOfItems = items.count
         if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
-            // When we present a story, mark it as viewed if it's not already.
-            if !currentItemView.isDownloading, currentItemView.item.message.localUserViewedTimestamp == nil {
+            // When we present a story, mark it as viewed if it's not already, as long as it's downloaded.
+            if !currentItemView.isPendingDownload, currentItemView.item.message.localUserViewedTimestamp == nil {
                 databaseStorage.write { transaction in
                     currentItemView.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
             }
 
             currentItemView.updateTimestampText()
-            if currentItemView.isDownloading {
+
+            if currentItemView.isPendingDownload {
+                // Don't progress stories that are pending download.
                 lastTransitionTime = CACurrentMediaTime()
                 playbackProgressView.itemState = .init(index: idx, value: 0)
             } else if let lastTransitionTime = lastTransitionTime {
