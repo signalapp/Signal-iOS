@@ -257,25 +257,29 @@ class StoryContextViewController: OWSViewController {
             mediaViewContainer.addSubview(itemView)
             itemView.autoPinEdgesToSuperviewEdges()
 
-            replyButton.isHidden = false
+            if currentItem.message.localUserAllowedToReply {
+                replyButton.isHidden = false
 
-            let replyButtonText: String
-            switch currentItem.numberOfReplies {
-            case 0:
-                replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_NO_REPLIES", comment: "Button for replying to a story with no existing replies.")
-            case 1:
-                replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_1_REPLY", comment: "Button for replying to a story with a single existing reply.")
-            default:
-                let format = NSLocalizedString("STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT", comment: "Button for replying to a story with N existing replies. {embeds the number of replies}")
-                replyButtonText = String(format: format, "\(currentItem.numberOfReplies)")
+                let replyButtonText: String
+                switch currentItem.numberOfReplies {
+                case 0:
+                    replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_NO_REPLIES", comment: "Button for replying to a story with no existing replies.")
+                case 1:
+                    replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_1_REPLY", comment: "Button for replying to a story with a single existing reply.")
+                default:
+                    let format = NSLocalizedString("STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT", comment: "Button for replying to a story with N existing replies. {embeds the number of replies}")
+                    replyButtonText = String(format: format, "\(currentItem.numberOfReplies)")
+                }
+
+                let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
+                let attributedReplyButtonText = replyButtonText.styled(
+                    with: .font(.systemFont(ofSize: 17, weight: .regular)),
+                    .xmlRules([.style("bold", semiboldStyle)])
+                )
+                replyButton.setAttributedTitle(attributedReplyButtonText)
+            } else {
+                replyButton.isHidden = true
             }
-
-            let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
-            let attributedReplyButtonText = replyButtonText.styled(
-                with: .font(.systemFont(ofSize: 17, weight: .regular)),
-                .xmlRules([.style("bold", semiboldStyle)])
-            )
-            replyButton.setAttributedTitle(attributedReplyButtonText)
         } else {
             replyButton.isHidden = true
         }
