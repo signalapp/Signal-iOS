@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -50,6 +50,8 @@ open class TooltipView: UIView {
 
     public enum TailDirection { case up, down }
     open var tailDirection: TailDirection { .down }
+
+    open var dismissOnTap: Bool { true }
 
     private func createContents(fromView: UIView,
                                 widthReferenceView: UIView,
@@ -164,11 +166,9 @@ open class TooltipView: UIView {
 
     @objc
     func handleTap(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
+        guard sender.state == .recognized else { return }
         Logger.verbose("")
-        removeFromSuperview()
+        if dismissOnTap { removeFromSuperview() }
         wasTappedBlock?()
     }
 }

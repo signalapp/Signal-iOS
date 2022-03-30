@@ -77,6 +77,8 @@ class TextAttachmentView: UIView {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
     }
 
+    public var isPresentingLinkTooltip: Bool { linkPreviewTooltipView != nil }
+
     private var linkPreviewTooltipView: LinkPreviewTooltipView?
     func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
         if let linkPreviewTooltipView = linkPreviewTooltipView {
@@ -87,10 +89,10 @@ class TextAttachmentView: UIView {
                     options: [:],
                     completionHandler: nil
                 )
+            } else {
+                linkPreviewTooltipView.removeFromSuperview()
+                self.linkPreviewTooltipView = nil
             }
-
-            linkPreviewTooltipView.removeFromSuperview()
-            self.linkPreviewTooltipView = nil
 
             return true
         } else if let linkPreviewView = linkPreviewView,
@@ -99,7 +101,7 @@ class TextAttachmentView: UIView {
                   linkPreviewView.frame.contains(gesture.location(in: container)) {
             let tooltipView = LinkPreviewTooltipView(
                 fromView: self,
-                referenceView: linkPreviewView,
+                tailReferenceView: linkPreviewView,
                 url: URL(string: urlString)!
             )
             self.linkPreviewTooltipView = tooltipView
@@ -298,12 +300,12 @@ private extension CAGradientLayer {
 
 private class LinkPreviewTooltipView: TooltipView {
     let url: URL
-    init(fromView: UIView, referenceView: UIView, url: URL) {
+    init(fromView: UIView, tailReferenceView: UIView, url: URL) {
         self.url = url
         super.init(
             fromView: fromView,
-            widthReferenceView: referenceView,
-            tailReferenceView: referenceView,
+            widthReferenceView: fromView,
+            tailReferenceView: tailReferenceView,
             wasTappedBlock: nil
         )
     }
@@ -340,4 +342,5 @@ private class LinkPreviewTooltipView: TooltipView {
     public override var bubbleHSpacing: CGFloat { 16 }
 
     public override var tailDirection: TooltipView.TailDirection { .down }
+    public override var dismissOnTap: Bool { false }
 }

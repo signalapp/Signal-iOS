@@ -9,7 +9,14 @@ import UIKit
 import SignalUI
 import SafariServices
 
+protocol StoryItemMediaViewDelegate: AnyObject {
+    func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
+    func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView)
+}
+
 class StoryItemMediaView: UIView {
+    weak var delegate: StoryItemMediaViewDelegate?
+
     let item: StoryItem
     init(item: StoryItem) {
         self.item = item
@@ -79,7 +86,17 @@ class StoryItemMediaView: UIView {
         if startAttachmentDownloadIfNecessary(gesture) { return true }
 
         if let textAttachmentView = mediaView as? TextAttachmentView {
-            return textAttachmentView.willHandleTapGesture(gesture)
+            let didHandle = textAttachmentView.willHandleTapGesture(gesture)
+            if didHandle {
+                if textAttachmentView.isPresentingLinkTooltip {
+                    // If we presented a link, pause playback
+                    delegate?.storyItemMediaViewWantsToPause(self)
+                } else {
+                    // If we dismissed a link, resume playback
+                    delegate?.storyItemMediaViewWantsToPlay(self)
+                }
+            }
+            return didHandle
         }
 
         return false

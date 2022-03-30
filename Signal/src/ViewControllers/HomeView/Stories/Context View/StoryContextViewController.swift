@@ -251,6 +251,7 @@ class StoryContextViewController: OWSViewController {
 
         if let currentItem = currentItem {
             let itemView = StoryItemMediaView(item: currentItem)
+            itemView.delegate = self
             self.currentItemMediaView = itemView
             mediaViewContainer.addSubview(itemView)
             itemView.autoPinEdgesToSuperviewEdges()
@@ -517,4 +518,14 @@ extension StoryContextViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdateExternally() {}
 
     func databaseChangesDidReset() {}
+}
+
+extension StoryContextViewController: StoryItemMediaViewDelegate {
+    func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView) {
+        play()
+    }
+
+    func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView) {
+        pause()
+    }
 }
