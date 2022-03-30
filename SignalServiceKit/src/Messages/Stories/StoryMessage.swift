@@ -257,7 +257,7 @@ public enum StoryMessageAttachment: Codable {
 }
 
 public struct TextAttachment: Codable {
-    public let text: String
+    public let text: String?
 
     public enum TextStyle: Int, Codable {
         case regular = 0
@@ -310,10 +310,7 @@ public struct TextAttachment: Codable {
     public private(set) var preview: OWSLinkPreview?
 
     init(from proto: SSKProtoTextAttachment, transaction: SDSAnyWriteTransaction) throws {
-        guard let text = proto.text?.nilIfEmpty else {
-            throw OWSAssertionError("Missing text for attachment.")
-        }
-        self.text = text
+        self.text = proto.text?.nilIfEmpty
 
         guard let style = proto.textStyle else {
             throw OWSAssertionError("Missing style for attachment.")

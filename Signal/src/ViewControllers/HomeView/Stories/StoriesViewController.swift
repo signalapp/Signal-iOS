@@ -385,7 +385,11 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
                             }
                             AttachmentSharing.showShareUI(forAttachment: attachment, sender: cell)
                         case .text(let attachment):
-                            AttachmentSharing.showShareUI(forText: attachment.text, sender: cell)
+                            if let url = attachment.preview?.urlString {
+                                AttachmentSharing.showShareUI(for: URL(string: url)!, sender: cell)
+                            } else if let text = attachment.text {
+                                AttachmentSharing.showShareUI(forText: text, sender: cell)
+                            }
                         case .missing:
                             owsFailDebug("Unexpectedly missing attachment for story.")
                         }
