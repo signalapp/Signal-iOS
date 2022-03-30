@@ -38,6 +38,69 @@ class StoryGroupReplyCell: UITableViewCell {
         case bottom
         case middle
         case reaction
+
+        var hasTimestamp: Bool {
+            switch self {
+            case .standalone, .bottom, .reaction: return true
+            case .top, .middle: return false
+            }
+        }
+
+        var hasAuthor: Bool {
+            switch self {
+            case .standalone, .top, .reaction: return true
+            case .middle, .bottom: return false
+            }
+        }
+
+        var hasAvatar: Bool {
+            switch self {
+            case .standalone, .bottom, .reaction: return true
+            case .top, .middle: return false
+            }
+        }
+
+        var hasBubble: Bool {
+            switch self {
+            case .reaction: return false
+            case .standalone, .top, .middle, .bottom: return true
+            }
+        }
+
+        var hasReaction: Bool {
+            switch self {
+            case .reaction: return true
+            case .standalone, .top, .middle, .bottom: return false
+            }
+        }
+
+        var insets: UIEdgeInsets {
+            switch self {
+            case .standalone, .reaction: return UIEdgeInsets(hMargin: 16, vMargin: 6)
+            case .top: return UIEdgeInsets(top: 6, leading: 16, bottom: 1, trailing: 16)
+            case .middle: return UIEdgeInsets(top: 1, leading: 16, bottom: 1, trailing: 16)
+            case .bottom: return UIEdgeInsets(top: 1, leading: 16, bottom: 6, trailing: 16)
+            }
+        }
+
+        var verticalAlignment: UIStackView.Alignment {
+            switch self {
+            case .reaction: return .center
+            case .standalone, .top, .middle, .bottom: return .bottom
+            }
+        }
+
+        var sharpCorners: UIRectCorner {
+            switch self {
+            case .standalone, .reaction: return []
+            case .top: return CurrentAppContext().isRTL ? .bottomRight : .bottomLeft
+            case .middle: return CurrentAppContext().isRTL ? [.bottomRight, .topRight] : [.bottomLeft, .topLeft]
+            case .bottom: return CurrentAppContext().isRTL ? .topRight : .topLeft
+            }
+        }
+
+        var cornerRadius: CGFloat { 18 }
+        var sharpCornerRadius: CGFloat { 4 }
     }
     let cellType: CellType
 
@@ -60,78 +123,47 @@ class StoryGroupReplyCell: UITableViewCell {
 
         let hStack = UIStackView()
         hStack.axis = .horizontal
-        hStack.alignment = .bottom
+        hStack.alignment = cellType.verticalAlignment
+
         hStack.isLayoutMarginsRelativeArrangement = true
+        hStack.layoutMargins = cellType.insets
 
-        switch cellType {
-        case .standalone:
-            hStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 6)
+        if cellType.hasAvatar {
             avatarView.autoSetDimensions(to: CGSize(square: 28))
             hStack.addArrangedSubview(avatarView)
-            hStack.addArrangedSubview(.spacer(withWidth: 8))
-            hStack.addArrangedSubview(bubbleView)
-            hStack.addArrangedSubview(.hStretchingSpacer())
-
-            bubbleView.layer.cornerRadius = 18
-            bubbleView.clipsToBounds = true
-
-            bubbleView.addSubview(vStack)
-            vStack.autoPinEdgesToSuperviewMargins()
-
-            vStack.addArrangedSubview(authorNameLabel)
-            vStack.addArrangedSubview(messageLabel)
-        case .top:
-            hStack.layoutMargins = UIEdgeInsets(top: 6, leading: 16, bottom: 1, trailing: 16)
-            hStack.addArrangedSubview(.spacer(withWidth: 36))
-            hStack.addArrangedSubview(bubbleView)
-            hStack.addArrangedSubview(.hStretchingSpacer())
-
-            bubbleView.layer.mask = bubbleCornerMaskLayer
-
-            bubbleView.addSubview(vStack)
-            vStack.autoPinEdgesToSuperviewMargins()
-
-            vStack.addArrangedSubview(authorNameLabel)
-            vStack.addArrangedSubview(messageLabel)
-        case .bottom:
-            hStack.layoutMargins = UIEdgeInsets(top: 1, leading: 16, bottom: 6, trailing: 16)
-            hStack.addArrangedSubview(avatarView)
-            hStack.addArrangedSubview(.spacer(withWidth: 8))
-            hStack.addArrangedSubview(bubbleView)
-            hStack.addArrangedSubview(.hStretchingSpacer())
-
-            bubbleView.layer.mask = bubbleCornerMaskLayer
-
-            bubbleView.addSubview(vStack)
-            vStack.autoPinEdgesToSuperviewMargins()
-
-            vStack.addArrangedSubview(authorNameLabel)
-            vStack.addArrangedSubview(messageLabel)
-        case .middle:
-            hStack.layoutMargins = UIEdgeInsets(top: 1, leading: 16, bottom: 1, trailing: 16)
-            hStack.addArrangedSubview(.spacer(withWidth: 36))
-            hStack.addArrangedSubview(bubbleView)
-            hStack.addArrangedSubview(.hStretchingSpacer())
-
-            bubbleView.layer.mask = bubbleCornerMaskLayer
-
-            bubbleView.addSubview(vStack)
-            vStack.autoPinEdgesToSuperviewMargins()
-
-            vStack.addArrangedSubview(messageLabel)
-        case .reaction:
-            hStack.alignment = .center
-            hStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 6)
-            avatarView.autoSetDimensions(to: CGSize(square: 28))
-            hStack.addArrangedSubview(avatarView)
-            hStack.addArrangedSubview(.spacer(withWidth: 20))
-            hStack.addArrangedSubview(vStack)
-            hStack.addArrangedSubview(.hStretchingSpacer())
-            hStack.addArrangedSubview(reactionLabel)
-
-            vStack.addArrangedSubview(authorNameLabel)
-            vStack.addArrangedSubview(messageLabel)
+        } else {
+            hStack.addArrangedSubview(.spacer(withWidth: 28))
         }
+
+        hStack.addArrangedSubview(.spacer(withWidth: 8))
+
+        if cellType.hasBubble {
+            hStack.addArrangedSubview(bubbleView)
+            bubbleView.addSubview(vStack)
+            vStack.autoPinEdgesToSuperviewMargins()
+
+            if cellType.sharpCorners.isEmpty {
+                bubbleView.layer.cornerRadius = cellType.cornerRadius
+                bubbleView.clipsToBounds = true
+            } else {
+                bubbleView.layer.mask = bubbleCornerMaskLayer
+            }
+        } else {
+            hStack.addArrangedSubview(.spacer(withWidth: 12))
+            hStack.addArrangedSubview(vStack)
+        }
+
+        hStack.addArrangedSubview(.hStretchingSpacer())
+
+        if cellType.hasReaction {
+            hStack.addArrangedSubview(reactionLabel)
+        }
+
+        if cellType.hasAuthor {
+            vStack.addArrangedSubview(authorNameLabel)
+        }
+
+        vStack.addArrangedSubview(messageLabel)
 
         contentView.addSubview(hStack)
         hStack.autoPinEdgesToSuperviewEdges()
@@ -142,29 +174,19 @@ class StoryGroupReplyCell: UITableViewCell {
     }
 
     func configure(with item: StoryGroupReplyViewItem) {
-        switch cellType {
-        case .standalone:
+        if cellType.hasAuthor {
             authorNameLabel.textColor = item.authorColor
             authorNameLabel.text = item.authorDisplayName
+        }
+
+        if cellType.hasAvatar {
             avatarView.updateWithSneakyTransactionIfNecessary { config in
                 config.dataSource = .address(item.authorAddress)
             }
-        case .top:
-            authorNameLabel.textColor = item.authorColor
-            authorNameLabel.text = item.authorDisplayName
-        case .bottom:
-            avatarView.updateWithSneakyTransactionIfNecessary { config in
-                config.dataSource = .address(item.authorAddress)
-            }
-        case .middle:
-            break
-        case .reaction:
-            authorNameLabel.textColor = item.authorColor
-            authorNameLabel.text = item.authorDisplayName
+        }
+
+        if cellType.hasReaction {
             reactionLabel.text = item.reactionEmoji
-            avatarView.updateWithSneakyTransactionIfNecessary { config in
-                config.dataSource = .address(item.authorAddress)
-            }
         }
 
         configureTextAndTimestamp(for: item)
@@ -194,83 +216,82 @@ class StoryGroupReplyCell: UITableViewCell {
             }
         }() else { return }
 
-        switch cellType {
-        case .standalone, .bottom, .reaction:
-            // Append timestamp to attributed text
-            let timestampText = item.timeString.styled(
-                with: .font(.ows_dynamicTypeCaption1Clamped),
-                .color(.ows_gray25)
-            )
-
-            let maxMessageWidth = min(512, CurrentAppContext().frame.width) - 92
-            let timestampSpacer: CGFloat = 6
-
-            let messageMeasurement = measure(messageText, maxWidth: maxMessageWidth)
-            let timestampMeasurement = measure(timestampText, maxWidth: maxMessageWidth)
-
-            let lastLineFreeSpace = maxMessageWidth - timestampSpacer - messageMeasurement.lastLineRect.width
-
-            let textDirectionMatchesAppDirection: Bool
-            switch item.displayableText?.displayTextNaturalAlignment ?? .natural {
-            case .left:
-                textDirectionMatchesAppDirection = !CurrentAppContext().isRTL
-            case .right:
-                textDirectionMatchesAppDirection = CurrentAppContext().isRTL
-            case .natural:
-                textDirectionMatchesAppDirection = true
-            default:
-                owsFailDebug("Unexpected text alignment")
-                textDirectionMatchesAppDirection = true
-            }
-
-            let hasSpacedForTimestampOnLastMessageLine = lastLineFreeSpace >= timestampMeasurement.rect.width
-            let shouldRenderTimestampOnLastMessageLine = hasSpacedForTimestampOnLastMessageLine && textDirectionMatchesAppDirection
-
-            if shouldRenderTimestampOnLastMessageLine {
-                var possibleMessageBubbleWidths = [
-                    messageMeasurement.rect.width,
-                    messageMeasurement.lastLineRect.width + timestampSpacer + timestampMeasurement.rect.width
-                ]
-                if cellType == .standalone {
-                    contentView.layoutIfNeeded()
-                    possibleMessageBubbleWidths.append(authorNameLabel.width)
-                }
-
-                let finalMessageLabelWidth = possibleMessageBubbleWidths.max()!
-
-                messageLabel.attributedText = .composed(of: [
-                    messageText,
-                    "\n",
-                    timestampText.styled(
-                        with: .paragraphSpacingBefore(-timestampMeasurement.rect.height),
-                        .firstLineHeadIndent(finalMessageLabelWidth - timestampMeasurement.rect.width)
-                    )
-                ])
-            } else {
-                var possibleMessageBubbleWidths = [
-                    messageMeasurement.rect.width,
-                    timestampMeasurement.rect.width
-                ]
-                if cellType == .standalone {
-                    contentView.layoutIfNeeded()
-                    possibleMessageBubbleWidths.append(authorNameLabel.width)
-                }
-
-                let finalMessageLabelWidth = possibleMessageBubbleWidths.max()!
-
-                messageLabel.attributedText = .composed(of: [
-                    messageText,
-                    "\n",
-                    timestampText.styled(
-                        with: textDirectionMatchesAppDirection
-                            ? .firstLineHeadIndent(finalMessageLabelWidth - timestampMeasurement.rect.width)
-                            : .alignment(.trailing)
-                    )
-                ])
-            }
-            break
-        case .top, .middle:
+        guard cellType.hasTimestamp else {
             messageLabel.attributedText = messageText
+            return
+        }
+
+        // Append timestamp to attributed text
+        let timestampText = item.timeString.styled(
+            with: .font(.ows_dynamicTypeCaption1Clamped),
+            .color(.ows_gray25)
+        )
+
+        let maxMessageWidth = min(512, CurrentAppContext().frame.width) - 92
+        let timestampSpacer: CGFloat = 6
+
+        let messageMeasurement = measure(messageText, maxWidth: maxMessageWidth)
+        let timestampMeasurement = measure(timestampText, maxWidth: maxMessageWidth)
+
+        let lastLineFreeSpace = maxMessageWidth - timestampSpacer - messageMeasurement.lastLineRect.width
+
+        let textDirectionMatchesAppDirection: Bool
+        switch item.displayableText?.displayTextNaturalAlignment ?? .natural {
+        case .left:
+            textDirectionMatchesAppDirection = !CurrentAppContext().isRTL
+        case .right:
+            textDirectionMatchesAppDirection = CurrentAppContext().isRTL
+        case .natural:
+            textDirectionMatchesAppDirection = true
+        default:
+            owsFailDebug("Unexpected text alignment")
+            textDirectionMatchesAppDirection = true
+        }
+
+        let hasSpacedForTimestampOnLastMessageLine = lastLineFreeSpace >= timestampMeasurement.rect.width
+        let shouldRenderTimestampOnLastMessageLine = hasSpacedForTimestampOnLastMessageLine && textDirectionMatchesAppDirection
+
+        if shouldRenderTimestampOnLastMessageLine {
+            var possibleMessageBubbleWidths = [
+                messageMeasurement.rect.width,
+                messageMeasurement.lastLineRect.width + timestampSpacer + timestampMeasurement.rect.width
+            ]
+            if cellType.hasAuthor {
+                contentView.layoutIfNeeded()
+                possibleMessageBubbleWidths.append(authorNameLabel.width)
+            }
+
+            let finalMessageLabelWidth = possibleMessageBubbleWidths.max()!
+
+            messageLabel.attributedText = .composed(of: [
+                messageText,
+                "\n",
+                timestampText.styled(
+                    with: .paragraphSpacingBefore(-timestampMeasurement.rect.height),
+                    .firstLineHeadIndent(finalMessageLabelWidth - timestampMeasurement.rect.width)
+                )
+            ])
+        } else {
+            var possibleMessageBubbleWidths = [
+                messageMeasurement.rect.width,
+                timestampMeasurement.rect.width
+            ]
+            if cellType.hasAuthor {
+                contentView.layoutIfNeeded()
+                possibleMessageBubbleWidths.append(authorNameLabel.width)
+            }
+
+            let finalMessageLabelWidth = possibleMessageBubbleWidths.max()!
+
+            messageLabel.attributedText = .composed(of: [
+                messageText,
+                "\n",
+                timestampText.styled(
+                    with: textDirectionMatchesAppDirection
+                    ? .firstLineHeadIndent(finalMessageLabelWidth - timestampMeasurement.rect.width)
+                    : .alignment(.trailing)
+                )
+            ])
         }
     }
 
@@ -303,26 +324,14 @@ class StoryGroupReplyCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let sharpCorners: UIRectCorner
-
-        switch cellType {
-        case .standalone, .reaction:
-            // No special corner rounding to apply
-            return
-        case .middle:
-            sharpCorners = CurrentAppContext().isRTL ? [.bottomRight, .topRight] : [.bottomLeft, .topLeft]
-        case .top:
-            sharpCorners = CurrentAppContext().isRTL ? .bottomRight : .bottomLeft
-        case .bottom:
-            sharpCorners = CurrentAppContext().isRTL ? .topRight : .topLeft
-        }
+        guard !cellType.sharpCorners.isEmpty else { return }
 
         bubbleView.layoutIfNeeded()
         bubbleCornerMaskLayer.path = UIBezierPath.roundedRect(
             bubbleView.bounds,
-            sharpCorners: sharpCorners,
-            sharpCornerRadius: 4,
-            wideCornerRadius: 18
+            sharpCorners: cellType.sharpCorners,
+            sharpCornerRadius: cellType.sharpCornerRadius,
+            wideCornerRadius: cellType.cornerRadius
         ).cgPath
     }
 }
