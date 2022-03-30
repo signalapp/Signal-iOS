@@ -726,8 +726,10 @@ extension ConversationViewController {
             owsFailDebug("Invalid thread.")
             return 0
         }
-        let blockedMembers = groupThread.groupModel.groupMembers.filter { address in
-            Self.blockingManager.isAddressBlocked(address)
+
+        let blockedMembers = databaseStorage.read { readTx in
+            groupThread.groupModel.groupMembers
+                .filter { blockingManager.isAddressBlocked($0, transaction: readTx) }
         }
         return blockedMembers.count
     }

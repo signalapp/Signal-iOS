@@ -118,7 +118,7 @@ extension ComposeViewController: RecipientPickerDelegate {
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):
-            guard blockingManager.isAddressBlocked(address) else { return nil }
+            guard blockingManager.isAddressBlocked(address, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
             guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }

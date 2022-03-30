@@ -15,7 +15,7 @@ class MemberActionSheet: InteractiveSheetViewController {
 
     var avatarView: PrimaryImageView?
     var thread: TSThread { threadViewModel.threadRecord }
-    let threadViewModel: ThreadViewModel
+    var threadViewModel: ThreadViewModel
     let address: SignalServiceAddress
 
     override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
@@ -33,33 +33,7 @@ class MemberActionSheet: InteractiveSheetViewController {
 
     @objc
     init(address: SignalServiceAddress, groupViewHelper: GroupViewHelper?) {
-        self.threadViewModel = {
-            // Avoid opening a write transaction if we can
-            guard let threadViewModel: ThreadViewModel = Self.databaseStorage.read(block: { transaction in
-                guard let thread = TSContactThread.getWithContactAddress(
-                    address,
-                    transaction: transaction
-                ) else { return nil }
-                return ThreadViewModel(
-                    thread: thread,
-                    forChatList: false,
-                    transaction: transaction
-                )
-            }) else {
-                return Self.databaseStorage.write { transaction in
-                    let thread = TSContactThread.getOrCreateThread(
-                        withContactAddress: address,
-                        transaction: transaction
-                    )
-                    return ThreadViewModel(
-                        thread: thread,
-                        forChatList: false,
-                        transaction: transaction
-                    )
-                }
-            }
-            return threadViewModel
-        }()
+        self.threadViewModel = Self.fetchThreadViewModel(address: address)
         self.groupViewHelper = groupViewHelper
         self.address = address
 
@@ -70,6 +44,34 @@ class MemberActionSheet: InteractiveSheetViewController {
 
     public required init() {
         fatalError("init() has not been implemented")
+    }
+
+    static func fetchThreadViewModel(address: SignalServiceAddress) -> ThreadViewModel {
+        // Avoid opening a write transaction if we can
+        guard let threadViewModel: ThreadViewModel = Self.databaseStorage.read(block: { transaction in
+            guard let thread = TSContactThread.getWithContactAddress(
+                address,
+                transaction: transaction
+            ) else { return nil }
+            return ThreadViewModel(
+                thread: thread,
+                forChatList: false,
+                transaction: transaction
+            )
+        }) else {
+            return Self.databaseStorage.write { transaction in
+                let thread = TSContactThread.getOrCreateThread(
+                    withContactAddress: address,
+                    transaction: transaction
+                )
+                return ThreadViewModel(
+                    thread: thread,
+                    forChatList: false,
+                    transaction: transaction
+                )
+            }
+        }
+        return threadViewModel
     }
 
     private weak var fromViewController: UIViewController?
@@ -130,6 +132,11 @@ class MemberActionSheet: InteractiveSheetViewController {
         updateTableContents()
     }
 
+    func reloadThreadViewModel() {
+        threadViewModel  = Self.fetchThreadViewModel(address: address)
+        updateTableContents()
+    }
+
     // When presenting the contact view, we must retain ourselves
     // as we are the delegate. This will get released when contact
     // editing has concluded.
@@ -157,7 +164,7 @@ class MemberActionSheet: InteractiveSheetViewController {
         guard !address.isLocalAddress else { return }
 
         // If blocked, only show unblock as an option
-        guard !blockingManager.isAddressBlocked(address) else {
+        guard !threadViewModel.isBlocked else {
             section.add(.actionItem(
                 icon: .settingsBlock,
                 name: NSLocalizedString(

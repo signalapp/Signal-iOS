@@ -456,7 +456,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 owsFailDebug("Invalid source address.")
             return .discard
         }
-        guard !blockingManager.isAddressBlocked(sourceAddress) &&
+        guard !blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) &&
             !blockingManager.isGroupIdBlocked(groupContextInfo.groupId) else {
                 Logger.info("Discarding blocked envelope.")
             return .discard

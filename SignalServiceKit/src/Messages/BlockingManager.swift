@@ -336,7 +336,7 @@ public class BlockingManager: NSObject {
 
     // MARK: - Contact Blocking
 
-    public var blockedAddresses: Set<SignalServiceAddress> {
+    public func blockedAddressSetWithTransaction(_ readTx: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
         let state = unfairLock.withLock {
             self.currentState
         }
@@ -464,7 +464,7 @@ public class BlockingManager: NSObject {
     }
 
     @objc
-    public func isAddressBlocked(_ address: SignalServiceAddress) -> Bool {
+    public func isAddressBlocked(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         unfairLock.withLock { self.currentState.isBlocked(address: address) }
     }
 
@@ -625,7 +625,7 @@ public class BlockingManager: NSObject {
     @objc
     public func isThreadBlocked(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         if let contactThread = thread as? TSContactThread {
-            return isAddressBlocked(contactThread.contactAddress)
+            return isAddressBlocked(contactThread.contactAddress, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
             return isGroupIdBlocked(groupThread.groupModel.groupId)
         } else {

@@ -132,14 +132,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Blocking
 
-- (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope
+- (BOOL)isEnvelopeSenderBlocked:(SSKProtoEnvelope *)envelope transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(envelope);
 
-    return [self.blockingManager isAddressBlocked:envelope.sourceAddress];
+    return [self.blockingManager isAddressBlocked:envelope.sourceAddress transaction:transaction];
 }
 
-- (BOOL)isDataMessageBlocked:(SSKProtoDataMessage *)dataMessage envelope:(SSKProtoEnvelope *)envelope
+- (BOOL)isDataMessageBlocked:(SSKProtoDataMessage *)dataMessage
+                    envelope:(SSKProtoEnvelope *)envelope
+                 transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(dataMessage);
     OWSAssertDebug(envelope);
@@ -148,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (groupId != nil) {
         return [self.blockingManager isGroupIdBlocked:groupId];
     } else {
-        BOOL senderBlocked = [self isEnvelopeSenderBlocked:envelope];
+        BOOL senderBlocked = [self isEnvelopeSenderBlocked:envelope transaction:transaction];
 
         // If the envelopeSender was blocked, we never should have gotten as far as decrypting the dataMessage.
         OWSAssertDebug(!senderBlocked);
@@ -219,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if ([self isEnvelopeSenderBlocked:envelope]) {
+    if ([self isEnvelopeSenderBlocked:envelope transaction:transaction]) {
         OWSLogInfo(@"incoming envelope sender is blocked.");
         return;
     }
@@ -532,7 +534,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self ensureGroupIdMapping:envelope withDataMessage:dataMessage transaction:transaction];
 
-    if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
+    if ([self isDataMessageBlocked:dataMessage envelope:envelope transaction:transaction]) {
         NSString *logMessage =
             [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];
         NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
@@ -998,7 +1000,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self ensureGroupIdMapping:envelope withCallMessage:callMessage transaction:transaction];
 
-    if ([self isEnvelopeSenderBlocked:envelope]) {
+    if ([self isEnvelopeSenderBlocked:envelope transaction:transaction]) {
         OWSFailDebug(@"envelope sender is blocked. Shouldn't have gotten this far.");
         return;
     }
@@ -1152,7 +1154,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (envelope.sourceAddress.isLocalAddress) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
-    } else if ([self.blockingManager isAddressBlocked:envelope.sourceAddress]
+    } else if ([self.blockingManager isAddressBlocked:envelope.sourceAddress transaction:transaction]
         || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID])) {
         NSString *logMessage =
             [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];

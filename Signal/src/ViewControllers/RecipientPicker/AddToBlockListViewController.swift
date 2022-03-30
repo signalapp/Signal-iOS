@@ -75,7 +75,8 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     ) -> RecipientPickerRecipientState {
         switch recipient.identifier {
         case .address(let address):
-            guard !blockingManager.isAddressBlocked(address) else {
+            let isAddressBlocked = databaseStorage.read { blockingManager.isAddressBlocked(address, transaction: $0) }
+            guard isAddressBlocked else {
                 return .userAlreadyInBlocklist
             }
             return .canBeSelected
@@ -123,7 +124,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):
-            guard blockingManager.isAddressBlocked(address) else { return nil }
+            guard blockingManager.isAddressBlocked(address, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
             guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }

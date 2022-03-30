@@ -324,16 +324,18 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         hasBeenConfigured = true
         deferredReconfigTimer?.invalidate()
 
-        let profileImage = databaseStorage.read { transaction -> UIImage? in
+        let (profileImage, isRemoteDeviceBlocked) = databaseStorage.read { transaction -> (UIImage?, Bool) in
             let updatedSize = avatarDiameter
             avatarView.update(transaction) { config in
                 config.dataSource = .address(device.address)
                 config.sizeClass = .customDiameter(updatedSize)
             }
 
-            return self.contactsManagerImpl.avatarImage(forAddress: device.address,
-                                                        shouldValidate: true,
-                                                        transaction: transaction)
+            let profileImage = self.contactsManagerImpl.avatarImage(forAddress: device.address,
+                                                                    shouldValidate: true,
+                                                                    transaction: transaction)
+            let isBlocked = blockingManager.isAddressBlocked(device.address, transaction: transaction)
+            return (profileImage, isBlocked)
         }
 
         backgroundAvatarView.image = profileImage
@@ -346,7 +348,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         noVideoView.backgroundColor = AvatarTheme.forAddress(device.address).backgroundColor
 
         configureRemoteVideo(device: device)
-        let isRemoteDeviceBlocked = blockingManager.isAddressBlocked(device.address)
         let errorDeferralInterval: TimeInterval = 5.0
         let addedDate = Date(millisecondsSince1970: device.addedTime)
         let connectionDuration = -addedDate.timeIntervalSinceNow

@@ -666,7 +666,10 @@ extension MessageSender {
             currentValidRecipients.remove(localAddress)
             recipientAddresses.formIntersection(currentValidRecipients)
 
-            recipientAddresses.subtract(self.blockingManager.blockedAddresses)
+            let blockedAddressSet = databaseStorage.read {
+                blockingManager.blockedAddressSetWithTransaction($0)
+            }
+            recipientAddresses.subtract(blockedAddressSet)
 
             if recipientAddresses.contains(localAddress) {
                 owsFailDebug("Message send recipients should not include self.")
@@ -683,7 +686,8 @@ extension MessageSender {
             // should prevent this from occurring, but in some edge cases
             // you might, for example, have a pending outgoing message when
             // you block them.
-            guard !self.blockingManager.isAddressBlocked(contactAddress) else {
+            let isBlocked = databaseStorage.read { blockingManager.isAddressBlocked(contactAddress, transaction: $0) }
+            guard !isBlocked else {
                 Logger.info("Skipping 1:1 send to blocked contact: \(contactAddress).")
                 throw MessageSenderError.blockedContactRecipient
             }

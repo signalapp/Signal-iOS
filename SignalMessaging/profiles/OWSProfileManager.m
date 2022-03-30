@@ -856,7 +856,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     for (SignalServiceAddress *address in addresses) {
 
         // If the address is blocked, we don't want to include it
-        if ([self.blockingManager isAddressBlocked:address]) {
+        if ([self.blockingManager isAddressBlocked:address transaction:transaction]) {
             continue;
         }
 
@@ -1014,11 +1014,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     OWSAssertDebug(address.isValid);
 
-    // isAddressBlocked can open a sneaky transaction in
-    // BlockingManager.ensureLazyInitialization(), but we avoid this
-    // by ensuring that BlockingManager.warmCaches() is always
-    // called first, immediately after registering the database views.
-    if ([self.blockingManager isAddressBlocked:address]) {
+    if ([self.blockingManager isAddressBlocked:address transaction:transaction]) {
         return NO;
     }
 

@@ -528,7 +528,7 @@ extension ConversationSettingsViewController {
                     let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
                     let isVerified = verificationState == .verified
                     let isNoLongerVerified = verificationState == .noLongerVerified
-                    let isBlocked = self.blockingManager.isAddressBlocked(memberAddress)
+                    let isBlocked = self.blockingManager.isAddressBlocked(memberAddress, transaction: transaction)
                     if isGroupAdmin {
                         configuration.accessoryMessage = NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
                                                                            comment: "Label indicating that a group member is an admin.")

@@ -66,6 +66,7 @@ extension OWSSyncContactsMessage {
                 inboxPosition = AnyThreadFinder().sortIndexObjc(thread: contactThread, transaction: transaction)
                 disappearingMessagesConfiguration = contactThread.disappearingMessagesConfiguration(with: transaction)
             }
+            let isBlocked = blockingManager.isAddressBlocked(signalAccount.recipientAddress, transaction: transaction)
 
             contactsOutputStream.write(signalAccount,
                                        recipientIdentity: recipientIdentity,
@@ -73,7 +74,8 @@ extension OWSSyncContactsMessage {
                                        contactsManager: Self.contactsManager,
                                        disappearingMessagesConfiguration: disappearingMessagesConfiguration,
                                        isArchived: isArchived,
-                                       inboxPosition: inboxPosition)
+                                       inboxPosition: inboxPosition,
+                                       isBlocked: isBlocked)
         }
 
         closeOutputStream()

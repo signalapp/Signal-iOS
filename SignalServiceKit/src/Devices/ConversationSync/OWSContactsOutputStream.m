@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
     disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
                            isArchived:(nullable NSNumber *)isArchived
                         inboxPosition:(nullable NSNumber *)inboxPosition
+                            isBlocked:(BOOL)isBlocked
 {
     OWSAssertDebug(signalAccount);
     OWSAssertDebug(signalAccount.contact);
@@ -92,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
         [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
     }
 
-    if ([BlockingManager.shared isAddressBlocked:signalAccount.recipientAddress]) {
+    if (isBlocked) {
         [contactBuilder setBlocked:YES];
     }
 

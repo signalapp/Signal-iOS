@@ -197,10 +197,11 @@ extension ConversationViewController {
         }
 
         let actionSheet = ActionSheetController(title: e164)
+        let isBlocked = databaseStorage.read { blockingManager.isAddressBlocked(address, transaction: $0) }
 
         if address.isLocalAddress {
             // Show no options.
-        } else if blockingManager.isAddressBlocked(address) {
+        } else if isBlocked {
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString(
                 "BLOCK_LIST_UNBLOCK_BUTTON",
                 comment: "Button label for the 'unblock' button"

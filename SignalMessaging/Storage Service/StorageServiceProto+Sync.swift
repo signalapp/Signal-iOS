@@ -42,7 +42,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
         let profileGivenName = profileManagerImpl.unfilteredGivenName(for: address, transaction: transaction)
         let profileFamilyName = profileManagerImpl.unfilteredFamilyName(for: address, transaction: transaction)
 
-        builder.setBlocked(blockingManager.isAddressBlocked(address))
+        builder.setBlocked(blockingManager.isAddressBlocked(address, transaction: transaction))
         builder.setWhitelisted(isInWhitelist)
 
         // Identity
@@ -121,7 +121,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
         let localFamilyName = profileManagerImpl.unfilteredFamilyName(for: address, transaction: transaction)
         let localIdentityKey = identityManager.identityKey(for: address, transaction: transaction)
         let localIdentityState = identityManager.verificationState(for: address, transaction: transaction)
-        let localIsBlocked = blockingManager.isAddressBlocked(address)
+        let localIsBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
         let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: address, transaction: transaction)
 
         // If our local profile key record differs from what's on the service, use the service's value.
