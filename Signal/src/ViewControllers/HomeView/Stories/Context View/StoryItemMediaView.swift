@@ -8,6 +8,7 @@ import YYImage
 import UIKit
 import SignalUI
 import SafariServices
+import CoreMedia
 
 protocol StoryItemMediaViewDelegate: AnyObject {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
@@ -45,6 +46,7 @@ class StoryItemMediaView: UIView {
     }
 
     func reset() {
+        videoPlayerLoopCount = 0
         videoPlayer?.seek(to: .zero)
         videoPlayer?.play()
         updateTimestampText()
@@ -133,16 +135,49 @@ class StoryItemMediaView: UIView {
     }
 
     var duration: CFTimeInterval {
-        if let asset = videoPlayer?.avPlayer.currentItem?.asset {
-            return CMTimeGetSeconds(asset.duration)
-        } else {
-            return 5
+        switch item.attachment {
+        case .pointer:
+            owsFailDebug("Undownloaded attachments should not progress.")
+            return 0
+        case .stream(let stream):
+            if let asset = videoPlayer?.avPlayer.currentItem?.asset {
+                let videoDuration = CMTimeGetSeconds(asset.duration)
+                if stream.isLoopingVideo {
+                    // GIFs should loop 3 times, or play for 5 seconds
+                    // whichever is longer.
+                    return max(5, videoDuration * 3)
+                } else {
+                    return videoDuration
+                }
+            } else {
+                // Images should play for 5 seconds
+                return 5
+            }
+        case .text(let attachment):
+            // As a base, all text attachments play for at least 3s,
+            // even if they have no text.
+            var duration: CFTimeInterval = 3
+
+            if let text = attachment.text {
+                // For each bucket of glyphs after the first 15,
+                // add an additional 1s of playback time.
+                let fifteenGlyphBuckets = (max(0, CGFloat(text.glyphCount) - 15) / 15).rounded(.up)
+                duration += fifteenGlyphBuckets
+            }
+
+            // If a text attachment includes a link preview, play
+            // for an additional 2s
+            if attachment.preview != nil { duration += 2 }
+
+            return duration
         }
     }
 
     var elapsedTime: CFTimeInterval? {
-        guard let currentTime = videoPlayer?.avPlayer.currentTime() else { return nil }
-        return CMTimeGetSeconds(currentTime)
+        guard let currentTime = videoPlayer?.avPlayer.currentTime(),
+                let asset = videoPlayer?.avPlayer.currentItem?.asset else { return nil }
+        let loopedElapsedTime = Double(videoPlayerLoopCount) * CMTimeGetSeconds(asset.duration)
+        return CMTimeGetSeconds(currentTime) + loopedElapsedTime
     }
 
     private lazy var gradientProtectionView: UIView = {
@@ -304,7 +339,7 @@ class StoryItemMediaView: UIView {
             backgroundImageView.autoPinEdgesToSuperviewEdges()
 
             if stream.isVideo {
-                let videoView = buildVideoView(originalMediaUrl: originalMediaUrl)
+                let videoView = buildVideoView(originalMediaUrl: originalMediaUrl, shouldLoop: stream.isLoopingVideo)
                 container.addSubview(videoView)
                 videoView.autoPinEdgesToSuperviewEdges()
             } else if stream.shouldBeRenderedByYY {
@@ -339,10 +374,14 @@ class StoryItemMediaView: UIView {
         }
     }
 
+    private var videoPlayerLoopCount = 0
     private var videoPlayer: OWSVideoPlayer?
-    private func buildVideoView(originalMediaUrl: URL) -> UIView {
-        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: false)
+    private func buildVideoView(originalMediaUrl: URL, shouldLoop: Bool) -> UIView {
+        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop)
+        player.delegate = self
         self.videoPlayer = player
+
+        videoPlayerLoopCount = 0
 
         let playerView = VideoPlayerView()
         playerView.contentMode = .scaleAspectFit
@@ -453,5 +492,11 @@ class StoryItem: NSObject {
         self.message = message
         self.numberOfReplies = numberOfReplies
         self.attachment = attachment
+    }
+}
+
+extension StoryItemMediaView: OWSVideoPlayerDelegate {
+    func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
+        videoPlayerLoopCount += 1
     }
 }
