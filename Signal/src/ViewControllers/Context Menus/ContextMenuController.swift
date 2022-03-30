@@ -409,7 +409,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         dismissButton.addTarget(self, action: #selector(dismissButtonTapped(sender:)), for: .touchUpInside)
         contextMenuView.blurView = blurView
         contextMenuView.dismissButton = dismissButton
-        contextMenuView.previewView = contextMenuPreview.snapshot
+        contextMenuView.previewView = contextMenuPreview.previewView
         contextMenuView.previewView?.isAccessibilityElement = true
         contextMenuView.previewView?.accessibilityLabel = NSLocalizedString("MESSAGE_PREVIEW", comment: "Context menu message preview accessibility label")
         contextMenuView.auxiliaryPreviewView = contextMenuPreview.auxiliarySnapshot
@@ -715,7 +715,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     // MARK: Private
 
     private func previewSourceFrame() -> CGRect {
-        return view.convert(contextMenuPreview.view.frame, from: contextMenuPreview.view.superview)
+        return view.convert(contextMenuPreview.previewViewSourceFrame, from: contextMenuPreview.view.superview)
     }
 
     private func auxPreviewSourceFrame() -> CGRect {

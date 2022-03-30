@@ -419,7 +419,7 @@ extension StoryGroupReplySheet: ContextMenuInteractionDelegate {
             alignment: .leading,
             accessoryViews: nil
         )
-        targetedPreview.alignmentOffset = CGPoint(x: 52, y: 12)
+        targetedPreview?.alignmentOffset = CGPoint(x: 52, y: 12)
 
         return targetedPreview
     }

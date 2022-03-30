@@ -98,7 +98,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
 
         configuration = contextMenuConfiguration
 
-        let targetedPreview = delegate.contextMenuInteraction(self, previewForHighlightingMenuWithConfiguration: contextMenuConfiguration) ?? ContextMenuTargetedPreview(view: view, alignment: .center, accessoryViews: nil)
+        guard let targetedPreview = delegate.contextMenuInteraction(self, previewForHighlightingMenuWithConfiguration: contextMenuConfiguration) ?? ContextMenuTargetedPreview(view: view, alignment: .center, accessoryViews: nil) else { return }
 
         for accessory in targetedPreview.accessoryViews {
             accessory.delegate = self

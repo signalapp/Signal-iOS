@@ -105,7 +105,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
                 owsFailDebug("conversationViewController was unexpectedly nil")
                 return ContextMenu([])
             }
-            
+
             var contextMenuActions: [ContextMenuAction] = []
             if let actions = self.collectionViewActiveContextMenuInteraction?.messageActions {
 
@@ -152,12 +152,12 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         if thread.canSendReactionToThread && shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
             let reactionBarAccessory = ContextMenuRectionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
             reactionBarAccessory.didSelectReactionHandler = { [weak self] (message: TSMessage, reaction: String, isRemoving: Bool) in
-                
+
                 guard let self = self else {
                     owsFailDebug("conversationViewController was unexpectedly nil")
                     return
                 }
-                
+
                 self.databaseStorage.asyncWrite { transaction in
                     ReactionManager.localUserReacted(
                         to: message,
@@ -181,7 +181,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
         if let componentView = cell.componentView, let contentView = componentView.contextMenuContentView?() {
             let preview = ContextMenuTargetedPreview(view: contentView, alignment: alignment, accessoryViews: accessories)
-            preview.auxiliaryView = componentView.contextMenuAuxiliaryContentView?()
+            preview?.auxiliaryView = componentView.contextMenuAuxiliaryContentView?()
             return preview
         } else {
             return ContextMenuTargetedPreview(view: cell, alignment: alignment, accessoryViews: accessories)

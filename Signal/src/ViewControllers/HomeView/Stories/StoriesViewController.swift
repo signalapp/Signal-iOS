@@ -12,7 +12,6 @@ class StoriesViewController: OWSViewController {
     private var models = [IncomingStoryViewModel]()
 
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
-    private weak var contextMenuPreviewView: UIView?
 
     override func loadView() {
         view = tableView
@@ -428,7 +427,9 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
         // Normally, our context menus just present the cell row full width.
 
         let previewView = UIView()
-        previewView.frame = cell.contentHStackView.frame.insetBy(dx: -12, dy: -12)
+        previewView.frame = cell.contentView
+            .convert(cell.contentHStackView.frame, to: cell.superview)
+            .insetBy(dx: -12, dy: -12)
         previewView.layer.cornerRadius = 18
         previewView.backgroundColor = Theme.backgroundColor
         previewView.clipsToBounds = true
@@ -436,26 +437,21 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
         previewView.addSubview(cellSnapshot)
         cellSnapshot.frame.origin = CGPoint(x: 12, y: 12)
 
-        cell.contentHStackView.superview!.addSubview(previewView)
-
-        self.contextMenuPreviewView?.removeFromSuperview()
-        self.contextMenuPreviewView = previewView
-
-        return .init(
-            view: previewView,
+        let preview = ContextMenuTargetedPreview(
+            view: cell,
+            previewView: previewView,
             alignment: .leading,
-            accessoryViews: nil
+            accessoryViews: []
         )
+        preview.alignmentOffset = CGPoint(x: 12, y: 12)
+        return preview
     }
 
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {}
 
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
 
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {
-        self.contextMenuPreviewView?.removeFromSuperview()
-        self.contextMenuPreviewView = nil
-    }
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
 }
 
 extension StoriesViewController: ForwardMessageDelegate {

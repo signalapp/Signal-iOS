@@ -151,13 +151,14 @@ public class ContextMenuTargetedPreview {
     public var auxiliaryView: UIView? {
         didSet {
             if let auxView = auxiliaryView {
-                if let snapshot = auxView.snapshotView(afterScreenUpdates: true) {
+                if let snapshot = auxView.snapshotView(afterScreenUpdates: false) {
                     self.auxiliarySnapshot = snapshot
                 }
             }
         }
     }
-    public let snapshot: UIView?
+    public let previewView: UIView
+    public let previewViewSourceFrame: CGRect
     public var auxiliarySnapshot: UIView?
     public let alignment: Alignment
     public var alignmentOffset: CGPoint?
@@ -170,24 +171,47 @@ public class ContextMenuTargetedPreview {
     ///   - alignment: If preview needs to be scaled, this property defines the edge alignment
     ///    in the source view to pin the preview to
     ///   - accessoryViews: accessory view
-    public init (
+    public convenience init?(
         view: UIView,
         alignment: Alignment,
         accessoryViews: [ContextMenuTargetedPreviewAccessory]?
     ) {
         AssertIsOnMainThread()
         owsAssertDebug(view.window != nil, "View must be in a window")
-        self.view = view
-
-        if let snapshot = view.snapshotView(afterScreenUpdates: true) {
-            self.snapshot = snapshot
-        } else {
-            self.snapshot = nil
+        guard let snapshot = view.snapshotView(afterScreenUpdates: false) else {
             owsFailDebug("Unable to snapshot context menu preview view")
+            return nil
         }
 
+        self.init(
+            view: view,
+            previewView: snapshot,
+            previewViewSourceFrame: view.frame,
+            alignment: alignment,
+            accessoryViews: accessoryViews ?? []
+        )
+    }
+
+    /// Initialize using a custom preview view that may or may not originate from `view`
+    /// - Parameters:
+    ///   - view: View to render a preview from
+    ///   - previewView: The preview to render, this should be an unowned view that does not live an any hierarchies.
+    ///   - previewViewSourceFrame: The frame to use as an initial and final rendering point for the `previewView`. This should be in the same coordinate space as `view`. If not provided the frame of `previewView` is used.
+    ///   - alignment: If preview needs to be scaled, this property defines the edge alignment
+    ///    in the source view to pin the preview to
+    ///   - accessoryViews: accessory view
+    public required init(
+        view: UIView,
+        previewView: UIView,
+        previewViewSourceFrame: CGRect? = nil,
+        alignment: Alignment,
+        accessoryViews: [ContextMenuTargetedPreviewAccessory]
+    ) {
+        self.view = view
+        self.previewView = previewView
+        self.previewViewSourceFrame = previewViewSourceFrame ?? previewView.frame
         self.alignment = alignment
-        self.accessoryViews = accessoryViews ?? []
+        self.accessoryViews = accessoryViews
     }
 }
 
