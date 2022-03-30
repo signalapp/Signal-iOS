@@ -81,6 +81,7 @@ class StoryContextViewController: OWSViewController {
 
         playbackProgressView.alpha = 1
         closeButton.alpha = 1
+        replyButton.alpha = 1
     }
 
     func transitionToNextItem(nextContextLoadPositionIfRead: LoadPosition = .default) {
@@ -438,6 +439,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             if hideChrome {
                 self.playbackProgressView.alpha = 0
                 self.closeButton.alpha = 0
+                self.replyButton.alpha = 0
             }
         }
     }
@@ -451,6 +453,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         currentItemMediaView?.play {
             self.playbackProgressView.alpha = 1
             self.closeButton.alpha = 1
+            self.replyButton.alpha = 1
         }
         delegate?.storyContextViewControllerDidResume(self)
     }
