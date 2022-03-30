@@ -20,7 +20,7 @@ class OWSProfileManagerTest: SignalBaseTest {
     private func add(username: String, transaction: SDSAnyWriteTransaction) -> OWSUserProfile {
         let profile = OWSUserProfile(address: SignalServiceAddress(uuid: UUID()))
         profile.update(username: username,
-                       isUuidCapable: true,
+                       isStoriesCapable: true,
                        userProfileWriter: .tests,
                        transaction: transaction)
         return profile

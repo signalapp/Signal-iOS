@@ -587,6 +587,15 @@ extension MessageSender {
             // which recipients are unregistered.
             return firstly(on: .global()) { () -> Promise<[SignalServiceAddress]> in
                 Self.ensureRecipientAddresses(sendInfo.recipients, message: message)
+            }.map(on: .global()) { (registeredRecipients: [SignalServiceAddress]) in
+                // For group story replies, we must check if the recipients are stories capable
+                guard message.isGroupStoryReply else { return registeredRecipients }
+
+                let profiles = databaseStorage.read {
+                    Self.profileManager.getUserProfiles(forAddresses: registeredRecipients, transaction: $0)
+                }
+
+                return registeredRecipients.filter { profiles[$0]?.isStoriesCapable == true }
             }.map(on: .global()) { (validRecipients: [SignalServiceAddress]) in
                 // Replace recipients with validRecipients.
                 MessageSendInfo(thread: sendInfo.thread,
@@ -599,6 +608,7 @@ extension MessageSender {
             // * Recipient is no longer in the group.
             // * Recipient is blocked.
             // * Recipient is unregistered.
+            // * Recipient does not have the required capability.
             //
             // Elsewhere, we skip recipient if their Signal account has been deactivated.
             let skippedRecipients = Set(message.sendingRecipientAddresses()).subtracting(sendInfo.recipients)

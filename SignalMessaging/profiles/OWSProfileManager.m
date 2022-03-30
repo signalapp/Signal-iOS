@@ -388,7 +388,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(self.localUserProfile);
 
     [userProfile updateWithUsername:username
-                      isUuidCapable:YES
+                   isStoriesCapable:YES
                   userProfileWriter:userProfileWriter
                         transaction:transaction];
 }
@@ -1413,14 +1413,14 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [self profileKeyForAddress:address transaction:transaction].keyData;
 }
 
-- (BOOL)recipientAddressIsUuidCapable:(nonnull SignalServiceAddress *)address
-                          transaction:(nonnull SDSAnyReadTransaction *)transaction
+- (BOOL)recipientAddressIsStoriesCapable:(nonnull SignalServiceAddress *)address
+                             transaction:(nonnull SDSAnyReadTransaction *)transaction
 {
     OWSUserProfile *_Nullable userProfile = [OWSUserProfile getUserProfileForAddress:address transaction:transaction];
     if (userProfile == nil) {
         return NO;
     } else {
-        return userProfile.isUuidCapable;
+        return userProfile.isStoriesCapable;
     }
 }
 
@@ -1609,6 +1609,13 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [self.modelReadCaches.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
 }
 
+- (NSDictionary<SignalServiceAddress *, OWSUserProfile *> *)
+    getUserProfilesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                    transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self objc_getUserProfilesForAddresses:addresses transaction:transaction];
+}
+
 - (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData
 {
     OWSAssertDebug(avatarData.length > 0);
@@ -1752,7 +1759,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                             bio:(nullable NSString *)bio
                        bioEmoji:(nullable NSString *)bioEmoji
                        username:(nullable NSString *)username
-                  isUuidCapable:(BOOL)isUuidCapable
+               isStoriesCapable:(BOOL)isStoriesCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
@@ -1779,7 +1786,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:writeTx];
     if (!userProfile.profileKey) {
         [userProfile updateWithUsername:username
-                          isUuidCapable:isUuidCapable
+                       isStoriesCapable:isStoriesCapable
                           lastFetchDate:lastFetchDate
                       userProfileWriter:userProfileWriter
                             transaction:writeTx];
@@ -1789,7 +1796,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                      bio:bio
                                 bioEmoji:bioEmoji
                                 username:username
-                           isUuidCapable:isUuidCapable
+                        isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
                            avatarUrlPath:avatarUrlPath
                           avatarFileName:optionalAvatarFileUrl.lastPathComponent
@@ -1803,7 +1810,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                      bio:bio
                                 bioEmoji:bioEmoji
                                 username:username
-                           isUuidCapable:isUuidCapable
+                        isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
                            avatarUrlPath:avatarUrlPath
                            lastFetchDate:lastFetchDate

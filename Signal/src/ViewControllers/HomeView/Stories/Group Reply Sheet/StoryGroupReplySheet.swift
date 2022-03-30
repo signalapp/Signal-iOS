@@ -39,6 +39,13 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
                 return TSContactThread.getWithContactAddress(storyMessage.authorAddress, transaction: transaction)
             }
         }
+
+        super.init()
+
+        // Fetch profiles for everyone in the group to make sure we have the latest capability state
+        if let thread = thread {
+            bulkProfileFetch.fetchProfiles(addresses: thread.recipientAddresses)
+        }
     }
 
     public required init() {

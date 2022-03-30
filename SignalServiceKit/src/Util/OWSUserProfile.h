@@ -51,7 +51,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 @property (atomic, readonly, nullable) NSString *bio;
 @property (atomic, readonly, nullable) NSString *bioEmoji;
 @property (atomic, readonly, nullable) NSString *username;
-@property (atomic, readonly) BOOL isUuidCapable;
+@property (atomic, readonly) BOOL isStoriesCapable;
 @property (atomic, readonly, nullable) OWSUserProfileBadgeInfo *primaryBadge;
 @property (atomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;

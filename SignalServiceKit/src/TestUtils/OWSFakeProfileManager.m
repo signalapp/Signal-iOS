@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     _profileKeys = [NSMutableDictionary new];
     _recipientWhitelist = [NSMutableSet new];
     _threadWhitelist = [NSMutableSet new];
-    _stubbedUuidCapabilitiesMap = [NSMutableDictionary new];
+    _stubbedStoriesCapabilitiesMap = [NSMutableDictionary new];
     _badgeStore = [[BadgeStore alloc] init];
 
     return self;
@@ -63,6 +63,13 @@ NS_ASSUME_NONNULL_BEGIN
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     return nil;
+}
+
+- (NSDictionary<SignalServiceAddress *, OWSUserProfile *> *)
+    getUserProfilesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                    transaction:(SDSAnyReadTransaction *)transaction
+{
+    return @{};
 }
 
 - (void)setProfileKeyData:(NSData *)profileKey
@@ -256,12 +263,12 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (BOOL)recipientAddressIsUuidCapable:(nonnull SignalServiceAddress *)address
-                          transaction:(nonnull SDSAnyReadTransaction *)transaction
+- (BOOL)recipientAddressIsStoriesCapable:(nonnull SignalServiceAddress *)address
+                             transaction:(nonnull SDSAnyReadTransaction *)transaction
 {
-    NSNumber *_Nullable capability = self.stubbedUuidCapabilitiesMap[address];
+    NSNumber *_Nullable capability = self.stubbedStoriesCapabilitiesMap[address];
     if (capability == nil) {
-        OWSFailDebug(@"unknown address %@ must be added to stubbedUuidCapabilitiesMap.", address);
+        OWSFailDebug(@"unknown address %@ must be added to stubbedStoriesCapabilitiesMap.", address);
         return NO;
     }
     return capability.boolValue;
@@ -298,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
                             bio:(nullable NSString *)bio
                        bioEmoji:(nullable NSString *)bioEmoji
                        username:(nullable NSString *)username
-                  isUuidCapable:(BOOL)isUuidCapable
+               isStoriesCapable:(BOOL)isStoriesCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges

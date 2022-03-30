@@ -295,18 +295,32 @@ extension OWSProfileManager {
 
     // This is the batch version of -[OWSProfileManager getUserProfileForAddress:transaction:]
     func getUserProfiles(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        userProfilesRefinery(for: addresses, transaction: transaction).values
+    }
+
+    // This unfortunately needs to be piped through to Obj-C for adherence to the
+    // ProfileManagerProtocol so it can be exposed to SignalServiceKit. It should
+    // never be called directly from swift.
+    @objc(objc_getUserProfilesForAddresses:transaction:)
+    @available(swift, obsoleted: 1.0)
+    func objc_getUserProfiles(
+        for addresses: [SignalServiceAddress],
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalServiceAddress: OWSUserProfile] {
+        Dictionary(userProfilesRefinery(for: addresses, transaction: transaction))
+    }
+
+    private func userProfilesRefinery(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> Refinery<SignalServiceAddress, OWSUserProfile> {
         let resolvedAddresses = addresses.map { OWSUserProfile.resolve($0) }
 
-        let profiles = Refinery<SignalServiceAddress, OWSUserProfile>(resolvedAddresses).refine(condition: { address in
+        return .init(resolvedAddresses).refine(condition: { address in
             OWSUserProfile.isLocalProfileAddress(address)
         }, then: { localAddresses in
             lazy var profile = { self.getLocalUserProfile(with: transaction) }()
             return localAddresses.lazy.map { _ in profile }
         }, otherwise: { remoteAddresses in
             return self.modelReadCaches.userProfileReadCache.getUserProfiles(for: remoteAddresses, transaction: transaction)
-        }).values
-
-        return profiles
+        })
     }
 
     @objc(objc_fullNamesForAddresses:transaction:)

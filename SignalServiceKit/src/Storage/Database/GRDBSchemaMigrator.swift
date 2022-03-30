@@ -125,6 +125,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addReceiptPresentationToSubscriptionDurableJob
         case createStoryMessageTable
         case addColumnsForStoryContext
+        case addIsStoriesCapableToUserProfiles
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -167,7 +168,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 34
+    public static let grdbSchemaVersionLatest: UInt = 35
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1593,6 +1594,18 @@ public class GRDBSchemaMigrator: NSObject {
                     CREATE INDEX index_model_TSInteraction_UnreadCount
                     ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
                 """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addIsStoriesCapableToUserProfiles.rawValue) { db in
+            do {
+                try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
+                    table.add(column: "isStoriesCapable", .boolean).notNull().defaults(to: false)
+                }
+
+                try db.execute(sql: "ALTER TABLE model_OWSUserProfile DROP COLUMN isUuidCapable")
             } catch {
                 owsFail("Error: \(error)")
             }
