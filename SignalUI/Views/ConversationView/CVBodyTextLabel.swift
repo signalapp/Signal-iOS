@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -257,6 +257,7 @@ public class CVBodyTextLabel: NSObject {
 
             isUserInteractionEnabled = true
             addInteraction(UIDragInteraction(delegate: self))
+            contentMode = .redraw
         }
 
         @available(*, unavailable, message: "Unimplemented")
