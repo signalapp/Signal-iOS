@@ -208,7 +208,8 @@ public class BlockingManager: NSObject {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.loadStateOnLaunch()
+            self.reloadState()
+            self.databaseStorage.appendDatabaseChangeDelegate(self)
         }
     }
 
@@ -230,10 +231,10 @@ public class BlockingManager: NSObject {
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
 
-        loadStateOnLaunch()
+        reloadState()
     }
 
-    private func loadStateOnLaunch() {
+    private func reloadState() {
         AssertIsOnMainThread()
 
         unfairLock.withLock {
@@ -797,5 +798,19 @@ public class BlockingManager: NSObject {
                 Self.syncBlockListIfNecessary(state: state)
             }
         }
+    }
+}
+
+// MARK: - Database Change Observation
+
+extension BlockingManager: DatabaseChangeDelegate {
+    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+    }
+
+    public func databaseChangesDidUpdateExternally() {
+        reloadState()
+    }
+
+    public func databaseChangesDidReset() {
     }
 }
