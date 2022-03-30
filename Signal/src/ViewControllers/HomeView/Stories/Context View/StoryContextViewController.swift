@@ -68,9 +68,9 @@ class StoryContextViewController: OWSViewController {
                 currentItem = firstUnviewedStory
             } else {
                 switch loadPositionIfRead {
-                case .newest, .default:
+                case .newest:
                     currentItem = items.last
-                case .oldest:
+                case .oldest, .default:
                     currentItem = items.first
                 }
             }
