@@ -36,6 +36,24 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     public private(set) var manifest: StoryManifest
     public let attachment: StoryMessageAttachment
 
+    public var localUserViewedTimestamp: UInt64? {
+        switch manifest {
+        case .incoming(_, let viewedTimestamp):
+            return viewedTimestamp
+        case .outgoing:
+            return timestamp
+        }
+    }
+
+    public var localUserAllowedToReply: Bool {
+        switch manifest {
+        case .incoming(let allowsReplies, _):
+            return allowsReplies
+        case .outgoing:
+            return true
+        }
+    }
+
     @objc public var allAttachmentIds: [String] {
         switch attachment {
         case .file(let attachmentId):

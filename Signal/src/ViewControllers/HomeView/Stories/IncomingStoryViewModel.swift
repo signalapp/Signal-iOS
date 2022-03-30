@@ -19,21 +19,14 @@ struct IncomingStoryViewModel: Dependencies {
     let hasReplies: Bool
     let latestMessageName: String
     let latestMessageTimestamp: UInt64
+    let latestMessageViewedTimestamp: UInt64?
 
     let latestMessageAvatarDataSource: ConversationAvatarDataSource
 
     init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) throws {
         let sortedFilteredMessages = messages.lazy.filter { $0.direction == .incoming }.sorted { $0.timestamp < $1.timestamp }
         self.messages = sortedFilteredMessages
-        self.hasUnviewedMessages = sortedFilteredMessages.contains { message in
-            switch message.manifest {
-            case .incoming(_, let viewedTimestamp):
-                return viewedTimestamp == nil
-            case .outgoing:
-                owsFailDebug("Unexpected message type")
-                return false
-            }
-        }
+        self.hasUnviewedMessages = sortedFilteredMessages.contains { $0.localUserViewedTimestamp == nil }
 
         guard let latestMessage = sortedFilteredMessages.last else {
             throw OWSAssertionError("At least one message is required.")
@@ -76,6 +69,7 @@ struct IncomingStoryViewModel: Dependencies {
         }
 
         latestMessageTimestamp = latestMessage.timestamp
+        latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp
     }
 
     func copy(updatedMessages: [StoryMessage], deletedMessageRowIds: [Int64], transaction: SDSAnyReadTransaction) throws -> Self? {

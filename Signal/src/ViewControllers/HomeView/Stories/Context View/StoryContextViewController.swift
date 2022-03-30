@@ -62,9 +62,8 @@ class StoryContextViewController: OWSViewController {
             updateProgressState()
         } else {
             // If there's an unviewed story, we always want to present that first.
-            if let firstUnviewedStory = items.first(where: { item in
-                guard case .incoming(_, let viewedTimestamp) = item.message.manifest else { return false }
-                return viewedTimestamp == nil
+            if let firstUnviewedStory = items.first(where: {
+                $0.message.localUserViewedTimestamp == nil
             }) {
                 currentItem = firstUnviewedStory
             } else {
@@ -295,7 +294,7 @@ class StoryContextViewController: OWSViewController {
         playbackProgressView.numberOfItems = items.count
         if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
             // When we present a story, mark it as viewed if it's not already.
-            if !currentItemView.isDownloading, case .incoming(_, let viewedTimestamp) = currentItemView.item.message.manifest, viewedTimestamp == nil {
+            if !currentItemView.isDownloading, currentItemView.item.message.localUserViewedTimestamp == nil {
                 databaseStorage.write { transaction in
                     currentItemView.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
