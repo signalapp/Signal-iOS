@@ -18,7 +18,7 @@ class StoryGroupReplyViewItem: Dependencies {
 
     var cellType: StoryGroupReplyCell.CellType
 
-    var timeString: String { DateUtil.formatMessageTimestampForCVC(receivedAtTimestamp, shouldUseLongFormat: false) }
+    var timeString: String { DateUtil.formatTimestampRelatively(receivedAtTimestamp) }
 
     init(
         message: TSMessage,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,7 +60,7 @@ extension DateUtil {
     // We might receive a message "from the future" due to a bug or
     // malicious sender or a sender whose device time is misconfigured,
     // etc. Clamp message and date headers dates to the past & present.
-    private static func safeDateForCVC(_ date: Date) -> Date {
+    private static func clampBeforeNow(_ date: Date) -> Date {
         let nowDate = Date()
         return date < nowDate ? date : nowDate
     }
@@ -68,7 +68,7 @@ extension DateUtil {
     @objc
     public static func formatMessageTimestampForCVC(_ timestamp: UInt64,
                                                     shouldUseLongFormat: Bool) -> String {
-        let date = safeDateForCVC(Date(millisecondsSince1970: timestamp))
+        let date = clampBeforeNow(Date(millisecondsSince1970: timestamp))
         let calendar = Calendar.current
         let minutesDiff = calendar.dateComponents([.minute], from: date, to: Date()).minute ?? 0
         if minutesDiff < 1 {
@@ -93,7 +93,7 @@ extension DateUtil {
 
     @objc
     public static func formatDateHeaderForCVC(_ date: Date) -> String {
-        let date = safeDateForCVC(date)
+        let date = clampBeforeNow(date)
         let calendar = Calendar.current
         let monthsDiff = calendar.dateComponents([.month], from: date, to: Date()).month ?? 0
         if monthsDiff >= 6 {
@@ -105,6 +105,18 @@ extension DateUtil {
         } else {
             // Today / Yesterday
             return dateHeaderRelativeDateFormatter.string(from: date)
+        }
+    }
+
+    public static func formatTimestampRelatively(_ timestamp: UInt64) -> String {
+        let date = clampBeforeNow(Date(millisecondsSince1970: timestamp))
+        let calendar = Calendar.current
+        let minutesDiff = calendar.dateComponents([.minute], from: date, to: Date()).minute ?? 0
+        if minutesDiff < 1 {
+            return OWSLocalizedString("DATE_NOW", comment: "The present; the current time.")
+        } else {
+            let secondsDiff = calendar.dateComponents([.second], from: date, to: Date()).second ?? 0
+            return NSString.formatDurationSeconds(UInt32(secondsDiff), useShortFormat: true)
         }
     }
 

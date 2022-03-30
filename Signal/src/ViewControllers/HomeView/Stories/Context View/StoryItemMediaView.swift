@@ -72,7 +72,7 @@ class StoryItemMediaView: UIView {
     }
 
     func updateTimestampText() {
-        timestampLabel.text = DateUtil.formatTimestampShort(item.message.timestamp)
+        timestampLabel.text = DateUtil.formatTimestampRelatively(item.message.timestamp)
     }
 
     func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
