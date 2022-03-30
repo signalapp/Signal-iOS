@@ -61,7 +61,7 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
                             let cellContent: UIView
                             if let self = self {
                                 let badgeCollectionView = BadgeCollectionView(dataSource: self)
-                                badgeCollectionView.badgeSelctionMode = .feature
+                                badgeCollectionView.badgeSelectionMode = .feature
                                 cellContent = badgeCollectionView
                             } else {
                                 cellContent = UIView()

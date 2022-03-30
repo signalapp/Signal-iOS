@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalUI
@@ -19,12 +19,12 @@ class BadgeCollectionView: UICollectionView {
         case feature
         case detailsSheet(owner: BadgeDetailsSheet.Owner)
     }
-    public var badgeSelctionMode: SelectionMode = .none {
+    public var badgeSelectionMode: SelectionMode = .none {
         didSet {
             indexPathsForSelectedItems?.forEach { deselectItem(at: $0, animated: false) }
-            allowsSelection = badgeSelctionMode != .none
+            allowsSelection = badgeSelectionMode != .none
 
-            if case .feature = badgeSelctionMode, let selectedIdx = badgeDataSource?.selectedBadgeIndex {
+            if case .feature = badgeSelectionMode, let selectedIdx = badgeDataSource?.selectedBadgeIndex {
                 let indexPath = IndexPath(item: selectedIdx, section: 0)
                 selectItem(at: indexPath, animated: false, scrollPosition: [])
             }
@@ -115,15 +115,15 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
     // MARK: Selection
 
     func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return badgeSelctionMode != .none
+        return badgeSelectionMode != .none
     }
 
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return badgeSelctionMode != .none
+        return badgeSelectionMode != .none
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        switch badgeSelctionMode {
+        switch badgeSelectionMode {
         case .none:
             owsFailDebug("This should never happen")
         case .feature:

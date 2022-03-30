@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -164,7 +164,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
 
                             if let localAddress = self.tsAccountManager.localAddress {
                                 let localShortName = self.databaseStorage.read { self.contactsManager.shortDisplayName(for: localAddress, transaction: $0) }
-                                collectionView.badgeSelctionMode = .detailsSheet(owner: .local(shortName: localShortName))
+                                collectionView.badgeSelectionMode = .detailsSheet(owner: .local(shortName: localShortName))
                             } else {
                                 owsFailDebug("Unexpectedly missing local address")
                             }
