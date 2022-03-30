@@ -110,10 +110,10 @@ PODS:
     - SignalCoreKit
     - SwiftProtobuf
     - YYImage/WebP
-  - SQLCipher (4.3.0):
-    - SQLCipher/standard (= 4.3.0)
-  - SQLCipher/common (4.3.0)
-  - SQLCipher/standard (4.3.0):
+  - SQLCipher (4.5.1):
+    - SQLCipher/standard (= 4.5.1)
+  - SQLCipher/common (4.5.1)
+  - SQLCipher/standard (4.5.1):
     - SQLCipher/common
   - SSZipArchive (2.1.4)
   - Starscream (3.1.1)
@@ -280,7 +280,7 @@ SPEC CHECKSUMS:
   SignalCoreKit: 87da14c58d57760793b892ff03838c5ef2ce1167
   SignalRingRTC: 8f1b90a580505a8305e10c7b53727d0acfc3bc4b
   SignalServiceKit: d598fa75d9f6c2137a5e016fdc117f94c7ac3ef7
-  SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
+  SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
   SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
