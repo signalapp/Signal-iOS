@@ -449,7 +449,6 @@ extension ConversationSettingsViewController {
         let section = OWSTableSection()
         section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
 
-        let helper = contactsViewHelper
         let groupMembership = groupModel.groupMembership
 
         // "Add Members" cell.
@@ -531,7 +530,7 @@ extension ConversationSettingsViewController {
                     let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
                     let isVerified = verificationState == .verified
                     let isNoLongerVerified = verificationState == .noLongerVerified
-                    let isBlocked = helper.isSignalServiceAddressBlocked(memberAddress)
+                    let isBlocked = self.blockingManager.isAddressBlocked(memberAddress)
                     if isGroupAdmin {
                         configuration.accessoryMessage = NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
                                                                            comment: "Label indicating that a group member is an admin.")

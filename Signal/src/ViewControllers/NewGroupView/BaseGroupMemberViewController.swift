@@ -392,7 +392,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
+        let isBlocked = blockingManager.isAddressBlocked(address)
 
         let addRecipientCompletion = { [weak self] in
             guard let self = self else {
@@ -527,7 +527,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
+        let isBlocked = blockingManager.isAddressBlocked(address)
 
         if isCurrentMember {
             return nil
@@ -555,7 +555,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
+        let isBlocked = blockingManager.isAddressBlocked(address)
         let isPreExistingMember = groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
                                                                                              transaction: transaction)
 

@@ -157,7 +157,7 @@ class MemberActionSheet: InteractiveSheetViewController {
         guard !address.isLocalAddress else { return }
 
         // If blocked, only show unblock as an option
-        guard !contactsViewHelper.isSignalServiceAddressBlocked(address) else {
+        guard !blockingManager.isAddressBlocked(address) else {
             section.add(.actionItem(
                 icon: .settingsBlock,
                 name: NSLocalizedString(

@@ -148,10 +148,10 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
         switch recipient.identifier {
         case .address(let address):
-            guard contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
+            guard blockingManager.isAddressBlocked(address) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
-            guard contactsViewHelper.isThreadBlocked(thread) else { return nil }
+            guard blockingManager.isThreadBlocked(thread) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

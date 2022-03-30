@@ -75,12 +75,12 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     ) -> RecipientPickerRecipientState {
         switch recipient.identifier {
         case .address(let address):
-            guard !contactsViewHelper.isSignalServiceAddressBlocked(address) else {
+            guard !blockingManager.isAddressBlocked(address) else {
                 return .userAlreadyInBlocklist
             }
             return .canBeSelected
         case .group(let thread):
-            guard !contactsViewHelper.isThreadBlocked(thread) else {
+            guard !blockingManager.isThreadBlocked(thread) else {
                 return .conversationAlreadyInBlocklist
             }
             return .canBeSelected
@@ -122,10 +122,10 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):
-            guard contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
+            guard blockingManager.isAddressBlocked(address) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
-            guard contactsViewHelper.isThreadBlocked(thread) else { return nil }
+            guard blockingManager.isThreadBlocked(thread) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

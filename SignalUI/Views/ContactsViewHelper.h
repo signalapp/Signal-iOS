@@ -39,14 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 
-// This method is faster than BlockingManager but
-// is only safe to be called on the main thread.
-- (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address;
-
-// This method is faster than BlockingManager but
-// is only safe to be called on the main thread.
-- (BOOL)isThreadBlocked:(TSThread *)thread;
-
 - (SignalServiceAddress *)localAddress;
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
