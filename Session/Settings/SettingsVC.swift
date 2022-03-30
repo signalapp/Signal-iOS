@@ -1,4 +1,5 @@
 import UIKit
+import SessionMessagingKit
 
 final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     private var profilePictureToBeUploaded: UIImage?
@@ -367,8 +368,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 if profilePictureToBeUploaded != nil {
                     userDefaults[.lastProfilePictureUpdate] = Date()
                 }
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
+                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss {
                         guard let self = self else { return }

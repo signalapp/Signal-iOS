@@ -72,8 +72,7 @@ final class JoinOpenGroupModal : Modal {
         Storage.shared.write { [presentingViewController = self.presentingViewController!] transaction in
             OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
             .done(on: DispatchQueue.main) { _ in
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
             }
             .catch(on: DispatchQueue.main) { error in
                 let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
