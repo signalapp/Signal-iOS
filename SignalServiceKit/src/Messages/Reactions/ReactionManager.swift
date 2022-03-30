@@ -126,6 +126,7 @@ public class ReactionManager: NSObject {
         thread: TSThread,
         reactor: SignalServiceAddress,
         timestamp: UInt64,
+        serverTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) -> ReactionProcessingResult {
         guard let emoji = reaction.emoji.strippedOrNil else {
@@ -205,6 +206,7 @@ public class ReactionManager: NSObject {
             } else {
                 let builder = TSIncomingMessageBuilder(thread: thread)
                 builder.authorAddress = reactor
+                builder.serverTimestamp = NSNumber(value: serverTimestamp)
                 populateStoryContext(on: builder)
                 message = builder.build()
             }

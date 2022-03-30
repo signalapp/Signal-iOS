@@ -1608,6 +1608,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                       thread:thread
                                                                                      reactor:envelope.sourceAddress
                                                                                    timestamp:syncMessage.sent.timestamp
+                                                                             serverTimestamp:envelope.serverTimestamp
                                                                                  transaction:transaction];
             switch (result) {
                 case OWSReactionProcessingResultSuccess:
@@ -1959,6 +1960,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   thread:thread
                                                                                  reactor:envelope.sourceAddress
                                                                                timestamp:timestamp
+                                                                         serverTimestamp:envelope.serverTimestamp
                                                                              transaction:transaction];
 
         switch (result) {
