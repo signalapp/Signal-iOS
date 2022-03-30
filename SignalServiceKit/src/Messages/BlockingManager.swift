@@ -336,7 +336,8 @@ public class BlockingManager: NSObject {
 
     // MARK: - Contact Blocking
 
-    public func blockedAddressSetWithTransaction(_ readTx: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
+    @objc
+    public func blockedAddresses(transaction readTx: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
         let state = unfairLock.withLock {
             self.currentState
         }
@@ -454,16 +455,6 @@ public class BlockingManager: NSObject {
     }
 
     @objc
-    public var blockedPhoneNumbers: Set<String> {
-        unfairLock.withLock { self.currentState.blockedPhoneNumbers }
-    }
-
-    @objc
-    public var blockedUUIDStrings: Set<String> {
-        unfairLock.withLock { self.currentState.blockedUUIDStrings }
-    }
-
-    @objc
     public func isAddressBlocked(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         unfairLock.withLock { self.currentState.isBlocked(address: address) }
     }
@@ -471,18 +462,12 @@ public class BlockingManager: NSObject {
     // MARK: - Group Blocking
 
     @objc
-    public var blockedGroupIds: Set<Data> {
-        let blockedGroupIds = unfairLock.withLock { self.currentState.blockedGroupMap.keys }
-        return Set(blockedGroupIds)
-    }
-
-    @objc
-    public var blockedGroupModels: [TSGroupModel] {
+    public func blockedGroupModels(transaction: SDSAnyReadTransaction) -> [TSGroupModel] {
         unfairLock.withLock { Array(self.currentState.blockedGroupMap.values) }
     }
 
     @objc
-    public func isGroupIdBlocked(_ groupId: Data) -> Bool {
+    public func isGroupIdBlocked(_ groupId: Data, transaction: SDSAnyReadTransaction) -> Bool {
         unfairLock.withLock { self.currentState.isBlocked(groupId: groupId) }
     }
 
@@ -627,7 +612,7 @@ public class BlockingManager: NSObject {
         if let contactThread = thread as? TSContactThread {
             return isAddressBlocked(contactThread.contactAddress, transaction: transaction)
         } else if let groupThread = thread as? TSGroupThread {
-            return isGroupIdBlocked(groupThread.groupModel.groupId)
+            return isGroupIdBlocked(groupThread.groupModel.groupId, transaction: transaction)
         } else {
             owsFailDebug("Invalid thread: \(type(of: thread))")
             return false

@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
     if (groupId != nil) {
-        return [self.blockingManager isGroupIdBlocked:groupId];
+        return [self.blockingManager isGroupIdBlocked:groupId transaction:transaction];
     } else {
         BOOL senderBlocked = [self isEnvelopeSenderBlocked:envelope transaction:transaction];
 
@@ -1155,7 +1155,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
     } else if ([self.blockingManager isAddressBlocked:envelope.sourceAddress transaction:transaction]
-        || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID])) {
+        || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID transaction:transaction])) {
         NSString *logMessage =
             [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];
         if (typingMessage.hasGroupID) {

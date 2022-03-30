@@ -111,7 +111,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             groupId = nil
         }
 
-        if let groupId = groupId, blockingManager.isGroupIdBlocked(groupId) {
+        if let groupId = groupId, blockingManager.isGroupIdBlocked(groupId, transaction: transaction) {
             Logger.warn("Ignoring StoryMessage in blocked group.")
             return nil
         } else if blockingManager.isAddressBlocked(author, transaction: transaction) {

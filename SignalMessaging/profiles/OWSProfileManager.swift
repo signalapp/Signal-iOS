@@ -119,9 +119,9 @@ public extension OWSProfileManager {
     @objc
     @available(swift, obsoleted: 1.0)
     func rotateProfileKey(
-        intersectingPhoneNumbers: Set<String>,
-        intersectingUUIDs: Set<String>,
-        intersectingGroupIds: Set<Data>
+        intersectingPhoneNumbers: Array<String>,
+        intersectingUUIDs: Array<String>,
+        intersectingGroupIds: Array<Data>
     ) -> AnyPromise {
         return AnyPromise(rotateProfileKey(
             intersectingPhoneNumbers: intersectingPhoneNumbers,
@@ -131,9 +131,9 @@ public extension OWSProfileManager {
     }
 
     func rotateProfileKey(
-        intersectingPhoneNumbers: Set<String>,
-        intersectingUUIDs: Set<String>,
-        intersectingGroupIds: Set<Data>
+        intersectingPhoneNumbers: Array<String>,
+        intersectingUUIDs: Array<String>,
+        intersectingGroupIds: Array<Data>
     ) -> Promise<Void> {
         guard tsAccountManager.isRegisteredPrimaryDevice else {
             return Promise(error: OWSAssertionError("tsAccountManager.isRegistered was unexpectedly false"))
@@ -184,11 +184,11 @@ public extension OWSProfileManager {
                 // in which we persist our new profile key, since storing them is what marks the
                 // profile key rotation as "complete" (removing newly blocked users from the whitelist).
                 self.whitelistedPhoneNumbersStore.removeValues(
-                    forKeys: Array(intersectingPhoneNumbers),
+                    forKeys: intersectingPhoneNumbers,
                     transaction: transaction
                 )
                 self.whitelistedUUIDsStore.removeValues(
-                    forKeys: Array(intersectingUUIDs),
+                    forKeys: intersectingUUIDs,
                     transaction: transaction
                 )
                 self.whitelistedGroupsStore.removeValues(
@@ -202,6 +202,46 @@ public extension OWSProfileManager {
         }.done(on: .global()) {
             Logger.info("Completed profile key rotation.")
             self.groupsV2.processProfileKeyUpdates()
+        }
+    }
+
+    @objc
+    func blockedPhoneNumbersInWhitelist(transaction readTx: SDSAnyReadTransaction) -> Array<String> {
+        let allWhitelistedNumbers = whitelistedPhoneNumbersStore.allKeys(transaction: readTx)
+
+        return allWhitelistedNumbers.filter { candidate in
+            let address = SignalServiceAddress(phoneNumber: candidate)
+            return !address.isLocalAddress && blockingManager.isAddressBlocked(address, transaction: readTx)
+        }
+    }
+
+    @objc
+    func blockedUUIDsInWhitelist(transaction readTx: SDSAnyReadTransaction) -> Array<String> {
+        let allWhitelistedUUIDs = whitelistedUUIDsStore.allKeys(transaction: readTx)
+
+        return allWhitelistedUUIDs.filter { candidate in
+            let address = SignalServiceAddress(uuidString: candidate)
+            return !address.isLocalAddress && blockingManager.isAddressBlocked(address, transaction: readTx)
+        }
+    }
+
+    @objc
+    func blockedGroupIDsInWhitelist(transaction readTx: SDSAnyReadTransaction) -> Array<Data> {
+        let allWhitelistedGroupKeys = whitelistedGroupsStore.allKeys(transaction: readTx)
+
+        return allWhitelistedGroupKeys.lazy
+            .compactMap { self.groupIdForGroupKey($0) }
+            .filter { blockingManager.isGroupIdBlocked($0, transaction: readTx) }
+    }
+
+    private func groupIdForGroupKey(_ groupKey: String) -> Data? {
+        guard let groupId = Data.data(fromHex: groupKey) else { return nil }
+
+        if GroupManager.isValidGroupIdOfAnyKind(groupId) {
+            return groupId
+        } else {
+            owsFailDebug("Parsed group id has unexpected length: \(groupId.hexadecimalString) (\(groupId.count))")
+            return nil
         }
     }
 }

@@ -261,7 +261,7 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         var builder = StorageServiceProtoGroupV1Record.builder(id: groupId)
 
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
-        builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
+        builder.setBlocked(blockingManager.isGroupIdBlocked(groupId, transaction: transaction))
 
         let threadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
         let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId,
@@ -306,7 +306,7 @@ extension StorageServiceProtoGroupV1Record: Dependencies {
         // For now, we'd like to avoid that as it adds its own set of problems.
 
         // Gather some local contact state to do comparisons against.
-        let localIsBlocked = blockingManager.isGroupIdBlocked(id)
+        let localIsBlocked = blockingManager.isGroupIdBlocked(id, transaction: transaction)
         let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: id, transaction: transaction)
 
         // If our local blocked state differs from the service state, use the service's value.
@@ -371,7 +371,7 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         var builder = StorageServiceProtoGroupV2Record.builder(masterKey: masterKeyData)
 
         builder.setWhitelisted(profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction))
-        builder.setBlocked(blockingManager.isGroupIdBlocked(groupId))
+        builder.setBlocked(blockingManager.isGroupIdBlocked(groupId, transaction: transaction))
 
         let threadId = TSGroupThread.threadId(forGroupId: groupId, transaction: transaction)
         let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: threadId,
@@ -453,7 +453,7 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         }
 
         // Gather some local contact state to do comparisons against.
-        let localIsBlocked = blockingManager.isGroupIdBlocked(groupId)
+        let localIsBlocked = blockingManager.isGroupIdBlocked(groupId, transaction: transaction)
         let localIsWhitelisted = profileManager.isGroupId(inProfileWhitelist: groupId, transaction: transaction)
 
         // If our local blocked state differs from the service state, use the service's value.

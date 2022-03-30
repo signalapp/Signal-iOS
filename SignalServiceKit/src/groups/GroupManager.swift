@@ -1862,7 +1862,7 @@ public class GroupManager: NSObject {
         }
         let inProfileWhitelist = profileManager.isThread(inProfileWhitelist: groupThreadV1,
                                                          transaction: transaction)
-        let isBlocked = blockingManager.isGroupIdBlocked(groupIdV1)
+        let isBlocked = blockingManager.isGroupIdBlocked(groupIdV1, transaction: transaction)
 
         // We re-use the same model.
         let groupThreadV2 = groupThreadV1

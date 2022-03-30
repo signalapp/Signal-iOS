@@ -514,18 +514,6 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [groupId hexadecimalString];
 }
 
-- (nullable NSData *)groupIdForGroupKey:(NSString *)groupKey {
-    NSData *_Nullable groupId = [NSData dataFromHexString:groupKey];
-    // Make sure that the group id is a valid v1 or v2 group id.
-    if (![GroupManager isValidGroupIdOfAnyKind:groupId]) {
-        OWSFailDebug(@"Parsed group id has unexpected length: %@ (%lu)",
-            groupId.hexadecimalString,
-            (unsigned long)groupId.length);
-        return nil;
-    }
-    return [groupId copy];
-}
-
 - (void)rotateLocalProfileKeyIfNecessary {
     if (CurrentAppContext().isNSE) {
         return;
@@ -550,85 +538,27 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableSet<NSString *> *whitelistedPhoneNumbers = [NSMutableSet new];
-        NSMutableSet<NSString *> *whitelistedUUIDS = [NSMutableSet new];
-        NSMutableSet<NSData *> *whitelistedGroupIds = [NSMutableSet new];
+        __block NSArray<NSString *> *victimPhoneNumbers = @[];
+        __block NSArray<NSString *> *victimUUIDs = @[];
+        __block NSArray<NSData *> *victimGroupIds = @[];
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [whitelistedPhoneNumbers
-                addObjectsFromArray:[self.whitelistedPhoneNumbersStore allKeysWithTransaction:transaction]];
-            [whitelistedUUIDS addObjectsFromArray:[self.whitelistedUUIDsStore allKeysWithTransaction:transaction]];
-            NSArray<NSString *> *whitelistedGroupKeys =
-                [self.whitelistedGroupsStore allKeysWithTransaction:transaction];
-
-            for (NSString *groupKey in whitelistedGroupKeys) {
-                NSData *_Nullable groupId = [self groupIdForGroupKey:groupKey];
-                if (!groupId) {
-                    OWSFailDebug(@"Couldn't parse group key: %@.", groupKey);
-                    continue;
-                }
-
-                [whitelistedGroupIds addObject:groupId];
-
-                // Note: We don't add the group member's ids to whitelistedUUIDS
-                // and whitelistedPhoneNumbers.
-                //
-                // Whenever we message a contact, be it in a 1:1 thread or in a group thread,
-                // we add them to the contact whitelist, so there's no reason to redundantly
-                // add them here.
-                //
-                // Furthermore, doing so would cause the following problem:
-                //
-                // - Alice is in group Book Club
-                // - Add Book Club to your profile white list
-                // - Message Book Club, which also adds Alice to your profile whitelist.
-                // - Block Alice, but not Book Club
-                //
-                // Now, at this point we'd want to rotate our profile key once, since Alice has
-                // it via BookClub.
-                //
-                // The next time we checked whether we should rotate our profile key, adding all
-                // group members to whitelistedUUIDS and whitelistedPhoneNumbers would
-                // include Alice, and we'd rotate our profile key every time this method is called.
-            }
+            victimPhoneNumbers = [self blockedPhoneNumbersInWhitelistWithTransaction:transaction];
+            victimUUIDs = [self blockedUUIDsInWhitelistWithTransaction:transaction];
+            victimGroupIds = [self blockedGroupIDsInWhitelistWithTransaction:transaction];
         } file:__FILE__ function:__FUNCTION__ line:__LINE__];
 
-        SignalServiceAddress *_Nullable localAddress = [self.tsAccountManager localAddress];
-        NSString *_Nullable localNumber = localAddress.phoneNumber;
-        if (localNumber) {
-            [whitelistedPhoneNumbers removeObject:localNumber];
-        } else {
-            OWSFailDebug(@"Missing localNumber");
-        }
-
-        NSString *_Nullable localUUID = localAddress.uuidString;
-        if (localUUID) {
-            [whitelistedUUIDS removeObject:localUUID];
-        } else {
-            OWSFailDebug(@"Missing localUUID");
-        }
-
-        NSSet<NSString *> *blockedPhoneNumbers = self.blockingManager.blockedPhoneNumbers;
-        NSSet<NSString *> *blockedUUIDs = self.blockingManager.blockedUUIDStrings;
-        NSSet<NSData *> *blockedGroupIds = self.blockingManager.blockedGroupIds;
-
-        // Find the users and groups which are both a) blocked b) may have our current profile key.
-        NSMutableSet<NSString *> *intersectingPhoneNumbers = [blockedPhoneNumbers mutableCopy];
-        [intersectingPhoneNumbers intersectSet:whitelistedPhoneNumbers];
-        NSMutableSet<NSString *> *intersectingUUIDS = [blockedUUIDs mutableCopy];
-        [intersectingUUIDS intersectSet:whitelistedUUIDS];
-        NSMutableSet<NSData *> *intersectingGroupIds = [blockedGroupIds mutableCopy];
-        [intersectingGroupIds intersectSet:whitelistedGroupIds];
-
-        BOOL isProfileKeySharedWithBlocked
-            = (intersectingPhoneNumbers.count > 0 || intersectingUUIDS.count > 0 || intersectingGroupIds.count > 0);
-        if (!isProfileKeySharedWithBlocked) {
+        NSUInteger victimCount = 0;
+        victimCount += victimPhoneNumbers.count;
+        victimCount += victimUUIDs.count;
+        victimCount += victimGroupIds.count;
+        if (victimCount == 0) {
             // No need to rotate the profile key.
             return success();
         }
 
-        [self rotateProfileKeyWithIntersectingPhoneNumbers:intersectingPhoneNumbers
-                                         intersectingUUIDs:intersectingUUIDS
-                                      intersectingGroupIds:intersectingGroupIds]
+        [self rotateProfileKeyWithIntersectingPhoneNumbers:victimPhoneNumbers
+                                         intersectingUUIDs:victimUUIDs
+                                      intersectingGroupIds:victimGroupIds]
             .done(^(id value) { success(); })
             .catch(^(NSError *error) { failure(error); });
     });
@@ -1218,7 +1148,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     // by ensuring that BlockingManager.warmCaches() is always
     // called first.  I've added asserts within BlockingManager around
     // this.
-    if ([self.blockingManager isGroupIdBlocked:groupId]) {
+    if ([self.blockingManager isGroupIdBlocked:groupId transaction:transaction]) {
         return NO;
     }
 

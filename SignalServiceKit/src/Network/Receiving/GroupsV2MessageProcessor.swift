@@ -457,7 +457,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             return .discard
         }
         guard !blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) &&
-            !blockingManager.isGroupIdBlocked(groupContextInfo.groupId) else {
+            !blockingManager.isGroupIdBlocked(groupContextInfo.groupId, transaction: transaction) else {
                 Logger.info("Discarding blocked envelope.")
             return .discard
         }
