@@ -58,6 +58,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @property (nonatomic) BOOL isViewOnceComplete;
 @property (nonatomic) BOOL wasRemotelyDeleted;
 
+@property (nonatomic, nullable) NSString *storyReactionEmoji;
+
 // This property is only intended to be used by GRDB queries.
 @property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
 
@@ -890,6 +892,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                         message.linkPreview = nil;
                                         message.messageSticker = nil;
                                         message.attachmentIds = @[];
+                                        message.storyReactionEmoji = nil;
                                         OWSAssertDebug(!message.hasRenderableContent);
 
                                         messageUpdateBlock(message);
