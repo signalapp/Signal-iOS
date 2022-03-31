@@ -8,9 +8,32 @@ import YYImage
 import UIKit
 import SignalUI
 import SafariServices
+import CoreMedia
+
+protocol StoryItemMediaViewDelegate: AnyObject {
+    func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
+    func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView)
+}
 
 class StoryItemMediaView: UIView {
+    weak var delegate: StoryItemMediaViewDelegate?
     let item: StoryItem
+
+    private lazy var gradientProtectionView: UIView = {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor.black.withAlphaComponent(0).cgColor,
+            UIColor.black.withAlphaComponent(0.5).cgColor
+        ]
+        let view = OWSLayerView(frame: .zero) { view in
+            gradientLayer.frame = view.bounds
+        }
+        view.layer.addSublayer(gradientLayer)
+        return view
+    }()
+
+    private let bottomContentVStack = UIStackView()
+
     init(item: StoryItem) {
         self.item = item
 
@@ -30,6 +53,25 @@ class StoryItemMediaView: UIView {
         gradientProtectionView.autoPinEdge(toSuperviewEdge: .bottom)
         gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.4)
 
+        bottomContentVStack.axis = .vertical
+        bottomContentVStack.spacing = 24
+        addSubview(bottomContentVStack)
+
+        bottomContentVStack.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
+
+        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
+            bottomContentVStack.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
+        } else {
+            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
+            bottomContentVStack.autoPinEdge(toSuperviewEdge: .bottom, withInset: 80)
+        }
+
+        bottomContentVStack.autoPinEdge(toSuperviewEdge: .top, withInset: OWSTableViewController2.defaultHOuterMargin)
+
+        bottomContentVStack.addArrangedSubview(.vStretchingSpacer())
+
+        createCaptionIfNecessary()
         createAuthorRow()
     }
 
@@ -38,19 +80,47 @@ class StoryItemMediaView: UIView {
     }
 
     func reset() {
+        videoPlayerLoopCount = 0
         videoPlayer?.seek(to: .zero)
         videoPlayer?.play()
         updateTimestampText()
-        authorRow.alpha = 1
+        bottomContentVStack.alpha = 1
         gradientProtectionView.alpha = 1
     }
+
+    func updateTimestampText() {
+        timestampLabel.text = DateUtil.formatTimestampRelatively(item.message.timestamp)
+    }
+
+    func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
+        if startAttachmentDownloadIfNecessary(gesture) { return true }
+        if toggleCaptionExpansionIfNecessary(gesture) { return true }
+
+        if let textAttachmentView = mediaView as? TextAttachmentView {
+            let didHandle = textAttachmentView.willHandleTapGesture(gesture)
+            if didHandle {
+                if textAttachmentView.isPresentingLinkTooltip {
+                    // If we presented a link, pause playback
+                    delegate?.storyItemMediaViewWantsToPause(self)
+                } else {
+                    // If we dismissed a link, resume playback
+                    delegate?.storyItemMediaViewWantsToPlay(self)
+                }
+            }
+            return didHandle
+        }
+
+        return false
+    }
+
+    // MARK: - Playback
 
     func pause(hideChrome: Bool = false, animateAlongside: @escaping () -> Void) {
         videoPlayer?.pause()
 
         if hideChrome {
             UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
-                self.authorRow.alpha = 0
+                self.bottomContentVStack.alpha = 0
                 self.gradientProtectionView.alpha = 0
                 animateAlongside()
             } completion: { _ in }
@@ -63,7 +133,7 @@ class StoryItemMediaView: UIView {
         videoPlayer?.play()
 
         UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
-            self.authorRow.alpha = 1
+            self.bottomContentVStack.alpha = 1
             self.gradientProtectionView.alpha = 1
             animateAlongside()
         } completion: { _ in
@@ -71,22 +141,64 @@ class StoryItemMediaView: UIView {
         }
     }
 
-    func updateTimestampText() {
-        timestampLabel.text = DateUtil.formatTimestampShort(item.message.timestamp)
-    }
+    var duration: CFTimeInterval {
+        switch item.attachment {
+        case .pointer:
+            owsFailDebug("Undownloaded attachments should not progress.")
+            return 0
+        case .stream(let stream):
+            if let asset = videoPlayer?.avPlayer.currentItem?.asset {
+                let videoDuration = CMTimeGetSeconds(asset.duration)
+                if stream.isLoopingVideo {
+                    // GIFs should loop 3 times, or play for 5 seconds
+                    // whichever is longer.
+                    return max(5, videoDuration * 3)
+                } else {
+                    return videoDuration
+                }
+            } else {
+                // Images should play for 5 seconds
+                return 5
+            }
+        case .text(let attachment):
+            // As a base, all text attachments play for at least 3s,
+            // even if they have no text.
+            var duration: CFTimeInterval = 3
 
-    func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
-        if startAttachmentDownloadIfNecessary() { return true }
+            if let text = attachment.text {
+                // For each bucket of glyphs after the first 15,
+                // add an additional 1s of playback time.
+                let fifteenGlyphBuckets = (max(0, CGFloat(text.glyphCount) - 15) / 15).rounded(.up)
+                duration += fifteenGlyphBuckets
+            }
 
-        if let textAttachmentView = mediaView as? TextAttachmentView {
-            return textAttachmentView.willHandleTapGesture(gesture)
+            // If a text attachment includes a link preview, play
+            // for an additional 2s
+            if attachment.preview != nil { duration += 2 }
+
+            return duration
         }
-
-        return false
     }
 
-    private func startAttachmentDownloadIfNecessary() -> Bool {
+    var elapsedTime: CFTimeInterval? {
+        guard let currentTime = videoPlayer?.avPlayer.currentTime(),
+                let asset = videoPlayer?.avPlayer.currentItem?.asset else { return nil }
+        let loopedElapsedTime = Double(videoPlayerLoopCount) * CMTimeGetSeconds(asset.duration)
+        return CMTimeGetSeconds(currentTime) + loopedElapsedTime
+    }
+
+    // MARK: - Downloading
+
+    private func startAttachmentDownloadIfNecessary(_ gesture: UITapGestureRecognizer) -> Bool {
         guard case .pointer(let pointer) = item.attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
+
+        // Only start downloads when the user taps in the center of the view.
+        let downloadHitRegion = CGRect(
+            origin: CGPoint(x: frame.center.x - 30, y: frame.center.y - 30),
+            size: CGSize(square: 60)
+        )
+        guard downloadHitRegion.contains(gesture.location(in: self)) else { return false }
+
         attachmentDownloads.enqueueDownloadOfAttachments(
             forStoryMessageId: item.message.uniqueId,
             attachmentGroup: .allAttachmentsIncoming,
@@ -98,39 +210,16 @@ class StoryItemMediaView: UIView {
                 Logger.warn("Failed to redownload attachment with error: \(error)")
                 DispatchQueue.main.async { self?.updateMediaView() }
             }
+
         return true
     }
 
-    var isDownloading: Bool {
-        guard case .pointer(let pointer) = item.attachment else { return false }
-        return [.enqueued, .downloading].contains(pointer.state)
+    var isPendingDownload: Bool {
+        guard case .pointer = item.attachment else { return false }
+        return true
     }
 
-    var duration: CFTimeInterval {
-        if let asset = videoPlayer?.avPlayer.currentItem?.asset {
-            return CMTimeGetSeconds(asset.duration)
-        } else {
-            return 5
-        }
-    }
-
-    var elapsedTime: CFTimeInterval? {
-        guard let currentTime = videoPlayer?.avPlayer.currentTime() else { return nil }
-        return CMTimeGetSeconds(currentTime)
-    }
-
-    private lazy var gradientProtectionView: UIView = {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor.black.withAlphaComponent(0).cgColor,
-            UIColor.black.withAlphaComponent(0.5).cgColor
-        ]
-        let view = OWSLayerView(frame: .zero) { view in
-            gradientLayer.frame = view.bounds
-        }
-        view.layer.addSublayer(gradientLayer)
-        return view
-    }()
+    // MARK: - Author Row
 
     private lazy var timestampLabel = UILabel()
     private lazy var authorRow = UIStackView()
@@ -157,16 +246,7 @@ class StoryItemMediaView: UIView {
         timestampLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
         updateTimestampText()
 
-        addSubview(authorRow)
-        authorRow.autoPinWidthToSuperview(withMargin: OWSTableViewController2.defaultHOuterMargin)
-
-        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
-            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
-            authorRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: OWSTableViewController2.defaultHOuterMargin + 16)
-        } else {
-            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
-            authorRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: 80)
-        }
+        bottomContentVStack.addArrangedSubview(authorRow)
     }
 
     private func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
@@ -248,6 +328,181 @@ class StoryItemMediaView: UIView {
         return label
     }
 
+    // MARK: - Caption
+
+    private lazy var captionLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 17)
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 15/17
+        label.textColor = Theme.darkThemePrimaryColor
+        return label
+    }()
+
+    private var fullCaptionText: String?
+    private var truncatedCaptionText: NSAttributedString?
+    private var isCaptionTruncated: Bool { truncatedCaptionText != nil }
+    private var hasCaption: Bool { fullCaptionText != nil }
+
+    private var maxCaptionLines = 5
+    private func createCaptionIfNecessary() {
+        guard let captionText: String = {
+            switch item.attachment {
+            case .stream(let attachment): return attachment.caption?.nilIfEmpty
+            case .pointer(let attachment): return attachment.caption?.nilIfEmpty
+            case .text: return nil
+            }
+        }() else { return }
+
+        fullCaptionText = captionText
+
+        captionLabel.text = captionText
+
+        bottomContentVStack.addArrangedSubview(captionLabel)
+    }
+
+    private var isCaptionExpanded = false
+    private var captionBackdrop: UIView?
+    private func toggleCaptionExpansionIfNecessary(_ gesture: UIGestureRecognizer) -> Bool {
+        guard hasCaption, isCaptionTruncated else { return false }
+
+        if !isCaptionExpanded {
+            guard captionLabel.bounds.contains(gesture.location(in: captionLabel)) else { return false }
+        } else if let captionBackdrop = captionBackdrop {
+            guard captionBackdrop.bounds.contains(gesture.location(in: captionBackdrop)) else { return false }
+        } else {
+            owsFailDebug("Unexpectedly missing caption backdrop")
+        }
+
+        let isExpanding = !isCaptionExpanded
+        isCaptionExpanded = isExpanding
+
+        if isExpanding {
+            self.captionBackdrop?.removeFromSuperview()
+            let captionBackdrop = UIView()
+            captionBackdrop.backgroundColor = .ows_blackAlpha60
+            captionBackdrop.alpha = 0
+            self.captionBackdrop = captionBackdrop
+            insertSubview(captionBackdrop, belowSubview: bottomContentVStack)
+            captionBackdrop.autoPinEdgesToSuperviewEdges()
+
+            captionLabel.numberOfLines = 0
+            captionLabel.text = fullCaptionText
+            delegate?.storyItemMediaViewWantsToPause(self)
+        } else {
+            captionLabel.numberOfLines = maxCaptionLines
+            captionLabel.attributedText = truncatedCaptionText
+            delegate?.storyItemMediaViewWantsToPlay(self)
+            updateCaptionTruncation()
+        }
+
+        UIView.animate(withDuration: 0.2) {
+            self.captionBackdrop?.alpha = isExpanding ? 1 : 0
+            self.captionLabel.layoutIfNeeded()
+        } completion: { _ in
+            if !isExpanding {
+                self.captionBackdrop?.removeFromSuperview()
+                self.captionBackdrop = nil
+            }
+        }
+
+        return true
+    }
+
+    private var lastTruncationWidth: CGFloat?
+    private func updateCaptionTruncation() {
+        guard let fullCaptionText = fullCaptionText, !isCaptionExpanded else { return }
+
+        // Only update truncation if the view's width has changed.
+        guard width != lastTruncationWidth else { return }
+        lastTruncationWidth = width
+
+        captionLabel.numberOfLines = maxCaptionLines
+        captionLabel.text = fullCaptionText
+        bottomContentVStack.layoutIfNeeded()
+
+        let labelMinimumScaledFont = captionLabel.font
+            .withSize(captionLabel.font.pointSize * captionLabel.minimumScaleFactor)
+
+        let layoutManager = NSLayoutManager()
+        let textContainer = NSTextContainer(size: captionLabel.bounds.size)
+        let textStorage = NSTextStorage()
+
+        layoutManager.addTextContainer(textContainer)
+        textStorage.addLayoutManager(layoutManager)
+        textStorage.setAttributedString(fullCaptionText.styled(with: .font(labelMinimumScaledFont)))
+
+        textContainer.lineFragmentPadding = 0
+        textContainer.lineBreakMode = .byWordWrapping
+        textContainer.maximumNumberOfLines = 5
+
+        func visibleCaptionRange() -> NSRange {
+            layoutManager.glyphRange(for: textContainer)
+        }
+
+        var visibleCharacterRangeUpperBound = visibleCaptionRange().upperBound
+
+        // Check if we're displaying less than the full length of the caption text.
+        guard visibleCharacterRangeUpperBound < fullCaptionText.utf16.count else {
+            truncatedCaptionText = nil
+            return
+        }
+
+        let readMoreText = NSLocalizedString(
+            "STORIES_CAPTION_READ_MORE",
+            comment: "Text indication a story caption can be tapped to read more."
+        ).styled(with: .font(labelMinimumScaledFont.ows_semibold))
+
+        var potentialTruncatedCaptionText = fullCaptionText
+        func truncatePotentialCaptionText(to index: Int) {
+            potentialTruncatedCaptionText = (potentialTruncatedCaptionText as NSString).substring(to: index)
+            textStorage.setAttributedString(buildTruncatedCaptionText().styled(with: .font(labelMinimumScaledFont)))
+        }
+
+        func buildTruncatedCaptionText() -> NSAttributedString {
+            .composed(of: [
+                potentialTruncatedCaptionText.stripped, "…", " ", readMoreText
+            ])
+        }
+
+        defer {
+            truncatedCaptionText = buildTruncatedCaptionText()
+            captionLabel.attributedText = truncatedCaptionText
+        }
+
+        // We might fit without further truncation, for example if the caption
+        // contains new line characters, so set the possible new text immediately.
+        truncatePotentialCaptionText(to: visibleCharacterRangeUpperBound)
+
+        visibleCharacterRangeUpperBound = visibleCaptionRange().upperBound - readMoreText.string.utf16.count - 2
+
+        // If we're still truncated, trim down the visible text until
+        // we have space to fit the read more text without truncation.
+        // This should only take a few iterations.
+        var iterationCount = 0
+        while visibleCharacterRangeUpperBound < potentialTruncatedCaptionText.utf16.count {
+            let truncateToIndex = max(0, visibleCharacterRangeUpperBound)
+            guard truncateToIndex > 0 else { break }
+
+            truncatePotentialCaptionText(to: truncateToIndex)
+
+            visibleCharacterRangeUpperBound = visibleCaptionRange().upperBound - readMoreText.string.utf16.count - 2
+
+            iterationCount += 1
+            if iterationCount >= 5 {
+                owsFailDebug("Failed to calculate visible range for caption text. Bailing.")
+                break
+            }
+        }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateCaptionTruncation()
+    }
+
+    // MARK: - Media
+
     private weak var mediaView: UIView?
     private func updateMediaView() {
         mediaView?.removeFromSuperview()
@@ -278,7 +533,7 @@ class StoryItemMediaView: UIView {
             backgroundImageView.autoPinEdgesToSuperviewEdges()
 
             if stream.isVideo {
-                let videoView = buildVideoView(originalMediaUrl: originalMediaUrl)
+                let videoView = buildVideoView(originalMediaUrl: originalMediaUrl, shouldLoop: stream.isLoopingVideo)
                 container.addSubview(videoView)
                 videoView.autoPinEdgesToSuperviewEdges()
             } else if stream.shouldBeRenderedByYY {
@@ -313,10 +568,14 @@ class StoryItemMediaView: UIView {
         }
     }
 
+    private var videoPlayerLoopCount = 0
     private var videoPlayer: OWSVideoPlayer?
-    private func buildVideoView(originalMediaUrl: URL) -> UIView {
-        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: false)
+    private func buildVideoView(originalMediaUrl: URL, shouldLoop: Bool) -> UIView {
+        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop)
+        player.delegate = self
         self.videoPlayer = player
+
+        videoPlayerLoopCount = 0
 
         let playerView = VideoPlayerView()
         playerView.contentMode = .scaleAspectFit
@@ -427,5 +686,11 @@ class StoryItem: NSObject {
         self.message = message
         self.numberOfReplies = numberOfReplies
         self.attachment = attachment
+    }
+}
+
+extension StoryItemMediaView: OWSVideoPlayerDelegate {
+    func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
+        videoPlayerLoopCount += 1
     }
 }

@@ -142,7 +142,7 @@ class StoriesViewController: OWSViewController {
             let groupedMessages = Dictionary(grouping: incomingMessages) { $0.context }
             let newModels = Self.databaseStorage.read { transaction in
                 groupedMessages.compactMap { try? IncomingStoryViewModel(messages: $1, transaction: transaction) }
-            }.sorted { $0.latestMessageTimestamp > $1.latestMessageTimestamp }
+            }.sorted(by: self.sortStoryModels)
             DispatchQueue.main.async {
                 self.models = newModels
                 self.tableView.reloadData()
@@ -183,7 +183,7 @@ class StoriesViewController: OWSViewController {
                             transaction: transaction
                         )
                     } + groupedMessages.map { try IncomingStoryViewModel(messages: $1, transaction: transaction) }
-                }.sorted { $0.latestMessageTimestamp > $1.latestMessageTimestamp }
+                }.sorted(by: self.sortStoryModels)
             } catch {
                 owsFailDebug("Failed to build new models, hard reloading \(error)")
                 DispatchQueue.main.async { self.reloadStories() }
@@ -232,6 +232,22 @@ class StoriesViewController: OWSViewController {
                 }
                 self.tableView.endUpdates()
             }
+        }
+    }
+
+    // Sort story models for display.
+    // * We show unviewed stories first, sorted by their sent timestamp, with the most recently sent at the top
+    // * We then show viewed stories, sorted by when they were viewed, with the most recently viewed at the top
+    private func sortStoryModels(lhs: IncomingStoryViewModel, rhs: IncomingStoryViewModel) -> Bool {
+        if let lhsViewedTimestamp = lhs.latestMessageViewedTimestamp,
+            let rhsViewedTimestamp = rhs.latestMessageViewedTimestamp {
+            return lhsViewedTimestamp > rhsViewedTimestamp
+        } else if lhs.latestMessageViewedTimestamp != nil {
+            return false
+        } else if rhs.latestMessageViewedTimestamp != nil {
+            return true
+        } else {
+            return lhs.latestMessageTimestamp > rhs.latestMessageTimestamp
         }
     }
 }
@@ -369,7 +385,11 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
                             }
                             AttachmentSharing.showShareUI(forAttachment: attachment, sender: cell)
                         case .text(let attachment):
-                            AttachmentSharing.showShareUI(forText: attachment.text, sender: cell)
+                            if let url = attachment.preview?.urlString {
+                                AttachmentSharing.showShareUI(for: URL(string: url)!, sender: cell)
+                            } else if let text = attachment.text {
+                                AttachmentSharing.showShareUI(forText: text, sender: cell)
+                            }
                         case .missing:
                             owsFailDebug("Unexpectedly missing attachment for story.")
                         }

@@ -106,12 +106,7 @@ public class ThreadViewModel: NSObject {
         }
 
         if let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction) {
-            switch latestStory.manifest {
-            case .incoming(_, let viewedTimestamp):
-                storyState = viewedTimestamp != nil ? .viewed : .unviewed
-            case .outgoing:
-                storyState = .viewed
-            }
+            storyState = latestStory.localUserViewedTimestamp != nil ? .viewed : .unviewed
         } else {
             self.storyState = .none
         }

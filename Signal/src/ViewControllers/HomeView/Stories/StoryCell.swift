@@ -188,6 +188,6 @@ class StoryCell: UITableViewCell {
     func configureTimestamp(with model: IncomingStoryViewModel) {
         timestampLabel.font = .ows_dynamicTypeSubheadline
         timestampLabel.textColor = Theme.secondaryTextAndIconColor
-        timestampLabel.text = DateUtil.formatTimestampShort(model.latestMessageTimestamp)
+        timestampLabel.text = DateUtil.formatTimestampRelatively(model.latestMessageTimestamp)
     }
 }

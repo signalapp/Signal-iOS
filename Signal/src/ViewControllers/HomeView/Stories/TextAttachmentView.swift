@@ -29,35 +29,37 @@ class TextAttachmentView: UIView {
         addSubview(contentStackView)
         contentStackView.autoPinEdgesToSuperviewEdges()
 
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.textColor = attachment.textForegroundColor ?? Theme.darkThemePrimaryColor
-        label.text = transformedText(attachment.text, for: attachment.textStyle)
-        label.textAlignment = .center
-        label.font = font(for: attachment.textStyle)
-        label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.2
+        if let text = attachment.text {
+            let label = UILabel()
+            label.numberOfLines = 0
+            label.textColor = attachment.textForegroundColor ?? Theme.darkThemePrimaryColor
+            label.text = transformedText(text, for: attachment.textStyle)
+            label.textAlignment = .center
+            label.font = font(for: attachment.textStyle)
+            label.adjustsFontSizeToFitWidth = true
+            label.minimumScaleFactor = 0.2
 
-        if let textBackgroundColor = attachment.textBackgroundColor {
-            let labelBackgroundView = UIView()
-            labelBackgroundView.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 16)
-            labelBackgroundView.backgroundColor = textBackgroundColor
-            labelBackgroundView.layer.cornerRadius = 18
+            if let textBackgroundColor = attachment.textBackgroundColor {
+                let labelBackgroundView = UIView()
+                labelBackgroundView.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 16)
+                labelBackgroundView.backgroundColor = textBackgroundColor
+                labelBackgroundView.layer.cornerRadius = 18
 
-            labelBackgroundView.addSubview(label)
-            label.autoPinEdgesToSuperviewMargins()
+                labelBackgroundView.addSubview(label)
+                label.autoPinEdgesToSuperviewMargins()
 
-            let labelWrapper = UIView()
-            labelWrapper.addSubview(labelBackgroundView)
-            labelBackgroundView.autoPinWidthToSuperview(withMargin: 24)
-            labelBackgroundView.autoPinHeightToSuperview()
-            contentStackView.addArrangedSubview(labelWrapper)
-        } else {
-            let labelWrapper = UIView()
-            labelWrapper.addSubview(label)
-            label.autoPinWidthToSuperview(withMargin: 40)
-            label.autoPinHeightToSuperview()
-            contentStackView.addArrangedSubview(labelWrapper)
+                let labelWrapper = UIView()
+                labelWrapper.addSubview(labelBackgroundView)
+                labelBackgroundView.autoPinWidthToSuperview(withMargin: 24)
+                labelBackgroundView.autoPinHeightToSuperview()
+                contentStackView.addArrangedSubview(labelWrapper)
+            } else {
+                let labelWrapper = UIView()
+                labelWrapper.addSubview(label)
+                label.autoPinWidthToSuperview(withMargin: 40)
+                label.autoPinHeightToSuperview()
+                contentStackView.addArrangedSubview(labelWrapper)
+            }
         }
 
         if let linkPreviewView = buildLinkPreviewView(attachment.preview) {
@@ -77,6 +79,8 @@ class TextAttachmentView: UIView {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
     }
 
+    public var isPresentingLinkTooltip: Bool { linkPreviewTooltipView != nil }
+
     private var linkPreviewTooltipView: LinkPreviewTooltipView?
     func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
         if let linkPreviewTooltipView = linkPreviewTooltipView {
@@ -87,10 +91,10 @@ class TextAttachmentView: UIView {
                     options: [:],
                     completionHandler: nil
                 )
+            } else {
+                linkPreviewTooltipView.removeFromSuperview()
+                self.linkPreviewTooltipView = nil
             }
-
-            linkPreviewTooltipView.removeFromSuperview()
-            self.linkPreviewTooltipView = nil
 
             return true
         } else if let linkPreviewView = linkPreviewView,
@@ -99,7 +103,7 @@ class TextAttachmentView: UIView {
                   linkPreviewView.frame.contains(gesture.location(in: container)) {
             let tooltipView = LinkPreviewTooltipView(
                 fromView: self,
-                referenceView: linkPreviewView,
+                tailReferenceView: linkPreviewView,
                 url: URL(string: urlString)!
             )
             self.linkPreviewTooltipView = tooltipView
@@ -215,6 +219,8 @@ class TextAttachmentView: UIView {
             titleLabel.font = .boldSystemFont(ofSize: 16)
             titleLabel.textColor = Theme.darkThemePrimaryColor
             titleLabel.numberOfLines = 2
+            titleLabel.setCompressionResistanceVerticalHigh()
+            titleLabel.setContentHuggingVerticalHigh()
             previewVStack.addArrangedSubview(titleLabel)
         }
 
@@ -224,6 +230,8 @@ class TextAttachmentView: UIView {
             descriptionLabel.font = .systemFont(ofSize: 12)
             descriptionLabel.textColor = Theme.darkThemePrimaryColor
             descriptionLabel.numberOfLines = 3
+            descriptionLabel.setCompressionResistanceVerticalHigh()
+            descriptionLabel.setContentHuggingVerticalHigh()
             previewVStack.addArrangedSubview(descriptionLabel)
         }
 
@@ -231,6 +239,8 @@ class TextAttachmentView: UIView {
         footerLabel.font = .systemFont(ofSize: 12)
         footerLabel.numberOfLines = 2
         footerLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        footerLabel.setCompressionResistanceVerticalHigh()
+        footerLabel.setContentHuggingVerticalHigh()
         previewVStack.addArrangedSubview(footerLabel)
 
         var footerText: String
@@ -298,12 +308,12 @@ private extension CAGradientLayer {
 
 private class LinkPreviewTooltipView: TooltipView {
     let url: URL
-    init(fromView: UIView, referenceView: UIView, url: URL) {
+    init(fromView: UIView, tailReferenceView: UIView, url: URL) {
         self.url = url
         super.init(
             fromView: fromView,
-            widthReferenceView: referenceView,
-            tailReferenceView: referenceView,
+            widthReferenceView: fromView,
+            tailReferenceView: tailReferenceView,
             wasTappedBlock: nil
         )
     }
@@ -340,4 +350,5 @@ private class LinkPreviewTooltipView: TooltipView {
     public override var bubbleHSpacing: CGFloat { 16 }
 
     public override var tailDirection: TooltipView.TailDirection { .down }
+    public override var dismissOnTap: Bool { false }
 }

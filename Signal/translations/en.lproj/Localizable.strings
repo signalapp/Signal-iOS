@@ -6091,6 +6091,9 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Uninstall";
 
+/* Text indication a story caption can be tapped to read more. */
+"STORIES_CAPTION_READ_MORE" = "Read more";
+
 /* Context menu action to copy the selected story reply */
 "STORIES_COPY_REPLY_ACTION" = "Copy";
 
@@ -6135,12 +6138,6 @@
 
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "You";
-
-/* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
-
-/* placeholder text for replying to a story */
-"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Badges";

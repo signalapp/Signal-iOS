@@ -62,16 +62,15 @@ class StoryContextViewController: OWSViewController {
             updateProgressState()
         } else {
             // If there's an unviewed story, we always want to present that first.
-            if let firstUnviewedStory = items.first(where: { item in
-                guard case .incoming(_, let viewedTimestamp) = item.message.manifest else { return false }
-                return viewedTimestamp == nil
+            if let firstUnviewedStory = items.first(where: {
+                $0.message.localUserViewedTimestamp == nil
             }) {
                 currentItem = firstUnviewedStory
             } else {
                 switch loadPositionIfRead {
-                case .newest, .default:
+                case .newest:
                     currentItem = items.last
-                case .oldest:
+                case .oldest, .default:
                     currentItem = items.first
                 }
             }
@@ -82,6 +81,7 @@ class StoryContextViewController: OWSViewController {
 
         playbackProgressView.alpha = 1
         closeButton.alpha = 1
+        replyButton.alpha = 1
     }
 
     func transitionToNextItem(nextContextLoadPositionIfRead: LoadPosition = .default) {
@@ -252,29 +252,34 @@ class StoryContextViewController: OWSViewController {
 
         if let currentItem = currentItem {
             let itemView = StoryItemMediaView(item: currentItem)
+            itemView.delegate = self
             self.currentItemMediaView = itemView
             mediaViewContainer.addSubview(itemView)
             itemView.autoPinEdgesToSuperviewEdges()
 
-            replyButton.isHidden = false
+            if currentItem.message.localUserAllowedToReply {
+                replyButton.isHidden = false
 
-            let replyButtonText: String
-            switch currentItem.numberOfReplies {
-            case 0:
-                replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_NO_REPLIES", comment: "Button for replying to a story with no existing replies.")
-            case 1:
-                replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_1_REPLY", comment: "Button for replying to a story with a single existing reply.")
-            default:
-                let format = NSLocalizedString("STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT", comment: "Button for replying to a story with N existing replies. {embeds the number of replies}")
-                replyButtonText = String(format: format, "\(currentItem.numberOfReplies)")
+                let replyButtonText: String
+                switch currentItem.numberOfReplies {
+                case 0:
+                    replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_NO_REPLIES", comment: "Button for replying to a story with no existing replies.")
+                case 1:
+                    replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_1_REPLY", comment: "Button for replying to a story with a single existing reply.")
+                default:
+                    let format = NSLocalizedString("STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT", comment: "Button for replying to a story with N existing replies. {embeds the number of replies}")
+                    replyButtonText = String(format: format, "\(currentItem.numberOfReplies)")
+                }
+
+                let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
+                let attributedReplyButtonText = replyButtonText.styled(
+                    with: .font(.systemFont(ofSize: 17, weight: .regular)),
+                    .xmlRules([.style("bold", semiboldStyle)])
+                )
+                replyButton.setAttributedTitle(attributedReplyButtonText)
+            } else {
+                replyButton.isHidden = true
             }
-
-            let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
-            let attributedReplyButtonText = replyButtonText.styled(
-                with: .font(.systemFont(ofSize: 17, weight: .regular)),
-                .xmlRules([.style("bold", semiboldStyle)])
-            )
-            replyButton.setAttributedTitle(attributedReplyButtonText)
         } else {
             replyButton.isHidden = true
         }
@@ -294,15 +299,17 @@ class StoryContextViewController: OWSViewController {
         AssertIsOnMainThread()
         playbackProgressView.numberOfItems = items.count
         if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
-            // When we present a story, mark it as viewed if it's not already.
-            if !currentItemView.isDownloading, case .incoming(_, let viewedTimestamp) = currentItemView.item.message.manifest, viewedTimestamp == nil {
+            // When we present a story, mark it as viewed if it's not already, as long as it's downloaded.
+            if !currentItemView.isPendingDownload, currentItemView.item.message.localUserViewedTimestamp == nil {
                 databaseStorage.write { transaction in
                     currentItemView.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
             }
 
             currentItemView.updateTimestampText()
-            if currentItemView.isDownloading {
+
+            if currentItemView.isPendingDownload {
+                // Don't progress stories that are pending download.
                 lastTransitionTime = CACurrentMediaTime()
                 playbackProgressView.itemState = .init(index: idx, value: 0)
             } else if let lastTransitionTime = lastTransitionTime {
@@ -436,6 +443,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             if hideChrome {
                 self.playbackProgressView.alpha = 0
                 self.closeButton.alpha = 0
+                self.replyButton.alpha = 0
             }
         }
     }
@@ -449,21 +457,35 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         currentItemMediaView?.play {
             self.playbackProgressView.alpha = 1
             self.closeButton.alpha = 1
+            self.replyButton.alpha = 1
         }
         delegate?.storyContextViewControllerDidResume(self)
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let nextFrameWidth = mediaViewContainer.width * 0.8
+        let previousFrameWidth = mediaViewContainer.width * 0.2
+
+        let leftFrameWidth: CGFloat
+        let rightFrameWidth: CGFloat
+        if CurrentAppContext().isRTL {
+            leftFrameWidth = nextFrameWidth
+            rightFrameWidth = previousFrameWidth
+        } else {
+            leftFrameWidth = previousFrameWidth
+            rightFrameWidth = nextFrameWidth
+        }
+
         let touchLocation = gestureRecognizer.location(in: view)
         if gestureRecognizer == leftTapGestureRecognizer {
-            var previousFrame = mediaViewContainer.frame
-            previousFrame.width = previousFrame.width / 2
-            return previousFrame.contains(touchLocation)
+            var leftFrame = mediaViewContainer.frame
+            leftFrame.width = leftFrameWidth
+            return leftFrame.contains(touchLocation)
         } else if gestureRecognizer == rightTapGestureRecognizer {
-            var nextFrame = mediaViewContainer.frame
-            nextFrame.width = nextFrame.width / 2
-            nextFrame.x += nextFrame.width
-            return nextFrame.contains(touchLocation)
+            var rightFrame = mediaViewContainer.frame
+            rightFrame.width = rightFrameWidth
+            rightFrame.x += leftFrameWidth
+            return rightFrame.contains(touchLocation)
         } else {
             return true
         }
@@ -516,4 +538,14 @@ extension StoryContextViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdateExternally() {}
 
     func databaseChangesDidReset() {}
+}
+
+extension StoryContextViewController: StoryItemMediaViewDelegate {
+    func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView) {
+        play()
+    }
+
+    func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView) {
+        pause()
+    }
 }
