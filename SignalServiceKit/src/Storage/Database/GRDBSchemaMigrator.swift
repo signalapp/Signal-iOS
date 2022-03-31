@@ -126,6 +126,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createStoryMessageTable
         case addColumnsForStoryContext
         case addIsStoriesCapableToUserProfiles
+        case addStoryContextIndexToInteractions
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1606,6 +1607,18 @@ public class GRDBSchemaMigrator: NSObject {
                 }
 
                 try db.execute(sql: "ALTER TABLE model_OWSUserProfile DROP COLUMN isUuidCapable")
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addStoryContextIndexToInteractions.rawValue) { db in
+            do {
+                try db.create(
+                    index: "index_model_TSInteraction_on_StoryContext",
+                    on: "model_TSInteraction",
+                    columns: ["storyTimestamp", "storyAuthorUuidString", "isGroupStoryReply"]
+                )
             } catch {
                 owsFail("Error: \(error)")
             }

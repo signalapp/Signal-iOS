@@ -1307,3 +1307,11 @@ CREATE
         ,recordType
     )
 ;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_StoryContext"
+        ON "model_TSInteraction"("storyTimestamp"
+    ,"storyAuthorUuidString"
+    ,"isGroupStoryReply"
+)
+;

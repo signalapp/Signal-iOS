@@ -183,7 +183,7 @@ public extension TSThread {
         transaction: SDSAnyReadTransaction
     ) -> UInt {
         InteractionFinder(threadUniqueId: uniqueId).count(
-            excludingPlaceholders: false,
+            excludingPlaceholders: true,
             storyReplyQueryMode: storyReplyQueryMode,
             transaction: transaction
         )
