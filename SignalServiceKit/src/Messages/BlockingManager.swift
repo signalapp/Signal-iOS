@@ -3,609 +3,227 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public enum BlockMode: UInt {
     case remote
     case localShouldLeaveGroups
     case localShouldNotLeaveGroups
+
+    var locallyInitiated: Bool {
+        switch self {
+        case .remote:
+            return false
+        case .localShouldLeaveGroups:
+            return true
+        case .localShouldNotLeaveGroups:
+            return true
+        }
+    }
 }
 
 // MARK: -
 
-@objc
 public class BlockingManager: NSObject {
-
-    @objc
-    public static let blockListDidChange = Notification.Name("blockListDidChange")
-    @objc
-    public static let blockedSyncDidComplete = Notification.Name("blockedSyncDidComplete")
-
-    // MARK: -
-
-    // We don't store the phone numbers as instances of PhoneNumber to avoid
-    // consistency issues between clients, but these should all be valid e164
-    // phone numbers.
-    private static let unfairLock = UnfairLock()
-    private var unfairLock: UnfairLock { Self.unfairLock }
-
-    private struct State: Equatable {
-        let blockedPhoneNumbers: Set<String>
-        let blockedUUIDStrings: Set<String>
-        // A map of group id-to-group model.
-        let blockedGroupMap: [Data: TSGroupModel]
-
-        static let empty: State = {
-            State(blockedPhoneNumbers: Set(),
-                  blockedUUIDStrings: Set(),
-                  blockedGroupMap: [:])
-        }()
-
-        func isBlocked(address: SignalServiceAddress) -> Bool {
-            if let phoneNumber = address.phoneNumber,
-               blockedPhoneNumbers.contains(phoneNumber) {
-                return true
-            }
-            if let uuidString = address.uuidString,
-               blockedUUIDStrings.contains(uuidString) {
-                return true
-            }
-            return false
-        }
-
-        func isBlocked(groupId: Data) -> Bool {
-            blockedGroupMap[groupId] != nil
-        }
-
-        // MARK: - Equatable
-
-        public static func == (lhs: State, rhs: State) -> Bool {
-            // Ignore the group models.
-            (lhs.blockedPhoneNumbers == rhs.blockedPhoneNumbers &&
-                lhs.blockedUUIDStrings == rhs.blockedUUIDStrings &&
-                Set(lhs.blockedGroupMap.keys) == Set(rhs.blockedGroupMap.keys))
-        }
-
-        // MARK: - Persistence
-
-        fileprivate static let keyValueStore = SDSKeyValueStore(collection: "kOWSBlockingManager_BlockedPhoneNumbersCollection")
-
-        // These keys are used to persist the current local "block list" state.
-        private static var blockedPhoneNumbersKey: String { "kOWSBlockingManager_BlockedPhoneNumbersKey" }
-        private static var blockedUUIDsKey: String { "kOWSBlockingManager_BlockedUUIDsKey" }
-        private static var blockedGroupMapKey: String { "kOWSBlockingManager_BlockedGroupMapKey" }
-
-        // These keys are used to persist the most recently synced remote "block list" state.
-        private static var syncedBlockedPhoneNumbersKey: String { "kOWSBlockingManager_SyncedBlockedPhoneNumbersKey" }
-        private static var syncedBlockedUUIDsKey: String { "kOWSBlockingManager_SyncedBlockedUUIDsKey" }
-        private static var syncedBlockedGroupIdsKey: String { "kOWSBlockingManager_SyncedBlockedGroupIdsKey" }
-
-        static func loadState(transaction: SDSAnyReadTransaction) -> State {
-            load(phoneNumbersKey: blockedPhoneNumbersKey,
-                 uuidStringsKey: blockedUUIDsKey,
-                 groupsKey: blockedGroupMapKey,
-                 shouldStoreGroupModels: true,
-                 transaction: transaction)
-        }
-
-        static func loadSyncedState(transaction: SDSAnyReadTransaction) -> State {
-            load(phoneNumbersKey: syncedBlockedPhoneNumbersKey,
-                 uuidStringsKey: syncedBlockedUUIDsKey,
-                 groupsKey: syncedBlockedGroupIdsKey,
-                 shouldStoreGroupModels: false,
-                 transaction: transaction)
-        }
-
-        private static func load(phoneNumbersKey: String,
-                                 uuidStringsKey: String,
-                                 groupsKey: String,
-                                 shouldStoreGroupModels: Bool,
-                                 transaction: SDSAnyReadTransaction) -> State {
-            let state: State = {
-                let keyValueStore = Self.keyValueStore
-                let blockedPhoneNumbers: [String] = keyValueStore.getObject(forKey: phoneNumbersKey,
-                                                                            transaction: transaction) as? [String] ?? []
-                let blockedUUIDStrings: [String] = keyValueStore.getObject(forKey: uuidStringsKey,
-                                                                           transaction: transaction) as? [String] ?? []
-                let blockedGroupMap: [Data: TSGroupModel]
-                if shouldStoreGroupModels {
-                    blockedGroupMap = keyValueStore.getObject(forKey: groupsKey,
-                                                              transaction: transaction) as? [Data: TSGroupModel] ?? [:]
-                } else {
-                    // For "synced" state we only store group ids,
-                    // not the group models.  So we fill in fake
-                    // group models as necessary.
-                    let blockedGroupIds: [Data] = keyValueStore.getObject(forKey: groupsKey,
-                                                                          transaction: transaction) as? [Data] ?? []
-                    var fakeBlockedGroupMap = [Data: TSGroupModel]()
-                    for groupId in blockedGroupIds {
-                        let groupModel = GroupManager.fakeGroupModel(groupId: groupId,
-                                                                     transaction: transaction)
-                        fakeBlockedGroupMap[groupId] = groupModel
-                    }
-                    blockedGroupMap = fakeBlockedGroupMap
-                }
-                return State(blockedPhoneNumbers: Set(blockedPhoneNumbers),
-                             blockedUUIDStrings: Set(blockedUUIDStrings),
-                             blockedGroupMap: blockedGroupMap)
-            }()
-
-            // Reduce memory usage by discarding group avatars.
-            var blockedGroupMap = [Data: TSGroupModel]()
-            for groupModel in state.blockedGroupMap.values {
-                blockedGroupMap[groupModel.groupId] = groupModel
-            }
-
-            return State(blockedPhoneNumbers: state.blockedPhoneNumbers,
-                         blockedUUIDStrings: state.blockedUUIDStrings,
-                         blockedGroupMap: blockedGroupMap)
-        }
-
-        func saveState(transaction: SDSAnyWriteTransaction) {
-            save(phoneNumbersKey: Self.blockedPhoneNumbersKey,
-                 uuidStringsKey: Self.blockedUUIDsKey,
-                 groupsKey: Self.blockedGroupMapKey,
-                 shouldStoreGroupModels: true,
-                 transaction: transaction)
-        }
-
-        func saveSyncedState(transaction: SDSAnyWriteTransaction) {
-            save(phoneNumbersKey: Self.syncedBlockedPhoneNumbersKey,
-                 uuidStringsKey: Self.syncedBlockedUUIDsKey,
-                 groupsKey: Self.syncedBlockedGroupIdsKey,
-                 shouldStoreGroupModels: false,
-                 transaction: transaction)
-        }
-
-        private func save(phoneNumbersKey: String,
-                          uuidStringsKey: String,
-                          groupsKey: String,
-                          shouldStoreGroupModels: Bool,
-                          transaction: SDSAnyWriteTransaction) {
-            let keyValueStore = Self.keyValueStore
-            keyValueStore.setObject(Array(blockedPhoneNumbers),
-                                    key: phoneNumbersKey,
-                                    transaction: transaction)
-            keyValueStore.setObject(Array(blockedUUIDStrings),
-                                    key: uuidStringsKey,
-                                    transaction: transaction)
-            if shouldStoreGroupModels {
-                // Store "group id-to-group model" map.
-                keyValueStore.setObject(blockedGroupMap,
-                                        key: groupsKey,
-                                        transaction: transaction)
-            } else {
-                // Store "group id" array.
-                keyValueStore.setObject(Array(blockedGroupMap.keys),
-                                        key: groupsKey,
-                                        transaction: transaction)
-            }
-        }
-    }
-
-    // An in-memory cache of current database state.
-    //
-    // This property should only be accessed with unfairLock acquired.
-    private var _currentState: State?
-    // This var should only be accessed with unfairLock acquired.
-    private var currentState: State {
-        get {
-            guard let currentState = _currentState else {
-                owsFailDebug("Accessed state before it was cached.")
-                return .empty
-            }
-            return currentState
-        }
-        set {
-            _currentState = newValue
-        }
-    }
+    private let lock = UnfairLock()
+    private var state: State = State(isDirty: false, changeToken: 0, blockedPhoneNumbers: Set(), blockedUUIDStrings: Set(), blockedGroupMap: [:])
 
     @objc
     public required override init() {
         super.init()
-
         SwiftSingletons.register(self)
-
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.reloadState()
-            self.databaseStorage.appendDatabaseChangeDelegate(self)
+            self.loadStateOnLaunch()
         }
     }
-
-    private func observeNotifications() {
-        AssertIsOnMainThread()
-
-        NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(applicationDidBecomeActive),
-            name: .OWSApplicationDidBecomeActive,
-            object: nil
-        )
-    }
-
-    // MARK: - Initialization
 
     @objc
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-
-        reloadState()
+        loadStateOnLaunch()
     }
 
-    private func reloadState() {
-        AssertIsOnMainThread()
+    private func loadStateOnLaunch() {
+        // Pre-warm our cached state
+        databaseStorage.read {
+            withCurrentState(transaction: $0) { _ in }
+        }
+        // Once we're ready to send a message, check to see if we need to sync.
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            self.sendBlockListSyncMessage(force: false)
+        }
+        observeNotifications()
+    }
 
-        unfairLock.withLock {
-            _currentState = nil
-            loadState()
+    fileprivate func withCurrentState<T>(transaction: SDSAnyReadTransaction, _ handler: (State) -> T) -> T {
+        return lock.withLock {
+            state.reloadIfNecessary(transaction)
+            return handler(state)
         }
     }
 
-    private func wasLocallyInitiated(withBlockMode blockMode: BlockMode) -> Bool {
-        blockMode != .remote
-    }
+    @discardableResult
+    fileprivate func updateCurrentState(transaction: SDSAnyWriteTransaction, wasLocallyInitiated: Bool, _ handler: (inout State) -> Void) -> Bool {
+        return lock.withLock {
+            state.reloadIfNecessary(transaction)
+            handler(&state)
+            let didUpdate = state.persistIfNecessary(transaction)
+            if didUpdate {
+                if !wasLocallyInitiated {
+                    State.setLastSyncedChangeToken(state.changeToken, transaction: transaction)
+                }
 
-    // MARK: - Sync
-
-    @objc
-    public func processIncomingSync(blockedPhoneNumbers: Set<String>,
-                                    blockedUUIDs: Set<UUID>,
-                                    blockedGroupIds: Set<Data>,
-                                    transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
-
-        transaction.addAsyncCompletionOnMain {
-            NotificationCenter.default.post(name: Self.blockedSyncDidComplete, object: nil)
-        }
-
-        // Since we store uuidStrings, rather than UUIDs, we need to
-        // be sure to round-trip any foreign input to ensure consistent
-        // serialization.
-        let blockedUUIDStrings = Set(blockedUUIDs.compactMap { $0.uuidString })
-
-        // We store the list of blocked groups as GroupModels (not group ids)
-        // so that we can display the group names in the block list UI, if
-        // possible.
-        //
-        // * If we have an existing group model, we use it to preserve the group name.
-        // * If we can find the group thread, we use it to preserve the group name.
-        // * If we only know the group id, we use a "fake" group model with only the group id.
-        //
-        // Try to fill in missing TSGroupModels before we acquire unfairLock.
-        var transitionalBlockedGroupMap: [Data: TSGroupModel] = unfairLock.withLock {
-            self.currentState.blockedGroupMap
-        }
-        for groupId in blockedGroupIds {
-            if nil != transitionalBlockedGroupMap[groupId] {
-                continue
-            }
-
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId,
-                                                        transaction: transaction) else {
-                continue
-            }
-            transitionalBlockedGroupMap[groupId] = groupThread.groupModel
-        }
-
-        let state: State? = unfairLock.withLock {
-            let oldState = self.currentState
-
-            // The new "blocked group" state should reflect the state from the sync.
-            // If possible we re-use a group model from the old "blocked group" state
-            // or from the database; otherwise we use a "fake" group model.
-            // See above.
-            var blockedGroupMap = [Data: TSGroupModel]()
-            for groupId in blockedGroupIds {
-                if let groupModel = transitionalBlockedGroupMap[groupId] {
-                    blockedGroupMap[groupId] = groupModel
-                } else {
-                    let groupModel = GroupManager.fakeGroupModel(groupId: groupId,
-                                                                 transaction: transaction)
-                    blockedGroupMap[groupId] = groupModel
+                transaction.addAsyncCompletionOffMain {
+                    Logger.info("blockListDidChange")
+                    if wasLocallyInitiated {
+                        self.sendBlockListSyncMessage(force: false)
+                    }
+                    NotificationCenter.default.postNotificationNameAsync(Self.blockListDidChange, object: nil)
                 }
             }
-
-            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
-                                 blockedUUIDStrings: blockedUUIDStrings,
-                                 blockedGroupMap: blockedGroupMap)
-
-            let hasChanges = (newState.blockedPhoneNumbers != oldState.blockedPhoneNumbers ||
-                                newState.blockedUUIDStrings != oldState.blockedUUIDStrings ||
-                                newState.blockedGroupMap.keys != oldState.blockedGroupMap.keys)
-            guard hasChanges else {
-                return nil
-            }
-
-            self.currentState = newState
-
-            return newState
+            return didUpdate
         }
-
-        guard let newState = state else {
-            // No changes.
-            return
-        }
-
-        Self.handleUpdate(newState: newState,
-                          sendSyncMessage: false,
-                          transaction: transaction)
     }
+}
 
-    // MARK: - Contact Blocking
+// MARK: - Public block state accessors
 
-    @objc
-    public func blockedAddresses(transaction readTx: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
-        let state = unfairLock.withLock {
-            self.currentState
-        }
-        var blockedAddresses = Set<SignalServiceAddress>()
-        for phoneNumber in state.blockedPhoneNumbers {
-            blockedAddresses.insert(SignalServiceAddress(phoneNumber: phoneNumber))
-        }
-        for uuidString in state.blockedUUIDStrings {
-            blockedAddresses.insert(SignalServiceAddress(uuidString: uuidString))
-        }
-        // TODO UUID - optimize this. Maybe blocking manager should store a SignalServiceAddressSet as
-        // it's state instead of the two separate sets.
-        return blockedAddresses
-    }
+extension BlockingManager {
 
-    @objc
-    public func addBlockedAddress(_ address: SignalServiceAddress,
-                                  blockMode: BlockMode,
-                                  transaction: SDSAnyWriteTransaction) {
-        guard address.isValid else {
-            owsFailDebug("Invalid address: \(address).")
-            return
-        }
-
-        let state: State? = unfairLock.withLock {
-            let oldState = self.currentState
-            guard !oldState.isBlocked(address: address) else {
-                return nil
-            }
-
-            var blockedPhoneNumbers = oldState.blockedPhoneNumbers
-            var blockedUUIDStrings = oldState.blockedUUIDStrings
-            let blockedGroupMap = oldState.blockedGroupMap
-
-            if let phoneNumber = address.phoneNumber {
-                blockedPhoneNumbers.insert(phoneNumber)
-            }
-            if let uuidString = address.uuidString {
-                blockedUUIDStrings.insert(uuidString)
-            }
-            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
-                                 blockedUUIDStrings: blockedUUIDStrings,
-                                 blockedGroupMap: blockedGroupMap)
-            self.currentState = newState
-            return newState
-        }
-        guard let newState = state else {
-            // No changes.
-            return
-        }
-
-        Logger.info("addBlockedAddress: \(address)")
-
-        // TODO: Should we consult "didChange" or "isBlockedAfter != isBlockedBefore".
-        // What if isBlocked didn't change but now we know one of the address components
-        // that we didn't before?
-        let wasLocallyInitiated = self.wasLocallyInitiated(withBlockMode: blockMode)
-        if wasLocallyInitiated {
-            // The block state changed, schedule a backup with the storage service
-            storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
-        }
-
-        Self.handleUpdate(newState: newState,
-                          sendSyncMessage: wasLocallyInitiated,
-                          transaction: transaction)
-    }
-
-    @objc
-    public func removeBlockedAddress(_ address: SignalServiceAddress,
-                                     wasLocallyInitiated: Bool,
-                                     transaction: SDSAnyWriteTransaction) {
-        guard address.isValid else {
-            owsFailDebug("Invalid address: \(address).")
-            return
-        }
-
-        let state: State? = unfairLock.withLock {
-            let oldState = self.currentState
-
-            guard oldState.isBlocked(address: address) else {
-                return nil
-            }
-
-            var blockedPhoneNumbers = oldState.blockedPhoneNumbers
-            var blockedUUIDStrings = oldState.blockedUUIDStrings
-            let blockedGroupMap = oldState.blockedGroupMap
-
-            if let phoneNumber = address.phoneNumber {
-                blockedPhoneNumbers.remove(phoneNumber)
-            }
-            if let uuidString = address.uuidString {
-                blockedUUIDStrings.remove(uuidString)
-            }
-            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
-                                 blockedUUIDStrings: blockedUUIDStrings,
-                                 blockedGroupMap: blockedGroupMap)
-            self.currentState = newState
-            return newState
-        }
-        guard let newState = state else {
-            // No changes.
-            return
-        }
-
-        Logger.info("removeBlockedAddress: \(address)")
-
-        if wasLocallyInitiated {
-            // The block state changed, schedule a backup with the storage service
-            storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
-        }
-
-        Self.handleUpdate(newState: newState,
-                          sendSyncMessage: wasLocallyInitiated,
-                          transaction: transaction)
-    }
+    // MARK: Readers
 
     @objc
     public func isAddressBlocked(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        unfairLock.withLock { self.currentState.isBlocked(address: address) }
-    }
-
-    // MARK: - Group Blocking
-
-    @objc
-    public func blockedGroupModels(transaction: SDSAnyReadTransaction) -> [TSGroupModel] {
-        unfairLock.withLock { Array(self.currentState.blockedGroupMap.values) }
+        withCurrentState(transaction: transaction) { state in
+            if let phoneNumber = address.phoneNumber, state.blockedPhoneNumbers.contains(phoneNumber) {
+                return true
+            }
+            if let uuidString = address.uuidString, state.blockedUUIDStrings.contains(uuidString) {
+                return true
+            }
+            return false
+        }
     }
 
     @objc
     public func isGroupIdBlocked(_ groupId: Data, transaction: SDSAnyReadTransaction) -> Bool {
-        unfairLock.withLock { self.currentState.isBlocked(groupId: groupId) }
-    }
-
-    private func cachedGroupModel(forGroupId groupId: Data) -> TSGroupModel? {
-        unfairLock.withLock { self.currentState.blockedGroupMap[groupId] }
+        withCurrentState(transaction: transaction) { state in
+            state.blockedGroupMap[groupId] != nil
+        }
     }
 
     @objc
-    public func addBlockedGroup(groupModel: TSGroupModel,
-                                blockMode: BlockMode,
-                                transaction: SDSAnyWriteTransaction) {
+    public func blockedAddresses(transaction: SDSAnyReadTransaction) -> Set<SignalServiceAddress> {
+        // TODO UUID - optimize this. Maybe blocking manager should store a SignalServiceAddressSet as
+        // it's state instead of the two separate sets.
+        withCurrentState(transaction: transaction) { state in
+            var addressSet = Set<SignalServiceAddress>()
+            state.blockedPhoneNumbers.forEach {
+                let address = SignalServiceAddress(phoneNumber: $0)
+                if address.isValid {
+                    addressSet.insert(address)
+                }
+            }
+            state.blockedUUIDStrings.forEach {
+                let address = SignalServiceAddress(uuidString: $0)
+                if address.isValid {
+                    addressSet.insert(address)
+                }
+            }
+            return addressSet
+        }
+    }
+
+    @objc
+    public func blockedGroupModels(transaction: SDSAnyReadTransaction) -> [TSGroupModel] {
+        withCurrentState(transaction: transaction) { state in
+            Array(state.blockedGroupMap.values)
+        }
+    }
+
+    // MARK: Writers
+
+    @objc public func addBlockedAddress(_ address: SignalServiceAddress, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
+        guard address.isValid else {
+            owsFailDebug("Invalid address: \(address).")
+            return
+        }
+        updateCurrentState(transaction: transaction, wasLocallyInitiated: blockMode.locallyInitiated) { state in
+            let didAdd = state.addBlockedAddress(address)
+            if didAdd && blockMode.locallyInitiated {
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
+            }
+        }
+    }
+
+    @objc public func removeBlockedAddress(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
+        guard address.isValid else {
+            owsFailDebug("Invalid address: \(address).")
+            return
+        }
+        updateCurrentState(transaction: transaction, wasLocallyInitiated: wasLocallyInitiated) { state in
+            let didRemove = state.removeBlockedAddress(address)
+            if didRemove && wasLocallyInitiated {
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
+            }
+        }
+    }
+
+    @objc public func addBlockedGroup(groupModel: TSGroupModel, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
         let groupId = groupModel.groupId
-        owsAssertDebug(GroupManager.isValidGroupIdOfAnyKind(groupId))
-
-        let state: State? = unfairLock.withLock {
-            let oldState = self.currentState
-
-            guard !oldState.isBlocked(groupId: groupId) else {
-                // Already blocked.
-                return nil
-            }
-
-            let blockedPhoneNumbers = oldState.blockedPhoneNumbers
-            let blockedUUIDStrings = oldState.blockedUUIDStrings
-            var blockedGroupMap = oldState.blockedGroupMap
-
-            blockedGroupMap[groupId] = groupModel
-
-            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
-                                 blockedUUIDStrings: blockedUUIDStrings,
-                                 blockedGroupMap: blockedGroupMap)
-            self.currentState = newState
-            return newState
-        }
-        guard let newState = state else {
-            // Already blocked.
+        guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
+            owsFailDebug("Invalid group: \(groupId)")
             return
         }
 
-        Logger.info("groupId: \(groupId.hexadecimalString)")
+        updateCurrentState(transaction: transaction, wasLocallyInitiated: blockMode.locallyInitiated) { state in
+            let didInsert = state.addBlockedGroup(groupModel)
+            if didInsert {
+                Logger.info("Added blocked groupId: \(groupId.hexadecimalString)")
+                TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
 
-        TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+                if blockMode.locallyInitiated {
+                    storageServiceManager.recordPendingUpdates(groupModel: groupModel)
+                }
 
-        // Quit the group if we're a member.
-        if blockMode == .localShouldLeaveGroups,
-           groupModel.groupMembership.isLocalUserMemberOfAnyKind,
-           let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
-           groupThread.isLocalUserMemberOfAnyKind {
-            GroupManager.leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: groupThread,
-                                                                 transaction: transaction,
-                                                                 success: nil)
+                // Quit the group if we're a member.
+                if blockMode == .localShouldLeaveGroups,
+                   groupModel.groupMembership.isLocalUserMemberOfAnyKind,
+                   let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
+                   groupThread.isLocalUserMemberOfAnyKind {
+                    GroupManager.leaveGroupOrDeclineInviteAsyncWithoutUI(groupThread: groupThread,
+                                                                         transaction: transaction,
+                                                                         success: nil)
+                }
+            }
         }
-
-        let wasLocallyInitiated = self.wasLocallyInitiated(withBlockMode: blockMode)
-
-        if wasLocallyInitiated {
-            // The block state changed, schedule a backup with the storage service.
-            storageServiceManager.recordPendingUpdates(groupModel: groupModel)
-        }
-
-        Self.handleUpdate(newState: newState,
-                          sendSyncMessage: wasLocallyInitiated,
-                          transaction: transaction)
     }
 
-    @objc
-    public func addBlockedGroup(groupId: Data,
-                                blockMode: BlockMode,
-                                transaction: SDSAnyWriteTransaction) {
-
-        let groupModel: TSGroupModel = {
-            if let groupModel = self.cachedGroupModel(forGroupId: groupId) {
-                return groupModel
-            }
-            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
-            if let groupThread = TSGroupThread.fetch(groupId: groupId,
-                                                     transaction: transaction) {
-                return groupThread.groupModel
-            }
-            return GroupManager.fakeGroupModel(groupId: groupId, transaction: transaction)!
-        }()
-
-        addBlockedGroup(groupModel: groupModel,
-                        blockMode: blockMode,
-                        transaction: transaction)
-    }
-
-    @objc
-    public func removeBlockedGroup(groupId: Data,
-                                   wasLocallyInitiated: Bool,
-                                   transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(GroupManager.isValidGroupIdOfAnyKind(groupId))
-
-        let result: (State, TSGroupModel)? = unfairLock.withLock {
-            let oldState = self.currentState
-
-            guard let blockedGroupModel = oldState.blockedGroupMap[groupId] else {
-                // Not blocked.
-                return nil
-            }
-
-            let blockedPhoneNumbers = oldState.blockedPhoneNumbers
-            let blockedUUIDStrings = oldState.blockedUUIDStrings
-            var blockedGroupMap = oldState.blockedGroupMap
-
-            blockedGroupMap.removeValue(forKey: groupId)
-
-            let newState = State(blockedPhoneNumbers: blockedPhoneNumbers,
-                                 blockedUUIDStrings: blockedUUIDStrings,
-                                 blockedGroupMap: blockedGroupMap)
-            self.currentState = newState
-            return (newState, blockedGroupModel)
-        }
-        guard let (newState, blockedGroupModel) = result else {
-            owsFailDebug("Group not blocked.")
+    @objc public func removeBlockedGroup(groupId: Data, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
+        guard GroupManager.isValidGroupIdOfAnyKind(groupId) else {
+            owsFailDebug("Invalid group: \(groupId)")
             return
         }
 
-        Logger.info("groupId: \(groupId.hexadecimalString)")
+        updateCurrentState(transaction: transaction, wasLocallyInitiated: wasLocallyInitiated) { state in
+            if let unblockedGroup = state.removeBlockedGroup(groupId) {
+                Logger.info("Removed blocked groupId: \(groupId.hexadecimalString)")
+                TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
 
-        TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+                if wasLocallyInitiated {
+                    storageServiceManager.recordPendingUpdates(groupModel: unblockedGroup)
+                }
 
-        if wasLocallyInitiated {
-            // The block state changed, schedule a backup with the storage service.
-            storageServiceManager.recordPendingUpdates(groupModel: blockedGroupModel)
-        }
-
-        Self.handleUpdate(newState: newState,
-                          sendSyncMessage: wasLocallyInitiated,
-                          transaction: transaction)
-
-        // Refresh unblocked group.
-        if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
+                // Refresh unblocked group.
+                if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+                    groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(groupThread)
+                }
+            }
         }
     }
 
-    // MARK: - Thread Blocking
+    // MARK: Other convenience access
 
     @objc
     public func isThreadBlocked(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
@@ -649,153 +267,292 @@ public class BlockingManager: NSObject {
         }
     }
 
-    // MARK: - Updates
-
-    // This should be called every time the block list changes.
-    private static func handleUpdate(newState: State,
-                                     sendSyncMessage: Bool,
-                                     transaction: SDSAnyWriteTransaction) {
-
-        newState.saveState(transaction: transaction)
-
-        transaction.addAsyncCompletionOffMain {
-            if sendSyncMessage {
-                Self.sendBlockListSyncMessage(state: newState)
+    @objc public func addBlockedGroup(groupId: Data, blockMode: BlockMode, transaction: SDSAnyWriteTransaction) {
+        // Since we're in a write transaction, current state shouldn't have updated between this read
+        // and the following write. I'm just using the `withCurrentState` method here to avoid reenterancy
+        // that'd require having a separate helper implementation.
+        let groupModelToUse: TSGroupModel? = withCurrentState(transaction: transaction) { state in
+            TSGroupThread.ensureGroupIdMapping(forGroupId: groupId, transaction: transaction)
+            if let existingModel = state.blockedGroupMap[groupId] {
+                return existingModel
+            } else if let currentThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+                return currentThread.groupModel
             } else {
-                // If this update came from an incoming block list sync message,
-                // update the "synced blocked list" state immediately,
-                // since we're now in sync.
-                //
-                // There could be data loss if both clients modify the block list
-                // at the same time, but:
-                //
-                // a) Block list changes will be rare.
-                // b) Conflicting block list changes will be even rarer.
-                // c) It's unlikely a user will make conflicting changes on two
-                //    devices around the same time.
-                // d) There isn't a good way to avoid this.
-                //
-                // TODO: Can we make the storage service the single
-                // source of truth for this state?
-                databaseStorage.write { transaction in
-                    newState.saveSyncedState(transaction: transaction)
+                return GroupManager.fakeGroupModel(groupId: groupId, transaction: transaction)
+            }
+        }
+
+        if let groupModelToUse = groupModelToUse {
+            addBlockedGroup(groupModel: groupModelToUse, blockMode: blockMode, transaction: transaction)
+        }
+    }
+}
+
+// MARK: - Syncing
+
+extension BlockingManager {
+    @objc public func processIncomingSync(blockedPhoneNumbers: Set<String>, blockedUUIDs: Set<UUID>, blockedGroupIds: Set<Data>, transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+        transaction.addAsyncCompletionOnMain {
+            NotificationCenter.default.post(name: Self.blockedSyncDidComplete, object: nil)
+        }
+
+        updateCurrentState(transaction: transaction, wasLocallyInitiated: false) { state in
+            var newBlockedAddresses = Set<SignalServiceAddress>()
+            blockedPhoneNumbers.forEach { phoneNumber in
+                let blockedAddress = SignalServiceAddress(phoneNumber: phoneNumber)
+                if blockedAddress.isValid, blockedAddress.phoneNumber != nil {
+                    newBlockedAddresses.insert(blockedAddress)
+                }
+            }
+            blockedUUIDs.forEach { uuid in
+                let blockedAddress = SignalServiceAddress(uuid: uuid)
+                if blockedAddress.isValid, blockedAddress.uuidString != nil {
+                    newBlockedAddresses.insert(blockedAddress)
                 }
             }
 
-            Logger.info("blockListDidChange")
-            NotificationCenter.default.postNotificationNameAsync(Self.blockListDidChange, object: nil)
+            // We store the list of blocked groups as GroupModels (not group ids)
+            // so that we can display the group names in the block list UI, if
+            // possible.
+            //
+            // * If we have an existing group model, we use it to preserve the group name.
+            // * If we can find the group thread, we use it to preserve the group name.
+            // * If we only know the group id, we use a "fake" group model with only the group id.
+            let newBlockedGroups: [Data: TSGroupModel] = blockedGroupIds.dictionaryMappingToValues { (blockedGroupId: Data) -> TSGroupModel? in
+                TSGroupThread.ensureGroupIdMapping(forGroupId: blockedGroupId, transaction: transaction)
+                if let existingModel = state.blockedGroupMap[blockedGroupId] {
+                    return existingModel
+                } else if let currentThread = TSGroupThread.fetch(groupId: blockedGroupId, transaction: transaction) {
+                    return currentThread.groupModel
+                } else {
+                    return GroupManager.fakeGroupModel(groupId: blockedGroupId, transaction: transaction)
+                }
+            }.compactMapValues { $0 }
+
+            state.replace(blockedAddresses: newBlockedAddresses, blockedGroups: newBlockedGroups)
         }
     }
 
-    // This method should only be called with unfairLock acquired.
-    private func loadState() {
-        owsAssertDebug(_currentState == nil)
-
-        Logger.verbose("")
-
-        let state = databaseStorage.read { transaction in
-            State.loadState(transaction: transaction)
-        }
-
-        _currentState = state
-
+    @objc public func syncBlockList(completion: @escaping () -> Void) {
         DispatchQueue.global().async {
-            Self.syncBlockListIfNecessary(state: state)
-        }
-
-        observeNotifications()
-    }
-
-    @objc
-    public func syncBlockList(completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            let state = Self.unfairLock.withLock { self.currentState }
-            Self.sendBlockListSyncMessage(state: state)
+            self.sendBlockListSyncMessage(force: true)
             completion()
         }
     }
 
-    // This method should only be called off the main thread.
-    private static func syncBlockListIfNecessary(state: State) {
-        if CurrentAppContext().isNSE {
-            return
-        }
-        // If we haven't yet successfully synced the current "block list" changes,
-        // try again to sync now.
-        let syncedState = databaseStorage.read { transaction in
-            State.loadSyncedState(transaction: transaction)
-        }
-
-        guard state != syncedState else {
-            Logger.verbose("Ignoring redundant block list sync.")
-            return
-        }
-
-        Logger.info("Syncing block list.")
-
-        Self.sendBlockListSyncMessage(state: state)
-    }
-
-    private static func sendBlockListSyncMessage(state: State) {
+    private func sendBlockListSyncMessage(force: Bool) {
         databaseStorage.write { transaction in
             let possibleThread = TSAccountManager.getOrCreateLocalThread(transaction: transaction)
-
             guard let thread = possibleThread else {
                 owsFailDebug("Missing thread.")
                 return
             }
 
-            let message = OWSBlockedPhoneNumbersMessage(
-                thread: thread,
-                phoneNumbers: Array(state.blockedPhoneNumbers),
-                uuids: Array(state.blockedUUIDStrings),
-                groupIds: Array(state.blockedGroupMap.keys)
-            )
-
-            messageSenderJobQueue.add(
-                .promise,
-                message: message.asPreparer,
-                transaction: transaction
-            ).done(on: .global()) {
-                Logger.info("Successfully sent blocked phone numbers sync message")
-
-                // Record the last block list which we successfully synced..
-                Self.databaseStorage.write { transaction in
-                    state.saveSyncedState(transaction: transaction)
+            withCurrentState(transaction: transaction) { state in
+                // If we're not forcing a sync, then we only sync if our last synced token is stale
+                // and we're not in the NSE. We'll leaving syncing to the main app.
+                if !force {
+                    let currentToken = state.changeToken
+                    let lastSyncedToken = State.fetchLastSyncedChangeToken(transaction)
+                    guard currentToken != lastSyncedToken && !CurrentAppContext().isNSE else {
+                        Logger.verbose("Skipping send for unchanged block state")
+                        return
+                    }
                 }
-            }.catch { error in
-                owsFailDebugUnlessNetworkFailure(error)
-            }
-        }
-    }
 
-    // MARK: - Notifications
+                let outgoingChangeToken = state.changeToken
+                let message = OWSBlockedPhoneNumbersMessage(
+                    thread: thread,
+                    phoneNumbers: Array(state.blockedPhoneNumbers),
+                    uuids: Array(state.blockedUUIDStrings),
+                    groupIds: Array(state.blockedGroupMap.keys))
 
-    @objc
-    private func applicationDidBecomeActive() {
-        AssertIsOnMainThread()
+                messageSenderJobQueue.add(
+                    .promise,
+                    message: message.asPreparer,
+                    transaction: transaction
+                ).done(on: .global()) {
+                    Logger.info("Successfully sent blocked phone numbers sync message")
 
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            DispatchQueue.global().async {
-                let state = Self.unfairLock.withLock {
-                    self.currentState
+                    // Record the last block list which we successfully synced..
+                    Self.databaseStorage.write { transaction in
+                        State.setLastSyncedChangeToken(outgoingChangeToken, transaction: transaction)
+                    }
+                }.catch { error in
+                    owsFailDebugUnlessNetworkFailure(error)
                 }
-                Self.syncBlockListIfNecessary(state: state)
             }
         }
     }
 }
 
-// MARK: - Database Change Observation
+// MARK: - Notifications
 
-extension BlockingManager: DatabaseChangeDelegate {
-    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+extension BlockingManager {
+    @objc public static let blockListDidChange = Notification.Name("blockListDidChange")
+    @objc public static let blockedSyncDidComplete = Notification.Name("blockedSyncDidComplete")
+
+    fileprivate func observeNotifications() {
+        AssertIsOnMainThread()
+
+        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil
+        )
     }
 
-    public func databaseChangesDidUpdateExternally() {
-        reloadState()
+    @objc
+    fileprivate func applicationDidBecomeActive() {
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            DispatchQueue.global().async {
+                self.sendBlockListSyncMessage(force: false)
+            }
+        }
     }
+}
 
-    public func databaseChangesDidReset() {
+// MARK: - Persistence
+
+extension BlockingManager {
+    fileprivate struct State {
+        private(set) var isDirty: Bool
+        private(set) var changeToken: UInt64
+        private(set) var blockedPhoneNumbers: Set<String>
+        private(set) var blockedUUIDStrings: Set<String>
+        private(set) var blockedGroupMap: [Data: TSGroupModel]   // GroupId -> GroupModel
+
+        // MARK: - Mutation
+
+        mutating func replace(blockedAddresses: Set<SignalServiceAddress>, blockedGroups: [Data: TSGroupModel]) {
+            let oldBlockedNumbers = blockedPhoneNumbers
+            let oldBlockedUUIDStrings = blockedUUIDStrings
+            let oldBlockedGroupMap = blockedGroupMap
+
+            blockedGroupMap = blockedGroups
+            blockedPhoneNumbers = Set()
+            blockedUUIDStrings = Set()
+            blockedAddresses.forEach { blockedAddress in
+                blockedAddress.phoneNumber.map { _ = blockedPhoneNumbers.insert($0) }
+                blockedAddress.uuidString.map { _ = blockedUUIDStrings.insert($0) }
+            }
+
+            isDirty = false
+            isDirty = isDirty || (oldBlockedNumbers != blockedPhoneNumbers)
+            isDirty = isDirty || (oldBlockedUUIDStrings != blockedUUIDStrings)
+            isDirty = isDirty || (oldBlockedGroupMap != blockedGroupMap)
+        }
+
+        @discardableResult
+        mutating func addBlockedAddress(_ address: SignalServiceAddress) -> Bool {
+            var didInsert = false
+            if let phoneNumber = address.phoneNumber, !blockedPhoneNumbers.contains(phoneNumber) {
+                blockedPhoneNumbers.insert(phoneNumber)
+                didInsert = true
+            }
+            if let uuidString = address.uuidString, !blockedUUIDStrings.contains(uuidString) {
+                blockedUUIDStrings.insert(uuidString)
+                didInsert = true
+            }
+            isDirty = isDirty || didInsert
+            return didInsert
+        }
+
+        @discardableResult
+        mutating func removeBlockedAddress(_ address: SignalServiceAddress) -> Bool {
+            var didRemove = false
+            if let phoneNumber = address.phoneNumber, blockedPhoneNumbers.contains(phoneNumber) {
+                blockedPhoneNumbers.remove(phoneNumber)
+                didRemove = true
+            }
+            if let uuidString = address.uuidString, !blockedUUIDStrings.contains(uuidString) {
+                blockedUUIDStrings.remove(uuidString)
+                didRemove = true
+            }
+            isDirty = isDirty || didRemove
+            return didRemove
+        }
+
+        @discardableResult
+        mutating func addBlockedGroup(_ model: TSGroupModel) -> Bool {
+            var didInsert = false
+            if blockedGroupMap[model.groupId] == nil {
+                blockedGroupMap[model.groupId] = model
+                didInsert = true
+            }
+            isDirty = didInsert || isDirty
+            return didInsert
+        }
+
+        @discardableResult
+        mutating func removeBlockedGroup(_ groupId: Data) -> TSGroupModel? {
+            let oldValue = blockedGroupMap.removeValue(forKey: groupId)
+            isDirty = isDirty || (oldValue != nil)
+            return oldValue
+        }
+
+        // MARK: Persistence
+        fileprivate static let keyValueStore = SDSKeyValueStore(collection: "kOWSBlockingManager_BlockedPhoneNumbersCollection")
+
+        // These keys are used to persist the current local "block list" state.
+        private static var changeTokenKey: String { "kOWSBlockingManager_ChangeTokenKey" }
+        private static var lastSyncedChangeTokenKey: String { "kOWSBlockingManager_LastSyncedChangeTokenKey" }
+        private static var blockedPhoneNumbersKey: String { "kOWSBlockingManager_BlockedPhoneNumbersKey" }
+        private static var blockedUUIDsKey: String { "kOWSBlockingManager_BlockedUUIDsKey" }
+        private static var blockedGroupMapKey: String { "kOWSBlockingManager_BlockedGroupMapKey" }
+        // These keys are used to persist the most recently synced remote "block list" state.
+        private static var syncedBlockedPhoneNumbersKey: String { "kOWSBlockingManager_SyncedBlockedPhoneNumbersKey" }
+        private static var syncedBlockedUUIDsKey: String { "kOWSBlockingManager_SyncedBlockedUUIDsKey" }
+        private static var syncedBlockedGroupIdsKey: String { "kOWSBlockingManager_SyncedBlockedGroupIdsKey" }
+
+        mutating func reloadIfNecessary(_ transaction: SDSAnyReadTransaction) {
+            owsAssertDebug(isDirty == false)
+            let databaseChangeToken: UInt64 = Self.keyValueStore.getUInt64(Self.changeTokenKey, defaultValue: 1, transaction: transaction)
+
+            if databaseChangeToken != changeToken {
+                func fetchObject<T>(of type: T.Type, key: String, defaultValue: T) -> T {
+                    if let storedObject = Self.keyValueStore.getObject(forKey: key, transaction: transaction) {
+                        owsAssertDebug(storedObject is T)
+                        return (storedObject as? T) ?? defaultValue
+                    } else {
+                        return defaultValue
+                    }
+                }
+                changeToken = Self.keyValueStore.getUInt64(Self.changeTokenKey, defaultValue: 1, transaction: transaction)
+                blockedPhoneNumbers = Set(fetchObject(of: [String].self, key: Self.blockedPhoneNumbersKey, defaultValue: []))
+                blockedUUIDStrings = Set(fetchObject(of: [String].self, key: Self.blockedUUIDsKey, defaultValue: []))
+                blockedGroupMap = fetchObject(of: [Data: TSGroupModel].self, key: Self.blockedGroupMapKey, defaultValue: [:])
+                isDirty = false
+            }
+        }
+
+        mutating func persistIfNecessary(_ transaction: SDSAnyWriteTransaction) -> Bool {
+            if isDirty {
+                let databaseChangeToken = Self.keyValueStore.getUInt64(Self.changeTokenKey, defaultValue: 1, transaction: transaction)
+                owsAssertDebug(databaseChangeToken == changeToken)
+
+                changeToken = databaseChangeToken + 1
+                Self.keyValueStore.setUInt64(changeToken, key: Self.changeTokenKey, transaction: transaction)
+                Self.keyValueStore.setObject(blockedPhoneNumbers, key: Self.blockedPhoneNumbersKey, transaction: transaction)
+                Self.keyValueStore.setObject(blockedUUIDStrings, key: Self.blockedUUIDsKey, transaction: transaction)
+                Self.keyValueStore.setObject(blockedGroupMap, key: Self.blockedGroupMapKey, transaction: transaction)
+                isDirty = false
+                return true
+
+            } else {
+                return false
+            }
+        }
+
+        static func fetchLastSyncedChangeToken(_ readTx: SDSAnyReadTransaction) -> UInt64 {
+            Self.keyValueStore.getUInt64(Self.lastSyncedChangeTokenKey, defaultValue: 0, transaction: readTx)
+        }
+
+        static func setLastSyncedChangeToken(_ newValue: UInt64, transaction writeTx: SDSAnyWriteTransaction) {
+            Self.keyValueStore.setUInt64(newValue, key: Self.lastSyncedChangeTokenKey, transaction: writeTx)
+        }
     }
 }
