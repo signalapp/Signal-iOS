@@ -92,14 +92,7 @@ final class SimplifiedConversationCell : UITableViewCell {
         
         guard let thread = threadViewModel?.threadRecord else { return }
         
-        let isBlocked: Bool
-        if let thread = thread as? TSContactThread {
-            isBlocked = SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(thread.contactSessionID())
-        } else {
-            isBlocked = false
-        }
-        
-        accentLineView.alpha = (isBlocked ? 1 : 0)
+        accentLineView.alpha = (thread.isBlocked() ? 1 : 0)
         profilePictureView.update(for: thread)
         displayNameLabel.text = getDisplayName()
     }

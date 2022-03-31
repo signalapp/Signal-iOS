@@ -8,7 +8,6 @@
 #import <SignalUtilitiesKit/OWSDatabaseMigration.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
-#import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
 #import <SessionMessagingKit/OWSIdentityManager.h>
 #import <SessionMessagingKit/OWSOutgoingReceiptManager.h>
@@ -23,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation AppSetup
 
 + (void)setupEnvironmentWithAppSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
-                                  migrationCompletion:(dispatch_block_t)migrationCompletion
+                                  migrationCompletion:(OWSDatabaseMigrationCompletion)migrationCompletion
 {
     OWSAssertDebug(appSpecificSingletonBlock);
     OWSAssertDebug(migrationCompletion);
@@ -52,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSPreferences *preferences = [OWSPreferences new];
 
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
         TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSDisappearingMessagesJob *disappearingMessagesJob =
@@ -77,7 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithProfileManager:profileManager
                                                                   primaryStorage:primaryStorage
-                                                                 blockingManager:blockingManager
                                                                  identityManager:identityManager
                                                                 tsAccountManager:tsAccountManager
                                                          disappearingMessagesJob:disappearingMessagesJob
@@ -99,10 +96,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{
                 // Don't start database migrations until storage is ready.
-                [VersionMigrations performUpdateCheckWithCompletion:^() {
+                [VersionMigrations performUpdateCheckWithCompletion:^(BOOL successful, BOOL needsConfigSync) {
                     OWSAssertIsOnMainThread();
 
-                    migrationCompletion();
+                    migrationCompletion(successful, needsConfigSync);
 
                     OWSAssertDebug(backgroundTask);
                     backgroundTask = nil;

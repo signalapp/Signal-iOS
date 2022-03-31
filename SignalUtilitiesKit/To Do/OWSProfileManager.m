@@ -14,7 +14,6 @@
 #import <SessionUtilitiesKit/NSData+Image.h>
 #import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
-#import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SessionMessagingKit/TSAccountManager.h>
@@ -92,11 +91,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (OWSIdentityManager *)identityManager
 {
     return SSKEnvironment.shared.identityManager;
-}
-
-- (OWSBlockingManager *)blockingManager
-{
-    return SSKEnvironment.shared.blockingManager;
 }
 
 - (void)updateLocalProfileName:(nullable NSString *)profileName

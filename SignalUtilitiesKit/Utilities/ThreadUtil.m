@@ -7,7 +7,6 @@
 #import "OWSUnreadIndicator.h"
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
-#import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSContactThread.h>
@@ -66,7 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Dynamic Interactions
 
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                  blockingManager:(OWSBlockingManager *)blockingManager
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
@@ -75,7 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(dbConnection);
-    OWSAssertDebug(blockingManager);
     OWSAssertDebug(maxRangeSize > 0);
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
