@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -79,7 +79,8 @@ extension TSInteraction {
             default:
                 return true
             }
-
+        case let message as TSMessage:
+            return !message.isGroupStoryReply
         default:
             return true
         }

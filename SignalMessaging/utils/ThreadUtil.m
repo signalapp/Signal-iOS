@@ -183,6 +183,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer:(TSThread *)thread
                                                                  transaction:(SDSAnyWriteTransaction *)transaction
 {
+    return [self addThreadToProfileWhitelistIfEmptyOrPendingRequest:thread
+                                         setDefaultTimerIfNecessary:YES
+                                                        transaction:transaction];
+}
+
++ (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequest:(TSThread *)thread
+                                setDefaultTimerIfNecessary:(BOOL)setDefaultTimerIfNecessary
+                                               transaction:(SDSAnyWriteTransaction *)transaction
+{
     OWSAssertDebug(thread);
 
     DisappearingMessageToken *defaultTimerToken =
@@ -192,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
         [GRDBThreadFinder shouldSetDefaultDisappearingMessageTimerWithThread:thread
                                                                  transaction:transaction.unwrapGrdbRead];
 
-    if (needsDefaultTimerSet) {
+    if (needsDefaultTimerSet && setDefaultTimerIfNecessary) {
         OWSDisappearingMessagesConfiguration *configuration =
             [OWSDisappearingMessagesConfiguration applyToken:defaultTimerToken toThread:thread transaction:transaction];
 

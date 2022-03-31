@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 class StoryPlaybackProgressView: UIView {
     var playedColor: UIColor = .ows_white {
@@ -102,32 +103,59 @@ class StoryPlaybackProgressView: UIView {
             unplayedShapeLayer.path = unplayedBezierPath.cgPath
         }
 
-        for x in 0..<numberOfItems {
-            if itemState.index == x, itemState.value < 1, itemState.value > 0 {
+        for idx in 0..<numberOfItems {
+            if itemState.index == idx, itemState.value < 1, itemState.value > 0 {
+                var playedXPosition = CGFloat(idx) * (itemWidth + itemSpacing)
+                let playedWidth = itemWidth * itemState.value
+                let playedRoundedCorners: UIRectCorner
+                var unplayedXPosition = playedXPosition + playedWidth
+                let unplayedRoundedCorners: UIRectCorner
+
+                if CurrentAppContext().isRTL {
+                    unplayedXPosition = rect.width - playedXPosition - itemWidth
+                    playedXPosition = unplayedXPosition + itemWidth - playedWidth
+                    playedRoundedCorners = [.topRight, .bottomRight]
+                    unplayedRoundedCorners = [.topLeft, .bottomLeft]
+                } else {
+                    playedRoundedCorners = [.topLeft, .bottomLeft]
+                    unplayedRoundedCorners = [.topRight, .bottomRight]
+                }
+
                 let playedItemFrame = CGRect(
-                    x: CGFloat(x) * (itemWidth + itemSpacing),
+                    x: playedXPosition,
                     y: 0,
-                    width: itemWidth * itemState.value,
+                    width: playedWidth,
                     height: itemHeight
                 )
-                playedBezierPath.append(UIBezierPath(roundedRect: playedItemFrame, byRoundingCorners: [.topLeft, .bottomLeft], cornerRadii: CGSize(square: itemHeight / 2)))
+                playedBezierPath.append(UIBezierPath(
+                    roundedRect: playedItemFrame,
+                    byRoundingCorners: playedRoundedCorners,
+                    cornerRadii: CGSize(square: itemHeight / 2)))
+
                 let unplayedItemFrame = CGRect(
-                    x: playedItemFrame.x + playedItemFrame.width,
+                    x: unplayedXPosition,
                     y: 0,
                     width: itemWidth * (1 - itemState.value),
                     height: itemHeight
                 )
-                unplayedBezierPath.append(UIBezierPath(roundedRect: unplayedItemFrame, byRoundingCorners: [.topRight, .bottomRight], cornerRadii: CGSize(square: itemHeight / 2)))
+                unplayedBezierPath.append(UIBezierPath(
+                    roundedRect: unplayedItemFrame,
+                    byRoundingCorners: unplayedRoundedCorners,
+                    cornerRadii: CGSize(square: itemHeight / 2)))
             } else {
                 let path: UIBezierPath
-                if itemState.index < x || (itemState.index == x && itemState.value <= 0) {
+                if itemState.index < idx || (itemState.index == idx && itemState.value <= 0) {
                     path = unplayedBezierPath
                 } else {
-                    owsAssertDebug(itemState.index > x || (itemState.index == x && itemState.value >= 1))
+                    owsAssertDebug(itemState.index > idx || (itemState.index == idx && itemState.value >= 1))
                     path = playedBezierPath
                 }
+
+                var xPosition = CGFloat(idx) * (itemWidth + itemSpacing)
+                if CurrentAppContext().isRTL { xPosition = rect.width - xPosition - itemWidth }
+
                 let itemFrame = CGRect(
-                    x: CGFloat(x) * (itemWidth + itemSpacing),
+                    x: xPosition,
                     y: 0,
                     width: itemWidth,
                     height: itemHeight

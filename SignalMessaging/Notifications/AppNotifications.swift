@@ -426,6 +426,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func canNotify(for incomingMessage: TSIncomingMessage,
                           thread: TSThread,
                           transaction: SDSAnyReadTransaction) -> Bool {
+        guard !incomingMessage.isGroupStoryReply else { return false }
+
         guard isThreadMuted(thread, transaction: transaction) else {
             return true
         }

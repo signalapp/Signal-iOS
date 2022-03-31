@@ -720,8 +720,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     self.isViewVisible = YES;
 
-    // Ensure the tabBar is always hidden if stories is disabled.
-    BOOL shouldHideTabBar = !SSKFeatureFlags.stories;
+    // Ensure the tabBar is always hidden if stories is disabled or we're in the archive.
+    BOOL shouldHideTabBar = !SSKFeatureFlags.stories || self.chatListMode == ChatListModeArchive;
     if (shouldHideTabBar) {
         self.tabBarController.tabBar.hidden = YES;
         self.extendedLayoutIncludesOpaqueBars = YES;

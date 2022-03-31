@@ -16,7 +16,7 @@ struct IncomingStoryViewModel: Dependencies {
         case missing
     }
     let latestMessageAttachment: Attachment
-    let latestMessageHasReplies: Bool
+    let hasReplies: Bool
     let latestMessageName: String
     let latestMessageTimestamp: UInt64
 
@@ -40,6 +40,7 @@ struct IncomingStoryViewModel: Dependencies {
         }
 
         self.context = latestMessage.context
+        self.hasReplies = InteractionFinder.hasReplies(for: latestMessage.context, transaction: transaction)
 
         if let groupId = latestMessage.groupId {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
@@ -74,7 +75,6 @@ struct IncomingStoryViewModel: Dependencies {
             latestMessageAttachment = .text(attachment)
         }
 
-        latestMessageHasReplies = false // TODO: replies
         latestMessageTimestamp = latestMessage.timestamp
     }
 

@@ -273,6 +273,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
+    @objc(touchStoryMessage:transaction:)
     public func touch(storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .grdbWrite(let grdb):

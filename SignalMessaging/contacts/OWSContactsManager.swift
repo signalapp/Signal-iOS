@@ -984,9 +984,11 @@ extension OWSContactsManager {
     // Rather than being called once for each address, we call it once with all the
     // addresses and it will use a single database query per step to assign
     // display names to addresses using different techniques.
-    @objc(objc_displayNamesForAddresses:transaction:)
-    func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
-        return Refinery(addresses).refine { addresses in
+    private func displayNamesRefinery(
+        for addresses: [SignalServiceAddress],
+        transaction: SDSAnyReadTransaction
+    ) -> Refinery<SignalServiceAddress, String> {
+        return .init(addresses).refine { addresses in
             // Prefer a saved name from system contacts, if available.
             return cachedContactNames(for: addresses, transaction: transaction)
         }.refine { addresses in
@@ -1009,9 +1011,20 @@ extension OWSContactsManager {
                 self.fetchProfile(forUnknownAddress: $0)
                 return self.unknownUserLabel
             }
-        }.values.map {
-            $0!
         }
+    }
+
+    @objc
+    public func displayNamesByAddress(
+        for addresses: [SignalServiceAddress],
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalServiceAddress: String] {
+        Dictionary(displayNamesRefinery(for: addresses, transaction: transaction))
+    }
+
+    @objc(objc_displayNamesForAddresses:transaction:)
+    func displayNames(for addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [String] {
+        displayNamesRefinery(for: addresses, transaction: transaction).values.map { $0! }
     }
 
     func phoneNumbers(for addresses: [SignalServiceAddress],

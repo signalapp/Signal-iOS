@@ -577,7 +577,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (dataMessage.storyContext != nil) {
+    if (!SSKFeatureFlags.stories && dataMessage.storyContext != nil) {
         OWSLogInfo(@"Ignoring message (author: %@, timestamp: %llu) related to story (author: %@, timestamp: %llu)",
             envelope.sourceAddress,
             dataMessage.timestamp,
@@ -1605,9 +1605,10 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                                                    threadId:thread.uniqueId
+                                                                                      thread:thread
                                                                                      reactor:envelope.sourceAddress
                                                                                    timestamp:syncMessage.sent.timestamp
+                                                                             serverTimestamp:envelope.serverTimestamp
                                                                                  transaction:transaction];
             switch (result) {
                 case OWSReactionProcessingResultSuccess:
@@ -1956,9 +1957,10 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Reaction: %@", messageDescription);
         }
         OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                                                threadId:thread.uniqueId
+                                                                                  thread:thread
                                                                                  reactor:envelope.sourceAddress
                                                                                timestamp:timestamp
+                                                                         serverTimestamp:envelope.serverTimestamp
                                                                              transaction:transaction];
 
         switch (result) {
@@ -2105,6 +2107,25 @@ NS_ASSUME_NONNULL_BEGIN
                                                       thread:thread
                                                  transaction:transaction];
 
+    NSNumber *_Nullable storyTimestamp;
+    SignalServiceAddress *_Nullable storyAuthorAddress;
+    if (dataMessage.storyContext != nil && dataMessage.storyContext.hasSentTimestamp
+        && dataMessage.storyContext.hasAuthorUuid) {
+        OWSLogInfo(
+            @"Processing storyContext for message with timestamp: %llu, storyTimestamp: %llu, and author uuid: %@",
+            envelope.timestamp,
+            dataMessage.storyContext.sentTimestamp,
+            dataMessage.storyContext.authorUuid);
+
+        storyTimestamp = @(dataMessage.storyContext.sentTimestamp);
+        storyAuthorAddress = [[SignalServiceAddress alloc] initWithUuidString:dataMessage.storyContext.authorUuid];
+
+        if (!storyAuthorAddress.isValid) {
+            OWSFailDebug(@"Discarding story reply with invalid address %@", storyAuthorAddress);
+            return nil;
+        }
+    }
+
     // Legit usage of senderTimestamp when creating an incoming group message record
     //
     // The builder() factory method requires us to specify every
@@ -2126,7 +2147,10 @@ NS_ASSUME_NONNULL_BEGIN
                             serverDeliveryTimestamp:serverDeliveryTimestamp
                                          serverGuid:serverGuid
                                     wasReceivedByUD:wasReceivedByUD
-                                  isViewOnceMessage:isViewOnceMessage];
+                                  isViewOnceMessage:isViewOnceMessage
+                                 storyAuthorAddress:storyAuthorAddress
+                                     storyTimestamp:storyTimestamp
+                                 storyReactionEmoji:nil];
     TSIncomingMessage *message = [incomingMessageBuilder build];
     if (!message) {
         OWSFailDebug(@"Missing incomingMessage.");
@@ -2139,8 +2163,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
     // But since the message is partially built and doesn't have the attachments yet, we check
-    // for attachments explicitly.
-    if (!message.hasRenderableContent && dataMessage.attachments.count == 0) {
+    // for attachments explicitly. Story replies cannot have attachments, so we can bail on them here immediately.
+    if (!message.hasRenderableContent && (dataMessage.attachments.count == 0 || message.isStoryReply)) {
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);
         OWSLogVerbose(@"Ignoring empty message(envelope): %@", envelope.debugDescription);
         OWSLogVerbose(@"Ignoring empty message(dataMessage): %@", dataMessage.debugDescription);

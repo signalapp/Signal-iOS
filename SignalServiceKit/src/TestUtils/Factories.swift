@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -139,7 +139,10 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 messageSticker: messageStickerBuilder(),
                                                 isViewOnceMessage: isViewOnceMessageBuilder(),
                                                 changeActionsProtoData: changeActionsProtoDataBuilder(),
-                                                additionalRecipients: additionalRecipientsBuilder()).build()
+                                                additionalRecipients: additionalRecipientsBuilder(),
+                                                storyAuthorAddress: storyAuthorAddressBuilder(),
+                                                storyTimestamp: storyTimestampBuilder(),
+                                                storyReactionEmoji: storyReactionEmojiBuilder()).build()
     }
 
     @objc
@@ -234,6 +237,21 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return nil
     }
 
+    @objc
+    public var storyAuthorAddressBuilder: () -> SignalServiceAddress? = {
+        return nil
+    }
+
+    @objc
+    public var storyTimestampBuilder: () -> NSNumber? = {
+        return nil
+    }
+
+    @objc
+    public var storyReactionEmojiBuilder: () -> String? = {
+        return nil
+    }
+
     // MARK: Delivery Receipts
 
     @objc
@@ -288,7 +306,10 @@ public class IncomingMessageFactory: NSObject, Factory {
                                                        serverDeliveryTimestamp: serverDeliveryTimestampBuilder(),
                                                        serverGuid: serverGuidBuilder(),
                                                        wasReceivedByUD: wasReceivedByUDBuilder(),
-                                                       isViewOnceMessage: isViewOnceMessageBuilder())
+                                                       isViewOnceMessage: isViewOnceMessageBuilder(),
+                                                       storyAuthorAddress: storyAuthorAddressBuilder(),
+                                                       storyTimestamp: storyTimestampBuilder(),
+                                                       storyReactionEmoji: storyReactionEmojiBuilder())
         let item = builder.build()
         item.anyInsert(transaction: transaction)
         return item
@@ -390,6 +411,21 @@ public class IncomingMessageFactory: NSObject, Factory {
     @objc
     public var isViewOnceMessageBuilder: () -> Bool = {
         return false
+    }
+
+    @objc
+    public var storyAuthorAddressBuilder: () -> SignalServiceAddress? = {
+        nil
+    }
+
+    @objc
+    public var storyTimestampBuilder: () -> NSNumber? = {
+        nil
+    }
+
+    @objc
+    public var storyReactionEmojiBuilder: () -> String? = {
+        return nil
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -91,11 +91,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 @property (nonatomic, readonly) BOOL isNoteToSelf;
 
 #pragma mark Interactions
-
-/**
- *  @return The number of interactions in this thread.
- */
-- (NSUInteger)numberOfInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * Get all messages in the thread we weren't able to decrypt

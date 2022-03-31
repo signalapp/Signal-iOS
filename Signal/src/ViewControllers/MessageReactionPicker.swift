@@ -24,7 +24,7 @@ class MessageReactionPicker: UIStackView {
     private var buttonForEmoji = [(emoji: String, button: OWSFlatButton)]()
     private var selectedEmoji: EmojiWithSkinTones?
     private var backgroundView: UIView?
-    init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate?, configureMode: Bool = false) {
+    init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate?, configureMode: Bool = false, forceDarkTheme: Bool = false) {
         self.configureMode = configureMode
 
         if let selectedEmoji = selectedEmoji {
@@ -38,7 +38,7 @@ class MessageReactionPicker: UIStackView {
         super.init(frame: .zero)
 
         backgroundView = addBackgroundView(
-            withBackgroundColor: Theme.actionSheetBackgroundColor,
+            withBackgroundColor: forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor,
             cornerRadius: pickerDiameter / 2
         )
         backgroundView?.layer.shadowColor = UIColor.ows_black.cgColor
@@ -47,7 +47,7 @@ class MessageReactionPicker: UIStackView {
         backgroundView?.layer.shadowOffset = .zero
 
         let shadowView = UIView()
-        shadowView.backgroundColor = Theme.actionSheetBackgroundColor
+        shadowView.backgroundColor = forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor
         shadowView.layer.cornerRadius = pickerDiameter / 2
         shadowView.layer.shadowColor = UIColor.ows_black.cgColor
         shadowView.layer.shadowRadius = 12
@@ -96,7 +96,7 @@ class MessageReactionPicker: UIStackView {
         for (index, emoji) in emojiSet.enumerated() {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setTitle(title: emoji.rawValue, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
+            button.setTitle(title: emoji.rawValue, font: .systemFont(ofSize: reactionFontSize), titleColor: forceDarkTheme ? Theme.darkThemePrimaryColor : Theme.primaryTextColor)
             button.setPressedBlock { [weak self] in
                 // current title of button may have changed in the meantime
                 if let currentEmoji = button.button.title(for: .normal) {
@@ -109,7 +109,7 @@ class MessageReactionPicker: UIStackView {
             // Add a circle behind the currently selected emoji
             if self.selectedEmoji == emoji {
                 let selectedBackgroundView = UIView()
-                selectedBackgroundView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
+                selectedBackgroundView.backgroundColor = Theme.isDarkThemeEnabled || forceDarkTheme ? .ows_gray60 : .ows_gray05
                 selectedBackgroundView.clipsToBounds = true
                 selectedBackgroundView.layer.cornerRadius = selectedBackgroundHeight / 2
                 backgroundView?.addSubview(selectedBackgroundView)
@@ -122,7 +122,7 @@ class MessageReactionPicker: UIStackView {
         if addAnyButton {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setImage(Theme.isDarkThemeEnabled ? #imageLiteral(resourceName: "any-emoji-32-dark") : #imageLiteral(resourceName: "any-emoji-32-light"))
+            button.setImage(Theme.isDarkThemeEnabled || forceDarkTheme ? #imageLiteral(resourceName: "any-emoji-32-dark") : #imageLiteral(resourceName: "any-emoji-32-light"))
             button.setPressedBlock { [weak self] in
                 self?.delegate?.didSelectAnyEmoji()
             }

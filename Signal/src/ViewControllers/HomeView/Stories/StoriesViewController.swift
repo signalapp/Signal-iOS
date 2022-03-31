@@ -20,12 +20,6 @@ class StoriesViewController: OWSViewController {
 
         title = NSLocalizedString("STORIES_TITLE", comment: "Title for the stories view.")
 
-        let cameraButton = UIBarButtonItem(image: Theme.iconImage(.cameraButton), style: .plain, target: self, action: #selector(showCameraView))
-        cameraButton.accessibilityLabel = NSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
-        cameraButton.accessibilityHint = NSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
-
-        navigationItem.rightBarButtonItems = [cameraButton]
-
         databaseStorage.appendDatabaseChangeDelegate(self)
 
         tableView.register(StoryCell.self, forCellReuseIdentifier: StoryCell.reuseIdentifier)
@@ -34,6 +28,7 @@ class StoriesViewController: OWSViewController {
         tableView.estimatedRowHeight = 116
 
         reloadStories()
+        updateNavigationBar()
     }
 
     private var timestampUpdateTimer: Timer?
@@ -97,6 +92,16 @@ class StoriesViewController: OWSViewController {
             view.backgroundColor = Theme.secondaryBackgroundColor
             tableView.backgroundColor = Theme.secondaryBackgroundColor
         }
+
+        updateNavigationBar()
+    }
+
+    private func updateNavigationBar() {
+        let cameraButton = UIBarButtonItem(image: Theme.iconImage(.cameraButton), style: .plain, target: self, action: #selector(showCameraView))
+        cameraButton.accessibilityLabel = NSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
+        cameraButton.accessibilityHint = NSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
+
+        navigationItem.rightBarButtonItems = [cameraButton]
     }
 
     @objc

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer:(TSThread *)thread
                                                                  transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread:transaction:));
+
++ (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequest:(TSThread *)thread
+                                setDefaultTimerIfNecessary:(BOOL)setDefaultTimerIfNecessary
+                                               transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(addThreadToProfileWhitelistIfEmptyOrPendingRequest(thread:setDefaultTimerIfNecessary:transaction:));
 
 #pragma mark - Delete Content
 

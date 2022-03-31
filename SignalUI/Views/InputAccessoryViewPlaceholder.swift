@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,7 +36,7 @@ public class InputAccessoryViewPlaceholder: UIView {
     }
 
     @objc
-    weak var referenceView: UIView?
+    public weak var referenceView: UIView?
 
     private var visibleKeyboardHeight: CGFloat {
         guard var keyboardFrame = transitioningKeyboardFrame ?? superview?.frame else { return 0 }

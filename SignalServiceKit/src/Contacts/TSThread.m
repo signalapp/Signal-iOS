@@ -354,13 +354,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 }
 #pragma clang diagnostic pop
 
-- (NSUInteger)numberOfInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countExcludingPlaceholders:NO
-                                                                                            transaction:transaction];
-}
-
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);

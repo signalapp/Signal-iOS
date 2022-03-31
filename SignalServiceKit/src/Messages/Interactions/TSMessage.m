@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
@@ -58,6 +58,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @property (nonatomic) BOOL isViewOnceComplete;
 @property (nonatomic) BOOL wasRemotelyDeleted;
 
+@property (nonatomic, nullable) NSString *storyReactionEmoji;
+
 // This property is only intended to be used by GRDB queries.
 @property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
 
@@ -92,6 +94,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _messageSticker = messageBuilder.messageSticker;
     _isViewOnceMessage = messageBuilder.isViewOnceMessage;
     _isViewOnceComplete = NO;
+    _storyTimestamp = messageBuilder.storyTimestamp;
+    _storyAuthorUuidString = messageBuilder.storyAuthorAddress.uuidString;
+    _storyReactionEmoji = messageBuilder.storyReactionEmoji;
+    _isGroupStoryReply = messageBuilder.isGroupStoryReply;
 
 #ifdef DEBUG
     [self verifyPerConversationExpiration];
@@ -119,12 +125,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+               isGroupStoryReply:(BOOL)isGroupStoryReply
               isViewOnceComplete:(BOOL)isViewOnceComplete
                isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+           storyAuthorUuidString:(nullable NSString *)storyAuthorUuidString
+              storyReactionEmoji:(nullable NSString *)storyReactionEmoji
+                  storyTimestamp:(nullable NSNumber *)storyTimestamp
               wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
 {
     self = [super initWithGrdbId:grdbId
@@ -145,12 +155,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _expireStartedAt = expireStartedAt;
     _expiresAt = expiresAt;
     _expiresInSeconds = expiresInSeconds;
+    _isGroupStoryReply = isGroupStoryReply;
     _isViewOnceComplete = isViewOnceComplete;
     _isViewOnceMessage = isViewOnceMessage;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
     _quotedMessage = quotedMessage;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
+    _storyAuthorUuidString = storyAuthorUuidString;
+    _storyReactionEmoji = storyReactionEmoji;
+    _storyTimestamp = storyTimestamp;
     _wasRemotelyDeleted = wasRemotelyDeleted;
 
     [self sdsFinalizeMessage];
@@ -296,6 +310,18 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else {
         _expiresAt = 0;
     }
+}
+
+#pragma mark - Story Context
+
+- (nullable SignalServiceAddress *)storyAuthorAddress
+{
+    return [[SignalServiceAddress alloc] initWithUuidString:self.storyAuthorUuidString];
+}
+
+- (BOOL)isStoryReply
+{
+    return self.storyAuthorUuidString != nil && self.storyTimestamp != nil;
 }
 
 #pragma mark - Attachments
@@ -585,6 +611,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyDidInsertWithTransaction:transaction];
 
     [self ensurePerConversationExpirationWithTransaction:transaction];
+
+    [self touchStoryMessageIfNecessaryWithTransaction:transaction];
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -603,6 +631,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyDidUpdateWithTransaction:transaction];
 
     [self ensurePerConversationExpirationWithTransaction:transaction];
+
+    [self touchStoryMessageIfNecessaryWithTransaction:transaction];
 }
 
 - (void)ensurePerConversationExpirationWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -650,6 +680,22 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self removeAllReactionsWithTransaction:transaction];
 
     [self removeAllMentionsWithTransaction:transaction];
+
+    [self touchStoryMessageIfNecessaryWithTransaction:transaction];
+}
+
+- (void)touchStoryMessageIfNecessaryWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (!self.isStoryReply) {
+        return;
+    }
+
+    StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:self.storyTimestamp.unsignedLongLongValue
+                                                                    author:self.storyAuthorAddress
+                                                               transaction:transaction];
+    if (storyMessage) {
+        [self.databaseStorage touchStoryMessage:storyMessage transaction:transaction];
+    }
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -780,9 +826,20 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)hasRenderableContent
 {
+    // Story replies currently only support a subset of message features, so may not
+    // be renderable in some circumstances where a normal message would be.
+    if (self.isStoryReply) {
+        return [self hasRenderableStoryReplyContent];
+    }
+
     // We DO NOT consider a message with just a linkPreview
     // or quotedMessage to be renderable.
     return (self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil || self.messageSticker);
+}
+
+- (BOOL)hasRenderableStoryReplyContent
+{
+    return self.body.length > 0 || self.storyReactionEmoji.isSingleEmoji;
 }
 
 #pragma mark - View Once
@@ -835,6 +892,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                         message.linkPreview = nil;
                                         message.messageSticker = nil;
                                         message.attachmentIds = @[];
+                                        message.storyReactionEmoji = nil;
                                         OWSAssertDebug(!message.hasRenderableContent);
 
                                         messageUpdateBlock(message);

@@ -115,3 +115,13 @@ public class Refinery<Key, Value> {
         return AnySequence(indexes.lazy.map { keys[$0] })
     }
 }
+
+public extension Dictionary {
+    init<T: Refinery<Key, Value>>(_ refinery: T) {
+        let keysAndValues: [(Key, Value)] = zip(refinery.keys, refinery.values).compactMap { key, value in
+            guard let value = value else { return nil }
+            return (key, value)
+        }
+        self.init(uniqueKeysWithValues: keysAndValues)
+    }
+}

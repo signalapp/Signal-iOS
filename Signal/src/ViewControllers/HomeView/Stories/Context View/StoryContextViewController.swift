@@ -6,6 +6,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 import SignalUI
+import BonMot
 
 protocol StoryContextViewControllerDelegate: AnyObject {
     func storyContextViewControllerWantsTransitionToNextContext(
@@ -30,16 +31,7 @@ class StoryContextViewController: OWSViewController {
     private var items = [StoryItem]()
     var currentItem: StoryItem? {
         didSet {
-            currentItemMediaView?.removeFromSuperview()
-
-            if let currentItem = currentItem {
-                let itemView = StoryItemMediaView(item: currentItem)
-                self.currentItemMediaView = itemView
-                mediaViewContainer.addSubview(itemView)
-                itemView.autoPinEdgesToSuperviewEdges()
-            }
-
-            updateProgressState()
+            currentItemWasUpdated(messageDidChange: oldValue?.message.uniqueId != currentItem?.message.uniqueId)
         }
     }
     var currentItemMediaView: StoryItemMediaView?
@@ -121,6 +113,7 @@ class StoryContextViewController: OWSViewController {
     private lazy var closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white)
 
     private lazy var mediaViewContainer = UIView()
+    private lazy var replyButton = OWSFlatButton()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -138,10 +131,44 @@ class StoryContextViewController: OWSViewController {
 
         view.addSubview(mediaViewContainer)
 
+        replyButton.setPressedBlock { [weak self] in
+            guard let self = self, let currentItem = self.currentItem else { return }
+            switch self.context {
+            case .groupId:
+                let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
+                groupReplyVC.dismissHandler = { [weak self] in self?.play() }
+                self.pause()
+                self.present(groupReplyVC, animated: true)
+            case .authorUuid:
+                // todo: 1:1 replies
+                break
+            case .none:
+                owsFailDebug("Unexpected context")
+            }
+        }
+        replyButton.setBackgroundColors(upColor: .clear)
+        replyButton.autoSetDimension(.height, toSize: 64)
+        replyButton.setTitleColor(Theme.darkThemePrimaryColor)
+        view.addSubview(replyButton)
+        replyButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
+        replyButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
+
+        view.addSubview(playbackProgressView)
+        playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
+        playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
+        playbackProgressView.autoSetDimension(.height, toSize: 2)
+        playbackProgressView.isUserInteractionEnabled = false
+
         if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
+            // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
             mediaViewContainer.layer.cornerRadius = 18
             mediaViewContainer.clipsToBounds = true
+            replyButton.autoPinEdge(.top, to: .bottom, of: mediaViewContainer)
+            playbackProgressView.autoPinEdge(.bottom, to: .top, of: replyButton, withOffset: -OWSTableViewController2.defaultHOuterMargin)
         } else {
+            // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
+            replyButton.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer)
+            playbackProgressView.autoPinEdge(.bottom, to: .top, of: replyButton)
             mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .bottom)
         }
 
@@ -161,13 +188,6 @@ class StoryContextViewController: OWSViewController {
         closeButton.autoSetDimensions(to: CGSize(square: 56))
         closeButton.autoPinEdge(toSuperviewSafeArea: .top)
         closeButton.autoPinEdge(toSuperviewSafeArea: .leading)
-
-        view.addSubview(playbackProgressView)
-        playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
-        playbackProgressView.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
-        playbackProgressView.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer, withOffset: -OWSTableViewController2.defaultHOuterMargin)
-        playbackProgressView.autoSetDimension(.height, toSize: 2)
-        playbackProgressView.isUserInteractionEnabled = false
 
         loadStoryItems { [weak self] storyItems in
             // If there are no stories for this context, dismiss.
@@ -206,6 +226,8 @@ class StoryContextViewController: OWSViewController {
     }
 
     private func buildStoryItem(for message: StoryMessage, transaction: SDSAnyReadTransaction) -> StoryItem? {
+        let replyCount = InteractionFinder.countReplies(for: message, transaction: transaction)
+
         switch message.attachment {
         case .file(let attachmentId):
             guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
@@ -213,16 +235,51 @@ class StoryContextViewController: OWSViewController {
                 return nil
             }
             if let attachment = attachment as? TSAttachmentPointer {
-                return .init(message: message, attachment: .pointer(attachment))
+                return .init(message: message, numberOfReplies: replyCount, attachment: .pointer(attachment))
             } else if let attachment = attachment as? TSAttachmentStream {
-                return .init(message: message, attachment: .stream(attachment))
+                return .init(message: message, numberOfReplies: replyCount, attachment: .stream(attachment))
             } else {
                 owsFailDebug("Unexpected attachment type \(type(of: attachment))")
                 return nil
             }
         case .text(let attachment):
-            return .init(message: message, attachment: .text(attachment))
+            return .init(message: message, numberOfReplies: replyCount, attachment: .text(attachment))
         }
+    }
+
+    private func currentItemWasUpdated(messageDidChange: Bool) {
+        currentItemMediaView?.removeFromSuperview()
+
+        if let currentItem = currentItem {
+            let itemView = StoryItemMediaView(item: currentItem)
+            self.currentItemMediaView = itemView
+            mediaViewContainer.addSubview(itemView)
+            itemView.autoPinEdgesToSuperviewEdges()
+
+            replyButton.isHidden = false
+
+            let replyButtonText: String
+            switch currentItem.numberOfReplies {
+            case 0:
+                replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_NO_REPLIES", comment: "Button for replying to a story with no existing replies.")
+            case 1:
+                replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_1_REPLY", comment: "Button for replying to a story with a single existing reply.")
+            default:
+                let format = NSLocalizedString("STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT", comment: "Button for replying to a story with N existing replies. {embeds the number of replies}")
+                replyButtonText = String(format: format, "\(currentItem.numberOfReplies)")
+            }
+
+            let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
+            let attributedReplyButtonText = replyButtonText.styled(
+                with: .font(.systemFont(ofSize: 17, weight: .regular)),
+                .xmlRules([.style("bold", semiboldStyle)])
+            )
+            replyButton.setAttributedTitle(attributedReplyButtonText)
+        } else {
+            replyButton.isHidden = true
+        }
+
+        if messageDidChange { updateProgressState() }
     }
 
     private var pauseTime: CFTimeInterval?
@@ -363,26 +420,37 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     func handleLongPress() {
         switch pauseGestureRecognizer.state {
         case .began:
-            pauseTime = CACurrentMediaTime()
-            delegate?.storyContextViewControllerDidPause(self)
-            currentItemMediaView?.pause {
-                self.playbackProgressView.alpha = 0
-                self.closeButton.alpha = 0
-            }
+            pause(hideChrome: true)
         case .ended:
-            if let lastTransitionTime = lastTransitionTime, let pauseTime = pauseTime {
-                let pauseDuration = CACurrentMediaTime() - pauseTime
-                self.lastTransitionTime = lastTransitionTime + pauseDuration
-                self.pauseTime = nil
-            }
-            currentItemMediaView?.play {
-                self.playbackProgressView.alpha = 1
-                self.closeButton.alpha = 1
-            }
-            delegate?.storyContextViewControllerDidResume(self)
+            play()
         default:
             break
         }
+    }
+
+    func pause(hideChrome: Bool = false) {
+        guard pauseTime == nil else { return }
+        pauseTime = CACurrentMediaTime()
+        delegate?.storyContextViewControllerDidPause(self)
+        currentItemMediaView?.pause(hideChrome: hideChrome) {
+            if hideChrome {
+                self.playbackProgressView.alpha = 0
+                self.closeButton.alpha = 0
+            }
+        }
+    }
+
+    func play() {
+        if let lastTransitionTime = lastTransitionTime, let pauseTime = pauseTime {
+            let pauseDuration = CACurrentMediaTime() - pauseTime
+            self.lastTransitionTime = lastTransitionTime + pauseDuration
+            self.pauseTime = nil
+        }
+        currentItemMediaView?.play {
+            self.playbackProgressView.alpha = 1
+            self.closeButton.alpha = 1
+        }
+        delegate?.storyContextViewControllerDidResume(self)
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -436,7 +504,7 @@ extension StoryContextViewController: DatabaseChangeDelegate {
             }
             DispatchQueue.main.async {
                 if shouldDismiss {
-                    self.dismiss(animated: true)
+                    self.presentingViewController?.dismiss(animated: true)
                 } else {
                     self.items = newItems
                     self.currentItem = currentItem

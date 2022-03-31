@@ -116,7 +116,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        messageSticker:transcript.messageSticker
                                                                     isViewOnceMessage:transcript.isViewOnceMessage
                                                                changeActionsProtoData:nil
-                                                                 additionalRecipients:nil] build];
+                                                                 additionalRecipients:nil
+                                                                   storyAuthorAddress:transcript.storyAuthorAddress
+                                                                       storyTimestamp:transcript.storyTimestamp
+                                                                   storyReactionEmoji:nil] build];
 
     SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
     if (localAddress == nil) {

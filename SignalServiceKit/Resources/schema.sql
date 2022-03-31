@@ -115,6 +115,10 @@ CREATE
             ,"paymentRequest" BLOB
             ,"viewed" BOOLEAN
             ,"serverGuid" TEXT
+            ,"storyAuthorUuidString" TEXT
+            ,"storyTimestamp" INTEGER
+            ,"isGroupStoryReply" BOOLEAN
+            ,"storyReactionEmoji" TEXT
         )
 ;
 
@@ -530,14 +534,6 @@ CREATE
         ON "model_TSInteraction"("timestamp"
     ,"sourceDeviceId"
     ,"authorPhoneNumber"
-)
-;
-
-CREATE
-    INDEX "index_interactions_unread_counts"
-        ON "model_TSInteraction"("read"
-    ,"uniqueThreadId"
-    ,"recordType"
 )
 ;
 
@@ -1221,28 +1217,6 @@ CREATE
 ;
 
 CREATE
-    INDEX index_model_TSInteraction_ConversationLoadInteractionCount
-        ON model_TSInteraction (
-        uniqueThreadId
-        ,recordType
-    )
-WHERE
-    recordType IS NOT 70
-;
-
-CREATE
-    INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
-        ON model_TSInteraction (
-        uniqueThreadId
-        ,id
-        ,recordType
-        ,uniqueId
-    )
-WHERE
-    recordType IS NOT 70
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_ProfileBadgeTable" (
             "id" TEXT PRIMARY KEY
@@ -1297,5 +1271,39 @@ CREATE
             manifest
             ,'$.incoming.viewedTimestamp'
         )
+    )
+;
+
+CREATE
+    INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+        ON model_TSInteraction (
+        uniqueThreadId
+        ,isGroupStoryReply
+        ,recordType
+    )
+WHERE
+    recordType IS NOT 70
+;
+
+CREATE
+    INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+        ON model_TSInteraction (
+        uniqueThreadId
+        ,id
+        ,isGroupStoryReply
+        ,recordType
+        ,uniqueId
+    )
+WHERE
+    recordType IS NOT 70
+;
+
+CREATE
+    INDEX index_model_TSInteraction_UnreadCount
+        ON model_TSInteraction (
+        READ
+        ,isGroupStoryReply
+        ,uniqueThreadId
+        ,recordType
     )
 ;

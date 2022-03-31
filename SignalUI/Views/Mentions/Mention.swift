@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,6 +24,7 @@ public class Mention: NSObject {
         case composingAttachment
         case quotedReply
         case longMessageView
+        case groupReply
 
         public static var composing: Self = .incoming
     }
@@ -79,6 +80,9 @@ public class Mention: NSObject {
         case .longMessageView:
             attributes[.backgroundColor] = Theme.isDarkThemeEnabled ? UIColor.ows_signalBlueDark : UIColor.ows_blackAlpha20
             attributes[.foregroundColor] = Theme.primaryTextColor
+        case .groupReply:
+            attributes[.backgroundColor] = UIColor.ows_gray60
+            attributes[.foregroundColor] = UIColor.ows_gray05
         }
 
         return attributes
