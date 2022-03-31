@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Completed migration %@", self.uniqueId);
         [self save];
 
-        completion();
+        completion(true, false);
     }];
 }
 

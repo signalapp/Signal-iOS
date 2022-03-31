@@ -10,7 +10,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionMessagingKit/OWSPrimaryStorage.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SessionMessagingKit/TSDatabaseView.h>
@@ -247,11 +246,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.primaryStorage.dbReadWriteConnection;
 }
 
-- (OWSBlockingManager *)blockingManager
-{
-    return OWSBlockingManager.sharedManager;
-}
-
 - (id<OWSTypingIndicators>)typingIndicators
 {
     return SSKEnvironment.shared.typingIndicators;
@@ -287,7 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
-                                                 name:kNSNotificationName_BlockListDidChange
+                                                 name:NSNotification.contactBlockedStateChanged
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localProfileDidChange:)
@@ -492,7 +486,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     ThreadDynamicInteractions *dynamicInteractions =
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
-                                       blockingManager:self.blockingManager
                                           dbConnection:self.editingDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                                    lastUnreadIndicator:self.dynamicInteractions.unreadIndicator

@@ -43,11 +43,17 @@ extension Storage {
             // Post notification
             let notificationCenter = NotificationCenter.default
             notificationCenter.post(name: .contactUpdated, object: contact.sessionID)
+            
             if contact.sessionID == getUserHexEncodedPublicKey() {
                 notificationCenter.post(name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
-            } else {
+            }
+            else {
                 let userInfo = [ kNSNotificationKey_ProfileRecipientId : contact.sessionID ]
                 notificationCenter.post(name: Notification.Name(kNSNotificationName_OtherUsersProfileDidChange), object: nil, userInfo: userInfo)
+            }
+            
+            if contact.isBlocked != oldContact?.isBlocked {
+                notificationCenter.post(name: .contactBlockedStateChanged, object: contact.sessionID)
             }
         }
     }

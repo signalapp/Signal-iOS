@@ -167,10 +167,10 @@ static NSTimeInterval launchStartedAt;
             [AppEnvironment.shared setup];
             [SignalApp.sharedApp setup];
         }
-        migrationCompletion:^{
+        migrationCompletion:^(BOOL successful, BOOL needsConfigSync){
             OWSAssertIsOnMainThread();
 
-            [self versionMigrationsDidComplete];
+            [self versionMigrationsDidCompleteNeedingConfigSync:needsConfigSync];
         }];
 
     [SNConfiguration performMainSetup];
@@ -405,11 +405,16 @@ static NSTimeInterval launchStartedAt;
     }
 }
 
-- (void)versionMigrationsDidComplete
+- (void)versionMigrationsDidCompleteNeedingConfigSync:(BOOL)needsConfigSync
 {
     OWSAssertIsOnMainThread();
 
     self.areVersionMigrationsComplete = YES;
+    
+    // If we need a config sync then trigger it now
+    if (needsConfigSync) {
+        [SNMessageSender forceSyncConfigurationNow];
+    }
 
     [self checkIfAppIsReady];
 }

@@ -2,7 +2,7 @@ import Foundation
 
 public enum General {
     public enum Cache {
-        public static var cachedEncodedPublicKey: String? = nil
+        public static var cachedEncodedPublicKey: Atomic<String?> = Atomic(nil)
     }
 }
 
@@ -14,10 +14,10 @@ public class GeneralUtilities: NSObject {
 }
 
 public func getUserHexEncodedPublicKey() -> String {
-    if let cachedKey: String = General.Cache.cachedEncodedPublicKey { return cachedKey }
+    if let cachedKey: String = General.Cache.cachedEncodedPublicKey.wrappedValue { return cachedKey }
     
     if let keyPair = OWSIdentityManager.shared().identityKeyPair() { // Can be nil under some circumstances
-        General.Cache.cachedEncodedPublicKey = keyPair.hexEncodedPublicKey
+        General.Cache.cachedEncodedPublicKey.mutate { $0 = keyPair.hexEncodedPublicKey }
         return keyPair.hexEncodedPublicKey
     }
     

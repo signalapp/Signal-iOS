@@ -94,7 +94,7 @@ public final class Poller : NSObject {
         let userPublicKey = getUserHexEncodedPublicKey()
         return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: Threading.pollerQueue) { [weak self] rawResponse -> Promise<Void> in
             guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
-            let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
+            let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
             if !messages.isEmpty {
                 SNLog("Received \(messages.count) new message(s).")
             }
@@ -110,6 +110,10 @@ public final class Poller : NSObject {
                     SNLog("Failed to deserialize envelope due to error: \(error).")
                 }
             }
+            
+            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
+            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: userPublicKey, from: lastRawMessage)
+            
             strongSelf.pollCount += 1
             if strongSelf.pollCount == Poller.maxPollCount {
                 throw Error.pollLimitReached

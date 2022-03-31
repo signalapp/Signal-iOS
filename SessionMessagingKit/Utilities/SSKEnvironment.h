@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
 @class OWSBatchMessageProcessor;
-@class OWSBlockingManager;
 @class OWSDisappearingMessagesJob;
 @class OWSIdentityManager;
 @class OWSMessageDecrypter;
@@ -39,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithProfileManager:(id<ProfileManagerProtocol>)profileManager
                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                       blockingManager:(OWSBlockingManager *)blockingManager
                        identityManager:(OWSIdentityManager *)identityManager
                       tsAccountManager:(TSAccountManager *)tsAccountManager
                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
@@ -61,7 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 @property (nonatomic, readonly) OWSIdentityManager *identityManager;
 @property (nonatomic, readonly) TSAccountManager *tsAccountManager;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;

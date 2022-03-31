@@ -3,10 +3,6 @@ import SessionSnodeKit
 
 extension MessageReceiver {
 
-    internal static func isBlocked(_ publicKey: String) -> Bool {
-        return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
-    }
-
     public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
@@ -212,6 +208,7 @@ extension MessageReceiver {
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
                 let contact = (Storage.shared.getContact(with: sessionID, using: transaction) ?? Contact(sessionID: sessionID))
+                let contactWasBlocked: Bool = contact.isBlocked
                 if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
@@ -219,9 +216,15 @@ extension MessageReceiver {
                 // Note: We only update these values if the proto actually has values for them (this is to
                 // prevent an edge case where an old client could override the values with default values
                 // since they aren't included)
-                if contactInfo.hasIsApproved { contact.isApproved = contactInfo.isApproved }
+                //
+                // Note: Since message requests has no reverse, the only case we need to process is a
+                // config message setting *isApproved* and *didApproveMe* to true. This may prevent some
+                // weird edge cases where a config message swapping *isApproved* and *didApproveMe* to
+                // false.
+                if contactInfo.hasIsApproved && contactInfo.isApproved { contact.isApproved = true }
+                if contactInfo.hasDidApproveMe && contactInfo.didApproveMe { contact.didApproveMe = true }
+                
                 if contactInfo.hasIsBlocked { contact.isBlocked = contactInfo.isBlocked }
-                if contactInfo.hasDidApproveMe { contact.didApproveMe = contactInfo.didApproveMe }
                 
                 Storage.shared.setContact(contact, using: transaction)
                 
@@ -231,28 +234,12 @@ extension MessageReceiver {
                     // associated with them that is a message request thread then delete it (assume
                     // that the current user had deleted that message request)
                     if
-                        contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID),
+                        contactInfo.isBlocked != contactWasBlocked,
                         let thread: TSContactThread = TSContactThread.getWithContactSessionID(sessionID, transaction: transaction),
                         thread.isMessageRequest(using: transaction)
                     {
                         thread.removeAllThreadInteractions(with: transaction)
                         thread.remove(with: transaction)
-                    }
-                }
-            }
-            
-            // FIXME: 'OWSBlockingManager' manages it's own dbConnection and transactions so we have to dispatch this to prevent deadlocks
-            DispatchQueue.global().async {
-                for contactInfo in message.contacts {
-                    let sessionID = contactInfo.publicKey!
-                    
-                    if contactInfo.hasIsBlocked && contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID) {
-                        if contactInfo.isBlocked {
-                            OWSBlockingManager.shared().addBlockedPhoneNumber(sessionID)
-                        }
-                        else {
-                            OWSBlockingManager.shared().removeBlockedPhoneNumber(sessionID)
-                        }
                     }
                 }
             }
@@ -385,7 +372,15 @@ extension MessageReceiver {
         }
         if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) {
             // Keep track of the open group server message ID ↔ message ID relationship
-            if let serverID = message.openGroupServerMessageID { tsMessage.openGroupServerMessageID = serverID }
+            if let serverID = message.openGroupServerMessageID {
+                tsMessage.openGroupServerMessageID = serverID
+                
+                // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
+                if let openGroup: OpenGroupV2 = storage.getV2OpenGroup(for: threadID) {
+                    storage.addOpenGroupServerIdLookup(serverID, tsMessageId: tsMessageID, in: openGroup.room, on: openGroup.server, using: transaction)
+                }
+            }
+            
             // Keep track of server hash
             if let serverHash = message.serverHash { tsMessage.serverHash = serverHash }
              tsMessage.save(with: transaction)
@@ -819,21 +814,10 @@ extension MessageReceiver {
             Storage.shared.setContact(contact, using: transaction)
         }
         
-        // Force a config sync to ensure all devices know the contact approval state if desired (Note: This logic
-        // should match the behaviour in AppDelegate.forceSyncConfigurationNowIfNeeded())
+        // Force a config sync to ensure all devices know the contact approval state if desired
         guard forceConfigSync else { return }
         
-        // Note: We MUST run this async as we need to ensure the database `transaction` has finished before we generate
-        // a new configuration message (otherwise the `contact` will be loaded direct from the database and the
-        // `didApproveMe` value won't have been updated)
-        DispatchQueue.global(qos: .background).async {
-            guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent() else {
-                return
-            }
-            
-            let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
-            MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
-        }
+        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
     }
     
     public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {

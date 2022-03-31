@@ -9,14 +9,14 @@ extension Storage {
         var result: [OnionRequestAPI.Path] = []
         Storage.read { transaction in
             if
-                let path0Snode0 = transaction.object(forKey: "0-0", inCollection: collection) as? Snode,
-                let path0Snode1 = transaction.object(forKey: "0-1", inCollection: collection) as? Snode,
-                let path0Snode2 = transaction.object(forKey: "0-2", inCollection: collection) as? Snode {
+                let path0Snode0 = transaction.object(forKey: "0-0", inCollection: collection) as? Legacy.Snode,
+                let path0Snode1 = transaction.object(forKey: "0-1", inCollection: collection) as? Legacy.Snode,
+                let path0Snode2 = transaction.object(forKey: "0-2", inCollection: collection) as? Legacy.Snode {
                 result.append([ path0Snode0, path0Snode1, path0Snode2 ])
                 if
-                    let path1Snode0 = transaction.object(forKey: "1-0", inCollection: collection) as? Snode,
-                    let path1Snode1 = transaction.object(forKey: "1-1", inCollection: collection) as? Snode,
-                    let path1Snode2 = transaction.object(forKey: "1-2", inCollection: collection) as? Snode {
+                    let path1Snode0 = transaction.object(forKey: "1-0", inCollection: collection) as? Legacy.Snode,
+                    let path1Snode1 = transaction.object(forKey: "1-1", inCollection: collection) as? Legacy.Snode,
+                    let path1Snode2 = transaction.object(forKey: "1-2", inCollection: collection) as? Legacy.Snode {
                     result.append([ path1Snode0, path1Snode1, path1Snode2 ])
                 }
             }
