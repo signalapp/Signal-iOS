@@ -174,7 +174,7 @@ extension ConversationSettingsViewController {
                     let cell = OWSTableItem.newCell()
                     guard let self = self else { return cell }
                     let collectionView = BadgeCollectionView(dataSource: self)
-                    collectionView.badgeSelctionMode = .detailsSheet(owner: .remote(shortName: shortName))
+                    collectionView.badgeSelectionMode = .detailsSheet(owner: .remote(shortName: shortName))
 
                     cell.contentView.addSubview(collectionView)
                     collectionView.autoPinEdgesToSuperviewMargins()
