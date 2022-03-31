@@ -76,7 +76,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
         switch recipient.identifier {
         case .address(let address):
             let isAddressBlocked = databaseStorage.read { blockingManager.isAddressBlocked(address, transaction: $0) }
-            guard isAddressBlocked else {
+            guard !isAddressBlocked else {
                 return .userAlreadyInBlocklist
             }
             return .canBeSelected

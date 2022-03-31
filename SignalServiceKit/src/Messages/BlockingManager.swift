@@ -342,13 +342,9 @@ extension BlockingManager {
     }
 
     private func sendBlockListSyncMessage(force: Bool) {
-        databaseStorage.write { transaction in
-            let possibleThread = TSAccountManager.getOrCreateLocalThread(transaction: transaction)
-            guard let thread = possibleThread else {
-                owsFailDebug("Missing thread.")
-                return
-            }
+        guard tsAccountManager.isRegistered else { return }
 
+        databaseStorage.write { transaction in
             withCurrentState(transaction: transaction) { state in
                 // If we're not forcing a sync, then we only sync if our last synced token is stale
                 // and we're not in the NSE. We'll leaving syncing to the main app.
@@ -359,6 +355,12 @@ extension BlockingManager {
                         Logger.verbose("Skipping send for unchanged block state")
                         return
                     }
+                }
+
+                let possibleThread = TSAccountManager.getOrCreateLocalThread(transaction: transaction)
+                guard let thread = possibleThread else {
+                    owsFailDebug("Missing thread.")
+                    return
                 }
 
                 let outgoingChangeToken = state.changeToken
@@ -468,7 +470,7 @@ extension BlockingManager {
                 blockedPhoneNumbers.remove(phoneNumber)
                 didRemove = true
             }
-            if let uuidString = address.uuidString, !blockedUUIDStrings.contains(uuidString) {
+            if let uuidString = address.uuidString, blockedUUIDStrings.contains(uuidString) {
                 blockedUUIDStrings.remove(uuidString)
                 didRemove = true
             }
@@ -536,8 +538,8 @@ extension BlockingManager {
 
                 changeToken = databaseChangeToken + 1
                 Self.keyValueStore.setUInt64(changeToken, key: Self.changeTokenKey, transaction: transaction)
-                Self.keyValueStore.setObject(blockedPhoneNumbers, key: Self.blockedPhoneNumbersKey, transaction: transaction)
-                Self.keyValueStore.setObject(blockedUUIDStrings, key: Self.blockedUUIDsKey, transaction: transaction)
+                Self.keyValueStore.setObject(Array(blockedPhoneNumbers), key: Self.blockedPhoneNumbersKey, transaction: transaction)
+                Self.keyValueStore.setObject(Array(blockedUUIDStrings), key: Self.blockedUUIDsKey, transaction: transaction)
                 Self.keyValueStore.setObject(blockedGroupMap, key: Self.blockedGroupMapKey, transaction: transaction)
                 isDirty = false
                 return true
