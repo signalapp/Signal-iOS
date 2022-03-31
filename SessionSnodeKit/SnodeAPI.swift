@@ -8,12 +8,12 @@ public final class SnodeAPI : NSObject {
     
     private static var hasLoadedSnodePool = false
     private static var loadedSwarms: Set<String> = []
-    private static var getSnodePoolPromise: Promise<Set<Snode>>?
+    private static var getSnodePoolPromise: Promise<Set<Legacy.Snode>>?
     
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    internal static var snodeFailureCount: [Snode:UInt] = [:]
+    internal static var snodeFailureCount: [Legacy.Snode:UInt] = [:]
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    internal static var snodePool: Set<Snode> = []
+    internal static var snodePool: Set<Legacy.Snode> = []
 
     /// The offset between the user's clock and the Service Node's clock. Used in cases where the
     /// user's clock is incorrect.
@@ -21,7 +21,7 @@ public final class SnodeAPI : NSObject {
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var clockOffset: Int64 = 0
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    public static var swarmCache: [String:Set<Snode>] = [:]
+    public static var swarmCache: [String:Set<Legacy.Snode>] = [:]
 
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
@@ -72,7 +72,7 @@ public final class SnodeAPI : NSObject {
         hasLoadedSnodePool = true
     }
     
-    private static func setSnodePool(to newValue: Set<Snode>, using transaction: Any? = nil) {
+    private static func setSnodePool(to newValue: Set<Legacy.Snode>, using transaction: Any? = nil) {
         snodePool = newValue
         let storage = SNSnodeKitConfiguration.shared.storage
         if let transaction = transaction {
@@ -84,7 +84,7 @@ public final class SnodeAPI : NSObject {
         }
     }
     
-    private static func dropSnodeFromSnodePool(_ snode: Snode) {
+    private static func dropSnodeFromSnodePool(_ snode: Legacy.Snode) {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
@@ -107,7 +107,7 @@ public final class SnodeAPI : NSObject {
         loadedSwarms.insert(publicKey)
     }
     
-    private static func setSwarm(to newValue: Set<Snode>, for publicKey: String, persist: Bool = true) {
+    private static func setSwarm(to newValue: Set<Legacy.Snode>, for publicKey: String, persist: Bool = true) {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
@@ -118,7 +118,7 @@ public final class SnodeAPI : NSObject {
         }
     }
     
-    public static func dropSnodeFromSwarmIfNeeded(_ snode: Snode, publicKey: String) {
+    public static func dropSnodeFromSwarmIfNeeded(_ snode: Legacy.Snode, publicKey: String) {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
@@ -129,7 +129,7 @@ public final class SnodeAPI : NSObject {
     }
     
     // MARK: Internal API
-    internal static func invoke(_ method: Snode.Method, on snode: Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> RawResponsePromise {
+    internal static func invoke(_ method: Legacy.Snode.Method, on snode: Legacy.Snode, associatedWith publicKey: String? = nil, parameters: JSON) -> RawResponsePromise {
         if Features.useOnionRequests {
             return OnionRequestAPI.sendOnionRequest(to: snode, invoking: method, with: parameters, associatedWith: publicKey).map2 { $0 as Any }
         } else {
@@ -141,7 +141,7 @@ public final class SnodeAPI : NSObject {
         }
     }
     
-    private static func getNetworkTime(from snode: Snode) -> Promise<UInt64> {
+    private static func getNetworkTime(from snode: Legacy.Snode) -> Promise<UInt64> {
         return invoke(.getInfo, on: snode, parameters: [:]).map2 { rawResponse in
             guard let json = rawResponse as? JSON,
                 let timestamp = json["timestamp"] as? UInt64 else { throw HTTP.Error.invalidJSON }
@@ -149,12 +149,12 @@ public final class SnodeAPI : NSObject {
         }
     }
     
-    internal static func getRandomSnode() -> Promise<Snode> {
+    internal static func getRandomSnode() -> Promise<Legacy.Snode> {
         // randomElement() uses the system's default random generator, which is cryptographically secure
         return getSnodePool().map2 { $0.randomElement()! }
     }
     
-    private static func getSnodePoolFromSeedNode() -> Promise<Set<Snode>> {
+    private static func getSnodePoolFromSeedNode() -> Promise<Set<Legacy.Snode>> {
         let target = seedNodePool.randomElement()!
         let url = "\(target)/json_rpc"
         let parameters: JSON = [
@@ -168,10 +168,10 @@ public final class SnodeAPI : NSObject {
             ]
         ]
         SNLog("Populating snode pool using seed node: \(target).")
-        let (promise, seal) = Promise<Set<Snode>>.pending()
+        let (promise, seal) = Promise<Set<Legacy.Snode>>.pending()
         Threading.workQueue.async {
             attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
-                HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true).map2 { json -> Set<Snode> in
+                HTTP.execute(.post, url, parameters: parameters, useSeedNodeURLSession: true).map2 { json -> Set<Legacy.Snode> in
                     guard let intermediate = json["result"] as? JSON, let rawSnodes = intermediate["service_node_states"] as? [JSON] else { throw Error.snodePoolUpdatingFailed }
                     return Set(rawSnodes.compactMap { rawSnode in
                         guard let address = rawSnode["public_ip"] as? String, let port = rawSnode["storage_port"] as? Int,
@@ -179,7 +179,7 @@ public final class SnodeAPI : NSObject {
                             SNLog("Failed to parse snode from: \(rawSnode).")
                             return nil
                         }
-                        return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
+                        return Legacy.Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Legacy.Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
                     })
                 }
             }.done2 { snodePool in
@@ -193,15 +193,15 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    private static func getSnodePoolFromSnode() -> Promise<Set<Snode>> {
+    private static func getSnodePoolFromSnode() -> Promise<Set<Legacy.Snode>> {
         var snodePool = SnodeAPI.snodePool
-        var snodes: Set<Snode> = []
+        var snodes: Set<Legacy.Snode> = []
         (0..<3).forEach { _ in
             let snode = snodePool.randomElement()!
             snodePool.remove(snode)
             snodes.insert(snode)
         }
-        let snodePoolPromises: [Promise<Set<Snode>>] = snodes.map { snode in
+        let snodePoolPromises: [Promise<Set<Legacy.Snode>>] = snodes.map { snode in
             return attempt(maxRetryCount: 4, recoveringOn: Threading.workQueue) {
                 // Don't specify a limit in the request. Service nodes return a shuffled
                 // list of nodes so if we specify a limit the 3 responses we get might have
@@ -226,18 +226,18 @@ public final class SnodeAPI : NSObject {
                             SNLog("Failed to parse snode from: \(rawSnode).")
                             return nil
                         }
-                        return Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
+                        return Legacy.Snode(address: "https://\(address)", port: UInt16(port), publicKeySet: Legacy.Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
                     })
                 }
             }
         }
-        let promise = when(fulfilled: snodePoolPromises).map2 { results -> Set<Snode> in
-            var result: Set<Snode> = results[0]
+        let promise = when(fulfilled: snodePoolPromises).map2 { results -> Set<Legacy.Snode> in
+            var result: Set<Legacy.Snode> = results[0]
             results.forEach { result = result.intersection($0) }
             if result.count > 24 { // We want the snodes to agree on at least this many snodes
                 // Limit the snode pool size to 256 so that we don't go too long without
                 // refreshing it
-                return (result.count > 256) ? Set([Snode](result)[0..<256]) : result
+                return (result.count > 256) ? Set([Legacy.Snode](result)[0..<256]) : result
             } else {
                 throw Error.inconsistentSnodePools
             }
@@ -251,7 +251,7 @@ public final class SnodeAPI : NSObject {
         AnyPromise.from(getSnodePool())
     }
     
-    public static func getSnodePool() -> Promise<Set<Snode>> {
+    public static func getSnodePool() -> Promise<Set<Legacy.Snode>> {
         loadSnodePoolIfNeeded()
         let now = Date()
         let hasSnodePoolExpired = given(Storage.shared.getLastSnodePoolRefreshDate()) { now.timeIntervalSince($0) > 2 * 60 * 60 } ?? true
@@ -259,7 +259,7 @@ public final class SnodeAPI : NSObject {
         let hasInsufficientSnodes = (snodePool.count < minSnodePoolCount)
         if hasInsufficientSnodes || hasSnodePoolExpired {
             if let getSnodePoolPromise = getSnodePoolPromise { return getSnodePoolPromise }
-            let promise: Promise<Set<Snode>>
+            let promise: Promise<Set<Legacy.Snode>>
             if snodePool.count < minSnodePoolCount {
                 promise = getSnodePoolFromSeedNode()
             } else {
@@ -268,15 +268,15 @@ public final class SnodeAPI : NSObject {
                 }
             }
             getSnodePoolPromise = promise
-            promise.map2 { snodePool -> Set<Snode> in
+            promise.map2 { snodePool -> Set<Legacy.Snode> in
                 if snodePool.isEmpty {
                     throw Error.snodePoolUpdatingFailed
                 } else {
                     return snodePool
                 }
             }
-            promise.then2 { snodePool -> Promise<Set<Snode>> in
-                let (promise, seal) = Promise<Set<Snode>>.pending()
+            promise.then2 { snodePool -> Promise<Set<Legacy.Snode>> in
+                let (promise, seal) = Promise<Set<Legacy.Snode>>.pending()
                 SNSnodeKitConfiguration.shared.storage.write(with: { transaction in
                     Storage.shared.setLastSnodePoolRefreshDate(to: now, using: transaction)
                     setSnodePool(to: snodePool, using: transaction)
@@ -366,15 +366,15 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    public static func getTargetSnodes(for publicKey: String) -> Promise<[Snode]> {
+    public static func getTargetSnodes(for publicKey: String) -> Promise<[Legacy.Snode]> {
         // shuffled() uses the system's default random generator, which is cryptographically secure
         return getSwarm(for: publicKey).map2 { Array($0.shuffled().prefix(targetSwarmSnodeCount)) }
     }
 
-    public static func getSwarm(for publicKey: String) -> Promise<Set<Snode>> {
+    public static func getSwarm(for publicKey: String) -> Promise<Set<Legacy.Snode>> {
         loadSwarmIfNeeded(for: publicKey)
         if let cachedSwarm = swarmCache[publicKey], cachedSwarm.count >= minSwarmSnodeCount {
-            return Promise<Set<Snode>> { $0.fulfill(cachedSwarm) }
+            return Promise<Set<Legacy.Snode>> { $0.fulfill(cachedSwarm) }
         } else {
             SNLog("Getting swarm for: \((publicKey == SNSnodeKitConfiguration.shared.storage.getUserPublicKey()) ? "self" : publicKey).")
             let parameters: [String:Any] = [ "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey ]
@@ -390,7 +390,7 @@ public final class SnodeAPI : NSObject {
         }
     }
     
-    public static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+    public static func getRawMessages(from snode: Legacy.Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let (promise, seal) = RawResponsePromise.pending()
         Threading.workQueue.async {
             getMessagesInternal(from: snode, associatedWith: publicKey).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
@@ -412,7 +412,7 @@ public final class SnodeAPI : NSObject {
         return promise
     }
     
-    private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+    private static func getMessagesInternal(from snode: Legacy.Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
         
         // NOTE: All authentication logic is currently commented out, the reason being that we can't currently support
@@ -468,7 +468,7 @@ public final class SnodeAPI : NSObject {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
             getSwarm(for: publicKey).then2 { swarm -> Promise<[String:Bool]> in
                 let snode = swarm.randomElement()!
-                let verificationData = (Snode.Method.deleteMessage.rawValue + serverHashes.joined(separator: "")).data(using: String.Encoding.utf8)!
+                let verificationData = (Legacy.Snode.Method.deleteMessage.rawValue + serverHashes.joined(separator: "")).data(using: String.Encoding.utf8)!
                 guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else { throw Error.signingFailed }
                 let parameters: JSON = [
                     "pubkey" : userX25519PublicKey,
@@ -515,7 +515,7 @@ public final class SnodeAPI : NSObject {
                 let snode = swarm.randomElement()!
                 return attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                     getNetworkTime(from: snode).then2 { timestamp -> Promise<[String:Bool]> in
-                        let verificationData = (Snode.Method.clearAllData.rawValue + String(timestamp)).data(using: String.Encoding.utf8)!
+                        let verificationData = (Legacy.Snode.Method.clearAllData.rawValue + String(timestamp)).data(using: String.Encoding.utf8)!
                         guard let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey) else { throw Error.signingFailed }
                         let parameters: JSON = [
                             "pubkey" : userX25519PublicKey,
@@ -558,7 +558,7 @@ public final class SnodeAPI : NSObject {
     
     // The parsing utilities below use a best attempt approach to parsing; they warn for parsing failures but don't throw exceptions.
 
-    private static func parseSnodes(from rawResponse: Any) -> Set<Snode> {
+    private static func parseSnodes(from rawResponse: Any) -> Set<Legacy.Snode> {
         guard let json = rawResponse as? JSON, let rawSnodes = json["snodes"] as? [JSON] else {
             SNLog("Failed to parse snodes from: \(rawResponse).")
             return []
@@ -569,17 +569,17 @@ public final class SnodeAPI : NSObject {
                 SNLog("Failed to parse snode from: \(rawSnode).")
                 return nil
             }
-            return Snode(address: "https://\(address)", port: port, publicKeySet: Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
+            return Legacy.Snode(address: "https://\(address)", port: port, publicKeySet: Legacy.Snode.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
         })
     }
 
-    public static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Snode, associatedWith publicKey: String) -> [JSON] {
+    public static func parseRawMessagesResponse(_ rawResponse: Any, from snode: Legacy.Snode, associatedWith publicKey: String) -> [JSON] {
         guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
         updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: rawMessages)
         return removeDuplicates(from: rawMessages, associatedWith: publicKey)
     }
     
-    private static func updateLastMessageHashValueIfPossible(for snode: Snode, associatedWith publicKey: String, from rawMessages: [JSON]) {
+    private static func updateLastMessageHashValueIfPossible(for snode: Legacy.Snode, associatedWith publicKey: String, from rawMessages: [JSON]) {
         if let lastMessage = rawMessages.last, let lastHash = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? UInt64 {
             SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
                 SNSnodeKitConfiguration.shared.storage.setLastMessageHashInfo(for: snode, associatedWith: publicKey,
@@ -614,7 +614,7 @@ public final class SnodeAPI : NSObject {
     // MARK: Error Handling
     /// - Note: Should only be invoked from `Threading.workQueue` to avoid race conditions.
     @discardableResult
-    internal static func handleError(withStatusCode statusCode: UInt, json: JSON?, forSnode snode: Snode, associatedWith publicKey: String? = nil) -> Error? {
+    internal static func handleError(withStatusCode statusCode: UInt, json: JSON?, forSnode snode: Legacy.Snode, associatedWith publicKey: String? = nil) -> Error? {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif

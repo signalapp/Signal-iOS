@@ -8,9 +8,9 @@ public enum OnionRequestAPI {
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     private static var pathFailureCount: [Path:UInt] = [:]
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    private static var snodeFailureCount: [Snode:UInt] = [:]
+    private static var snodeFailureCount: [Legacy.Snode:UInt] = [:]
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    public static var guardSnodes: Set<Snode> = []
+    public static var guardSnodes: Set<Legacy.Snode> = []
     public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
     // MARK: Settings
@@ -29,7 +29,7 @@ public enum OnionRequestAPI {
 
     // MARK: Destination
     public enum Destination : CustomStringConvertible {
-        case snode(Snode)
+        case snode(Legacy.Snode)
         case server(host: String, target: String, x25519PublicKey: String, scheme: String?, port: UInt16?)
         
         public var description: String {
@@ -67,14 +67,14 @@ public enum OnionRequestAPI {
     }
 
     // MARK: Path
-    public typealias Path = [Snode]
+    public typealias Path = [Legacy.Snode]
 
     // MARK: Onion Building Result
-    private typealias OnionBuildingResult = (guardSnode: Snode, finalEncryptionResult: AESGCM.EncryptionResult, destinationSymmetricKey: Data)
+    private typealias OnionBuildingResult = (guardSnode: Legacy.Snode, finalEncryptionResult: AESGCM.EncryptionResult, destinationSymmetricKey: Data)
 
     // MARK: Private API
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.
-    private static func testSnode(_ snode: Snode) -> Promise<Void> {
+    private static func testSnode(_ snode: Legacy.Snode) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         DispatchQueue.global(qos: .userInitiated).async {
             let url = "\(snode.address):\(snode.port)/get_stats/v1"
@@ -96,17 +96,17 @@ public enum OnionRequestAPI {
 
     /// Finds `targetGuardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func getGuardSnodes(reusing reusableGuardSnodes: [Snode]) -> Promise<Set<Snode>> {
+    private static func getGuardSnodes(reusing reusableGuardSnodes: [Legacy.Snode]) -> Promise<Set<Legacy.Snode>> {
         if guardSnodes.count >= targetGuardSnodeCount {
-            return Promise<Set<Snode>> { $0.fulfill(guardSnodes) }
+            return Promise<Set<Legacy.Snode>> { $0.fulfill(guardSnodes) }
         } else {
             SNLog("Populating guard snode cache.")
             var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes) // Sync on LokiAPI.workQueue
             let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
             guard unusedSnodes.count >= (targetGuardSnodeCount - reusableGuardSnodeCount) else { return Promise(error: Error.insufficientSnodes) }
-            func getGuardSnode() -> Promise<Snode> {
+            func getGuardSnode() -> Promise<Legacy.Snode> {
                 // randomElement() uses the system's default random generator, which is cryptographically secure
-                guard let candidate = unusedSnodes.randomElement() else { return Promise<Snode> { $0.reject(Error.insufficientSnodes) } }
+                guard let candidate = unusedSnodes.randomElement() else { return Promise<Legacy.Snode> { $0.reject(Error.insufficientSnodes) } }
                 unusedSnodes.remove(candidate) // All used snodes should be unique
                 SNLog("Testing guard snode: \(candidate).")
                 // Loop until a reliable guard snode is found
@@ -167,7 +167,7 @@ public enum OnionRequestAPI {
     }
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
-    private static func getPath(excluding snode: Snode?) -> Promise<Path> {
+    private static func getPath(excluding snode: Legacy.Snode?) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
         var paths = OnionRequestAPI.paths
         if paths.isEmpty {
@@ -216,14 +216,14 @@ public enum OnionRequestAPI {
         }
     }
 
-    private static func dropGuardSnode(_ snode: Snode) {
+    private static func dropGuardSnode(_ snode: Legacy.Snode) {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
         guardSnodes = guardSnodes.filter { $0 != snode }
     }
 
-    private static func drop(_ snode: Snode) throws {
+    private static func drop(_ snode: Legacy.Snode) throws {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
@@ -272,10 +272,10 @@ public enum OnionRequestAPI {
 
     /// Builds an onion around `payload` and returns the result.
     private static func buildOnion(around payload: JSON, targetedAt destination: Destination) -> Promise<OnionBuildingResult> {
-        var guardSnode: Snode!
+        var guardSnode: Legacy.Snode!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the destination
         var encryptionResult: AESGCM.EncryptionResult!
-        var snodeToExclude: Snode?
+        var snodeToExclude: Legacy.Snode?
         if case .snode(let snode) = destination { snodeToExclude = snode }
         return getPath(excluding: snodeToExclude).then2 { path -> Promise<AESGCM.EncryptionResult> in
             guardSnode = path.first!
@@ -305,7 +305,7 @@ public enum OnionRequestAPI {
 
     // MARK: Public API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    public static func sendOnionRequest(to snode: Snode, invoking method: Snode.Method, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<JSON> {
+    public static func sendOnionRequest(to snode: Legacy.Snode, invoking method: Legacy.Snode.Method, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<JSON> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
         return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
             guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json, _) = error else { throw error }
@@ -365,7 +365,7 @@ public enum OnionRequestAPI {
 
     public static func sendOnionRequest(with payload: JSON, to destination: Destination) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
-        var guardSnode: Snode?
+        var guardSnode: Legacy.Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
                 guardSnode = intermediate.guardSnode

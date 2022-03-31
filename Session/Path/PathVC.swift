@@ -156,7 +156,7 @@ final class PathVC : BaseVC {
         return stackView
     }
 
-    private func getPathRow(snode: Snode, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
+    private func getPathRow(snode: Legacy.Snode, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
         let country = IP2Country.isInitialized ? (IP2Country.shared.countryNamesCache[snode.ip] ?? "Resolving...") : "Resolving..."
         let title = isGuardSnode ? NSLocalizedString("vc_path_guard_node_row_title", comment: "") : NSLocalizedString("vc_path_service_node_row_title", comment: "")
         return getPathRow(title: title, subtitle: country, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)

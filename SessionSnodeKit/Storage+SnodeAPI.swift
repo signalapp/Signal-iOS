@@ -7,18 +7,18 @@ extension Storage {
     private static let snodePoolCollection = "LokiSnodePoolCollection"
     private static let lastSnodePoolRefreshDateCollection = "LokiLastSnodePoolRefreshDateCollection"
 
-    public func getSnodePool() -> Set<Snode> {
-        var result: Set<Snode> = []
+    public func getSnodePool() -> Set<Legacy.Snode> {
+        var result: Set<Legacy.Snode> = []
         Storage.read { transaction in
             transaction.enumerateKeysAndObjects(inCollection: Storage.snodePoolCollection) { _, object, _ in
-                guard let snode = object as? Snode else { return }
+                guard let snode = object as? Legacy.Snode else { return }
                 result.insert(snode)
             }
         }
         return result
     }
 
-    public func setSnodePool(to snodePool: Set<Snode>, using transaction: Any) {
+    public func setSnodePool(to snodePool: Set<Legacy.Snode>, using transaction: Any) {
         clearSnodePool(in: transaction)
         snodePool.forEach { snode in
             (transaction as! YapDatabaseReadWriteTransaction).setObject(snode, forKey: snode.description, inCollection: Storage.snodePoolCollection)
@@ -49,20 +49,21 @@ extension Storage {
         return "LokiSwarmCollection-\(publicKey)"
     }
 
-    public func getSwarm(for publicKey: String) -> Set<Snode> {
-        var result: Set<Snode> = []
+    public func getSwarm(for publicKey: String) -> Set<Legacy.Snode> {
+        var result: Set<Legacy.Snode> = []
         let collection = Storage.getSwarmCollection(for: publicKey)
         Storage.read { transaction in
             transaction.enumerateKeysAndObjects(inCollection: collection) { _, object, _ in
-                guard let snode = object as? Snode else { return }
+                guard let snode = object as? Legacy.Snode else { return }
                 result.insert(snode)
             }
         }
         return result
     }
 
-    public func setSwarm(to swarm: Set<Snode>, for publicKey: String, using transaction: Any) {
+    public func setSwarm(to swarm: Set<Legacy.Snode>, for publicKey: String, using transaction: Any) {
         clearSwarm(for: publicKey, in: transaction)
+        let tmp = getSnodePool()
         let collection = Storage.getSwarmCollection(for: publicKey)
         swarm.forEach { snode in
             (transaction as! YapDatabaseReadWriteTransaction).setObject(snode, forKey: snode.description, inCollection: collection)
@@ -80,7 +81,7 @@ extension Storage {
 
     private static let lastMessageHashCollection = "LokiLastMessageHashCollection"
 
-    public func getLastMessageHashInfo(for snode: Snode, associatedWith publicKey: String) -> JSON? {
+    public func getLastMessageHashInfo(for snode: Legacy.Snode, associatedWith publicKey: String) -> JSON? {
         let key = "\(snode.address):\(snode.port).\(publicKey)"
         var result: JSON?
         Storage.read { transaction in
@@ -93,17 +94,17 @@ extension Storage {
         return result
     }
 
-    public func getLastMessageHash(for snode: Snode, associatedWith publicKey: String) -> String? {
+    public func getLastMessageHash(for snode: Legacy.Snode, associatedWith publicKey: String) -> String? {
         return getLastMessageHashInfo(for: snode, associatedWith: publicKey)?["hash"] as? String
     }
 
-    public func setLastMessageHashInfo(for snode: Snode, associatedWith publicKey: String, to lastMessageHashInfo: JSON, using transaction: Any) {
+    public func setLastMessageHashInfo(for snode: Legacy.Snode, associatedWith publicKey: String, to lastMessageHashInfo: JSON, using transaction: Any) {
         let key = "\(snode.address):\(snode.port).\(publicKey)"
         guard lastMessageHashInfo.count == 2 && lastMessageHashInfo["hash"] as? String != nil && lastMessageHashInfo["expirationDate"] as? NSNumber != nil else { return }
         (transaction as! YapDatabaseReadWriteTransaction).setObject(lastMessageHashInfo, forKey: key, inCollection: Storage.lastMessageHashCollection)
     }
 
-    public func pruneLastMessageHashInfoIfExpired(for snode: Snode, associatedWith publicKey: String) {
+    public func pruneLastMessageHashInfoIfExpired(for snode: Legacy.Snode, associatedWith publicKey: String) {
         guard let lastMessageHashInfo = getLastMessageHashInfo(for: snode, associatedWith: publicKey),
             (lastMessageHashInfo["hash"] as? String) != nil, let expirationDate = (lastMessageHashInfo["expirationDate"] as? NSNumber)?.uint64Value else { return }
         let now = NSDate.millisecondTimestamp()
@@ -114,7 +115,7 @@ extension Storage {
         }
     }
 
-    public func removeLastMessageHashInfo(for snode: Snode, associatedWith publicKey: String, using transaction: Any) {
+    public func removeLastMessageHashInfo(for snode: Legacy.Snode, associatedWith publicKey: String, using transaction: Any) {
         let key = "\(snode.address):\(snode.port).\(publicKey)"
         (transaction as! YapDatabaseReadWriteTransaction).removeObject(forKey: key, inCollection: Storage.lastMessageHashCollection)
     }

@@ -765,6 +765,26 @@
 		F5765D284BC6ECAC0C1D33F0 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_SessionNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4A93ECA93B3DE800CC7D7F6 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_SessionNotificationServiceExtension.framework */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
+		FD17D79927F40AB800122BE0 /* _002_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79827F40AB800122BE0 /* _002_YDBToGRDBMigration.swift */; };
+		FD17D79C27F40B2E00122BE0 /* SMKLegacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */; };
+		FD17D7A027F40CC800122BE0 /* _001_InitialSetupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79F27F40CC800122BE0 /* _001_InitialSetupMigration.swift */; };
+		FD17D7A127F40D2500122BE0 /* GRDBStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD28A4F527EAD44C00FF65E7 /* GRDBStorage.swift */; };
+		FD17D7A227F40F0500122BE0 /* _001_InitialSetupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */; };
+		FD17D7A427F40F8100122BE0 /* _002_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7A327F40F8100122BE0 /* _002_YDBToGRDBMigration.swift */; };
+		FD17D7A727F41AF000122BE0 /* SSKLegacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7A627F41AF000122BE0 /* SSKLegacyModels.swift */; };
+		FD17D7AA27F41BF500122BE0 /* SnodeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7A927F41BF500122BE0 /* SnodeSet.swift */; };
+		FD17D7AE27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7AD27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift */; };
+		FD17D7B027F4225C00122BE0 /* Set+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7AF27F4225C00122BE0 /* Set+Utilities.swift */; };
+		FD17D7B327F51E5B00122BE0 /* SSKSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B227F51E5B00122BE0 /* SSKSetting.swift */; };
+		FD17D7B627F51E7300122BE0 /* SettingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B527F51E7300122BE0 /* SettingType.swift */; };
+		FD17D7B827F51ECA00122BE0 /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B727F51ECA00122BE0 /* Migration.swift */; };
+		FD17D7BA27F51F2100122BE0 /* TargetMigrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */; };
+		FD17D7BD27F51F6900122BE0 /* GRDB+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */; };
+		FD17D7BF27F51F8200122BE0 /* ColumnExpressible.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7BE27F51F8200122BE0 /* ColumnExpressible.swift */; };
+		FD17D7C127F5200100122BE0 /* TypedTableDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C027F5200100122BE0 /* TypedTableDefinition.swift */; };
+		FD17D7C327F5204C00122BE0 /* Database+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */; };
+		FD17D7C527F5206300122BE0 /* ColumnDefinition+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C427F5206300122BE0 /* ColumnDefinition+Utilities.swift */; };
+		FD17D7C727F5207C00122BE0 /* DatabaseMigrator+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C627F5207C00122BE0 /* DatabaseMigrator+Utilities.swift */; };
 		FD5D200F27AA2B6000FEA984 /* MessageRequestResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */; };
 		FD5D201127AA331F00FEA984 /* ConfigurationMessage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */; };
 		FD659AC027A7649600F12C02 /* MessageRequestsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD659ABF27A7649600F12C02 /* MessageRequestsViewController.swift */; };
@@ -1792,6 +1812,26 @@
 		F9BBF530D71905BA9007675F /* Pods-SessionShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionShareExtension/Pods-SessionShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _001_InitialSetupMigration.swift; sourceTree = "<group>"; };
+		FD17D79827F40AB800122BE0 /* _002_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _002_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
+		FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMKLegacyModels.swift; sourceTree = "<group>"; };
+		FD17D79F27F40CC800122BE0 /* _001_InitialSetupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _001_InitialSetupMigration.swift; sourceTree = "<group>"; };
+		FD17D7A327F40F8100122BE0 /* _002_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _002_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
+		FD17D7A627F41AF000122BE0 /* SSKLegacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKLegacyModels.swift; sourceTree = "<group>"; };
+		FD17D7A927F41BF500122BE0 /* SnodeSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnodeSet.swift; sourceTree = "<group>"; };
+		FD17D7AD27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnodeReceivedMessageInfo.swift; sourceTree = "<group>"; };
+		FD17D7AF27F4225C00122BE0 /* Set+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+Utilities.swift"; sourceTree = "<group>"; };
+		FD17D7B227F51E5B00122BE0 /* SSKSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKSetting.swift; sourceTree = "<group>"; };
+		FD17D7B527F51E7300122BE0 /* SettingType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingType.swift; sourceTree = "<group>"; };
+		FD17D7B727F51ECA00122BE0 /* Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Migration.swift; sourceTree = "<group>"; };
+		FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetMigrations.swift; sourceTree = "<group>"; };
+		FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GRDB+Notifications.swift"; sourceTree = "<group>"; };
+		FD17D7BE27F51F8200122BE0 /* ColumnExpressible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColumnExpressible.swift; sourceTree = "<group>"; };
+		FD17D7C027F5200100122BE0 /* TypedTableDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedTableDefinition.swift; sourceTree = "<group>"; };
+		FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Utilities.swift"; sourceTree = "<group>"; };
+		FD17D7C427F5206300122BE0 /* ColumnDefinition+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColumnDefinition+Utilities.swift"; sourceTree = "<group>"; };
+		FD17D7C627F5207C00122BE0 /* DatabaseMigrator+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseMigrator+Utilities.swift"; sourceTree = "<group>"; };
+		FD28A4F527EAD44C00FF65E7 /* GRDBStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBStorage.swift; sourceTree = "<group>"; };
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
 		FD5D201027AA331F00FEA984 /* ConfigurationMessage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConfigurationMessage+Convenience.swift"; sourceTree = "<group>"; };
 		FD659ABF27A7649600F12C02 /* MessageRequestsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsViewController.swift; sourceTree = "<group>"; };
@@ -2243,6 +2283,9 @@
 		B8A582AB258C64E800AFD84C /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				FD17D7B427F51E6700122BE0 /* Types */,
+				FD17D7BB27F51F5C00122BE0 /* Utilities */,
+				FD28A4F527EAD44C00FF65E7 /* GRDBStorage.swift */,
 				C33FDBAB255A581500E217F9 /* OWSFileSystem.h */,
 				C33FDA8E255A57FD00E217F9 /* OWSFileSystem.m */,
 				C3D9E41E25676C870040E4F3 /* OWSPrimaryStorageProtocol.swift */,
@@ -2338,6 +2381,7 @@
 				C33FDB51255A580D00E217F9 /* NSUserDefaults+OWS.h */,
 				C33FDB77255A581000E217F9 /* NSUserDefaults+OWS.m */,
 				C33FDB14255A580800E217F9 /* OWSMath.h */,
+				FD17D7AF27F4225C00122BE0 /* Set+Utilities.swift */,
 				C33FDB6B255A580F00E217F9 /* SNUserDefaults.swift */,
 				C33FDB3F255A580C00E217F9 /* String+SSK.swift */,
 				C3C2AC2D2553CBEB00C340D1 /* String+Trimming.swift */,
@@ -2654,6 +2698,8 @@
 		C32C5BCB256DC818003C73A2 /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				FD17D79A27F40ADA00122BE0 /* LegacyDatabase */,
+				FD17D79427F3E03300122BE0 /* Migrations */,
 				B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */,
 				C33FDAEA255A580500E217F9 /* OWSBackupFragment.h */,
 				C33FDB07255A580700E217F9 /* OWSBackupFragment.m */,
@@ -3220,11 +3266,11 @@
 			isa = PBXGroup;
 			children = (
 				C3C2A5B0255385C700C340D1 /* Meta */,
+				FD17D79D27F40CAA00122BE0 /* Database */,
 				C3C2A5B9255385ED00C340D1 /* Configuration.swift */,
 				C3C2A5BD255385EE00C340D1 /* Notification+OnionRequestAPI.swift */,
 				C3C2A5BA255385ED00C340D1 /* OnionRequestAPI.swift */,
 				C3C2A5BB255385ED00C340D1 /* OnionRequestAPI+Encryption.swift */,
-				C3C2A5B7255385EC00C340D1 /* Snode.swift */,
 				C3C2A5BE255385EE00C340D1 /* SnodeAPI.swift */,
 				C3C2A5B6255385EC00C340D1 /* SnodeMessage.swift */,
 				C3C2A5B8255385EC00C340D1 /* Storage.swift */,
@@ -3577,6 +3623,92 @@
 				76EB03C118170B33006006FC /* Utilities */,
 			);
 			path = Session;
+			sourceTree = "<group>";
+		};
+		FD17D79427F3E03300122BE0 /* Migrations */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */,
+				FD17D79827F40AB800122BE0 /* _002_YDBToGRDBMigration.swift */,
+			);
+			path = Migrations;
+			sourceTree = "<group>";
+		};
+		FD17D79A27F40ADA00122BE0 /* LegacyDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */,
+			);
+			path = LegacyDatabase;
+			sourceTree = "<group>";
+		};
+		FD17D79D27F40CAA00122BE0 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7A527F41ADE00122BE0 /* LegacyDatabase */,
+				FD17D79E27F40CC000122BE0 /* Migrations */,
+				FD17D7A827F41BE300122BE0 /* Models */,
+				FD17D7B127F51E2B00122BE0 /* Types */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
+		FD17D79E27F40CC000122BE0 /* Migrations */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D79F27F40CC800122BE0 /* _001_InitialSetupMigration.swift */,
+				FD17D7A327F40F8100122BE0 /* _002_YDBToGRDBMigration.swift */,
+			);
+			path = Migrations;
+			sourceTree = "<group>";
+		};
+		FD17D7A527F41ADE00122BE0 /* LegacyDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7A627F41AF000122BE0 /* SSKLegacyModels.swift */,
+			);
+			path = LegacyDatabase;
+			sourceTree = "<group>";
+		};
+		FD17D7A827F41BE300122BE0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				C3C2A5B7255385EC00C340D1 /* Snode.swift */,
+				FD17D7A927F41BF500122BE0 /* SnodeSet.swift */,
+				FD17D7AD27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FD17D7B127F51E2B00122BE0 /* Types */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7B227F51E5B00122BE0 /* SSKSetting.swift */,
+			);
+			path = Types;
+			sourceTree = "<group>";
+		};
+		FD17D7B427F51E6700122BE0 /* Types */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7BE27F51F8200122BE0 /* ColumnExpressible.swift */,
+				FD17D7B727F51ECA00122BE0 /* Migration.swift */,
+				FD17D7B527F51E7300122BE0 /* SettingType.swift */,
+				FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */,
+				FD17D7C027F5200100122BE0 /* TypedTableDefinition.swift */,
+			);
+			path = Types;
+			sourceTree = "<group>";
+		};
+		FD17D7BB27F51F5C00122BE0 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7C427F5206300122BE0 /* ColumnDefinition+Utilities.swift */,
+				FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */,
+				FD17D7C627F5207C00122BE0 /* DatabaseMigrator+Utilities.swift */,
+				FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 		FD659ABE27A7648200F12C02 /* Message Requests */ = {
@@ -4576,16 +4708,22 @@
 				C3C2A5E02553860B00C340D1 /* Threading.swift in Sources */,
 				C3C2A5BF255385EE00C340D1 /* SnodeMessage.swift in Sources */,
 				C3C2A5C0255385EE00C340D1 /* Snode.swift in Sources */,
+				FD17D7A027F40CC800122BE0 /* _001_InitialSetupMigration.swift in Sources */,
 				C3C2A5C7255385EE00C340D1 /* SnodeAPI.swift in Sources */,
 				C32C5CBF256DD282003C73A2 /* Storage+SnodeAPI.swift in Sources */,
 				C3C2A5C6255385EE00C340D1 /* Notification+OnionRequestAPI.swift in Sources */,
+				FD17D7AA27F41BF500122BE0 /* SnodeSet.swift in Sources */,
+				FD17D7A427F40F8100122BE0 /* _002_YDBToGRDBMigration.swift in Sources */,
 				C32C5CBE256DD282003C73A2 /* Storage+OnionRequests.swift in Sources */,
 				C3C2A5DC2553860B00C340D1 /* Promise+Threading.swift in Sources */,
 				C3C2A5C4255385EE00C340D1 /* OnionRequestAPI+Encryption.swift in Sources */,
 				C3C2A5DE2553860B00C340D1 /* String+Trimming.swift in Sources */,
 				C3C2A5DB2553860B00C340D1 /* Promise+Hashing.swift in Sources */,
 				C3C2A5E42553860B00C340D1 /* Data+Utilities.swift in Sources */,
+				FD17D7A727F41AF000122BE0 /* SSKLegacyModels.swift in Sources */,
 				C3C2A5C2255385EE00C340D1 /* Configuration.swift in Sources */,
+				FD17D7B327F51E5B00122BE0 /* SSKSetting.swift in Sources */,
+				FD17D7AE27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift in Sources */,
 				C3C2A5C3255385EE00C340D1 /* OnionRequestAPI.swift in Sources */,
 				C3C2A5C1255385EE00C340D1 /* Storage.swift in Sources */,
 			);
@@ -4597,6 +4735,7 @@
 			files = (
 				C3AABDDF2553ECF00042FF4C /* Array+Utilities.swift in Sources */,
 				7B1D74AC27BDE7510030B423 /* Promise+Timeout.swift in Sources */,
+				FD17D7B627F51E7300122BE0 /* SettingType.swift in Sources */,
 				C3AABDDF2553ECF00042FF4C /* Array+Utilities.swift in Sources */,
 				C32C5A47256DB8F0003C73A2 /* ECKeyPair+Hexadecimal.swift in Sources */,
 				C3D9E41525676C320040E4F3 /* Storage.swift in Sources */,
@@ -4604,6 +4743,7 @@
 				C32C5D83256DD5B6003C73A2 /* SSKKeychainStorage.swift in Sources */,
 				C3D9E39B256763C20040E4F3 /* AppContext.m in Sources */,
 				C3BBE0A82554D4DE0050F1E3 /* JSON.swift in Sources */,
+				FD17D7C127F5200100122BE0 /* TypedTableDefinition.swift in Sources */,
 				C352A36D2557858E00338F3E /* NSTimer+Proxying.m in Sources */,
 				C32C5A2D256DB849003C73A2 /* LKGroupUtilities.m in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
@@ -4617,6 +4757,7 @@
 				C3A7211A2558BCA10043A11F /* DiffieHellman.swift in Sources */,
 				C32C5FA1256DFED5003C73A2 /* NSArray+Functional.m in Sources */,
 				C3A7225E2558C38D0043A11F /* Promise+Retaining.swift in Sources */,
+				FD17D7BD27F51F6900122BE0 /* GRDB+Notifications.swift in Sources */,
 				C3D9E4D12567777D0040E4F3 /* OWSMediaUtils.swift in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
 				C3D9E4DA256778410040E4F3 /* UIImage+OWS.m in Sources */,
@@ -4624,21 +4765,28 @@
 				C3D9E35E25675F640040E4F3 /* OWSFileSystem.m in Sources */,
 				C3C2AC2E2553CBEB00C340D1 /* String+Trimming.swift in Sources */,
 				C32C5B48256DC211003C73A2 /* NSNotificationCenter+OWS.m in Sources */,
+				FD17D7C727F5207C00122BE0 /* DatabaseMigrator+Utilities.swift in Sources */,
 				C3D9E3C925676AF30040E4F3 /* TSYapDatabaseObject.m in Sources */,
 				C352A3A62557B60D00338F3E /* TSRequest.m in Sources */,
 				FD705A92278D051200F16121 /* ReusableView.swift in Sources */,
+				FD17D7BA27F51F2100122BE0 /* TargetMigrations.swift in Sources */,
+				FD17D7C327F5204C00122BE0 /* Database+Utilities.swift in Sources */,
 				B8AE75A425A6C6A6001A84D2 /* Data+Trimming.swift in Sources */,
+				FD17D7C527F5206300122BE0 /* ColumnDefinition+Utilities.swift in Sources */,
 				B8856DE6256F15F2001CE70E /* String+SSK.swift in Sources */,
 				C3471ED42555386B00297E91 /* AESGCM.swift in Sources */,
+				FD17D7B827F51ECA00122BE0 /* Migration.swift in Sources */,
 				C32C5DDB256DD9FF003C73A2 /* ContentProxy.swift in Sources */,
 				C3A71F892558BA9F0043A11F /* Mnemonic.swift in Sources */,
 				B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */,
 				C33FDEF8255A656D00E217F9 /* Promise+Delaying.swift in Sources */,
 				B8BC00C0257D90E30032E807 /* General.swift in Sources */,
+				FD17D7A127F40D2500122BE0 /* GRDBStorage.swift in Sources */,
 				C32C5A24256DB7DB003C73A2 /* SNUserDefaults.swift in Sources */,
 				C3D9E41F25676C870040E4F3 /* OWSPrimaryStorageProtocol.swift in Sources */,
 				C3BBE0A72554D4DE0050F1E3 /* Promise+Retrying.swift in Sources */,
 				B8856D7B256F14F4001CE70E /* UIView+OWS.m in Sources */,
+				FD17D7B027F4225C00122BE0 /* Set+Utilities.swift in Sources */,
 				B88FA7FB26114EA70049422F /* Hex.swift in Sources */,
 				C35D0DB525AE5F1200B6BF49 /* UIEdgeInsets.swift in Sources */,
 				C3D9E4F4256778AF0040E4F3 /* NSData+Image.m in Sources */,
@@ -4646,6 +4794,7 @@
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
 				B8856D23256F116B001CE70E /* Weak.swift in Sources */,
 				C32C5A48256DB8F0003C73A2 /* BuildConfiguration.swift in Sources */,
+				FD17D7BF27F51F8200122BE0 /* ColumnExpressible.swift in Sources */,
 				B87EF18126377A1D00124B3C /* Features.swift in Sources */,
 				C300A60D2554B31900555489 /* Logging.swift in Sources */,
 				B8FF8EA625C11FEF004D1F22 /* IPv4.swift in Sources */,
@@ -4705,6 +4854,7 @@
 				C3A3A107256E1A5C004D228D /* OWSDisappearingMessagesFinder.m in Sources */,
 				C32C59C3256DB41F003C73A2 /* TSGroupModel.m in Sources */,
 				B8856ECE256F1E58001CE70E /* OWSPreferences.m in Sources */,
+				FD17D79927F40AB800122BE0 /* _002_YDBToGRDBMigration.swift in Sources */,
 				C3C2A7842553AAF300C340D1 /* SNProto.swift in Sources */,
 				C32C5DC0256DD743003C73A2 /* Poller.swift in Sources */,
 				C3C2A7682553A3D900C340D1 /* VisibleMessage+Contact.swift in Sources */,
@@ -4717,6 +4867,7 @@
 				B8566C63256F55930045A0B9 /* OWSLinkPreview+Conversion.swift in Sources */,
 				C32C5B3F256DC1DF003C73A2 /* TSQuotedMessage+Conversion.swift in Sources */,
 				B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */,
+				FD17D7A227F40F0500122BE0 /* _001_InitialSetupMigration.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
 				C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */,
@@ -4786,6 +4937,7 @@
 				C32C5FD6256E0346003C73A2 /* Notification+Thread.swift in Sources */,
 				C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */,
 				C32C5C88256DD0D2003C73A2 /* Storage+Messaging.swift in Sources */,
+				FD17D79C27F40B2E00122BE0 /* SMKLegacyModels.swift in Sources */,
 				C32C59C7256DB41F003C73A2 /* TSThread.m in Sources */,
 				C300A5B22554AF9800555489 /* VisibleMessage+Profile.swift in Sources */,
 				C32C5A75256DBBCF003C73A2 /* TSAttachmentPointer+Conversion.swift in Sources */,

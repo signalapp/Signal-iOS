@@ -5,7 +5,7 @@ import PromiseKit
 public final class Poller : NSObject {
     private let storage = OWSPrimaryStorage.shared()
     private var isPolling = false
-    private var usedSnodes = Set<Snode>()
+    private var usedSnodes = Set<SessionSnodeKit.Legacy.Snode>()
     private var pollCount = 0
 
     // MARK: Settings
@@ -89,7 +89,7 @@ public final class Poller : NSObject {
         }
     }
 
-    private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
+    private func poll(_ snode: SessionSnodeKit.Legacy.Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard isPolling else { return Promise { $0.fulfill(()) } }
         let userPublicKey = getUserHexEncodedPublicKey()
         return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: Threading.pollerQueue) { [weak self] rawResponse -> Promise<Void> in
