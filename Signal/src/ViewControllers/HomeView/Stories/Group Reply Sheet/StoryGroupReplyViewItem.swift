@@ -7,6 +7,7 @@ import SignalServiceKit
 import UIKit
 
 class StoryGroupReplyViewItem: Dependencies {
+    let interactionUniqueId: String
     let displayableText: DisplayableText?
     let reactionEmoji: String?
     let wasRemotelyDeleted: Bool
@@ -26,6 +27,8 @@ class StoryGroupReplyViewItem: Dependencies {
         authorColor: UIColor,
         transaction: SDSAnyReadTransaction
     ) {
+        self.interactionUniqueId = message.uniqueId
+
         if !message.wasRemotelyDeleted {
             self.displayableText = DisplayableText.displayableText(
                 withMessageBody: .init(text: message.body ?? "", ranges: message.bodyRanges ?? .empty),

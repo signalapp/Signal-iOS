@@ -12,6 +12,7 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
     private lazy var tableView = UITableView()
     private lazy var inputToolbar = StoryReplyInputToolbar()
     private lazy var inputToolbarBottomConstraint = inputToolbar.autoPinEdge(toSuperviewEdge: .bottom)
+    private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
     private lazy var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder = {
         let placeholder = InputAccessoryViewPlaceholder()
@@ -54,6 +55,7 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.keyboardDismissMode = .interactive
         tableView.contentInset = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
+        tableView.addInteraction(contextMenu)
 
         contentView.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
@@ -357,4 +359,74 @@ extension StoryGroupReplySheet: MessageReactionPickerDelegate {
             self.reactionPicker = nil
         }
     }
+}
+
+extension StoryGroupReplySheet: ContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
+        guard let indexPath = tableView.indexPathForRow(at: location),
+              let item = replyLoader?.replyItem(for: indexPath) else { return nil }
+
+        return .init(identifier: indexPath as NSCopying, forceDarkTheme: true) { _ in
+
+            var actions = [ContextMenuAction]()
+
+            actions.append(.init(
+                title: NSLocalizedString(
+                    "STORIES_PRIVATE_REPLY_ACTION",
+                    comment: "Context menu action to privately reply to the selected story reply"),
+                image: Theme.iconImage(.messageActionReply, isDarkThemeEnabled: true),
+                handler: { _ in
+                    OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Private replies are not yet implemented."))
+                }))
+
+            if item.cellType != .reaction {
+                actions.append(.init(
+                    title: NSLocalizedString(
+                        "STORIES_COPY_REPLY_ACTION",
+                        comment: "Context menu action to copy the selected story reply"),
+                    image: Theme.iconImage(.messageActionCopy, isDarkThemeEnabled: true),
+                    handler: { _ in
+                        guard let displayableText = item.displayableText else { return }
+                        MentionTextView.copyAttributedStringToPasteboard(displayableText.fullAttributedText)
+                    }))
+            }
+
+            actions.append(.init(
+                title: NSLocalizedString(
+                    "STORIES_DELETE_REPLY_ACTION",
+                    comment: "Context menu action to delete the selected story reply"),
+                image: Theme.iconImage(.messageActionDelete, isDarkThemeEnabled: true),
+                attributes: .destructive,
+                handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    guard let message = Self.databaseStorage.read(
+                        block: { TSMessage.anyFetchMessage(uniqueId: item.interactionUniqueId, transaction: $0) }
+                    ) else { return }
+                    message.presentDeletionActionSheet(from: self)
+                }))
+
+            return .init(actions)
+        }
+    }
+
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
+        guard let indexPath = configuration.identifier as? IndexPath else { return nil }
+
+        guard let cell = tableView.cellForRow(at: indexPath) else { return nil }
+
+        let targetedPreview = ContextMenuTargetedPreview(
+            view: cell,
+            alignment: .leading,
+            accessoryViews: nil
+        )
+        targetedPreview?.alignmentOffset = CGPoint(x: 52, y: 12)
+
+        return targetedPreview
+    }
+
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {}
+
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
+
+    func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -137,6 +137,14 @@ public class ContextMenuTargetedPreview {
         case left
         case center
         case right
+
+        public static var leading: Alignment {
+            CurrentAppContext().isRTL ? .right : .left
+        }
+
+        public static var trailing: Alignment {
+            CurrentAppContext().isRTL ? .left : .right
+        }
     }
 
     public let view: UIView
@@ -149,9 +157,11 @@ public class ContextMenuTargetedPreview {
             }
         }
     }
-    public let snapshot: UIView?
+    public let previewView: UIView
+    public let previewViewSourceFrame: CGRect
     public var auxiliarySnapshot: UIView?
     public let alignment: Alignment
+    public var alignmentOffset: CGPoint?
     public let accessoryViews: [ContextMenuTargetedPreviewAccessory]
 
     /// Default targeted preview initializer
@@ -161,24 +171,47 @@ public class ContextMenuTargetedPreview {
     ///   - alignment: If preview needs to be scaled, this property defines the edge alignment
     ///    in the source view to pin the preview to
     ///   - accessoryViews: accessory view
-    public init (
+    public convenience init?(
         view: UIView,
         alignment: Alignment,
         accessoryViews: [ContextMenuTargetedPreviewAccessory]?
     ) {
         AssertIsOnMainThread()
         owsAssertDebug(view.window != nil, "View must be in a window")
-        self.view = view
-
-        if let snapshot = view.snapshotView(afterScreenUpdates: false) {
-            self.snapshot = snapshot
-        } else {
-            self.snapshot = nil
+        guard let snapshot = view.snapshotView(afterScreenUpdates: false) else {
             owsFailDebug("Unable to snapshot context menu preview view")
+            return nil
         }
 
+        self.init(
+            view: view,
+            previewView: snapshot,
+            previewViewSourceFrame: view.frame,
+            alignment: alignment,
+            accessoryViews: accessoryViews ?? []
+        )
+    }
+
+    /// Initialize using a custom preview view that may or may not originate from `view`
+    /// - Parameters:
+    ///   - view: View to render a preview from
+    ///   - previewView: The preview to render, this should be an unowned view that does not live an any hierarchies.
+    ///   - previewViewSourceFrame: The frame to use as an initial and final rendering point for the `previewView`. This should be in the same coordinate space as `view`. If not provided the frame of `previewView` is used.
+    ///   - alignment: If preview needs to be scaled, this property defines the edge alignment
+    ///    in the source view to pin the preview to
+    ///   - accessoryViews: accessory view
+    public required init(
+        view: UIView,
+        previewView: UIView,
+        previewViewSourceFrame: CGRect? = nil,
+        alignment: Alignment,
+        accessoryViews: [ContextMenuTargetedPreviewAccessory]
+    ) {
+        self.view = view
+        self.previewView = previewView
+        self.previewViewSourceFrame = previewViewSourceFrame ?? previewView.frame
         self.alignment = alignment
-        self.accessoryViews = accessoryViews ?? []
+        self.accessoryViews = accessoryViews
     }
 }
 
@@ -188,9 +221,11 @@ public typealias ContextMenuActionProvider = ([ContextMenuAction]) -> ContextMen
 public class ContextMenuConfiguration {
     public let identifier: NSCopying
     public let actionProvider: ContextMenuActionProvider?
+    public let forceDarkTheme: Bool
 
     public init (
         identifier: NSCopying?,
+        forceDarkTheme: Bool = false,
         actionProvider: ContextMenuActionProvider?
     ) {
         if let ident = identifier {
@@ -199,6 +234,7 @@ public class ContextMenuConfiguration {
             self.identifier = UUID() as NSCopying
         }
 
+        self.forceDarkTheme = forceDarkTheme
         self.actionProvider = actionProvider
     }
 }

@@ -15,6 +15,8 @@ class StoryCell: UITableViewCell {
     let attachmentThumbnail = UIView()
     let replyImageView = UIImageView()
 
+    let contentHStackView = UIStackView()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -27,13 +29,13 @@ class StoryCell: UITableViewCell {
         vStack.axis = .vertical
         vStack.alignment = .leading
 
-        let hStack = UIStackView(arrangedSubviews: [avatarView, vStack, .hStretchingSpacer(), attachmentThumbnail])
-        hStack.axis = .horizontal
-        hStack.alignment = .center
-        hStack.spacing = 16
+        contentHStackView.addArrangedSubviews([avatarView, vStack, .hStretchingSpacer(), attachmentThumbnail])
+        contentHStackView.axis = .horizontal
+        contentHStackView.alignment = .center
+        contentHStackView.spacing = 16
 
-        contentView.addSubview(hStack)
-        hStack.autoPinEdgesToSuperviewMargins()
+        contentView.addSubview(contentHStackView)
+        contentHStackView.autoPinEdgesToSuperviewMargins()
 
         attachmentThumbnail.autoSetDimensions(to: CGSize(width: 56, height: 84))
         attachmentThumbnail.layer.cornerRadius = 12

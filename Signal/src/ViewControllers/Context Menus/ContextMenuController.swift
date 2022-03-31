@@ -386,6 +386,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         self.menuAccessory = menuAccessory
         self.presentImmediately = presentImmediately
         super.init(nibName: nil, bundle: nil)
+        if #available(iOS 13, *), configuration.forceDarkTheme { overrideUserInterfaceStyle = .dark }
     }
 
     required init?(coder: NSCoder) {
@@ -408,7 +409,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         dismissButton.addTarget(self, action: #selector(dismissButtonTapped(sender:)), for: .touchUpInside)
         contextMenuView.blurView = blurView
         contextMenuView.dismissButton = dismissButton
-        contextMenuView.previewView = contextMenuPreview.snapshot
+        contextMenuView.previewView = contextMenuPreview.previewView
         contextMenuView.previewView?.isAccessibilityElement = true
         contextMenuView.previewView?.accessibilityLabel = NSLocalizedString("MESSAGE_PREVIEW", comment: "Context menu message preview accessibility label")
         contextMenuView.auxiliaryPreviewView = contextMenuPreview.auxiliarySnapshot
@@ -448,7 +449,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         UIView.animate(withDuration: animationDuration / 2.0) {
             if !UIDevice.current.isIPad {
                 self.blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
-                self.blurView.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_blackAlpha20
+                self.blurView.backgroundColor = self.contextMenuConfiguration.forceDarkTheme || Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_blackAlpha20
             } else {
                 self.blurView.backgroundColor = UIColor.ows_blackAlpha40
             }
@@ -714,7 +715,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     // MARK: Private
 
     private func previewSourceFrame() -> CGRect {
-        return view.convert(contextMenuPreview.view.frame, from: contextMenuPreview.view.superview)
+        return view.convert(contextMenuPreview.previewViewSourceFrame, from: contextMenuPreview.view.superview)
     }
 
     private func auxPreviewSourceFrame() -> CGRect {

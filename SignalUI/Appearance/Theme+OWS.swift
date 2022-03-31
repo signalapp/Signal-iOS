@@ -87,6 +87,8 @@ public enum ThemeIcon: UInt {
     case color24
     case text24
     case cancel24
+    case xCircle24
+    case open24
 
     case checkCircle
     case message
@@ -166,7 +168,11 @@ public extension Theme {
 @objc
 public extension Theme {
     class func iconImage(_ icon: ThemeIcon) -> UIImage {
-        let name = iconName(icon)
+        iconImage(icon, isDarkThemeEnabled: isDarkThemeEnabled)
+    }
+
+    class func iconImage(_ icon: ThemeIcon, isDarkThemeEnabled: Bool) -> UIImage {
+        let name = iconName(icon, isDarkThemeEnabled: isDarkThemeEnabled)
         guard let image = UIImage(named: name) else {
             owsFailDebug("image was unexpectedly nil: \(name)")
             return UIImage()
@@ -176,6 +182,10 @@ public extension Theme {
     }
 
     class func iconName(_ icon: ThemeIcon) -> String {
+        iconName(icon, isDarkThemeEnabled: isDarkThemeEnabled)
+    }
+
+    class func iconName(_ icon: ThemeIcon, isDarkThemeEnabled: Bool) -> String {
         switch icon {
         case .settingsUserInContacts:
             return isDarkThemeEnabled ? "profile-circle-solid-24" : "profile-circle-outline-24"
@@ -324,6 +334,10 @@ public extension Theme {
             return "x-24"
         case .search20:
             return "search-20"
+        case .xCircle24:
+            return isDarkThemeEnabled ? "x-circle-solid-24" : "x-circle-outline-24"
+        case .open24:
+            return "open-24"
 
         case .trash24:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"

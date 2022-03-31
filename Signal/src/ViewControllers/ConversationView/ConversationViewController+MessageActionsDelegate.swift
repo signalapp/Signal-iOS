@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 extension ConversationViewController: MessageActionsDelegate {
@@ -95,49 +95,7 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsDeleteItem(_ itemViewModel: CVItemViewModelImpl) {
-        let actionSheetController = ActionSheetController(message: NSLocalizedString(
-            "MESSAGE_ACTION_DELETE_FOR_TITLE",
-            comment: "The title for the action sheet asking who the user wants to delete the message for."
-        ))
-
-        let deleteForMeAction = ActionSheetAction(
-            title: CommonStrings.deleteForMeButton,
-            style: .destructive
-        ) { _ in
-            itemViewModel.deleteAction()
-        }
-        actionSheetController.addAction(deleteForMeAction)
-
-        if canBeRemotelyDeleted(item: itemViewModel),
-           let message = itemViewModel.interaction as? TSOutgoingMessage {
-
-            let deleteForEveryoneAction = ActionSheetAction(
-                title: NSLocalizedString(
-                    "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
-                    comment: "The title for the action that deletes a message for all users in the conversation."
-                ),
-                style: .destructive
-            ) { [weak self] _ in
-                self?.showDeleteForEveryoneConfirmationIfNecessary {
-                    guard let self = self else { return }
-
-                    let deleteMessage = TSOutgoingDeleteMessage(thread: self.thread, message: message)
-
-                    self.databaseStorage.write { transaction in
-                        // Reset the sending states, so we can render the sending state of the deleted message.
-                        // TSOutgoingDeleteMessage will automatically pass through it's send state to the message
-                        // record that it is deleting.
-                        message.updateWith(recipientAddressStates: deleteMessage.recipientAddressStates, transaction: transaction)
-                        message.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
-                        Self.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
-                    }
-                }
-            }
-            actionSheetController.addAction(deleteForEveryoneAction)
-        }
-
-        actionSheetController.addAction(OWSActionSheets.cancelAction)
-
-        presentActionSheet(actionSheetController)
+        guard let message = itemViewModel.interaction as? TSMessage else { return }
+        message.presentDeletionActionSheet(from: self)
     }
 }
