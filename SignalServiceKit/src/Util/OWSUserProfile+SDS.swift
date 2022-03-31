@@ -38,12 +38,12 @@ public struct UserProfileRecord: SDSRecord {
     public let recipientUUID: String?
     public let username: String?
     public let familyName: String?
-    public let isUuidCapable: Bool
     public let lastFetchDate: Double?
     public let lastMessagingDate: Double?
     public let bio: String?
     public let bioEmoji: String?
     public let profileBadgeInfo: Data?
+    public let isStoriesCapable: Bool
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -57,12 +57,12 @@ public struct UserProfileRecord: SDSRecord {
         case recipientUUID
         case username
         case familyName
-        case isUuidCapable
         case lastFetchDate
         case lastMessagingDate
         case bio
         case bioEmoji
         case profileBadgeInfo
+        case isStoriesCapable
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -97,12 +97,12 @@ public extension UserProfileRecord {
         recipientUUID = row[8]
         username = row[9]
         familyName = row[10]
-        isUuidCapable = row[11]
-        lastFetchDate = row[12]
-        lastMessagingDate = row[13]
-        bio = row[14]
-        bioEmoji = row[15]
-        profileBadgeInfo = row[16]
+        lastFetchDate = row[11]
+        lastMessagingDate = row[12]
+        bio = row[13]
+        bioEmoji = row[14]
+        profileBadgeInfo = row[15]
+        isStoriesCapable = row[16]
     }
 }
 
@@ -139,7 +139,7 @@ extension OWSUserProfile {
             let bio: String? = record.bio
             let bioEmoji: String? = record.bioEmoji
             let familyName: String? = record.familyName
-            let isUuidCapable: Bool = record.isUuidCapable
+            let isStoriesCapable: Bool = record.isStoriesCapable
             let lastFetchDateInterval: Double? = record.lastFetchDate
             let lastFetchDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastFetchDateInterval, name: "lastFetchDate")
             let lastMessagingDateInterval: Double? = record.lastMessagingDate
@@ -160,7 +160,7 @@ extension OWSUserProfile {
                                   bio: bio,
                                   bioEmoji: bioEmoji,
                                   familyName: familyName,
-                                  isUuidCapable: isUuidCapable,
+                                  isStoriesCapable: isStoriesCapable,
                                   lastFetchDate: lastFetchDate,
                                   lastMessagingDate: lastMessagingDate,
                                   profileBadgeInfo: profileBadgeInfo,
@@ -224,7 +224,7 @@ extension OWSUserProfile: DeepCopyable {
             let bio: String? = modelToCopy.bio
             let bioEmoji: String? = modelToCopy.bioEmoji
             let familyName: String? = modelToCopy.familyName
-            let isUuidCapable: Bool = modelToCopy.isUuidCapable
+            let isStoriesCapable: Bool = modelToCopy.isStoriesCapable
             let lastFetchDate: Date? = modelToCopy.lastFetchDate
             let lastMessagingDate: Date? = modelToCopy.lastMessagingDate
             // NOTE: If this generates build errors, you made need to
@@ -265,7 +265,7 @@ extension OWSUserProfile: DeepCopyable {
                                   bio: bio,
                                   bioEmoji: bioEmoji,
                                   familyName: familyName,
-                                  isUuidCapable: isUuidCapable,
+                                  isStoriesCapable: isStoriesCapable,
                                   lastFetchDate: lastFetchDate,
                                   lastMessagingDate: lastMessagingDate,
                                   profileBadgeInfo: profileBadgeInfo,
@@ -297,12 +297,12 @@ extension OWSUserProfileSerializer {
     static var recipientUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true) }
     static var usernameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "username", columnType: .unicodeString, isOptional: true) }
     static var familyNameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "familyName", columnType: .unicodeString, isOptional: true) }
-    static var isUuidCapableColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isUuidCapable", columnType: .int) }
     static var lastFetchDateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastFetchDate", columnType: .double, isOptional: true) }
     static var lastMessagingDateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastMessagingDate", columnType: .double, isOptional: true) }
     static var bioColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "bio", columnType: .unicodeString, isOptional: true) }
     static var bioEmojiColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "bioEmoji", columnType: .unicodeString, isOptional: true) }
     static var profileBadgeInfoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "profileBadgeInfo", columnType: .blob, isOptional: true) }
+    static var isStoriesCapableColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isStoriesCapable", columnType: .int) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -321,12 +321,12 @@ extension OWSUserProfileSerializer {
         recipientUUIDColumn,
         usernameColumn,
         familyNameColumn,
-        isUuidCapableColumn,
         lastFetchDateColumn,
         lastMessagingDateColumn,
         bioColumn,
         bioEmojiColumn,
-        profileBadgeInfoColumn
+        profileBadgeInfoColumn,
+        isStoriesCapableColumn
         ])
     }
 }
@@ -727,14 +727,14 @@ class OWSUserProfileSerializer: SDSSerializer {
         let recipientUUID: String? = model.recipientUUID
         let username: String? = model.username
         let familyName: String? = model.familyName
-        let isUuidCapable: Bool = model.isUuidCapable
         let lastFetchDate: Double? = archiveOptionalDate(model.lastFetchDate)
         let lastMessagingDate: Double? = archiveOptionalDate(model.lastMessagingDate)
         let bio: String? = model.bio
         let bioEmoji: String? = model.bioEmoji
         let profileBadgeInfo: Data? = optionalArchive(model.profileBadgeInfo)
+        let isStoriesCapable: Bool = model.isStoriesCapable
 
-        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName, isUuidCapable: isUuidCapable, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo)
+        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo, isStoriesCapable: isStoriesCapable)
     }
 }
 

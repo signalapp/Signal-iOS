@@ -122,7 +122,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic, nullable) NSString *bio;
 @property (atomic, nullable) NSString *bioEmoji;
 @property (atomic, nullable) NSString *username;
-@property (atomic) BOOL isUuidCapable;
+@property (atomic) BOOL isStoriesCapable;
 @property (atomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 @property (atomic, nullable) NSDate *lastFetchDate;
 @property (atomic, nullable) NSDate *lastMessagingDate;
@@ -155,7 +155,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                              bio:(nullable NSString *)bio
                         bioEmoji:(nullable NSString *)bioEmoji
                       familyName:(nullable NSString *)familyName
-                   isUuidCapable:(BOOL)isUuidCapable
+                isStoriesCapable:(BOOL)isStoriesCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
                lastMessagingDate:(nullable NSDate *)lastMessagingDate
                 profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadgeInfo
@@ -177,7 +177,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _bio = bio;
     _bioEmoji = bioEmoji;
     _familyName = familyName;
-    _isUuidCapable = isUuidCapable;
+    _isStoriesCapable = isStoriesCapable;
     _lastFetchDate = lastFetchDate;
     _lastMessagingDate = lastMessagingDate;
     _profileBadgeInfo = profileBadgeInfo;
@@ -556,8 +556,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     if (changes.username != nil) {
         profile.username = changes.username.value;
     }
-    if (changes.isUuidCapable != nil) {
-        profile.isUuidCapable = changes.isUuidCapable.value;
+    if (changes.isStoriesCapable != nil) {
+        profile.isStoriesCapable = changes.isStoriesCapable.value;
     }
     if (changes.badges != nil) {
         profile.profileBadgeInfo = changes.badges;

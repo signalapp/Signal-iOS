@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, copy) NSDictionary<SignalServiceAddress *, NSString *> *fakeDisplayNames;
 @property (nullable, nonatomic, copy) NSDictionary<SignalServiceAddress *, NSString *> *fakeUsernames;
 
-@property (nonatomic) NSMutableDictionary<SignalServiceAddress *, NSNumber *> *stubbedUuidCapabilitiesMap;
+@property (nonatomic) NSMutableDictionary<SignalServiceAddress *, NSNumber *> *stubbedStoriesCapabilitiesMap;
 
 @end
 

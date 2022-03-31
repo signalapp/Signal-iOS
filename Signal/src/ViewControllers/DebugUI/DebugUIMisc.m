@@ -505,7 +505,7 @@ NS_ASSUME_NONNULL_BEGIN
     // OWSUserProfile
     [[OWSUserProfile getOrBuildUserProfileForAddress:address1
                                          transaction:transaction] updateWithUsername:nil
-                                                                       isUuidCapable:YES
+                                                                    isStoriesCapable:YES
                                                                    userProfileWriter:UserProfileWriter_Debugging
                                                                          transaction:transaction];
 

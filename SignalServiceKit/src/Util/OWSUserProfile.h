@@ -51,7 +51,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 @property (atomic, readonly, nullable) NSString *bio;
 @property (atomic, readonly, nullable) NSString *bioEmoji;
 @property (atomic, readonly, nullable) NSString *username;
-@property (atomic, readonly) BOOL isUuidCapable;
+@property (atomic, readonly) BOOL isStoriesCapable;
 @property (atomic, readonly, nullable) OWSUserProfileBadgeInfo *primaryBadge;
 @property (atomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
@@ -87,7 +87,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
                              bio:(nullable NSString *)bio
                         bioEmoji:(nullable NSString *)bioEmoji
                       familyName:(nullable NSString *)familyName
-                   isUuidCapable:(BOOL)isUuidCapable
+                isStoriesCapable:(BOOL)isStoriesCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
                lastMessagingDate:(nullable NSDate *)lastMessagingDate
                 profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadgeInfo
@@ -96,7 +96,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
                         username:(nullable NSString *)username
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:familyName:isUuidCapable:lastFetchDate:lastMessagingDate:profileBadgeInfo:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:familyName:isStoriesCapable:lastFetchDate:lastMessagingDate:profileBadgeInfo:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 
