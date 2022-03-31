@@ -3,7 +3,6 @@
 //
 
 #import "OWSConversationSettingsViewController.h"
-#import "OWSBlockingManager.h"
 #import "OWSSoundSettingsViewController.h"
 #import "Session-Swift.h"
 #import "UIFont+OWS.h"
@@ -37,7 +36,6 @@ CGFloat kIconViewLength = 24;
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 @property (nullable, nonatomic) MediaGallery *mediaGallery;
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
 @property (nonatomic) UILabel *displayNameLabel;
@@ -105,11 +103,6 @@ CGFloat kIconViewLength = 24;
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
 
     return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (OWSBlockingManager *)blockingManager
-{
-    return [OWSBlockingManager sharedManager];
 }
 
 - (OWSProfileManager *)profileManager
@@ -601,7 +594,7 @@ CGFloat kIconViewLength = 24;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
             UISwitch *blockConversationSwitch = [UISwitch new];
-            blockConversationSwitch.on = [strongSelf.blockingManager isThreadBlocked:strongSelf.thread];
+            blockConversationSwitch.on = strongSelf.thread.isBlocked;
             [blockConversationSwitch addTarget:strongSelf action:@selector(blockConversationSwitchDidChange:)
                 forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = blockConversationSwitch;
@@ -868,9 +861,13 @@ CGFloat kIconViewLength = 24;
     if (![sender isKindOfClass:[UISwitch class]]) {
         OWSFailDebug(@"Unexpected sender for block user switch: %@", sender);
     }
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSFailDebug(@"unexpected thread type: %@", self.thread.class);
+    }
     UISwitch *blockConversationSwitch = (UISwitch *)sender;
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
 
-    BOOL isCurrentlyBlocked = [self.blockingManager isThreadBlocked:self.thread];
+    BOOL isCurrentlyBlocked = contactThread.isBlocked;
 
     __weak OWSConversationSettingsViewController *weakSelf = self;
     if (blockConversationSwitch.isOn) {
@@ -878,12 +875,16 @@ CGFloat kIconViewLength = 24;
         if (isCurrentlyBlocked) {
             return;
         }
-        [BlockListUIUtils showBlockThreadActionSheet:self.thread
-                                  fromViewController:self
-                                     blockingManager:self.blockingManager
+        [BlockListUIUtils showBlockThreadActionSheet:contactThread
+                                                from:self
                                      completionBlock:^(BOOL isBlocked) {
                                          // Update switch state if user cancels action.
                                          blockConversationSwitch.on = isBlocked;
+            
+                                         // If we successfully blocked then force a config sync
+                                         if (isBlocked) {
+                                             [SNMessageSender forceSyncConfigurationNow];
+                                         }
 
                                          [weakSelf updateTableContents];
                                      }];
@@ -893,12 +894,16 @@ CGFloat kIconViewLength = 24;
         if (!isCurrentlyBlocked) {
             return;
         }
-        [BlockListUIUtils showUnblockThreadActionSheet:self.thread
-                                    fromViewController:self
-                                       blockingManager:self.blockingManager
+        [BlockListUIUtils showUnblockThreadActionSheet:contactThread
+                                                  from:self
                                        completionBlock:^(BOOL isBlocked) {
                                            // Update switch state if user cancels action.
                                            blockConversationSwitch.on = isBlocked;
+            
+                                           // If we successfully unblocked then force a config sync
+                                           if (!isBlocked) {
+                                               [SNMessageSender forceSyncConfigurationNow];
+                                           }
 
                                            [weakSelf updateTableContents];
                                        }];

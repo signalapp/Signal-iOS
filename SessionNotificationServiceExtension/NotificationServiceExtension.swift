@@ -109,8 +109,8 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
             appSpecificSingletonBlock: {
                 SSKEnvironment.shared.notificationsManager = NSENotificationPresenter()
             },
-            migrationCompletion: { [weak self] in
-                self?.versionMigrationsDidComplete()
+            migrationCompletion: { [weak self] _, needsConfigSync in
+                self?.versionMigrationsDidComplete(needsConfigSync: needsConfigSync)
                 completion()
             }
         )
@@ -119,10 +119,15 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     }
     
     @objc
-    private func versionMigrationsDidComplete() {
+    private func versionMigrationsDidComplete(needsConfigSync: Bool) {
         AssertIsOnMainThread()
 
         areVersionMigrationsComplete = true
+        
+        // If we need a config sync then trigger it now
+        if needsConfigSync {
+            MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+        }
 
         checkIsAppReady()
     }

@@ -269,8 +269,6 @@
 		B8D84ECF25E3108A005A043E /* ExpandingAttachmentsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D84ECE25E3108A005A043E /* ExpandingAttachmentsButton.swift */; };
 		B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */; };
 		B8EB20F02640F7F000773E52 /* OpenGroupInvitationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */; };
-		B8F5F52925EC4F8A003BF8D4 /* BlockListUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F52825EC4F8A003BF8D4 /* BlockListUIUtils.m */; };
-		B8F5F54E25EC50A5003BF8D4 /* BlockListUIUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = B8F5F52725EC4F6A003BF8D4 /* BlockListUIUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8F5F56525EC8453003BF8D4 /* Notification+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */; };
 		B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */; };
 		B8F5F60325EDE16F003BF8D4 /* DataExtractionNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F5F60225EDE16F003BF8D4 /* DataExtractionNotification.swift */; };
@@ -352,8 +350,6 @@
 		C32C5B6B256DC357003C73A2 /* OWSDisappearingConfigurationUpdateInfoMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDADA255A580400E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C5B84256DC54F003C73A2 /* SSKEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAF4255A580600E217F9 /* SSKEnvironment.m */; };
 		C32C5B8D256DC565003C73A2 /* SSKEnvironment.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB31255A580A00E217F9 /* SSKEnvironment.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C32C5B9F256DC739003C73A2 /* OWSBlockingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA68255A57F900E217F9 /* OWSBlockingManager.m */; };
-		C32C5BB0256DC73D003C73A2 /* OWSBlockingManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBEB255A581B00E217F9 /* OWSBlockingManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C5BBA256DC7E3003C73A2 /* ProfileManagerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBB9255A581600E217F9 /* ProfileManagerProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C5BCC256DC830003C73A2 /* Storage+ClosedGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D8F1372566120F0092EF10 /* Storage+ClosedGroups.swift */; };
 		C32C5BDD256DC88D003C73A2 /* OWSReadReceiptManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA71255A57FA00E217F9 /* OWSReadReceiptManager.m */; };
@@ -518,7 +514,6 @@
 		C374EEEB25DA3CA70073A857 /* ConversationTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374EEEA25DA3CA70073A857 /* ConversationTitleView.swift */; };
 		C374EEF425DB31D40073A857 /* VoiceMessageRecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C374EEF325DB31D40073A857 /* VoiceMessageRecordingView.swift */; };
 		C379DCF4256735770002D4EB /* VisibleMessage+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C379DCF3256735770002D4EB /* VisibleMessage+Attachment.swift */; };
-		C37F5385255B94F6002AEA92 /* SelectRecipientViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34E255B6DC8007E1867 /* SelectRecipientViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5396255B95BD002AEA92 /* OWSAnyTouchGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF302255B6DBE007E1867 /* OWSAnyTouchGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C37F5414255BAFA7002AEA92 /* SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; };
 		C37F54DC255BB84A002AEA92 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
@@ -574,20 +569,14 @@
 		C38EF32F255B6DBF007E1867 /* OWSFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF305255B6DBE007E1867 /* OWSFormat.m */; };
 		C38EF331255B6DBF007E1867 /* UIGestureRecognizer+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF307255B6DBE007E1867 /* UIGestureRecognizer+OWS.swift */; };
 		C38EF334255B6DBF007E1867 /* UIUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF30A255B6DBE007E1867 /* UIUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C38EF335255B6DBF007E1867 /* BlockListCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF30B255B6DBE007E1867 /* BlockListCache.swift */; };
 		C38EF359255B6DCC007E1867 /* SheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF33F255B6DC5007E1867 /* SheetViewController.swift */; };
-		C38EF35B255B6DCC007E1867 /* SelectThreadViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF341255B6DC5007E1867 /* SelectThreadViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C38EF35C255B6DCC007E1867 /* SelectThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF342255B6DC5007E1867 /* SelectThreadViewController.m */; };
 		C38EF35D255B6DCC007E1867 /* OWSNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF343255B6DC5007E1867 /* OWSNavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF344255B6DC5007E1867 /* OWSViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C38EF35F255B6DCC007E1867 /* SelectRecipientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF345255B6DC6007E1867 /* SelectRecipientViewController.m */; };
 		C38EF363255B6DCC007E1867 /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */; };
 		C38EF365255B6DCC007E1867 /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF34B255B6DC8007E1867 /* OWSTableViewController.m */; };
 		C38EF366255B6DCC007E1867 /* ScreenLockViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34C255B6DC8007E1867 /* ScreenLockViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF367255B6DCC007E1867 /* OWSTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34D255B6DC8007E1867 /* OWSTableViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF36B255B6DCC007E1867 /* ScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF351255B6DC9007E1867 /* ScreenLockViewController.m */; };
-		C38EF36C255B6DCC007E1867 /* SharingThreadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF352255B6DC9007E1867 /* SharingThreadPickerViewController.m */; };
-		C38EF36D255B6DCC007E1867 /* SharingThreadPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF353255B6DCB007E1867 /* SharingThreadPickerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF36F255B6DCC007E1867 /* OWSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF355255B6DCB007E1867 /* OWSViewController.m */; };
 		C38EF370255B6DCC007E1867 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF356255B6DCB007E1867 /* OWSNavigationController.m */; };
 		C38EF371255B6DCC007E1867 /* MessageApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF357255B6DCC007E1867 /* MessageApprovalViewController.swift */; };
@@ -783,6 +772,8 @@
 		FD078E6027E2BB36000769AF /* MockIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E5F27E2BB36000769AF /* MockIdentityManager.swift */; };
 		FD0BA51B27CD88EC00CC6805 /* BlindedIdMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */; };
 		FD0BA51D27CDC34600CC6805 /* SOGSV4Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */; };
+		FD28A4F227E990E800FF65E7 /* BlockingManagerRemovalMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD28A4F127E990E800FF65E7 /* BlockingManagerRemovalMigration.swift */; };
+		FD28A4F427EA79F800FF65E7 /* BlockListUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD28A4F327EA79F800FF65E7 /* BlockListUIUtils.swift */; };
 		FD3C905C27E3FBEF00CD579F /* BatchRequestInfoSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905B27E3FBEF00CD579F /* BatchRequestInfoSpec.swift */; };
 		FD3C906027E410F700CD579F /* FileUploadResponseSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */; };
 		FD3C906227E411AF00CD579F /* HeaderSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C906127E411AF00CD579F /* HeaderSpec.swift */; };
@@ -1406,8 +1397,6 @@
 		B8EB20E6263F7E4B00773E52 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+OpenGroupInvitation.swift"; sourceTree = "<group>"; };
 		B8EB20EF2640F7F000773E52 /* OpenGroupInvitationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupInvitationView.swift; sourceTree = "<group>"; };
-		B8F5F52725EC4F6A003BF8D4 /* BlockListUIUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlockListUIUtils.h; sourceTree = "<group>"; };
-		B8F5F52825EC4F8A003BF8D4 /* BlockListUIUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlockListUIUtils.m; sourceTree = "<group>"; };
 		B8F5F56425EC8453003BF8D4 /* Notification+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Contacts.swift"; sourceTree = "<group>"; };
 		B8F5F58225EC94A6003BF8D4 /* Collection+Subscripting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Subscripting.swift"; sourceTree = "<group>"; };
 		B8F5F60225EDE16F003BF8D4 /* DataExtractionNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtractionNotification.swift; sourceTree = "<group>"; };
@@ -1455,7 +1444,6 @@
 		C33FD9AD255A548A00E217F9 /* SignalUtilitiesKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalUtilitiesKit.h; sourceTree = "<group>"; };
 		C33FD9AE255A548A00E217F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C33FDA67255A57F900E217F9 /* OWSPrimaryStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSPrimaryStorage.h; sourceTree = "<group>"; };
-		C33FDA68255A57F900E217F9 /* OWSBlockingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBlockingManager.m; sourceTree = "<group>"; };
 		C33FDA69255A57F900E217F9 /* SSKPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKPreferences.swift; sourceTree = "<group>"; };
 		C33FDA6B255A57FA00E217F9 /* OWSDisappearingConfigurationUpdateInfoMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingConfigurationUpdateInfoMessage.m; sourceTree = "<group>"; };
 		C33FDA6C255A57FA00E217F9 /* ProtoUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoUtils.m; sourceTree = "<group>"; };
@@ -1610,7 +1598,6 @@
 		C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotificationAPI.swift; sourceTree = "<group>"; };
 		C33FDBE1255A581A00E217F9 /* LKGroupUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKGroupUtilities.m; sourceTree = "<group>"; };
 		C33FDBE9255A581A00E217F9 /* TSInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInteraction.m; sourceTree = "<group>"; };
-		C33FDBEB255A581B00E217F9 /* OWSBlockingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBlockingManager.h; sourceTree = "<group>"; };
 		C33FDBEC255A581B00E217F9 /* OWSRecipientIdentity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSRecipientIdentity.m; sourceTree = "<group>"; };
 		C33FDBEF255A581B00E217F9 /* TSStorageKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSStorageKeys.h; sourceTree = "<group>"; };
 		C33FDBF1255A581B00E217F9 /* OWSIdentityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSIdentityManager.h; sourceTree = "<group>"; };
@@ -1732,21 +1719,14 @@
 		C38EF308255B6DBE007E1867 /* OWSPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSPreferences.m; path = SessionMessagingKit/Utilities/OWSPreferences.m; sourceTree = SOURCE_ROOT; };
 		C38EF309255B6DBE007E1867 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeviceSleepManager.swift; path = SessionMessagingKit/Utilities/DeviceSleepManager.swift; sourceTree = SOURCE_ROOT; };
 		C38EF30A255B6DBE007E1867 /* UIUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIUtil.h; path = SignalUtilitiesKit/Utilities/UIUtil.h; sourceTree = SOURCE_ROOT; };
-		C38EF30B255B6DBE007E1867 /* BlockListCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlockListCache.swift; path = SignalUtilitiesKit/Messaging/BlockListCache.swift; sourceTree = SOURCE_ROOT; };
 		C38EF33F255B6DC5007E1867 /* SheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SheetViewController.swift; path = "SignalUtilitiesKit/Shared View Controllers/SheetViewController.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF341255B6DC5007E1867 /* SelectThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectThreadViewController.h; path = SignalUtilitiesKit/Sharing/SelectThreadViewController.h; sourceTree = SOURCE_ROOT; };
-		C38EF342255B6DC5007E1867 /* SelectThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectThreadViewController.m; path = SignalUtilitiesKit/Sharing/SelectThreadViewController.m; sourceTree = SOURCE_ROOT; };
 		C38EF343255B6DC5007E1867 /* OWSNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSNavigationController.h; path = "SignalUtilitiesKit/Shared View Controllers/OWSNavigationController.h"; sourceTree = SOURCE_ROOT; };
 		C38EF344255B6DC5007E1867 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSViewController.h; path = "SignalUtilitiesKit/Shared View Controllers/OWSViewController.h"; sourceTree = SOURCE_ROOT; };
-		C38EF345255B6DC6007E1867 /* SelectRecipientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SelectRecipientViewController.m; path = SignalUtilitiesKit/Sharing/SelectRecipientViewController.m; sourceTree = SOURCE_ROOT; };
 		C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ModalActivityIndicatorViewController.swift; path = "SignalUtilitiesKit/Shared View Controllers/ModalActivityIndicatorViewController.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF34B255B6DC8007E1867 /* OWSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSTableViewController.m; path = "SignalUtilitiesKit/Shared View Controllers/OWSTableViewController.m"; sourceTree = SOURCE_ROOT; };
 		C38EF34C255B6DC8007E1867 /* ScreenLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenLockViewController.h; path = "SignalUtilitiesKit/Screen Lock/ScreenLockViewController.h"; sourceTree = SOURCE_ROOT; };
 		C38EF34D255B6DC8007E1867 /* OWSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSTableViewController.h; path = "SignalUtilitiesKit/Shared View Controllers/OWSTableViewController.h"; sourceTree = SOURCE_ROOT; };
-		C38EF34E255B6DC8007E1867 /* SelectRecipientViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelectRecipientViewController.h; path = SignalUtilitiesKit/Sharing/SelectRecipientViewController.h; sourceTree = SOURCE_ROOT; };
 		C38EF351255B6DC9007E1867 /* ScreenLockViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenLockViewController.m; path = "SignalUtilitiesKit/Screen Lock/ScreenLockViewController.m"; sourceTree = SOURCE_ROOT; };
-		C38EF352255B6DC9007E1867 /* SharingThreadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SharingThreadPickerViewController.m; path = SignalUtilitiesKit/Sharing/SharingThreadPickerViewController.m; sourceTree = SOURCE_ROOT; };
-		C38EF353255B6DCB007E1867 /* SharingThreadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SharingThreadPickerViewController.h; path = SignalUtilitiesKit/Sharing/SharingThreadPickerViewController.h; sourceTree = SOURCE_ROOT; };
 		C38EF355255B6DCB007E1867 /* OWSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSViewController.m; path = "SignalUtilitiesKit/Shared View Controllers/OWSViewController.m"; sourceTree = SOURCE_ROOT; };
 		C38EF356255B6DCB007E1867 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSNavigationController.m; path = "SignalUtilitiesKit/Shared View Controllers/OWSNavigationController.m"; sourceTree = SOURCE_ROOT; };
 		C38EF357255B6DCC007E1867 /* MessageApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MessageApprovalViewController.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/MessageApprovalViewController.swift"; sourceTree = SOURCE_ROOT; };
@@ -1943,6 +1923,8 @@
 		FD078E5F27E2BB36000769AF /* MockIdentityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockIdentityManager.swift; sourceTree = "<group>"; };
 		FD0BA51A27CD88EC00CC6805 /* BlindedIdMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindedIdMapping.swift; sourceTree = "<group>"; };
 		FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSV4Migration.swift; sourceTree = "<group>"; };
+		FD28A4F127E990E800FF65E7 /* BlockingManagerRemovalMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingManagerRemovalMigration.swift; sourceTree = "<group>"; };
+		FD28A4F327EA79F800FF65E7 /* BlockListUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListUIUtils.swift; sourceTree = "<group>"; };
 		FD3C905B27E3FBEF00CD579F /* BatchRequestInfoSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRequestInfoSpec.swift; sourceTree = "<group>"; };
 		FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadResponseSpec.swift; sourceTree = "<group>"; };
 		FD3C906127E411AF00CD579F /* HeaderSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderSpec.swift; sourceTree = "<group>"; };
@@ -2735,7 +2717,6 @@
 			isa = PBXGroup;
 			children = (
 				C3D9E3B52567685D0040E4F3 /* Attachments */,
-				C32C5B9E256DC720003C73A2 /* Blocking */,
 				B8F5F61925EDE4B0003BF8D4 /* Data Extraction */,
 				C32C5B01256DC054003C73A2 /* Expiration */,
 				C32C5D22256DD496003C73A2 /* Link Previews */,
@@ -2901,15 +2882,6 @@
 			path = Quotes;
 			sourceTree = "<group>";
 		};
-		C32C5B9E256DC720003C73A2 /* Blocking */ = {
-			isa = PBXGroup;
-			children = (
-				C33FDBEB255A581B00E217F9 /* OWSBlockingManager.h */,
-				C33FDA68255A57F900E217F9 /* OWSBlockingManager.m */,
-			);
-			path = Blocking;
-			sourceTree = "<group>";
-		};
 		C32C5BB9256DC7C4003C73A2 /* To Do */ = {
 			isa = PBXGroup;
 			children = (
@@ -3041,7 +3013,6 @@
 				C36096EE25AD21BC008B62B2 /* Screen Lock */,
 				C3851CD225624B060061EEB0 /* Shared Views */,
 				C360970125AD22D3008B62B2 /* Shared View Controllers */,
-				C36096F025AD227E008B62B2 /* Sharing */,
 				C3851CE3256250FA0061EEB0 /* To Do */,
 				C3CA3B11255CF17200F4C6D4 /* Utilities */,
 			);
@@ -3271,19 +3242,6 @@
 			path = "Profile Pictures";
 			sourceTree = "<group>";
 		};
-		C36096F025AD227E008B62B2 /* Sharing */ = {
-			isa = PBXGroup;
-			children = (
-				C38EF34E255B6DC8007E1867 /* SelectRecipientViewController.h */,
-				C38EF345255B6DC6007E1867 /* SelectRecipientViewController.m */,
-				C38EF341255B6DC5007E1867 /* SelectThreadViewController.h */,
-				C38EF342255B6DC5007E1867 /* SelectThreadViewController.m */,
-				C38EF353255B6DCB007E1867 /* SharingThreadPickerViewController.h */,
-				C38EF352255B6DC9007E1867 /* SharingThreadPickerViewController.m */,
-			);
-			path = Sharing;
-			sourceTree = "<group>";
-		};
 		C360970125AD22D3008B62B2 /* Shared View Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -3315,6 +3273,7 @@
 				B8B32044258C117C0020074B /* ContactsMigration.swift */,
 				FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */,
 				FD3C907227E8387300CD579F /* OpenGroupServerIdLookupMigration.swift */,
+				FD28A4F127E990E800FF65E7 /* BlockingManagerRemovalMigration.swift */,
 				FD0BA51C27CDC34600CC6805 /* SOGSV4Migration.swift */,
 				C38EF271255B6D79007E1867 /* OWSDatabaseMigration.h */,
 				C38EF270255B6D79007E1867 /* OWSDatabaseMigration.m */,
@@ -3405,8 +3364,7 @@
 		C38BBA0D255E321C0041B9A3 /* Messaging */ = {
 			isa = PBXGroup;
 			children = (
-				B8F5F52725EC4F6A003BF8D4 /* BlockListUIUtils.h */,
-				B8F5F52825EC4F8A003BF8D4 /* BlockListUIUtils.m */,
+				FD28A4F327EA79F800FF65E7 /* BlockListUIUtils.swift */,
 				C38EF2FC255B6DBD007E1867 /* ConversationStyle.swift */,
 				C38EF3D4255B6DEE007E1867 /* DisappearingTimerConfigurationView.swift */,
 				C33FDA72255A57FA00E217F9 /* OWSFailedAttachmentDownloadsJob.h */,
@@ -3414,7 +3372,6 @@
 				C33FDADB255A580400E217F9 /* OWSFailedMessagesJob.h */,
 				C33FDAB7255A580100E217F9 /* OWSFailedMessagesJob.m */,
 				C38EF397255B6DD9007E1867 /* ThreadViewModel.swift */,
-				C38EF30B255B6DBE007E1867 /* BlockListCache.swift */,
 				C38EF2E4255B6DB9007E1867 /* FullTextSearcher.swift */,
 				C38EF2E9255B6DBA007E1867 /* OWSUnreadIndicator.h */,
 				C38EF2E3255B6DB9007E1867 /* OWSUnreadIndicator.m */,
@@ -4194,7 +4151,6 @@
 				C33FDDCC255A582000E217F9 /* TSConstants.h in Headers */,
 				C33FDDBD255A582000E217F9 /* ByteParser.h in Headers */,
 				C38EF243255B6D67007E1867 /* UIViewController+OWS.h in Headers */,
-				C38EF36D255B6DCC007E1867 /* SharingThreadPickerViewController.h in Headers */,
 				C38EF35D255B6DCC007E1867 /* OWSNavigationController.h in Headers */,
 				C38EF249255B6D67007E1867 /* UIColor+OWS.h in Headers */,
 				C38EF216255B6D3B007E1867 /* Theme.h in Headers */,
@@ -4207,7 +4163,6 @@
 				C38EF3F5255B6DF7007E1867 /* OWSTextField.h in Headers */,
 				C38EF275255B6D7A007E1867 /* OWSDatabaseMigrationRunner.h in Headers */,
 				C38EF366255B6DCC007E1867 /* ScreenLockViewController.h in Headers */,
-				C38EF35B255B6DCC007E1867 /* SelectThreadViewController.h in Headers */,
 				C33FDDD3255A582000E217F9 /* OWSQueues.h in Headers */,
 				C33FDC96255A582000E217F9 /* NSObject+Casting.h in Headers */,
 				C33FDDB3255A582000E217F9 /* OWSError.h in Headers */,
@@ -4219,7 +4174,6 @@
 				C33FDDB2255A582000E217F9 /* NSArray+OWS.h in Headers */,
 				C38EF2D7255B6DAF007E1867 /* OWSProfileManager.h in Headers */,
 				C38EF290255B6D86007E1867 /* AppSetup.h in Headers */,
-				C37F5385255B94F6002AEA92 /* SelectRecipientViewController.h in Headers */,
 				C38EF367255B6DCC007E1867 /* OWSTableViewController.h in Headers */,
 				C38EF246255B6D67007E1867 /* UIFont+OWS.h in Headers */,
 				C33FD9AF255A548A00E217F9 /* SignalUtilitiesKit.h in Headers */,
@@ -4227,7 +4181,6 @@
 				C33FDD06255A582000E217F9 /* AppVersion.h in Headers */,
 				C33FDD5A255A582000E217F9 /* TSStorageHeaders.h in Headers */,
 				C33FDCA2255A582000E217F9 /* OWSMessageUtils.h in Headers */,
-				B8F5F54E25EC50A5003BF8D4 /* BlockListUIUtils.h in Headers */,
 				C38EF28F255B6D86007E1867 /* VersionMigrations.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4311,7 +4264,6 @@
 				C32C5EA0256DE0D6003C73A2 /* OWSPrimaryStorage.h in Headers */,
 				C3A3A111256E1A93004D228D /* OWSIncomingMessageFinder.h in Headers */,
 				C32C5AAC256DBE8F003C73A2 /* TSInfoMessage.h in Headers */,
-				C32C5BB0256DC73D003C73A2 /* OWSBlockingManager.h in Headers */,
 				C3A3A15F256E1BB4004D228D /* ProtoUtils.h in Headers */,
 				C3A3A145256E1B49004D228D /* OWSMediaGalleryFinder.h in Headers */,
 				B8856E33256F18D5001CE70E /* OWSStorage+Subclass.h in Headers */,
@@ -5143,10 +5095,10 @@
 				C38EF317255B6DBF007E1867 /* DisplayableText.swift in Sources */,
 				C38EF30F255B6DBF007E1867 /* AppPreferences.swift in Sources */,
 				C38EF3C3255B6DE7007E1867 /* ImageEditorTextItem.swift in Sources */,
+				FD28A4F227E990E800FF65E7 /* BlockingManagerRemovalMigration.swift in Sources */,
 				C33FDC7D255A582000E217F9 /* OWSDispatch.m in Sources */,
 				C38EF247255B6D67007E1867 /* NSAttributedString+OWS.m in Sources */,
 				C33FDD49255A582000E217F9 /* ParamParser.swift in Sources */,
-				C38EF35F255B6DCC007E1867 /* SelectRecipientViewController.m in Sources */,
 				C38EF3C5255B6DE7007E1867 /* OWSViewController+ImageEditor.swift in Sources */,
 				C38EF39B255B6DDA007E1867 /* ThreadViewModel.swift in Sources */,
 				C38EF2A5255B6D93007E1867 /* Identicon+ObjC.swift in Sources */,
@@ -5154,11 +5106,11 @@
 				C33FDD12255A582000E217F9 /* OWSPrimaryStorage+Loki.m in Sources */,
 				C3D9E40C25676C100040E4F3 /* Storage+Conformances.swift in Sources */,
 				C38EF31A255B6DBF007E1867 /* OWSAnyTouchGestureRecognizer.m in Sources */,
-				C38EF36C255B6DCC007E1867 /* SharingThreadPickerViewController.m in Sources */,
 				C38EF385255B6DD2007E1867 /* AttachmentTextToolbar.swift in Sources */,
 				C33FDD23255A582000E217F9 /* FeatureFlags.swift in Sources */,
 				C38EF389255B6DD2007E1867 /* AttachmentTextView.swift in Sources */,
 				C38EF3FF255B6DF7007E1867 /* TappableView.swift in Sources */,
+				FD28A4F427EA79F800FF65E7 /* BlockListUIUtils.swift in Sources */,
 				C38EF3C2255B6DE7007E1867 /* ImageEditorPaletteView.swift in Sources */,
 				C38EF245255B6D67007E1867 /* UIFont+OWS.m in Sources */,
 				C38EF36F255B6DCC007E1867 /* OWSViewController.m in Sources */,
@@ -5189,7 +5141,6 @@
 				C38EF409255B6DF7007E1867 /* ContactTableViewCell.m in Sources */,
 				FD3C907327E8387300CD579F /* OpenGroupServerIdLookupMigration.swift in Sources */,
 				C38EF32A255B6DBF007E1867 /* UIUtil.m in Sources */,
-				C38EF335255B6DBF007E1867 /* BlockListCache.swift in Sources */,
 				C38EF2A6255B6D93007E1867 /* PlaceholderIcon.swift in Sources */,
 				C38EF371255B6DCC007E1867 /* MessageApprovalViewController.swift in Sources */,
 				C33FDD92255A582000E217F9 /* SignalIOS.pb.swift in Sources */,
@@ -5226,7 +5177,6 @@
 				C38EF36B255B6DCC007E1867 /* ScreenLockViewController.m in Sources */,
 				C38EF228255B6D5D007E1867 /* AttachmentSharing.m in Sources */,
 				C38EF40C255B6DF7007E1867 /* GradientView.swift in Sources */,
-				C38EF35C255B6DCC007E1867 /* SelectThreadViewController.m in Sources */,
 				C38EF30E255B6DBF007E1867 /* FullTextSearcher.swift in Sources */,
 				C38EF3FA255B6DF7007E1867 /* DirectionalPanGestureRecognizer.swift in Sources */,
 				C38EF3BB255B6DE7007E1867 /* ImageEditorStrokeItem.swift in Sources */,
@@ -5261,7 +5211,6 @@
 				C38EF40B255B6DF7007E1867 /* TappableStackView.swift in Sources */,
 				C38EF31D255B6DBF007E1867 /* UIImage+OWS.swift in Sources */,
 				C38EF359255B6DCC007E1867 /* SheetViewController.swift in Sources */,
-				B8F5F52925EC4F8A003BF8D4 /* BlockListUIUtils.m in Sources */,
 				C38EF386255B6DD2007E1867 /* AttachmentApprovalInputAccessoryView.swift in Sources */,
 				B8C2B2C82563685C00551B4D /* CircleView.swift in Sources */,
 				C38EF331255B6DBF007E1867 /* UIGestureRecognizer+OWS.swift in Sources */,
@@ -5412,7 +5361,6 @@
 				C32C59C1256DB41F003C73A2 /* TSGroupThread.m in Sources */,
 				C3A3A08F256E1728004D228D /* FullTextSearchFinder.swift in Sources */,
 				B8856D1A256F114D001CE70E /* ProximityMonitoringManager.swift in Sources */,
-				C32C5B9F256DC739003C73A2 /* OWSBlockingManager.m in Sources */,
 				C3D9E52725677DF20040E4F3 /* OWSThumbnailService.swift in Sources */,
 				C32C5E75256DE020003C73A2 /* YapDatabaseTransaction+OWS.m in Sources */,
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
@@ -5950,7 +5898,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 332;
+				CURRENT_PROJECT_VERSION = 333;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -6023,7 +5971,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 332;
+				CURRENT_PROJECT_VERSION = 333;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6089,7 +6037,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 332;
+				CURRENT_PROJECT_VERSION = 333;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -6163,7 +6111,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 332;
+				CURRENT_PROJECT_VERSION = 333;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -7099,7 +7047,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 332;
+				CURRENT_PROJECT_VERSION = 333;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7170,7 +7118,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 332;
+				CURRENT_PROJECT_VERSION = 333;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

@@ -1,3 +1,5 @@
+import UIKit
+import SessionMessagingKit
 
 final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -145,8 +147,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
                     .add(roomToken: roomToken, server: server, publicKey: publicKey, isConfigMessage: false, using: transaction as! YapDatabaseReadWriteTransaction)
                     .done(on: DispatchQueue.main) { [weak self] _ in
                         self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                     }
                     .catch(on: DispatchQueue.main) { [weak self] error in
                         self?.dismiss(animated: true, completion: nil) // Dismiss the loader

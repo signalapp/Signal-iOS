@@ -44,7 +44,7 @@ extension ConfigurationMessage {
                     if let threadId: String = thread.uniqueId, let openGroup = storage.getOpenGroup(for: threadId) {
                         openGroups.insert("\(openGroup.server)/\(openGroup.room)?public_key=\(openGroup.publicKey)")
                     }
-                    
+
                 default: break
             }
         }
@@ -66,7 +66,8 @@ extension ConfigurationMessage {
                         contact.didApproveMe ||
                         
                         // Sync blocked contacts
-                        SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID)
+                        contact.isBlocked ||
+                        contact.hasBeenBlocked
                     )
                 else {
                     return nil
@@ -85,7 +86,7 @@ extension ConfigurationMessage {
                     hasIsApproved: true,
                     isApproved: contact.isApproved,
                     hasIsBlocked: true,
-                    isBlocked: SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(contact.sessionID),
+                    isBlocked: contact.isBlocked,
                     hasDidApproveMe: true,
                     didApproveMe: contact.didApproveMe
                 )

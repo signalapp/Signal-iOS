@@ -43,7 +43,7 @@ public class OpenGroupServerIdLookupMigration: OWSDatabaseMigration {
             }
             self.save(with: transaction) // Intentionally capture self
         }, completion: {
-            completion()
+            completion(true, false)
         })
     }
 }

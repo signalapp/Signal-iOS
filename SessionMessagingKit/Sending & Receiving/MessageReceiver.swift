@@ -140,7 +140,9 @@ public enum MessageReceiver {
         }
         
         // Don't process the envelope any further if the sender is blocked
-        guard !isBlocked(sender) else { throw Error.senderBlocked }
+        guard Storage.shared.getContact(with: sender, using: transaction)?.isBlocked != true else {
+            throw Error.senderBlocked
+        }
         
         // Parse the proto
         let proto: SNProtoContent

@@ -1,5 +1,6 @@
+import SessionMessagingKit
 
-final class BlockedModal : Modal {
+final class BlockedModal: Modal {
     private let publicKey: String
     
     // MARK: Lifecycle
@@ -63,7 +64,22 @@ final class BlockedModal : Modal {
     
     // MARK: Interaction
     @objc private func unblock() {
-        OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
+        let publicKey: String = self.publicKey
+        
+        Storage.shared.write(
+            with: { transaction in
+                guard let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
+                    return
+                }
+                
+                contact.isBlocked = false
+                Storage.shared.setContact(contact, using: transaction as Any)
+            },
+            completion: {
+                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+            }
+        )
+        
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

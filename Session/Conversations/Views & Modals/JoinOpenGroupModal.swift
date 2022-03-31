@@ -1,3 +1,5 @@
+import UIKit
+import SessionMessagingKit
 
 final class JoinOpenGroupModal : Modal {
     private let name: String
@@ -74,8 +76,7 @@ final class JoinOpenGroupModal : Modal {
             OpenGroupManager.shared
                 .add(roomToken: room, server: server, publicKey: publicKey, isConfigMessage: false, using: transaction as! YapDatabaseReadWriteTransaction)
                 .done(on: DispatchQueue.main) { _ in
-                    let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                    appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                 }
                 .catch(on: DispatchQueue.main) { error in
                     let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)

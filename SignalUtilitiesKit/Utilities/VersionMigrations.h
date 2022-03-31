@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define RECENT_CALLS_DEFAULT_KEY @"RPRecentCallsDefaultKey"
 
-typedef void (^VersionMigrationCompletion)(void);
+typedef void (^VersionMigrationCompletion)(BOOL success, BOOL requiresConfigurationSync);
 
 @interface VersionMigrations : NSObject
 
