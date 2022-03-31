@@ -10,7 +10,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/AppSetup.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SignalUtilitiesKit/AttachmentSharing.h>
-#import <SignalUtilitiesKit/BlockListUIUtils.h>
 #import <SignalUtilitiesKit/ByteParser.h>
 #import <SignalUtilitiesKit/ContactCellView.h>
 #import <SignalUtilitiesKit/ContactTableViewCell.h>
@@ -43,8 +42,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSUnreadIndicator.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
 #import <SignalUtilitiesKit/ScreenLockViewController.h>
-#import <SignalUtilitiesKit/SelectRecipientViewController.h>
-#import <SignalUtilitiesKit/SharingThreadPickerViewController.h>
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/Theme.h>

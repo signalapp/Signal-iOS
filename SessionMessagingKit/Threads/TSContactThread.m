@@ -83,6 +83,20 @@ NSString *const TSContactThreadPrefix = @"c";
     );
 }
 
+- (BOOL)isBlocked {
+    NSString *sessionID = self.contactSessionID;
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
+    
+    return (contact.isBlocked == YES);
+}
+
+- (BOOL)isBlockedUsingTransaction:(YapDatabaseReadTransaction *)transaction {
+    NSString *sessionID = self.contactSessionID;
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID using:transaction];
+    
+    return (contact.isBlocked == YES);
+}
+
 - (BOOL)isGroupThread
 {
     return NO;

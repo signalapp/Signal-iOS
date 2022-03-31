@@ -1,4 +1,5 @@
 import PromiseKit
+import SessionUtilitiesKit
 
 extension MessageSender {
 
@@ -103,5 +104,40 @@ extension MessageSender {
             }
         }
         return promise
+    }
+    
+    public static func syncConfiguration(forceSyncNow: Bool = true) -> Promise<Void> {
+        let (promise, seal) = Promise<Void>.pending()
+        let destination: Message.Destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
+        
+        // Note: SQLite only supports a single write thread so we can be sure this will retrieve the most up-to-date data
+        Storage.writeSync { transaction in
+            guard Storage.shared.getUser(using: transaction)?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
+                seal.fulfill(())
+                return
+            }
+            
+            if forceSyncNow {
+                MessageSender.send(configurationMessage, to: destination, using: transaction).done {
+                    seal.fulfill(())
+                }.catch { _ in
+                    seal.fulfill(()) // Fulfill even if this failed; the configuration in the swarm should be at most 2 days old
+                }.retainUntilComplete()
+            }
+            else {
+                let job = MessageSendJob(message: configurationMessage, destination: destination)
+                JobQueue.shared.add(job, using: transaction)
+                seal.fulfill(())
+            }
+        }
+        
+        return promise
+    }
+}
+
+extension MessageSender {
+    @objc(forceSyncConfigurationNow)
+    public static func objc_forceSyncConfigurationNow() {
+        return syncConfiguration(forceSyncNow: true).retainUntilComplete()
     }
 }

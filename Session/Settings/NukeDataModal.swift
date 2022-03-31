@@ -123,9 +123,8 @@ final class NukeDataModal : Modal {
     }
     
     @objc private func clearDeviceOnly() {
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] _ in
-            appDelegate.forceSyncConfigurationNowIfNeeded().ensure(on: DispatchQueue.main) {
+            MessageSender.syncConfiguration(forceSyncNow: true).ensure(on: DispatchQueue.main) {
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                 UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later
                 General.Cache.cachedEncodedPublicKey.mutate { $0 = nil } // Remove the cached key so it gets re-cached on next access

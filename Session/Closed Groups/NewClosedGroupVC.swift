@@ -174,8 +174,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
                 promise = MessageSender.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
             }
             let _ = promise.done(on: DispatchQueue.main) { thread in
-                let appDelegate = UIApplication.shared.delegate as! AppDelegate
-                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside createClosedGroup(...)
+                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)
                 SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
             }

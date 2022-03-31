@@ -14,7 +14,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 @property (nonatomic) id<ProfileManagerProtocol> profileManager;
 @property (nonatomic) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic) OWSBlockingManager *blockingManager;
 @property (nonatomic) OWSIdentityManager *identityManager;
 @property (nonatomic) TSAccountManager *tsAccountManager;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
@@ -37,7 +36,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 - (instancetype)initWithProfileManager:(id<ProfileManagerProtocol>)profileManager
                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                       blockingManager:(OWSBlockingManager *)blockingManager
                        identityManager:(OWSIdentityManager *)identityManager
                       tsAccountManager:(TSAccountManager *)tsAccountManager
                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
@@ -54,7 +52,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 
     _profileManager = profileManager;
     _primaryStorage = primaryStorage;
-    _blockingManager = blockingManager;
     _identityManager = identityManager;
     _tsAccountManager = tsAccountManager;
     _disappearingMessagesJob = disappearingMessagesJob;

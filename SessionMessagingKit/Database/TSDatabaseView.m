@@ -9,7 +9,6 @@
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
-#import "OWSBlockingManager.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
@@ -264,7 +263,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
         if ([thread isMessageRequestUsingTransaction:transaction]) {
             // Don't show blocked threads at all
-            if ([[OWSBlockingManager sharedManager] isThreadBlocked: thread]) {
+            if (thread.isBlocked) {
                 return nil;
             }
             

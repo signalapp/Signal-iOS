@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^OWSDatabaseMigrationCompletion)(void);
+typedef void (^OWSDatabaseMigrationCompletion)(BOOL success, BOOL requiresConfigurationSync);
 
 @class OWSPrimaryStorage;
 

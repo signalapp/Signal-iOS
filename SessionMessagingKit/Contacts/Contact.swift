@@ -1,3 +1,4 @@
+import Foundation
 
 @objc(SNContact)
 public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
@@ -15,9 +16,17 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     /// This flag is used to determine whether message requests from this contact are approved
     @objc public var isApproved = false
     /// This flag is used to determine whether message requests from this contact are blocked
-    @objc public var isBlocked = false
+    @objc public var isBlocked = false {
+        didSet {
+            if isBlocked {
+                hasBeenBlocked = true
+            }
+        }
+    }
     /// This flag is used to determine whether this contact has approved the current users message request
     @objc public var didApproveMe = false
+    /// This flag is used to determine whether this contact has ever been blocked (will be included in the config message if so)
+    @objc public var hasBeenBlocked = false
     
     // MARK: Name
     /// The name of the contact. Use this whenever you need the "real", underlying name of a user (e.g. when sending a message).
@@ -72,9 +81,11 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         if let profileEncryptionKey = coder.decodeObject(forKey: "profilePictureEncryptionKey") as! OWSAES256Key? { self.profileEncryptionKey = profileEncryptionKey }
         if let threadID = coder.decodeObject(forKey: "threadID") as! String? { self.threadID = threadID }
         
+        let isBlockedFlag: Bool = coder.decodeBool(forKey: "isBlocked")
         isApproved = coder.decodeBool(forKey: "isApproved")
-        isBlocked = coder.decodeBool(forKey: "isBlocked")
+        isBlocked = isBlockedFlag
         didApproveMe = coder.decodeBool(forKey: "didApproveMe")
+        hasBeenBlocked = (coder.decodeBool(forKey: "hasBeenBlocked") || isBlockedFlag)
     }
 
     public func encode(with coder: NSCoder) {
@@ -89,6 +100,7 @@ public class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is 
         coder.encode(isApproved, forKey: "isApproved")
         coder.encode(isBlocked, forKey: "isBlocked")
         coder.encode(didApproveMe, forKey: "didApproveMe")
+        coder.encode(hasBeenBlocked, forKey: "hasBeenBlocked")
     }
     
     // MARK: Equality
