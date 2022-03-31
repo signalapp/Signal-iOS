@@ -286,16 +286,12 @@ final class ConversationCell : UITableViewCell {
         AssertIsOnMainThread()
         guard let thread = threadViewModel?.threadRecord else { return }
         backgroundColor = threadViewModel.isPinned ? Colors.cellPinned : Colors.cellBackground
-        let isBlocked: Bool
-        if let thread = thread as? TSContactThread {
-            isBlocked = SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(thread.contactSessionID())
-        } else {
-            isBlocked = false
-        }
-        if isBlocked {
+        
+        if thread.isBlocked() {
             accentLineView.backgroundColor = Colors.destructive
             accentLineView.alpha = 1
-        } else {
+        }
+        else {
             accentLineView.backgroundColor = Colors.accent
             accentLineView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
         }

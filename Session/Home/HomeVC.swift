@@ -522,22 +522,52 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                 }
                 unpin.backgroundColor = Colors.pathsBuilding
                 
-                if let thread = thread as? TSContactThread {
+                if let thread = thread as? TSContactThread, !thread.isNoteToSelf() {
                     let publicKey = thread.contactSessionID()
-                    let blockingManager = SSKEnvironment.shared.blockingManager
-                    let isBlocked = blockingManager.isRecipientIdBlocked(publicKey)
+
                     let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in
-                        blockingManager.addBlockedPhoneNumber(publicKey)
-                        tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                        Storage.shared.write(
+                            with: { transaction in
+                                guard  let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
+                                    return
+                                }
+                                
+                                contact.isBlocked = true
+                                Storage.shared.setContact(contact, using: transaction as Any)
+                            },
+                            completion: {
+                                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                                
+                                DispatchQueue.main.async {
+                                    tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                                }
+                            }
+                        )
                     }
                     block.backgroundColor = Colors.unimportant
                     let unblock = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "")) { _, _ in
-                        blockingManager.removeBlockedPhoneNumber(publicKey)
-                        tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                        Storage.shared.write(
+                            with: { transaction in
+                                guard  let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
+                                    return
+                                }
+                                
+                                contact.isBlocked = false
+                                Storage.shared.setContact(contact, using: transaction as Any)
+                            },
+                            completion: {
+                                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                                
+                                DispatchQueue.main.async {
+                                    tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                                }
+                            }
+                        )
                     }
                     unblock.backgroundColor = Colors.unimportant
-                    return [ delete, (isBlocked ? unblock : block), (isPinned ? unpin : pin) ]
-                } else {
+                    return [ delete, (thread.isBlocked() ? unblock : block), (isPinned ? unpin : pin) ]
+                }
+                else {
                     return [ delete, (isPinned ? unpin : pin) ]
                 }
         }

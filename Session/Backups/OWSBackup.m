@@ -58,7 +58,6 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
 NSArray<NSString *> *MiscCollectionsToBackup(void)
 {
     return @[
-             kOWSBlockingManager_BlockListCollection,
              OWSUserProfile.collection,
              SSKIncrementingIdFinder.collectionName,
              OWSPreferencesSignalDatabaseCollection,

@@ -4,7 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSBlockingManager;
 @class OWSLinkPreviewDraft;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
@@ -60,7 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
 //   size of the "load window" in that view. The unread indicator should
 //   always be inserted within that window.
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
-                                                  blockingManager:(OWSBlockingManager *)blockingManager
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
