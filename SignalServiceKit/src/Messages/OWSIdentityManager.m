@@ -19,6 +19,7 @@
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
+#import "TSPreKeyManager.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SCKExceptionWrapper.h>
@@ -82,6 +83,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSSingletonAssert();
 
     [self observeNotifications];
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self checkForPniIdentity]; });
 
     return self;
 }
@@ -89,6 +91,24 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)checkForPniIdentity
+{
+    if (!self.tsAccountManager.isRegistered) {
+        return;
+    }
+    if ([self identityKeyPairForIdentity:OWSIdentityPNI] != nil) {
+        return;
+    }
+
+    if (self.tsAccountManager.isPrimaryDevice) {
+        [TSPreKeyManager createPreKeysForIdentity:OWSIdentityPNI
+            success:^{}
+            failure:^(NSError *error) { OWSFailDebug(@"Failed to create PNI identity and pre-keys: %@", error); }];
+    } else {
+        [self.syncManager sendPniIdentitySyncRequestMessage];
+    }
 }
 
 - (void)writeWithUnfairLock:(void(^ _Nonnull)(SDSAnyWriteTransaction *transaction))block
@@ -123,10 +143,12 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     return newKeyPair;
 }
 
-- (void)storeIdentityKeyPair:(ECKeyPair *)keyPair
+- (void)storeIdentityKeyPair:(nullable ECKeyPair *)keyPair
                  forIdentity:(OWSIdentity)identity
                  transaction:(SDSAnyWriteTransaction *)transaction
 {
+    // Under no circumstances may we *clear* our *ACI* identity key.
+    OWSAssert(keyPair != nil || identity != OWSIdentityACI);
     [self.ownIdentityKeyValueStore setObject:keyPair key:keyForIdentity(identity) transaction:transaction];
 }
 

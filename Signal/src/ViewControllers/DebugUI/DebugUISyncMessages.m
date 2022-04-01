@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Send Verification Sync Message"
                         actionBlock:^{ [DebugUISyncMessages sendVerificationSyncMessage]; }],
         [OWSTableItem itemWithTitle:@"Send PNI Identity Request"
-                        actionBlock:^{ [DebugUISyncMessages sendPniIdentityRequest]; }],
+                        actionBlock:^{ [self.syncManager sendPniIdentitySyncRequestMessage]; }],
     ] mutableCopy];
 
     if (thread != nil) {
@@ -117,13 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendVerificationSyncMessage
 {
     [OWSIdentityManager.shared tryToSyncQueuedVerificationStates];
-}
-
-+ (void)sendPniIdentityRequest
-{
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [(OWSSyncManager *)self.syncManager sendPniIdentitySyncRequestMessageWithTransaction:transaction];
-    })
 }
 
 + (void)syncConversationSettingsWithThread:(TSThread *)thread

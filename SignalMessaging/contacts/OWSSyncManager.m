@@ -40,6 +40,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 @end
 
+@interface OWSSyncManager (SwiftPrivate)
+- (void)sendSyncRequestMessage:(SSKProtoSyncMessageRequestType)requestType
+                   transaction:(SDSAnyWriteTransaction *)transaction;
+@end
+
 #pragma mark -
 
 @implementation OWSSyncManager
@@ -509,6 +514,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType];
 
         [self.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
+    });
+}
+
+- (void)sendPniIdentitySyncRequestMessage
+{
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self sendSyncRequestMessage:SSKProtoSyncMessageRequestTypePniIdentity transaction:transaction];
     });
 }
 

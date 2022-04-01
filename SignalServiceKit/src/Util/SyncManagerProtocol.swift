@@ -28,6 +28,7 @@ public protocol SyncManagerProtocolObjc {
     func sendFetchLatestProfileSyncMessage()
     func sendFetchLatestStorageManifestSyncMessage()
     func sendFetchLatestSubscriptionStatusSyncMessage()
+    func sendPniIdentitySyncRequestMessage()
 }
 
 // MARK: -

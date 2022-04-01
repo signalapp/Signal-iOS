@@ -188,6 +188,9 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Remove All Sessions"
                                      actionBlock:^() { [DebugUIMisc removeAllSessions]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Remove local PNI identity key"
+                                     actionBlock:^() { [DebugUIMisc removeLocalPniIdentityKey]; }]];
+
     [items addObject:[OWSTableItem itemWithTitle:@"Discard All Profile Keys"
                                      actionBlock:^() { [DebugUIMisc discardAllProfileKeys]; }]];
 
@@ -237,6 +240,13 @@ NS_ASSUME_NONNULL_BEGIN
         // FIXME: This isn't removing sessions!
         [signalProtocolStore.signedPreKeyStore removeAll:transaction];
         [signalProtocolStore.preKeyStore removeAll:transaction];
+    });
+}
+
++ (void)removeLocalPniIdentityKey
+{
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self.identityManager storeIdentityKeyPair:nil forIdentity:OWSIdentityPNI transaction:transaction];
     });
 }
 
