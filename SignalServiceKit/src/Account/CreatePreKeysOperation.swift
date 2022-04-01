@@ -28,8 +28,8 @@ public class CreatePreKeysOperation: OWSOperation {
             signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
                                                                     signedPreKeyRecord: signedPreKeyRecord,
                                                                     transaction: transaction)
+            signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords, transaction: transaction)
         }
-        signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords)
 
         firstly(on: .global()) { () -> Promise<Void> in
             guard self.tsAccountManager.isRegisteredAndReady else {

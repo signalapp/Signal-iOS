@@ -23,6 +23,12 @@
 
 @implementation SSKPreKeyStore (Tests)
 
+- (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
+{
+    DatabaseStorageWrite(self.databaseStorage,
+        ^(SDSAnyWriteTransaction *transaction) { [self storePreKeyRecords:preKeyRecords transaction:transaction]; })
+}
+
 - (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
 {
     __block PreKeyRecord *_Nullable result;

@@ -20,7 +20,8 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) SDSKeyValueStore *keyStore;
 
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
-- (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords NS_SWIFT_NAME(storePreKeyRecords(_:));
+- (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
+               transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(storePreKeyRecords(_:transaction:));
 
 #if TESTABLE_BUILD
 - (void)removeAll:(SDSAnyWriteTransaction *)transaction;

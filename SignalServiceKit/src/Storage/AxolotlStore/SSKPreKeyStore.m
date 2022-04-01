@@ -102,15 +102,11 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
     return preKeyRecords;
 }
 
-- (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
+- (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords transaction:(SDSAnyWriteTransaction *)transaction
 {
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        for (PreKeyRecord *record in preKeyRecords) {
-            [self.keyStore setPreKeyRecord:record
-                                    forKey:[SDSKeyValueStore keyWithInt:record.Id]
-                               transaction:transaction];
-        }
-    });
+    for (PreKeyRecord *record in preKeyRecords) {
+        [self.keyStore setPreKeyRecord:record forKey:[SDSKeyValueStore keyWithInt:record.Id] transaction:transaction];
+    }
 }
 
 - (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
