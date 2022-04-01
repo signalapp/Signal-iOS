@@ -117,7 +117,7 @@ CREATE
             ,"serverGuid" TEXT
             ,"storyAuthorUuidString" TEXT
             ,"storyTimestamp" INTEGER
-            ,"isGroupStoryReply" BOOLEAN
+            ,"isGroupStoryReply" BOOLEAN DEFAULT 0
             ,"storyReactionEmoji" TEXT
         )
 ;

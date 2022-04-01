@@ -124,9 +124,12 @@ public class GRDBSchemaMigrator: NSObject {
         case createSubscriptionDurableJob
         case addReceiptPresentationToSubscriptionDurableJob
         case createStoryMessageTable
-        case addColumnsForStoryContext
+        case addColumnsForStoryContextRedux
         case addIsStoriesCapableToUserProfiles
         case addStoryContextIndexToInteractions
+        case updateConversationLoadInteractionCountIndex
+        case updateConversationLoadInteractionDistanceIndex
+        case updateConversationUnreadCountIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -203,8 +206,12 @@ public class GRDBSchemaMigrator: NSObject {
 
         func registerMigration(_ identifier: String, migrate: @escaping (Database) throws -> Void) {
             migrator.registerMigration(identifier) {  (database: Database) throws in
+                let startTime = CACurrentMediaTime()
                 Logger.info("Running migration: \(identifier)")
                 try migrate(database)
+                let timeElapsed = CACurrentMediaTime() - startTime
+                let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+                Logger.info("Migration completed: \(identifier), duration: \(formattedTime)")
             }
         }
     }
@@ -1568,33 +1575,18 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addColumnsForStoryContext.rawValue) { db in
+        migrator.registerMigration(MigrationId.addColumnsForStoryContextRedux.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
+
             do {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "storyAuthorUuidString", .text)
                     table.add(column: "storyTimestamp", .integer)
-                    table.add(column: "isGroupStoryReply", .boolean)
+                    table.add(column: "isGroupStoryReply", .boolean).defaults(to: false)
                     table.add(column: "storyReactionEmoji", .text)
                 }
-
-                try db.execute(sql: "UPDATE model_TSInteraction SET isGroupStoryReply = 0")
-
-                try db.execute(sql: """
-                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
-                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
-                    DROP INDEX index_interactions_unread_counts;
-
-                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
-                    ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
-                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-
-                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
-                    ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
-                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-
-                    CREATE INDEX index_model_TSInteraction_UnreadCount
-                    ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
-                """)
             } catch {
                 owsFail("Error: \(error)")
             }
@@ -1612,16 +1604,77 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addStoryContextIndexToInteractions.rawValue) { db in
-            do {
-                try db.create(
-                    index: "index_model_TSInteraction_on_StoryContext",
-                    on: "model_TSInteraction",
-                    columns: ["storyTimestamp", "storyAuthorUuidString", "isGroupStoryReply"]
-                )
-            } catch {
-                owsFail("Error: \(error)")
+        // These index migrations are *expensive* for users with large interaction tables. For external
+        // users who don't yet have access to stories and don't have need for the indices, we will perform
+        // one migration per release to keep the blocking time low (ideally one 5-7s migration per release).
+        if FeatureFlags.storiesMigration1 {
+
+            migrator.registerMigration(MigrationId.updateConversationLoadInteractionCountIndex.rawValue) { db in
+                let transaction = GRDBWriteTransaction(database: db)
+                defer { transaction.finalizeTransaction() }
+                guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
+
+                try db.execute(sql: """
+                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
+
+                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+                    ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
+                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+                """)
             }
+
+        }
+
+        if FeatureFlags.storiesMigration2 {
+
+            migrator.registerMigration(MigrationId.updateConversationLoadInteractionDistanceIndex.rawValue) { db in
+                let transaction = GRDBWriteTransaction(database: db)
+                defer { transaction.finalizeTransaction() }
+                guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
+
+                try db.execute(sql: """
+                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
+
+                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+                    ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
+                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+                """)
+            }
+
+        }
+
+        if FeatureFlags.storiesMigration3 {
+
+            migrator.registerMigration(MigrationId.updateConversationUnreadCountIndex.rawValue) { db in
+                let transaction = GRDBWriteTransaction(database: db)
+                defer { transaction.finalizeTransaction() }
+                guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
+
+                try db.execute(sql: """
+                    DROP INDEX IF EXISTS index_interactions_unread_counts;
+                    DROP INDEX IF EXISTS index_model_TSInteraction_UnreadCount;
+
+                    CREATE INDEX index_model_TSInteraction_UnreadCount
+                    ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
+                """)
+            }
+
+        }
+
+        if FeatureFlags.storiesMigration4 {
+
+            migrator.registerMigration(MigrationId.addStoryContextIndexToInteractions.rawValue) { db in
+                do {
+                    try db.create(
+                        index: "index_model_TSInteraction_on_StoryContext",
+                        on: "model_TSInteraction",
+                        columns: ["storyTimestamp", "storyAuthorUuidString", "isGroupStoryReply"]
+                    )
+                } catch {
+                    owsFail("Error: \(error)")
+                }
+            }
+
         }
 
         // MARK: - Schema Migration Insertion Point

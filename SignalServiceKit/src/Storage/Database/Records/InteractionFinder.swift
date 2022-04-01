@@ -1195,6 +1195,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     private let filterPlaceholdersClause = "AND \(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
 
     fileprivate static func filterStoryRepliesClause(for queryMode: StoryReplyQueryMode, interactionsAlias: String? = nil) -> String {
+        // Until stories are supported, and all the requisite indices have been built,
+        // keep using the old story-free query which works with both the old and new indices.
+        guard FeatureFlags.stories else { return "" }
+
         let columnPrefix: String
         if let interactionsAlias = interactionsAlias {
             columnPrefix = interactionsAlias + "."
