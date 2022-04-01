@@ -189,7 +189,27 @@ public class OWSHttpHeaders: NSObject {
 
     // MARK: - NSObject Overrides
 
-    override public var description: String { "<\(super.description): \(headers)>" }
+    static let whitelistedLoggedHeaderKeys = Set([
+        "retry-after",
+        "x-signal-timestamp"
+        // Have a header key who's value you'd like to see logged? Add it here (lowercased)!
+    ])
+
+    override public var description: String {
+        let loggedPairsString: String = headers.lazy
+            .filter { Self.whitelistedLoggedHeaderKeys.contains($0.key.lowercased()) == true }
+            .map { "\($0.key): \($0.value.description)" }
+            .joined(separator: "; ")
+
+        let leftoverKeysString: String = headers.keys.lazy
+            .filter { Self.whitelistedLoggedHeaderKeys.contains($0.lowercased()) == false }
+            .joined(separator: ", ")
+
+        return "<\(super.description)"
+            .appending(loggedPairsString.count > 0 ? " (\(loggedPairsString))" : "")
+            .appending(leftoverKeysString.count > 0 ? " (\(leftoverKeysString))" : "")
+            .appending(">")
+    }
 }
 
 // MARK: - HTTP Headers
