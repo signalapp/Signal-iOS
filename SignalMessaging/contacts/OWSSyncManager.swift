@@ -111,11 +111,6 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         }
     }
 
-    @objc(sendPniIdentitySyncRequestMessageWithTransaction:)
-    public func sendPniIdentitySyncRequestMessage(transaction: SDSAnyWriteTransaction) {
-        sendSyncRequestMessage(.pniIdentity, transaction: transaction)
-    }
-
     @objc
     public func processIncomingMessageRequestResponseSyncMessage(
         _ syncMessage: SSKProtoSyncMessageMessageRequestResponse,
@@ -229,6 +224,7 @@ public extension OWSSyncManager {
         }
     }
 
+    @objc
     fileprivate func sendSyncRequestMessage(_ requestType: SSKProtoSyncMessageRequestType,
                                             transaction: SDSAnyWriteTransaction) {
         Logger.info("")

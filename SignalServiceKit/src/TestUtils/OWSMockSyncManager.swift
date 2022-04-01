@@ -44,6 +44,10 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
         Logger.info("")
     }
 
+    public func sendPniIdentitySyncRequestMessage() {
+        Logger.info("")
+    }
+
     public func sendKeysSyncMessage() {
         Logger.info("")
     }

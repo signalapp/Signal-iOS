@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
 
 @interface TSPreKeyManager : NSObject
 
@@ -28,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
 
 + (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
+
++ (void)createPreKeysForIdentity:(OWSIdentity)identity
+                         success:(void (^)(void))successHandler
+                         failure:(void (^)(NSError *error))failureHandler;
 
 + (void)checkPreKeysIfNecessary;
 

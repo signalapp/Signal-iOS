@@ -80,10 +80,19 @@ extension OWSIdentityManager {
                 throw OWSAssertionError("missing key data in PniIdentity message")
             }
             let publicKey = try PublicKey(publicKeyData)
+
+            let previousKeyPair = identityKeyPair(for: .pni, transaction: transaction)
+            guard previousKeyPair?.identityKeyPair.publicKey != publicKey else {
+                // The identity key didn't change; we don't need to do anything.
+                return
+            }
+
             let privateKey = try PrivateKey(privateKeyData)
             let keyPair = ECKeyPair(IdentityKeyPair(publicKey: publicKey, privateKey: privateKey))
             storeIdentityKeyPair(keyPair, for: .pni, transaction: transaction)
-            // PNI TODO: Immediately rotate PNI pre-keys (signed and one-time)
+            TSPreKeyManager.createPreKeys(for: .pni, success: {}, failure: { error in
+                owsFailDebug("Failed to create PNI pre-keys after receiving PniIdentity sync message: \(error)")
+            })
         } catch {
             owsFailDebug("Invalid PNI identity data: \(error)")
         }

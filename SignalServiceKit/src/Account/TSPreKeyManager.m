@@ -220,6 +220,25 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     });
 }
 
++ (void)createPreKeysForIdentity:(OWSIdentity)identity
+                         success:(void (^)(void))successHandler
+                         failure:(void (^)(NSError *error))failureHandler
+{
+    OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        SSKCreatePreKeysOperation *op = [[SSKCreatePreKeysOperation alloc] initForIdentity:identity];
+        [self.operationQueue addOperations:@[ op ] waitUntilFinished:YES];
+
+        NSError *_Nullable error = op.failingError;
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{ failureHandler(error); });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), successHandler);
+        }
+    });
+}
+
 + (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
