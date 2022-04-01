@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -351,16 +351,6 @@ public class NotificationStrings: NSObject {
     @objc
     static public var incomingVideoCallBody: String {
         OWSLocalizedString("CALL_VIDEO_INCOMING_NOTIFICATION_BODY", comment: "notification body")
-    }
-
-    @objc
-    static public var missedAudioCallBody: String {
-        OWSLocalizedString("CALL_AUDIO_MISSED_NOTIFICATION_BODY", comment: "notification body")
-    }
-
-    @objc
-    static public var missedVideoCallBody: String {
-        OWSLocalizedString("CALL_VIDEO_MISSED_NOTIFICATION_BODY", comment: "notification body")
     }
 
     @objc

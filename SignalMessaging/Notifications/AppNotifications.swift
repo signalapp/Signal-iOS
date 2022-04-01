@@ -284,6 +284,34 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
+    /// Classifies a timestamp based on how it should be included in a notification.
+    ///
+    /// In particular, a notification already comes with its own timestamp, so any information we put in has to be
+    /// relevant (different enough from the notification's own timestamp to be useful) and absolute (because if a
+    /// thirty-minute-old notification says "five minutes ago", that's not great).
+    private enum TimestampClassification {
+        case lastFewMinutes
+        case last24Hours
+        case lastWeek
+        case other
+
+        init(_ timestamp: Date) {
+            switch -timestamp.timeIntervalSinceNow {
+            case ..<0:
+                owsFailDebug("Formatting a notification for an event in the future")
+                self = .other
+            case ...(5 * kMinuteInterval):
+                self = .lastFewMinutes
+            case ...kDayInterval:
+                self = .last24Hours
+            case ...kWeekInterval:
+                self = .lastWeek
+            default:
+                self = .other
+            }
+        }
+    }
+
     public func presentMissedCall(_ call: IndividualCallNotificationInfo, callerName: String) {
 
         let remoteAddress = call.remoteAddress
@@ -300,11 +328,59 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
 
-        let notificationBody: String
-        switch call.offerMediaType {
-        case .audio: notificationBody = NotificationStrings.missedAudioCallBody
-        case .video: notificationBody = NotificationStrings.missedVideoCallBody
+        let timestamp = Date(millisecondsSince1970: call.sentAtTimestamp)
+        let timestampClassification = TimestampClassification(timestamp)
+        let timestampArgument: String
+        switch timestampClassification {
+        case .lastFewMinutes:
+            // will be ignored
+            timestampArgument = ""
+        case .last24Hours:
+            timestampArgument = DateUtil.formatDateAsTime(timestamp)
+        case .lastWeek:
+            timestampArgument = DateUtil.weekdayFormatter().string(from: timestamp)
+        case .other:
+            timestampArgument = DateUtil.monthAndDayFormatter().string(from: timestamp)
         }
+
+        // We could build these localized string keys by interpolating the two pieces,
+        // but then genstrings wouldn't pick them up.
+        let notificationBodyFormat: String
+        switch (call.offerMediaType, timestampClassification) {
+        case (.audio, .lastFewMinutes):
+            notificationBodyFormat = OWSLocalizedString(
+                "CALL_AUDIO_MISSED_NOTIFICATION_BODY",
+                comment: "notification body for a call that was just missed")
+        case (.audio, .last24Hours):
+            notificationBodyFormat = OWSLocalizedString(
+                "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT",
+                comment: "notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'.")
+        case (.audio, .lastWeek):
+            notificationBodyFormat = OWSLocalizedString(
+                "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT",
+                comment: "notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'.")
+        case (.audio, .other):
+            notificationBodyFormat = OWSLocalizedString(
+                "CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT",
+                comment: "notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'.")
+        case (.video, .lastFewMinutes):
+            notificationBodyFormat = OWSLocalizedString(
+                "CALL_VIDEO_MISSED_NOTIFICATION_BODY",
+                comment: "notification body for a call that was just missed")
+        case (.video, .last24Hours):
+            notificationBodyFormat = OWSLocalizedString(
+                "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT",
+                comment: "notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'.")
+        case (.video, .lastWeek):
+            notificationBodyFormat = OWSLocalizedString(
+                "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT",
+                comment: "notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'.")
+        case (.video, .other):
+            notificationBodyFormat = OWSLocalizedString(
+                "CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT",
+                comment: "notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'.")
+        }
+        let notificationBody = String(format: notificationBodyFormat, timestampArgument)
 
         let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: remoteAddress)
 
@@ -1024,4 +1100,5 @@ public protocol IndividualCallNotificationInfo {
     var remoteAddress: SignalServiceAddress { get }
     var localId: UUID { get }
     var offerMediaType: TSRecentCallOfferType { get }
+    var sentAtTimestamp: UInt64 { get }
 }

@@ -619,10 +619,11 @@ extension CVComponentSystemMessage {
 
         let shouldShowTimestamp = interaction.interactionType == .call
         if shouldShowTimestamp {
+            // FIXME: This is not the correct way to localize a date and time; they should be formatted together.
             labelText.append(LocalizationNotNeeded(" · "))
-            labelText.append(DateUtil.formatTimestamp(asDate: interaction.timestamp))
+            labelText.append(DateUtil.formatTimestampAsDate(interaction.timestamp))
             labelText.append(LocalizationNotNeeded(" "))
-            labelText.append(DateUtil.formatTimestamp(asTime: interaction.timestamp))
+            labelText.append(DateUtil.formatTimestampAsTime(interaction.timestamp))
         }
 
         return labelText

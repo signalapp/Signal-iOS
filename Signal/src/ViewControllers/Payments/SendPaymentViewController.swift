@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -726,7 +726,7 @@ public class SendPaymentViewController: OWSViewController {
         guard !isZero else {
             return formattedAmount
         }
-        let formattedFreshness = DateUtil.formatDate(asTime: currencyConversion.conversionDate)
+        let formattedFreshness = DateUtil.formatDateAsTime(currencyConversion.conversionDate)
         let conversionFormat = NSLocalizedString("PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT",
                                                  comment: "Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}.")
         return String(format: conversionFormat, formattedAmount, formattedFreshness)
