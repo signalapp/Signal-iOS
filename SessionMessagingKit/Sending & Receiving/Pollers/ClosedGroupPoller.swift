@@ -100,26 +100,29 @@ public final class ClosedGroupPoller : NSObject {
 
     private func poll(_ groupPublicKey: String) -> Promise<Void> {
         guard isPolling(for: groupPublicKey) else { return Promise.value(()) }
-        let promise = SnodeAPI.getSwarm(for: groupPublicKey).then2 { [weak self] swarm -> Promise<(SessionSnodeKit.Legacy.Snode, [JSON], JSON?)> in
+        let promise = SnodeAPI.getSwarm(for: groupPublicKey).then2 { [weak self] swarm -> Promise<(Snode, [SnodeReceivedMessage])> in
             // randomElement() uses the system's default random generator, which is cryptographically secure
             guard let snode = swarm.randomElement() else { return Promise(error: Error.insufficientSnodes) }
-            guard let self = self, self.isPolling(for: groupPublicKey) else { return Promise(error: Error.pollingCanceled) }
+            guard let self = self, self.isPolling(for: groupPublicKey) else {
+                return Promise(error: Error.pollingCanceled)
+            }
+            
             return SnodeAPI.getRawMessages(from: snode, associatedWith: groupPublicKey).map2 {
-                let (rawMessages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse($0, from: snode, associatedWith: groupPublicKey)
+                let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse($0, from: snode, associatedWith: groupPublicKey)
                 
-                return (snode, rawMessages, lastRawMessage)
+                return (snode, messages)
             }
         }
-        promise.done2 { [weak self] snode, rawMessages, lastRawMessage in
+        promise.done2 { [weak self] snode, messages in
             guard let self = self, self.isPolling(for: groupPublicKey) else { return }
-            if !rawMessages.isEmpty {
-                SNLog("Received \(rawMessages.count) new message(s) in closed group with public key: \(groupPublicKey).")
+            if !messages.isEmpty {
+                SNLog("Received \(messages.count) new message(s) in closed group with public key: \(groupPublicKey).")
             }
-            rawMessages.forEach { json in
-                guard let envelope = SNProtoEnvelope.from(json) else { return }
+            messages.forEach { message in
+                guard let envelope = SNProtoEnvelope.from(message) else { return }
                 do {
                     let data = try envelope.serializedData()
-                    let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: false)
+                    let job = MessageReceiveJob(data: data, serverHash: message.info.hash, isBackgroundPoll: false)
                     SNMessagingKitConfiguration.shared.storage.write { transaction in
                         SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }
@@ -128,8 +131,12 @@ public final class ClosedGroupPoller : NSObject {
                 }
             }
             
-            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
-            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: groupPublicKey, from: lastRawMessage)
+            // Now that the MessageReceiveJob's have been created we can persist the received messages
+            if !messages.isEmpty {
+                GRDBStorage.shared.write { db in
+                    messages.forEach { try? $0.info.save(db) }
+                }
+            }
         }
         promise.catch2 { error in
             SNLog("Polling failed for closed group with public key: \(groupPublicKey) due to error: \(error).")

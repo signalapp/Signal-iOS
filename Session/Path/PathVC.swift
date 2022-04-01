@@ -106,26 +106,49 @@ final class PathVC : BaseVC {
 
     private func update() {
         pathStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        if !OnionRequestAPI.paths.isEmpty {
-            let pathToDisplay = OnionRequestAPI.paths.first!
-            let dotAnimationRepeatInterval = Double(pathToDisplay.count) + 2
-            let snodeRows: [UIStackView] = pathToDisplay.enumerated().map { index, snode in
-                let isGuardSnode = (snode == pathToDisplay.first!)
-                return getPathRow(snode: snode, location: .middle, dotAnimationStartDelay: Double(index) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval, isGuardSnode: isGuardSnode)
-            }
-            let youRow = getPathRow(title: NSLocalizedString("vc_path_device_row_title", comment: ""), subtitle: nil, location: .top, dotAnimationStartDelay: 1, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-            let destinationRow = getPathRow(title: NSLocalizedString("vc_path_destination_row_title", comment: ""), subtitle: nil, location: .bottom, dotAnimationStartDelay: Double(pathToDisplay.count) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-            let rows = [ youRow ] + snodeRows + [ destinationRow ]
-            rows.forEach { pathStackView.addArrangedSubview($0) }
-            spinner.stopAnimating()
-            UIView.animate(withDuration: 0.25) {
-                self.spinner.alpha = 0
-            }
-        } else {
+        
+        guard let pathToDisplay: [Snode] = OnionRequestAPI.paths.first else {
             spinner.startAnimating()
+            
             UIView.animate(withDuration: 0.25) {
                 self.spinner.alpha = 1
             }
+            return
+        }
+        
+        let dotAnimationRepeatInterval = Double(pathToDisplay.count) + 2
+        let snodeRows: [UIStackView] = pathToDisplay.enumerated().map { index, snode in
+            let isGuardSnode = (snode == pathToDisplay.first)
+            
+            return getPathRow(
+                snode: snode,
+                location: .middle,
+                dotAnimationStartDelay: Double(index) + 2,
+                dotAnimationRepeatInterval: dotAnimationRepeatInterval,
+                isGuardSnode: isGuardSnode
+            )
+        }
+        
+        let youRow = getPathRow(
+            title: NSLocalizedString("vc_path_device_row_title", comment: ""),
+            subtitle: nil,
+            location: .top,
+            dotAnimationStartDelay: 1,
+            dotAnimationRepeatInterval: dotAnimationRepeatInterval
+        )
+        let destinationRow = getPathRow(
+            title: NSLocalizedString("vc_path_destination_row_title", comment: ""),
+            subtitle: nil,
+            location: .bottom,
+            dotAnimationStartDelay: Double(pathToDisplay.count) + 2,
+            dotAnimationRepeatInterval: dotAnimationRepeatInterval
+        )
+        let rows = [ youRow ] + snodeRows + [ destinationRow ]
+        rows.forEach { pathStackView.addArrangedSubview($0) }
+        spinner.stopAnimating()
+        
+        UIView.animate(withDuration: 0.25) {
+            self.spinner.alpha = 0
         }
     }
 
@@ -156,7 +179,7 @@ final class PathVC : BaseVC {
         return stackView
     }
 
-    private func getPathRow(snode: Legacy.Snode, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
+    private func getPathRow(snode: Snode, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
         let country = IP2Country.isInitialized ? (IP2Country.shared.countryNamesCache[snode.ip] ?? "Resolving...") : "Resolving..."
         let title = isGuardSnode ? NSLocalizedString("vc_path_guard_node_row_title", comment: "") : NSLocalizedString("vc_path_service_node_row_title", comment: "")
         return getPathRow(title: title, subtitle: country, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)

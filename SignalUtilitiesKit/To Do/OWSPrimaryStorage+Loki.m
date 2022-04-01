@@ -1,6 +1,5 @@
 #import "OWSPrimaryStorage+Loki.h"
 #import "OWSPrimaryStorage+keyFromIntLong.h"
-#import "OWSIdentityManager.h"
 #import "NSDate+OWS.h"
 #import "TSAccountManager.h"
 #import "YapDatabaseConnection+OWS.h"

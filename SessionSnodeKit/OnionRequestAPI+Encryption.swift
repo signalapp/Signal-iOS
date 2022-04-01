@@ -22,7 +22,7 @@ internal extension OnionRequestAPI {
                 // Wrapping isn't needed for file server or open group onion requests
                 switch destination {
                 case .snode(let snode):
-                    let snodeX25519PublicKey = snode.publicKeySet.x25519Key
+                    let snodeX25519PublicKey = snode.x25519PublicKey
                     let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
                     let plaintext = try encode(ciphertext: payloadAsData, json: [ "headers" : "" ])
                     let result = try AESGCM.encrypt(plaintext, for: snodeX25519PublicKey)
@@ -46,7 +46,7 @@ internal extension OnionRequestAPI {
             var parameters: JSON
             switch rhs {
             case .snode(let snode):
-                let snodeED25519PublicKey = snode.publicKeySet.ed25519Key
+                let snodeED25519PublicKey = snode.ed25519PublicKey
                 parameters = [ "destination" : snodeED25519PublicKey ]
             case .server(let host, let target, _, let scheme, let port):
                 let scheme = scheme ?? "https"
@@ -57,7 +57,7 @@ internal extension OnionRequestAPI {
             let x25519PublicKey: String
             switch lhs {
             case .snode(let snode):
-                let snodeX25519PublicKey = snode.publicKeySet.x25519Key
+                let snodeX25519PublicKey = snode.x25519PublicKey
                 x25519PublicKey = snodeX25519PublicKey
             case .server(_, _, let serverX25519PublicKey, _, _):
                 x25519PublicKey = serverX25519PublicKey

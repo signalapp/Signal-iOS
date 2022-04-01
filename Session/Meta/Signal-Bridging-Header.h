@@ -63,7 +63,6 @@
 #import <SignalUtilitiesKit/OWSDispatch.h>
 #import <SignalUtilitiesKit/OWSError.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SessionMessagingKit/OWSIdentityManager.h>
 #import <SessionMessagingKit/OWSMediaGalleryFinder.h>
 #import <SessionMessagingKit/OWSRecipientIdentity.h>
 #import <SignalUtilitiesKit/SignalAccount.h>

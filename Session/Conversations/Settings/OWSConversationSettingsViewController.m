@@ -115,10 +115,6 @@ CGFloat kIconViewLength = 24;
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(identityStateDidChange:)
-                                                 name:kNSNotificationName_IdentityStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationName_OtherUsersProfileDidChange
                                                object:nil];
@@ -1068,13 +1064,6 @@ CGFloat kIconViewLength = 24;
 }
 
 #pragma mark - Notifications
-
-- (void)identityStateDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateTableContents];
-}
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {

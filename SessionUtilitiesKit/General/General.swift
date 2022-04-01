@@ -1,3 +1,35 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import Curve25519Kit
+
+public enum General {
+    public enum Cache {
+        public static var cachedEncodedPublicKey: Atomic<String?> = Atomic(nil)
+    }
+}
+
+public enum GeneralError: Error {
+    case keyGenerationFailed
+}
+
+@objc(SNGeneralUtilities)
+public class GeneralUtilities: NSObject {
+    @objc public static func getUserPublicKey() -> String {
+        return getUserHexEncodedPublicKey()
+    }
+}
+
+public func getUserHexEncodedPublicKey() -> String {
+    if let cachedKey: String = General.Cache.cachedEncodedPublicKey.wrappedValue { return cachedKey }
+    
+    if let keyPair: ECKeyPair = Identity.fetchUserKeyPair() { // Can be nil under some circumstances
+        General.Cache.cachedEncodedPublicKey.mutate { $0 = keyPair.hexEncodedPublicKey }
+        return keyPair.hexEncodedPublicKey
+    }
+    
+    return ""
+}
 
 /// Does nothing, but is never inlined and thus evaluating its argument will never be optimized away.
 ///

@@ -5,7 +5,7 @@ import PromiseKit
 public final class Poller : NSObject {
     private let storage = OWSPrimaryStorage.shared()
     private var isPolling = false
-    private var usedSnodes = Set<SessionSnodeKit.Legacy.Snode>()
+    private var usedSnodes = Set<Snode>()
     private var pollCount = 0
 
     // MARK: Settings
@@ -66,7 +66,7 @@ public final class Poller : NSObject {
     private func pollNextSnode(seal: Resolver<Void>) {
         let userPublicKey = getUserHexEncodedPublicKey()
         let swarm = SnodeAPI.swarmCache[userPublicKey] ?? []
-        let unusedSnodes = Set(swarm).subtracting(usedSnodes)
+        let unusedSnodes = swarm.subtracting(usedSnodes)
         if !unusedSnodes.isEmpty {
             // randomElement() uses the system's default random generator, which is cryptographically secure
             let nextSnode = unusedSnodes.randomElement()!
@@ -89,20 +89,20 @@ public final class Poller : NSObject {
         }
     }
 
-    private func poll(_ snode: SessionSnodeKit.Legacy.Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
+    private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard isPolling else { return Promise { $0.fulfill(()) } }
         let userPublicKey = getUserHexEncodedPublicKey()
         return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: Threading.pollerQueue) { [weak self] rawResponse -> Promise<Void> in
             guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
-            let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
+            let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
             if !messages.isEmpty {
                 SNLog("Received \(messages.count) new message(s).")
             }
-            messages.forEach { json in
-                guard let envelope = SNProtoEnvelope.from(json) else { return }
+            messages.forEach { message in
+                guard let envelope = SNProtoEnvelope.from(message) else { return }
                 do {
                     let data = try envelope.serializedData()
-                    let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: false)
+                    let job = MessageReceiveJob(data: data, serverHash: message.info.hash, isBackgroundPoll: false)
                     SNMessagingKitConfiguration.shared.storage.write { transaction in
                         SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
                     }
@@ -111,17 +111,22 @@ public final class Poller : NSObject {
                 }
             }
             
-            // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
-            SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: userPublicKey, from: lastRawMessage)
+            // Now that the MessageReceiveJob's have been created we can persist the received messages
+            if !messages.isEmpty {
+                GRDBStorage.shared.write { db in
+                    messages.forEach { try? $0.info.save(db) }
+                }
+            }
             
             strongSelf.pollCount += 1
-            if strongSelf.pollCount == Poller.maxPollCount {
+            
+            guard strongSelf.pollCount < Poller.maxPollCount else {
                 throw Error.pollLimitReached
-            } else {
-                return withDelay(Poller.pollInterval, completionQueue: Threading.pollerQueue) {
-                    guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
-                    return strongSelf.poll(snode, seal: longTermSeal)
-                }
+            }
+            
+            return withDelay(Poller.pollInterval, completionQueue: Threading.pollerQueue) {
+                guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
+                return strongSelf.poll(snode, seal: longTermSeal)
             }
         }
     }

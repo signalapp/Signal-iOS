@@ -108,7 +108,7 @@ public final class MessageSender : NSObject {
         let (promise, seal) = Promise<Void>.pending()
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let userPublicKey = storage.getUserPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
         var isMainAppAndActive = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
             isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
@@ -267,7 +267,7 @@ public final class MessageSender : NSObject {
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
-        message.sender = storage.getUserPublicKey()
+        message.sender = getUserHexEncodedPublicKey()
         switch destination {
         case .contact(_): preconditionFailure()
         case .closedGroup(_): preconditionFailure()

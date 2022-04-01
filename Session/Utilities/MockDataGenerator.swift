@@ -106,7 +106,7 @@ enum MockDataGenerator {
             (0..<dmThreadCount).forEach { threadIndex in
                 let data = Data((0..<16).map { _ in UInt8.random(in: (UInt8.min...UInt8.max), using: &dmThreadRandomGenerator) })
                 
-                let randomSessionId: String = KeyPairUtilities.generate(from: data).x25519KeyPair.hexEncodedPublicKey
+                let randomSessionId: String = try! Identity.generate(from: data).x25519KeyPair.hexEncodedPublicKey
                 let isMessageRequest: Bool = Bool.random(using: &dmThreadRandomGenerator)
                 let contactNameLength: Int = ((5..<20).randomElement(using: &dmThreadRandomGenerator) ?? 0)
                 let numMessages: Int = ((0..<maxMessagesPerThread).randomElement(using: &dmThreadRandomGenerator) ?? 0)
@@ -158,7 +158,7 @@ enum MockDataGenerator {
             
             (0..<closedGroupThreadCount).forEach { threadIndex in
                 let data = Data((0..<16).map { _ in UInt8.random(in: (UInt8.min...UInt8.max), using: &cgThreadRandomGenerator) })
-                let randomGroupPublicKey: String = KeyPairUtilities.generate(from: data).x25519KeyPair.hexEncodedPublicKey
+                let randomGroupPublicKey: String = try! Identity.generate(from: data).x25519KeyPair.hexEncodedPublicKey
                 let groupNameLength: Int = ((5..<20).randomElement(using: &cgThreadRandomGenerator) ?? 0)
                 let groupName: String = (0..<groupNameLength)
                     .compactMap { _ in stringContent.randomElement(using: &cgThreadRandomGenerator) }
@@ -171,7 +171,7 @@ enum MockDataGenerator {
                 
                 (0..<numGroupMembers).forEach { _ in
                     let contactData = Data((0..<16).map { _ in UInt8.random(in: (UInt8.min...UInt8.max), using: &cgThreadRandomGenerator) })
-                    let randomSessionId: String = KeyPairUtilities.generate(from: contactData).x25519KeyPair.hexEncodedPublicKey
+                    let randomSessionId: String = try! Identity.generate(from: contactData).x25519KeyPair.hexEncodedPublicKey
                     let contactNameLength: Int = ((5..<20).randomElement(using: &cgThreadRandomGenerator) ?? 0)
                     let contact = Contact(sessionID: randomSessionId)
                     contact.name = (0..<contactNameLength)
@@ -229,7 +229,7 @@ enum MockDataGenerator {
             
             (0..<openGroupThreadCount).forEach { threadIndex in
                 let data = Data((0..<16).map { _ in UInt8.random(in: (UInt8.min...UInt8.max), using: &ogThreadRandomGenerator) })
-                let randomGroupPublicKey: String = KeyPairUtilities.generate(from: data).x25519KeyPair.hexEncodedPublicKey
+                let randomGroupPublicKey: String = try! Identity.generate(from: data).x25519KeyPair.hexEncodedPublicKey
                 let serverNameLength: Int = ((5..<20).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let roomNameLength: Int = ((5..<20).randomElement(using: &ogThreadRandomGenerator) ?? 0)
                 let serverName: String = (0..<serverNameLength)

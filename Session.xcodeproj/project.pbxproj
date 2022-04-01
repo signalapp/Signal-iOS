@@ -188,7 +188,6 @@
 		B8566C7D256F62030045A0B9 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF2D3255B6DAF007E1867 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B8569AC325CB5D2900DBA3DB /* ConversationVC+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8569AC225CB5D2900DBA3DB /* ConversationVC+Interaction.swift */; };
 		B8569AE325CBB19A00DBA3DB /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8569AE225CBB19A00DBA3DB /* DocumentView.swift */; };
-		B866CE112581C1A900535CC4 /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
 		B86BD08423399ACF000F5AE3 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
 		B875885A264503A6000E60D0 /* JoinOpenGroupModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8758859264503A6000E60D0 /* JoinOpenGroupModal.swift */; };
@@ -287,7 +286,6 @@
 		C31A6C5C247F2CF3001123EF /* CGRect+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */; };
 		C31D1DE32521718E005D4DA8 /* UserSelectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */; };
 		C31D1DE9252172D4005D4DA8 /* ContactUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DE8252172D4005D4DA8 /* ContactUtilities.swift */; };
-		C31FFE57254A5FFE00F19441 /* KeyPairUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */; };
 		C3227FF6260AAD66006EA627 /* OpenGroupMessageV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3227FF5260AAD66006EA627 /* OpenGroupMessageV2.swift */; };
 		C32824D325C9F9790062D0A7 /* SessionSnodeKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; };
 		C328250F25CA06020062D0A7 /* VoiceMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C328250E25CA06020062D0A7 /* VoiceMessageView.swift */; };
@@ -348,9 +346,6 @@
 		C32C5BE6256DC891003C73A2 /* OWSReadReceiptManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB1D255A580900E217F9 /* OWSReadReceiptManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C5BEF256DC8EE003C73A2 /* OWSDisappearingMessagesJob.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBDD255A581900E217F9 /* OWSDisappearingMessagesJob.m */; };
 		C32C5BF8256DC8F6003C73A2 /* OWSDisappearingMessagesJob.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDA80255A57FC00E217F9 /* OWSDisappearingMessagesJob.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C32C5C01256DC9A0003C73A2 /* OWSIdentityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBA9255A581500E217F9 /* OWSIdentityManager.m */; };
-		C32C5C0A256DC9B4003C73A2 /* OWSIdentityManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDBF1255A581B00E217F9 /* OWSIdentityManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C32C5C1B256DC9E0003C73A2 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBC1255A581700E217F9 /* General.swift */; };
 		C32C5C24256DCB30003C73A2 /* NotificationsProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB7A255A581000E217F9 /* NotificationsProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C5C3D256DCBAF003C73A2 /* AppReadiness.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB75255A581000E217F9 /* AppReadiness.m */; };
 		C32C5C46256DCBB2003C73A2 /* AppReadiness.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB01255A580700E217F9 /* AppReadiness.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -359,8 +354,6 @@
 		C32C5C89256DD0D2003C73A2 /* Storage+Jobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D8F17625661AFA0092EF10 /* Storage+Jobs.swift */; };
 		C32C5CA4256DD1DC003C73A2 /* TSAccountManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB88255A581200E217F9 /* TSAccountManager.m */; };
 		C32C5CAD256DD1DF003C73A2 /* TSAccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB94255A581300E217F9 /* TSAccountManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C32C5CBE256DD282003C73A2 /* Storage+OnionRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */; };
-		C32C5CBF256DD282003C73A2 /* Storage+SnodeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A607255C98A6007BE2A3 /* Storage+SnodeAPI.swift */; };
 		C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */; };
 		C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBA8255A581500E217F9 /* OWSLinkPreview.swift */; };
 		C32C5D23256DD4C0003C73A2 /* Mention.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA7E255A57FB00E217F9 /* Mention.swift */; };
@@ -670,7 +663,6 @@
 		C3C2A5A7255385C100C340D1 /* SessionSnodeKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A59F255385C100C340D1 /* SessionSnodeKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C3C2A5BF255385EE00C340D1 /* SnodeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5B6255385EC00C340D1 /* SnodeMessage.swift */; };
 		C3C2A5C0255385EE00C340D1 /* Snode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5B7255385EC00C340D1 /* Snode.swift */; };
-		C3C2A5C1255385EE00C340D1 /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5B8255385EC00C340D1 /* Storage.swift */; };
 		C3C2A5C2255385EE00C340D1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5B9255385ED00C340D1 /* Configuration.swift */; };
 		C3C2A5C3255385EE00C340D1 /* OnionRequestAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BA255385ED00C340D1 /* OnionRequestAPI.swift */; };
 		C3C2A5C4255385EE00C340D1 /* OnionRequestAPI+Encryption.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5BB255385ED00C340D1 /* OnionRequestAPI+Encryption.swift */; };
@@ -754,6 +746,9 @@
 		F5765D284BC6ECAC0C1D33F0 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_SessionNotificationServiceExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4A93ECA93B3DE800CC7D7F6 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_SessionNotificationServiceExtension.framework */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
+		FD09796727F6B0B600936362 /* Sodium+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E7134E251C867C009649BB /* Sodium+Conversion.swift */; };
+		FD09796927F6BEA700936362 /* SwarmSnode.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09796827F6BEA700936362 /* SwarmSnode.swift */; };
+		FD09796B27F6C67500936362 /* Failable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09796A27F6C67500936362 /* Failable.swift */; };
 		FD17D79927F40AB800122BE0 /* _002_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79827F40AB800122BE0 /* _002_YDBToGRDBMigration.swift */; };
 		FD17D79C27F40B2E00122BE0 /* SMKLegacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */; };
 		FD17D7A027F40CC800122BE0 /* _001_InitialSetupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79F27F40CC800122BE0 /* _001_InitialSetupMigration.swift */; };
@@ -765,7 +760,6 @@
 		FD17D7AE27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7AD27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift */; };
 		FD17D7B027F4225C00122BE0 /* Set+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7AF27F4225C00122BE0 /* Set+Utilities.swift */; };
 		FD17D7B327F51E5B00122BE0 /* SSKSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B227F51E5B00122BE0 /* SSKSetting.swift */; };
-		FD17D7B627F51E7300122BE0 /* SettingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B527F51E7300122BE0 /* SettingType.swift */; };
 		FD17D7B827F51ECA00122BE0 /* Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B727F51ECA00122BE0 /* Migration.swift */; };
 		FD17D7BA27F51F2100122BE0 /* TargetMigrations.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */; };
 		FD17D7BD27F51F6900122BE0 /* GRDB+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */; };
@@ -774,6 +768,15 @@
 		FD17D7C327F5204C00122BE0 /* Database+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */; };
 		FD17D7C527F5206300122BE0 /* ColumnDefinition+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C427F5206300122BE0 /* ColumnDefinition+Utilities.swift */; };
 		FD17D7C727F5207C00122BE0 /* DatabaseMigrator+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C627F5207C00122BE0 /* DatabaseMigrator+Utilities.swift */; };
+		FD17D7CA27F546D900122BE0 /* _001_InitialSetupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7C927F546D900122BE0 /* _001_InitialSetupMigration.swift */; };
+		FD17D7CD27F546FF00122BE0 /* Setting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7CC27F546FF00122BE0 /* Setting.swift */; };
+		FD17D7D227F5797A00122BE0 /* SSKEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7D127F5797A00122BE0 /* SSKEndpoint.swift */; };
+		FD17D7D427F6584600122BE0 /* SSKError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7D327F6584600122BE0 /* SSKError.swift */; };
+		FD17D7D827F658E200122BE0 /* SSKDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7D727F658E200122BE0 /* SSKDestination.swift */; };
+		FD17D7E127F67BD400122BE0 /* SnodeReceivedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7E027F67BD400122BE0 /* SnodeReceivedMessage.swift */; };
+		FD17D7E527F6A09900122BE0 /* Identity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7E427F6A09900122BE0 /* Identity.swift */; };
+		FD17D7E727F6A16700122BE0 /* _002_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7E627F6A16700122BE0 /* _002_YDBToGRDBMigration.swift */; };
+		FD17D7EA27F6A1C600122BE0 /* SUKLegacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7E927F6A1C600122BE0 /* SUKLegacyModels.swift */; };
 		FD28A4F227E990E800FF65E7 /* BlockingManagerRemovalMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD28A4F127E990E800FF65E7 /* BlockingManagerRemovalMigration.swift */; };
 		FD28A4F427EA79F800FF65E7 /* BlockListUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD28A4F327EA79F800FF65E7 /* BlockListUIUtils.swift */; };
 		FD3C907327E8387300CD579F /* OpenGroupServerIdLookupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C907227E8387300CD579F /* OpenGroupServerIdLookupMigration.swift */; };
@@ -1274,7 +1277,6 @@
 		B8D8F17625661AFA0092EF10 /* Storage+Jobs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Jobs.swift"; sourceTree = "<group>"; };
 		B8D8F18825661BA50092EF10 /* Storage+OpenGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OpenGroups.swift"; sourceTree = "<group>"; };
 		B8D8F19225661BF80092EF10 /* Storage+Messaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Messaging.swift"; sourceTree = "<group>"; };
-		B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+OnionRequests.swift"; sourceTree = "<group>"; };
 		B8D8F1EF256621180092EF10 /* MessageSender+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MessageSender+Convenience.swift"; path = "../../SignalUtilitiesKit/Messaging/Sending & Receiving/MessageSender+Convenience.swift"; sourceTree = "<group>"; };
 		B8EB20E6263F7E4B00773E52 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8EB20ED2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisibleMessage+OpenGroupInvitation.swift"; sourceTree = "<group>"; };
@@ -1307,7 +1309,6 @@
 		C31D1DDC25217014005D4DA8 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		C31D1DE22521718E005D4DA8 /* UserSelectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSelectionVC.swift; sourceTree = "<group>"; };
 		C31D1DE8252172D4005D4DA8 /* ContactUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactUtilities.swift; sourceTree = "<group>"; };
-		C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPairUtilities.swift; sourceTree = "<group>"; };
 		C3227FF5260AAD66006EA627 /* OpenGroupMessageV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupMessageV2.swift; sourceTree = "<group>"; };
 		C328250E25CA06020062D0A7 /* VoiceMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceMessageView.swift; sourceTree = "<group>"; };
 		C328251E25CA3A900062D0A7 /* QuoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuoteView.swift; sourceTree = "<group>"; };
@@ -1461,7 +1462,6 @@
 		C33FDBA1255A581400E217F9 /* OWSOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOperation.h; sourceTree = "<group>"; };
 		C33FDBA4255A581400E217F9 /* OWSDisappearingMessagesConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingMessagesConfiguration.m; sourceTree = "<group>"; };
 		C33FDBA8255A581500E217F9 /* OWSLinkPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSLinkPreview.swift; sourceTree = "<group>"; };
-		C33FDBA9255A581500E217F9 /* OWSIdentityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSIdentityManager.m; sourceTree = "<group>"; };
 		C33FDBAB255A581500E217F9 /* OWSFileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFileSystem.h; sourceTree = "<group>"; };
 		C33FDBAE255A581500E217F9 /* SignalAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalAccount.h; sourceTree = "<group>"; };
 		C33FDBB4255A581600E217F9 /* NSURLSessionDataTask+StatusCode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLSessionDataTask+StatusCode.m"; sourceTree = "<group>"; };
@@ -1472,7 +1472,6 @@
 		C33FDBBA255A581600E217F9 /* OWSPrimaryStorage+keyFromIntLong.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OWSPrimaryStorage+keyFromIntLong.h"; sourceTree = "<group>"; };
 		C33FDBBB255A581600E217F9 /* OWSPrimaryStorage+Loki.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OWSPrimaryStorage+Loki.h"; sourceTree = "<group>"; };
 		C33FDBBC255A581600E217F9 /* SSKKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKKeychainStorage.swift; sourceTree = "<group>"; };
-		C33FDBC1255A581700E217F9 /* General.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
 		C33FDBC2255A581700E217F9 /* SSKAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKAsserts.h; sourceTree = "<group>"; };
 		C33FDBCA255A581700E217F9 /* LKGroupUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKGroupUtilities.h; sourceTree = "<group>"; };
 		C33FDBD3255A581800E217F9 /* OWSSignalAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalAddress.swift; sourceTree = "<group>"; };
@@ -1484,7 +1483,6 @@
 		C33FDBE9255A581A00E217F9 /* TSInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInteraction.m; sourceTree = "<group>"; };
 		C33FDBEC255A581B00E217F9 /* OWSRecipientIdentity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSRecipientIdentity.m; sourceTree = "<group>"; };
 		C33FDBEF255A581B00E217F9 /* TSStorageKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSStorageKeys.h; sourceTree = "<group>"; };
-		C33FDBF1255A581B00E217F9 /* OWSIdentityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSIdentityManager.h; sourceTree = "<group>"; };
 		C33FDBF6255A581C00E217F9 /* NSURLSessionDataTask+StatusCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLSessionDataTask+StatusCode.h"; sourceTree = "<group>"; };
 		C33FDBF8255A581C00E217F9 /* NSArray+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+OWS.h"; sourceTree = "<group>"; };
 		C33FDBF9255A581C00E217F9 /* OWSError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSError.h; sourceTree = "<group>"; };
@@ -1706,7 +1704,6 @@
 		C3C2A5A2255385C100C340D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3C2A5B6255385EC00C340D1 /* SnodeMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SnodeMessage.swift; sourceTree = "<group>"; };
 		C3C2A5B7255385EC00C340D1 /* Snode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Snode.swift; sourceTree = "<group>"; };
-		C3C2A5B8255385EC00C340D1 /* Storage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		C3C2A5B9255385ED00C340D1 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		C3C2A5BA255385ED00C340D1 /* OnionRequestAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnionRequestAPI.swift; sourceTree = "<group>"; };
 		C3C2A5BB255385ED00C340D1 /* OnionRequestAPI+Encryption.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OnionRequestAPI+Encryption.swift"; sourceTree = "<group>"; };
@@ -1764,7 +1761,6 @@
 		C3F0A5B2255C915C007BE2A3 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C3F0A5EB255C970D007BE2A3 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		C3F0A5FD255C988A007BE2A3 /* Storage+Shared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+Shared.swift"; sourceTree = "<group>"; };
-		C3F0A607255C98A6007BE2A3 /* Storage+SnodeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Storage+SnodeAPI.swift"; sourceTree = "<group>"; };
 		C5060C3B36A848B71CCE4685 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionUtilitiesKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionUtilitiesKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C88965DE4F4EC4FC919BEC4E /* Pods-SessionUIKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionUIKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionUIKit/Pods-SessionUIKit.debug.xcconfig"; sourceTree = "<group>"; };
 		C98441E849C3CA7FE8220D33 /* Pods-SessionNotificationServiceExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionNotificationServiceExtension.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionNotificationServiceExtension/Pods-SessionNotificationServiceExtension.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -1795,6 +1791,8 @@
 		F9BBF530D71905BA9007675F /* Pods-SessionShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SessionShareExtension/Pods-SessionShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		FD09796827F6BEA700936362 /* SwarmSnode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwarmSnode.swift; sourceTree = "<group>"; };
+		FD09796A27F6C67500936362 /* Failable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Failable.swift; sourceTree = "<group>"; };
 		FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _001_InitialSetupMigration.swift; sourceTree = "<group>"; };
 		FD17D79827F40AB800122BE0 /* _002_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _002_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
 		FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMKLegacyModels.swift; sourceTree = "<group>"; };
@@ -1805,7 +1803,6 @@
 		FD17D7AD27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnodeReceivedMessageInfo.swift; sourceTree = "<group>"; };
 		FD17D7AF27F4225C00122BE0 /* Set+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+Utilities.swift"; sourceTree = "<group>"; };
 		FD17D7B227F51E5B00122BE0 /* SSKSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKSetting.swift; sourceTree = "<group>"; };
-		FD17D7B527F51E7300122BE0 /* SettingType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingType.swift; sourceTree = "<group>"; };
 		FD17D7B727F51ECA00122BE0 /* Migration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Migration.swift; sourceTree = "<group>"; };
 		FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetMigrations.swift; sourceTree = "<group>"; };
 		FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GRDB+Notifications.swift"; sourceTree = "<group>"; };
@@ -1814,9 +1811,18 @@
 		FD17D7C227F5204C00122BE0 /* Database+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Utilities.swift"; sourceTree = "<group>"; };
 		FD17D7C427F5206300122BE0 /* ColumnDefinition+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColumnDefinition+Utilities.swift"; sourceTree = "<group>"; };
 		FD17D7C627F5207C00122BE0 /* DatabaseMigrator+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseMigrator+Utilities.swift"; sourceTree = "<group>"; };
-		FD28A4F527EAD44C00FF65E7 /* GRDBStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBStorage.swift; sourceTree = "<group>"; };
+		FD17D7C927F546D900122BE0 /* _001_InitialSetupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _001_InitialSetupMigration.swift; sourceTree = "<group>"; };
+		FD17D7CC27F546FF00122BE0 /* Setting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Setting.swift; sourceTree = "<group>"; };
+		FD17D7D127F5797A00122BE0 /* SSKEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKEndpoint.swift; sourceTree = "<group>"; };
+		FD17D7D327F6584600122BE0 /* SSKError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKError.swift; sourceTree = "<group>"; };
+		FD17D7D727F658E200122BE0 /* SSKDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKDestination.swift; sourceTree = "<group>"; };
+		FD17D7E027F67BD400122BE0 /* SnodeReceivedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnodeReceivedMessage.swift; sourceTree = "<group>"; };
+		FD17D7E427F6A09900122BE0 /* Identity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Identity.swift; sourceTree = "<group>"; };
+		FD17D7E627F6A16700122BE0 /* _002_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _002_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
+		FD17D7E927F6A1C600122BE0 /* SUKLegacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SUKLegacyModels.swift; sourceTree = "<group>"; };
 		FD28A4F127E990E800FF65E7 /* BlockingManagerRemovalMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockingManagerRemovalMigration.swift; sourceTree = "<group>"; };
 		FD28A4F327EA79F800FF65E7 /* BlockListUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListUIUtils.swift; sourceTree = "<group>"; };
+		FD28A4F527EAD44C00FF65E7 /* GRDBStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBStorage.swift; sourceTree = "<group>"; };
 		FD3C907227E8387300CD579F /* OpenGroupServerIdLookupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupServerIdLookupMigration.swift; sourceTree = "<group>"; };
 		FD3C907427E83AC200CD579F /* OpenGroupServerIdLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupServerIdLookup.swift; sourceTree = "<group>"; };
 		FD5D200E27AA2B6000FEA984 /* MessageRequestResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestResponse.swift; sourceTree = "<group>"; };
@@ -2062,7 +2068,6 @@
 				C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */,
 				C31D1DE8252172D4005D4DA8 /* ContactUtilities.swift */,
 				C35E8AAD2485E51D00ACB629 /* IP2Country.swift */,
-				C31FFE56254A5FFE00F19441 /* KeyPairUtilities.swift */,
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
 				B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */,
@@ -2271,6 +2276,9 @@
 		B8A582AB258C64E800AFD84C /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				FD17D7E827F6A1B800122BE0 /* LegacyDatabase */,
+				FD17D7C827F546CE00122BE0 /* Migrations */,
+				FD17D7CB27F546F500122BE0 /* Models */,
 				FD17D7B427F51E6700122BE0 /* Types */,
 				FD17D7BB27F51F5C00122BE0 /* Utilities */,
 				FD28A4F527EAD44C00FF65E7 /* GRDBStorage.swift */,
@@ -3183,7 +3191,6 @@
 				C37F5402255BA9ED002AEA92 /* Environment.m */,
 				C3BBE0C62554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift */,
 				C33FDB7F255A581100E217F9 /* FullTextSearchFinder.swift */,
-				C33FDBC1255A581700E217F9 /* General.swift */,
 				B82A0C3726B9098200C1BCE3 /* MessageInvalidator.swift */,
 				C3A71D0A2558989C0043A11F /* MessageWrapper.swift */,
 				C3A71D4E25589FF30043A11F /* NSData+messagePadding.h */,
@@ -3195,8 +3202,6 @@
 				C33FDC1B255A581F00E217F9 /* OWSBackgroundTask.m */,
 				C33FDC05255A581D00E217F9 /* OWSDisappearingMessagesFinder.h */,
 				C33FDA86255A57FC00E217F9 /* OWSDisappearingMessagesFinder.m */,
-				C33FDBF1255A581B00E217F9 /* OWSIdentityManager.h */,
-				C33FDBA9255A581500E217F9 /* OWSIdentityManager.m */,
 				C33FDAC0255A580100E217F9 /* OWSIncomingMessageFinder.h */,
 				C33FDB1E255A580900E217F9 /* OWSIncomingMessageFinder.m */,
 				C33FDB67255A580F00E217F9 /* OWSMediaGalleryFinder.h */,
@@ -3213,7 +3218,6 @@
 				C33FDB91255A581200E217F9 /* ProtoUtils.h */,
 				C33FDA6C255A57FA00E217F9 /* ProtoUtils.m */,
 				C38EEF09255B49A8007E1867 /* SNProtoEnvelope+Conversion.swift */,
-				C3E7134E251C867C009649BB /* Sodium+Conversion.swift */,
 				C33FDB31255A580A00E217F9 /* SSKEnvironment.h */,
 				C33FDAF4255A580600E217F9 /* SSKEnvironment.m */,
 				C33FDB32255A580A00E217F9 /* SSKIncrementingIdFinder.swift */,
@@ -3233,15 +3237,14 @@
 			children = (
 				C3C2A5B0255385C700C340D1 /* Meta */,
 				FD17D79D27F40CAA00122BE0 /* Database */,
+				FD17D7DF27F67BC400122BE0 /* Models */,
+				FD17D7D027F5795300122BE0 /* Types */,
 				C3C2A5B9255385ED00C340D1 /* Configuration.swift */,
 				C3C2A5BD255385EE00C340D1 /* Notification+OnionRequestAPI.swift */,
 				C3C2A5BA255385ED00C340D1 /* OnionRequestAPI.swift */,
 				C3C2A5BB255385ED00C340D1 /* OnionRequestAPI+Encryption.swift */,
 				C3C2A5BE255385EE00C340D1 /* SnodeAPI.swift */,
 				C3C2A5B6255385EC00C340D1 /* SnodeMessage.swift */,
-				C3C2A5B8255385EC00C340D1 /* Storage.swift */,
-				B8D8F1BC25661C6F0092EF10 /* Storage+OnionRequests.swift */,
-				C3F0A607255C98A6007BE2A3 /* Storage+SnodeAPI.swift */,
 				C3C2A5CD255385F300C340D1 /* Utilities */,
 			);
 			path = SessionSnodeKit;
@@ -3279,6 +3282,7 @@
 				B8A582B9258C696200AFD84C /* Messaging */,
 				B8A582AE258C65D000AFD84C /* Networking */,
 				B8A582AD258C655E00AFD84C /* PromiseKit */,
+				FD09796527F6B0A800936362 /* Utilities */,
 				C3D9E43025676D3D0040E4F3 /* Configuration.swift */,
 			);
 			path = SessionUtilitiesKit;
@@ -3591,6 +3595,15 @@
 			path = Session;
 			sourceTree = "<group>";
 		};
+		FD09796527F6B0A800936362 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				FD09796A27F6C67500936362 /* Failable.swift */,
+				C3E7134E251C867C009649BB /* Sodium+Conversion.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		FD17D79427F3E03300122BE0 /* Migrations */ = {
 			isa = PBXGroup;
 			children = (
@@ -3659,7 +3672,6 @@
 			children = (
 				FD17D7BE27F51F8200122BE0 /* ColumnExpressible.swift */,
 				FD17D7B727F51ECA00122BE0 /* Migration.swift */,
-				FD17D7B527F51E7300122BE0 /* SettingType.swift */,
 				FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */,
 				FD17D7C027F5200100122BE0 /* TypedTableDefinition.swift */,
 			);
@@ -3675,6 +3687,51 @@
 				FD17D7BC27F51F6900122BE0 /* GRDB+Notifications.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		FD17D7C827F546CE00122BE0 /* Migrations */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7C927F546D900122BE0 /* _001_InitialSetupMigration.swift */,
+				FD17D7E627F6A16700122BE0 /* _002_YDBToGRDBMigration.swift */,
+			);
+			path = Migrations;
+			sourceTree = "<group>";
+		};
+		FD17D7CB27F546F500122BE0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7E427F6A09900122BE0 /* Identity.swift */,
+				FD17D7CC27F546FF00122BE0 /* Setting.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FD17D7D027F5795300122BE0 /* Types */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7D127F5797A00122BE0 /* SSKEndpoint.swift */,
+				FD17D7D327F6584600122BE0 /* SSKError.swift */,
+				FD17D7D727F658E200122BE0 /* SSKDestination.swift */,
+			);
+			path = Types;
+			sourceTree = "<group>";
+		};
+		FD17D7DF27F67BC400122BE0 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7E027F67BD400122BE0 /* SnodeReceivedMessage.swift */,
+				FD09796827F6BEA700936362 /* SwarmSnode.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FD17D7E827F6A1B800122BE0 /* LegacyDatabase */ = {
+			isa = PBXGroup;
+			children = (
+				FD17D7E927F6A1C600122BE0 /* SUKLegacyModels.swift */,
+			);
+			path = LegacyDatabase;
 			sourceTree = "<group>";
 		};
 		FD659ABE27A7648200F12C02 /* Message Requests */ = {
@@ -3843,7 +3900,6 @@
 				C3A3A15F256E1BB4004D228D /* ProtoUtils.h in Headers */,
 				C3A3A145256E1B49004D228D /* OWSMediaGalleryFinder.h in Headers */,
 				B8856E33256F18D5001CE70E /* OWSStorage+Subclass.h in Headers */,
-				C32C5C0A256DC9B4003C73A2 /* OWSIdentityManager.h in Headers */,
 				B8856E9D256F1C3D001CE70E /* OWSSounds.h in Headers */,
 				C32C5E64256DDFD6003C73A2 /* OWSStorage.h in Headers */,
 			);
@@ -4664,27 +4720,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD09796927F6BEA700936362 /* SwarmSnode.swift in Sources */,
 				C3C2A5E02553860B00C340D1 /* Threading.swift in Sources */,
 				C3C2A5BF255385EE00C340D1 /* SnodeMessage.swift in Sources */,
+				FD17D7E127F67BD400122BE0 /* SnodeReceivedMessage.swift in Sources */,
 				C3C2A5C0255385EE00C340D1 /* Snode.swift in Sources */,
 				FD17D7A027F40CC800122BE0 /* _001_InitialSetupMigration.swift in Sources */,
 				C3C2A5C7255385EE00C340D1 /* SnodeAPI.swift in Sources */,
-				C32C5CBF256DD282003C73A2 /* Storage+SnodeAPI.swift in Sources */,
 				C3C2A5C6255385EE00C340D1 /* Notification+OnionRequestAPI.swift in Sources */,
 				FD17D7AA27F41BF500122BE0 /* SnodeSet.swift in Sources */,
 				FD17D7A427F40F8100122BE0 /* _002_YDBToGRDBMigration.swift in Sources */,
-				C32C5CBE256DD282003C73A2 /* Storage+OnionRequests.swift in Sources */,
 				C3C2A5DC2553860B00C340D1 /* Promise+Threading.swift in Sources */,
 				C3C2A5C4255385EE00C340D1 /* OnionRequestAPI+Encryption.swift in Sources */,
+				FD17D7D227F5797A00122BE0 /* SSKEndpoint.swift in Sources */,
 				C3C2A5DE2553860B00C340D1 /* String+Trimming.swift in Sources */,
 				C3C2A5DB2553860B00C340D1 /* Promise+Hashing.swift in Sources */,
 				C3C2A5E42553860B00C340D1 /* Data+Utilities.swift in Sources */,
 				FD17D7A727F41AF000122BE0 /* SSKLegacyModels.swift in Sources */,
 				C3C2A5C2255385EE00C340D1 /* Configuration.swift in Sources */,
+				FD17D7D827F658E200122BE0 /* SSKDestination.swift in Sources */,
 				FD17D7B327F51E5B00122BE0 /* SSKSetting.swift in Sources */,
 				FD17D7AE27F41C4300122BE0 /* SnodeReceivedMessageInfo.swift in Sources */,
 				C3C2A5C3255385EE00C340D1 /* OnionRequestAPI.swift in Sources */,
-				C3C2A5C1255385EE00C340D1 /* Storage.swift in Sources */,
+				FD17D7D427F6584600122BE0 /* SSKError.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4694,7 +4752,6 @@
 			files = (
 				C3AABDDF2553ECF00042FF4C /* Array+Utilities.swift in Sources */,
 				7B1D74AC27BDE7510030B423 /* Promise+Timeout.swift in Sources */,
-				FD17D7B627F51E7300122BE0 /* SettingType.swift in Sources */,
 				C3AABDDF2553ECF00042FF4C /* Array+Utilities.swift in Sources */,
 				C32C5A47256DB8F0003C73A2 /* ECKeyPair+Hexadecimal.swift in Sources */,
 				C3D9E41525676C320040E4F3 /* Storage.swift in Sources */,
@@ -4703,11 +4760,13 @@
 				C3D9E39B256763C20040E4F3 /* AppContext.m in Sources */,
 				C3BBE0A82554D4DE0050F1E3 /* JSON.swift in Sources */,
 				FD17D7C127F5200100122BE0 /* TypedTableDefinition.swift in Sources */,
+				FD17D7EA27F6A1C600122BE0 /* SUKLegacyModels.swift in Sources */,
 				C352A36D2557858E00338F3E /* NSTimer+Proxying.m in Sources */,
 				C32C5A2D256DB849003C73A2 /* LKGroupUtilities.m in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
 				B8856E09256F1676001CE70E /* UIDevice+featureSupport.swift in Sources */,
 				B8856DEF256F161F001CE70E /* NSString+SSK.m in Sources */,
+				FD09796727F6B0B600936362 /* Sodium+Conversion.swift in Sources */,
 				C32C5DC9256DD935003C73A2 /* ProxiedContentDownloader.swift in Sources */,
 				C3D9E4C02567767F0040E4F3 /* DataSource.m in Sources */,
 				C3D9E43125676D3D0040E4F3 /* Configuration.swift in Sources */,
@@ -4717,6 +4776,7 @@
 				C32C5FA1256DFED5003C73A2 /* NSArray+Functional.m in Sources */,
 				C3A7225E2558C38D0043A11F /* Promise+Retaining.swift in Sources */,
 				FD17D7BD27F51F6900122BE0 /* GRDB+Notifications.swift in Sources */,
+				FD17D7CA27F546D900122BE0 /* _001_InitialSetupMigration.swift in Sources */,
 				C3D9E4D12567777D0040E4F3 /* OWSMediaUtils.swift in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Description.swift in Sources */,
 				C3D9E4DA256778410040E4F3 /* UIImage+OWS.m in Sources */,
@@ -4727,6 +4787,7 @@
 				FD17D7C727F5207C00122BE0 /* DatabaseMigrator+Utilities.swift in Sources */,
 				C3D9E3C925676AF30040E4F3 /* TSYapDatabaseObject.m in Sources */,
 				C352A3A62557B60D00338F3E /* TSRequest.m in Sources */,
+				FD09796B27F6C67500936362 /* Failable.swift in Sources */,
 				FD705A92278D051200F16121 /* ReusableView.swift in Sources */,
 				FD17D7BA27F51F2100122BE0 /* TargetMigrations.swift in Sources */,
 				FD17D7C327F5204C00122BE0 /* Database+Utilities.swift in Sources */,
@@ -4753,8 +4814,10 @@
 				C32C5E0C256DDAFA003C73A2 /* NSRegularExpression+SSK.swift in Sources */,
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
 				B8856D23256F116B001CE70E /* Weak.swift in Sources */,
+				FD17D7CD27F546FF00122BE0 /* Setting.swift in Sources */,
 				C32C5A48256DB8F0003C73A2 /* BuildConfiguration.swift in Sources */,
 				FD17D7BF27F51F8200122BE0 /* ColumnExpressible.swift in Sources */,
+				FD17D7E527F6A09900122BE0 /* Identity.swift in Sources */,
 				B87EF18126377A1D00124B3C /* Features.swift in Sources */,
 				C300A60D2554B31900555489 /* Logging.swift in Sources */,
 				B8FF8EA625C11FEF004D1F22 /* IPv4.swift in Sources */,
@@ -4762,6 +4825,7 @@
 				FD705A8E278CE29800F16121 /* String+Localization.swift in Sources */,
 				C3A7219A2558C1660043A11F /* AnyPromise+Conversion.swift in Sources */,
 				C300A6322554B6D100555489 /* NSDate+Timestamp.mm in Sources */,
+				FD17D7E727F6A16700122BE0 /* _002_YDBToGRDBMigration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4848,9 +4912,7 @@
 				C3D9E3BE25676AD70040E4F3 /* TSAttachmentPointer.m in Sources */,
 				C3ECBF7B257056B700EA7FCE /* Threading.swift in Sources */,
 				C32C5AAB256DBE8F003C73A2 /* TSIncomingMessage+Conversion.swift in Sources */,
-				B866CE112581C1A900535CC4 /* Sodium+Conversion.swift in Sources */,
 				C32C5A88256DBCF9003C73A2 /* MessageReceiver+Handling.swift in Sources */,
-				C32C5C1B256DC9E0003C73A2 /* General.swift in Sources */,
 				C32C5A02256DB658003C73A2 /* MessageSender+Convenience.swift in Sources */,
 				B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */,
 				B8D0A25925E367AC00C1835E /* Notification+MessageReceiver.swift in Sources */,
@@ -4905,7 +4967,6 @@
 				C32C5EBA256DE130003C73A2 /* OWSQuotedReplyModel.m in Sources */,
 				C32C5B62256DC333003C73A2 /* OWSDisappearingConfigurationUpdateInfoMessage.m in Sources */,
 				C352A2F525574B4700338F3E /* Job.swift in Sources */,
-				C32C5C01256DC9A0003C73A2 /* OWSIdentityManager.m in Sources */,
 				C32C59C4256DB41F003C73A2 /* TSContactThread.m in Sources */,
 				C32C5AB0256DBE8F003C73A2 /* TSOutgoingMessage.m in Sources */,
 				B82A0C3826B9098200C1BCE3 /* MessageInvalidator.swift in Sources */,
@@ -4975,7 +5036,6 @@
 				FD659AC027A7649600F12C02 /* MessageRequestsViewController.swift in Sources */,
 				B8F5F72325F1B4CA003BF8D4 /* DownloadAttachmentModal.swift in Sources */,
 				C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */,
-				C31FFE57254A5FFE00F19441 /* KeyPairUtilities.swift in Sources */,
 				B8D84EA325DF745A005A043E /* LinkPreviewState.swift in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */,
@@ -5248,7 +5308,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SessionShareExtension/Meta/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5326,7 +5386,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SessionShareExtension/Meta/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5385,7 +5445,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SessionNotificationServiceExtension/Meta/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5464,7 +5524,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SessionNotificationServiceExtension/Meta/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5521,7 +5581,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SessionUIKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5600,7 +5660,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SessionUIKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5668,7 +5728,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SignalUtilitiesKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5755,7 +5815,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SignalUtilitiesKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5815,7 +5875,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SessionSnodeKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5894,7 +5954,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SessionSnodeKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -5954,7 +6014,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SessionUtilitiesKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6042,7 +6102,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SessionUtilitiesKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6111,7 +6171,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SessionMessagingKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6190,7 +6250,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SessionMessagingKit/Meta/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6407,7 +6467,7 @@
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
 				INFOPLIST_FILE = "Session/Meta/Session-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -6478,7 +6538,7 @@
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
 				INFOPLIST_FILE = "Session/Meta/Session-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

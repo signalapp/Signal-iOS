@@ -10,4 +10,14 @@ public extension Dictionary {
             return keyDescription + " : " + truncatedValueDescription
         }.joined(separator: ", ") + " ]"
     }
+    
+    func asArray() -> [(key: Key, value: Value)] {
+        return Array(self)
+    }
+}
+
+public extension Dictionary.Values {
+    func asArray() -> [Value] {
+        return Array(self)
+    }
 }

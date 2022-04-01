@@ -6,12 +6,12 @@ public enum Legacy {
     // MARK: - Collections and Keys
     
     internal static let swarmCollectionPrefix = "LokiSwarmCollection-"
+    internal static let lastSnodePoolRefreshDateKey = "lastSnodePoolRefreshDate"
     internal static let snodePoolCollection = "LokiSnodePoolCollection"
     internal static let onionRequestPathCollection = "LokiOnionRequestPathCollection"
     internal static let lastSnodePoolRefreshDateCollection = "LokiLastSnodePoolRefreshDateCollection"
     internal static let lastMessageHashCollection = "LokiLastMessageHashCollection" // TODO: Remove this one? (make it a query??)
     internal static let receivedMessagesCollection = "LokiReceivedMessagesCollection"
-    // TODO: - "lastSnodePoolRefreshDate"
     
     // MARK: - Types
     
@@ -29,15 +29,6 @@ public enum Legacy {
         }
 
         // MARK: Nested Types
-        public enum Method : String {
-            case getSwarm = "get_snodes_for_pubkey"
-            case getMessages = "retrieve"
-            case sendMessage = "store"
-            case deleteMessage = "delete"
-            case oxenDaemonRPCCall = "oxend_request"
-            case getInfo = "info"
-            case clearAllData = "delete_all"
-        }
 
         public struct KeySet {
             public let ed25519Key: String

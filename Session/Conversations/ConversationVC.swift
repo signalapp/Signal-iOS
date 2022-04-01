@@ -1,6 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import SessionUIKit
 import SessionMessagingKit
-import UIKit
+import SessionUtilitiesKit
 
 // TODO:
 // • Slight paging glitch when scrolling up and loading more content
@@ -69,13 +72,12 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     lazy var mnemonic: String = {
-        let identityManager = OWSIdentityManager.shared()
-        let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
-        var hexEncodedSeed: String! = databaseConnection.object(forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection) as! String?
-        if hexEncodedSeed == nil {
-            hexEncodedSeed = identityManager.identityKeyPair()!.hexEncodedPrivateKey // Legacy account
+        if let hexEncodedSeed: String = Identity.fetchHexEncodedSeed() {
+            return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
         }
-        return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
+        
+        // Legacy account
+        return Mnemonic.encode(hexEncodedString: Identity.fetchUserKeyPair()!.hexEncodedPrivateKey)
     }()
     
     lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: nil, delegate: self)

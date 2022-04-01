@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class LandingVC : BaseVC {
+import UIKit
+import SessionUIKit
+
+final class LandingVC: BaseVC {
     
     // MARK: Components
     private lazy var fakeChatView: FakeChatView = {

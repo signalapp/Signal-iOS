@@ -13,9 +13,6 @@ public protocol SessionMessagingKitStorageProtocol {
 
     // MARK: - General
 
-    func getUserPublicKey() -> String?
-    func getUserKeyPair() -> ECKeyPair?
-    func getUserED25519KeyPair() -> Box.KeyPair?
     func getUser() -> Contact?
     func getUser(using transaction: YapDatabaseReadTransaction?) -> Contact?
     func getAllContacts() -> Set<Contact>

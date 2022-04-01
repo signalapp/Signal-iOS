@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import PromiseKit
 import SessionMessagingKit
+import SessionUtilitiesKit
 
 extension AppDelegate {
 
@@ -22,7 +26,8 @@ extension AppDelegate {
     }
 
     @objc func startClosedGroupPoller() {
-        guard OWSIdentityManager.shared().identityKeyPair() != nil else { return }
+        guard Identity.fetchUserKeyPair() != nil else { return }
+        
         ClosedGroupPoller.shared.start()
     }
 

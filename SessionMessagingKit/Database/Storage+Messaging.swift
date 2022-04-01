@@ -27,7 +27,7 @@ extension Storage {
         guard let threadID = getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: groupPublicKey, openGroupID: openGroupID, using: transaction),
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
         let tsMessage: TSMessage
-        if message.sender == getUserPublicKey() {
+        if message.sender == getUserHexEncodedPublicKey() {
             if TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) != nil { return nil }
             let tsOutgoingMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
             var recipients: [String] = []

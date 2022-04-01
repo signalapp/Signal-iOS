@@ -14,7 +14,6 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesFinder.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
-#import <SessionMessagingKit/OWSIdentityManager.h>
 #import <SessionMessagingKit/OWSIncomingMessageFinder.h>
 #import <SessionMessagingKit/OWSMediaGalleryFinder.h>
 #import <SessionMessagingKit/OWSOutgoingReceiptManager.h>

@@ -13,6 +13,17 @@ public final class SNUtilitiesKitConfiguration : NSObject {
 }
 
 public enum SNUtilitiesKit { // Just to make the external API nice
+    public static func migrations() -> TargetMigrations {
+        return TargetMigrations(
+            identifier: .utilitiesKit,
+            migrations: [
+                [
+                    _001_InitialSetupMigration.self,
+                    _002_YDBToGRDBMigration.self
+                ]
+            ]
+        )
+    }
 
     public static func configure(owsPrimaryStorage: OWSPrimaryStorageProtocol, maxFileSize: UInt) {
         SNUtilitiesKitConfiguration.shared = SNUtilitiesKitConfiguration(owsPrimaryStorage: owsPrimaryStorage, maxFileSize: maxFileSize)

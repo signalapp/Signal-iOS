@@ -1,19 +1,40 @@
+import Foundation
 import CryptoSwift
+import GRDB
 import PromiseKit
 import SessionUtilitiesKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 public enum OnionRequestAPI {
-    private static var buildPathsPromise: Promise<[Path]>? = nil
+    private static var buildPathsPromise: Promise<[[Snode]]>? = nil
+    
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    private static var pathFailureCount: [Path:UInt] = [:]
+    private static var pathFailureCount: [[Snode]: UInt] = [:]
+    
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    private static var snodeFailureCount: [Legacy.Snode:UInt] = [:]
+    private static var snodeFailureCount: [Snode: UInt] = [:]
+    
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    public static var guardSnodes: Set<Legacy.Snode> = []
-    public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
+    public static var guardSnodes: Set<Snode> = []
+    
+    // Not a set to ensure we consistently show the same path to the user
+    private static var _paths: [[Snode]]?
+    public static var paths: [[Snode]] {
+        get {
+            if let paths: [[Snode]] = _paths { return paths }
+            
+            let results: [[Snode]]? = GRDBStorage.shared.read { db in
+                try? SnodeSet.fetchAllOnionRequestPaths(db)
+            }
+            
+            if results?.isEmpty == false { _paths = results }
+            return (results ?? [])
+        }
+        set { _paths = newValue }
+    }
 
-    // MARK: Settings
+    // MARK: - Settings
+    
     public static let maxRequestSize = 10_000_000 // 10 MB
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
@@ -27,97 +48,80 @@ public enum OnionRequestAPI {
     /// The number of guard snodes required to maintain `targetPathCount` paths.
     private static var targetGuardSnodeCount: UInt { return targetPathCount } // One per path
 
-    // MARK: Destination
-    public enum Destination : CustomStringConvertible {
-        case snode(Legacy.Snode)
-        case server(host: String, target: String, x25519PublicKey: String, scheme: String?, port: UInt16?)
-        
-        public var description: String {
-            switch self {
-            case .snode(let snode): return "Service node \(snode.ip):\(snode.port)"
-            case .server(let host, _, _, _, _): return host
-            }
-        }
-    }
-
-    // MARK: Error
-    public enum Error : LocalizedError {
-        case httpRequestFailedAtDestination(statusCode: UInt, json: JSON, destination: Destination)
-        case insufficientSnodes
-        case invalidURL
-        case missingSnodeVersion
-        case snodePublicKeySetMissing
-        case unsupportedSnodeVersion(String)
-
-        public var errorDescription: String? {
-            switch self {
-            case .httpRequestFailedAtDestination(let statusCode, _, let destination):
-                if statusCode == 429 {
-                    return "Rate limited."
-                } else {
-                    return "HTTP request failed at destination (\(destination)) with status code: \(statusCode)."
-                }
-            case .insufficientSnodes: return "Couldn't find enough Service Nodes to build a path."
-            case .invalidURL: return "Invalid URL"
-            case .missingSnodeVersion: return "Missing Service Node version."
-            case .snodePublicKeySetMissing: return "Missing Service Node public key set."
-            case .unsupportedSnodeVersion(let version): return "Unsupported Service Node version: \(version)."
-            }
-        }
-    }
-
-    // MARK: Path
-    public typealias Path = [Legacy.Snode]
-
     // MARK: Onion Building Result
-    private typealias OnionBuildingResult = (guardSnode: Legacy.Snode, finalEncryptionResult: AESGCM.EncryptionResult, destinationSymmetricKey: Data)
+    private typealias OnionBuildingResult = (guardSnode: Snode, finalEncryptionResult: AESGCM.EncryptionResult, destinationSymmetricKey: Data)
 
     // MARK: Private API
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.
-    private static func testSnode(_ snode: Legacy.Snode) -> Promise<Void> {
+    private static func testSnode(_ snode: Snode) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
+        
         DispatchQueue.global(qos: .userInitiated).async {
             let url = "\(snode.address):\(snode.port)/get_stats/v1"
             let timeout: TimeInterval = 3 // Use a shorter timeout for testing
-            HTTP.execute(.get, url, timeout: timeout).done2 { json in
-                guard let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
-                if version >= "2.0.7" {
-                    seal.fulfill(())
-                } else {
-                    SNLog("Unsupported snode version: \(version).")
-                    seal.reject(Error.unsupportedSnodeVersion(version))
+            
+            HTTP.execute(.get, url, timeout: timeout)
+                .done2 { json in
+                    guard let version = json["version"] as? String else {
+                        return seal.reject(Error.missingSnodeVersion)
+                    }
+                    
+                    if version >= "2.0.7" {
+                        seal.fulfill(())
+                    }
+                    else {
+                        SNLog("Unsupported snode version: \(version).")
+                        seal.reject(Error.unsupportedSnodeVersion(version))
+                    }
                 }
-            }.catch2 { error in
-                seal.reject(error)
-            }
+                .catch2 { error in
+                    seal.reject(error)
+                }
         }
+        
         return promise
     }
 
     /// Finds `targetGuardSnodeCount` guard snodes to use for path building. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func getGuardSnodes(reusing reusableGuardSnodes: [Legacy.Snode]) -> Promise<Set<Legacy.Snode>> {
+    private static func getGuardSnodes(reusing reusableGuardSnodes: [Snode]) -> Promise<Set<Snode>> {
         if guardSnodes.count >= targetGuardSnodeCount {
-            return Promise<Set<Legacy.Snode>> { $0.fulfill(guardSnodes) }
-        } else {
+            return Promise<Set<Snode>> { $0.fulfill(guardSnodes) }
+        }
+        else {
             SNLog("Populating guard snode cache.")
-            var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes) // Sync on LokiAPI.workQueue
+            // Sync on LokiAPI.workQueue
+            var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes)
             let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
-            guard unusedSnodes.count >= (targetGuardSnodeCount - reusableGuardSnodeCount) else { return Promise(error: Error.insufficientSnodes) }
-            func getGuardSnode() -> Promise<Legacy.Snode> {
-                // randomElement() uses the system's default random generator, which is cryptographically secure
-                guard let candidate = unusedSnodes.randomElement() else { return Promise<Legacy.Snode> { $0.reject(Error.insufficientSnodes) } }
+            
+            guard unusedSnodes.count >= (targetGuardSnodeCount - reusableGuardSnodeCount) else {
+                return Promise(error: Error.insufficientSnodes)
+            }
+            
+            func getGuardSnode() -> Promise<Snode> {
+                // randomElement() uses the system's default random generator, which
+                // is cryptographically secure
+                guard let candidate = unusedSnodes.randomElement() else {
+                    return Promise<Snode> { $0.reject(Error.insufficientSnodes) }
+                }
+                
                 unusedSnodes.remove(candidate) // All used snodes should be unique
                 SNLog("Testing guard snode: \(candidate).")
+                
                 // Loop until a reliable guard snode is found
                 return testSnode(candidate).map2 { candidate }.recover(on: DispatchQueue.main) { _ in
                     withDelay(0.1, completionQueue: Threading.workQueue) { getGuardSnode() }
                 }
             }
-            let promises = (0..<(targetGuardSnodeCount - reusableGuardSnodeCount)).map { _ in getGuardSnode() }
+            
+            let promises = (0..<(targetGuardSnodeCount - reusableGuardSnodeCount)).map { _ in
+                getGuardSnode()
+            }
+            
             return when(fulfilled: promises).map2 { guardSnodes in
                 let guardSnodesAsSet = Set(guardSnodes + reusableGuardSnodes)
                 OnionRequestAPI.guardSnodes = guardSnodesAsSet
+                
                 return guardSnodesAsSet
             }
         }
@@ -126,40 +130,50 @@ public enum OnionRequestAPI {
     /// Builds and returns `targetPathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
     @discardableResult
-    private static func buildPaths(reusing reusablePaths: [Path]) -> Promise<[Path]> {
+    private static func buildPaths(reusing reusablePaths: [[Snode]]) -> Promise<[[Snode]]> {
         if let existingBuildPathsPromise = buildPathsPromise { return existingBuildPathsPromise }
         SNLog("Building onion request paths.")
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .buildingPaths, object: nil)
         }
         let reusableGuardSnodes = reusablePaths.map { $0[0] }
-        let promise: Promise<[Path]> = getGuardSnodes(reusing: reusableGuardSnodes).map2 { guardSnodes -> [Path] in
-            var unusedSnodes = SnodeAPI.snodePool.subtracting(guardSnodes).subtracting(reusablePaths.flatMap { $0 })
-            let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
-            let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
-            guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
-            // Don't test path snodes as this would reveal the user's IP to them
-            return guardSnodes.subtracting(reusableGuardSnodes).map { guardSnode in
-                let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
-                    // randomElement() uses the system's default random generator, which is cryptographically secure
-                    let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
-                    unusedSnodes.remove(pathSnode) // All used snodes should be unique
-                    return pathSnode
+        let promise: Promise<[[Snode]]> = getGuardSnodes(reusing: reusableGuardSnodes)
+            .map2 { guardSnodes -> [[Snode]] in
+                var unusedSnodes = SnodeAPI.snodePool
+                    .subtracting(guardSnodes)
+                    .subtracting(reusablePaths.flatMap { $0 })
+                let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
+                let pathSnodeCount = (targetGuardSnodeCount - reusableGuardSnodeCount) * pathSize - (targetGuardSnodeCount - reusableGuardSnodeCount)
+                
+                guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
+                
+                // Don't test path snodes as this would reveal the user's IP to them
+                return guardSnodes.subtracting(reusableGuardSnodes).map { guardSnode in
+                    let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
+                        // randomElement() uses the system's default random generator, which is cryptographically secure
+                        let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
+                        unusedSnodes.remove(pathSnode) // All used snodes should be unique
+                        return pathSnode
+                    }
+                    
+                    SNLog("Built new onion request path: \(result.prettifiedDescription).")
+                    return result
                 }
-                SNLog("Built new onion request path: \(result.prettifiedDescription).")
-                return result
             }
-        }.map2 { paths in
-            OnionRequestAPI.paths = paths + reusablePaths
-            SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-                SNLog("Persisting onion request paths to database.")
-                SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
+            .map2 { paths in
+                OnionRequestAPI.paths = paths + reusablePaths
+                
+                GRDBStorage.shared.write { db in
+                    SNLog("Persisting onion request paths to database.")
+                    try? paths.save(db)
+                }
+                
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .pathsBuilt, object: nil)
+                }
+                return paths
             }
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .pathsBuilt, object: nil)
-            }
-            return paths
-        }
+        
         promise.done2 { _ in buildPathsPromise = nil }
         promise.catch2 { _ in buildPathsPromise = nil }
         buildPathsPromise = promise
@@ -167,63 +181,68 @@ public enum OnionRequestAPI {
     }
 
     /// Returns a `Path` to be used for building an onion request. Builds new paths as needed.
-    private static func getPath(excluding snode: Legacy.Snode?) -> Promise<Path> {
+    private static func getPath(excluding snode: Snode?) -> Promise<[Snode]> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
-        var paths = OnionRequestAPI.paths
-        if paths.isEmpty {
-            paths = SNSnodeKitConfiguration.shared.storage.getOnionRequestPaths()
-            OnionRequestAPI.paths = paths
-            if !paths.isEmpty {
-                guardSnodes.formUnion([ paths[0][0] ])
-                if paths.count >= 2 {
-                    guardSnodes.formUnion([ paths[1][0] ])
-                }
+        
+        let paths: [[Snode]] = OnionRequestAPI.paths
+        
+        if !paths.isEmpty {
+            guardSnodes.formUnion([ paths[0][0] ])
+            
+            if paths.count >= 2 {
+                guardSnodes.formUnion([ paths[1][0] ])
             }
         }
+        
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= targetPathCount {
-            if let snode = snode {
+            if let snode: Snode = snode {
                 return Promise { $0.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!) }
-            } else {
+            }
+            else {
                 return Promise { $0.fulfill(paths.randomElement()!) }
             }
-        } else if !paths.isEmpty {
+        }
+        else if !paths.isEmpty {
             if let snode = snode {
                 if let path = paths.first(where: { !$0.contains(snode) }) {
                     buildPaths(reusing: paths) // Re-build paths in the background
                     return Promise { $0.fulfill(path) }
-                } else {
+                }
+                else {
                     return buildPaths(reusing: paths).map2 { paths in
                         return paths.filter { !$0.contains(snode) }.randomElement()!
                     }
                 }
-            } else {
+            }
+            else {
                 buildPaths(reusing: paths) // Re-build paths in the background
                 return Promise { $0.fulfill(paths.randomElement()!) }
             }
-        } else {
+        }
+        else {
             return buildPaths(reusing: []).map2 { paths in
                 if let snode = snode {
                     if let path = paths.filter({ !$0.contains(snode) }).randomElement() {
                         return path
-                    } else {
-                        throw Error.insufficientSnodes
                     }
-                } else {
-                    return paths.randomElement()!
+                    
+                    throw Error.insufficientSnodes
                 }
+                
+                return paths.randomElement()!
             }
         }
     }
 
-    private static func dropGuardSnode(_ snode: Legacy.Snode) {
+    private static func dropGuardSnode(_ snode: Snode) {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
         guardSnodes = guardSnodes.filter { $0 != snode }
     }
 
-    private static func drop(_ snode: Legacy.Snode) throws {
+    private static func drop(_ snode: Snode) throws {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
@@ -244,13 +263,14 @@ public enum OnionRequestAPI {
         oldPaths.remove(at: pathIndex)
         let newPaths = oldPaths + [ path ]
         paths = newPaths
-        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
+        
+        GRDBStorage.shared.write { db in
             SNLog("Persisting onion request paths to database.")
-            SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: newPaths, using: transaction)
+            try? newPaths.save(db)
         }
     }
 
-    private static func drop(_ path: Path) {
+    private static func drop(_ path: [Snode]) {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
@@ -259,56 +279,69 @@ public enum OnionRequestAPI {
         guard let pathIndex = paths.firstIndex(of: path) else { return }
         paths.remove(at: pathIndex)
         OnionRequestAPI.paths = paths
-        SNSnodeKitConfiguration.shared.storage.writeSync { transaction in
-            if !paths.isEmpty {
-                SNLog("Persisting onion request paths to database.")
-                SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: paths, using: transaction)
-            } else {
+        
+        GRDBStorage.shared.write { db in
+            guard !paths.isEmpty else {
                 SNLog("Clearing onion request paths.")
-                SNSnodeKitConfiguration.shared.storage.setOnionRequestPaths(to: [], using: transaction)
+                try? SnodeSet.clearOnionRequestPaths(db)
+                return
             }
+            
+            SNLog("Persisting onion request paths to database.")
+            try? paths.save(db)
         }
     }
 
     /// Builds an onion around `payload` and returns the result.
     private static func buildOnion(around payload: JSON, targetedAt destination: Destination) -> Promise<OnionBuildingResult> {
-        var guardSnode: Legacy.Snode!
+        var guardSnode: Snode!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the destination
         var encryptionResult: AESGCM.EncryptionResult!
-        var snodeToExclude: Legacy.Snode?
+        var snodeToExclude: Snode?
+        
         if case .snode(let snode) = destination { snodeToExclude = snode }
-        return getPath(excluding: snodeToExclude).then2 { path -> Promise<AESGCM.EncryptionResult> in
-            guardSnode = path.first!
-            // Encrypt in reverse order, i.e. the destination first
-            return encrypt(payload, for: destination).then2 { r -> Promise<AESGCM.EncryptionResult> in
-                targetSnodeSymmetricKey = r.symmetricKey
-                // Recursively encrypt the layers of the onion (again in reverse order)
-                encryptionResult = r
-                var path = path
-                var rhs = destination
-                func addLayer() -> Promise<AESGCM.EncryptionResult> {
-                    if path.isEmpty {
-                        return Promise<AESGCM.EncryptionResult> { $0.fulfill(encryptionResult) }
-                    } else {
-                        let lhs = Destination.snode(path.removeLast())
-                        return OnionRequestAPI.encryptHop(from: lhs, to: rhs, using: encryptionResult).then2 { r -> Promise<AESGCM.EncryptionResult> in
-                            encryptionResult = r
-                            rhs = lhs
-                            return addLayer()
+        
+        return getPath(excluding: snodeToExclude)
+            .then2 { path -> Promise<AESGCM.EncryptionResult> in
+                guardSnode = path.first!
+                // Encrypt in reverse order, i.e. the destination first
+                return encrypt(payload, for: destination)
+                    .then2 { r -> Promise<AESGCM.EncryptionResult> in
+                        targetSnodeSymmetricKey = r.symmetricKey
+                        
+                        // Recursively encrypt the layers of the onion (again in reverse order)
+                        encryptionResult = r
+                        var path = path
+                        var rhs = destination
+                        
+                        func addLayer() -> Promise<AESGCM.EncryptionResult> {
+                            guard !path.isEmpty else {
+                                return Promise<AESGCM.EncryptionResult> { $0.fulfill(encryptionResult) }
+                            }
+                            
+                            let lhs = Destination.snode(path.removeLast())
+                            return OnionRequestAPI
+                                .encryptHop(from: lhs, to: rhs, using: encryptionResult)
+                                .then2 { r -> Promise<AESGCM.EncryptionResult> in
+                                    encryptionResult = r
+                                    rhs = lhs
+                                    return addLayer()
+                                }
                         }
+                        
+                        return addLayer()
                     }
-                }
-                return addLayer()
             }
-        }.map2 { _ in (guardSnode, encryptionResult, targetSnodeSymmetricKey) }
+            .map2 { _ in (guardSnode, encryptionResult, targetSnodeSymmetricKey) }
     }
 
     // MARK: Public API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    public static func sendOnionRequest(to snode: Legacy.Snode, invoking method: Legacy.Snode.Method, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<JSON> {
+    public static func sendOnionRequest(to snode: Snode, invoking method: SnodeAPI.Endpoint, with parameters: JSON, associatedWith publicKey: String? = nil) -> Promise<JSON> {
         let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
         return sendOnionRequest(with: payload, to: Destination.snode(snode)).recover2 { error -> Promise<JSON> in
             guard case OnionRequestAPI.Error.httpRequestFailedAtDestination(let statusCode, let json, _) = error else { throw error }
+            
             throw SnodeAPI.handleError(withStatusCode: statusCode, json: json, forSnode: snode, associatedWith: publicKey) ?? error
         }
     }
@@ -365,7 +398,7 @@ public enum OnionRequestAPI {
 
     public static func sendOnionRequest(with payload: JSON, to destination: Destination) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
-        var guardSnode: Legacy.Snode?
+        var guardSnode: Snode?
         Threading.workQueue.async { // Avoid race conditions on `guardSnodes` and `paths`
             buildOnion(around: payload, targetedAt: destination).done2 { intermediate in
                 guardSnode = intermediate.guardSnode
@@ -442,7 +475,7 @@ public enum OnionRequestAPI {
             let prefix = "Next node not found: "
             if let message = json?["result"] as? String, message.hasPrefix(prefix) {
                 let ed25519PublicKey = message[message.index(message.startIndex, offsetBy: prefix.count)..<message.endIndex]
-                if let path = path, let snode = path.first(where: { $0.publicKeySet.ed25519Key == ed25519PublicKey }) {
+                if let path = path, let snode = path.first(where: { $0.ed25519PublicKey == ed25519PublicKey }) {
                     var snodeFailureCount = OnionRequestAPI.snodeFailureCount[snode] ?? 0
                     snodeFailureCount += 1
                     if snodeFailureCount >= snodeFailureThreshold {

@@ -210,15 +210,15 @@ public final class GRDBStorage {
     
     // MARK: - Functions
     
-    public func write<T>(updates: (Database) throws -> T) throws -> T {
-        return try dbPool.write(updates)
+    @discardableResult public func write<T>(updates: (Database) throws -> T?) -> T? {
+        return try? dbPool.write(updates)
     }
     
     public func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Result<T, Error>) -> Void) {
         dbPool.asyncWrite(updates, completion: completion)
     }
     
-    public func read<T>(_ value: (Database) throws -> T) throws -> T {
-        return try dbPool.read(value)
+    @discardableResult public func read<T>(_ value: (Database) throws -> T?) -> T? {
+        return try? dbPool.read(value)
     }
 }

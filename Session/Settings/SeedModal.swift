@@ -1,15 +1,18 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionUtilitiesKit
 
 @objc(LKSeedModal)
-final class SeedModal : Modal {
-    
+final class SeedModal: Modal {
+
     private let mnemonic: String = {
-        let identityManager = OWSIdentityManager.shared()
-        let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
-        var hexEncodedSeed: String! = databaseConnection.object(forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection) as! String?
-        if hexEncodedSeed == nil {
-            hexEncodedSeed = identityManager.identityKeyPair()!.hexEncodedPrivateKey // Legacy account
+        if let hexEncodedSeed: String = Identity.fetchHexEncodedSeed() {
+            return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
         }
-        return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
+        
+        // Legacy account
+        return Mnemonic.encode(hexEncodedString: Identity.fetchUserKeyPair()!.hexEncodedPrivateKey)
     }()
     
     // MARK: Lifecycle

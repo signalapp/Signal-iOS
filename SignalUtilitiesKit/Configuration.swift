@@ -24,6 +24,7 @@ public final class Configuration : NSObject {
             //DispatchQueue.main.once
             let storage: GRDBStorage? = try? GRDBStorage(
                 migrations: [
+                    SNUtilitiesKit.migrations(),
                     SNSnodeKit.migrations(),
                     SNMessagingKit.migrations()
                 ]
@@ -31,6 +32,6 @@ public final class Configuration : NSObject {
         }
         
         SNMessagingKit.configure(storage: Storage.shared)
-        SNSnodeKit.configure(storage: Storage.shared)
+        SNSnodeKit.configure()
     }
 }

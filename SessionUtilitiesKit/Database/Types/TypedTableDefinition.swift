@@ -20,7 +20,14 @@ public class TypedTableDefinition<T> where T: TableRecord, T: ColumnExpressible 
         definition.primaryKey(columns.map { $0.name }, onConflict: onConflict)
     }
     
-    public func foreignKey<Other>(_ columns: [T.Columns], references table: Other.Type, columns destinationColumns: [Other.Columns]? = nil, onDelete: Database.ForeignKeyAction? = nil, onUpdate: Database.ForeignKeyAction? = nil, deferred: Bool = false) where Other: TableRecord, Other: ColumnExpressible {
+    public func foreignKey<Other>(
+        _ columns: [T.Columns],
+        references table: Other.Type,
+        columns destinationColumns: [Other.Columns]? = nil,
+        onDelete: Database.ForeignKeyAction? = nil,
+        onUpdate: Database.ForeignKeyAction? = nil,
+        deferred: Bool = false
+    ) where Other: TableRecord, Other: ColumnExpressible {
         return definition.foreignKey(
             columns.map { $0.name },
             references: table.databaseTableName,

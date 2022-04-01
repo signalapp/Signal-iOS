@@ -1,3 +1,7 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import Curve25519Kit
 import SignalCoreKit
 import SessionSnodeKit
 
@@ -556,7 +560,7 @@ extension MessageReceiver {
             let groupPublicKey = explicitGroupPublicKey?.toHexString() ?? message.groupPublicKey else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let userPublicKey = getUserHexEncodedPublicKey()
-        guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else {
+        guard let userKeyPair = Identity.fetchUserKeyPair() else {
             return SNLog("Couldn't find user X25519 key pair.")
         }
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)

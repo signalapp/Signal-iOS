@@ -3,7 +3,6 @@
 //
 
 #import "OWSRecipientIdentity.h"
-#import "OWSIdentityManager.h"
 #import "OWSPrimaryStorage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>

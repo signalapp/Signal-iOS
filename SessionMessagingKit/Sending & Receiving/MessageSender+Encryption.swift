@@ -1,10 +1,13 @@
-import SessionUtilitiesKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import Sodium
+import SessionUtilitiesKit
 
 extension MessageSender {
 
     internal static func encryptWithSessionProtocol(_ plaintext: Data, for recipientHexEncodedX25519PublicKey: String) throws -> Data {
-        guard let userED25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserED25519KeyPair() else { throw Error.noUserED25519KeyPair }
+        guard let userED25519KeyPair = Identity.fetchUserEd25519KeyPair() else { throw Error.noUserED25519KeyPair }
         let recipientX25519PublicKey = Data(hex: recipientHexEncodedX25519PublicKey.removing05PrefixIfNeeded())
         let sodium = Sodium()
         

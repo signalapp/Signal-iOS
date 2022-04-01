@@ -38,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithProfileManager:(id<ProfileManagerProtocol>)profileManager
                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                       identityManager:(OWSIdentityManager *)identityManager
                       tsAccountManager:(TSAccountManager *)tsAccountManager
                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager

@@ -28,7 +28,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         }
         
         let senderPublicKey = incomingMessage.authorId
-        let userPublicKey = GeneralUtilities.getUserPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
         guard senderPublicKey != userPublicKey else {
             // Ignore PNs for messages sent by the current user
             // after handling the message. Otherwise the closed

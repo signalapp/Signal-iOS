@@ -1,7 +1,11 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import Curve25519Kit
 import PromiseKit
 
 extension MessageSender {
-    public static var distributingClosedGroupEncryptionKeyPairs: [String:[ECKeyPair]] = [:]
+    public static var distributingClosedGroupEncryptionKeyPairs: [String: [ECKeyPair]] = [:]
     
     public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
         // Prepare

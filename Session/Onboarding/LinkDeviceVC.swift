@@ -1,4 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import PromiseKit
+import SessionUtilitiesKit
 
 final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -130,7 +134,7 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
             presentAlert(alert)
             return
         }
-        let (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
+        let (ed25519KeyPair, x25519KeyPair) = try! Identity.generate(from: seed)
         Onboarding.Flow.link.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
         TSAccountManager.sharedInstance().didRegister()
         NotificationCenter.default.addObserver(self, selector: #selector(handleInitialConfigurationMessageReceived), name: .initialConfigurationMessageReceived, object: nil)
@@ -140,7 +144,8 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }
     
     @objc private func handleInitialConfigurationMessageReceived(_ notification: Notification) {
-        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = getUserHexEncodedPublicKey()
+        
         DispatchQueue.main.async {
             self.navigationController!.dismiss(animated: true) {
                 let pnModeVC = PNModeVC()

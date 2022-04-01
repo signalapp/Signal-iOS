@@ -1005,7 +1005,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
             // If it's an incoming message the user must have moderator status
             if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
-                NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
+                NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
                 if (![SNOpenGroupAPIV2 isUserModerator:userPublicKey forRoom:openGroupV2.room onServer:openGroupV2.server]) { return; }
             }
             
@@ -1058,7 +1058,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
         // If it's an incoming message the user must have moderator status
         if (self.interaction.interactionType == OWSInteractionType_IncomingMessage) {
-            NSString *userPublicKey = [LKStorage.shared getUserPublicKey];
+            NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
             if (openGroupV2 != nil) {
                 if (![SNOpenGroupAPIV2 isUserModerator:userPublicKey forRoom:openGroupV2.room onServer:openGroupV2.server]) { return; }
             }

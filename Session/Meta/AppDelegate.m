@@ -748,7 +748,7 @@ static NSTimeInterval launchStartedAt;
         [[LKPushNotificationAPI unregisterToken:deviceToken] retainUntilComplete];
     }
     [ThreadUtil deleteAllContent];
-    [SSKEnvironment.shared.identityManager clearIdentityKey];
+    [SUKIdentity clearUserKeyPair];
     [SNSnodeAPI clearSnodePool];
     [self stopPoller];
     [self stopClosedGroupPoller];

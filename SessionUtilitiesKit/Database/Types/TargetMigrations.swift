@@ -16,6 +16,7 @@ public struct TargetMigrations: Comparable {
     public enum Identifier: String, CaseIterable, Comparable {
         // WARNING: The string version of these cases are used as migration identifiers so
         // changing them will result in the migrations running again
+        case utilitiesKit
         case snodeKit
         case messagingKit
         

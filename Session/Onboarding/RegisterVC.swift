@@ -136,7 +136,7 @@ final class RegisterVC : BaseVC {
     }
     
     private func updateKeyPair() {
-        (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
+        (ed25519KeyPair, x25519KeyPair) = try! Identity.generate(from: seed)
     }
     
     private func updatePublicKeyLabel() {

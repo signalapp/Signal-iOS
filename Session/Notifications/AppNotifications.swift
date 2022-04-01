@@ -121,10 +121,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     // MARK: - Dependencies
 
-    var identityManager: OWSIdentityManager {
-        return OWSIdentityManager.shared()
-    }
-
     var preferences: OWSPreferences {
         return Environment.shared.preferences
     }

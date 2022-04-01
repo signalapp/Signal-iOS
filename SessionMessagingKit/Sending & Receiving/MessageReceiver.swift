@@ -1,7 +1,10 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import SessionUtilitiesKit
 
 public enum MessageReceiver {
-    private static var lastEncryptionKeyPairRequest: [String:Date] = [:] 
+    private static var lastEncryptionKeyPairRequest: [String: Date] = [:]
 
     public enum Error : LocalizedError {
         case duplicateMessage
@@ -49,7 +52,7 @@ public enum MessageReceiver {
     }
 
     public static func parse(_ data: Data, openGroupMessageServerID: UInt64?, isRetry: Bool = false, using transaction: Any) throws -> (Message, SNProtoContent) {
-        let userPublicKey = SNMessagingKitConfiguration.shared.storage.getUserPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
         let isOpenGroupMessage = (openGroupMessageServerID != nil)
         // Parse the envelope
         let envelope = try SNProtoEnvelope.parseData(data)
@@ -64,7 +67,7 @@ public enum MessageReceiver {
         } else {
             switch envelope.type {
             case .sessionMessage:
-                guard let userX25519KeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { throw Error.noUserX25519KeyPair }
+                guard let userX25519KeyPair = Identity.fetchUserKeyPair() else { throw Error.noUserX25519KeyPair }
                 (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: userX25519KeyPair)
             case .closedGroupMessage:
                 guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else { throw Error.invalidGroupPublicKey }

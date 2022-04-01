@@ -14,8 +14,15 @@ enum _002_YDBToGRDBMigration: Migration {
         // Note: Want to exclude the Snode's we already added from the 'onionRequestPathResult'
         var snodeResult: Set<Legacy.Snode> = []
         var snodeSetResult: [String: Set<Legacy.Snode>] = [:]
+        var lastSnodePoolRefreshDate: Date? = nil
         
         Storage.read { transaction in
+            // Process the lastSnodePoolRefreshDate
+            lastSnodePoolRefreshDate = transaction.object(
+                forKey: Legacy.lastSnodePoolRefreshDateKey,
+                inCollection: Legacy.lastSnodePoolRefreshDateCollection
+            ) as? Date
+            
             // Process the OnionRequestPaths
             if
                 let path0Snode0 = transaction.object(forKey: "0-0", inCollection: Legacy.onionRequestPathCollection) as? Legacy.Snode,
@@ -65,6 +72,10 @@ enum _002_YDBToGRDBMigration: Migration {
             }
         }
         
+        // Insert the data into GRDB
+        
+        db[.lastSnodePoolRefreshDate] = lastSnodePoolRefreshDate
+        
         try snodeResult.forEach { legacySnode in
             try Snode(
                 address: legacySnode.address,
@@ -79,19 +90,12 @@ enum _002_YDBToGRDBMigration: Migration {
                 // Note: In this case the 'nodeIndex' is irrelivant
                 try SnodeSet(
                     key: key,
-                    nodeIndex: UInt(nodeIndex),
+                    nodeIndex: nodeIndex,
                     address: legacySnode.address,
                     port: legacySnode.port
                 ).insert(db)
             }
         }
-        
-        // TODO: This
-//        public func setLastSnodePoolRefreshDate(to date: Date, using transaction: Any) {
-//            (transaction as! YapDatabaseReadWriteTransaction).setObject(date, forKey: "lastSnodePoolRefreshDate", inCollection: Storage.lastSnodePoolRefreshDateCollection)
-//        }
-        
-        print("RAWR")
         
         // MARK: - Received Messages & Last Message Hash
         

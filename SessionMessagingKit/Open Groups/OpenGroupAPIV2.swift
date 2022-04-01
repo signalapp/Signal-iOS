@@ -1,10 +1,15 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import PromiseKit
+import Curve25519Kit
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
-    private static var authTokenPromises: [String:Promise<String>] = [:]
-    private static var hasPerformedInitialPoll: [String:Bool] = [:]
+    private static var authTokenPromises: [String: Promise<String>] = [:]
+    private static var hasPerformedInitialPoll: [String: Bool] = [:]
     private static var hasUpdatedLastOpenDate = false
     public static let workQueue = DispatchQueue(label: "OpenGroupAPIV2.workQueue", qos: .userInitiated) // It's important that this is a serial queue
     public static var moderators: [String:[String:Set<String>]] = [:] // Server URL to room ID to set of moderator IDs
@@ -237,7 +242,7 @@ public final class OpenGroupAPIV2 : NSObject {
 
     public static func requestNewAuthToken(for room: String, on server: String) -> Promise<String> {
         SNLog("Requesting auth token for server: \(server).")
-        guard let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair() else { return Promise(error: Error.generic) }
+        guard let userKeyPair = Identity.fetchUserKeyPair() else { return Promise(error: Error.generic) }
         let queryParameters = [ "public_key" : getUserHexEncodedPublicKey() ]
         let request = Request(verb: .get, room: room, server: server, endpoint: "auth_token_challenge", queryParameters: queryParameters, isAuthRequired: false)
         return send(request).map(on: OpenGroupAPIV2.workQueue) { json in

@@ -1,3 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import Curve25519Kit
+import SessionUtilitiesKit
 
 public struct OpenGroupMessageV2 {
     public let serverID: Int64?
@@ -10,8 +15,11 @@ public struct OpenGroupMessageV2 {
     public let base64EncodedSignature: String?
 
     public func sign() -> OpenGroupMessageV2? {
-        let userKeyPair = SNMessagingKitConfiguration.shared.storage.getUserKeyPair()!
-        let data = Data(base64Encoded: base64EncodedData)!
+        guard
+            let userKeyPair = Identity.fetchUserKeyPair(),
+            let data: Data = Data(base64Encoded: base64EncodedData)
+        else { return nil }
+        
         guard let signature = try? Ed25519.sign(data, with: userKeyPair) else {
             SNLog("Failed to sign open group message.")
             return nil

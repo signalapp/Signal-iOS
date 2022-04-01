@@ -1,3 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionMessagingKit
+import SessionUtilitiesKit
 
 // See https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions and
 // https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification for
@@ -162,7 +167,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             self.threads.update(with: transaction) // Perform the initial update
         }
         // Start polling if needed (i.e. if the user just created or restored their Session ID)
-        if OWSIdentityManager.shared().identityKeyPair() != nil {
+        if Identity.fetchUserKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
             appDelegate.startClosedGroupPoller()

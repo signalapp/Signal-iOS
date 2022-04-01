@@ -42,18 +42,29 @@ public final class BackgroundPoller : NSObject {
             guard let snode = swarm.randomElement() else { throw SnodeAPI.Error.generic }
             return attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.main) {
                 return SnodeAPI.getRawMessages(from: snode, associatedWith: publicKey).then(on: DispatchQueue.main) { rawResponse -> Promise<Void> in
-                    let (messages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
-                    let promises = messages.compactMap { json -> Promise<Void>? in
-                        // Use a best attempt approach here; we don't want to fail the entire process if one of the
-                        // messages failed to parse.
-                        guard let envelope = SNProtoEnvelope.from(json),
-                            let data = try? envelope.serializedData() else { return nil }
-                        let job = MessageReceiveJob(data: data, serverHash: json["hash"] as? String, isBackgroundPoll: true)
+                    let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: publicKey)
+                    let promises = messages.compactMap { message -> Promise<Void>? in
+                        // Use a best attempt approach here; we don't want to fail the entire process
+                        // if one of the messages failed to parse
+                        guard
+                            let envelope = SNProtoEnvelope.from(message),
+                            let data = try? envelope.serializedData()
+                        else { return nil }
+                        
+                        let job = MessageReceiveJob(
+                            data: data,
+                            serverHash: message.info.hash,
+                            isBackgroundPoll: true
+                        )
                         return job.execute()
                     }
                     
-                    // Now that the MessageReceiveJob's have been created we can update the `lastMessageHash` value
-                    SnodeAPI.updateLastMessageHashValueIfPossible(for: snode, associatedWith: publicKey, from: lastRawMessage)
+                    // Now that the MessageReceiveJob's have been created we can persist the received messages
+                    if !messages.isEmpty {
+                        GRDBStorage.shared.write { db in
+                            messages.forEach { try? $0.info.save(db) }
+                        }
+                    }
                     
                     return when(fulfilled: promises) // The promise returned by MessageReceiveJob never rejects
                 }
