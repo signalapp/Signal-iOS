@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 public struct EmojiWithSkinTones: Hashable {
@@ -31,9 +31,9 @@ public struct EmojiWithSkinTones: Hashable {
 extension Emoji {
     private static let keyValueStore = SDSKeyValueStore(collection: "Emoji+PreferredSkinTonePermutation")
 
-    static func allAvailableEmojiByCategoryWithPreferredSkinTones(transaction: SDSAnyReadTransaction) -> [Category: [EmojiWithSkinTones]] {
+    static func allSendableEmojiByCategoryWithPreferredSkinTones(transaction: SDSAnyReadTransaction) -> [Category: [EmojiWithSkinTones]] {
         return Category.allCases.reduce(into: [Category: [EmojiWithSkinTones]]()) { result, category in
-            result[category] = category.emoji.filter { $0.available }.map { $0.withPreferredSkinTones(transaction: transaction) }
+            result[category] = category.normalizedEmoji.filter { $0.available }.map { $0.withPreferredSkinTones(transaction: transaction) }
         }
     }
 

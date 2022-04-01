@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -185,6 +185,30 @@ public class OWSHttpHeaders: NSObject {
         httpHeaders.addDefaultHeaders()
         request.replace(httpHeaders: httpHeaders)
         return request
+    }
+
+    // MARK: - NSObject Overrides
+
+    static let whitelistedLoggedHeaderKeys = Set([
+        "retry-after",
+        "x-signal-timestamp"
+        // Have a header key who's value you'd like to see logged? Add it here (lowercased)!
+    ])
+
+    override public var description: String {
+        let loggedPairsString: String = headers.lazy
+            .filter { Self.whitelistedLoggedHeaderKeys.contains($0.key.lowercased()) == true }
+            .map { "\($0.key): \($0.value.description)" }
+            .joined(separator: "; ")
+
+        let leftoverKeysString: String = headers.keys.lazy
+            .filter { Self.whitelistedLoggedHeaderKeys.contains($0.lowercased()) == false }
+            .joined(separator: ", ")
+
+        return "<\(super.description)"
+            .appending(loggedPairsString.count > 0 ? " (\(loggedPairsString))" : "")
+            .appending(leftoverKeysString.count > 0 ? " (\(leftoverKeysString))" : "")
+            .appending(">")
     }
 }
 

@@ -1154,31 +1154,28 @@ extension OWSWebSocket {
         let webSocketType = self.webSocketType
         let canUseAuth = webSocketType == .identified && !request.isUDRequest
 
-        self.makeRequestInternal(request,
-                                 unsubmittedRequestToken: unsubmittedRequestToken,
-                                 success: { (response: HTTPResponse, requestInfo: SocketRequestInfo) in
-                                    let label = Self.label(forRequest: request,
-                                                           webSocketType: webSocketType,
-                                                           requestInfo: requestInfo)
+        self.makeRequestInternal(
+            request,
+            unsubmittedRequestToken: unsubmittedRequestToken,
+            success: { (response: HTTPResponse, requestInfo: SocketRequestInfo) in
+                let label = Self.label(forRequest: request, webSocketType: webSocketType, requestInfo: requestInfo)
+                Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
 
-                                    Logger.info("\(label): Request Succeeded")
+                if canUseAuth, request.shouldHaveAuthorizationHeaders {
+                    Self.tsAccountManager.setIsDeregistered(false)
+                }
 
-                                    if canUseAuth,
-                                       request.shouldHaveAuthorizationHeaders {
-                                        Self.tsAccountManager.setIsDeregistered(false)
-                                    }
+                successParam(response)
 
-                                    successParam(response)
+                Self.outageDetection.reportConnectionSuccess()
+            },
+            failure: { (failure: OWSHTTPErrorWrapper) in
+                if failure.error.responseStatusCode == AppExpiry.appExpiredStatusCode {
+                    Self.appExpiry.setHasAppExpiredAtCurrentVersion()
+                }
 
-                                    Self.outageDetection.reportConnectionSuccess()
-                                 },
-                                 failure: { (failure: OWSHTTPErrorWrapper) in
-                                    if failure.error.responseStatusCode == AppExpiry.appExpiredStatusCode {
-                                        Self.appExpiry.setHasAppExpiredAtCurrentVersion()
-                                    }
-
-                                    failureParam(failure)
-                                 })
+                failureParam(failure)
+            })
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -335,6 +335,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         primaryView.addSubview(spinner)
         spinner.autoCenterInSuperviewMargins()
         spinner.startAnimating()
+        saveButton.setEnabled(false)
 
         firstly(on: .sharedUserInitiated) {
             OWSProfileManager.updateLocalProfilePromise(
@@ -345,14 +346,28 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
                 profileAvatarData: avatarData,
                 visibleBadgeIds: [],
                 userProfileWriter: .registration)
-        }.recover { error in
-            owsFailDebug("Error: \(error)")
         }.done {
             self.profileCompleted()
             UIView.animate(withDuration: 0.15) {
                 spinner.alpha = 0
             } completion: { _ in
                 spinner.removeFromSuperview()
+                self.saveButton.setEnabled(self.isValidProfile)
+            }
+        }.catch { error in
+            spinner.stopAnimating(success: false) {
+                spinner.removeFromSuperview()
+                self.saveButton.setEnabled(self.isValidProfile)
+
+                if error.isNetworkConnectivityFailure {
+                    OWSActionSheets.showErrorAlert(
+                        message: NSLocalizedString(
+                            "PROFILE_VIEW_NO_CONNECTION",
+                            comment: "Error shown when the user tries to update their profile when the app is not connected to the internet.")
+                    )
+                } else {
+                    OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
+                }
             }
         }
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,9 +24,9 @@ class EmojiPickerCollectionView: UICollectionView {
     private let recentEmoji: [EmojiWithSkinTones]
     var hasRecentEmoji: Bool { !recentEmoji.isEmpty }
 
-    private let allAvailableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
-    private lazy var allAvailableEmoji: [EmojiWithSkinTones] = {
-        return Array(allAvailableEmojiByCategory.values).flatMap({$0})
+    private let allSendableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
+    private lazy var allSendableEmoji: [EmojiWithSkinTones] = {
+        return Array(allSendableEmojiByCategory.values).flatMap({$0})
     }()
 
     static let emojiWidth: CGFloat = 38
@@ -59,16 +59,32 @@ class EmojiPickerCollectionView: UICollectionView {
         layout.minimumInteritemSpacing = EmojiPickerCollectionView.minimumSpacing
         layout.sectionInset = UIEdgeInsets(top: 0, leading: EmojiPickerCollectionView.margins, bottom: 0, trailing: EmojiPickerCollectionView.margins)
 
-        (recentEmoji, allAvailableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
-            let rawEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
+        (recentEmoji, allSendableEmojiByCategory) = SDSDatabaseStorage.shared.read { transaction in
+            let rawRecentEmoji = EmojiPickerCollectionView.keyValueStore.getObject(
                 forKey: EmojiPickerCollectionView.recentEmojiKey,
                 transaction: transaction
             ) as? [String] ?? []
-            let recentEmoji = rawEmoji.compactMap { EmojiWithSkinTones(rawValue: $0) }
-            let allAvailableEmojiByCategory = Emoji.allAvailableEmojiByCategoryWithPreferredSkinTones(
+
+            var recentEmoji = rawRecentEmoji.compactMap { EmojiWithSkinTones(rawValue: $0) }
+
+            // Some emoji have two different code points but identical appearances. Let's remove them!
+            // If we normalize to a different emoji than the one currently in our array, we want to drop
+            // the non-normalized variant if the normalized variant already exists. Otherwise, map to the
+            // normalized variant.
+            for (idx, emoji) in recentEmoji.enumerated().reversed() {
+                if !emoji.isNormalized {
+                    if recentEmoji.contains(emoji.normalized) {
+                        recentEmoji.remove(at: idx)
+                    } else {
+                        recentEmoji[idx] = emoji.normalized
+                    }
+                }
+            }
+
+            let allSendableEmojiByCategory = Emoji.allSendableEmojiByCategoryWithPreferredSkinTones(
                 transaction: transaction
             )
-            return (recentEmoji, allAvailableEmojiByCategory)
+            return (recentEmoji, allSendableEmojiByCategory)
         }
 
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -121,7 +137,7 @@ class EmojiPickerCollectionView: UICollectionView {
             return []
         }
 
-        guard let categoryEmoji = allAvailableEmojiByCategory[category] else {
+        guard let categoryEmoji = allSendableEmojiByCategory[category] else {
             owsFailDebug("Unexpectedly missing emoji for category \(category)")
             return []
         }
@@ -149,6 +165,10 @@ class EmojiPickerCollectionView: UICollectionView {
 
     func recordRecentEmoji(_ emoji: EmojiWithSkinTones, transaction: SDSAnyWriteTransaction) {
         guard recentEmoji.first != emoji else { return }
+        guard emoji.isNormalized else {
+            recordRecentEmoji(emoji.normalized, transaction: transaction)
+            return
+        }
 
         var newRecentEmoji = recentEmoji
 
@@ -192,7 +212,7 @@ class EmojiPickerCollectionView: UICollectionView {
     func searchWithText(_ searchText: String?) {
         if let searchText = searchText {
             if let emojiSearchIndex = emojiSearchIndex {
-                emojiSearchResults = allAvailableEmoji.filter { emoji in
+                emojiSearchResults = allSendableEmoji.filter { emoji in
                     let rawEmoji = emoji.baseEmoji.rawValue
                     if let terms = emojiSearchIndex[rawEmoji] {
                         for term in terms {
@@ -204,7 +224,7 @@ class EmojiPickerCollectionView: UICollectionView {
                     return false
                 }
             } else { // Search on raw emoji name if no index is available
-                emojiSearchResults = allAvailableEmoji.filter { emoji in
+                emojiSearchResults = allSendableEmoji.filter { emoji in
                     return emoji.baseEmoji.name.range(of: searchText, options: [.caseInsensitive, .anchored]) != nil
                 }
             }
@@ -593,4 +613,19 @@ private class EmojiSearchIndex: NSObject {
 
         return index
     }
+}
+
+fileprivate extension EmojiWithSkinTones {
+
+    var normalized: EmojiWithSkinTones {
+        switch (baseEmoji, skinTones) {
+        case (let base, nil) where base.normalized != base:
+            return EmojiWithSkinTones(baseEmoji: base.normalized)
+        default:
+            return self
+        }
+    }
+
+    var isNormalized: Bool { self == normalized }
+
 }

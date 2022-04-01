@@ -177,6 +177,17 @@ struct EmojiModel {
             }
         }
 
+        var isNormalized: Bool { enumName == normalizedEnumName }
+        var normalizedEnumName: String {
+            switch enumName {
+                // flagUm (US Minor Outlying Islands) looks identical to the
+                // US flag. We don't present it as a sendable reaction option
+                // This matches the iOS keyboard behavior.
+                case "flagUm": return "us"
+                default: return enumName
+            }
+        }
+
         static func parseCodePointString(_ pointString: String) -> [UnicodeScalar] {
             return pointString
                 .components(separatedBy: "-")
@@ -413,15 +424,17 @@ extension EmojiGenerator {
                     fileHandle.writeLine("")
 
                     // Emoji lookup per category
-                    fileHandle.writeLine("var emoji: [Emoji] {")
+                    fileHandle.writeLine("var normalizedEmoji: [Emoji] {")
                     fileHandle.indent {
                         fileHandle.writeLine("switch self {")
 
-                        let emojiPerCategory: [RemoteModel.EmojiCategory: [EmojiModel.EmojiDefinition]]
-                        emojiPerCategory = emojiModel.definitions.reduce(into: [:]) { result, emojiDef in
-                            var categoryList = result[emojiDef.category] ?? []
-                            categoryList.append(emojiDef)
-                            result[emojiDef.category] = categoryList
+                        let normalizedEmojiPerCategory: [RemoteModel.EmojiCategory: [EmojiModel.EmojiDefinition]]
+                        normalizedEmojiPerCategory = emojiModel.definitions.reduce(into: [:]) { result, emojiDef in
+                            if emojiDef.isNormalized {
+                                var categoryList = result[emojiDef.category] ?? []
+                                categoryList.append(emojiDef)
+                                result[emojiDef.category] = categoryList
+                            }
                         }
 
                         for category in outputCategories {
@@ -430,9 +443,9 @@ extension EmojiGenerator {
                                 case .smileysAndPeople:
                                     // Merge smileys & people. It's important we initially bucket these separately,
                                     // because we want the emojis to be sorted smileys followed by people
-                                    return emojiPerCategory[.smileys]! + emojiPerCategory[.people]!
+                                    return normalizedEmojiPerCategory[.smileys]! + normalizedEmojiPerCategory[.people]!
                                 default:
-                                    return emojiPerCategory[category]!
+                                    return normalizedEmojiPerCategory[category]!
                                 }
                             }()
 
@@ -466,6 +479,20 @@ extension EmojiGenerator {
                     }
                     // Write a default case, because this enum is too long for the compiler to validate it's exhaustive
                     fileHandle.writeLine("default: fatalError(\"Unexpected case \\(self)\")")
+                    fileHandle.writeLine("}")
+                }
+                fileHandle.writeLine("}")
+                fileHandle.writeLine("")
+
+                // Normalized variant mapping
+                fileHandle.writeLine("var isNormalized: Bool { normalized == self }")
+                fileHandle.writeLine("var normalized: Emoji {")
+                fileHandle.indent {
+                    fileHandle.writeLine("switch self {")
+                    emojiModel.definitions.filter { !$0.isNormalized }.forEach {
+                        fileHandle.writeLine("case .\($0.enumName): return .\($0.normalizedEnumName)")
+                    }
+                    fileHandle.writeLine("default: return self")
                     fileHandle.writeLine("}")
                 }
                 fileHandle.writeLine("}")
