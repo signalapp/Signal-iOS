@@ -256,9 +256,9 @@ class StoryGroupReplyCell: UITableViewCell {
                 messageMeasurement.rect.width,
                 messageMeasurement.lastLineRect.width + timestampSpacer + timestampMeasurement.rect.width
             ]
-            if cellType.hasAuthor {
-                contentView.layoutIfNeeded()
-                possibleMessageBubbleWidths.append(authorNameLabel.width)
+            if cellType.hasAuthor, let authorDisplayName = item.authorDisplayName {
+                let authorMeasurement = measure(authorDisplayName.styled(with: .font(authorNameLabel.font)), maxWidth: maxMessageWidth)
+                possibleMessageBubbleWidths.append(authorMeasurement.rect.width)
             }
 
             let finalMessageLabelWidth = possibleMessageBubbleWidths.max()!
@@ -276,9 +276,9 @@ class StoryGroupReplyCell: UITableViewCell {
                 messageMeasurement.rect.width,
                 timestampMeasurement.rect.width
             ]
-            if cellType.hasAuthor {
-                contentView.layoutIfNeeded()
-                possibleMessageBubbleWidths.append(authorNameLabel.width)
+            if cellType.hasAuthor, let authorDisplayName = item.authorDisplayName {
+                let authorMeasurement = measure(authorDisplayName.styled(with: .font(authorNameLabel.font)), maxWidth: maxMessageWidth)
+                possibleMessageBubbleWidths.append(authorMeasurement.rect.width)
             }
 
             let finalMessageLabelWidth = possibleMessageBubbleWidths.max()!
