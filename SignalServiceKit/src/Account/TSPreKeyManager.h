@@ -18,10 +18,6 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
 
 + (void)clearPreKeyUpdateFailureCount;
 
-+ (void)clearSignedPreKeyRecords;
-
-+ (void)cullPreKeyRecords;
-
 // This should only be called from the TSPreKeyManager.operationQueue
 + (void)refreshPreKeysDidSucceed;
 

@@ -17,8 +17,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 - (instancetype)initForIdentity:(OWSIdentity)identity;
 
-@property (nonatomic, readonly) SDSKeyValueStore *keyStore;
-
 - (NSArray<PreKeyRecord *> *)generatePreKeyRecords;
 - (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
                transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(storePreKeyRecords(_:transaction:));
@@ -35,6 +33,9 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 - (void)removePreKey:(int)preKeyId
          transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)cullPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(cullPreKeyRecords(transaction:));
 
 @end
 

@@ -30,14 +30,17 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 - (void)removeSignedPreKey:(int)signedPreKeyId transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)cullSignedPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(cullSignedPreKeyRecords(transaction:));
+
 #pragma mark -
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord;
 
 // Returns nil if no current signed prekey id is found.
 - (nullable NSNumber *)currentSignedPrekeyId;
-- (void)setCurrentSignedPrekeyId:(int)value;
 - (nullable SignedPreKeyRecord *)currentSignedPreKey;
+- (void)setCurrentSignedPrekeyId:(int)value transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Prekey update failures
 

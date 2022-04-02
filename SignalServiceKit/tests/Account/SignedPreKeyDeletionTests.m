@@ -6,17 +6,8 @@
 #import "SSKBaseTestObjC.h"
 #import "SSKSignedPreKeyStore.h"
 #import "SignedPrekeyRecord.h"
-#import "TSPreKeyManager.h"
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-
-@interface TSPreKeyManager (Testing)
-
-+ (void)clearSignedPreKeyRecordsWithKeyId:(NSNumber *)keyId;
-
-@end
-
-#pragma mark -
 
 @interface SignedPreKeyDeletionTests : SSKBaseTestObjC
 
@@ -46,14 +37,6 @@
 #pragma mark -
 
 @implementation SignedPreKeyDeletionTests
-
-- (void)setUp {
-    [super setUp];
-}
-
-- (void)tearDown {
-    [super tearDown];
-}
 
 - (SSKSignedPreKeyStore *)signedPreKeyStore
 {
@@ -85,13 +68,16 @@
                                                                 generatedAt:generatedAt];
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
+            [self.signedPreKeyStore setCurrentSignedPrekeyId:i transaction:transaction];
         });
     }
 
     // Sanity check
     XCTAssertEqual(41, self.signedPreKeyCount);
 
-    [TSPreKeyManager clearSignedPreKeyRecordsWithKeyId:@(lastPreKeyId)];
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self.signedPreKeyStore cullSignedPreKeyRecordsWithTransaction:transaction];
+    });
 
     XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
 
@@ -117,13 +103,16 @@
         [record markAsAcceptedByService];
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
+            [self.signedPreKeyStore setCurrentSignedPrekeyId:i transaction:transaction];
         });
     }
 
     // Sanity check
     XCTAssertEqual(11, self.signedPreKeyCount);
 
-    [TSPreKeyManager clearSignedPreKeyRecordsWithKeyId:@(lastPreKeyId)];
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self.signedPreKeyStore cullSignedPreKeyRecordsWithTransaction:transaction];
+    });
 
     XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
 
@@ -148,13 +137,16 @@
                                                                 generatedAt:generatedAt];
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record transaction:transaction];
+            [self.signedPreKeyStore setCurrentSignedPrekeyId:i transaction:transaction];
         });
     }
 
     // Sanity check
     XCTAssertEqual(4, self.signedPreKeyCount);
 
-    [TSPreKeyManager clearSignedPreKeyRecordsWithKeyId:@(lastPreKeyId)];
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self.signedPreKeyStore cullSignedPreKeyRecordsWithTransaction:transaction];
+    });
     XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
 
     // All records should still be stored.

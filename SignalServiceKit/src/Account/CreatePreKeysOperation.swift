@@ -47,8 +47,9 @@ public class CreatePreKeysOperation: OWSOperation {
                 signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
                                                                         signedPreKeyRecord: signedPreKeyRecord,
                                                                         transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id,
+                                                                               transaction: transaction)
             }
-            signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             Logger.debug("done")
             self.reportSuccess()

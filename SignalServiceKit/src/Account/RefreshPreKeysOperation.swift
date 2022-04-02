@@ -57,12 +57,14 @@ public class RefreshPreKeysOperation: OWSOperation {
                     signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
                                                                             signedPreKeyRecord: signedPreKeyRecord,
                                                                             transaction: transaction)
+                    signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id,
+                                                                                   transaction: transaction)
+                    signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(transaction: transaction)
+
+                    signalProtocolStore.preKeyStore.cullPreKeyRecords(transaction: transaction)
                 }
-                signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()
-                TSPreKeyManager.clearSignedPreKeyRecords()
-                TSPreKeyManager.cullPreKeyRecords()
             }
         }.done(on: .global()) {
             Logger.info("done")

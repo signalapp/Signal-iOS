@@ -171,29 +171,110 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     return result;
 }
 
-- (void)setCurrentSignedPrekeyId:(int)value
+- (void)setCurrentSignedPrekeyId:(int)value transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSLogInfo(@"%lu.", (unsigned long)value);
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.metadataStore setObject:@(value) key:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
-    });
+    [self.metadataStore setObject:@(value) key:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
 }
 
 - (nullable SignedPreKeyRecord *)currentSignedPreKey
 {
     __block SignedPreKeyRecord *_Nullable currentRecord;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSNumber *_Nullable preKeyId = [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey
-                                                               transaction:transaction];
-
-        if (preKeyId == nil) {
-            return;
+    [self.databaseStorage
+        readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            currentRecord = [self currentSignedPreKeyWithTransaction:transaction];
         }
-
-        currentRecord = [self.keyStore signedPreKeyRecordForKey:preKeyId.stringValue transaction:transaction];
-    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+                 file:__FILE__
+             function:__FUNCTION__
+                 line:__LINE__];
 
     return currentRecord;
+}
+
+- (nullable SignedPreKeyRecord *)currentSignedPreKeyWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    NSNumber *_Nullable preKeyId = [self.metadataStore getObjectForKey:kPrekeyCurrentSignedPrekeyIdKey
+                                                           transaction:transaction];
+
+    if (preKeyId == nil) {
+        return nil;
+    }
+
+    return [self.keyStore signedPreKeyRecordForKey:preKeyId.stringValue transaction:transaction];
+}
+
+- (void)cullSignedPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    const NSTimeInterval kSignedPreKeysDeletionTime = 30 * kDayInterval;
+
+    SignedPreKeyRecord *_Nullable currentRecord = [self currentSignedPreKeyWithTransaction:transaction];
+    if (!currentRecord) {
+        OWSFailDebug(@"Couldn't find current signed pre-key; skipping culling until we have one");
+        return;
+    }
+
+    NSMutableArray<SignedPreKeyRecord *> *oldSignedPrekeys =
+        [[self loadSignedPreKeysWithTransaction:transaction] mutableCopy];
+    // Remove the current record from the list.
+    for (NSUInteger i = 0; i < oldSignedPrekeys.count; ++i) {
+        if (oldSignedPrekeys[i].Id == currentRecord.Id) {
+            [oldSignedPrekeys removeObjectAtIndex:i];
+            break;
+        }
+    }
+
+    // Sort the signed prekeys in ascending order of generation time.
+    [oldSignedPrekeys sortUsingComparator:^NSComparisonResult(
+        SignedPreKeyRecord *left, SignedPreKeyRecord *right) { return [left.generatedAt compare:right.generatedAt]; }];
+
+    unsigned oldSignedPreKeyCount = (unsigned)[oldSignedPrekeys count];
+    unsigned oldAcceptedSignedPreKeyCount = 0;
+    for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
+        if (signedPrekey.wasAcceptedByService) {
+            oldAcceptedSignedPreKeyCount++;
+        }
+    }
+
+    OWSLogInfo(@"oldSignedPreKeyCount: %u, oldAcceptedSignedPreKeyCount: %u",
+        oldSignedPreKeyCount,
+        oldAcceptedSignedPreKeyCount);
+
+    // Iterate the signed prekeys in ascending order so that we try to delete older keys first.
+    for (SignedPreKeyRecord *signedPrekey in oldSignedPrekeys) {
+        OWSLogInfo(@"Considering signed prekey id: %d, generatedAt: %@, createdAt: %@, wasAcceptedByService: %d",
+            signedPrekey.Id,
+            signedPrekey.generatedAt,
+            signedPrekey.createdAt,
+            signedPrekey.wasAcceptedByService);
+
+        // Always keep at least 3 keys, accepted or otherwise.
+        if (oldSignedPreKeyCount <= 3) {
+            break;
+        }
+
+        // Never delete signed prekeys until they are N days old.
+        if (fabs([signedPrekey.generatedAt timeIntervalSinceNow]) < kSignedPreKeysDeletionTime) {
+            break;
+        }
+
+        // We try to keep a minimum of 3 "old, accepted" signed prekeys.
+        if (signedPrekey.wasAcceptedByService) {
+            if (oldAcceptedSignedPreKeyCount <= 3) {
+                continue;
+            } else {
+                oldAcceptedSignedPreKeyCount--;
+            }
+        }
+
+        if (signedPrekey.wasAcceptedByService) {
+            OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldAcceptedSignedPrekey]);
+        } else {
+            OWSProdInfo([OWSAnalyticsEvents prekeysDeletedOldUnacceptedSignedPrekey]);
+        }
+
+        oldSignedPreKeyCount--;
+        [self removeSignedPreKey:signedPrekey.Id transaction:transaction];
+    }
 }
 
 #pragma mark - Prekey update failures

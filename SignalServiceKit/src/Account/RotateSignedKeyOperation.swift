@@ -35,11 +35,12 @@ public class RotateSignedPreKeyOperation: OWSOperation {
                 signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
                                                                         signedPreKeyRecord: signedPreKeyRecord,
                                                                         transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id,
+                                                                               transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(transaction: transaction)
             }
-            signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
-            TSPreKeyManager.clearSignedPreKeyRecords()
 
             Logger.info("done")
             self.reportSuccess()

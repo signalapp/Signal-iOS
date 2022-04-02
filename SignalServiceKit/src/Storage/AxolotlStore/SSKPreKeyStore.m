@@ -45,6 +45,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 @interface SSKPreKeyStore ()
 
+@property (nonatomic, readonly) SDSKeyValueStore *keyStore;
 @property (nonatomic, readonly) SDSKeyValueStore *metadataStore;
 
 @end
@@ -147,6 +148,46 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
     OWSAssertDebug(lastPreKeyId > 0 && lastPreKeyId < kPreKeyOfLastResortId);
 
     return lastPreKeyId;
+}
+
+- (void)cullPreKeyRecordsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    NSTimeInterval expirationInterval = kDayInterval * 30;
+    NSMutableArray<NSString *> *keys = [[self.keyStore allKeysWithTransaction:transaction] mutableCopy];
+    NSMutableSet<NSString *> *keysToRemove = [NSMutableSet new];
+    [Batching
+        loopObjcWithBatchSize:Batching.kDefaultBatchSize
+                    loopBlock:^(BOOL *stop) {
+                        NSString *_Nullable key = [keys lastObject];
+                        if (key == nil) {
+                            *stop = YES;
+                            return;
+                        }
+                        [keys removeLastObject];
+                        PreKeyRecord *_Nullable record = [self.keyStore getObjectForKey:key transaction:transaction];
+                        if (![record isKindOfClass:[PreKeyRecord class]]) {
+                            OWSFailDebug(@"Unexpected value: %@", [record class]);
+                            return;
+                        }
+                        if (record.createdAt == nil) {
+                            OWSFailDebug(@"Missing createdAt.");
+                            [keysToRemove addObject:key];
+                            return;
+                        }
+                        BOOL shouldRemove = fabs(record.createdAt.timeIntervalSinceNow) > expirationInterval;
+                        if (shouldRemove) {
+                            OWSLogInfo(
+                                @"Removing prekey id: %lu., createdAt: %@", (unsigned long)record.Id, record.createdAt);
+                            [keysToRemove addObject:key];
+                        }
+                    }];
+    if (keysToRemove.count < 1) {
+        return;
+    }
+    OWSLogInfo(@"Culling prekeys: %lu", (unsigned long)keysToRemove.count);
+    for (NSString *key in keysToRemove) {
+        [self.keyStore removeValueForKey:key transaction:transaction];
+    }
 }
 
 #if TESTABLE_BUILD
