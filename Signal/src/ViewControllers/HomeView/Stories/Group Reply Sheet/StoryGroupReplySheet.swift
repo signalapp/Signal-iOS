@@ -9,6 +9,7 @@ import SignalServiceKit
 class StoryGroupReplySheet: InteractiveSheetViewController {
     override var renderExternalHandle: Bool { false }
     override var interactiveScrollViews: [UIScrollView] { [tableView] }
+    override var minHeight: CGFloat { CurrentAppContext().frame.height * 0.6 }
 
     private lazy var tableView = UITableView()
     private lazy var inputToolbar = StoryReplyInputToolbar()
