@@ -261,30 +261,27 @@ class StoryGroupReplyLoader: Dependencies {
 
             newReplyItems[message.uniqueId] = replyItem
 
-            if let previousItem = previousItem {
-                if previousItem.authorAddress == authorAddress
-                    && previousItem.timeString == replyItem.timeString
-                    && replyItem.cellType != .reaction
-                    && previousItem.cellType != .reaction {
-                    switch previousItem.cellType {
-                    case .standalone:
-                        previousItem.cellType = .top
-                    case .bottom:
-                        previousItem.cellType = .middle
-                    case .top, .middle, .reaction:
-                        break
-                    }
+            if let previousItem = previousItem,
+               previousItem.authorAddress == authorAddress,
+               previousItem.timeString == replyItem.timeString,
+               replyItem.cellType != .reaction,
+               previousItem.cellType != .reaction {
+                switch previousItem.cellType {
+                case .standalone:
+                    previousItem.cellType = .top
+                case .bottom:
+                    previousItem.cellType = .middle
+                case .top, .middle, .reaction:
+                    break
+                }
 
-                    replyItem.cellType = .bottom
-                } else {
-                    switch previousItem.cellType {
-                    case .standalone, .reaction, .bottom:
-                        break
-                    case .top:
-                        previousItem.cellType = .standalone
-                    case .middle:
-                        previousItem.cellType = .bottom
-                    }
+                replyItem.cellType = .bottom
+            } else {
+                switch replyItem.cellType {
+                case .standalone, .reaction:
+                    break
+                case .top, .middle, .bottom:
+                    replyItem.cellType = .standalone
                 }
             }
 
