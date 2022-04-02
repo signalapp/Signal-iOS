@@ -34,7 +34,17 @@ class StoryGroupReplyLoader: Dependencies {
 
     var isScrolledToBottom: Bool {
         AssertIsOnMainThread()
-        return tableView?.indexPathsForVisibleRows?.lazy.map { $0.row }.contains(replyUniqueIds.count - 1) ?? false
+        guard let tableView = tableView else { return false }
+
+        let lastIndexPath = IndexPath(row: replyUniqueIds.count - 1, section: 0)
+
+        guard tableView.indexPathsForVisibleRows?.contains(lastIndexPath) ?? false else { return false }
+
+        var container = tableView.bounds
+        container.y += tableView.contentInset.top + tableView.safeAreaInsets.top
+        container.height -= tableView.contentInset.totalHeight + tableView.safeAreaInsets.totalHeight
+
+        return container.contains(tableView.rectForRow(at: lastIndexPath))
     }
 
     init?(storyMessage: StoryMessage, threadUniqueId: String?, tableView: UITableView) {
@@ -155,27 +165,28 @@ class StoryGroupReplyLoader: Dependencies {
             do {
                 switch mode {
                 case .initial:
-                    try self.messageMapping.loadNewestMessagePage(
+                    try self.messageMapping.loadInitialMessagePage(
+                        focusMessageId: nil,
                         reusableInteractions: reusableInteractions,
-                        deletedInteractionIds: nil,
+                        deletedInteractionIds: deletedInteractionIds,
                         transaction: transaction
                     )
                 case .newer:
                     try self.messageMapping.loadNewerMessagePage(
                         reusableInteractions: reusableInteractions,
-                        deletedInteractionIds: nil,
+                        deletedInteractionIds: deletedInteractionIds,
                         transaction: transaction
                     )
                 case .older:
                     try self.messageMapping.loadOlderMessagePage(
                         reusableInteractions: reusableInteractions,
-                        deletedInteractionIds: nil,
+                        deletedInteractionIds: deletedInteractionIds,
                         transaction: transaction
                     )
                 case .reload:
                     try self.messageMapping.loadSameLocation(
                         reusableInteractions: reusableInteractions,
-                        deletedInteractionIds: nil,
+                        deletedInteractionIds: deletedInteractionIds,
                         transaction: transaction
                     )
                 }
@@ -190,13 +201,12 @@ class StoryGroupReplyLoader: Dependencies {
 
         DispatchQueue.main.async {
             let wasScrolledToBottom = self.isScrolledToBottom
-            let wasInitialLoad = mode == .initial
 
             self.replyUniqueIds = replyUniqueIds
             self.replyItems = newReplyItems
             self.tableView?.reloadData()
 
-            if wasScrolledToBottom || wasInitialLoad { self.scrollToBottomOfLoadWindow(animated: !wasInitialLoad) }
+            if wasScrolledToBottom { self.scrollToBottomOfLoadWindow(animated: true) }
         }
     }
 

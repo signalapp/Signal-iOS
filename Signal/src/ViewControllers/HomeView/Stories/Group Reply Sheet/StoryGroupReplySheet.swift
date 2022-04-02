@@ -8,6 +8,7 @@ import SignalServiceKit
 
 class StoryGroupReplySheet: InteractiveSheetViewController {
     override var renderExternalHandle: Bool { false }
+    override var interactiveScrollViews: [UIScrollView] { [tableView] }
 
     private lazy var tableView = UITableView()
     private lazy var inputToolbar = StoryReplyInputToolbar()
@@ -61,11 +62,11 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.keyboardDismissMode = .interactive
-        tableView.contentInset = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 0)
         tableView.addInteraction(contextMenu)
 
         contentView.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.autoPinWidthToSuperview()
+        tableView.autoPinEdge(toSuperviewEdge: .bottom)
 
         // We add the handle directly to the content view,
         // so that it doesn't scroll with the table.
@@ -73,6 +74,7 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
         contentView.addSubview(handleContainer)
         handleContainer.autoPinWidthToSuperview()
         handleContainer.autoPinEdge(toSuperviewEdge: .top)
+        handleContainer.autoPinEdge(.bottom, to: .top, of: tableView)
 
         let handle = UIView()
         handle.backgroundColor = .ows_gray65
@@ -107,11 +109,6 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
             completion?()
             dismissHandler?()
         }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        replyLoader?.scrollToBottomOfLoadWindow(animated: true)
     }
 
     fileprivate func tryToSendMessage(_ message: TSOutgoingMessage) {
