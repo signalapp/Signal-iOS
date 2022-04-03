@@ -36,7 +36,11 @@ public extension SnodeReceivedMessageInfo {
         self.hash = hash
         self.expirationDateMs = (expirationDateMs ?? 0)
     }
-    
+}
+
+// MARK: - GRDB Interactions
+
+public extension SnodeReceivedMessageInfo {
     static func pruneLastMessageHashInfoIfExpired(for snode: Snode, associatedWith publicKey: String) {
         // Clear out the 'expirationDateMs' value for all expired (but non-0) message infos
         GRDBStorage.shared.write { db in

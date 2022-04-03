@@ -24,7 +24,7 @@ public enum OnionRequestAPI {
             if let paths: [[Snode]] = _paths { return paths }
             
             let results: [[Snode]]? = GRDBStorage.shared.read { db in
-                try? SnodeSet.fetchAllOnionRequestPaths(db)
+                try? Snode.fetchAllOnionRequestPaths(db)
             }
             
             if results?.isEmpty == false { _paths = results }
@@ -283,7 +283,7 @@ public enum OnionRequestAPI {
         GRDBStorage.shared.write { db in
             guard !paths.isEmpty else {
                 SNLog("Clearing onion request paths.")
-                try? SnodeSet.clearOnionRequestPaths(db)
+                try? Snode.clearOnionRequestPaths(db)
                 return
             }
             

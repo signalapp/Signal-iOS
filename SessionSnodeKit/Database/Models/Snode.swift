@@ -65,7 +65,7 @@ extension Snode {
     }
 }
 
-// MARK: - Convenience
+// MARK: - GRDB Interactions
 
 internal extension Snode {
     static func fetchSet(_ db: Database, publicKey: String) throws -> Set<Snode> {
@@ -77,9 +77,41 @@ internal extension Snode {
             )
             .fetchSet(db)
     }
+
+    static func fetchAllOnionRequestPaths(_ db: Database) throws -> [[Snode]] {
+        struct ResultWrapper: Decodable, FetchableRecord {
+            let key: String
+            let nodeIndex: Int
+            let address: String
+            let port: UInt16
+            let snode: Snode
+        }
+        
+        return try SnodeSet
+            .filter(SnodeSet.Columns.key.like("\(SnodeSet.onionRequestPathPrefix)%"))
+            .order(SnodeSet.Columns.nodeIndex)
+            .order(SnodeSet.Columns.key)
+            .including(required: SnodeSet.node)
+            .asRequest(of: ResultWrapper.self)
+            .fetchAll(db)
+            .reduce(into: [:]) { prev, next in  // Reducing will lose the 'key' sorting
+                prev[next.key] = (prev[next.key] ?? []).appending(next.snode)
+            }
+            .asArray()
+            .sorted(by: { lhs, rhs in lhs.key < rhs.key })
+            .compactMap { _, nodes in !nodes.isEmpty ? nodes : nil }  // Exclude empty sets
+    }
+    
+    static func clearOnionRequestPaths(_ db: Database) throws {
+        try SnodeSet
+            .filter(SnodeSet.Columns.key.like("\(SnodeSet.onionRequestPathPrefix)%"))
+            .deleteAll(db)
+    }
 }
 
+
 internal extension Collection where Element == Snode {
+    /// This method is used to save Swarms
     func save(_ db: Database, key: String) throws {
         try self.enumerated().forEach { nodeIndex, node in
             try node.save(db)
@@ -95,6 +127,7 @@ internal extension Collection where Element == Snode {
 }
 
 internal extension Collection where Element == [Snode] {
+    /// This method is used to save onion reuqest paths
     func save(_ db: Database) throws {
         try self.enumerated().forEach { pathIndex, path in
             try path.save(db, key: "\(SnodeSet.onionRequestPathPrefix)\(pathIndex)")
