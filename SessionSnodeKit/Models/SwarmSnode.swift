@@ -9,7 +9,7 @@ import SessionUtilitiesKit
 internal struct SwarmSnode: Codable {
     public enum CodingKeys: String, CodingKey {
         case address = "ip"
-        case port
+        case port = "port_https"    // Note: The 'port' key was deprecated inplace of the 'port_https' key
         case ed25519PublicKey = "pubkey_ed25519"
         case x25519PublicKey = "pubkey_x25519"
     }
@@ -28,15 +28,12 @@ extension SwarmSnode {
         
         do {
             let address: String = try container.decode(String.self, forKey: .address)
-            let portString: String = try container.decode(String.self, forKey: .port)
             
-            guard address != "0.0.0.0", let port: UInt16 = UInt16(portString) else {
-                throw SnodeAPI.Error.invalidIP
-            }
+            guard address != "0.0.0.0" else { throw SnodeAPI.Error.invalidIP }
             
             self = SwarmSnode(
                 address: (address.starts(with: "https://") ? address : "https://\(address)"),
-                port: port,
+                port: try container.decode(UInt16.self, forKey: .port),
                 ed25519PublicKey: try container.decode(String.self, forKey: .ed25519PublicKey),
                 x25519PublicKey: try container.decode(String.self, forKey: .x25519PublicKey)
             )
