@@ -111,11 +111,9 @@ public extension Identity {
         }
     }
     
-    // TODO: Should this actually clear all identity values???
     static func clearUserKeyPair() {
         GRDBStorage.shared.write { db in
-            try Identity.deleteOne(db, id: .x25519PublicKey)
-            try Identity.deleteOne(db, id: .x25519PrivateKey)
+            try Identity.deleteAll(db)
         }
     }
 }
