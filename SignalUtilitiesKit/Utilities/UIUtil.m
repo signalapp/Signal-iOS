@@ -3,7 +3,6 @@
 //
 
 #import "UIUtil.h"
-#import "Theme.h"
 #import "UIColor+OWS.h"
 #import <SessionUtilitiesKit/AppContext.h>
 

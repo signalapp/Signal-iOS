@@ -4,7 +4,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "Theme.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
 #import "UIView+OWS.h"
@@ -96,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     OWSAssertDebug(backImage);
     [backButton setImage:backImage forState:UIControlStateNormal];
-    backButton.tintColor = Theme.navbarIconColor;
+    backButton.tintColor = UIColor.lokiGreen;
 
     backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
 

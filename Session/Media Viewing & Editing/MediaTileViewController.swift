@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import SessionUIKit
+import UIKit
 
 public protocol MediaTileViewControllerDelegate: class {
     func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)
@@ -75,7 +77,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
                                            target: self,
                                            action: #selector(didPressDelete))
-        deleteButton.tintColor = Theme.darkThemeNavbarIconColor
+        deleteButton.tintColor = Colors.text
 
         return deleteButton
     }()
@@ -823,16 +825,16 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
 
     override init(frame: CGRect) {
         label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
+        label.textColor = Colors.text
 
-        let blurEffect = Theme.darkThemeBarBlurEffect
+        let blurEffect = UIBlurEffect(style: .dark)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
 
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
         super.init(frame: frame)
 
-        self.backgroundColor = isLightMode ? Colors.cellBackground : Theme.darkThemeNavbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        self.backgroundColor = isLightMode ? Colors.cellBackground : UIColor.ows_black.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
 
         self.addSubview(blurEffectView)
         self.addSubview(label)
@@ -871,7 +873,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
 
         addSubview(label)
 
-        label.textColor = Theme.darkThemePrimaryColor
+        label.textColor = Colors.text
         label.textAlignment = .center
         label.numberOfLines = 0
         label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 0, leading: Values.largeSpacing, bottom: 0, trailing: Values.largeSpacing))
