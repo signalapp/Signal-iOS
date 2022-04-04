@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import Curve25519Kit
 
 public enum General {
@@ -20,10 +21,10 @@ public class GeneralUtilities: NSObject {
     }
 }
 
-public func getUserHexEncodedPublicKey() -> String {
+public func getUserHexEncodedPublicKey(_ db: Database? = nil) -> String {
     if let cachedKey: String = General.Cache.cachedEncodedPublicKey.wrappedValue { return cachedKey }
     
-    if let keyPair: ECKeyPair = Identity.fetchUserKeyPair() { // Can be nil under some circumstances
+    if let keyPair: ECKeyPair = Identity.fetchUserKeyPair(db) { // Can be nil under some circumstances
         General.Cache.cachedEncodedPublicKey.mutate { $0 = keyPair.hexEncodedPublicKey }
         return keyPair.hexEncodedPublicKey
     }

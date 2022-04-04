@@ -10,7 +10,7 @@ public enum Legacy {
     internal static let snodePoolCollection = "LokiSnodePoolCollection"
     internal static let onionRequestPathCollection = "LokiOnionRequestPathCollection"
     internal static let lastSnodePoolRefreshDateCollection = "LokiLastSnodePoolRefreshDateCollection"
-    internal static let lastMessageHashCollection = "LokiLastMessageHashCollection" // TODO: Remove this one? (make it a query??)
+    internal static let lastMessageHashCollection = "LokiLastMessageHashCollection"
     internal static let receivedMessagesCollection = "LokiReceivedMessagesCollection"
     
     // MARK: - Types

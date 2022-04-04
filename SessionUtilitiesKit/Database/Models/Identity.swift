@@ -69,8 +69,8 @@ public extension Identity {
         }
     }
     
-    static func fetchUserKeyPair() -> ECKeyPair? {
-        return GRDBStorage.shared.read { db -> ECKeyPair? in
+    static func fetchUserKeyPair(_ db: Database? = nil) -> ECKeyPair? {
+        let fetchKeys: (Database) -> ECKeyPair? = { db in
             guard
                 let publicKey: Identity = try? Identity.fetchOne(db, id: .x25519PublicKey),
                 let privateKey: Identity = try? Identity.fetchOne(db, id: .x25519PrivateKey)
@@ -82,6 +82,14 @@ public extension Identity {
                 publicKeyData: publicKey.data,
                 privateKeyData: privateKey.data
             )
+        }
+        
+        if let db: Database = db {
+            return fetchKeys(db)
+        }
+        
+        return GRDBStorage.shared.read { db -> ECKeyPair? in
+            return fetchKeys(db)
         }
     }
     
