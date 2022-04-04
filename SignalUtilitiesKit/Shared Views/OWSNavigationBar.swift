@@ -50,10 +50,6 @@ public class OWSNavigationBar: UINavigationBar {
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(themeDidChange),
-                                               name: .ThemeDidChange,
-                                               object: nil)
     }
 
     // MARK: FirstResponder Stubbing
@@ -82,13 +78,13 @@ public class OWSNavigationBar: UINavigationBar {
         
         if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
-            let color = Theme.navbarBackgroundColor
+            let color = UIColor.lokiDarkestGray()
             let backgroundImage = UIImage(color: color)
             self.setBackgroundImage(backgroundImage, for: .default)
         } else {
             // Make navbar more translucent than default. Navbars remove alpha from any assigned backgroundColor, so
             // to achieve transparency, we have to assign a transparent image.
-            let color = Theme.navbarBackgroundColor
+            let color = UIColor.lokiDarkestGray()
             let backgroundImage = UIImage(color: color)
             self.setBackgroundImage(backgroundImage, for: .default)
 
@@ -98,15 +94,9 @@ public class OWSNavigationBar: UINavigationBar {
     }
 
     @objc
-    public func themeDidChange() {
-        Logger.debug("")
-        applyTheme()
-    }
-
-    @objc
     public var respectsTheme: Bool = true {
         didSet {
-            themeDidChange()
+            applyTheme()
         }
     }
 
@@ -191,9 +181,9 @@ public class OWSNavigationBar: UINavigationBar {
         respectsTheme = false
 
         barStyle = .black
-        titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.darkThemePrimaryColor]
-        barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
-        tintColor = Theme.darkThemePrimaryColor
+        titleTextAttributes = [NSAttributedString.Key.foregroundColor: Colors.text]
+        barTintColor = Colors.navigationBarBackground.withAlphaComponent(0.6)
+        tintColor = Colors.text
 
         switch type {
         case .clear:

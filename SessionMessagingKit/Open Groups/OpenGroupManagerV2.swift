@@ -150,7 +150,6 @@ public final class OpenGroupManagerV2 : NSObject {
             messageIDs.insert(interaction.uniqueId!)
             messageTimestamps.insert(interaction.timestamp)
         }
-        storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
         Storage.shared.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
         Storage.shared.removeLastMessageServerID(for: openGroup.room, on: openGroup.server, using: transaction)
         Storage.shared.removeLastDeletionServerID(for: openGroup.room, on: openGroup.server, using: transaction)

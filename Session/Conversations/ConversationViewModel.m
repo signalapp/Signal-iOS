@@ -276,10 +276,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                  name:[OWSTypingIndicatorsImpl typingIndicatorStateDidChange]
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(profileWhitelistDidChange:)
-                                                 name:kNSNotificationName_ProfileWhitelistDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockListDidChange:)
                                                  name:NSNotification.contactBlockedStateChanged
                                                object:nil];
@@ -287,14 +283,6 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(localProfileDidChange:)
                                                  name:kNSNotificationName_LocalProfileDidChange
                                                object:nil];
-}
-
-- (void)profileWhitelistDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    self.conversationProfileState = nil;
-    [self updateForTransientItems];
 }
 
 - (void)localProfileDidChange:(NSNotification *)notification

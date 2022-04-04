@@ -270,7 +270,7 @@ class GifPickerCell: UICollectionViewCell {
 
     private func clearViewState() {
         imageView?.image = nil
-        self.backgroundColor = (Theme.isDarkThemeEnabled
+        self.backgroundColor = (isDarkMode
             ? UIColor(white: 0.25, alpha: 1.0)
             : UIColor(white: 0.95, alpha: 1.0))
     }

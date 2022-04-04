@@ -1,5 +1,6 @@
 import PromiseKit
 import Sodium
+import SessionSnodeKit
 
 public protocol SessionMessagingKitStorageProtocol {
 
@@ -52,7 +53,6 @@ public protocol SessionMessagingKitStorageProtocol {
     func getAllV2OpenGroups() -> [String:OpenGroupV2]
     func getV2OpenGroup(for threadID: String) -> OpenGroupV2?
     func v2GetThreadID(for v2OpenGroupID: String) -> String?
-    func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any)
     
     // MARK: - Open Group Public Keys
 
@@ -97,3 +97,5 @@ public protocol SessionMessagingKitStorageProtocol {
     /// Also touches the associated message.
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any)
 }
+
+extension Storage: SessionMessagingKitStorageProtocol, SessionSnodeKitStorageProtocol {}

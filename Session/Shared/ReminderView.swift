@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUIKit
 
 class ReminderView: UIView {
 
@@ -70,9 +71,9 @@ class ReminderView: UIView {
             iconColor = UIColor.ows_gray60
         case .explanation:
             // TODO: Theme, review with design.
-            self.backgroundColor = Theme.offBackgroundColor
-            textColor = Theme.primaryColor
-            iconColor = Theme.secondaryColor
+            self.backgroundColor = Colors.unimportant
+            textColor = Colors.text
+            iconColor = Colors.separator
         }
         self.clipsToBounds = true
 

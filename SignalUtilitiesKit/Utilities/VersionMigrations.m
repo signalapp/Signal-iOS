@@ -7,7 +7,6 @@
 #import <SessionUtilitiesKit/AppContext.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SessionUtilitiesKit/NSUserDefaults+OWS.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSThread.h>
 #import <SessionMessagingKit/TSGroupThread.h>
