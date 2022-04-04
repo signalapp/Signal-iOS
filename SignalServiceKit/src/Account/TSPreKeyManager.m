@@ -67,31 +67,6 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
             >= kSignedPreKeyUpdateFailureMaxFailureDuration);
 }
 
-+ (void)incrementPreKeyUpdateFailureCount
-{
-    // PERF TODO use a single transaction / take in a transaction
-    // PNI TODO: handle PNI pre-keys too.
-
-    // Record a prekey update failure.
-    SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
-    NSInteger failureCount = [signedPreKeyStore incrementPrekeyUpdateFailureCount];
-    OWSLogInfo(@"new failureCount: %ld", (unsigned long)failureCount);
-
-    if (failureCount == 1 || ![signedPreKeyStore firstPrekeyUpdateFailureDate]) {
-        // If this is the "first" failure, record the timestamp of that
-        // failure.
-        [signedPreKeyStore setFirstPrekeyUpdateFailureDate:[NSDate new]];
-    }
-}
-
-+ (void)clearPreKeyUpdateFailureCount
-{
-    // PNI TODO: handle PNI pre-keys too.
-    SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
-    [signedPreKeyStore clearFirstPrekeyUpdateFailureDate];
-    [signedPreKeyStore clearPrekeyUpdateFailureCount];
-}
-
 + (void)refreshPreKeysDidSucceed
 {
     TSPreKeyManager.shared.lastPreKeyCheckTimestamp = [NSDate new];

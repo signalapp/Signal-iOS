@@ -289,44 +289,41 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     return [value intValue];
 }
 
-- (void)clearPrekeyUpdateFailureCount
+- (void)clearPrekeyUpdateFailureCountWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.metadataStore removeValueForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
-    });
+    [self.metadataStore removeValueForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
+    [self.metadataStore removeValueForKey:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
 }
 
-- (NSInteger)incrementPrekeyUpdateFailureCount
+- (NSInteger)incrementPrekeyUpdateFailureCountWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    __block NSInteger result;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        result = [self.metadataStore incrementIntForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
-    });
-    return result;
+    NSInteger failureCount = [self.metadataStore incrementIntForKey:kPrekeyUpdateFailureCountKey
+                                                        transaction:transaction];
+
+    OWSLogInfo(@"new failureCount: %ld", (long)failureCount);
+
+    if (failureCount == 1 || ![self firstPrekeyUpdateFailureDateWithTransaction:transaction]) {
+        // If this is the "first" failure, record the timestamp of that failure.
+        [self.metadataStore setDate:[NSDate new] key:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
+    }
+
+    return failureCount;
 }
 
 - (nullable NSDate *)firstPrekeyUpdateFailureDate
 {
     __block NSDate *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.metadataStore getDate:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
+        result = [self firstPrekeyUpdateFailureDateWithTransaction:transaction];
     }];
     return result;
 }
 
-- (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value
+- (nullable NSDate *)firstPrekeyUpdateFailureDateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.metadataStore setDate:value key:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
-    });
+    return [self.metadataStore getDate:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
 }
 
-- (void)clearFirstPrekeyUpdateFailureDate
-{
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.metadataStore removeValueForKey:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
-    });
-}
 
 #pragma mark - Debugging
 

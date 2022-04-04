@@ -60,11 +60,10 @@ public class RefreshPreKeysOperation: OWSOperation {
                     signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id,
                                                                                    transaction: transaction)
                     signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(transaction: transaction)
+                    signalProtocolStore.signedPreKeyStore.clearPrekeyUpdateFailureCount(transaction: transaction)
 
                     signalProtocolStore.preKeyStore.cullPreKeyRecords(transaction: transaction)
                 }
-
-                TSPreKeyManager.clearPreKeyUpdateFailureCount()
             }
         }.done(on: .global()) {
             Logger.info("done")
@@ -92,6 +91,9 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
-        TSPreKeyManager.incrementPreKeyUpdateFailureCount()
+        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        self.databaseStorage.write { transaction in
+            signalProtocolStore.signedPreKeyStore.incrementPrekeyUpdateFailureCount(transaction: transaction)
+        }
     }
 }

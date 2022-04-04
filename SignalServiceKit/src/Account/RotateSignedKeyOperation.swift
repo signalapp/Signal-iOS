@@ -38,9 +38,8 @@ public class RotateSignedPreKeyOperation: OWSOperation {
                 signalProtocolStore.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id,
                                                                                transaction: transaction)
                 signalProtocolStore.signedPreKeyStore.cullSignedPreKeyRecords(transaction: transaction)
+                signalProtocolStore.signedPreKeyStore.clearPrekeyUpdateFailureCount(transaction: transaction)
             }
-
-            TSPreKeyManager.clearPreKeyUpdateFailureCount()
 
             Logger.info("done")
             self.reportSuccess()
@@ -63,6 +62,9 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
 
-        TSPreKeyManager.incrementPreKeyUpdateFailureCount()
+        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        self.databaseStorage.write { transaction in
+            signalProtocolStore.signedPreKeyStore.incrementPrekeyUpdateFailureCount(transaction: transaction)
+        }
     }
 }

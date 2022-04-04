@@ -45,12 +45,11 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 #pragma mark - Prekey update failures
 
 - (int)prekeyUpdateFailureCount;
-- (void)clearPrekeyUpdateFailureCount;
-- (NSInteger)incrementPrekeyUpdateFailureCount;
-
 - (nullable NSDate *)firstPrekeyUpdateFailureDate;
-- (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value;
-- (void)clearFirstPrekeyUpdateFailureDate;
+- (NSInteger)incrementPrekeyUpdateFailureCountWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(incrementPrekeyUpdateFailureCount(transaction:));
+- (void)clearPrekeyUpdateFailureCountWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(clearPrekeyUpdateFailureCount(transaction:));
 
 #pragma mark - Debugging
 

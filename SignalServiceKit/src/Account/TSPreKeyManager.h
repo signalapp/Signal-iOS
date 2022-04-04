@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
+
 typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
 
 @interface TSPreKeyManager : NSObject
@@ -13,10 +15,6 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
 #pragma mark - State Tracking
 
 + (BOOL)isAppLockedDueToPreKeyUpdateFailures;
-
-+ (void)incrementPreKeyUpdateFailureCount;
-
-+ (void)clearPreKeyUpdateFailureCount;
 
 // This should only be called from the TSPreKeyManager.operationQueue
 + (void)refreshPreKeysDidSucceed;
