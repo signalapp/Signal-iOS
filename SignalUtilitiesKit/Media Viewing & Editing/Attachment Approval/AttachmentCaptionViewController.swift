@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SessionUIKit
 
 protocol AttachmentCaptionDelegate: class {
     func captionView(_ captionView: AttachmentCaptionViewController, didChangeCaptionText captionText: String?, attachmentItem: SignalAttachmentItem)
@@ -217,8 +218,8 @@ class AttachmentCaptionViewController: OWSViewController {
         placeholderTextView.backgroundColor = .clear
         placeholderTextView.font = UIFont.ows_dynamicTypeBody
 
-        placeholderTextView.textColor = Theme.darkThemePrimaryColor
-        placeholderTextView.tintColor = Theme.darkThemePrimaryColor
+        placeholderTextView.textColor = Colors.text
+        placeholderTextView.tintColor = Colors.text
         placeholderTextView.returnKeyType = .done
 
         return placeholderTextView

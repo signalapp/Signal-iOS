@@ -15,8 +15,6 @@ extern NSString *const LKED25519SecretKey;
 extern NSString *const LKED25519PublicKey;
 extern NSString *const OWSPrimaryStorageIdentityKeyStoreCollection;
 
-extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
-
 // This notification will be fired whenever identities are created
 // or their verification state changes.
 extern NSString *const kNSNotificationName_IdentityStateDidChange;
@@ -55,19 +53,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
  */
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToRecipientId:(NSString *)recipientId;
 
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;
-
 - (nullable ECKeyPair *)identityKeyPair;
-
-#pragma mark - Debug
-
-#if DEBUG
-// Clears everything except the local identity key.
-- (void)clearIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
-
-- (void)snapshotIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)restoreIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
-#endif
 
 @end
 

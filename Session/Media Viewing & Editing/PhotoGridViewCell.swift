@@ -2,6 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+import UIKit
+import SessionUIKit
+
 public enum PhotoGridItemType {
     case photo, animated, video
 }
@@ -29,7 +32,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
     private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
     private static let selectedBadgeImage = #imageLiteral(resourceName: "selected_blue_circle")
 
-    public var loadingColor = Theme.offBackgroundColor
+    public var loadingColor = Colors.unimportant
 
     override public var isSelected: Bool {
         didSet {

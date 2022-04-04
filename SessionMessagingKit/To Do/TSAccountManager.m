@@ -418,22 +418,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                            inCollection:TSAccountManager_UserAccountCollection];
 }
 
-- (BOOL)hasPendingBackupRestoreDecision
-{
-    return [self.dbConnection boolForKey:TSAccountManager_HasPendingRestoreDecisionKey
-                            inCollection:TSAccountManager_UserAccountCollection
-                            defaultValue:NO];
-}
-
-- (void)setHasPendingBackupRestoreDecision:(BOOL)value
-{
-    [self.dbConnection setBool:value
-                        forKey:TSAccountManager_HasPendingRestoreDecisionKey
-                  inCollection:TSAccountManager_UserAccountCollection];
-
-    [self postRegistrationStateDidChangeNotification];
-}
-
 - (BOOL)isManualMessageFetchEnabled
 {
     return [self.dbConnection boolForKey:TSAccountManager_ManualMessageFetchKey
