@@ -29,6 +29,19 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 // before the message sending is disabled.
 #define kSignedPreKeyUpdateFailureMaxFailureDuration (10 * kDayInterval)
 
+static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransaction *transaction)
+{
+    SSKSignedPreKeyStore *store = [SSKEnvironment signalProtocolStoreForIdentity:identity].signedPreKeyStore;
+    // Only disable message sending if we have failed more than N times...
+    if ([store prekeyUpdateFailureCountWithTransaction:transaction] < kMaxPrekeyUpdateFailureCount) {
+        return NO;
+    }
+    // ...over a period of at least M days.
+    NSDate *_Nullable firstFailureDate = [store firstPrekeyUpdateFailureDateWithTransaction:transaction];
+    // If firstFailureDate is nil, the time interval will be zero.
+    return fabs(firstFailureDate.timeIntervalSinceNow) >= kSignedPreKeyUpdateFailureMaxFailureDuration;
+}
+
 #pragma mark -
 
 @interface TSPreKeyManager ()
@@ -55,17 +68,26 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (BOOL)isAppLockedDueToPreKeyUpdateFailures
 {
-    // PERF TODO use a single transaction / take in a transaction
-    // PNI TODO: handle PNI pre-keys too.
-
-    // Only disable message sending if we have failed more than N times
-    // over a period of at least M days.
-    SSKSignedPreKeyStore *signedPreKeyStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
-    return ([signedPreKeyStore prekeyUpdateFailureCount] >= kMaxPrekeyUpdateFailureCount &&
-        [signedPreKeyStore firstPrekeyUpdateFailureDate] != nil
-        && fabs([[signedPreKeyStore firstPrekeyUpdateFailureDate] timeIntervalSinceNow])
-            >= kSignedPreKeyUpdateFailureMaxFailureDuration);
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = needsSignedPreKeyRotation(OWSIdentityACI, transaction)
+            || needsSignedPreKeyRotation(OWSIdentityPNI, transaction);
+    }];
+    return result;
 }
+
+#if TESTABLE_BUILD
++ (void)storeFakePreKeyUploadFailuresForIdentity:(OWSIdentity)identity
+{
+    SSKSignedPreKeyStore *store = [self signalProtocolStoreForIdentity:identity].signedPreKeyStore;
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        NSDate *firstFailureDate = [NSDate dateWithTimeIntervalSinceNow:-kSignedPreKeyUpdateFailureMaxFailureDuration];
+        [store setPrekeyUpdateFailureCount:kMaxPrekeyUpdateFailureCount
+                          firstFailureDate:firstFailureDate
+                               transaction:transaction];
+    });
+}
+#endif
 
 + (void)refreshPreKeysDidSucceed
 {

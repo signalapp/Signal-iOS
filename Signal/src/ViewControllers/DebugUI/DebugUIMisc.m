@@ -188,6 +188,11 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Remove All Sessions"
                                      actionBlock:^() { [DebugUIMisc removeAllSessions]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Fake PNI pre-key upload failures"
+                                     actionBlock:^() {
+                                         [TSPreKeyManager storeFakePreKeyUploadFailuresForIdentity:OWSIdentityPNI];
+                                     }]];
+
     [items addObject:[OWSTableItem itemWithTitle:@"Remove local PNI identity key"
                                      actionBlock:^() { [DebugUIMisc removeLocalPniIdentityKey]; }]];
 

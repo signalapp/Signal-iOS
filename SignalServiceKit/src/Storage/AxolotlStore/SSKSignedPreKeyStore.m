@@ -279,12 +279,10 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 #pragma mark - Prekey update failures
 
-- (int)prekeyUpdateFailureCount
+- (int)prekeyUpdateFailureCountWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    __block NSNumber *_Nullable value;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        value = [self.metadataStore getObjectForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
-    }];
+    NSNumber *_Nullable value = [self.metadataStore getObjectForKey:kPrekeyUpdateFailureCountKey
+                                                        transaction:transaction];
     // Will default to zero.
     return [value intValue];
 }
@@ -310,13 +308,12 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     return failureCount;
 }
 
-- (nullable NSDate *)firstPrekeyUpdateFailureDate
+- (void)setPrekeyUpdateFailureCount:(NSInteger)count
+                   firstFailureDate:(NSDate *)firstFailureDate
+                        transaction:(SDSAnyWriteTransaction *)transaction
 {
-    __block NSDate *_Nullable result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self firstPrekeyUpdateFailureDateWithTransaction:transaction];
-    }];
-    return result;
+    [self.metadataStore setInt:count key:kPrekeyUpdateFailureCountKey transaction:transaction];
+    [self.metadataStore setDate:firstFailureDate key:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
 }
 
 - (nullable NSDate *)firstPrekeyUpdateFailureDateWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -332,11 +329,12 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     NSString *tag = @"SSKSignedPreKeyStore";
 
     NSNumber *currentId = [self currentSignedPrekeyId];
-    NSDate *firstPrekeyUpdateFailureDate = [self firstPrekeyUpdateFailureDate];
-    NSUInteger prekeyUpdateFailureCount = [self prekeyUpdateFailureCount];
 
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         __block int i = 0;
+
+        NSDate *firstPrekeyUpdateFailureDate = [self firstPrekeyUpdateFailureDateWithTransaction:transaction];
+        NSUInteger prekeyUpdateFailureCount = [self prekeyUpdateFailureCountWithTransaction:transaction];
 
         OWSLogInfo(@"%@ SignedPreKeys Report:", tag);
         OWSLogInfo(@"%@   currentId: %@", tag, currentId);

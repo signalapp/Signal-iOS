@@ -33,6 +33,8 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
 
 #if TESTABLE_BUILD
 + (void)checkPreKeysImmediately;
+
++ (void)storeFakePreKeyUploadFailuresForIdentity:(OWSIdentity)identity;
 #endif
 
 @end
