@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUIKit
 
 @objc(OWSSheetViewControllerDelegate)
 public protocol SheetViewControllerDelegate: class {
@@ -54,8 +55,8 @@ public class SheetViewController: UIViewController {
         sheetView.setContentHuggingVerticalHigh()
         sheetView.setCompressionResistanceHigh()
         self.sheetViewVerticalConstraint = sheetView.autoPinEdge(.top, to: .bottom, of: self.view)
-
-        handleView.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_white : UIColor.ows_gray05
+        
+        handleView.backgroundColor = isDarkMode ? UIColor.ows_white : UIColor.ows_gray05
         let kHandleViewHeight: CGFloat = 5
         handleView.autoSetDimensions(to: CGSize(width: 40, height: kHandleViewHeight))
         handleView.layer.cornerRadius = kHandleViewHeight / 2
@@ -82,7 +83,7 @@ public class SheetViewController: UIViewController {
 
         let backgroundDuration: TimeInterval = 0.1
         UIView.animate(withDuration: backgroundDuration) {
-            let alpha: CGFloat = Theme.isDarkThemeEnabled ? 0.7 : 0.6
+            let alpha: CGFloat = isDarkMode ? 0.7 : 0.6
             self.view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
         }
 
@@ -199,8 +200,7 @@ private class SheetView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray90
-            : UIColor.ows_gray05
+        self.backgroundColor = isDarkMode ? UIColor.ows_gray90 : UIColor.ows_gray05
     }
 
     required init?(coder aDecoder: NSCoder) {

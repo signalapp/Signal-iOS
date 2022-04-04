@@ -140,9 +140,6 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (BOOL)isDeregistered;
 - (void)setIsDeregistered:(BOOL)isDeregistered;
 
-- (BOOL)hasPendingBackupRestoreDecision;
-- (void)setHasPendingBackupRestoreDecision:(BOOL)value;
-
 #pragma mark - Re-registration
 
 // Re-registration is the process of re-registering _with the same phone number_.

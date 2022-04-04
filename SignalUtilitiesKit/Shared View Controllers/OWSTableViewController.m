@@ -4,7 +4,6 @@
 
 #import "OWSTableViewController.h"
 #import "OWSNavigationController.h"
-#import "Theme.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -594,11 +593,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 
     [self applyTheme];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
-                                               object:nil];
 }
 
 - (void)dealloc
@@ -816,23 +810,13 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.delegate tableViewWillBeginDragging];
 }
 
-#pragma mark - Theme
-
-- (void)themeDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self applyTheme];
-    [self.tableView reloadData];
-}
-
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = Theme.backgroundColor;
-    self.tableView.backgroundColor = Theme.backgroundColor;
-    self.tableView.separatorColor = Theme.cellSeparatorColor;
+    self.view.backgroundColor = LKColors.navigationBarBackground;
+    self.tableView.backgroundColor = LKColors.navigationBarBackground;
+    self.tableView.separatorColor = LKColors.separator;
 }
 
 @end
