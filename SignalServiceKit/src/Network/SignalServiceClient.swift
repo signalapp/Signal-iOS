@@ -17,7 +17,7 @@ public protocol SignalServiceClient {
     func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse>
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(for identity: OWSIdentity, identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
-    func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
+    func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void>
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
     func getAccountWhoAmI() -> Promise<WhoAmIResponse>
@@ -95,10 +95,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return networkManager.makePromise(request: request).asVoid()
     }
 
-    public func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void> {
+    public func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
         Logger.debug("")
 
-        let request = OWSRequestFactory.registerSignedPrekeyRequest(with: signedPreKey)
+        let request = OWSRequestFactory.registerSignedPrekeyRequest(for: identity, signedPreKey: signedPreKey)
         return networkManager.makePromise(request: request).asVoid()
     }
 

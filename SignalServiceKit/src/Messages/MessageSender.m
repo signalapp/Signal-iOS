@@ -581,7 +581,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             // Only try to update the signed prekey; updating it is sufficient to
             // re-enable message sending.
             [TSPreKeyManager
-                rotateSignedPreKeyWithSuccess:^{
+                rotateSignedPreKeysWithSuccess:^{
                     OWSLogInfo(@"New prekeys registered with server.");
                     [future resolveWithValue:@(1)];
                 }

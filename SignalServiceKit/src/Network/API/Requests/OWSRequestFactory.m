@@ -21,6 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
+static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
+{
+    switch (identity) {
+        case OWSIdentityACI:
+            return nil;
+        case OWSIdentityPNI:
+            return @"identity=pni";
+    }
+}
+
 @implementation OWSRequestFactory
 
 + (TSRequest *)enable2FARequestWithPin:(NSString *)pin
@@ -556,11 +566,16 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey
++ (TSRequest *)registerSignedPrekeyRequestForIdentity:(OWSIdentity)identity
+                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey
 {
     OWSAssertDebug(signedPreKey);
 
     NSString *path = self.textSecureSignedKeysAPI;
+    NSString *queryParam = queryParamForIdentity(identity);
+    if (queryParam != nil) {
+        path = [path stringByAppendingFormat:@"?%@", queryParam];
+    }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
                               method:@"PUT"
                           parameters:[self dictionaryFromSignedPreKey:signedPreKey]];
@@ -576,12 +591,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(signedPreKey);
 
     NSString *path = self.textSecureKeysAPI;
-    switch (identity) {
-        case OWSIdentityACI:
-            break;
-        case OWSIdentityPNI:
-            path = [path stringByAppendingString:@"?identity=pni"];
-            break;
+    NSString *queryParam = queryParamForIdentity(identity);
+    if (queryParam != nil) {
+        path = [path stringByAppendingFormat:@"?%@", queryParam];
     }
 
     NSString *publicIdentityKey = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];

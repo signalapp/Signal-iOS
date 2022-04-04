@@ -47,8 +47,8 @@ public class AccountServiceClient: NSObject {
                                              preKeyRecords: preKeyRecords)
     }
 
-    public func setSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void> {
-        return serviceClient.setCurrentSignedPreKey(signedPreKey)
+    public func setSignedPreKey(_ signedPreKey: SignedPreKeyRecord, for identity: OWSIdentity) -> Promise<Void> {
+        return serviceClient.setCurrentSignedPreKey(signedPreKey, for: identity)
     }
 
     public func updatePrimaryDeviceAccountAttributes() -> Promise<Void> {

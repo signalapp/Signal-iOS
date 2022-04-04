@@ -126,7 +126,8 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                         deviceId:(NSString *)deviceId
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
-+ (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey;
++ (TSRequest *)registerSignedPrekeyRequestForIdentity:(OWSIdentity)identity
+                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey;
 
 + (TSRequest *)registerPrekeysRequestForIdentity:(OWSIdentity)identity
                                      prekeyArray:(NSArray *)prekeys

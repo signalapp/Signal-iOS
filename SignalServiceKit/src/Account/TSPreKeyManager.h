@@ -21,7 +21,7 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity);
 
 #pragma mark - Check/Request Initiation
 
-+ (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
++ (void)rotateSignedPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
 
 + (void)createPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler;
 

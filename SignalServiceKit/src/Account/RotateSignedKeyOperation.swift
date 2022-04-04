@@ -6,6 +6,12 @@ import Foundation
 
 @objc(SSKRotateSignedPreKeyOperation)
 public class RotateSignedPreKeyOperation: OWSOperation {
+    private let identity: OWSIdentity
+
+    @objc(initForIdentity:)
+    public init(for identity: OWSIdentity) {
+        self.identity = identity
+    }
 
     public override func run() {
         Logger.debug("")
@@ -15,8 +21,12 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
 
-        // PNI TODO: parameterize this entire operation on OWSIdentity
-        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        guard identityManager.identityKeyPair(for: identity) != nil else {
+            Logger.debug("skipping - no identity keys")
+            return
+        }
+
+        let signalProtocolStore = self.signalProtocolStore(for: identity)
         let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
 
         firstly(on: .global()) { () -> Promise<Void> in
@@ -27,7 +37,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
                                                                         signedPreKeyRecord: signedPreKeyRecord,
                                                                         transaction: transaction)
             }
-            return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord)
+            return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord, for: self.identity)
         }.done(on: .global()) { () in
             Logger.info("Successfully uploaded signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
@@ -62,7 +72,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
 
-        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        let signalProtocolStore = self.signalProtocolStore(for: identity)
         self.databaseStorage.write { transaction in
             signalProtocolStore.signedPreKeyStore.incrementPrekeyUpdateFailureCount(transaction: transaction)
         }

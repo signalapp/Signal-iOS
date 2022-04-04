@@ -139,7 +139,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     }
     [operations addObject:refreshOperation];
 
-    SSKRotateSignedPreKeyOperation *rotationOperation = [SSKRotateSignedPreKeyOperation new];
+    SSKRotateSignedPreKeyOperation *rotationOperation =
+        [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityACI];
 
     if (shouldThrottle) {
         __weak SSKRotateSignedPreKeyOperation *weakRotationOperation = rotationOperation;
@@ -211,15 +212,16 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     });
 }
 
-+ (void)rotateSignedPreKeyWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
++ (void)rotateSignedPreKeysWithSuccess:(void (^)(void))successHandler failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        SSKRotateSignedPreKeyOperation *operation = [SSKRotateSignedPreKeyOperation new];
-        [self.operationQueue addOperations:@[ operation ] waitUntilFinished:YES];
+        SSKRotateSignedPreKeyOperation *aciOp = [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityACI];
+        SSKRotateSignedPreKeyOperation *pniOp = [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityPNI];
+        [self.operationQueue addOperations:@[ aciOp, pniOp ] waitUntilFinished:YES];
 
-        NSError *_Nullable error = operation.failingError;
+        NSError *_Nullable error = aciOp.failingError ?: pniOp.failingError;
         if (error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 failureHandler(error);
