@@ -3,7 +3,7 @@ import SessionSnodeKit
 
 @objc(SNOpenGroupAPIV2)
 public final class OpenGroupAPIV2 : NSObject {
-    private static var authTokenPromises: [String:Promise<String>] = [:]
+    private static var authTokenPromises: Atomic<[String:Promise<String>]> = Atomic([:])
     private static var hasPerformedInitialPoll: [String:Bool] = [:]
     private static var hasUpdatedLastOpenDate = false
     public static let workQueue = DispatchQueue(label: "OpenGroupAPIV2.workQueue", qos: .userInitiated) // It's important that this is a serial queue
@@ -210,7 +210,7 @@ public final class OpenGroupAPIV2 : NSObject {
         if let authToken = storage.getAuthToken(for: room, on: server) {
             return Promise.value(authToken)
         } else {
-            if let authTokenPromise = authTokenPromises["\(server).\(room)"] {
+            if let authTokenPromise = authTokenPromises.wrappedValue["\(server).\(room)"] {
                 return authTokenPromise
             } else {
                 let promise = requestNewAuthToken(for: room, on: server)
@@ -225,11 +225,11 @@ public final class OpenGroupAPIV2 : NSObject {
                     return promise
                 }
                 promise.done(on: OpenGroupAPIV2.workQueue) { _ in
-                    authTokenPromises["\(server).\(room)"] = nil
+                    authTokenPromises.mutate{ $0["\(server).\(room)"] = nil }
                 }.catch(on: OpenGroupAPIV2.workQueue) { _ in
-                    authTokenPromises["\(server).\(room)"] = nil
+                    authTokenPromises.mutate{ $0["\(server).\(room)"] = nil }
                 }
-                authTokenPromises["\(server).\(room)"] = promise
+                authTokenPromises.mutate{ $0["\(server).\(room)"] = promise }
                 return promise
             }
         }

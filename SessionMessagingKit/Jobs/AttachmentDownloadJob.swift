@@ -61,7 +61,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
     // MARK: Running
     public func execute() {
         if let id = id {
-            JobQueue.currentlyExecutingJobs.insert(id)
+            JobQueue.currentlyExecutingJobs.mutate{ $0.insert(id) }
         }
         guard !isDeferred else { return }
         if TSAttachment.fetch(uniqueId: attachmentID) is TSAttachmentStream {
