@@ -16,12 +16,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, OWSReceiptType) {
-    OWSReceiptType_Delivery,
-    OWSReceiptType_Read,
-};
-
-NSString *const kOutgoingDeliveryReceiptManagerCollection = @"kOutgoingDeliveryReceiptManagerCollection";
 NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptManagerCollection";
 
 @interface OWSOutgoingReceiptManager ()
@@ -103,7 +97,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         }
 
         NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
-        [sendPromises addObjectsFromArray:[self sendReceiptsForReceiptType:OWSReceiptType_Read]];
+        [sendPromises addObjectsFromArray:[self sendReceipts]];
 
         if (sendPromises.count < 1) {
             // No work to do; abort.
@@ -132,10 +126,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     });
 }
 
-- (NSArray<AnyPromise *> *)sendReceiptsForReceiptType:(OWSReceiptType)receiptType {
-    if (receiptType == OWSReceiptType_Delivery) { return @[]; } // Don't send delivery receipts
-
-    NSString *collection = [self collectionForReceiptType:receiptType];
+- (NSArray<AnyPromise *> *)sendReceipts {
+    NSString *collection = kOutgoingReadReceiptManagerCollection;
 
     NSMutableDictionary<NSString *, NSSet<NSNumber *> *> *queuedReceiptMap = [NSMutableDictionary new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -170,7 +162,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             AnyPromise *promise = [SNMessageSender sendNonDurably:readReceipt inThread:thread usingTransaction:transaction]
             .thenOn(self.serialQueue, ^(id object) {
-                [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestampsAsSet receiptType:OWSReceiptType_Read];
+                [self dequeueReceiptsWithRecipientId:recipientId timestamps:timestampsAsSet];
             });
             [sendPromises addObject:promise];
         }];
@@ -179,22 +171,11 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     return [sendPromises copy];
 }
 
-- (void)enqueueDeliveryReceiptForEnvelope:(SNProtoEnvelope *)envelope
-{
-    [self enqueueReceiptWithRecipientId:envelope.source
-                              timestamp:envelope.timestamp
-                            receiptType:OWSReceiptType_Delivery];
-}
-
 - (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp {
-    [self enqueueReceiptWithRecipientId:messageAuthorId timestamp:timestamp receiptType:OWSReceiptType_Read];
+    [self enqueueReceiptWithRecipientId:messageAuthorId timestamp:timestamp];
 }
 
-- (void)enqueueReceiptWithRecipientId:(NSString *)recipientId
-                            timestamp:(uint64_t)timestamp
-                          receiptType:(OWSReceiptType)receiptType {
-    NSString *collection = [self collectionForReceiptType:receiptType];
-
+- (void)enqueueReceiptWithRecipientId:(NSString *)recipientId timestamp:(uint64_t)timestamp {
     if (recipientId.length < 1) {
         return;
     }
@@ -203,23 +184,19 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     }
     dispatch_async(self.serialQueue, ^{
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:collection];
+            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:kOutgoingReadReceiptManagerCollection];
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps addObject:@(timestamp)];
 
-            [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
+            [transaction setObject:newTimestamps forKey:recipientId inCollection:kOutgoingReadReceiptManagerCollection];
         }];
 
         [self process];
     });
 }
 
-- (void)dequeueReceiptsWithRecipientId:(NSString *)recipientId
-                            timestamps:(NSSet<NSNumber *> *)timestamps
-                           receiptType:(OWSReceiptType)receiptType {
-    NSString *collection = [self collectionForReceiptType:receiptType];
-
+- (void)dequeueReceiptsWithRecipientId:(NSString *)recipientId timestamps:(NSSet<NSNumber *> *)timestamps {
     if (recipientId.length < 1) {
         return;
     }
@@ -228,15 +205,15 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
     }
     dispatch_async(self.serialQueue, ^{
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:collection];
+            NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:kOutgoingReadReceiptManagerCollection];
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps minusSet:timestamps];
 
             if (newTimestamps.count > 0) {
-                [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
+                [transaction setObject:newTimestamps forKey:recipientId inCollection:kOutgoingReadReceiptManagerCollection];
             } else {
-                [transaction removeObjectForKey:recipientId inCollection:collection];
+                [transaction removeObjectForKey:recipientId inCollection:kOutgoingReadReceiptManagerCollection];
             }
         }];
     });
@@ -245,15 +222,6 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 - (void)reachabilityChanged
 {
     [self process];
-}
-
-- (NSString *)collectionForReceiptType:(OWSReceiptType)receiptType {
-    switch (receiptType) {
-        case OWSReceiptType_Delivery:
-            return kOutgoingDeliveryReceiptManagerCollection;
-        case OWSReceiptType_Read:
-            return kOutgoingReadReceiptManagerCollection;
-    }
 }
 
 @end

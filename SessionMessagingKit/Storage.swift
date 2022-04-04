@@ -2,6 +2,7 @@ import PromiseKit
 import Sodium
 import Curve25519Kit
 import YapDatabase
+import SessionSnodeKit
 
 public protocol SessionMessagingKitStorageProtocol {
 
@@ -67,7 +68,6 @@ public protocol SessionMessagingKitStorageProtocol {
 
     func getAllOpenGroups() -> [String: OpenGroup]
     func getThreadID(for openGroupID: String) -> String?
-    func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any)
     
     func getOpenGroupImage(for room: String, on server: String) -> Data?
     func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any)
@@ -133,3 +133,5 @@ public protocol SessionMessagingKitStorageProtocol {
     /// Also touches the associated message.
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any)
 }
+
+extension Storage: SessionMessagingKitStorageProtocol, SessionSnodeKitStorageProtocol {}

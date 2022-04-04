@@ -206,7 +206,6 @@ public final class OpenGroupManager: NSObject {
             messageIDs.insert(interaction.uniqueId!)
             messageTimestamps.insert(interaction.timestamp)
         }
-        dependencies.storage.updateMessageIDCollectionByPruningMessagesWithIDs(messageIDs, using: transaction)
         dependencies.storage.removeReceivedMessageTimestamps(messageTimestamps, using: transaction)
         dependencies.storage.removeOpenGroupSequenceNumber(for: openGroup.room, on: openGroup.server, using: transaction)
         

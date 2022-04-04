@@ -901,9 +901,6 @@ class OpenGroupManagerSpec: QuickSpec {
                 beforeEach {
                     testGroupThread.mockData[.interactions] = [testInteraction]
                     
-                    mockStorage
-                        .when { $0.updateMessageIDCollectionByPruningMessagesWithIDs(anySet(), using: anyAny()) }
-                        .thenReturn(())
                     mockStorage.when { $0.removeReceivedMessageTimestamps(anySet(), using: anyAny()) }.thenReturn(())
                     mockStorage.when { $0.removeOpenGroupSequenceNumber(for: any(), on: any(), using: anyAny()) }.thenReturn(())
                     mockStorage.when { $0.removeOpenGroup(for: any(), using: anyAny()) }.thenReturn(())
@@ -911,24 +908,6 @@ class OpenGroupManagerSpec: QuickSpec {
                     mockStorage.when { $0.removeOpenGroupPublicKey(for: any(), using: anyAny()) }.thenReturn(())
                     
                     mockOGMCache.when { $0.pollers }.thenReturn([:])
-                }
-                
-                it("removes messages for the given thread") {
-                    openGroupManager
-                        .delete(
-                            testOpenGroup,
-                            associatedWith: testGroupThread,
-                            using: testTransaction,
-                            dependencies: dependencies
-                        )
-                    
-                    expect(mockStorage)
-                        .to(call(matchingParameters: true) {
-                            $0.updateMessageIDCollectionByPruningMessagesWithIDs(
-                                Set(arrayLiteral: testInteraction.uniqueId!),
-                                using: testTransaction! as Any
-                            )
-                        })
                 }
                 
                 it("removes received timestamps for the given thread") {

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUIKit
 
 @objc(OWSMediaView)
 public class MediaView: UIView {
@@ -149,7 +150,7 @@ public class MediaView: UIView {
             configure(forError: .missing)
             return
         }
-        backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
+        backgroundColor = (isDarkMode ? .ows_gray90 : .ows_gray05)
         let loader = MediaLoaderView()
         addSubview(loader)
         loader.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: self)
@@ -352,7 +353,7 @@ public class MediaView: UIView {
     }
 
     private func configure(forError error: MediaError) {
-        backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
+        backgroundColor = (isDarkMode ? .ows_gray90 : .ows_gray05)
         let icon: UIImage
         switch error {
         case .failed:

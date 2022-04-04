@@ -115,9 +115,6 @@ class MockStorage: Mock<SessionMessagingKitStorageProtocol>, SessionMessagingKit
     
     func getAllOpenGroups() -> [String: OpenGroup] { return accept() as! [String: OpenGroup] }
     func getThreadID(for v2OpenGroupID: String) -> String? { return accept(args: [v2OpenGroupID]) as? String }
-    func updateMessageIDCollectionByPruningMessagesWithIDs(_ messageIDs: Set<String>, using transaction: Any) {
-        accept(args: [messageIDs, transaction])
-    }
     
     func getOpenGroupImage(for room: String, on server: String) -> Data? { return accept(args: [room, server]) as? Data }
     func setOpenGroupImage(to data: Data, for room: String, on server: String, using transaction: Any) {
