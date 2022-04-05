@@ -379,7 +379,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     func handleEndCallMessage() {
-        print("[Calls] Ending call.")
+        SNLog("[Calls] Ending call.")
         callInfoLabel.text = "Call Ended"
         UIView.animate(withDuration: 0.25) {
             self.remoteVideoView.alpha = 0

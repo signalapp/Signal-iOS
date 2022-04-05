@@ -108,11 +108,11 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     // MARK: Signaling
     public func sendPreOffer(_ message: CallMessage, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
-        print("[Calls] Sending pre-offer message.")
+        SNLog("[Calls] Sending pre-offer message.")
         let (promise, seal) = Promise<Void>.pending()
         DispatchQueue.main.async {
             MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
-                print("[Calls] Pre-offer message has been sent.")
+                SNLog("[Calls] Pre-offer message has been sent.")
                 seal.fulfill(())
             }.catch2 { error in
                 seal.reject(error)
@@ -122,7 +122,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction, isRestartingICEConnection: Bool = false) -> Promise<Void> {
-        print("[Calls] Sending offer message.")
+        SNLog("[Calls] Sending offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
         peerConnection.offer(for: mediaConstraints(isRestartingICEConnection)) { [weak self] sdp, error in
@@ -154,7 +154,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func sendAnswer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
-        print("[Calls] Sending answer message.")
+        SNLog("[Calls] Sending answer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
         peerConnection.answer(for: mediaConstraints(false)) { [weak self] sdp, error in
@@ -198,7 +198,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         Storage.write { transaction in
             let candidates = self.queuedICECandidates
             guard let thread = TSContactThread.fetch(for: self.contactSessionID, using: transaction) else { return }
-            print("[Calls] Batch sending \(candidates.count) ICE candidates.")
+            SNLog("[Calls] Batch sending \(candidates.count) ICE candidates.")
             let message = CallMessage()
             let sdps = candidates.map { $0.sdp }
             let sdpMLineIndexes = candidates.map { UInt32($0.sdpMLineIndex) }
@@ -216,7 +216,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         let message = CallMessage()
         message.uuid = self.uuid
         message.kind = .endCall
-        print("[Calls] Sending end call message.")
+        SNLog("[Calls] Sending end call message.")
         MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
     }
     
@@ -243,23 +243,23 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     // MARK: Peer connection delegate
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCSignalingState) {
-        print("[Calls] Signaling state changed to: \(state).")
+        SNLog("[Calls] Signaling state changed to: \(state).")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
-        print("[Calls] Peer connection did add stream.")
+        SNLog("[Calls] Peer connection did add stream.")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
-        print("[Calls] Peer connection did remove stream.")
+        SNLog("[Calls] Peer connection did remove stream.")
     }
     
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-        print("[Calls] Peer connection should negotiate.")
+        SNLog("[Calls] Peer connection should negotiate.")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceConnectionState) {
-        print("[Calls] ICE connection state changed to: \(state).")
+        SNLog("[Calls] ICE connection state changed to: \(state).")
         if state == .connected {
             delegate?.webRTCIsConnected()
         } else if state == .disconnected {
@@ -270,7 +270,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceGatheringState) {
-        print("[Calls] ICE gathering state changed to: \(state).")
+        SNLog("[Calls] ICE gathering state changed to: \(state).")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
@@ -278,11 +278,11 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
-        print("[Calls] \(candidates.count) ICE candidate(s) removed.")
+        SNLog("[Calls] \(candidates.count) ICE candidate(s) removed.")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
-        print("[Calls] Data channel opened.")
+        SNLog("[Calls] Data channel opened.")
     }
 }
 

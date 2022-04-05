@@ -314,16 +314,16 @@ extension MessageReceiver {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         switch message.kind! {
         case .preOffer:
-            print("[Calls] Received pre-offer message.")
+            SNLog("[Calls] Received pre-offer message.")
             // It is enough just ignoring the pre offers, other call messages
             // for this call would be dropped because of no Session call instance
             guard let sender = message.sender, let contact = Storage.shared.getContact(with: sender), contact.isApproved else { return }
             handleNewCallOfferMessageIfNeeded?(message, transaction)
         case .offer:
-            print("[Calls] Received offer message.")
+            SNLog("[Calls] Received offer message.")
             handleOfferCallMessage?(message)
         case .answer:
-            print("[Calls] Received answer message.")
+            SNLog("[Calls] Received answer message.")
             guard let currentWebRTCSession = WebRTCSession.current, currentWebRTCSession.uuid == message.uuid! else { return }
             handleAnswerCallMessage?(message)
         case .provisionalAnswer: break // TODO: Implement
@@ -340,7 +340,7 @@ extension MessageReceiver {
             }
             currentWebRTCSession.handleICECandidates(candidates)
         case .endCall:
-            print("[Calls] Received end call message.")
+            SNLog("[Calls] Received end call message.")
             guard WebRTCSession.current?.uuid == message.uuid! else { return }
             handleEndCallMessage?(message)
         }
