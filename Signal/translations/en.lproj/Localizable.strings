@@ -1606,17 +1606,29 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
 
+/* Section title for donation amount on receipts */
+"DONATION_RECEIPT_AMOUNT" = "Amount";
+
 /* Section title for donation date on receipts */
 "DONATION_RECEIPT_DATE_PAID" = "Date paid";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "Details";
 
+/* Text on the button that exports the receipt */
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+
+/* Footer text at the bottom of donation receipts */
+"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "One-time";
 
 /* Title for recurring donation receipts */
 "DONATION_RECEIPT_RECURRING" = "Recurring";
+
+/* Title on donation receipts */
+"DONATION_RECEIPT_TITLE" = "Donation receipt";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "Type";
