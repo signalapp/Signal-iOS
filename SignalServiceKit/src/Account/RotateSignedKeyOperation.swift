@@ -4,13 +4,17 @@
 
 import Foundation
 
+private let kSignedPreKeyRotationTime: TimeInterval = 2 * kDayInterval
+
 @objc(SSKRotateSignedPreKeyOperation)
 public class RotateSignedPreKeyOperation: OWSOperation {
     private let identity: OWSIdentity
+    private let shouldSkipIfRecent: Bool
 
-    @objc(initForIdentity:)
-    public init(for identity: OWSIdentity) {
+    @objc(initForIdentity:shouldSkipIfRecent:)
+    public init(for identity: OWSIdentity, shouldSkipIfRecent: Bool) {
         self.identity = identity
+        self.shouldSkipIfRecent = shouldSkipIfRecent
     }
 
     public override func run() {
@@ -18,15 +22,25 @@ public class RotateSignedPreKeyOperation: OWSOperation {
 
         guard tsAccountManager.isRegistered else {
             Logger.debug("skipping - not registered")
+            self.reportCancelled()
             return
         }
 
         guard identityManager.identityKeyPair(for: identity) != nil else {
-            Logger.debug("skipping - no identity keys")
+            Logger.debug("skipping - no \(identity) identity key")
+            self.reportCancelled()
             return
         }
 
         let signalProtocolStore = self.signalProtocolStore(for: identity)
+
+        if shouldSkipIfRecent,
+           let currentSignedPreKey = signalProtocolStore.signedPreKeyStore.currentSignedPreKey(),
+           abs(currentSignedPreKey.generatedAt.timeIntervalSinceNow) < kSignedPreKeyRotationTime {
+            self.reportCancelled()
+            return
+        }
+
         let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
 
         firstly(on: .global()) { () -> Promise<Void> in
@@ -39,7 +53,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             }
             return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord, for: self.identity)
         }.done(on: .global()) { () in
-            Logger.info("Successfully uploaded signed PreKey")
+            Logger.info("Successfully uploaded \(self.identity) signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in
                 signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,

@@ -15,9 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Time before rotation of signed prekeys (measured in seconds)
-#define kSignedPreKeyRotationTime (2 * kDayInterval)
-
 // How often we check prekey state on app activation.
 #define kPreKeyCheckFrequencySeconds (12 * kHourInterval)
 
@@ -162,23 +159,8 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
     [operations addObject:refreshOperation];
 
     SSKRotateSignedPreKeyOperation *rotationOperation =
-        [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityACI];
+        [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityACI shouldSkipIfRecent:shouldThrottle];
 
-    if (shouldThrottle) {
-        __weak SSKRotateSignedPreKeyOperation *weakRotationOperation = rotationOperation;
-        NSBlockOperation *checkIfRotationNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
-            SSKSignedPreKeyStore *signedPreKeyStore =
-                [self signalProtocolStoreForIdentity:OWSIdentityACI].signedPreKeyStore;
-            SignedPreKeyRecord *_Nullable signedPreKey = [signedPreKeyStore currentSignedPreKey];
-
-            BOOL shouldCheck
-                = !signedPreKey || fabs(signedPreKey.generatedAt.timeIntervalSinceNow) >= kSignedPreKeyRotationTime;
-            if (!shouldCheck) {
-                [weakRotationOperation cancel];
-            }
-        }];
-        [operations addObject:checkIfRotationNecessaryOperation];
-    }
     [operations addObject:rotationOperation];
 
     // Set up dependencies; we want to perform these operations serially.
@@ -239,8 +221,10 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
     OWSAssertDebug(self.tsAccountManager.isRegisteredAndReady);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        SSKRotateSignedPreKeyOperation *aciOp = [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityACI];
-        SSKRotateSignedPreKeyOperation *pniOp = [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityPNI];
+        SSKRotateSignedPreKeyOperation *aciOp = [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityACI
+                                                                                     shouldSkipIfRecent:NO];
+        SSKRotateSignedPreKeyOperation *pniOp = [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityPNI
+                                                                                     shouldSkipIfRecent:NO];
         [self.operationQueue addOperations:@[ aciOp, pniOp ] waitUntilFinished:YES];
 
         NSError *_Nullable error = aciOp.failingError ?: pniOp.failingError;
