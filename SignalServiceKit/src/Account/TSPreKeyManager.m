@@ -142,21 +142,11 @@ static BOOL needsSignedPreKeyRotation(OWSIdentity identity, SDSAnyReadTransactio
     MessageProcessingOperation *messageProcessingOperation = [MessageProcessingOperation new];
     [operations addObject:messageProcessingOperation];
 
-    SSKRefreshPreKeysOperation *refreshOperation = [SSKRefreshPreKeysOperation new];
-
-    if (shouldThrottle) {
-        __weak SSKRefreshPreKeysOperation *weakRefreshOperation = refreshOperation;
-        NSBlockOperation *checkIfRefreshNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
-            NSDate *_Nullable lastPreKeyCheckTimestamp = TSPreKeyManager.shared.lastPreKeyCheckTimestamp;
-            BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
-                || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
-            if (!shouldCheck) {
-                [weakRefreshOperation cancel];
-            }
-        }];
-        [operations addObject:checkIfRefreshNecessaryOperation];
+    NSDate *_Nullable lastPreKeyCheckTimestamp = TSPreKeyManager.shared.lastPreKeyCheckTimestamp;
+    if (!shouldThrottle || lastPreKeyCheckTimestamp == nil ||
+        fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds) {
+        [operations addObject:[SSKRefreshPreKeysOperation new]];
     }
-    [operations addObject:refreshOperation];
 
     SSKRotateSignedPreKeyOperation *rotationOperation =
         [[SSKRotateSignedPreKeyOperation alloc] initForIdentity:OWSIdentityACI shouldSkipIfRecent:shouldThrottle];
