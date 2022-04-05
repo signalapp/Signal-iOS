@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -122,9 +122,7 @@ class PreviewWallpaperViewController: UIViewController {
                     guard let standalonePage = self.standalonePage else {
                         return owsFailDebug("Missing standalone page for photo")
                     }
-                    guard let croppedAndScaledPhoto = standalonePage.view.renderAsImage() else {
-                        return owsFailDebug("Failed to snapshot cropped and scaled photo")
-                    }
+                    let croppedAndScaledPhoto = standalonePage.view.renderAsImage()
                     try Wallpaper.setPhoto(croppedAndScaledPhoto, for: self.thread, transaction: transaction)
                 case .preset(let selectedWallpaper):
                     try Wallpaper.setBuiltIn(selectedWallpaper, for: self.thread, transaction: transaction)

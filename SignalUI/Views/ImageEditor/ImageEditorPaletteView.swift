@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -214,15 +214,12 @@ public class ImageEditorPaletteView: UIView {
         shadowView.layer.shadowOffset = .zero
         addSubview(shadowView)
 
-        if let image = ImageEditorPaletteView.buildPaletteGradientImage() {
-            imageView.image = image
-            let imageRadius = image.size.width * 0.5
-            imageView.layer.cornerRadius = imageRadius
-            shadowView.layer.cornerRadius = imageRadius
-            imageView.clipsToBounds = true
-        } else {
-            owsFailDebug("Missing image.")
-        }
+        let image = ImageEditorPaletteView.buildPaletteGradientImage()
+        imageView.image = image
+        let imageRadius = image.size.width * 0.5
+        imageView.layer.cornerRadius = imageRadius
+        shadowView.layer.cornerRadius = imageRadius
+        imageView.clipsToBounds = true
         addSubview(imageView)
         // We use an invisible margin to expand the hot area of this control.
         let margin: CGFloat = 20
@@ -362,7 +359,7 @@ public class ImageEditorPaletteView: UIView {
         selectColor(atLocationY: location.y)
     }
 
-    private static func buildPaletteGradientImage() -> UIImage? {
+    private static func buildPaletteGradientImage() -> UIImage {
         let gradientSize = CGSize(width: 8, height: 200)
         let gradientBounds = CGRect(origin: .zero, size: gradientSize)
         let gradientView = UIView()
