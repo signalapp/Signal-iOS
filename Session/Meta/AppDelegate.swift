@@ -7,6 +7,11 @@ import SessionMessagingKit
 extension AppDelegate {
 
     // MARK: Call handling
+    @objc func hasIncomingCallWaiting() -> Bool {
+        guard let call = AppEnvironment.shared.callManager.currentCall else { return false }
+        return !call.hasStartedConnecting
+    }
+    
     @objc func handleAppActivatedWithOngoingCallIfNeeded() {
         guard let call = AppEnvironment.shared.callManager.currentCall else { return }
         guard MiniCallView.current == nil else { return }

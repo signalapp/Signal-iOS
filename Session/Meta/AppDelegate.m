@@ -114,8 +114,13 @@ static NSTimeInterval launchStartedAt;
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [DDLog flushLog];
-
-    [self stopPoller];
+    
+    // NOTE: Fix an edge case where user taps on the callkit notification
+    // but answers the call on another device
+    if (![self hasIncomingCallWaiting]) {
+        [self stopPoller];
+    }
+    
     [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
 }
