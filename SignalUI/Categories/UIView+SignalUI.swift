@@ -65,11 +65,11 @@ public class SpacerView: UIView {
 
 @objc
 public extension UIView {
-    func renderAsImage() -> UIImage? {
+    func renderAsImage() -> UIImage {
         renderAsImage(opaque: false, scale: UIScreen.main.scale)
     }
 
-    func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage? {
+    func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = scale
         format.opaque = opaque

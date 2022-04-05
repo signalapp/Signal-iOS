@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -527,10 +527,7 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
             guard bounds.width > 0, bounds.height > 0 else {
                 return nil
             }
-            guard let contentImage = contentView.renderAsImage() else {
-                owsFailDebug("Could not render contentView.")
-                return nil
-            }
+            let contentImage = contentView.renderAsImage()
             // We approximate the behavior of UIVisualEffectView(effect: UIBlurEffect(style: .regular)).
             let tintColor: UIColor = (isDarkThemeEnabled
                                         ? UIColor.ows_black.withAlphaComponent(0.9)
