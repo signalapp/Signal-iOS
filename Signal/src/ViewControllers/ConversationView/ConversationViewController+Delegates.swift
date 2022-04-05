@@ -348,6 +348,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
 
         updateBottomBarPosition()
         updateContentInsets(animated: false)
+        updateScrollingContent()
     }
 
     public func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
