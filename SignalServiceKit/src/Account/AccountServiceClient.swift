@@ -33,8 +33,8 @@ public class AccountServiceClient: NSObject {
         }
     }
 
-    public func getPreKeysCount() -> Promise<Int> {
-        return serviceClient.getAvailablePreKeys()
+    public func getPreKeysCount(for identity: OWSIdentity) -> Promise<Int> {
+        return serviceClient.getAvailablePreKeys(for: identity)
     }
 
     public func setPreKeys(for identity: OWSIdentity,

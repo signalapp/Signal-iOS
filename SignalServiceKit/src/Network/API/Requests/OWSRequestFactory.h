@@ -118,7 +118,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 #pragma mark - Prekeys
 
-+ (TSRequest *)availablePreKeysCountRequest;
++ (TSRequest *)availablePreKeysCountRequestForIdentity:(OWSIdentity)identity;
 
 + (TSRequest *)currentSignedPreKeyRequest;
 

@@ -19,7 +19,7 @@ public class FakeAccountServiceClient: AccountServiceClient {
         return Promise { $0.resolve() }
     }
 
-    public override func getPreKeysCount() -> Promise<Int> {
+    public override func getPreKeysCount(for identity: OWSIdentity) -> Promise<Int> {
         return Promise { $0.resolve(0) }
     }
 

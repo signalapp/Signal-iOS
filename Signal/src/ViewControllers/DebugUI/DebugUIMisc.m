@@ -235,6 +235,10 @@ NS_ASSUME_NONNULL_BEGIN
         SignalProtocolStore *signalProtocolStore = [self signalProtocolStoreForIdentity:OWSIdentityACI];
         [signalProtocolStore.signedPreKeyStore removeAll:transaction];
         [signalProtocolStore.preKeyStore removeAll:transaction];
+
+        signalProtocolStore = [self signalProtocolStoreForIdentity:OWSIdentityPNI];
+        [signalProtocolStore.signedPreKeyStore removeAll:transaction];
+        [signalProtocolStore.preKeyStore removeAll:transaction];
     });
 }
 

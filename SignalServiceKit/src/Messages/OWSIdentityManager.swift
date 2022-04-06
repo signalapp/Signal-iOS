@@ -4,6 +4,17 @@
 
 import LibSignalClient
 
+extension OWSIdentity: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .aci:
+            return "ACI"
+        case .pni:
+            return "PNI"
+        }
+    }
+}
+
 extension TSMessageDirection {
     fileprivate init(_ direction: Direction) {
         switch direction {

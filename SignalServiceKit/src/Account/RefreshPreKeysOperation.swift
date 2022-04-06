@@ -6,35 +6,47 @@ import Foundation
 
 // We generate 100 one-time prekeys at a time.  We should replenish
 // whenever ~2/3 of them have been consumed.
-let kEphemeralPreKeysMinimumCount: UInt = 35
+private let kEphemeralPreKeysMinimumCount: UInt = 35
 
 @objc(SSKRefreshPreKeysOperation)
 public class RefreshPreKeysOperation: OWSOperation {
+    private let identity: OWSIdentity
+
+    @objc(initForIdentity:)
+    public init(for identity: OWSIdentity) {
+        self.identity = identity
+    }
 
     public override func run() {
         Logger.debug("")
 
         guard tsAccountManager.isRegistered else {
             Logger.debug("skipping - not registered")
+            self.reportCancelled()
+            return
+        }
+
+        guard let identityKeyPair = identityManager.identityKeyPair(for: identity) else {
+            Logger.debug("skipping - no \(self.identity) identity key")
+            owsAssertDebug(identity != .aci)
+            self.reportCancelled()
             return
         }
 
         firstly(on: .global()) { () -> Promise<Void> in
             self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.then(on: .global()) { () -> Promise<Int> in
-            self.accountServiceClient.getPreKeysCount()
+            self.accountServiceClient.getPreKeysCount(for: self.identity)
         }.then(on: .global()) { (preKeysCount: Int) -> Promise<Void> in
-            Logger.info("preKeysCount: \(preKeysCount)")
-            // PNI TODO: parameterize this entire operation on OWSIdentity
-            let signalProtocolStore = self.signalProtocolStore(for: .aci)
+            Logger.info("\(self.identity) preKeysCount: \(preKeysCount)")
+            let signalProtocolStore = self.signalProtocolStore(for: self.identity)
 
             guard preKeysCount < kEphemeralPreKeysMinimumCount ||
                     signalProtocolStore.signedPreKeyStore.currentSignedPrekeyId() == nil else {
-                Logger.debug("Available keys sufficient: \(preKeysCount)")
+                Logger.debug("Available \(self.identity) keys sufficient: \(preKeysCount)")
                 return Promise.value(())
             }
 
-            let identityKey: Data = self.identityManager.identityKeyPair(for: .aci)!.publicKey
             let signedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
             let preKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
 
@@ -46,8 +58,8 @@ public class RefreshPreKeysOperation: OWSOperation {
             }
 
             return firstly(on: .global()) { () -> Promise<Void> in
-                self.accountServiceClient.setPreKeys(for: .aci,
-                                                     identityKey: identityKey,
+                self.accountServiceClient.setPreKeys(for: self.identity,
+                                                     identityKey: identityKeyPair.publicKey,
                                                      signedPreKeyRecord: signedPreKeyRecord,
                                                      preKeyRecords: preKeyRecords)
             }.done(on: .global()) { () in
@@ -91,7 +103,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
-        let signalProtocolStore = self.signalProtocolStore(for: .aci)
+        let signalProtocolStore = self.signalProtocolStore(for: identity)
         self.databaseStorage.write { transaction in
             signalProtocolStore.signedPreKeyStore.incrementPrekeyUpdateFailureCount(transaction: transaction)
         }

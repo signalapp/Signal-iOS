@@ -168,9 +168,13 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v3/attachments/form/upload"] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)availablePreKeysCountRequest
++ (TSRequest *)availablePreKeysCountRequestForIdentity:(OWSIdentity)identity
 {
-    NSString *path = [NSString stringWithFormat:@"%@", self.textSecureKeysAPI];
+    NSString *path = self.textSecureKeysAPI;
+    NSString *queryParam = queryParamForIdentity(identity);
+    if (queryParam != nil) {
+        path = [path stringByAppendingFormat:@"?%@", queryParam];
+    }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
