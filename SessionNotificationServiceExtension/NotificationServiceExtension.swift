@@ -78,6 +78,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                                 let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
                                 infoMessage.updateCallInfoMessage(.missed, using: transaction)
                             }
+                            break
                         }
                         self.handleSuccessForIncomingCall(for: callMessage, using: transaction)
                     default: break
