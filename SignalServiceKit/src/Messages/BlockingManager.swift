@@ -27,7 +27,7 @@ public enum BlockMode: UInt {
 
 public class BlockingManager: NSObject {
     private let lock = UnfairLock()
-    private var state: State = State(isDirty: false, changeToken: 0, blockedPhoneNumbers: Set(), blockedUUIDStrings: Set(), blockedGroupMap: [:])
+    private var state = State()
 
     @objc
     public required override init() {
@@ -349,10 +349,12 @@ extension BlockingManager {
                 // If we're not forcing a sync, then we only sync if our last synced token is stale
                 // and we're not in the NSE. We'll leaving syncing to the main app.
                 if !force {
-                    let currentToken = state.changeToken
-                    let lastSyncedToken = State.fetchLastSyncedChangeToken(transaction)
-                    guard currentToken != lastSyncedToken && !CurrentAppContext().isNSE else {
+                    guard state.needsSync(transaction: transaction) else {
                         Logger.verbose("Skipping send for unchanged block state")
+                        return
+                    }
+                    guard !CurrentAppContext().isNSE else {
+                        Logger.verbose("Needs sync but running from NSE, deferring...")
                         return
                     }
                 }
@@ -369,6 +371,11 @@ extension BlockingManager {
                     phoneNumbers: Array(state.blockedPhoneNumbers),
                     uuids: Array(state.blockedUUIDStrings),
                     groupIds: Array(state.blockedGroupMap.keys))
+
+                if TestingFlags.optimisticallyCommitSyncToken {
+                    // Tests can opt in to setting this token early. This won't be executed in production.
+                    State.setLastSyncedChangeToken(outgoingChangeToken, transaction: transaction)
+                }
 
                 messageSenderJobQueue.add(
                     .promise,
@@ -420,16 +427,56 @@ extension BlockingManager {
 // MARK: - Persistence
 
 extension BlockingManager {
-    fileprivate struct State {
+    struct State {
         private(set) var isDirty: Bool
         private(set) var changeToken: UInt64
         private(set) var blockedPhoneNumbers: Set<String>
         private(set) var blockedUUIDStrings: Set<String>
         private(set) var blockedGroupMap: [Data: TSGroupModel]   // GroupId -> GroupModel
 
+        static let invalidChangeToken: UInt64 = 0
+        static let initialChangeToken: UInt64 = 1
+
+        fileprivate init() {
+            // We're okay initializing with empty data since it'll be reloaded on first access
+            // Only non-zero change tokens should ever be stored in the database, so we'll pick up on the mismatch
+            isDirty = false
+            changeToken = Self.invalidChangeToken
+            blockedPhoneNumbers = Set()
+            blockedUUIDStrings = Set()
+            blockedGroupMap = [:]
+        }
+
+        func needsSync(transaction readTx: SDSAnyReadTransaction) -> Bool {
+            owsAssertDebug(changeToken != Self.invalidChangeToken)
+
+            if let lastSyncedToken = State.fetchLastSyncedChangeToken(readTx) {
+                return changeToken != lastSyncedToken
+
+            } else if changeToken > Self.initialChangeToken {
+                // If we've made changes and we don't have a last synced token, we must require a sync
+                return true
+
+            } else {
+                // If we don't have a last synced change token, we can use the existence of one of our
+                // old KVS keys as a hint that we may need to sync. If they don't exist this is
+                // probably a fresh install and we don't need to sync.
+                func storesValueForKey(key: String) -> Bool {
+                    Self.keyValueStore.hasValue(forKey: key, transaction: readTx)
+                }
+                var hasOldKey = false
+                hasOldKey = hasOldKey || storesValueForKey(key: Keys.legacy_syncedBlockedUUIDsKey.rawValue)
+                hasOldKey = hasOldKey || storesValueForKey(key: Keys.legacy_syncedBlockedPhoneNumbersKey.rawValue)
+                hasOldKey = hasOldKey || storesValueForKey(key: Keys.legacy_syncedBlockedGroupIdsKey.rawValue)
+                return hasOldKey
+            }
+        }
+
         // MARK: - Mutation
 
         mutating func replace(blockedAddresses: Set<SignalServiceAddress>, blockedGroups: [Data: TSGroupModel]) {
+            owsAssertDebug(changeToken != Self.invalidChangeToken)
+
             let oldBlockedNumbers = blockedPhoneNumbers
             let oldBlockedUUIDStrings = blockedUUIDStrings
             let oldBlockedGroupMap = blockedGroupMap
@@ -450,6 +497,8 @@ extension BlockingManager {
 
         @discardableResult
         mutating func addBlockedAddress(_ address: SignalServiceAddress) -> Bool {
+            owsAssertDebug(changeToken != Self.invalidChangeToken)
+
             var didInsert = false
             if let phoneNumber = address.phoneNumber, !blockedPhoneNumbers.contains(phoneNumber) {
                 blockedPhoneNumbers.insert(phoneNumber)
@@ -465,6 +514,8 @@ extension BlockingManager {
 
         @discardableResult
         mutating func removeBlockedAddress(_ address: SignalServiceAddress) -> Bool {
+            owsAssertDebug(changeToken != Self.invalidChangeToken)
+
             var didRemove = false
             if let phoneNumber = address.phoneNumber, blockedPhoneNumbers.contains(phoneNumber) {
                 blockedPhoneNumbers.remove(phoneNumber)
@@ -480,6 +531,8 @@ extension BlockingManager {
 
         @discardableResult
         mutating func addBlockedGroup(_ model: TSGroupModel) -> Bool {
+            owsAssertDebug(changeToken != Self.invalidChangeToken)
+
             var didInsert = false
             if blockedGroupMap[model.groupId] == nil {
                 blockedGroupMap[model.groupId] = model
@@ -491,28 +544,38 @@ extension BlockingManager {
 
         @discardableResult
         mutating func removeBlockedGroup(_ groupId: Data) -> TSGroupModel? {
+            owsAssertDebug(changeToken != Self.invalidChangeToken)
+
             let oldValue = blockedGroupMap.removeValue(forKey: groupId)
             isDirty = isDirty || (oldValue != nil)
             return oldValue
         }
 
         // MARK: Persistence
-        fileprivate static let keyValueStore = SDSKeyValueStore(collection: "kOWSBlockingManager_BlockedPhoneNumbersCollection")
 
-        // These keys are used to persist the current local "block list" state.
-        private static var changeTokenKey: String { "kOWSBlockingManager_ChangeTokenKey" }
-        private static var lastSyncedChangeTokenKey: String { "kOWSBlockingManager_LastSyncedChangeTokenKey" }
-        private static var blockedPhoneNumbersKey: String { "kOWSBlockingManager_BlockedPhoneNumbersKey" }
-        private static var blockedUUIDsKey: String { "kOWSBlockingManager_BlockedUUIDsKey" }
-        private static var blockedGroupMapKey: String { "kOWSBlockingManager_BlockedGroupMapKey" }
-        // These keys are used to persist the most recently synced remote "block list" state.
-        private static var syncedBlockedPhoneNumbersKey: String { "kOWSBlockingManager_SyncedBlockedPhoneNumbersKey" }
-        private static var syncedBlockedUUIDsKey: String { "kOWSBlockingManager_SyncedBlockedUUIDsKey" }
-        private static var syncedBlockedGroupIdsKey: String { "kOWSBlockingManager_SyncedBlockedGroupIdsKey" }
+        static let keyValueStore = SDSKeyValueStore(collection: "kOWSBlockingManager_BlockedPhoneNumbersCollection")
+
+        enum Keys: String {
+            // Currently in use
+            case changeTokenKey = "kOWSBlockingManager_ChangeTokenKey"
+            case lastSyncedChangeTokenKey = "kOWSBlockingManager_LastSyncedChangeTokenKey"
+            case blockedPhoneNumbersKey = "kOWSBlockingManager_BlockedPhoneNumbersKey"
+            case blockedUUIDsKey = "kOWSBlockingManager_BlockedUUIDsKey"
+            case blockedGroupMapKey = "kOWSBlockingManager_BlockedGroupMapKey"
+
+            // Legacy
+            case legacy_syncedBlockedPhoneNumbersKey = "kOWSBlockingManager_SyncedBlockedPhoneNumbersKey"
+            case legacy_syncedBlockedUUIDsKey = "kOWSBlockingManager_SyncedBlockedUUIDsKey"
+            case legacy_syncedBlockedGroupIdsKey = "kOWSBlockingManager_SyncedBlockedGroupIdsKey"
+        }
 
         mutating func reloadIfNecessary(_ transaction: SDSAnyReadTransaction) {
             owsAssertDebug(isDirty == false)
-            let databaseChangeToken: UInt64 = Self.keyValueStore.getUInt64(Self.changeTokenKey, defaultValue: 1, transaction: transaction)
+
+            let databaseChangeToken: UInt64 = Self.keyValueStore.getUInt64(
+                Keys.changeTokenKey.rawValue,
+                defaultValue: Self.initialChangeToken,
+                transaction: transaction)
 
             if databaseChangeToken != changeToken {
                 func fetchObject<T>(of type: T.Type, key: String, defaultValue: T) -> T {
@@ -523,24 +586,35 @@ extension BlockingManager {
                         return defaultValue
                     }
                 }
-                changeToken = Self.keyValueStore.getUInt64(Self.changeTokenKey, defaultValue: 1, transaction: transaction)
-                blockedPhoneNumbers = Set(fetchObject(of: [String].self, key: Self.blockedPhoneNumbersKey, defaultValue: []))
-                blockedUUIDStrings = Set(fetchObject(of: [String].self, key: Self.blockedUUIDsKey, defaultValue: []))
-                blockedGroupMap = fetchObject(of: [Data: TSGroupModel].self, key: Self.blockedGroupMapKey, defaultValue: [:])
+                changeToken = Self.keyValueStore.getUInt64(
+                    Keys.changeTokenKey.rawValue,
+                    defaultValue: Self.initialChangeToken,
+                    transaction: transaction)
+                blockedPhoneNumbers = Set(fetchObject(of: [String].self, key: Keys.blockedPhoneNumbersKey.rawValue, defaultValue: []))
+                blockedUUIDStrings = Set(fetchObject(of: [String].self, key: Keys.blockedUUIDsKey.rawValue, defaultValue: []))
+                blockedGroupMap = fetchObject(of: [Data: TSGroupModel].self, key: Keys.blockedGroupMapKey.rawValue, defaultValue: [:])
                 isDirty = false
             }
         }
 
         mutating func persistIfNecessary(_ transaction: SDSAnyWriteTransaction) -> Bool {
+            guard changeToken != Self.invalidChangeToken else {
+                owsFailDebug("Attempting to persist an unfetched change token. Aborting...")
+                return false
+            }
+
             if isDirty {
-                let databaseChangeToken = Self.keyValueStore.getUInt64(Self.changeTokenKey, defaultValue: 1, transaction: transaction)
+                let databaseChangeToken = Self.keyValueStore.getUInt64(
+                    Keys.changeTokenKey.rawValue,
+                    defaultValue: Self.initialChangeToken,
+                    transaction: transaction)
                 owsAssertDebug(databaseChangeToken == changeToken)
 
                 changeToken = databaseChangeToken + 1
-                Self.keyValueStore.setUInt64(changeToken, key: Self.changeTokenKey, transaction: transaction)
-                Self.keyValueStore.setObject(Array(blockedPhoneNumbers), key: Self.blockedPhoneNumbersKey, transaction: transaction)
-                Self.keyValueStore.setObject(Array(blockedUUIDStrings), key: Self.blockedUUIDsKey, transaction: transaction)
-                Self.keyValueStore.setObject(blockedGroupMap, key: Self.blockedGroupMapKey, transaction: transaction)
+                Self.keyValueStore.setUInt64(changeToken, key: Keys.changeTokenKey.rawValue, transaction: transaction)
+                Self.keyValueStore.setObject(Array(blockedPhoneNumbers), key: Keys.blockedPhoneNumbersKey.rawValue, transaction: transaction)
+                Self.keyValueStore.setObject(Array(blockedUUIDStrings), key: Keys.blockedUUIDsKey.rawValue, transaction: transaction)
+                Self.keyValueStore.setObject(blockedGroupMap, key: Keys.blockedGroupMapKey.rawValue, transaction: transaction)
                 isDirty = false
                 return true
 
@@ -549,12 +623,51 @@ extension BlockingManager {
             }
         }
 
-        static func fetchLastSyncedChangeToken(_ readTx: SDSAnyReadTransaction) -> UInt64 {
-            Self.keyValueStore.getUInt64(Self.lastSyncedChangeTokenKey, defaultValue: 0, transaction: readTx)
+        static func fetchLastSyncedChangeToken(_ readTx: SDSAnyReadTransaction) -> UInt64? {
+            Self.keyValueStore.getUInt64(Keys.lastSyncedChangeTokenKey.rawValue, transaction: readTx)
         }
 
         static func setLastSyncedChangeToken(_ newValue: UInt64, transaction writeTx: SDSAnyWriteTransaction) {
-            Self.keyValueStore.setUInt64(newValue, key: Self.lastSyncedChangeTokenKey, transaction: writeTx)
+            Self.keyValueStore.setUInt64(newValue, key: Keys.lastSyncedChangeTokenKey.rawValue, transaction: writeTx)
         }
     }
 }
+
+// MARK: - Testing Helpers
+
+extension BlockingManager {
+    enum TestingFlags {
+        // Usually, we wait until after MessageSender finishes sending before commiting our last-sync
+        // token. It's easier to just expose a knob for tests to force an early commit than having a test wait
+        // for some nonexistent send.
+        #if TESTABLE_BUILD
+        static var optimisticallyCommitSyncToken = false
+        #else
+        static let optimisticallyCommitSyncToken = false
+        #endif
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension BlockingManager {
+    func _testingOnly_needsSyncMessage(_ readTx: SDSAnyReadTransaction) -> Bool {
+        state.needsSync(transaction: readTx)
+    }
+
+    func _testingOnly_clearNeedsSyncMessage(_ writeTx: SDSAnyWriteTransaction) {
+        State.setLastSyncedChangeToken(state.changeToken, transaction: writeTx)
+    }
+}
+
+extension BlockingManager.State {
+    static func _testing_createEmpty() -> BlockingManager.State {
+        return .init()
+    }
+
+    mutating func _testingOnly_resetDirtyBit() {
+        isDirty = false
+    }
+}
+
+#endif
