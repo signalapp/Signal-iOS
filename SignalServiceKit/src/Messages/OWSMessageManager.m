@@ -1155,7 +1155,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
     } else if ([self.blockingManager isAddressBlocked:envelope.sourceAddress transaction:transaction]
-        || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID transaction:transaction])) {
+        || (typingMessage.hasGroupID &&
+            [self.blockingManager isGroupIdBlocked:typingMessage.groupID transaction:transaction])) {
         NSString *logMessage =
             [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];
         if (typingMessage.hasGroupID) {

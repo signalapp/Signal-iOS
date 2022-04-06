@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,7 +37,6 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         XCTAssertFalse(dut.addBlockedAddress(blockedUUID))
         XCTAssertFalse(dut.addBlockedAddress(blockedPhoneNumber))
         XCTAssertFalse(dut.addBlockedAddress(blockedBoth))
-
 
         // Verify — All added addresses are contained in each set
         XCTAssertEqual(dut.blockedGroupMap[blockedGroup.groupId], blockedGroup)
@@ -151,7 +150,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
             (victimGroup, true, false),
             (victimGroup, true, false),
             (victimGroup, false, true),
-            (victimGroup, false, false),
+            (victimGroup, false, false)
 
         ].forEach { (changedObject: Any, isInsertion: Bool, expectDirtyBit: Bool) in
             // Force reset the dirty bit to test the effect of this single insert/remove
@@ -307,8 +306,8 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
 
             // Verify #1
             XCTAssertNotEqual(oldChangeToken, remoteState.changeToken)
-            XCTAssertEqual(remoteState.blockedPhoneNumbers, Set(blockedAddresses.compactMap { $0.phoneNumber} ))
-            XCTAssertEqual(remoteState.blockedUUIDStrings, Set(blockedAddresses.compactMap { $0.uuidString} ))
+            XCTAssertEqual(remoteState.blockedPhoneNumbers, Set(blockedAddresses.compactMap { $0.phoneNumber}))
+            XCTAssertEqual(remoteState.blockedUUIDStrings, Set(blockedAddresses.compactMap { $0.uuidString}))
             XCTAssertEqual(remoteState.blockedGroupMap, blockedGroups)
         }
 

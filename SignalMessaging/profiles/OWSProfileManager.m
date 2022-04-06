@@ -541,11 +541,15 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         __block NSArray<NSString *> *victimPhoneNumbers = @[];
         __block NSArray<NSString *> *victimUUIDs = @[];
         __block NSArray<NSData *> *victimGroupIds = @[];
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            victimPhoneNumbers = [self blockedPhoneNumbersInWhitelistWithTransaction:transaction];
-            victimUUIDs = [self blockedUUIDsInWhitelistWithTransaction:transaction];
-            victimGroupIds = [self blockedGroupIDsInWhitelistWithTransaction:transaction];
-        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+        [self.databaseStorage
+            readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                victimPhoneNumbers = [self blockedPhoneNumbersInWhitelistWithTransaction:transaction];
+                victimUUIDs = [self blockedUUIDsInWhitelistWithTransaction:transaction];
+                victimGroupIds = [self blockedGroupIDsInWhitelistWithTransaction:transaction];
+            }
+                     file:__FILE__
+                 function:__FUNCTION__
+                     line:__LINE__];
 
         NSUInteger victimCount = 0;
         victimCount += victimPhoneNumbers.count;

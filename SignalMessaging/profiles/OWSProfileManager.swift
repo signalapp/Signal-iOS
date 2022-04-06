@@ -119,9 +119,9 @@ public extension OWSProfileManager {
     @objc
     @available(swift, obsoleted: 1.0)
     func rotateProfileKey(
-        intersectingPhoneNumbers: Array<String>,
-        intersectingUUIDs: Array<String>,
-        intersectingGroupIds: Array<Data>
+        intersectingPhoneNumbers: [String],
+        intersectingUUIDs: [String],
+        intersectingGroupIds: [Data]
     ) -> AnyPromise {
         return AnyPromise(rotateProfileKey(
             intersectingPhoneNumbers: intersectingPhoneNumbers,
@@ -131,9 +131,9 @@ public extension OWSProfileManager {
     }
 
     func rotateProfileKey(
-        intersectingPhoneNumbers: Array<String>,
-        intersectingUUIDs: Array<String>,
-        intersectingGroupIds: Array<Data>
+        intersectingPhoneNumbers: [String],
+        intersectingUUIDs: [String],
+        intersectingGroupIds: [Data]
     ) -> Promise<Void> {
         guard tsAccountManager.isRegisteredPrimaryDevice else {
             return Promise(error: OWSAssertionError("tsAccountManager.isRegistered was unexpectedly false"))
@@ -206,7 +206,7 @@ public extension OWSProfileManager {
     }
 
     @objc
-    func blockedPhoneNumbersInWhitelist(transaction readTx: SDSAnyReadTransaction) -> Array<String> {
+    func blockedPhoneNumbersInWhitelist(transaction readTx: SDSAnyReadTransaction) -> [String] {
         let allWhitelistedNumbers = whitelistedPhoneNumbersStore.allKeys(transaction: readTx)
 
         return allWhitelistedNumbers.filter { candidate in
@@ -216,7 +216,7 @@ public extension OWSProfileManager {
     }
 
     @objc
-    func blockedUUIDsInWhitelist(transaction readTx: SDSAnyReadTransaction) -> Array<String> {
+    func blockedUUIDsInWhitelist(transaction readTx: SDSAnyReadTransaction) -> [String] {
         let allWhitelistedUUIDs = whitelistedUUIDsStore.allKeys(transaction: readTx)
 
         return allWhitelistedUUIDs.filter { candidate in
@@ -226,7 +226,7 @@ public extension OWSProfileManager {
     }
 
     @objc
-    func blockedGroupIDsInWhitelist(transaction readTx: SDSAnyReadTransaction) -> Array<Data> {
+    func blockedGroupIDsInWhitelist(transaction readTx: SDSAnyReadTransaction) -> [Data] {
         let allWhitelistedGroupKeys = whitelistedGroupsStore.allKeys(transaction: readTx)
 
         return allWhitelistedGroupKeys.lazy

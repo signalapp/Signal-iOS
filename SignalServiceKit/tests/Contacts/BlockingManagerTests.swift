@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -114,8 +114,8 @@ class BlockingManagerTests: SSKBaseTestSwift {
             XCTAssertNotEqual(oldToken, newToken)
 
             let expectedRemainingBlocks = [blockedContact, blockedThread.contactAddress]
-            XCTAssertEqual(remoteState.blockedUUIDStrings, Set(expectedRemainingBlocks.compactMap { $0.uuidString} ))
-            XCTAssertEqual(remoteState.blockedPhoneNumbers, Set(expectedRemainingBlocks.compactMap { $0.phoneNumber} ))
+            XCTAssertEqual(remoteState.blockedUUIDStrings, Set(expectedRemainingBlocks.compactMap { $0.uuidString}))
+            XCTAssertEqual(remoteState.blockedPhoneNumbers, Set(expectedRemainingBlocks.compactMap { $0.phoneNumber}))
             XCTAssertEqual(remoteState.blockedGroupMap, [:])
         }
     }
@@ -211,7 +211,6 @@ class BlockingManagerTests: SSKBaseTestSwift {
             XCTAssertFalse(blockingManager._testingOnly_needsSyncMessage($0))
         }
     }
-
 
     // MARK: - Helpers
 
