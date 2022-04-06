@@ -1,3 +1,7 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionMessagingKit
 
 @objc(SNUserSelectionVC)
 final class UserSelectionVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
@@ -7,7 +11,7 @@ final class UserSelectionVC : BaseVC, UITableViewDataSource, UITableViewDelegate
     private var selectedUsers: Set<String> = []
 
     private lazy var users: [String] = {
-        var result = ContactUtilities.getAllContacts()
+        var result = Contact.fetchAllIds()
         result.removeAll { usersToExclude.contains($0) }
         return result
     }()

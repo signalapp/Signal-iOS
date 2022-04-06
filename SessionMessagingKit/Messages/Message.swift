@@ -53,8 +53,8 @@ public class Message : NSObject, NSCoding { // NSObject/NSCoding conformance is 
     }
 
     // MARK: Proto Conversion
-    public class func fromProto(_ proto: SNProtoContent) -> Self? {
-        preconditionFailure("fromProto(_:) is abstract and must be overridden.")
+    public class func fromProto(_ proto: SNProtoContent, sender: String) -> Self? {
+        preconditionFailure("fromProto(_:sender:) is abstract and must be overridden.")
     }
 
     public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {

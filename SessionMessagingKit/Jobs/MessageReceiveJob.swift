@@ -62,25 +62,37 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
             JobQueue.currentlyExecutingJobs.insert(id)
         }
         let (promise, seal) = Promise<Void>.pending()
-        SNMessagingKitConfiguration.shared.storage.write(with: { transaction in // Intentionally capture self
-            do {
-                let isRetry = (self.failureCount != 0)
-                let (message, proto) = try MessageReceiver.parse(self.data, openGroupMessageServerID: self.openGroupMessageServerID, isRetry: isRetry, using: transaction)
-                message.serverHash = self.serverHash
-                try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: self.openGroupID, isBackgroundPoll: self.isBackgroundPoll, using: transaction)
-                self.handleSuccess()
-                seal.fulfill(())
-            } catch {
-                if let error = error as? MessageReceiver.Error, !error.isRetryable {
-                    SNLog("Message receive job permanently failed due to error: \(error).")
-                    self.handlePermanentFailure(error: error)
-                } else {
-                    SNLog("Couldn't receive message due to error: \(error).")
-                    self.handleFailure(error: error)
+        
+        GRDBStorage.shared.writeAsync(
+            updates: { db in
+                SNMessagingKitConfiguration.shared.storage.write(with: { transaction in // Intentionally capture self
+                    do {
+                        let isRetry = (self.failureCount != 0)
+                        let (message, proto) = try MessageReceiver.parse(db, self.data, openGroupMessageServerID: self.openGroupMessageServerID, isRetry: isRetry, using: transaction)
+                        message.serverHash = self.serverHash
+                        try MessageReceiver.handle(db, message, associatedWithProto: proto, openGroupID: self.openGroupID, isBackgroundPoll: self.isBackgroundPoll, using: transaction)
+                        self.handleSuccess()
+                        seal.fulfill(())
+                    } catch {
+                        if let error = error as? MessageReceiver.Error, !error.isRetryable {
+                            SNLog("Message receive job permanently failed due to error: \(error).")
+                            self.handlePermanentFailure(error: error)
+                        } else {
+                            SNLog("Couldn't receive message due to error: \(error).")
+                            self.handleFailure(error: error)
+                        }
+                        seal.fulfill(()) // The promise is just used to keep track of when we're done
+                    }
+                }, completion: { })
+            },
+            completion: { _, result in
+                switch result {
+                    case .failure(let error): self.handleFailure(error: error)
+                    default: break
                 }
-                seal.fulfill(()) // The promise is just used to keep track of when we're done
             }
-        }, completion: { })
+        )
+        
         return promise
     }
 

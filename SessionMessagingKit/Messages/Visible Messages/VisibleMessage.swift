@@ -10,8 +10,8 @@ public final class VisibleMessage : Message {
     @objc public var attachmentIDs: [String] = []
     @objc public var quote: Quote?
     @objc public var linkPreview: LinkPreview?
-    @objc public var contact: Contact?
-    @objc public var profile: Profile?
+    @objc public var contact: Legacy.Contact?
+    @objc public var profile: Legacy.Profile?
     @objc public var openGroupInvitation: OpenGroupInvitation?
 
     public override var isSelfSendValid: Bool { true }
@@ -37,7 +37,7 @@ public final class VisibleMessage : Message {
         if let quote = coder.decodeObject(forKey: "quote") as! Quote? { self.quote = quote }
         if let linkPreview = coder.decodeObject(forKey: "linkPreview") as! LinkPreview? { self.linkPreview = linkPreview }
         // TODO: Contact
-        if let profile = coder.decodeObject(forKey: "profile") as! Profile? { self.profile = profile }
+        if let profile = coder.decodeObject(forKey: "profile") as! Legacy.Profile? { self.profile = profile }
         if let openGroupInvitation = coder.decodeObject(forKey: "openGroupInvitation") as! OpenGroupInvitation? { self.openGroupInvitation = openGroupInvitation }
     }
 
@@ -54,7 +54,7 @@ public final class VisibleMessage : Message {
     }
 
     // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> VisibleMessage? {
+    public override class func fromProto(_ proto: SNProtoContent, sender: String) -> VisibleMessage? {
         guard let dataMessage = proto.dataMessage else { return nil }
         let result = VisibleMessage()
         result.text = dataMessage.body
@@ -62,7 +62,7 @@ public final class VisibleMessage : Message {
         if let quoteProto = dataMessage.quote, let quote = Quote.fromProto(quoteProto) { result.quote = quote }
         if let linkPreviewProto = dataMessage.preview.first, let linkPreview = LinkPreview.fromProto(linkPreviewProto) { result.linkPreview = linkPreview }
         // TODO: Contact
-        if let profile = Profile.fromProto(dataMessage) { result.profile = profile }
+        if let profile = Legacy.Profile.fromProto(dataMessage) { result.profile = profile }
         if let openGroupInvitationProto = dataMessage.openGroupInvitation,
             let openGroupInvitation = OpenGroupInvitation.fromProto(openGroupInvitationProto) { result.openGroupInvitation = openGroupInvitation }
         result.syncTarget = dataMessage.syncTarget

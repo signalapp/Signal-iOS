@@ -82,7 +82,7 @@ final class UserCell : UITableViewCell {
     func update() {
         profilePictureView.publicKey = publicKey
         profilePictureView.update()
-        displayNameLabel.text = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+        displayNameLabel.text = Profile.displayName(for: publicKey)
         
         switch accessory {
             case .none: accessoryImageView.isHidden = true

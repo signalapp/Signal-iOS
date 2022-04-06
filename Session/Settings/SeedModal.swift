@@ -12,7 +12,7 @@ final class SeedModal: Modal {
         }
         
         // Legacy account
-        return Mnemonic.encode(hexEncodedString: Identity.fetchUserKeyPair()!.hexEncodedPrivateKey)
+        return Mnemonic.encode(hexEncodedString: Identity.fetchUserPrivateKey()!.toHexString())
     }()
     
     // MARK: Lifecycle

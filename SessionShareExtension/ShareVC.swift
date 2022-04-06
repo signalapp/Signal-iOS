@@ -81,7 +81,9 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         
         // If we need a config sync then trigger it now
         if needsConfigSync {
-            MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+            GRDBStorage.shared.write { db in
+                MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+            }
         }
 
         checkIsAppReady()

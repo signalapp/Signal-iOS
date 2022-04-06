@@ -178,12 +178,16 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
-        var result = "\(recipientId)"
-        if let contact = Storage.shared.getContact(with: recipientId) {
-            if let name = contact.name { result += " \(name)" }
-            if let nickname = contact.nickname { result += " \(nickname)" }
-        }
-        return result
+        let profile: Profile? = GRDBStorage.shared.read { db in try Profile.fetchOne(db, id: recipientId) }
+        
+        return [
+            recipientId,
+            profile?.name,
+            profile?.nickname
+        ]
+        .compactMap { $0 }
+        .filter { !$0.isEmpty }
+        .joined(separator: " ")
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in

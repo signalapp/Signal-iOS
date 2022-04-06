@@ -1,8 +1,11 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 import CoreServices
 import Photos
 import PhotosUI
 import PromiseKit
+import GRDB
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
@@ -14,7 +17,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         // Don't take the user to settings for message requests
         guard
             let contactThread: TSContactThread = thread as? TSContactThread,
-            let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()),
+            let contact: Contact = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: contactThread.contactSessionID()) }),
             contact.isApproved,
             contact.didApproveMe
         else {
@@ -44,23 +47,31 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     @objc func unblock() {
         guard let thread = thread as? TSContactThread else { return }
         let publicKey = thread.contactSessionID()
-        UIView.animate(withDuration: 0.25, animations: {
-            self.blockedBanner.alpha = 0
-        }, completion: { _ in
-            if let contact: Contact = Storage.shared.getContact(with: publicKey) {
-                Storage.shared.write(
-                    with: { transaction in
-                        guard let transaction = transaction as? YapDatabaseReadWriteTransaction else { return }
-                        
-                        contact.isBlocked = false
-                        Storage.shared.setContact(contact, using: transaction)
+        
+        UIView.animate(
+            withDuration: 0.25,
+            animations: {
+                self.blockedBanner.alpha = 0
+            },
+            completion: { _ in
+                GRDBStorage.shared.writeAsync(
+                    updates: { db in
+                        try Contact
+                            .fetchOne(db, id: publicKey)?
+                            .with(isBlocked: false)
+                            .update(db)
                     },
-                    completion: {
-                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                    completion: { db, result in
+                        switch result {
+                            case .success:
+                                MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                                
+                            default: break
+                        }
                     }
                 )
             }
-        })
+        )
     }
 
     func showBlockedModalIfNeeded() -> Bool {
@@ -374,7 +385,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         
         // Update the input state if this is a contact thread
         if let contactThread: TSContactThread = thread as? TSContactThread {
-            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            let contact: Contact? = GRDBStorage.shared.read { db in try Contact.fetchOne(db, id: contactThread.contactSessionID()) }
             
             // If the contact doesn't exist yet then it's a message request without the first message sent
             // so only allow text-based messages
@@ -525,9 +536,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         } else {
             switch viewItem.messageCellType {
             case .audio:
-                if viewItem.interaction is TSIncomingMessage,
+                if
+                    viewItem.interaction is TSIncomingMessage,
                     let thread = self.thread as? TSContactThread,
-                    Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
+                    let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
+                    contact?.isTrusted != true {
                     confirmDownload()
                 } else {
                     playOrPauseAudio(for: viewItem)
@@ -535,9 +548,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             case .mediaMessage:
                 guard let index = viewItems.firstIndex(where: { $0 === viewItem }),
                     let cell = messagesTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? VisibleMessageCell else { return }
-                if viewItem.interaction is TSIncomingMessage,
+                if
+                    viewItem.interaction is TSIncomingMessage,
                     let thread = self.thread as? TSContactThread,
-                    Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
+                    let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
+                    contact?.isTrusted != true {
                     confirmDownload()
                 } else {
                     guard let albumView = cell.albumView else { return }
@@ -559,9 +574,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     gallery.presentDetailView(fromViewController: self, mediaAttachment: stream)
                 }
             case .genericAttachment:
-                if viewItem.interaction is TSIncomingMessage,
+                if
+                    viewItem.interaction is TSIncomingMessage,
                     let thread = self.thread as? TSContactThread,
-                    Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
+                    let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
+                    contact?.isTrusted != true {
                     confirmDownload()
                 }
                 else if (
@@ -1108,9 +1125,13 @@ extension ConversationVC {
         // (it'll be updated with correct profile info if they accept the message request so this
         // shouldn't cause weird behaviours)
         let sessionId: String = contactThread.contactSessionID()
-        let contact: Contact = (Storage.shared.getContact(with: sessionId) ?? Contact(sessionID: sessionId))
         
-        guard !contact.isApproved else { return Promise.value(()) }
+        guard
+            let contact: Contact = GRDBStorage.shared.read({ db in Contact.fetchOrCreate(db, id: sessionId) }),
+            !contact.isApproved
+        else {
+            return Promise.value(())
+        }
         
         return Promise.value(())
             .then { [weak self] _ -> Promise<Void> in
@@ -1151,49 +1172,58 @@ extension ConversationVC {
             }
             .map { _ in
                 // Default 'didApproveMe' to true for the person approving the message request
-                Storage.write { transaction in
-                    contact.isApproved = true
-                    contact.didApproveMe = (contact.didApproveMe || !isNewThread)
-                    Storage.shared.setContact(contact, using: transaction)
-                }
-                
-                // Send a sync message with the details of the contact
-                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                
-                // Hide the 'messageRequestView' since the request has been approved and force a config
-                // sync to propagate the contact approval state (both must run on the main thread)
-                DispatchQueue.main.async { [weak self] in
-                    let messageRequestViewWasVisible: Bool = (self?.messageRequestView.isHidden == false)
-                    
-                    UIView.animate(withDuration: 0.3) {
-                        self?.messageRequestView.isHidden = true
-                        self?.scrollButtonMessageRequestsBottomConstraint?.isActive = false
-                        self?.scrollButtonBottomConstraint?.isActive = true
-                        
-                        // Update the table content inset and offset to account for the dissapearance of
-                        // the messageRequestsView
-                        if messageRequestViewWasVisible {
-                            let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
-                            let oldContentInset: UIEdgeInsets = (self?.messagesTableView.contentInset ?? UIEdgeInsets.zero)
-                            self?.messagesTableView.contentInset = UIEdgeInsets(
-                                top: 0,
-                                leading: 0,
-                                bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
-                                trailing: 0
+                GRDBStorage.shared.writeAsync(
+                    updates: { db in
+                        try contact
+                            .with(
+                                isApproved: true,
+                                didApproveMe: .update(contact.didApproveMe || !isNewThread)
                             )
+                            .save(db)
+                    },
+                    completion: { db, _ in
+                        // Send a sync message with the details of the contact
+                        MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                        
+                        // Hide the 'messageRequestView' since the request has been approved
+                        DispatchQueue.main.async { [weak self] in
+                            let messageRequestViewWasVisible: Bool = (self?.messageRequestView.isHidden == false)
+                            
+                            UIView.animate(withDuration: 0.3) {
+                                self?.messageRequestView.isHidden = true
+                                self?.scrollButtonMessageRequestsBottomConstraint?.isActive = false
+                                self?.scrollButtonBottomConstraint?.isActive = true
+                                
+                                // Update the table content inset and offset to account for
+                                // the dissapearance of the messageRequestsView
+                                if messageRequestViewWasVisible {
+                                    let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
+                                    let oldContentInset: UIEdgeInsets = (self?.messagesTableView.contentInset ?? UIEdgeInsets.zero)
+                                    self?.messagesTableView.contentInset = UIEdgeInsets(
+                                        top: 0,
+                                        leading: 0,
+                                        bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
+                                        trailing: 0
+                                    )
+                                }
+                            }
+                            
+                            // Update UI
+                            self?.updateNavBarButtons()
+                            
+                            // Remove the 'MessageRequestsViewController' from the nav hierarchy if present
+                            if
+                                let viewControllers: [UIViewController] = self?.navigationController?.viewControllers,
+                                let messageRequestsIndex = viewControllers.firstIndex(where: { $0 is MessageRequestsViewController }),
+                                messageRequestsIndex > 0
+                            {
+                                var newViewControllers = viewControllers
+                                newViewControllers.remove(at: messageRequestsIndex)
+                                self?.navigationController?.setViewControllers(newViewControllers, animated: false)
+                            }
                         }
                     }
-                    
-                    // Update UI
-                    self?.updateNavBarButtons()
-                    if let viewControllers: [UIViewController] = self?.navigationController?.viewControllers,
-                       let messageRequestsIndex = viewControllers.firstIndex(where: { $0 is MessageRequestsViewController }),
-                       messageRequestsIndex > 0 {
-                        var newViewControllers = viewControllers
-                        newViewControllers.remove(at: messageRequestsIndex)
-                        self?.navigationController?.setViewControllers(newViewControllers, animated: false)
-                    }
-                }
+                )
             }
     }
     
@@ -1220,44 +1250,52 @@ extension ConversationVC {
         let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON", comment: ""), message: nil, preferredStyle: .actionSheet)
         alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
             // Delete the request
-            Storage.write(
-                with: { [weak self] transaction in
-                    Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                    
+            GRDBStorage.shared.writeAsync(
+                updates: { [weak self] db in
                     // Update the contact
                     if let contactThread: TSContactThread = self?.thread as? TSContactThread {
                         let sessionId: String = contactThread.contactSessionID()
                         
-                        if let contact: Contact = Storage.shared.getContact(with: sessionId) {
-                            // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
-                            // so showing the banner just looks buggy)
-                            if let strongSelf = self {
-                                NotificationCenter.default.removeObserver(strongSelf, name: .contactBlockedStateChanged, object: nil)
-                            }
-                            
-                            contact.isApproved = false
-                            contact.isBlocked = true
-                            
-                            // Note: We set this to true so the current user will be able to send a
-                            // message to the person who originally sent them the message request in
-                            // the future if they unblock them
-                            contact.didApproveMe = true
-                            
-                            Storage.shared.setContact(contact, using: transaction)
+                        // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
+                        // so showing the banner just looks buggy)
+                        if let strongSelf = self {
+                            NotificationCenter.default.removeObserver(strongSelf, name: .contactBlockedStateChanged, object: nil)
                         }
+                        
+                        try? Contact
+                            .fetchOne(db, id: sessionId)?
+                            .with(
+                                isApproved: false,
+                                isBlocked: true,
+                                
+                                // Note: We set this to true so the current user will be able to send a
+                                // message to the person who originally sent them the message request in
+                                // the future if they unblock them
+                                didApproveMe: true
+                            )
+                            .update(db)
                     }
-                    
-                    // Delete all thread content
-                    self?.thread.removeAllThreadInteractions(with: transaction)
-                    self?.thread.remove(with: transaction)
                 },
-                completion: { [weak self] in
-                    // Force a config sync and pop to the previous screen
-                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                    
-                    DispatchQueue.main.async {
-                        self?.navigationController?.popViewController(animated: true)
-                    }
+                completion: { db, _ in
+                    Storage.write(
+                        with: { [weak self] transaction in
+                            // TODO: This should be above the contact updating
+                            Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+                            
+                            // Delete all thread content
+                            self?.thread.removeAllThreadInteractions(with: transaction)
+                            self?.thread.remove(with: transaction)
+                        },
+                        completion: { [weak self] in
+                            // Force a config sync and pop to the previous screen
+                            // TODO: This might cause an "incorrect thread" crash
+                            MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                            
+                            DispatchQueue.main.async {
+                                self?.navigationController?.popViewController(animated: true)
+                            }
+                        }
+                    )
                 }
             )
         })

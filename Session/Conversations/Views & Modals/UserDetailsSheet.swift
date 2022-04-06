@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class UserDetailsSheet : Sheet {
+import UIKit
+import SessionMessagingKit
+
+final class UserDetailsSheet: Sheet {
     private let sessionID: String
     
     init(for sessionID: String) {
@@ -26,7 +30,7 @@ final class UserDetailsSheet : Sheet {
         profilePictureView.update()
         // Display name label
         let displayNameLabel = UILabel()
-        let displayName = Storage.shared.getContact(with: sessionID)?.displayName(for: .regular) ?? sessionID
+        let displayName = Profile.displayName(for: sessionID)
         displayNameLabel.text = displayName
         displayNameLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
         displayNameLabel.textColor = Colors.text

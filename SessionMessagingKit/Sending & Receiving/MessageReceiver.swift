@@ -1,6 +1,8 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
+import Sodium
 import SessionUtilitiesKit
 
 public enum MessageReceiver {
@@ -51,7 +53,7 @@ public enum MessageReceiver {
         }
     }
 
-    public static func parse(_ data: Data, openGroupMessageServerID: UInt64?, isRetry: Bool = false, using transaction: Any) throws -> (Message, SNProtoContent) {
+    public static func parse(_ db: Database, _ data: Data, openGroupMessageServerID: UInt64?, isRetry: Bool = false, using transaction: Any) throws -> (Message, SNProtoContent) {
         let userPublicKey = getUserHexEncodedPublicKey()
         let isOpenGroupMessage = (openGroupMessageServerID != nil)
         // Parse the envelope
@@ -67,7 +69,7 @@ public enum MessageReceiver {
         } else {
             switch envelope.type {
             case .sessionMessage:
-                guard let userX25519KeyPair = Identity.fetchUserKeyPair() else { throw Error.noUserX25519KeyPair }
+                guard let userX25519KeyPair: Box.KeyPair = Identity.fetchUserKeyPair() else { throw Error.noUserX25519KeyPair }
                 (plaintext, sender) = try decryptWithSessionProtocol(ciphertext: ciphertext, using: userX25519KeyPair)
             case .closedGroupMessage:
                 guard let hexEncodedGroupPublicKey = envelope.source, SNMessagingKitConfiguration.shared.storage.isClosedGroup(hexEncodedGroupPublicKey) else { throw Error.invalidGroupPublicKey }
@@ -111,7 +113,8 @@ public enum MessageReceiver {
         }
         
         // Don't process the envelope any further if the sender is blocked
-        guard Storage.shared.getContact(with: sender, using: transaction)?.isBlocked != true else {
+        guard GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: sender) })?.isBlocked != true else {
+//        guard (try? Contact.fetchOne(db, id: sender))?.isBlocked != true else {
             throw Error.senderBlocked
         }
         
@@ -125,15 +128,15 @@ public enum MessageReceiver {
         }
         // Parse the message
         let message: Message? = {
-            if let readReceipt = ReadReceipt.fromProto(proto) { return readReceipt }
-            if let typingIndicator = TypingIndicator.fromProto(proto) { return typingIndicator }
-            if let closedGroupControlMessage = ClosedGroupControlMessage.fromProto(proto) { return closedGroupControlMessage }
-            if let dataExtractionNotification = DataExtractionNotification.fromProto(proto) { return dataExtractionNotification }
-            if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto) { return expirationTimerUpdate }
-            if let configurationMessage = ConfigurationMessage.fromProto(proto) { return configurationMessage }
-            if let unsendRequest = UnsendRequest.fromProto(proto) { return unsendRequest }
-            if let messageRequestResponse = MessageRequestResponse.fromProto(proto) { return messageRequestResponse }
-            if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
+            if let readReceipt = ReadReceipt.fromProto(proto, sender: sender) { return readReceipt }
+            if let typingIndicator = TypingIndicator.fromProto(proto, sender: sender) { return typingIndicator }
+            if let closedGroupControlMessage = ClosedGroupControlMessage.fromProto(proto, sender: sender) { return closedGroupControlMessage }
+            if let dataExtractionNotification = DataExtractionNotification.fromProto(proto, sender: sender) { return dataExtractionNotification }
+            if let expirationTimerUpdate = ExpirationTimerUpdate.fromProto(proto, sender: sender) { return expirationTimerUpdate }
+            if let configurationMessage = ConfigurationMessage.fromProto(proto, sender: sender) { return configurationMessage }
+            if let unsendRequest = UnsendRequest.fromProto(proto, sender: sender) { return unsendRequest }
+            if let messageRequestResponse = MessageRequestResponse.fromProto(proto, sender: sender) { return messageRequestResponse }
+            if let visibleMessage = VisibleMessage.fromProto(proto, sender: sender) { return visibleMessage }
             return nil
         }()
         if let message = message {

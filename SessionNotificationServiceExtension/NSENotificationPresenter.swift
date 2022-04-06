@@ -1,7 +1,9 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import SignalUtilitiesKit
+import Foundation
 import UserNotifications
+import SignalUtilitiesKit
+import SessionMessagingKit
 
 public class NSENotificationPresenter: NSObject, NotificationsProtocol {
     
@@ -36,8 +38,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
         
-        let context = Contact.context(for: thread)
-        let senderName = Storage.shared.getContact(with: senderPublicKey, using: transaction)?.displayName(for: context) ?? senderPublicKey
+        let senderName = Profile.displayName(for: senderPublicKey, thread: thread)
         
         var notificationTitle = senderName
         if let group = thread as? TSGroupThread {
@@ -128,8 +129,8 @@ private extension String {
         while let m1 = m0 {
             let publicKey = String((result as NSString).substring(with: m1.range).dropFirst()) // Drop the @
             var matchEnd = m1.range.location + m1.range.length
-            let displayName = Storage.shared.getContact(with: publicKey, using: transaction)?.displayName(for: .regular)
-            if let displayName = displayName {
+            
+            if let displayName: String = Profile.displayNameNoFallback(for: publicKey) {
                 result = (result as NSString).replacingCharacters(in: m1.range, with: "@\(displayName)")
                 mentions.append((range: NSRange(location: m1.range.location, length: displayName.utf16.count + 1), publicKey: publicKey)) // + 1 to include the @
                 matchEnd = m1.range.location + displayName.utf16.count

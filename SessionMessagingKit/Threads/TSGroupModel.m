@@ -123,8 +123,7 @@ const int32_t kGroupIdLength = 16;
 
     if (removedMembersMinusSelf.count > 0) {
         NSArray *removedMemberNames = [removedMembers.allObjects map:^NSString *(NSString *publicKey) {
-            SNContact *contact = [LKStorage.shared getContactWithSessionID:publicKey];
-            return [contact displayNameFor:SNContactContextRegular] ?: publicKey;
+            return [SMKProfile displayNameWithId:publicKey];
         }];
         NSString *format = removedMembers.count > 1 ? NSLocalizedString(@"GROUP_MEMBERS_REMOVED", @"") : NSLocalizedString(@"GROUP_MEMBER_REMOVED", @"");
         updatedGroupInfoString = [updatedGroupInfoString
@@ -135,8 +134,7 @@ const int32_t kGroupIdLength = 16;
     
     if (addedMembers.count > 0) {
         NSArray *addedMemberNames = [[addedMembers allObjects] map:^NSString*(NSString* publicKey) {
-            SNContact *contact = [LKStorage.shared getContactWithSessionID:publicKey];
-            return [contact displayNameFor:SNContactContextRegular] ?: publicKey;
+            return [SMKProfile displayNameWithId:publicKey];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString

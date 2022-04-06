@@ -3,8 +3,9 @@
 //
 
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
-#import "OWSDisappearingMessagesConfiguration.h"
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalCoreKit/NSString+OWS.h>
+
 
 NS_ASSUME_NONNULL_BEGIN
 

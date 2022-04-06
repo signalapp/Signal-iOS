@@ -318,7 +318,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             
             if (!thread.isGroupThread) {
                 TSContactThread *contactThead = (TSContactThread *)thread;
-                SNContact *contact = [LKStorage.shared getContactWithSessionID:[contactThead contactSessionID]];
+                SMKContact *contact = [SMKContact fetchOrCreateWithId:[contactThead contactSessionID]];
                 
                 if (contact == nil || !contact.didApproveMe) {
                     return nil;

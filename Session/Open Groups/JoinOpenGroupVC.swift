@@ -1,3 +1,4 @@
+import SessionUtilitiesKit
 
 final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -143,8 +144,11 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
             Storage.shared.write { transaction in
                 OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
                 .done(on: DispatchQueue.main) { [weak self] _ in
+                    GRDBStorage.shared.write { db in
+                        MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                    }
+                    
                     self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                 }
                 .catch(on: DispatchQueue.main) { [weak self] error in
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader

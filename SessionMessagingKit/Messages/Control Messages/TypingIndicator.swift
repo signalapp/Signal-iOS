@@ -58,7 +58,7 @@ public final class TypingIndicator : ControlMessage {
     }
 
     // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> TypingIndicator? {
+    public override class func fromProto(_ proto: SNProtoContent, sender: String) -> TypingIndicator? {
         guard let typingIndicatorProto = proto.typingMessage else { return nil }
         let kind = Kind.fromProto(typingIndicatorProto.action)
         return TypingIndicator(kind: kind)

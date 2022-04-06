@@ -6,7 +6,7 @@ import GRDB
 // MARK: - Setting
 
 public struct Setting: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
-    public static var databaseTableName: String { "settings" }
+    public static var databaseTableName: String { "setting" }
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -89,7 +89,7 @@ public extension Setting {
     }
 }
 
-// MARK: - Database Access
+// MARK: - GRDB Interactions
 
 public extension GRDBStorage {
     subscript(key: Setting.BoolKey) -> Bool? { return read { db in db[key] } }

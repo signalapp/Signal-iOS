@@ -2,6 +2,7 @@
 
 import Foundation
 import Sodium
+import Curve25519Kit
 import SessionMessagingKit
 
 enum MockDataGenerator {
@@ -146,7 +147,7 @@ enum MockDataGenerator {
                     !isMessageRequest &&
                     (((0..<10).randomElement(using: &dmThreadRandomGenerator) ?? 0) < 8) // 80% approved the current user
                 )
-                Storage.shared.setContact(contact, using: transaction)
+                transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
                 
                 // Generate the message history (Note: Unapproved message requests will only include incoming messages)
                 logProgress("DM Thread \(threadIndex)", "Generate \(numMessages) Messages")
@@ -209,7 +210,7 @@ enum MockDataGenerator {
                     contact.name = (0..<contactNameLength)
                         .compactMap { _ in stringContent.randomElement(using: &cgThreadRandomGenerator) }
                         .joined()
-                    Storage.shared.setContact(contact, using: transaction)
+                    transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
                     
                     members.append(randomSessionId)
                 }
@@ -229,8 +230,12 @@ enum MockDataGenerator {
                 
                 // Add the group to the user's set of public keys to poll for and store the key pair
                 let encryptionKeyPair = Curve25519.generateKeyPair()
+                let keyPair: Box.KeyPair = Box.KeyPair(
+                    publicKey: encryptionKeyPair.publicKey.bytes,
+                    secretKey: encryptionKeyPair.privateKey.bytes
+                )
                 Storage.shared.addClosedGroupPublicKey(randomGroupPublicKey, using: transaction)
-                Storage.shared.addClosedGroupEncryptionKeyPair(encryptionKeyPair, for: randomGroupPublicKey, using: transaction)
+                Storage.shared.addClosedGroupEncryptionKeyPair(keyPair, for: randomGroupPublicKey, using: transaction)
                 
                 // Generate the message history (Note: Unapproved message requests will only include incoming messages)
                 logProgress("Closed Group Thread \(threadIndex)", "Generate \(numMessages) Messages")
@@ -291,7 +296,7 @@ enum MockDataGenerator {
                     contact.name = (0..<contactNameLength)
                         .compactMap { _ in stringContent.randomElement(using: &ogThreadRandomGenerator) }
                         .joined()
-                    Storage.shared.setContact(contact, using: transaction)
+                    transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
 
                     members.append(randomSessionId)
                 }

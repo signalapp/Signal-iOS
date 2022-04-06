@@ -1,9 +1,8 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
 import AVFoundation
+import SignalCoreKit
 
 @objc(OWSAudioActivity)
 public class AudioActivity: NSObject {

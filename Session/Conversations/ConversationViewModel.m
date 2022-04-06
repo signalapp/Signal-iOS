@@ -18,6 +18,7 @@
 #import <SessionMessagingKit/TSThread.h>
 #import <SessionMessagingKit/TSGroupThread.h>
 #import <SessionMessagingKit/TSGroupModel.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -258,11 +259,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager sharedManager];
-}
-
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -281,7 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localProfileDidChange:)
-                                                 name:kNSNotificationName_LocalProfileDidChange
+                                                 name:NSNotification.localProfileDidChange
                                                object:nil];
 }
 
@@ -1271,8 +1267,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 
                 if (shouldShowSenderName) {
-                    SNContactContext context = [SNContact contextForThread:self.thread];
-                    senderName = [[NSAttributedString alloc] initWithString:[[LKStorage.shared getContactWithSessionID:incomingSenderId] displayNameFor:context] ?: incomingSenderId];
+                    senderName = [[NSAttributedString alloc] initWithString:[SMKProfile displayNameWithId:incomingSenderId thread:self.thread]];
                 }
 
                 // Show the sender profile picture for incoming group messages unless the

@@ -43,7 +43,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/SignalAccount.h>
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
-#import <SignalUtilitiesKit/ThreadViewHelper.h>
 #import <SignalUtilitiesKit/TSConstants.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SignalUtilitiesKit/UIUtil.h>

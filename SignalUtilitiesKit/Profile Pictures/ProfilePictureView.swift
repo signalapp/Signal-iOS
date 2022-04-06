@@ -90,16 +90,18 @@ public final class ProfilePictureView : UIView {
         AssertIsOnMainThread()
         func getProfilePicture(of size: CGFloat, for publicKey: String) -> UIImage? {
             guard !publicKey.isEmpty else { return nil }
-            if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: publicKey) {
+            
+            if let profilePicture: UIImage = ProfileManager.profileAvatar(for: publicKey) {
                 hasTappableProfilePicture = true
                 return profilePicture
-            } else {
-                hasTappableProfilePicture = false
-                // TODO: Pass in context?
-                let displayName = Storage.shared.getContact(with: publicKey)?.name ?? publicKey
-                return Identicon.generatePlaceholderIcon(seed: publicKey, text: displayName, size: size)
             }
+            
+            hasTappableProfilePicture = false
+            // TODO: Pass in context?
+            let displayName: String = Profile.displayName(for: publicKey)
+            return Identicon.generatePlaceholderIcon(seed: publicKey, text: displayName, size: size)
         }
+        
         let size: CGFloat
         if let additionalPublicKey = additionalPublicKey, !useFallbackPicture, openGroupProfilePicture == nil {
             if self.size == 40 {

@@ -3,7 +3,7 @@
 //
 
 import Foundation
-
+import SessionMessagingKit
 
 public typealias MessageSortKey = UInt64
 public struct ConversationSortKey: Comparable {
@@ -395,7 +395,6 @@ public class FullTextSearcher: NSObject {
     }
 
     private func indexingString(recipientId: String) -> String {
-        let profileName = Storage.shared.getContact(with: recipientId)?.name
-        return "\(recipientId) \(profileName ?? "")"
+        return "\(recipientId) \(Profile.fetchOrCreate(id: recipientId).name)"
     }
 }

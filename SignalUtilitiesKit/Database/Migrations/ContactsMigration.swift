@@ -1,3 +1,7 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import SessionMessagingKit
 
 @objc(SNContactsMigration)
 public class ContactsMigration : OWSDatabaseMigration {
@@ -12,18 +16,24 @@ public class ContactsMigration : OWSDatabaseMigration {
     }
     
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
-        var contacts: [Contact] = []
+        var contacts: [SessionMessagingKit.Legacy.Contact] = []
         TSContactThread.enumerateCollectionObjects { object, _ in
             guard let thread = object as? TSContactThread else { return }
             let sessionID = thread.contactSessionID()
-            if let contact = Storage.shared.getContact(with: sessionID) {
+            var contact: SessionMessagingKit.Legacy.Contact?
+            
+            Storage.read { transaction in
+                contact = transaction.object(forKey: sessionID, inCollection: Legacy.contactCollection) as? SessionMessagingKit.Legacy.Contact
+            }
+            
+            if let contact: SessionMessagingKit.Legacy.Contact = contact {
                 contact.isTrusted = true
                 contacts.append(contact)
             }
         }
         Storage.write(with: { transaction in
             contacts.forEach { contact in
-                Storage.shared.setContact(contact, using: transaction)
+                transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
             }
             self.save(with: transaction) // Intentionally capture self
         }, completion: {

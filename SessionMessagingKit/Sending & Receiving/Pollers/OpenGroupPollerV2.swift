@@ -65,20 +65,22 @@ public final class OpenGroupPollerV2 : NSObject {
         // Sorting the messages by server ID before importing them fixes an issue where messages that quote older messages can't find those older messages
         let openGroupID = "\(server).\(body.room)"
         let messages = body.messages.sorted { $0.serverID! < $1.serverID! } // Safe because messages with a nil serverID are filtered out
-        storage.write { transaction in
-            messages.forEach { message in
-                guard let data = Data(base64Encoded: message.base64EncodedData) else {
-                    return SNLog("Ignoring open group message with invalid encoding.")
-                }
-                let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: message.sentTimestamp)
-                envelope.setContent(data)
-                envelope.setSource(message.sender!) // Safe because messages with a nil sender are filtered out
-                do {
-                    let data = try envelope.buildSerializedData()
-                    let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: UInt64(message.serverID!), isRetry: false, using: transaction)
-                    try MessageReceiver.handle(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
-                } catch {
-                    SNLog("Couldn't receive open group message due to error: \(error).")
+        GRDBStorage.shared.write { db in
+            storage.write { transaction in
+                messages.forEach { message in
+                    guard let data = Data(base64Encoded: message.base64EncodedData) else {
+                        return SNLog("Ignoring open group message with invalid encoding.")
+                    }
+                    let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: message.sentTimestamp)
+                    envelope.setContent(data)
+                    envelope.setSource(message.sender!) // Safe because messages with a nil sender are filtered out
+                    do {
+                        let data = try envelope.buildSerializedData()
+                        let (message, proto) = try MessageReceiver.parse(db, data, openGroupMessageServerID: UInt64(message.serverID!), isRetry: false, using: transaction)
+                        try MessageReceiver.handle(db, message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
+                    } catch {
+                        SNLog("Couldn't receive open group message due to error: \(error).")
+                    }
                 }
             }
         }

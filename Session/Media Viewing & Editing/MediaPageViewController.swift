@@ -680,9 +680,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private func senderName(message: TSMessage) -> String {
         switch message {
         case let incomingMessage as TSIncomingMessage:
-            let publicKey = incomingMessage.authorId
-            let context = Contact.context(for: incomingMessage.thread)
-            return Storage.shared.getContact(with: publicKey)?.displayName(for: context) ?? publicKey
+            return Profile.displayName(for: incomingMessage.authorId, thread: incomingMessage.thread)
         case is TSOutgoingMessage:
             return NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "Short sender label for media sent by you")
         default:

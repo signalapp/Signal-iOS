@@ -131,10 +131,12 @@ final class DisplayNameVC : BaseVC {
         guard !displayName.isEmpty else {
             return showError(title: NSLocalizedString("vc_display_name_display_name_missing_error", comment: ""))
         }
-        guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
+        guard !ProfileManager.isToLong(profileName: displayName) else {
             return showError(title: NSLocalizedString("vc_display_name_display_name_too_long_error", comment: ""))
         }
-        OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { _ in }, requiresSync: false) // Try to save the user name but ignore the result
+        
+        // Try to save the user name but ignore the result
+        ProfileManager.updateLocal(profileName: displayName, avatarImage: nil, requiredSync: false)
         let pnModeVC = PNModeVC()
         navigationController!.pushViewController(pnModeVC, animated: true)
     }

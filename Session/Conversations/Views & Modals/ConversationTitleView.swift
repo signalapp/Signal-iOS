@@ -52,7 +52,7 @@ final class ConversationTitleView : UIView {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.groupThreadUpdated, object: nil)
         notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.muteSettingUpdated, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.contactUpdated, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(update), name: Notification.Name.profileUpdated, object: nil)
         update()
     }
 
@@ -62,11 +62,18 @@ final class ConversationTitleView : UIView {
 
     // MARK: Updating
     @objc private func update() {
-        titleLabel.text = getTitle()
-        let subtitle = getSubtitle()
-        subtitleLabel.attributedText = subtitle
-        let titleFontSize = (subtitle != nil) ? Values.mediumFontSize : Values.veryLargeFontSize
-        titleLabel.font = .boldSystemFont(ofSize: titleFontSize)
+        DispatchQueue.main.async {
+            self.titleLabel.text = self.getTitle()
+            
+            let subtitle: NSAttributedString? = self.getSubtitle()
+            self.subtitleLabel.attributedText = subtitle
+            self.titleLabel.font = .boldSystemFont(
+                ofSize: (subtitle != nil ?
+                    Values.mediumFontSize :
+                    Values.veryLargeFontSize
+                )
+            )
+        }
     }
 
     // MARK: General
@@ -79,13 +86,9 @@ final class ConversationTitleView : UIView {
         }
         else {
             let sessionID = (thread as! TSContactThread).contactSessionID()
-            var result = sessionID
-            Storage.read { transaction in
-                let displayName: String = ((Storage.shared.getContact(with: sessionID)?.displayName(for: .regular)) ?? sessionID)
-                let middleTruncatedHexKey: String = "\(sessionID.prefix(4))...\(sessionID.suffix(4))"
-                result = (displayName == sessionID ? middleTruncatedHexKey : displayName)
-            }
-            return result
+            let middleTruncatedHexKey: String = "\(sessionID.prefix(4))...\(sessionID.suffix(4))"
+            
+            return Profile.displayName(for: sessionID, customFallback: middleTruncatedHexKey)
         }
     }
 

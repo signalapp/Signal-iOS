@@ -36,7 +36,7 @@ public final class UnsendRequest: ControlMessage {
     }
     
     // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> UnsendRequest? {
+    public override class func fromProto(_ proto: SNProtoContent, sender: String) -> UnsendRequest? {
         guard let unsendRequestProto = proto.unsendRequest else { return nil }
         let timestamp = unsendRequestProto.timestamp
         let author = unsendRequestProto.author

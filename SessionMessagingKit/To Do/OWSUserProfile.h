@@ -6,9 +6,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const kNSNotificationName_LocalProfileDidChange;
-extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
-extern NSString *const kNSNotificationKey_ProfileRecipientId;
+//extern NSString *const kNSNotificationName_LocalProfileDidChange;
+//extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
+//extern NSString *const kNSNotificationKey_ProfileRecipientId;
 
 @interface OWSUserProfile : TSYapDatabaseObject
 
@@ -18,7 +18,7 @@ extern NSString *const kNSNotificationKey_ProfileRecipientId;
 + (NSString *)sharedDataProfileAvatarsDirPath;
 + (NSString *)profileAvatarsDirPath;
 + (void)resetProfileStorage;
-+ (NSSet<NSString *> *)allProfileAvatarFilePaths;
+//+ (NSSet<NSString *> *)allProfileAvatarFilePaths;
 
 @end
 

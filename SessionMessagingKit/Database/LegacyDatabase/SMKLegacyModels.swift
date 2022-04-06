@@ -1,18 +1,30 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import Mantle
+import YapDatabase
+import SignalCoreKit
 
 public enum Legacy {
     // MARK: - Collections and Keys
     
     internal static let contactThreadPrefix = "c"
+    internal static let groupThreadPrefix = "g"
+    internal static let closedGroupIdPrefix = "__textsecure_group__!"
+    internal static let closedGroupKeyPairPrefix = "SNClosedGroupEncryptionKeyPairCollection-"
+    
+    public static let contactCollection = "LokiContactCollection"
     internal static let threadCollection = "TSThread"
-    internal static let contactCollection = "LokiContactCollection"
+    internal static let disappearingMessagesCollection = "OWSDisappearingMessagesConfiguration"
+    internal static let closedGroupPublicKeyCollection = "SNClosedGroupPublicKeyCollection"
+    internal static let closedGroupFormationTimestampCollection = "SNClosedGroupFormationTimestampCollection"
+    internal static let closedGroupZombieMembersCollection = "SNClosedGroupZombieMembersCollection"
     
     // MARK: - Types
     
     public typealias Contact = _LegacyContact
-
+    public typealias DisappearingMessagesConfiguration = _LegacyDisappearingMessagesConfiguration
+    
     @objc(SNProfile)
     public class Profile: NSObject, NSCoding {
         public var displayName: String?

@@ -1,11 +1,12 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import Sodium
 import Curve25519Kit
 import PromiseKit
 
 extension MessageSender {
-    public static var distributingClosedGroupEncryptionKeyPairs: [String: [ECKeyPair]] = [:]
+    public static var distributingClosedGroupEncryptionKeyPairs: [String: [Box.KeyPair]] = [:]
     
     public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> Promise<TSGroupThread> {
         // Prepare
@@ -30,8 +31,12 @@ extension MessageSender {
         for member in members {
             let thread = TSContactThread.getOrCreateThread(withContactSessionID: member, transaction: transaction)
             thread.save(with: transaction)
+            let keyPair: Box.KeyPair = Box.KeyPair(
+                publicKey: encryptionKeyPair.publicKey.bytes,
+                secretKey: encryptionKeyPair.privateKey.bytes
+            )
             let closedGroupControlMessageKind = ClosedGroupControlMessage.Kind.new(publicKey: Data(hex: groupPublicKey), name: name,
-                encryptionKeyPair: encryptionKeyPair, members: membersAsData, admins: adminsAsData, expirationTimer: 0)
+                encryptionKeyPair: keyPair, members: membersAsData, admins: adminsAsData, expirationTimer: 0)
             let closedGroupControlMessage = ClosedGroupControlMessage(kind: closedGroupControlMessageKind)
             // Sending this non-durably is okay because we show a loader to the user. If they close the app while the
             // loader is still showing, it's within expectation that the group creation might be incomplete.
@@ -41,7 +46,11 @@ extension MessageSender {
         // Add the group to the user's set of public keys to poll for
         Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
         // Store the key pair
-        Storage.shared.addClosedGroupEncryptionKeyPair(encryptionKeyPair, for: groupPublicKey, using: transaction)
+        let keyPair: Box.KeyPair = Box.KeyPair(
+            publicKey: encryptionKeyPair.publicKey.bytes,
+            secretKey: encryptionKeyPair.privateKey.bytes
+        )
+        Storage.shared.addClosedGroupEncryptionKeyPair(keyPair, for: groupPublicKey, using: transaction)
         // Notify the PN server
         promises.append(PushNotificationAPI.performOperation(.subscribe, for: groupPublicKey, publicKey: userPublicKey))
         // Notify the user
@@ -72,10 +81,14 @@ extension MessageSender {
             return Promise(error: Error.invalidClosedGroupUpdate)
         }
         // Generate the new encryption key pair
-        let newKeyPair = Curve25519.generateKeyPair()
+        let newLegacyKeyPair = Curve25519.generateKeyPair()
+        let newKeyPair: Box.KeyPair = Box.KeyPair(
+            publicKey: newLegacyKeyPair.publicKey.bytes,
+            secretKey: newLegacyKeyPair.privateKey.bytes
+        )
         // Distribute it
-        let proto = try! SNProtoKeyPair.builder(publicKey: newKeyPair.publicKey,
-            privateKey: newKeyPair.privateKey).build()
+        let proto = try! SNProtoKeyPair.builder(publicKey: Data(newKeyPair.publicKey),
+            privateKey: Data(newKeyPair.secretKey)).build()
         let plaintext = try! proto.serializedData()
         let wrappers = targetMembers.compactMap { publicKey -> ClosedGroupControlMessage.KeyPairWrapper in
             let ciphertext = try! MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey)
@@ -329,8 +342,8 @@ extension MessageSender {
         guard let encryptionKeyPair = distributingClosedGroupEncryptionKeyPairs[groupPublicKey]?.last
             ?? Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else { return }
         // Send it
-        guard let proto = try? SNProtoKeyPair.builder(publicKey: encryptionKeyPair.publicKey,
-            privateKey: encryptionKeyPair.privateKey).build(), let plaintext = try? proto.serializedData() else { return }
+        guard let proto = try? SNProtoKeyPair.builder(publicKey: Data(encryptionKeyPair.publicKey),
+            privateKey: Data(encryptionKeyPair.secretKey)).build(), let plaintext = try? proto.serializedData() else { return }
         let contactThread = TSContactThread.getOrCreateThread(withContactSessionID: publicKey, transaction: transaction)
         guard let ciphertext = try? MessageSender.encryptWithSessionProtocol(plaintext, for: publicKey) else { return }
         SNLog("Sending latest encryption key pair to: \(publicKey).")

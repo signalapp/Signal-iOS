@@ -1,3 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import SignalCoreKit
+
 extension OWSSound {
     
     public func notificationSound(isQuiet: Bool) -> UNNotificationSound {

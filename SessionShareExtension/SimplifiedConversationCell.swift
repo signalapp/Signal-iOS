@@ -1,5 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 import SessionUIKit
+import SessionMessagingKit
 
 final class SimplifiedConversationCell : UITableViewCell {
     var threadViewModel: ThreadViewModel! { didSet { update() } }
@@ -116,9 +119,6 @@ final class SimplifiedConversationCell : UITableViewCell {
             return "Unknown"
         }
         
-        return (
-            Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ??
-            hexEncodedPublicKey
-        )
+        return Profile.displayName(for: hexEncodedPublicKey)
     }
 }

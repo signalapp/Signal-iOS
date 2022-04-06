@@ -15,7 +15,7 @@ public struct Identity: Codable, Identifiable, FetchableRecord, PersistableRecor
         case data
     }
     
-    public enum Variant: String, Codable, DatabaseValueConvertible {
+    public enum Variant: String, Codable, CaseIterable, DatabaseValueConvertible {
         case seed
         case ed25519SecretKey
         case ed25519PublicKey
@@ -39,7 +39,7 @@ extension ECKeyPair {
     }
 }
 
-// MARK: - User Identity
+// MARK: - GRDB Interactions
 
 public extension Identity {
     static func generate(from seed: Data) throws -> (ed25519KeyPair: Sign.KeyPair, x25519KeyPair: ECKeyPair) {
@@ -69,8 +69,45 @@ public extension Identity {
         }
     }
     
-    static func fetchUserKeyPair(_ db: Database? = nil) -> ECKeyPair? {
-        let fetchKeys: (Database) -> ECKeyPair? = { db in
+    static func userExists(_ db: Database? = nil) -> Bool {
+        let userExists: (Database) -> Bool = { db in
+            return (
+                (try? Identity.fetchOne(db, id: .x25519PublicKey)) != nil &&
+                (try? Identity.fetchOne(db, id: .x25519PrivateKey)) != nil
+            )
+        }
+        
+        if let db: Database = db {
+            return userExists(db)
+        }
+        
+        return GRDBStorage.shared
+            .read { db -> Bool in userExists(db) }
+            .defaulting(to: false)
+    }
+    
+    static func fetchUserPublicKey(_ db: Database? = nil) -> Data? {
+        if let db: Database = db {
+            return try? Identity.fetchOne(db, id: .x25519PublicKey)?.data
+        }
+        
+        return GRDBStorage.shared.read { db -> Data? in
+            try Identity.fetchOne(db, id: .x25519PublicKey)?.data
+        }
+    }
+    
+    static func fetchUserPrivateKey(_ db: Database? = nil) -> Data? {
+        if let db: Database = db {
+            return try? Identity.fetchOne(db, id: .x25519PrivateKey)?.data
+        }
+        
+        return GRDBStorage.shared.read { db -> Data? in
+            try Identity.fetchOne(db, id: .x25519PrivateKey)?.data
+        }
+    }
+    
+    static func fetchUserKeyPair(_ db: Database? = nil) -> Box.KeyPair? {
+        let fetchKeys: (Database) -> Box.KeyPair? = { db in
             guard
                 let publicKey: Identity = try? Identity.fetchOne(db, id: .x25519PublicKey),
                 let privateKey: Identity = try? Identity.fetchOne(db, id: .x25519PrivateKey)
@@ -78,9 +115,9 @@ public extension Identity {
                 return nil
             }
             
-            return try? ECKeyPair(
-                publicKeyData: publicKey.data,
-                privateKeyData: privateKey.data
+            return try? Box.KeyPair(
+                publicKey: publicKey.data.bytes,
+                secretKey: privateKey.data.bytes
             )
         }
         
@@ -88,7 +125,7 @@ public extension Identity {
             return fetchKeys(db)
         }
         
-        return GRDBStorage.shared.read { db -> ECKeyPair? in
+        return GRDBStorage.shared.read { db -> Box.KeyPair? in
             return fetchKeys(db)
         }
     }

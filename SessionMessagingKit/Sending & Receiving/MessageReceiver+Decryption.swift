@@ -8,9 +8,9 @@ import SessionUtilitiesKit
 
 extension MessageReceiver {
 
-    internal static func decryptWithSessionProtocol(ciphertext: Data, using x25519KeyPair: ECKeyPair) throws -> (plaintext: Data, senderX25519PublicKey: String) {
-        let recipientX25519PrivateKey = x25519KeyPair.privateKey
-        let recipientX25519PublicKey = Data(hex: x25519KeyPair.hexEncodedPublicKey.removing05PrefixIfNeeded())
+    internal static func decryptWithSessionProtocol(ciphertext: Data, using x25519KeyPair: Box.KeyPair) throws -> (plaintext: Data, senderX25519PublicKey: String) {
+        let recipientX25519PrivateKey = x25519KeyPair.secretKey
+        let recipientX25519PublicKey = x25519KeyPair.publicKey
         let sodium = Sodium()
         let signatureSize = sodium.sign.Bytes
         let ed25519PublicKeySize = sodium.sign.PublicKeyBytes

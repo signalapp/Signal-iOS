@@ -147,7 +147,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         profilePictureView.publicKey = getUserHexEncodedPublicKey()
         profilePictureView.update()
         // Display name label
-        displayNameLabel.text = Storage.shared.getUser()?.name
+        displayNameLabel.text = Profile.fetchOrCreateCurrentUser().name
         // Display name container
         let displayNameContainer = UIView()
         displayNameContainer.accessibilityLabel = "Edit display name text field"
@@ -346,7 +346,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     func avatarDidChange(_ image: UIImage) {
-        let maxSize = Int(kOWSProfileManager_MaxAvatarDiameter)
+        let maxSize = Int(ProfileManager.maxAvatarDiameter)
         profilePictureToBeUploaded = image.resizedImage(toFillPixelSize: CGSize(width: maxSize, height: maxSize))
         updateProfile(isUpdatingDisplayName: false, isUpdatingProfilePicture: true)
     }
@@ -358,41 +358,47 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     
     private func updateProfile(isUpdatingDisplayName: Bool, isUpdatingProfilePicture: Bool) {
         let userDefaults = UserDefaults.standard
-        let name = displayNameToBeUploaded ?? Storage.shared.getUser()?.name
-        let profilePicture = profilePictureToBeUploaded ?? OWSProfileManager.shared().profileAvatar(forRecipientId: getUserHexEncodedPublicKey())
+        let name: String? = (displayNameToBeUploaded ?? Profile.fetchOrCreateCurrentUser().name)
+        let profilePicture: UIImage? = (profilePictureToBeUploaded ?? ProfileManager.profileAvatar(for: getUserHexEncodedPublicKey()))
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self, displayNameToBeUploaded, profilePictureToBeUploaded] modalActivityIndicator in
-            OWSProfileManager.shared().updateLocalProfileName(name, avatarImage: profilePicture, success: {
-                if displayNameToBeUploaded != nil {
-                    userDefaults[.lastDisplayNameUpdate] = Date()
-                }
-                if profilePictureToBeUploaded != nil {
-                    userDefaults[.lastProfilePictureUpdate] = Date()
-                }
-                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                DispatchQueue.main.async {
-                    modalActivityIndicator.dismiss {
-                        guard let self = self else { return }
-                        self.profilePictureView.update()
-                        self.displayNameLabel.text = name
-                        self.profilePictureToBeUploaded = nil
-                        self.displayNameToBeUploaded = nil
+            ProfileManager.updateLocal(
+                profileName: (name ?? ""),
+                avatarImage: profilePicture,
+                requiredSync: true,
+                success: {
+                    if displayNameToBeUploaded != nil {
+                        userDefaults[.lastDisplayNameUpdate] = Date()
                     }
-                }
-            }, failure: { error in
-                DispatchQueue.main.async {
-                    modalActivityIndicator.dismiss {
-                        var isMaxFileSizeExceeded = false
-                        if let error = error as? FileServerAPIV2.Error {
-                            isMaxFileSizeExceeded = (error == .maxFileSizeExceeded)
+                    if profilePictureToBeUploaded != nil {
+                        userDefaults[.lastProfilePictureUpdate] = Date()
+                    }
+                    GRDBStorage.shared.write { db in
+                        MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                    }
+                    
+                    DispatchQueue.main.async {
+                        modalActivityIndicator.dismiss {
+                            guard let self = self else { return }
+                            self.profilePictureView.update()
+                            self.displayNameLabel.text = name
+                            self.profilePictureToBeUploaded = nil
+                            self.displayNameToBeUploaded = nil
                         }
-                        let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : "Couldn't Update Profile"
-                        let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
-                        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                        self?.present(alert, animated: true, completion: nil)
+                    }
+                },
+                failure: { error in
+                    DispatchQueue.main.async {
+                        modalActivityIndicator.dismiss {
+                            let isMaxFileSizeExceeded = (error == .avatarUploadMaxFileSizeExceeded)
+                            let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : "Couldn't Update Profile"
+                            let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
+                            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+                            self?.present(alert, animated: true, completion: nil)
+                        }
                     }
                 }
-            }, requiresSync: true)
+            )
         }
     }
 
@@ -461,7 +467,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         guard !displayName.isEmpty else {
             return showError(title: NSLocalizedString("vc_settings_display_name_missing_error", comment: ""))
         }
-        guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
+        guard !ProfileManager.isToLong(profileName: displayName) else {
             return showError(title: NSLocalizedString("vc_settings_display_name_too_long_error", comment: ""))
         }
         isEditingDisplayName = false

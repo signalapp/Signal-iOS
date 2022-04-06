@@ -17,10 +17,11 @@ public struct OpenGroupMessageV2 {
     public func sign() -> OpenGroupMessageV2? {
         guard
             let userKeyPair = Identity.fetchUserKeyPair(),
+            let legacyKeyPair: ECKeyPair = try? ECKeyPair(publicKeyData: Data(userKeyPair.publicKey), privateKeyData: Data(userKeyPair.secretKey)),
             let data: Data = Data(base64Encoded: base64EncodedData)
         else { return nil }
         
-        guard let signature = try? Ed25519.sign(data, with: userKeyPair) else {
+        guard let signature = try? Ed25519.sign(data, with: legacyKeyPair) else {
             SNLog("Failed to sign open group message.")
             return nil
         }

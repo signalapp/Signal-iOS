@@ -14,6 +14,7 @@ public enum SNUserDefaults {
         case lastConfigurationSync
         case lastDisplayNameUpdate
         case lastProfilePictureUpdate
+        case lastProfilePictureUpload
         case lastOpenGroupImageUpdate
         case lastOpen
     }

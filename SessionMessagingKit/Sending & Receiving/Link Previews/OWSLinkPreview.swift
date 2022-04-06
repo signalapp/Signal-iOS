@@ -1,10 +1,9 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import AFNetworking
 import Foundation
 import PromiseKit
+import SignalCoreKit
 
 @objc
 public enum LinkPreviewError: Int, Error {

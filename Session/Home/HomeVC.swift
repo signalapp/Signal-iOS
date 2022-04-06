@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import GRDB
 import SessionMessagingKit
 import SessionUtilitiesKit
 
@@ -155,8 +156,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         // Notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleYapDatabaseModifiedNotification(_:)), name: .YapDatabaseModified, object: OWSPrimaryStorage.shared().dbNotificationObject)
-        notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: Notification.Name(kNSNotificationName_LocalProfileDidChange), object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: Notification.Name.otherUsersProfileDidChange, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: Notification.Name.localProfileDidChange, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleSeedViewedNotification(_:)), name: .seedViewed, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleBlockedContactsUpdatedNotification(_:)), name: .blockedContactsUpdated, object: nil)
         notificationCenter.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
@@ -167,7 +168,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             self.threads.update(with: transaction) // Perform the initial update
         }
         // Start polling if needed (i.e. if the user just created or restored their Session ID)
-        if Identity.fetchUserKeyPair() != nil {
+        if Identity.userExists() {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
             appDelegate.startClosedGroupPoller()
@@ -399,7 +400,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     @objc private func handleLocalProfileDidChangeNotification(_ notification: Notification) {
-        updateNavBarButtons()
+        DispatchQueue.main.async {
+            self.updateNavBarButtons()
+        }
     }
     
     @objc private func handleSeedViewedNotification(_ notification: Notification) {
@@ -531,40 +534,48 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                     let publicKey = thread.contactSessionID()
 
                     let block = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "")) { _, _ in
-                        Storage.shared.write(
-                            with: { transaction in
-                                guard  let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
-                                    return
-                                }
-                                
-                                contact.isBlocked = true
-                                Storage.shared.setContact(contact, using: transaction as Any)
+                        GRDBStorage.shared.writeAsync(
+                            updates: { db in
+                                try Contact
+                                    .fetchOrCreate(db, id: publicKey)
+                                    .with(isBlocked: true)
+                                    .save(db)
                             },
-                            completion: {
-                                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                                
-                                DispatchQueue.main.async {
-                                    tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                            completion: { db, result in
+                                switch result {
+                                    case .success:
+                                        MessageSender.syncConfiguration(db, forceSyncNow: true)
+                                            .retainUntilComplete()
+                                        
+                                        DispatchQueue.main.async {
+                                            tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                                        }
+                                        
+                                    default: break
                                 }
                             }
                         )
                     }
                     block.backgroundColor = Colors.unimportant
                     let unblock = UITableViewRowAction(style: .normal, title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "")) { _, _ in
-                        Storage.shared.write(
-                            with: { transaction in
-                                guard  let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
-                                    return
-                                }
-                                
-                                contact.isBlocked = false
-                                Storage.shared.setContact(contact, using: transaction as Any)
+                        GRDBStorage.shared.writeAsync(
+                            updates: { db in
+                                try Contact
+                                    .fetchOrCreate(db, id: publicKey)
+                                    .with(isBlocked: false)
+                                    .save(db)
                             },
-                            completion: {
-                                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                                
-                                DispatchQueue.main.async {
-                                    tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                            completion: { db, result in
+                                switch result {
+                                    case .success:
+                                        MessageSender.syncConfiguration(db, forceSyncNow: true)
+                                            .retainUntilComplete()
+                                        
+                                        DispatchQueue.main.async {
+                                            tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+                                        }
+                                        
+                                    default: break
                                 }
                             }
                         )

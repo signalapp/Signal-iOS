@@ -77,7 +77,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
         
         // Legacy account
-        return Mnemonic.encode(hexEncodedString: Identity.fetchUserKeyPair()!.hexEncodedPrivateKey)
+        return Mnemonic.encode(hexEncodedString: Identity.fetchUserPrivateKey()!.toHexString())
     }()
     
     lazy var viewModel = ConversationViewModel(thread: thread, focusMessageIdOnOpen: nil, delegate: self)
@@ -150,10 +150,9 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     lazy var blockedBanner: InfoBanner = {
         let name: String
         if let thread = thread as? TSContactThread {
-            let publicKey = thread.contactSessionID()
-            let context = Contact.context(for: thread)
-            name = Storage.shared.getContact(with: publicKey)?.displayName(for: context) ?? publicKey
-        } else {
+            name = Profile.displayName(for: thread.contactSessionID(), thread: thread)
+        }
+        else {
             name = "Thread"
         }
         let message = "\(name) is blocked. Unblock them?"
@@ -378,7 +377,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         
         // Update the input state if this is a contact thread
         if let contactThread: TSContactThread = thread as? TSContactThread {
-            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            let contact: Contact? = GRDBStorage.shared.read { db in try Contact.fetchOne(db, id: contactThread.contactSessionID()) }
             
             // If the contact doesn't exist yet then it's a message request without the first message sent
             // so only allow text-based messages
@@ -473,7 +472,11 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         else {
             if let contactThread: TSContactThread = thread as? TSContactThread {
                 // Don't show the settings button for message requests
-                if let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()), contact.isApproved, contact.didApproveMe {
+                if
+                    let contact: Contact = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: contactThread.contactSessionID()) }),
+                    contact.isApproved,
+                    contact.didApproveMe
+                {
                     let size = Values.verySmallProfilePictureSize
                     let profilePictureView = ProfilePictureView()
                     profilePictureView.size = size
@@ -657,7 +660,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         
         // Update the input state if this is a contact thread
         if let contactThread: TSContactThread = thread as? TSContactThread {
-            let contact: Contact? = Storage.shared.getContact(with: contactThread.contactSessionID())
+            let contact: Contact? = GRDBStorage.shared.read { db in try Contact.fetchOne(db, id: contactThread.contactSessionID()) }
             
             // If the contact doesn't exist yet then it's a message request without the first message sent
             // so only allow text-based messages
@@ -718,18 +721,17 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
     }
     
-    // MARK: General
+    // MARK: - General
+    
     @objc func addOrRemoveBlockedBanner() {
-        func detach() {
-            blockedBanner.removeFromSuperview()
-        }
-        guard let thread = thread as? TSContactThread else { return detach() }
-        if thread.isBlocked() {
-            view.addSubview(blockedBanner)
-            blockedBanner.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
-        }
-        else {
-            detach()
+        DispatchQueue.main.async {
+            guard let thread = self.thread as? TSContactThread, thread.isBlocked() else {
+                self.blockedBanner.removeFromSuperview()
+                return
+            }
+            
+            self.view.addSubview(self.blockedBanner)
+            self.blockedBanner.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: self.view)
         }
     }
     

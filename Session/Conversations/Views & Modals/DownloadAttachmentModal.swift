@@ -1,3 +1,10 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import GRDB
+import SessionUIKit
+import SessionUtilitiesKit
+import SessionMessagingKit
 
 final class DownloadAttachmentModal : Modal {
     private let viewItem: ConversationViewItem
@@ -19,7 +26,7 @@ final class DownloadAttachmentModal : Modal {
     override func populateContentView() {
         guard let publicKey = (viewItem.interaction as? TSIncomingMessage)?.authorId else { return }
         // Name
-        let name = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+        let name = Profile.displayName(for: publicKey)
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
@@ -65,15 +72,23 @@ final class DownloadAttachmentModal : Modal {
     // MARK: Interaction
     @objc private func trust() {
         guard let message = viewItem.interaction as? TSIncomingMessage else { return }
-        let publicKey = message.authorId
-        let contact = Storage.shared.getContact(with: publicKey) ?? Contact(sessionID: publicKey)
-        contact.isTrusted = true
-        Storage.write(with: { transaction in
-            Storage.shared.setContact(contact, using: transaction)
-            MessageInvalidator.invalidate(message, with: transaction)
-        }, completion: {
-            Storage.shared.resumeAttachmentDownloadJobsIfNeeded(for: message.uniqueThreadId)
-        })
+        
+        GRDBStorage.shared.writeAsync(
+            updates: { db in
+                try? Contact
+                    .fetchOrCreate(db, id: message.authorId)
+                    .with(isTrusted: true)
+                    .save(db)
+            },
+            completion: { _, _ in
+                Storage.write(with: { transaction in
+                    MessageInvalidator.invalidate(message, with: transaction)
+                }, completion: {
+                    Storage.shared.resumeAttachmentDownloadJobsIfNeeded(for: message.uniqueThreadId)
+                })
+            }
+        )
+        
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

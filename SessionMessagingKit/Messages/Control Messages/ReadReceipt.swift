@@ -31,7 +31,7 @@ public final class ReadReceipt : ControlMessage {
     }
 
     // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> ReadReceipt? {
+    public override class func fromProto(_ proto: SNProtoContent, sender: String) -> ReadReceipt? {
         guard let receiptProto = proto.receiptMessage, receiptProto.type == .read else { return nil }
         let timestamps = receiptProto.timestamp
         guard !timestamps.isEmpty else { return nil }

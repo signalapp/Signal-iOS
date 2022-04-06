@@ -12,7 +12,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 
 @interface SSKEnvironment ()
 
-@property (nonatomic) id<ProfileManagerProtocol> profileManager;
 @property (nonatomic) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic) TSAccountManager *tsAccountManager;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
@@ -33,8 +32,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @synthesize migrationDBConnection = _migrationDBConnection;
 @synthesize analyticsDBConnection = _analyticsDBConnection;
 
-- (instancetype)initWithProfileManager:(id<ProfileManagerProtocol>)profileManager
-                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
                       tsAccountManager:(TSAccountManager *)tsAccountManager
                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
@@ -48,7 +46,6 @@ static SSKEnvironment *sharedSSKEnvironment;
         return self;
     }
 
-    _profileManager = profileManager;
     _primaryStorage = primaryStorage;
     _tsAccountManager = tsAccountManager;
     _disappearingMessagesJob = disappearingMessagesJob;

@@ -24,9 +24,10 @@ public class GeneralUtilities: NSObject {
 public func getUserHexEncodedPublicKey(_ db: Database? = nil) -> String {
     if let cachedKey: String = General.Cache.cachedEncodedPublicKey.wrappedValue { return cachedKey }
     
-    if let keyPair: ECKeyPair = Identity.fetchUserKeyPair(db) { // Can be nil under some circumstances
-        General.Cache.cachedEncodedPublicKey.mutate { $0 = keyPair.hexEncodedPublicKey }
-        return keyPair.hexEncodedPublicKey
+    // TODO: Refactor this to be a sessionId instead of custom creating it
+    if let publicKey: Data = Identity.fetchUserPublicKey(db) { // Can be nil under some circumstances
+        General.Cache.cachedEncodedPublicKey.mutate { $0 = "05\(publicKey.toHexString())" }
+        return "05\(publicKey.toHexString())"
     }
     
     return ""

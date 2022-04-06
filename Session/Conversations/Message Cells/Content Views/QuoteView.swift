@@ -1,3 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionUIKit
+import SessionMessagingKit
 
 final class QuoteView : UIView {
     private let mode: Mode
@@ -180,8 +185,7 @@ final class QuoteView : UIView {
         if let groupThread = thread as? TSGroupThread {
             let authorLabel = UILabel()
             authorLabel.lineBreakMode = .byTruncatingTail
-            let context: Contact.Context = groupThread.isOpenGroup ? .openGroup : .regular
-            authorLabel.text = Storage.shared.getContact(with: authorID)?.displayName(for: context) ?? authorID
+            authorLabel.text = Profile.displayName(for: authorID, thread: groupThread)
             authorLabel.textColor = textColor
             authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
             let authorLabelSize = authorLabel.systemLayoutSizeFitting(availableSpace)

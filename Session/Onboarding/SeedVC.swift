@@ -10,7 +10,7 @@ final class SeedVC: BaseVC {
         }
         
         // Legacy account
-        return Mnemonic.encode(hexEncodedString: Identity.fetchUserKeyPair()!.hexEncodedPrivateKey)
+        return Mnemonic.encode(hexEncodedString: Identity.fetchUserPrivateKey()!.toHexString())
     }()
     
     private lazy var redactedMnemonic: String = {

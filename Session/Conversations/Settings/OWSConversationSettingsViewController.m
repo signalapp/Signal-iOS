@@ -105,18 +105,13 @@ CGFloat kIconViewLength = 24;
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager sharedManager];
-}
-
 #pragma mark
 
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                                 name:NSNotification.otherUsersProfileDidChange
                                                object:nil];
 }
 
@@ -130,7 +125,7 @@ CGFloat kIconViewLength = 24;
     NSString *threadName = self.thread.name;
     if ([self.thread isKindOfClass:TSContactThread.class]) {
         TSContactThread *thread = (TSContactThread *)self.thread;
-        return [[LKStorage.shared getContactWithSessionID:thread.contactSessionID] displayNameFor:SNContactContextRegular] ?: @"Anonymous";
+        return [SMKProfile displayNameWithId:thread.contactSessionID customFallback: @"Anonymous"];
     } else if (threadName.length == 0 && [self isGroupThread]) {
         threadName = [MessageStrings newGroupDefaultTitle];
     }
@@ -235,13 +230,12 @@ CGFloat kIconViewLength = 24;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _disappearingMessagesDurationLabel);
 
     self.disappearingMessagesDurations = [OWSDisappearingMessagesConfiguration validDurationsSeconds];
-
+    
     self.disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueId:self.thread.uniqueId];
 
     if (!self.disappearingMessagesConfiguration) {
-        self.disappearingMessagesConfiguration =
-            [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
+        self.disappearingMessagesConfiguration = [OWSDisappearingMessagesConfiguration defaultWith: self.thread.uniqueId];
     }
 
     [self updateTableContents];
@@ -361,7 +355,7 @@ CGFloat kIconViewLength = 24;
                 displayName = @"the group";
             } else {
                 TSContactThread *thread = (TSContactThread *)self.thread;
-                displayName = [[LKStorage.shared getContactWithSessionID:thread.contactSessionID] displayNameFor:SNContactContextRegular] ?: @"anonymous";
+                displayName = [SMKProfile displayNameWithId:thread.contactSessionID customFallback:@"anonymous"];
             }
             subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), displayName];
             subtitleLabel.textColor = LKColors.text;
@@ -762,7 +756,7 @@ CGFloat kIconViewLength = 24;
             [infoMessage saveWithTransaction:transaction];
 
             SNExpirationTimerUpdate *expirationTimerUpdate = [SNExpirationTimerUpdate new];
-            BOOL isEnabled = self.disappearingMessagesConfiguration.enabled;
+            BOOL isEnabled = self.disappearingMessagesConfiguration.isEnabled;
             expirationTimerUpdate.duration = isEnabled ? self.disappearingMessagesConfiguration.durationSeconds : 0;
             [SNMessageSender send:expirationTimerUpdate inThread:self.thread usingTransaction:transaction];
         }];
@@ -908,7 +902,7 @@ CGFloat kIconViewLength = 24;
 
 - (void)toggleDisappearingMessages:(BOOL)flag
 {
-    self.disappearingMessagesConfiguration.enabled = flag;
+    self.disappearingMessagesConfiguration.isEnabled = flag;
 
     [self updateTableContents];
 }
@@ -1027,16 +1021,11 @@ CGFloat kIconViewLength = 24;
 {
     if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
     NSString *sessionID = ((TSContactThread *)self.thread).contactSessionID;
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
-    if (contact == nil) {
-        contact = [[SNContact alloc] initWithSessionID:sessionID];
-    }
+    SMKProfile *profile = [SMKProfile fetchOrCreateWithId:sessionID];
     NSString *text = [self.displayNameTextField.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-    contact.nickname = text.length > 0 ? text : nil;
-    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKStorage.shared setContact:contact usingTransaction:transaction];
-    }];
-    self.displayNameLabel.text = text.length > 0 ? text : contact.name;
+    profile.nickname = text.length > 0 ? text : nil;
+    [SMKProfile saveProfile: profile];
+    self.displayNameLabel.text = text.length > 0 ? text : profile.name;
     [self hideEditNameUI];
 }
 
@@ -1069,7 +1058,7 @@ CGFloat kIconViewLength = 24;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    NSString *recipientId = notification.userInfo[NSNotification.profileRecipientIdKey];
     OWSAssertDebug(recipientId.length > 0);
 
     if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&

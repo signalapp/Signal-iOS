@@ -1,3 +1,6 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import SessionUtilitiesKit
 
 @objc public extension TSOutgoingMessage {
@@ -9,11 +12,11 @@ import SessionUtilitiesKit
     
     static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread, using transaction: YapDatabaseReadWriteTransaction? = nil) -> TSOutgoingMessage {
         var expiration: UInt32 = 0
-        let disappearingMessagesConfigurationOrNil: OWSDisappearingMessagesConfiguration?
+        let disappearingMessagesConfigurationOrNil: Legacy.DisappearingMessagesConfiguration?
         if let transaction = transaction {
-            disappearingMessagesConfigurationOrNil = OWSDisappearingMessagesConfiguration.fetch(uniqueId: thread.uniqueId!, transaction: transaction)
+            disappearingMessagesConfigurationOrNil = Legacy.DisappearingMessagesConfiguration.fetch(uniqueId: thread.uniqueId!, transaction: transaction)
         } else {
-            disappearingMessagesConfigurationOrNil = OWSDisappearingMessagesConfiguration.fetch(uniqueId: thread.uniqueId!)
+            disappearingMessagesConfigurationOrNil = Legacy.DisappearingMessagesConfiguration.fetch(uniqueId: thread.uniqueId!)
         }
         if let disappearingMessagesConfiguration = disappearingMessagesConfigurationOrNil {
             expiration = disappearingMessagesConfiguration.isEnabled ? disappearingMessagesConfiguration.durationSeconds : 0

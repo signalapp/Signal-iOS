@@ -2,7 +2,6 @@
 
 import Foundation
 import GRDB
-import Curve25519Kit
 
 enum _002_YDBToGRDBMigration: Migration {
     static let identifier: String = "YDBToGRDBMigration"
@@ -15,7 +14,7 @@ enum _002_YDBToGRDBMigration: Migration {
         var seedHexString: String?
         var userEd25519SecretKeyHexString: String?
         var userEd25519PublicKeyHexString: String?
-        var userX25519KeyPair: ECKeyPair?
+        var userX25519KeyPair: Legacy.KeyPair?
         
         Storage.read { transaction in
             registeredNumber = transaction.object(
@@ -41,10 +40,10 @@ enum _002_YDBToGRDBMigration: Migration {
                 inCollection: Legacy.identityKeyStoreCollection
             ) as? String
             
-            userX25519KeyPair = transaction.keyPair(
+            userX25519KeyPair = transaction.object(
                 forKey: Legacy.identityKeyStoreIdentityKey,
-                in: Legacy.identityKeyStoreCollection
-            )
+                inCollection: Legacy.identityKeyStoreCollection
+            ) as? Legacy.KeyPair
         }
         
         // No need to continue if the user isn't registered
@@ -55,8 +54,15 @@ enum _002_YDBToGRDBMigration: Migration {
             let seedHexString: String = seedHexString,
             let userEd25519SecretKeyHexString: String = userEd25519SecretKeyHexString,
             let userEd25519PublicKeyHexString: String = userEd25519PublicKeyHexString,
-            let userX25519KeyPair: ECKeyPair = userX25519KeyPair
+            let userX25519KeyPair: Legacy.KeyPair = userX25519KeyPair
         else {
+            // If this is a fresh install then we would have created all of the Identity
+            // values directly within the 'Identity' table so this is actually a valid
+            // case and we don't need to throw
+            if try Identity.fetchCount(db) == Identity.Variant.allCases.count {
+                return
+            }
+            
             throw GRDBStorageError.migrationFailed
         }
         

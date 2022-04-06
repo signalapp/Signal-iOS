@@ -188,8 +188,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     NSString *_Nullable remoteContactName = nil;
     if (remoteRecipientId) {
-        SNContactContext context = [SNContact contextForThread:thread];
-        remoteContactName = [[LKStorage.shared getContactWithSessionID:remoteRecipientId] displayNameFor:context] ?: remoteRecipientId;
+        remoteContactName = [SMKProfile displayNameWithId:remoteRecipientId thread:thread];
     }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.
@@ -198,9 +197,9 @@ void AssertIsOnDisappearingMessagesQueue()
         [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
     if (duration == 0) {
-        disappearingMessagesConfiguration.enabled = NO;
+        disappearingMessagesConfiguration.isEnabled = NO;
     } else {
-        disappearingMessagesConfiguration.enabled = YES;
+        disappearingMessagesConfiguration.isEnabled = YES;
         disappearingMessagesConfiguration.durationSeconds = duration;
     }
 

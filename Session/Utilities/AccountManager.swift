@@ -15,10 +15,6 @@ public class AccountManager: NSObject {
 
     // MARK: - Dependencies
 
-    var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
-    }
-
     private var preferences: OWSPreferences {
         return Environment.shared.preferences
     }

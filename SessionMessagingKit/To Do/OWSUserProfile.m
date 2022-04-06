@@ -18,10 +18,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationName_LocalProfileDidChange";
-NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
-NSString *const kNSNotificationKey_ProfileRecipientId = @"kNSNotificationKey_ProfileRecipientId";
-
 @interface OWSUserProfile ()
 
 @end
@@ -69,21 +65,21 @@ NSString *const kNSNotificationKey_ProfileRecipientId = @"kNSNotificationKey_Pro
     [[NSFileManager defaultManager] removeItemAtPath:[self profileAvatarsDirPath] error:&error];
 }
 
-+ (NSSet<NSString *> *)allProfileAvatarFilePaths
-{
-    NSString *profileAvatarsDirPath = self.profileAvatarsDirPath;
-    NSMutableSet<NSString *> *profileAvatarFilePaths = [NSMutableSet new];
-
-    NSSet<SNContact *> *allContacts = [LKStorage.shared getAllContacts];
-    
-    for (SNContact *contact in allContacts) {
-        if (contact.profilePictureFileName == nil) { continue; }
-        NSString *filePath = [profileAvatarsDirPath stringByAppendingPathComponent:contact.profilePictureFileName];
-        [profileAvatarFilePaths addObject:filePath];
-    }
-    
-    return [profileAvatarFilePaths copy];
-}
+//+ (NSSet<NSString *> *)allProfileAvatarFilePaths
+//{
+//    NSString *profileAvatarsDirPath = self.profileAvatarsDirPath;
+//    NSMutableSet<NSString *> *profileAvatarFilePaths = [NSMutableSet new];
+//
+//    NSSet<SNContact *> *allContacts = [LKStorage.shared getAllContacts];
+//
+//    for (SNContact *contact in allContacts) {
+//        if (contact.profilePictureFileName == nil) { continue; }
+//        NSString *filePath = [profileAvatarsDirPath stringByAppendingPathComponent:contact.profilePictureFileName];
+//        [profileAvatarFilePaths addObject:filePath];
+//    }
+//
+//    return [profileAvatarFilePaths copy];
+//}
 
 @end
 

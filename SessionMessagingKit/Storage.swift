@@ -12,13 +12,6 @@ public protocol SessionMessagingKitStorageProtocol {
     func write(with block: @escaping (Any) -> Void, completion: @escaping () -> Void) -> Promise<Void>
     func writeSync(with block: @escaping (Any) -> Void)
 
-    // MARK: - General
-
-    func getUser() -> Contact?
-    func getUser(using transaction: YapDatabaseReadTransaction?) -> Contact?
-    func getAllContacts() -> Set<Contact>
-    func getAllContacts(with transaction: YapDatabaseReadTransaction) -> Set<Contact>
-
     // MARK: - Closed Groups
 
     func getUserClosedGroupPublicKeys() -> Set<String>
@@ -95,4 +88,4 @@ public protocol SessionMessagingKitStorageProtocol {
     func persist(_ stream: TSAttachmentStream, associatedWith tsIncomingMessageID: String, using transaction: Any)
 }
 
-extension Storage: SessionMessagingKitStorageProtocol, SessionSnodeKitStorageProtocol {}
+extension Storage: SessionMessagingKitStorageProtocol {}

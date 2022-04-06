@@ -1,4 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import PromiseKit
+import SessionMessagingKit
 
 @objc(SNEditClosedGroupVC)
 final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
@@ -73,7 +77,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         backButton.tintColor = Colors.text
         navigationItem.backBarButtonItem = backButton
         func getDisplayName(for publicKey: String) -> String {
-            return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+            return Profile.displayName(for: publicKey)
         }
         setUpViewHierarchy()
         // Always show zombies at the bottom
@@ -107,7 +111,7 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
         membersLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         membersLabel.text = "Members"
         // Add members button
-        let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.membersAndZombies).isEmpty
+        let hasContactsToAdd = !Set(Contact.fetchAllIds()).subtracting(self.membersAndZombies).isEmpty
         if (!hasContactsToAdd) {
             addMembersButton.isUserInteractionEnabled = false
             let disabledColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
@@ -246,10 +250,10 @@ final class EditClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelega
             var members = self.membersAndZombies
             members.append(contentsOf: selectedUsers)
             func getDisplayName(for publicKey: String) -> String {
-                return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+                return Profile.displayName(for: publicKey)
             }
             self.membersAndZombies = members.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
-            let hasContactsToAdd = !Set(ContactUtilities.getAllContacts()).subtracting(self.membersAndZombies).isEmpty
+            let hasContactsToAdd = !Set(Contact.fetchAllIds()).subtracting(self.membersAndZombies).isEmpty
             self.addMembersButton.isUserInteractionEnabled = hasContactsToAdd
             let color = hasContactsToAdd ? Colors.accent : Colors.text.withAlphaComponent(Values.mediumOpacity)
             self.addMembersButton.layer.borderColor = color.cgColor

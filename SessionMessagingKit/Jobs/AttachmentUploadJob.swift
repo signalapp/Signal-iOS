@@ -1,4 +1,7 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import PromiseKit
+import SignalCoreKit
 import SessionUtilitiesKit
 
 public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility

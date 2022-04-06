@@ -1,23 +1,25 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
+import Sodium
 import Curve25519Kit
 import SignalCoreKit
 import SessionSnodeKit
 
 extension MessageReceiver {
 
-    public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws {
+    public static func handle(_ db: Database, _ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws {
         switch message {
         case let message as ReadReceipt: handleReadReceipt(message, using: transaction)
         case let message as TypingIndicator: handleTypingIndicator(message, using: transaction)
-        case let message as ClosedGroupControlMessage: handleClosedGroupControlMessage(message, using: transaction)
+        case let message as ClosedGroupControlMessage: handleClosedGroupControlMessage(db, message, using: transaction)
         case let message as DataExtractionNotification: handleDataExtractionNotification(message, using: transaction)
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
-        case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
+        case let message as ConfigurationMessage: handleConfigurationMessage(db, message, using: transaction)
         case let message as UnsendRequest: handleUnsendRequest(message, using: transaction)
-        case let message as MessageRequestResponse: handleMessageRequestResponse(message, using: transaction)
-        case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
+        case let message as MessageRequestResponse: handleMessageRequestResponse(db, message, using: transaction)
+        case let message as VisibleMessage: try handleVisibleMessage(db, message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
         
@@ -145,11 +147,11 @@ extension MessageReceiver {
             threadOrNil = TSContactThread.getWithContactSessionID(syncTarget ?? senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
-        let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
+        let configuration = Legacy.DisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
         configuration.save(with: transaction)
         var senderDisplayName: String? = nil
         if senderPublicKey != getUserHexEncodedPublicKey() {
-            senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .regular) ?? senderPublicKey
+            senderDisplayName = Profile.displayName(for: senderPublicKey)
         }
         let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: messageSentTimestamp, thread: thread,
             configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
@@ -168,11 +170,11 @@ extension MessageReceiver {
             threadOrNil = TSContactThread.getWithContactSessionID(syncTarget ?? senderPublicKey, transaction: transaction)
         }
         guard let thread = threadOrNil else { return }
-        let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
+        let configuration = Legacy.DisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
         configuration.save(with: transaction)
         var senderDisplayName: String? = nil
         if senderPublicKey != getUserHexEncodedPublicKey() {
-            senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .regular) ?? senderPublicKey
+            senderDisplayName = Profile.displayName(for: senderPublicKey)
         }
         let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: messageSentTimestamp, thread: thread,
             configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
@@ -184,7 +186,7 @@ extension MessageReceiver {
     
     // MARK: - Configuration Messages
     
-    private static func handleConfigurationMessage(_ message: ConfigurationMessage, using transaction: Any) {
+    private static func handleConfigurationMessage(_ db: Database, _ message: ConfigurationMessage, using transaction: Any) {
         let userPublicKey = getUserHexEncodedPublicKey()
         guard message.sender == userPublicKey else { return }
         SNLog("Configuration message received.")
@@ -195,10 +197,14 @@ extension MessageReceiver {
         let lastConfigTimestamp: TimeInterval = (UserDefaults.standard[.lastConfigurationSync]?.timeIntervalSince1970 ?? Date(timeIntervalSince1970: 0).timeIntervalSince1970)
         
         // Profile
-        var userProfileKey: OWSAES256Key? = nil
-        if let profileKey = message.profileKey { userProfileKey = OWSAES256Key(data: profileKey) }
-        updateProfileIfNeeded(publicKey: userPublicKey, name: message.displayName, profilePictureURL: message.profilePictureURL,
-            profileKey: userProfileKey, sentTimestamp: message.sentTimestamp!, transaction: transaction)
+        updateProfileIfNeeded(
+            publicKey: userPublicKey,
+            name: message.displayName,
+            profilePictureURL: message.profilePictureURL,
+            profileKey: OWSAES256Key(data: message.profileKey),
+            sentTimestamp: message.sentTimestamp!,
+            transaction: transaction
+        )
         
         if isInitialSync || messageSentTimestamp > lastConfigTimestamp {
             if isInitialSync {
@@ -211,11 +217,18 @@ extension MessageReceiver {
             // Contacts
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
-                let contact = (Storage.shared.getContact(with: sessionID, using: transaction) ?? Contact(sessionID: sessionID))
-                let contactWasBlocked: Bool = contact.isBlocked
-                if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
-                contact.profilePictureURL = contactInfo.profilePictureURL
-                contact.name = contactInfo.displayName
+                let contact: Contact = Contact.fetchOrCreate(db, id: sessionID)
+                let profile: Profile = Profile.fetchOrCreate(db, id: sessionID)
+                
+                try? profile
+                    .with(
+                        name: contactInfo.displayName,
+                        profilePictureUrl: .updateIf(contactInfo.profilePictureURL),
+                        profileEncryptionKey: .updateIf(
+                            contactInfo.profileKey.map { OWSAES256Key(data: $0) }
+                        )
+                    )
+                    .save(db)
                 
                 // Note: We only update these values if the proto actually has values for them (this is to
                 // prevent an edge case where an old client could override the values with default values
@@ -225,12 +238,22 @@ extension MessageReceiver {
                 // config message setting *isApproved* and *didApproveMe* to true. This may prevent some
                 // weird edge cases where a config message swapping *isApproved* and *didApproveMe* to
                 // false.
-                if contactInfo.hasIsApproved && contactInfo.isApproved { contact.isApproved = true }
-                if contactInfo.hasDidApproveMe && contactInfo.didApproveMe { contact.didApproveMe = true }
-                
-                if contactInfo.hasIsBlocked { contact.isBlocked = contactInfo.isBlocked }
-                
-                Storage.shared.setContact(contact, using: transaction)
+                try? contact
+                    .with(
+                        isApproved: (contactInfo.hasIsApproved && contactInfo.isApproved ?
+                            .existing :
+                            true
+                        ),
+                        isBlocked: (contactInfo.hasIsBlocked && contactInfo.isBlocked ?
+                            .existing :
+                            true
+                        ),
+                        didApproveMe: (contactInfo.hasDidApproveMe && contactInfo.didApproveMe ?
+                            .existing :
+                            true
+                        )
+                    )
+                    .save(db)
                 
                 // If the contact is blocked
                 if contactInfo.hasIsBlocked && contactInfo.isBlocked {
@@ -238,7 +261,7 @@ extension MessageReceiver {
                     // associated with them that is a message request thread then delete it (assume
                     // that the current user had deleted that message request)
                     if
-                        contactInfo.isBlocked != contactWasBlocked,
+                        contactInfo.isBlocked != contact.isBlocked,
                         let thread: TSContactThread = TSContactThread.getWithContactSessionID(sessionID, transaction: transaction),
                         thread.isMessageRequest(using: transaction)
                     {
@@ -258,7 +281,11 @@ extension MessageReceiver {
                 let allClosedGroupPublicKeys = storage.getUserClosedGroupPublicKeys()
                 for closedGroup in message.closedGroups {
                     guard !allClosedGroupPublicKeys.contains(closedGroup.publicKey) else { continue }
-                    handleNewClosedGroup(groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: closedGroup.encryptionKeyPair,
+                    let keyPair: Box.KeyPair = Box.KeyPair(
+                        publicKey: closedGroup.encryptionKeyPair.publicKey.bytes,
+                        secretKey: closedGroup.encryptionKeyPair.privateKey.bytes
+                    )
+                    handleNewClosedGroup(db, groupPublicKey: closedGroup.publicKey, name: closedGroup.name, encryptionKeyPair: keyPair,
                         members: [String](closedGroup.members), admins: [String](closedGroup.admins), expirationTimer: closedGroup.expirationTimer,
                         messageSentTimestamp: message.sentTimestamp!, using: transaction)
                 }
@@ -313,7 +340,8 @@ extension MessageReceiver {
     // MARK: - Visible Messages
 
     @discardableResult
-    public static func handleVisibleMessage(_ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws -> String {
+    public static func handleVisibleMessage(_ db: Database, _ message: VisibleMessage, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws -> String {
+        let sender: String = message.sender!
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         var isMainAppAndActive = false
@@ -337,7 +365,7 @@ extension MessageReceiver {
                 profileKey: contactProfileKey, sentTimestamp: message.sentTimestamp!, transaction: transaction)
         }
         // Get or create thread
-        guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
+        guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? sender, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
         // Parse quote if needed
         var tsQuotedMessage: TSQuotedMessage? = nil
         if message.quote != nil && proto.dataMessage?.quote != nil, let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
@@ -359,7 +387,9 @@ extension MessageReceiver {
             groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.duplicateMessage }
         message.threadID = threadID
         // Start attachment downloads if needed
-        let isContactTrusted = Storage.shared.getContact(with: message.sender!)?.isTrusted ?? false
+        // TODO: Swap this back
+        let isContactTrusted: Bool = (GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: sender) })?.isTrusted ?? false)
+//        let isContactTrusted: Bool = ((try? Contact.fetchOne(db, id: sender))?.isTrusted ?? false)
         let isGroup = message.groupPublicKey != nil || openGroupID != nil
         attachmentsToDownload.forEach { attachmentID in
             let downloadJob = AttachmentDownloadJob(attachmentID: attachmentID, tsMessageID: tsMessageID, threadID: threadID)
@@ -403,10 +433,10 @@ extension MessageReceiver {
         // by using the approval process
         if !isGroup, let senderSessionId: String = message.sender {
             updateContactApprovalStatusIfNeeded(
+                db,
                 senderSessionId: senderSessionId,
                 threadId: message.threadID,
-                forceConfigSync: false,
-                using: transaction
+                forceConfigSync: false
             )
         }
         
@@ -427,9 +457,10 @@ extension MessageReceiver {
         profileKey: OWSAES256Key?, sentTimestamp: UInt64, transaction: YapDatabaseReadWriteTransaction) {
         let isCurrentUser = (publicKey == getUserHexEncodedPublicKey())
         let userDefaults = UserDefaults.standard
-        let contact = Storage.shared.getContact(with: publicKey) ?? Contact(sessionID: publicKey) // New API
+        var profile: Profile = Profile.fetchOrCreate(id: publicKey)
+        
         // Name
-        if let name = name, name != contact.name {
+        if let name = name, name != profile.name {
             let shouldUpdate: Bool
             if isCurrentUser {
                 shouldUpdate = given(userDefaults[.lastDisplayNameUpdate]) { sentTimestamp > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
@@ -440,40 +471,54 @@ extension MessageReceiver {
                 if isCurrentUser {
                     userDefaults[.lastDisplayNameUpdate] = Date(timeIntervalSince1970: TimeInterval(sentTimestamp / 1000))
                 }
-                contact.name = name
+                
+                profile = profile.with(name: name)
             }
         }
+        
         // Profile picture & profile key
-        if let profileKey = profileKey, let profilePictureURL = profilePictureURL,
-            profileKey.keyData.count == kAES256_KeyByteLength, profileKey != contact.profileEncryptionKey {
+        if
+            let profileKey = profileKey,
+            let profilePictureURL = profilePictureURL,
+            profileKey.keyData.count == kAES256_KeyByteLength,
+            profileKey != profile.profileEncryptionKey
+        {
             let shouldUpdate: Bool
             if isCurrentUser {
                 shouldUpdate = given(userDefaults[.lastProfilePictureUpdate]) { sentTimestamp > UInt64($0.timeIntervalSince1970 * 1000) } ?? true
             } else {
                 shouldUpdate = true
             }
+            
             if shouldUpdate {
                 if isCurrentUser {
                     userDefaults[.lastProfilePictureUpdate] = Date(timeIntervalSince1970: TimeInterval(sentTimestamp / 1000))
                 }
-                contact.profilePictureURL = profilePictureURL
-                contact.profileEncryptionKey = profileKey
+                
+                profile = profile.with(
+                    profilePictureUrl: .update(profilePictureURL),
+                    profileEncryptionKey: .update(profileKey)
+                )
             }
         }
+        
         // Persist changes
-        Storage.shared.setContact(contact, using: transaction)
+        GRDBStorage.shared.write { db in
+            try profile.save(db)
+        }
+        
         // Download the profile picture if needed
         transaction.addCompletionQueue(DispatchQueue.main) {
-            SSKEnvironment.shared.profileManager.downloadAvatar(forUserProfile: contact)
+            ProfileManager.downloadAvatar(for: profile)
         }
     }
 
     
     
     // MARK: - Closed Groups
-    public static func handleClosedGroupControlMessage(_ message: ClosedGroupControlMessage, using transaction: Any) {
+    public static func handleClosedGroupControlMessage(_ db: Database, _ message: ClosedGroupControlMessage, using transaction: Any) {
         switch message.kind! {
-        case .new: handleNewClosedGroup(message, using: transaction)
+        case .new: handleNewClosedGroup(db, message, using: transaction)
         case .encryptionKeyPair: handleClosedGroupEncryptionKeyPair(message, using: transaction)
         case .nameChange: handleClosedGroupNameChanged(message, using: transaction)
         case .membersAdded: handleClosedGroupMembersAdded(message, using: transaction)
@@ -483,16 +528,16 @@ extension MessageReceiver {
         }
     }
     
-    private static func handleNewClosedGroup(_ message: ClosedGroupControlMessage, using transaction: Any) {
+    private static func handleNewClosedGroup(_ db: Database, _ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case let .new(publicKeyAsData, name, encryptionKeyPair, membersAsData, adminsAsData, expirationTimer) = message.kind else { return }
         let groupPublicKey = publicKeyAsData.toHexString()
         let members = membersAsData.map { $0.toHexString() }
         let admins = adminsAsData.map { $0.toHexString() }
-        handleNewClosedGroup(groupPublicKey: groupPublicKey, name: name, encryptionKeyPair: encryptionKeyPair,
+        handleNewClosedGroup(db, groupPublicKey: groupPublicKey, name: name, encryptionKeyPair: encryptionKeyPair,
             members: members, admins: admins, expirationTimer: expirationTimer, messageSentTimestamp: message.sentTimestamp!, using: transaction)
     }
 
-    private static func handleNewClosedGroup(groupPublicKey: String, name: String, encryptionKeyPair: ECKeyPair, members: [String], admins: [String], expirationTimer: UInt32, messageSentTimestamp: UInt64, using transaction: Any) {
+    private static func handleNewClosedGroup(_ db: Database, groupPublicKey: String, name: String, encryptionKeyPair: Box.KeyPair, members: [String], admins: [String], expirationTimer: UInt32, messageSentTimestamp: UInt64, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         
         // With new closed groups we only want to create them if the admin creating the closed group is an
@@ -501,7 +546,7 @@ extension MessageReceiver {
         var hasApprovedAdmin: Bool = false
         
         for adminId in admins {
-            if let contact: Contact = Storage.shared.getContact(with: adminId), contact.isApproved {
+            if let contact: Contact = try? Contact.fetchOne(db, id: adminId), contact.isApproved {
                 hasApprovedAdmin = true
                 break
             }
@@ -533,7 +578,7 @@ extension MessageReceiver {
         
         let isExpirationTimerEnabled = (expirationTimer > 0)
         let expirationTimerDuration = (isExpirationTimerEnabled ? expirationTimer : 24 * 60 * 60)
-        let configuration = OWSDisappearingMessagesConfiguration(
+        let configuration = Legacy.DisappearingMessagesConfiguration(
             threadId: thread.uniqueId!,
             enabled: isExpirationTimerEnabled,
             durationSeconds: expirationTimerDuration
@@ -560,7 +605,7 @@ extension MessageReceiver {
             let groupPublicKey = explicitGroupPublicKey?.toHexString() ?? message.groupPublicKey else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         let userPublicKey = getUserHexEncodedPublicKey()
-        guard let userKeyPair = Identity.fetchUserKeyPair() else {
+        guard let userKeyPair: Box.KeyPair = Identity.fetchUserKeyPair() else {
             return SNLog("Couldn't find user X25519 key pair.")
         }
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -586,12 +631,10 @@ extension MessageReceiver {
         } catch {
             return SNLog("Couldn't parse closed group encryption key pair.")
         }
-        let keyPair: ECKeyPair
-        do {
-            keyPair = try ECKeyPair(publicKeyData: proto.publicKey.removing05PrefixIfNeeded(), privateKeyData: proto.privateKey)
-        } catch {
-            return SNLog("Couldn't parse closed group encryption key pair.")
-        }
+        let keyPair: Box.KeyPair = Box.KeyPair(
+            publicKey: proto.publicKey.removing05PrefixIfNeeded().bytes,
+            secretKey: proto.privateKey.bytes
+        )
         // Store it if needed
         let closedGroupEncryptionKeyPairs = Storage.shared.getClosedGroupEncryptionKeyPairs(for: groupPublicKey)
         guard !closedGroupEncryptionKeyPairs.contains(keyPair) else {
@@ -711,6 +754,8 @@ extension MessageReceiver {
     /// • Unsubscribe from PNs, delete the group public key, etc. as the group will be disbanded.
     private static func handleClosedGroupMemberLeft(_ message: ClosedGroupControlMessage, using transaction: Any) {
         guard case .memberLeft = message.kind else { return }
+        
+        let sender: String = message.sender!
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard let groupPublicKey = message.groupPublicKey else { return }
         performIfValid(for: message, using: transaction) { groupID, thread, group in
@@ -731,13 +776,16 @@ extension MessageReceiver {
             thread.setGroupModel(newGroupModel, with: transaction)
             // Notify the user if needed
             guard members != Set(group.groupMemberIds) else { return }
-            let contact = Storage.shared.getContact(with: message.sender!)
+            
             let updateInfo: String
-            if let displayName = contact?.displayName(for: Contact.Context.regular) {
+            
+            if let displayName = Profile.displayNameNoFallback(for: sender) {
                 updateInfo = String(format: NSLocalizedString("GROUP_MEMBER_LEFT", comment: ""), displayName)
-            } else {
+            }
+            else {
                 updateInfo = NSLocalizedString("GROUP_UPDATED", comment: "")
             }
+            
             let infoMessage = TSInfoMessage(timestamp: message.sentTimestamp!, in: thread, messageType: .groupUpdated, customMessage: updateInfo)
             infoMessage.save(with: transaction)
         }
@@ -787,14 +835,12 @@ extension MessageReceiver {
     // MARK: - Message Requests
     
     private static func updateContactApprovalStatusIfNeeded(
+        _ db: Database,
         senderSessionId: String,
         threadId: String?,
-        forceConfigSync: Bool,
-        using transaction: Any
+        forceConfigSync: Bool
     ) {
-        guard let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction else { return }
-        
-        let userPublicKey: String = getUserHexEncodedPublicKey()
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
         
         // If the sender of the message was the current user
         if senderSessionId == userPublicKey {
@@ -824,8 +870,8 @@ extension MessageReceiver {
         MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
     }
     
-    public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {
-        let userPublicKey = getUserHexEncodedPublicKey()
+    public static func handleMessageRequestResponse(_ db: Database, _ message: MessageRequestResponse, using transaction: Any) {
+        let userPublicKey = getUserHexEncodedPublicKey(db)
         
         // Ignore messages which were sent from the current user
         guard message.sender != userPublicKey else { return }
@@ -842,10 +888,10 @@ extension MessageReceiver {
         }
         
         updateContactApprovalStatusIfNeeded(
+            db,
             senderSessionId: senderId,
             threadId: nil,
-            forceConfigSync: true,
-            using: transaction
+            forceConfigSync: true
         )
     }
 }

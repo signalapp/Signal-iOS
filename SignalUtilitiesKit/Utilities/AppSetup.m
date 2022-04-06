@@ -6,7 +6,6 @@
 #import "Environment.h"
 #import "VersionMigrations.h"
 #import <SignalUtilitiesKit/OWSDatabaseMigration.h>
-#import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
 #import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
 #import <SessionMessagingKit/OWSOutgoingReceiptManager.h>
@@ -49,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSPreferences *preferences = [OWSPreferences new];
 
-        OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
         TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSDisappearingMessagesJob *disappearingMessagesJob =
             [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
@@ -71,8 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   sounds:sounds
                                                            windowManager:windowManager]];
 
-        [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithProfileManager:profileManager
-                                                                  primaryStorage:primaryStorage
+        [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithPrimaryStorage:primaryStorage
                                                                 tsAccountManager:tsAccountManager
                                                          disappearingMessagesJob:disappearingMessagesJob
                                                               readReceiptManager:readReceiptManager

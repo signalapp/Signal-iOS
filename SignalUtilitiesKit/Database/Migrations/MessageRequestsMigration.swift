@@ -1,3 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import SessionMessagingKit
+
 @objc(SNMessageRequestsMigration)
 public class MessageRequestsMigration : OWSDatabaseMigration {
 
@@ -11,29 +16,31 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
     }
 
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
-        var contacts: Set<Contact> = Set()
+        var contacts: Set<SessionMessagingKit.Legacy.Contact> = Set()
         var threads: [TSThread] = []
 
         TSThread.enumerateCollectionObjects { object, _ in
             guard let thread: TSThread = object as? TSThread else { return }
             
-            if let contactThread: TSContactThread = thread as? TSContactThread {
-                let sessionId: String = contactThread.contactSessionID()
-                
-                if let contact: Contact = Storage.shared.getContact(with: sessionId) {
-                    contact.isApproved = true
-                    contact.didApproveMe = true
-                    contacts.insert(contact)
-                }
-            }
-            else if let groupThread: TSGroupThread = thread as? TSGroupThread, groupThread.isClosedGroup {
-                let groupAdmins: [String] = groupThread.groupModel.groupAdminIds
-                
-                groupAdmins.forEach { sessionId in
-                    if let contact: Contact = Storage.shared.getContact(with: sessionId) {
+            Storage.read { transaction in
+                if let contactThread: TSContactThread = thread as? TSContactThread {
+                    let sessionId: String = contactThread.contactSessionID()
+                    
+                    if let contact: SessionMessagingKit.Legacy.Contact = transaction.object(forKey: sessionId, inCollection: Legacy.contactCollection) as? SessionMessagingKit.Legacy.Contact {
                         contact.isApproved = true
                         contact.didApproveMe = true
                         contacts.insert(contact)
+                    }
+                }
+                else if let groupThread: TSGroupThread = thread as? TSGroupThread, groupThread.isClosedGroup {
+                    let groupAdmins: [String] = groupThread.groupModel.groupAdminIds
+                    
+                    groupAdmins.forEach { sessionId in
+                        if let contact: SessionMessagingKit.Legacy.Contact = transaction.object(forKey: sessionId, inCollection: Legacy.contactCollection) as? SessionMessagingKit.Legacy.Contact {
+                            contact.isApproved = true
+                            contact.didApproveMe = true
+                            contacts.insert(contact)
+                        }
                     }
                 }
             }
@@ -41,16 +48,19 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
             threads.append(thread)
         }
         
-        if let user = Storage.shared.getUser() {
-            user.isApproved = true
-            user.didApproveMe = true
-            contacts.insert(user)
-        }
+        let userPublicKey: String = getUserHexEncodedPublicKey()
         
+        Storage.read { transaction in
+            if let user = transaction.object(forKey: userPublicKey, inCollection: Legacy.contactCollection) as? SessionMessagingKit.Legacy.Contact {
+                user.isApproved = true
+                user.didApproveMe = true
+                contacts.insert(user)
+            }
+        }
         
         Storage.write(with: { transaction in
             contacts.forEach { contact in
-                Storage.shared.setContact(contact, using: transaction)
+                transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
             }
             threads.forEach { thread in
                 thread.save(with: transaction)

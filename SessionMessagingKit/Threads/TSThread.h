@@ -22,6 +22,7 @@ BOOL IsNoteToSelfEnabled(void);
 @property (nonatomic, readonly, nullable) NSDate *lastInteractionDate;
 @property (nonatomic, readonly) TSInteraction *lastInteraction;
 @property (atomic, readonly) BOOL isMuted;
+@property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;
 
 /**

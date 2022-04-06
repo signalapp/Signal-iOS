@@ -163,8 +163,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             return recipientRow
         }
 
-        let publicKey = contactThread.contactSessionID()
-        nameLabel.text = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+        nameLabel.text = Profile.displayName(for: contactThread.contactSessionID())
         nameLabel.textColor = Colors.text
 
         if let profileName = self.profileName(contactThread: contactThread) {
@@ -189,8 +188,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     }
 
     private func profileName(contactThread: TSContactThread) -> String? {
-        let publicKey = contactThread.contactSessionID()
-        return Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+        return Profile.displayName(for: contactThread.contactSessionID())
     }
 
     // MARK: - Event Handlers

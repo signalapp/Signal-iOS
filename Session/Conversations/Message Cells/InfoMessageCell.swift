@@ -1,5 +1,10 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class InfoMessageCell : MessageCell {
+import UIKit
+import SessionUIKit
+import SessionMessagingKit
+
+final class InfoMessageCell: MessageCell {
     private lazy var iconImageViewWidthConstraint = iconImageView.set(.width, to: InfoMessageCell.iconSize)
     private lazy var iconImageViewHeightConstraint = iconImageView.set(.height, to: InfoMessageCell.iconSize)
     
@@ -48,7 +53,7 @@ final class InfoMessageCell : MessageCell {
         let icon: UIImage?
         switch message.messageType {
         case .disappearingMessagesUpdate:
-            var configuration: OWSDisappearingMessagesConfiguration?
+            var configuration: SessionMessagingKit.Legacy.DisappearingMessagesConfiguration?
             Storage.read { transaction in
                 configuration = message.thread(with: transaction).disappearingMessagesConfiguration(with: transaction)
             }

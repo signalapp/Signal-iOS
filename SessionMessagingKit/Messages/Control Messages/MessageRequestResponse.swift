@@ -30,7 +30,7 @@ public final class MessageRequestResponse: ControlMessage {
     
     // MARK: - Proto Conversion
 
-    public override class func fromProto(_ proto: SNProtoContent) -> MessageRequestResponse? {
+    public override class func fromProto(_ proto: SNProtoContent, sender: String) -> MessageRequestResponse? {
         guard let messageRequestResponseProto = proto.messageRequestResponse else { return nil }
         
         let isApproved = messageRequestResponseProto.isApproved

@@ -197,8 +197,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        let context = Contact.context(for: thread)
-        let senderName = Storage.shared.getContact(with: incomingMessage.authorId, using: transaction)?.displayName(for: context) ?? incomingMessage.authorId
+        let senderName = Profile.displayName(for: incomingMessage.authorId, thread: incomingMessage.thread)
 
         let notificationTitle: String?
         var notificationBody: String?

@@ -239,10 +239,9 @@ final class ConversationCell : UITableViewCell {
             // Contact
             if threadViewModel.isGroupThread, let thread = threadViewModel.threadRecord as? TSGroupThread {
                 displayNameLabel.attributedText = getHighlightedSnippet(snippet: getDisplayName(), searchText: normalizedSearchText, fontSize: Values.mediumFontSize)
-                let context: Contact.Context = thread.isOpenGroup ? .openGroup : .regular
                 var rawSnippet: String = ""
-                thread.groupModel.groupMemberIds.forEach{ id in
-                    if let displayName = Storage.shared.getContact(with: id)?.displayName(for: context) {
+                thread.groupModel.groupMemberIds.forEach { id in
+                    if let displayName = Profile.displayNameNoFallback(for: id, thread: thread) {
                         if !rawSnippet.isEmpty {
                             rawSnippet += ", \(displayName)"
                         }
@@ -348,7 +347,7 @@ final class ConversationCell : UITableViewCell {
     private func getMessageAuthorName(message: TSMessage) -> String? {
         guard threadViewModel.isGroupThread else { return nil }
         if let incomingMessage = message as? TSIncomingMessage {
-            return Storage.shared.getContact(with: incomingMessage.authorId)?.displayName(for: .regular) ?? "Anonymous"
+            return Profile.displayName(for: incomingMessage.authorId, customFallback: "Anonymous")
         }
         return nil
     }
@@ -356,14 +355,14 @@ final class ConversationCell : UITableViewCell {
     private func getDisplayNameForSearch(_ sessionID: String) -> String {
         if threadViewModel.threadRecord.isNoteToSelf() {
             return NSLocalizedString("NOTE_TO_SELF", comment: "")
-        } else {
-            var result = sessionID
-            if let contact = Storage.shared.getContact(with: sessionID), let name = contact.name {
-                result = name
-                if let nickname = contact.nickname { result += "(\(nickname))"}
-            }
-            return result
         }
+        
+        return [
+            Profile.displayName(for: sessionID),
+            Profile.fetchOrCreate(id: sessionID).nickname.map { "(\($0)" }
+        ]
+        .compactMap { $0 }
+        .joined(separator: " ")
     }
     
     private func getDisplayName() -> String {
@@ -381,9 +380,9 @@ final class ConversationCell : UITableViewCell {
             }
             else {
                 let hexEncodedPublicKey: String = threadViewModel.contactSessionID!
-                let displayName: String = (Storage.shared.getContact(with: hexEncodedPublicKey)?.displayName(for: .regular) ?? hexEncodedPublicKey)
                 let middleTruncatedHexKey: String = "\(hexEncodedPublicKey.prefix(4))...\(hexEncodedPublicKey.suffix(4))"
-                return (displayName == hexEncodedPublicKey ? middleTruncatedHexKey : displayName)
+                
+                return Profile.displayName(for: hexEncodedPublicKey, customFallback: middleTruncatedHexKey)
             }
         }
     }

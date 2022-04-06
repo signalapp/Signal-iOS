@@ -39,5 +39,56 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.profilePictureFileName, .text)
             t.column(.profileEncryptionKey, .blob)
         }
+        
+        try db.create(table: SessionThread.self) { t in
+            t.column(.id, .text)
+                .notNull()
+                .primaryKey()
+            t.column(.variant, .integer).notNull()
+            t.column(.creationDateTimestamp, .double).notNull()
+            t.column(.shouldBeVisible, .boolean).notNull()
+            t.column(.isPinned, .boolean).notNull()
+            t.column(.messageDraft, .text)
+            t.column(.notificationMode, .integer).notNull()
+            t.column(.mutedUntilTimestamp, .double)
+        }
+        
+        try db.create(table: DisappearingMessagesConfiguration.self) { t in
+            t.column(.id, .text)
+                .notNull()
+                .primaryKey()
+                .references(SessionThread.self)
+            t.column(.isEnabled, .boolean)
+                .defaults(to: false)
+                .notNull()
+            t.column(.durationSeconds, .double)
+                .defaults(to: 0)
+                .notNull()
+        }
+        
+        try db.create(table: ClosedGroup.self) { t in
+            t.column(.publicKey, .text)
+                .notNull()
+                .primaryKey()
+            t.column(.name, .text).notNull()
+            t.column(.formationTimestamp, .double).notNull()
+        }
+        
+        try db.create(table: ClosedGroupKeyPair.self) { t in
+            t.column(.publicKey, .text)
+                .notNull()
+                .indexed()
+                .references(ClosedGroup.self)
+            t.column(.secretKey, .blob).notNull()
+            t.column(.receivedTimestamp, .double).notNull()
+        }
+        
+        try db.create(table: GroupMember.self) { t in
+            t.column(.groupId, .text)
+                .notNull()
+                .indexed()
+            t.column(.profileId, .text).notNull()
+            t.column(.role, .integer).notNull()
+        }
     }
 }

@@ -141,13 +141,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                     NSFontAttributeName : self.nameLabel.font,
                 }];
     } else {
-        SNContactContext context = [SNContact contextForThread:self.thread];
-        self.nameLabel.text = [[LKStorage.shared getContactWithSessionID:recipientId] displayNameFor:context] ?: recipientId;
+        self.nameLabel.text = [SMKProfile displayNameWithId:recipientId thread:self.thread];
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                                 name:NSNotification.otherUsersProfileDidChange
                                                object:nil];
     [self updateProfileName];
     [self updateAvatar];
@@ -185,7 +184,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(otherUsersProfileDidChange:)
-                                                     name:kNSNotificationName_OtherUsersProfileDidChange
+                                                     name:NSNotification.otherUsersProfileDidChange
                                                    object:nil];
         [self updateProfileName];
     } else {
@@ -218,11 +217,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateProfileName
 {
-    NSString *publicKey = self.recipientId;
-    NSString *threadID = self.thread.uniqueId;
-    SNContactContext context = [SNContact contextForThread:self.thread];
-    NSString *displayName = [[LKStorage.shared getContactWithSessionID:publicKey] displayNameFor:context] ?: publicKey;
-    self.nameLabel.text = displayName;
+    self.nameLabel.text = [SMKProfile displayNameWithId:self.recipientId thread:self.thread];
     [self.nameLabel setNeedsLayout];
 }
 
@@ -245,7 +240,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    NSString *recipientId = notification.userInfo[NSNotification.profileRecipientIdKey];
     OWSAssertDebug(recipientId.length > 0);
 
     if (recipientId.length > 0 && [self.recipientId isEqualToString:recipientId]) {

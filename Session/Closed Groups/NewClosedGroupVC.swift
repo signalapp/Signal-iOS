@@ -1,4 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import PromiseKit
+import SessionMessagingKit
 
 private protocol TableViewTouchDelegate {
     
@@ -15,7 +19,7 @@ private final class TableView : UITableView {
 }
 
 final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate, TableViewTouchDelegate, UITextFieldDelegate, UIScrollViewDelegate {
-    private let contacts = ContactUtilities.getAllContacts()
+    private let contacts = Contact.fetchAllIds()
     private var selectedContacts: Set<String> = []
     
     // MARK: Components
@@ -174,7 +178,10 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
                 promise = MessageSender.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
             }
             let _ = promise.done(on: DispatchQueue.main) { thread in
-                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                GRDBStorage.shared.write { db in
+                    MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                }
+                
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)
                 SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
             }

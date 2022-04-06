@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct Contact: Codable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct Contact: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "contact" }
     
     public typealias Columns = CodingKeys
@@ -22,23 +22,129 @@ public struct Contact: Codable, FetchableRecord, PersistableRecord, TableRecord,
     public let id: String
     
     /// This flag is used to determine whether we should auto-download files sent by this contact.
-    public var isTrusted = false
+    public let isTrusted: Bool
     
     /// This flag is used to determine whether message requests from this contact are approved
-    public var isApproved = false
+    public let isApproved: Bool
     
     /// This flag is used to determine whether message requests from this contact are blocked
-    public var isBlocked = false {
-        didSet {
-            if isBlocked {
-                hasBeenBlocked = true
+    public let isBlocked: Bool
+    
+    /// This flag is used to determine whether this contact has approved the current users message request
+    public let didApproveMe: Bool
+    
+    /// This flag is used to determine whether this contact has ever been blocked (will be included in the config message if so)
+    public let hasBeenBlocked: Bool
+    
+    // MARK: - Initialization
+    
+    public init(
+        id: String,
+        isTrusted: Bool = false,
+        isApproved: Bool = false,
+        isBlocked: Bool = false,
+        didApproveMe: Bool = false,
+        hasBeenBlocked: Bool = false
+    ) {
+        self.id = id
+        self.isTrusted = (
+            isTrusted ||
+            id == getUserHexEncodedPublicKey()  // Always trust ourselves
+        )
+        self.isApproved = isApproved
+        self.isBlocked = isBlocked
+        self.didApproveMe = didApproveMe
+        self.hasBeenBlocked = (isBlocked || hasBeenBlocked)
+    }
+    
+    // MARK: - PersistableRecord
+    
+    public func save(_ db: Database) throws {
+        let oldContact: Contact? = try? Contact.fetchOne(db, id: id)
+        
+        try performSave(db)
+        
+        db.afterNextTransactionCommit { db in
+            if isBlocked != oldContact?.isBlocked {
+                NotificationCenter.default.post(name: .contactBlockedStateChanged, object: id)
             }
         }
     }
-    
-    /// This flag is used to determine whether this contact has approved the current users message request
-    public var didApproveMe = false
-    
-    /// This flag is used to determine whether this contact has ever been blocked (will be included in the config message if so)
-    public var hasBeenBlocked = false
 }
+
+// MARK: - Convenience
+
+public extension Contact {
+    func with(
+        isTrusted: Updatable<Bool> = .existing,
+        isApproved: Updatable<Bool> = .existing,
+        isBlocked: Updatable<Bool> = .existing,
+        didApproveMe: Updatable<Bool> = .existing
+    ) -> Contact {
+        return Contact(
+            id: id,
+            isTrusted: (
+                (isTrusted ?? self.isTrusted) ||
+                self.id == getUserHexEncodedPublicKey() // Always trust ourselves
+            ),
+            isApproved: (isApproved ?? self.isApproved),
+            isBlocked: (isBlocked ?? self.isBlocked),
+            didApproveMe: (didApproveMe ?? self.didApproveMe),
+            hasBeenBlocked: ((isBlocked ?? self.isBlocked) || self.hasBeenBlocked)
+        )
+    }
+}
+
+// MARK: - GRDB Interactions
+
+public extension Contact {
+    static func fetchOrCreate(_ db: Database, id: ID) -> Contact {
+        return ((try? fetchOne(db, id: id)) ?? Contact(id: id))
+    }
+    
+    static func fetchAllIds() -> [String] {
+        return GRDBStorage.shared
+            .read { db in
+                let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                let contacts: [Contact] = try Contact
+                    .filter(Contact.Columns.id != userPublicKey)
+                    .filter(Contact.Columns.didApproveMe == true)
+                    .fetchAll(db)
+                let profiles: [Profile] = try Profile
+                    .fetchAll(db, ids: contacts.map { $0.id })
+                
+                // Sort the contacts by their displayName value
+                return profiles
+                    .sorted(by: { lhs, rhs -> Bool in lhs.displayName() < rhs.displayName() })
+                    .map { $0.id }
+            }
+            .defaulting(to: [])
+    }
+}
+
+// MARK: - Objective-C Support
+@objc(SMKContact)
+public class SMKContact: NSObject {
+    @objc let isApproved: Bool
+    @objc let isBlocked: Bool
+    @objc let didApproveMe: Bool
+    
+    init(isApproved: Bool, isBlocked: Bool, didApproveMe: Bool) {
+        self.isApproved = isApproved
+        self.isBlocked = isBlocked
+        self.didApproveMe = didApproveMe
+    }
+    
+    @objc public static func fetchOrCreate(id: String) -> SMKContact {
+        let existingContact: Contact? = GRDBStorage.shared.read { db in
+            try Contact.fetchOne(db, id: id)
+        }
+        
+        return SMKContact(
+            isApproved: existingContact?.isApproved ?? false,
+            isBlocked: existingContact?.isBlocked ?? false,
+            didApproveMe: existingContact?.didApproveMe ?? false
+        )
+    }
+}
+

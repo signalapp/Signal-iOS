@@ -11,14 +11,14 @@ public final class ConfigurationMessage : ControlMessage {
     public var displayName: String?
     public var profilePictureURL: String?
     public var profileKey: Data?
-    public var contacts: Set<Contact> = []
+    public var contacts: Set<CMContact> = []
 
     public override var isSelfSendValid: Bool { true }
     
     // MARK: Initialization
     public override init() { super.init() }
 
-    public init(displayName: String?, profilePictureURL: String?, profileKey: Data?, closedGroups: Set<ClosedGroup>, openGroups: Set<String>, contacts: Set<Contact>) {
+    public init(displayName: String?, profilePictureURL: String?, profileKey: Data?, closedGroups: Set<ClosedGroup>, openGroups: Set<String>, contacts: Set<CMContact>) {
         super.init()
         self.displayName = displayName
         self.profilePictureURL = profilePictureURL
@@ -36,7 +36,7 @@ public final class ConfigurationMessage : ControlMessage {
         if let displayName = coder.decodeObject(forKey: "displayName") as! String? { self.displayName = displayName }
         if let profilePictureURL = coder.decodeObject(forKey: "profilePictureURL") as! String? { self.profilePictureURL = profilePictureURL }
         if let profileKey = coder.decodeObject(forKey: "profileKey") as! Data? { self.profileKey = profileKey }
-        if let contacts = coder.decodeObject(forKey: "contacts") as! Set<Contact>? { self.contacts = contacts }
+        if let contacts = coder.decodeObject(forKey: "contacts") as! Set<CMContact>? { self.contacts = contacts }
     }
 
     public override func encode(with coder: NSCoder) {
@@ -50,14 +50,14 @@ public final class ConfigurationMessage : ControlMessage {
     }
 
     // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> ConfigurationMessage? {
+    public override class func fromProto(_ proto: SNProtoContent, sender: String) -> ConfigurationMessage? {
         guard let configurationProto = proto.configurationMessage else { return nil }
         let displayName = configurationProto.displayName
         let profilePictureURL = configurationProto.profilePicture
         let profileKey = configurationProto.profileKey
         let closedGroups = Set(configurationProto.closedGroups.compactMap { ClosedGroup.fromProto($0) })
         let openGroups = Set(configurationProto.openGroups)
-        let contacts = Set(configurationProto.contacts.compactMap { Contact.fromProto($0) })
+        let contacts = Set(configurationProto.contacts.compactMap { CMContact.fromProto($0) })
         return ConfigurationMessage(displayName: displayName, profilePictureURL: profilePictureURL, profileKey: profileKey,
             closedGroups: closedGroups, openGroups: openGroups, contacts: contacts)
     }
@@ -89,7 +89,7 @@ public final class ConfigurationMessage : ControlMessage {
             displayName: \(displayName ?? "null"),
             profilePictureURL: \(profilePictureURL ?? "null"),
             profileKey: \(profileKey?.toHexString() ?? "null"),
-            contacts: \([Contact](contacts).prettifiedDescription)
+            contacts: \([CMContact](contacts).prettifiedDescription)
         )
         """
     }
@@ -192,7 +192,7 @@ extension ConfigurationMessage {
 extension ConfigurationMessage {
 
     @objc(SNConfigurationMessageContact)
-    public final class Contact : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    public final class CMContact : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
         public var publicKey: String?
         public var displayName: String?
         public var profilePictureURL: String?
@@ -259,8 +259,8 @@ extension ConfigurationMessage {
             coder.encode(didApproveMe, forKey: "didApproveMe")
         }
 
-        public static func fromProto(_ proto: SNProtoConfigurationMessageContact) -> Contact? {
-            let result: Contact = Contact(
+        public static func fromProto(_ proto: SNProtoConfigurationMessageContact) -> CMContact? {
+            let result: CMContact = CMContact(
                 publicKey: proto.publicKey.toHexString(),
                 displayName: proto.name,
                 profilePictureURL: proto.profilePicture,

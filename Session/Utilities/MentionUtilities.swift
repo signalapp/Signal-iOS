@@ -17,9 +17,7 @@ public final class MentionUtilities : NSObject {
         while let match = outerMatch {
             let publicKey = String((string as NSString).substring(with: match.range).dropFirst()) // Drop the @
             let matchEnd: Int
-            let context: Contact.Context = (openGroupV2 != nil) ? .openGroup : .regular
-            let displayName = Storage.shared.getContact(with: publicKey)?.displayName(for: context)
-            if let displayName = displayName {
+            if let displayName = Profile.displayNameNoFallback(for: publicKey, context: (openGroupV2 != nil ? .openGroup : .regular)) {
                 string = (string as NSString).replacingCharacters(in: match.range, with: "@\(displayName)")
                 mentions.append((range: NSRange(location: match.range.location, length: displayName.utf16.count + 1), publicKey: publicKey)) // + 1 to include the @
                 matchEnd = match.range.location + displayName.utf16.count

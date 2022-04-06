@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import SessionMessagingKit
 
 @objc(SNBlockingManagerRemovalMigration)
 public class BlockingManagerRemovalMigration: OWSDatabaseMigration {
@@ -27,11 +28,18 @@ public class BlockingManagerRemovalMigration: OWSDatabaseMigration {
 
         Storage.write(
             with: { transaction in
-                Storage.shared.getAllContacts(with: transaction)
+                var result: Set<SessionMessagingKit.Legacy.Contact> = []
+                
+                transaction.enumerateRows(inCollection: Legacy.contactCollection) { _, object, _, _ in
+                    guard let contact = object as? SessionMessagingKit.Legacy.Contact else { return }
+                    result.insert(contact)
+                }
+                
+                result
                     .filter { contact -> Bool in blockedSessionIds.contains(contact.sessionID) }
                     .forEach { contact in
                         contact.isBlocked = true
-                        Storage.shared.setContact(contact, using: transaction)
+                        transaction.setObject(contact, forKey: contact.sessionID, inCollection: Legacy.contactCollection)
                     }
                 
                 // Now that the values have been migrated we can clear out the old collection

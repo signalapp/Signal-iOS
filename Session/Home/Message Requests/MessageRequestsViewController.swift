@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import GRDB
 import SessionUIKit
 import SessionMessagingKit
 
@@ -107,7 +108,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleProfileDidChangeNotification(_:)),
-            name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange),
+            name: Notification.Name.otherUsersProfileDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -302,32 +303,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     
     // MARK: - Interaction
     
-    private func updateContactAndThread(thread: TSThread, with transaction: YapDatabaseReadWriteTransaction, onComplete: ((Bool) -> ())? = nil) {
-        guard let contactThread: TSContactThread = thread as? TSContactThread else {
-            onComplete?(false)
-            return
-        }
-        
-        var needsSync: Bool = false
-        
-        // Update the contact
-        let sessionId: String = contactThread.contactSessionID()
-        
-        if let contact: Contact = Storage.shared.getContact(with: sessionId), (contact.isApproved || !contact.isBlocked) {
-            contact.isApproved = false
-            contact.isBlocked = true
-            
-            Storage.shared.setContact(contact, using: transaction)
-            needsSync = true
-        }
-        
-        // Delete all thread content
-        thread.removeAllThreadInteractions(with: transaction)
-        thread.remove(with: transaction)
-        
-        onComplete?(needsSync)
-    }
-    
     @objc private func clearAllTapped() {
         let threadCount: Int = Int(messageRequestCount)
         let threads: [TSThread] = (0..<threadCount).compactMap { self.thread(at: $0) }
@@ -336,36 +311,47 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE", comment: ""), message: nil, preferredStyle: .actionSheet)
         alertVC.addAction(UIAlertAction(title: NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON", comment: ""), style: .destructive) { _ in
             // Clear the requests
-            Storage.write(
-                with: { [weak self] transaction in
+            
+            GRDBStorage.shared.writeAsync(
+                updates: { db in
                     threads.forEach { thread in
-                        if let uniqueId: String = thread.uniqueId {
-                            Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                        }
-                        
-                        self?.updateContactAndThread(thread: thread, with: transaction) { threadNeedsSync in
-                            if threadNeedsSync {
-                                needsSync = true
-                            }
-                        }
-                        
-                        // Block the contact
-                        if
+                        guard
                             let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
-                            !thread.isBlocked(),
-                            let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
-                        {
-                            contact.isBlocked = true
-                            Storage.shared.setContact(contact, using: transaction)
-                            needsSync = true
-                        }
+                            let contact: Contact = try? Contact.fetchOrCreate(db, id: sessionId),
+                            !contact.isBlocked
+                        else { return }
+
+                        try? contact
+                            .with(
+                                isApproved: false,
+                                isBlocked: true
+                            )
+                            .save(db)
+                        
+                        needsSync = true
                     }
                 },
-                completion: {
-                    // Force a config sync
-                    if needsSync {
-                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                    }
+                completion: { db, _ in
+                    Storage.write(
+                        with: { transaction in
+                            threads.forEach { thread in
+                                if let uniqueId: String = thread.uniqueId {
+                                    Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+                                }
+                                
+                                // Delete all thread content
+                                thread.removeAllThreadInteractions(with: transaction)
+                                thread.remove(with: transaction)
+                            }
+                        },
+                        completion: {
+                            // Force a config sync
+                            if needsSync {
+                                // TODO: This might crash due to a "wrong thread" error
+                                MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                            }
+                        }
+                    )
                 }
             )
         })
@@ -378,24 +364,36 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON", comment: ""), message: nil, preferredStyle: .actionSheet)
         alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
-            Storage.write(
-                with: { [weak self] transaction in
-                    Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                    self?.updateContactAndThread(thread: thread, with: transaction)
-                    
-                    // Block the contact
-                    if
+            GRDBStorage.shared.writeAsync(
+                updates: { db in
+                    guard
                         let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
-                        !thread.isBlocked(),
-                        let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
-                    {
-                        contact.isBlocked = true
-                        Storage.shared.setContact(contact, using: transaction)
-                    }
+                        let contact: Contact = try? Contact.fetchOrCreate(db, id: sessionId),
+                        !contact.isBlocked
+                    else { return }
+                    
+                    try? contact
+                        .with(
+                            isApproved: false,
+                            isBlocked: true
+                        )
+                        .save(db)
                 },
-                completion: {
-                    // Force a config sync
-                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                completion: { db, _ in
+                    Storage.write(
+                        with: { transaction in
+                            Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
+                            
+                            // Delete all thread content
+                            thread.removeAllThreadInteractions(with: transaction)
+                            thread.remove(with: transaction)
+                        },
+                        completion: {
+                            // Force a config sync
+                            // TODO: This might crash due to a "wrong thread" error
+                            MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                        }
+                    )
                 }
             )
         })

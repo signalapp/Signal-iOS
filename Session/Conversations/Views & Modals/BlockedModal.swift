@@ -1,3 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import GRDB
+import SessionUIKit
+import SessionUtilitiesKit
 import SessionMessagingKit
 
 final class BlockedModal: Modal {
@@ -19,7 +25,7 @@ final class BlockedModal: Modal {
     
     override func populateContentView() {
         // Name
-        let name = Storage.shared.getContact(with: publicKey)?.displayName(for: .regular) ?? publicKey
+        let name = Profile.displayName(for: publicKey)
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
@@ -66,17 +72,15 @@ final class BlockedModal: Modal {
     @objc private func unblock() {
         let publicKey: String = self.publicKey
         
-        Storage.shared.write(
-            with: { transaction in
-                guard let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
-                    return
-                }
-                
-                contact.isBlocked = false
-                Storage.shared.setContact(contact, using: transaction as Any)
+        GRDBStorage.shared.writeAsync(
+            updates: { db in
+                try? Contact
+                    .fetchOne(db, id: publicKey)?
+                    .with(isBlocked: true)
+                    .update(db)
             },
-            completion: {
-                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+            completion: { db, _ in
+                MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
         )
         

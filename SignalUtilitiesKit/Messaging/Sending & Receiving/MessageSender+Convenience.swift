@@ -1,3 +1,7 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import PromiseKit
 import SessionUtilitiesKit
 
@@ -106,23 +110,31 @@ extension MessageSender {
         return promise
     }
     
-    public static func syncConfiguration(forceSyncNow: Bool = true) -> Promise<Void> {
-        let (promise, seal) = Promise<Void>.pending()
-        let destination: Message.Destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey())
+    /// This method requires the `db` value to be passed in because if it's called within a `writeAsync` completion block
+    /// it will throw a "re-entrant" fatal error when attempting to write again
+    public static func syncConfiguration(_ db: Database, forceSyncNow: Bool = true) -> Promise<Void> {
+        // If we don't have a userKeyPair yet then there is no need to sync the configuration
+        // as the user doesn't exist yet (this will get triggered on the first launch of a
+        // fresh install due to the migrations getting run)
+        guard Identity.userExists(db) else {
+            return Promise(error: GRDBStorageError.generic)
+        }
         
-        // Note: SQLite only supports a single write thread so we can be sure this will retrieve the most up-to-date data
+        let destination: Message.Destination = Message.Destination.contact(publicKey: getUserHexEncodedPublicKey(db))
+        
+        guard let configurationMessage = try? ConfigurationMessage.getCurrent(db) else {
+            return Promise(error: GRDBStorageError.generic)
+        }
+        
+        let (promise, seal) = Promise<Void>.pending()
+        
         Storage.writeSync { transaction in
-            guard Storage.shared.getUser(using: transaction)?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
-                seal.fulfill(())
-                return
-            }
-            
             if forceSyncNow {
-                MessageSender.send(configurationMessage, to: destination, using: transaction).done {
-                    seal.fulfill(())
-                }.catch { _ in
-                    seal.fulfill(()) // Fulfill even if this failed; the configuration in the swarm should be at most 2 days old
-                }.retainUntilComplete()
+                MessageSender
+                    .send(configurationMessage, to: destination, using: transaction)
+                    .done { seal.fulfill(()) }
+                    .catch { _ in seal.reject(GRDBStorageError.generic) }
+                    .retainUntilComplete()
             }
             else {
                 let job = MessageSendJob(message: configurationMessage, destination: destination)
@@ -138,6 +150,8 @@ extension MessageSender {
 extension MessageSender {
     @objc(forceSyncConfigurationNow)
     public static func objc_forceSyncConfigurationNow() {
-        return syncConfiguration(forceSyncNow: true).retainUntilComplete()
+        GRDBStorage.shared.write { db in
+            syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+        }
     }
 }

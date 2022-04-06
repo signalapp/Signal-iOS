@@ -4,8 +4,11 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-enum GRDBStorageError: Error {  // TODO: Rename to `StorageError`
+public enum GRDBStorageError: Error {  // TODO: Rename to `StorageError`
+    case generic
+    case migrationFailed
     case invalidKeySpec
+    case decodingFailed
 }
 
 // TODO: Protocol for storage (just need to have 'read' and 'write' methods and mock 'Database'?

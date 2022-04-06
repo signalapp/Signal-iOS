@@ -2,7 +2,10 @@
 
 import Foundation
 import Sodium
+import GRDB
+import Curve25519Kit
 import SessionUtilitiesKit
+import SessionMessagingKit
 
 enum Onboarding {
     
@@ -14,11 +17,13 @@ enum Onboarding {
             Identity.store(seed: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
             let x25519PublicKey = x25519KeyPair.hexEncodedPublicKey
             TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = x25519PublicKey
-            Storage.writeSync { transaction in
-                let user = Contact(sessionID: x25519PublicKey)
-                user.isApproved = true
-                user.didApproveMe = true
-                Storage.shared.setContact(user, using: transaction)
+            GRDBStorage.shared.write { db in
+                try Contact(id: x25519PublicKey)
+                    .with(
+                        isApproved: true,
+                        didApproveMe: true
+                    )
+                    .save(db)
             }
             
             switch self {

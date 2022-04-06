@@ -1,3 +1,4 @@
+import SessionUtilitiesKit
 
 final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     private var unloadContent: (() -> Void)?
@@ -351,11 +352,14 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 stackView.pin(to: snContentView, withInset: inset)
             }
         case .mediaMessage:
-            if viewItem.interaction is TSIncomingMessage,
+            if
+                viewItem.interaction is TSIncomingMessage,
                 let thread = thread as? TSContactThread,
-                Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
+                let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
+                contact?.isTrusted != true {
                 showMediaPlaceholder()
-            } else {
+            }
+            else {
                 guard let cache = delegate?.getMediaCache() else { preconditionFailure() }
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])
@@ -385,11 +389,14 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 stackView.pin(to: snContentView)
             }
         case .audio:
-            if viewItem.interaction is TSIncomingMessage,
+            if
+                viewItem.interaction is TSIncomingMessage,
                 let thread = thread as? TSContactThread,
-                Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
+                let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
+                contact?.isTrusted != true {
                 showMediaPlaceholder()
-            } else {
+            }
+            else {
                 let voiceMessageView = VoiceMessageView(viewItem: viewItem)
                 snContentView.addSubview(voiceMessageView)
                 voiceMessageView.pin(to: snContentView)
@@ -397,11 +404,14 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 viewItem.lastAudioMessageView = voiceMessageView
             }
         case .genericAttachment:
-            if viewItem.interaction is TSIncomingMessage,
+            if
+                viewItem.interaction is TSIncomingMessage,
                 let thread = thread as? TSContactThread,
-                Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
+                let contact: Contact? = GRDBStorage.shared.read({ db in try Contact.fetchOne(db, id: thread.contactSessionID()) }),
+                contact?.isTrusted != true {
                 showMediaPlaceholder()
-            } else {
+            }
+            else {
                 let inset: CGFloat = 12
                 let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
                 // Stack view

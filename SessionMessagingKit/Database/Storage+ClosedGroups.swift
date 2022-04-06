@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import Sodium
 import Curve25519Kit
 
 extension Storage {
@@ -13,12 +14,18 @@ extension Storage {
     private static let closedGroupFormationTimestampCollection = "SNClosedGroupFormationTimestampCollection"
     private static let closedGroupZombieMembersCollection = "SNClosedGroupZombieMembersCollection"
 
-    public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [ECKeyPair] {
+    public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String) -> [Box.KeyPair] {
         var result: [ECKeyPair] = []
         Storage.read { transaction in
             result = self.getClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction)
         }
         return result
+            .map { keyPair -> Box.KeyPair in
+                Box.KeyPair(
+                    publicKey: keyPair.publicKey.bytes,
+                    secretKey: keyPair.privateKey.bytes
+                )
+            }
     }
     
     public func getClosedGroupEncryptionKeyPairs(for groupPublicKey: String, using transaction: YapDatabaseReadTransaction) -> [ECKeyPair] {
@@ -31,7 +38,7 @@ extension Storage {
         return timestampsAndKeyPairs.sorted { $0.timestamp < $1.timestamp }.map { $0.keyPair }
     }
 
-    public func getLatestClosedGroupEncryptionKeyPair(for groupPublicKey: String) -> ECKeyPair? {
+    public func getLatestClosedGroupEncryptionKeyPair(for groupPublicKey: String) -> Box.KeyPair? {
         return getClosedGroupEncryptionKeyPairs(for: groupPublicKey).last
     }
     
@@ -39,10 +46,14 @@ extension Storage {
         return getClosedGroupEncryptionKeyPairs(for: groupPublicKey, using: transaction).last
     }
 
-    public func addClosedGroupEncryptionKeyPair(_ keyPair: ECKeyPair, for groupPublicKey: String, using transaction: Any) {
+    public func addClosedGroupEncryptionKeyPair(_ keyPair: Box.KeyPair, for groupPublicKey: String, using transaction: Any) {
+        let ecKeyPair: ECKeyPair = try! ECKeyPair(
+            publicKeyData: Data(keyPair.publicKey),
+            privateKeyData: Data(keyPair.secretKey)
+        )
         let collection = Storage.getClosedGroupEncryptionKeyPairCollection(for: groupPublicKey)
         let timestamp = String(Date().timeIntervalSince1970)
-        (transaction as! YapDatabaseReadWriteTransaction).setObject(keyPair, forKey: timestamp, inCollection: collection)
+        (transaction as! YapDatabaseReadWriteTransaction).setObject(ecKeyPair, forKey: timestamp, inCollection: collection)
     }
 
     public func removeAllClosedGroupEncryptionKeyPairs(for groupPublicKey: String, using transaction: Any) {

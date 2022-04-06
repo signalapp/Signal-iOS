@@ -36,8 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SSKEnvironment : NSObject
 
-- (instancetype)initWithProfileManager:(id<ProfileManagerProtocol>)profileManager
-                        primaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
                       tsAccountManager:(TSAccountManager *)tsAccountManager
                disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
                     readReceiptManager:(OWSReadReceiptManager *)readReceiptManager

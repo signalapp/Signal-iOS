@@ -59,7 +59,7 @@ NSString *const TSContactThreadPrefix = @"c";
 
 - (BOOL)isMessageRequest {
     NSString *sessionID = self.contactSessionID;
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
+    SMKContact *contact = [SMKContact fetchOrCreateWithId: sessionID];
     
     return (
         self.shouldBeVisible &&
@@ -72,7 +72,7 @@ NSString *const TSContactThreadPrefix = @"c";
 
 - (BOOL)isMessageRequestUsingTransaction:(YapDatabaseReadTransaction *)transaction {
     NSString *sessionID = self.contactSessionID;
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID using:transaction];
+    SMKContact *contact = [SMKContact fetchOrCreateWithId: sessionID];
     
     return (
         self.shouldBeVisible &&
@@ -85,14 +85,14 @@ NSString *const TSContactThreadPrefix = @"c";
 
 - (BOOL)isBlocked {
     NSString *sessionID = self.contactSessionID;
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
+    SMKContact *contact = [SMKContact fetchOrCreateWithId: sessionID];
     
     return (contact.isBlocked == YES);
 }
 
 - (BOOL)isBlockedUsingTransaction:(YapDatabaseReadTransaction *)transaction {
     NSString *sessionID = self.contactSessionID;
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID using:transaction];
+    SMKContact *contact = [SMKContact fetchOrCreateWithId: sessionID];
     
     return (contact.isBlocked == YES);
 }
@@ -105,15 +105,13 @@ NSString *const TSContactThreadPrefix = @"c";
 - (NSString *)name
 {
     NSString *sessionID = self.contactSessionID;
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
-    return [contact displayNameFor:SNContactContextRegular] ?: sessionID;
+    return [SMKProfile displayNameWithId:sessionID];
 }
 
 - (NSString *)nameWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSString *sessionID = self.contactSessionID;
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID using:transaction];
-    return [contact displayNameFor:SNContactContextRegular] ?: sessionID;
+    return [SMKProfile displayNameWithId:sessionID];
 }
 
 + (NSString *)threadIDFromContactSessionID:(NSString *)contactSessionID {

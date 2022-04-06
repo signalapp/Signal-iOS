@@ -1,8 +1,7 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import SignalCoreKit
 
 @objc(OWSTypingIndicatorInteraction)
 public class TypingIndicatorInteraction: TSInteraction {

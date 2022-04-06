@@ -144,7 +144,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
 - (void)setExpiresInSeconds:(uint32_t)expiresInSeconds
 {
-    uint32_t maxExpirationDuration = [OWSDisappearingMessagesConfiguration maxDurationSeconds];
+    uint32_t maxExpirationDuration = [SMKDisappearingMessagesConfiguration maxDurationSeconds];
 
     _expiresInSeconds = MIN(expiresInSeconds, maxExpirationDuration);
     [self updateExpiresAt];
