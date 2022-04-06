@@ -377,14 +377,15 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     }
 
     private static func jobInfo(forJob job: IncomingGroupsV2MessageJob,
-                         transaction: SDSAnyReadTransaction) -> IncomingGroupsV2MessageJobInfo {
+                                transaction: SDSAnyReadTransaction) -> IncomingGroupsV2MessageJobInfo {
         var jobInfo = IncomingGroupsV2MessageJobInfo(job: job)
         guard let envelope = job.envelope else {
             owsFailDebug("Missing envelope.")
             return jobInfo
         }
         jobInfo.envelope = envelope
-        guard let groupContext = GroupsV2MessageProcessor.groupContextV2(forEnvelope: envelope, plaintextData: job.plaintextData) else {
+        guard let plaintextData = job.plaintextData,
+              let groupContext = GroupsV2MessageProcessor.groupContextV2(fromPlaintextData: plaintextData) else {
             owsFailDebug("Missing group context.")
             return jobInfo
         }
@@ -916,17 +917,16 @@ public class GroupsV2MessageProcessor: NSObject {
 
     @objc
     public func enqueue(envelopeData: Data,
-                        plaintextData: Data?,
-                        envelope: SSKProtoEnvelope,
+                        plaintextData: Data,
                         wasReceivedByUD: Bool,
                         serverDeliveryTimestamp: UInt64,
                         transaction: SDSAnyWriteTransaction) {
-        guard envelopeData.count > 0 else {
+        guard !envelopeData.isEmpty else {
             owsFailDebug("Empty envelope.")
             return
         }
 
-        guard let groupId = groupId(forEnvelope: envelope, plaintextData: plaintextData) else {
+        guard let groupId = groupId(fromPlaintextData: plaintextData) else {
             owsFailDebug("Missing or invalid group id")
             return
         }
@@ -951,12 +951,10 @@ public class GroupsV2MessageProcessor: NSObject {
         }
     }
 
-    private func groupId(forEnvelope envelope: SSKProtoEnvelope,
-                         plaintextData: Data?) -> Data? {
-        guard let groupContext = GroupsV2MessageProcessor.groupContextV2(forEnvelope: envelope,
-                                                                         plaintextData: plaintextData) else {
-                                                                            owsFailDebug("Invalid envelope.")
-                                                                            return nil
+    private func groupId(fromPlaintextData plaintextData: Data) -> Data? {
+        guard let groupContext = GroupsV2MessageProcessor.groupContextV2(fromPlaintextData: plaintextData) else {
+            owsFailDebug("Invalid content.")
+            return nil
         }
         do {
             let groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
@@ -968,10 +966,8 @@ public class GroupsV2MessageProcessor: NSObject {
     }
 
     @objc
-    public class func isGroupsV2Message(envelope: SSKProtoEnvelope?,
-                                        plaintextData: Data?) -> Bool {
-        return groupContextV2(forEnvelope: envelope,
-                              plaintextData: plaintextData) != nil
+    public class func isGroupsV2Message(plaintextData: Data) -> Bool {
+        return groupContextV2(fromPlaintextData: plaintextData) != nil
     }
 
     @objc
@@ -1028,16 +1024,8 @@ public class GroupsV2MessageProcessor: NSObject {
     }
 
     @objc
-    public class func groupContextV2(forEnvelope envelope: SSKProtoEnvelope?,
-                                     plaintextData: Data?) -> SSKProtoGroupContextV2? {
-        guard let envelope = envelope else {
-            return nil
-        }
-        guard let plaintextData = plaintextData,
-            plaintextData.count > 0 else {
-                return nil
-        }
-        guard envelope.content != nil else {
+    public class func groupContextV2(fromPlaintextData plaintextData: Data) -> SSKProtoGroupContextV2? {
+        guard !plaintextData.isEmpty else {
             return nil
         }
 

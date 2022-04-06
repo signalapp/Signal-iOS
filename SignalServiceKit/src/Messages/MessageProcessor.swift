@@ -333,10 +333,9 @@ public class MessageProcessor: NSObject {
                 case processNow(shouldDiscardVisibleMessages: Bool)
             }
             let processingStep = { () -> ProcessingStep in
-                guard let groupContextV2 = GroupsV2MessageProcessor.groupContextV2(
-                    forEnvelope: envelope,
-                    plaintextData: result.plaintextData
-                ) else {
+                guard let plaintextData = result.plaintextData,
+                      let groupContextV2 =
+                        GroupsV2MessageProcessor.groupContextV2(fromPlaintextData: plaintextData) else {
                     // Non-v2-group messages can be processed immediately.
                     return .processNow(shouldDiscardVisibleMessages: false)
                 }
@@ -378,8 +377,8 @@ public class MessageProcessor: NSObject {
                 // to prevent data loss.
                 Self.groupsV2MessageProcessor.enqueue(
                     envelopeData: result.envelopeData,
-                    plaintextData: result.plaintextData,
-                    envelope: envelope,
+                    // All GV2 messages have plaintext data (because that's where the group context lives)
+                    plaintextData: result.plaintextData!,
                     wasReceivedByUD: result.wasReceivedByUD,
                     serverDeliveryTimestamp: result.serverDeliveryTimestamp,
                     transaction: transaction
