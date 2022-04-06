@@ -7,6 +7,12 @@ import UIKit
 
 class DonationReceiptViewController: OWSTableViewController2 {
     let model: DonationReceipt
+    let signalLogoView: UIImageView = {
+        let view = UIImageView()
+        view.autoSetDimensions(to: CGSize(width: 100, height: 31))
+        view.contentMode = .scaleAspectFit
+        return view
+    }()
 
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -26,6 +32,21 @@ class DonationReceiptViewController: OWSTableViewController2 {
         title = NSLocalizedString("DONATION_RECEIPT_DETAILS", comment: "Title on the view where you can see a single receipt")
 
         updateTableContents()
+        updateSignalLogoImage()
+    }
+
+    override func themeDidChange() {
+        super.themeDidChange()
+        updateSignalLogoImage()
+    }
+
+    private func updateSignalLogoImage() {
+        let signalLogoImage = UIImage(named: "signal-full-logo")
+        if Theme.isDarkThemeEnabled {
+            signalLogoView.image = signalLogoImage?.tintedImage(color: .ows_white)
+        } else {
+            signalLogoView.image = signalLogoImage
+        }
     }
 
     // MARK: - Rendering table contents
@@ -45,9 +66,10 @@ class DonationReceiptViewController: OWSTableViewController2 {
                 amountLabel.font = .preferredFont(forTextStyle: .largeTitle)
                 amountLabel.adjustsFontForContentSizeCategory = true
 
-                let content = UIStackView(arrangedSubviews: [amountLabel])
+                let content = UIStackView(arrangedSubviews: [self.signalLogoView, amountLabel])
                 content.axis = .vertical
                 content.alignment = .center
+                content.spacing = 12
 
                 let cell = OWSTableItem.newCell()
                 cell.contentView.addSubview(content)
