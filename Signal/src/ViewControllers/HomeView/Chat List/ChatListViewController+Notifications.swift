@@ -45,6 +45,10 @@ extension ChatListViewController {
                                                name: .profileWhitelistDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(otherProfileDidChange(_:)),
+                                               name: .otherUsersProfileDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(appExpiryDidChange),
                                                name: AppExpiry.AppExpiryDidChange,
                                                object: nil)
@@ -169,6 +173,25 @@ extension ChatListViewController {
 
         if let threadId = changedThreadId {
             self.loadCoordinator.scheduleLoad(updatedThreadIds: Set([threadId]))
+        }
+    }
+
+    @objc
+    private func otherProfileDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress
+
+        let changedThreadId: String? = databaseStorage.read { readTx in
+            if let address = address, address.isValid {
+                return TSContactThread.getWithContactAddress(address, transaction: readTx)?.uniqueId
+            } else {
+                return nil
+            }
+        }
+
+        if let changedThreadId = changedThreadId {
+            self.loadCoordinator.scheduleLoad(updatedThreadIds: Set([changedThreadId]))
         }
     }
 
