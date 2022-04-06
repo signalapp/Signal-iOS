@@ -234,6 +234,17 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 self.handleEndCallMessage()
             }
         }
+        self.call.hasStartedReconnecting = {
+            DispatchQueue.main.async {
+                self.callInfoLabel.text = "Reconnecting..."
+                self.callInfoLabel.isHidden = false
+            }
+        }
+        self.call.hasReconnected = {
+            DispatchQueue.main.async {
+                self.callInfoLabel.isHidden = true
+            }
+        }
     }
     
     required init(coder: NSCoder) { preconditionFailure("Use init(for:) instead.") }

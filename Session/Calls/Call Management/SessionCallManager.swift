@@ -129,7 +129,7 @@ public final class SessionCallManager: NSObject {
         let message = CallMessage()
         message.uuid = offerMessage.uuid
         message.kind = .endCall
-        SNLog("[Calls] Sending end call message.")
+        SNLog("[Calls] Sending end call message because there is an ongoing call.")
         MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
         let infoMessage = TSInfoMessage.from(offerMessage, associatedWith: thread)
         infoMessage.save(with: transaction)

@@ -118,6 +118,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     var hasConnectedDidChange: (() -> Void)?
     var hasEndedDidChange: (() -> Void)?
     var remoteVideoStateDidChange: ((Bool) -> Void)?
+    var hasStartedReconnecting: (() -> Void)?
+    var hasReconnected: (() -> Void)?
     
     // MARK: Derived Properties
     var hasStartedConnecting: Bool {
@@ -172,6 +174,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     func reportIncomingCallIfNeeded(completion: @escaping (Error?) -> Void) {
         guard case .answer = mode else { return }
+        setupTimeoutTimer()
         AppEnvironment.shared.callManager.reportIncomingCall(self, callerName: contactName) { error in
             completion(error)
         }
@@ -282,8 +285,12 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     // MARK: Delegate
     public func webRTCIsConnected() {
+        self.invalidateTimeoutTimer()
         self.reconnectTimer?.invalidate()
-        guard !self.hasConnected else { return }
+        guard !self.hasConnected else {
+            hasReconnected?()
+            return
+        }
         self.hasConnected = true
         self.answerCallAction?.fulfill()
     }
@@ -312,6 +319,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     }
     
     public func reconnectIfNeeded() {
+        setupTimeoutTimer()
+        hasStartedReconnecting?()
         guard isOutgoing else { return }
         tryToReconnect()
     }
@@ -331,7 +340,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     // MARK: Timeout
     public func setupTimeoutTimer() {
-        timeOutTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: 30, repeats: false) { _ in
+        invalidateTimeoutTimer()
+        let timeInterval: TimeInterval = hasConnected ? 60 : 30
+        timeOutTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: timeInterval, repeats: false) { _ in
             self.didTimeout = true
             AppEnvironment.shared.callManager.endCall(self) { error in
                 self.timeOutTimer = nil

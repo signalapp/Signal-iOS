@@ -120,7 +120,6 @@ extension AppDelegate {
                     self.dismissAllCallUI()
                     AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .answeredElsewhere)
                 } else {
-                    call.invalidateTimeoutTimer()
                     call.hasStartedConnecting = true
                     let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
                     call.didReceiveRemoteSDP(sdp: sdp)
