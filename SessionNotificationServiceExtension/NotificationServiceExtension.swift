@@ -76,7 +76,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         if !SSKPreferences.areCallsEnabled {
                             if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), thread.hasOutgoingInteraction(with: transaction) {
                                 let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
-                                infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                                infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
                             }
                             break
                         }

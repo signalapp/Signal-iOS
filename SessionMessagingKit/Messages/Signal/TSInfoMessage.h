@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, TSInfoMessageCallState) {
     TSInfoMessageCallStateIncoming,
     TSInfoMessageCallStateOutgoing,
     TSInfoMessageCallStateMissed,
+    TSInfoMessageCallStatePermissionDenied,
     TSInfoMessageCallStateUnknown
 };
 

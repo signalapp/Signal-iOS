@@ -121,6 +121,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
             case TSInfoMessageCallStateOutgoing:
                 return [NSString stringWithFormat:NSLocalizedString(@"call_outgoing", @""), name];
             case TSInfoMessageCallStateMissed:
+            case TSInfoMessageCallStatePermissionDenied:
                 return [NSString stringWithFormat:NSLocalizedString(@"call_missed", @""), name];
             default:
                 break;

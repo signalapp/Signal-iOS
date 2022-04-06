@@ -81,7 +81,7 @@ extension AppDelegate {
             }
             guard SSKPreferences.areCallsEnabled else {
                 let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
-                infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
                 let contactName = Storage.shared.getContact(with: message.sender!, using: transaction)?.displayName(for: Contact.Context.regular) ?? message.sender!
                 DispatchQueue.main.async {
                     self.showMissedCallTipsIfNeeded(caller: contactName)

@@ -1,11 +1,17 @@
 import UIKit
+import SessionMessagingKit
 
 final class CallMessageCell : MessageCell {
-    private lazy var iconImageViewWidthConstraint = iconImageView.set(.width, to: CallMessageCell.iconSize)
-    private lazy var iconImageViewHeightConstraint = iconImageView.set(.height, to: CallMessageCell.iconSize)
+    private lazy var iconImageViewWidthConstraint = iconImageView.set(.width, to: 0)
+    private lazy var iconImageViewHeightConstraint = iconImageView.set(.height, to: 0)
+    
+    private lazy var infoImageViewWidthConstraint = infoImageView.set(.width, to: 0)
+    private lazy var infoImageViewHeightConstraint = infoImageView.set(.height, to: 0)
     
     // MARK: UI Components
     private lazy var iconImageView = UIImageView()
+    
+    private lazy var infoImageView = UIImageView(image: UIImage(named: "ic_info")?.withTint(Colors.text))
     
     private lazy var timestampLabel: UILabel = {
         let result = UILabel()
@@ -35,6 +41,9 @@ final class CallMessageCell : MessageCell {
         result.addSubview(iconImageView)
         iconImageView.autoVCenterInSuperview()
         iconImageView.pin(.left, to: .left, of: result, withInset: CallMessageCell.inset)
+        result.addSubview(infoImageView)
+        infoImageView.autoVCenterInSuperview()
+        infoImageView.pin(.right, to: .right, of: result, withInset: -CallMessageCell.inset)
         return result
     }()
     
@@ -66,6 +75,12 @@ final class CallMessageCell : MessageCell {
         stackView.pin(.bottom, to: .bottom, of: self, withInset: -CallMessageCell.inset)
     }
     
+    override func setUpGestureRecognizers() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        addGestureRecognizer(tapGestureRecognizer)
+    }
+    
     // MARK: Updating
     override func update() {
         guard let message = viewItem?.interaction as? TSInfoMessage, message.messageType == .call else { return }
@@ -73,14 +88,17 @@ final class CallMessageCell : MessageCell {
         switch message.callState {
         case .outgoing: icon = UIImage(named: "CallOutgoing")?.withTint(Colors.text)
         case .incoming: icon = UIImage(named: "CallIncoming")?.withTint(Colors.text)
-        case .missed: icon = UIImage(named: "CallMissed")?.withTint(Colors.destructive)
+        case .missed, .permissionDenied: icon = UIImage(named: "CallMissed")?.withTint(Colors.destructive)
         default: icon = nil
         }
-        if let icon = icon {
-            iconImageView.image = icon
-        }
+        iconImageView.image = icon
         iconImageViewWidthConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
         iconImageViewHeightConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
+        
+        let shouldShowInfoIcon = message.callState == .permissionDenied && !SSKPreferences.areCallsEnabled
+        infoImageViewWidthConstraint.constant = shouldShowInfoIcon ? CallMessageCell.iconSize : 0
+        infoImageViewHeightConstraint.constant = shouldShowInfoIcon ? CallMessageCell.iconSize : 0
+        
         Storage.read { transaction in
             self.label.text = message.previewText(with: transaction)
         }
@@ -89,4 +107,13 @@ final class CallMessageCell : MessageCell {
         let description = DateUtil.formatDate(forDisplay: date)
         timestampLabel.text = description
     }
+    
+    @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
+        guard let viewItem = viewItem, let message = viewItem.interaction as? TSInfoMessage, message.messageType == .call else { return }
+        let shouldBeTappable = message.callState == .permissionDenied && !SSKPreferences.areCallsEnabled
+        if shouldBeTappable {
+            delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)
+        }
+    }
+
 }

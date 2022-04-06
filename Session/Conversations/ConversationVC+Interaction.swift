@@ -539,7 +539,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             modal.modalTransitionStyle = .crossDissolve
             present(modal, animated: true, completion: nil)
         }
-        if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
+        if let message = viewItem.interaction as? TSInfoMessage, message.messageType == .call {
+            let caller = (thread as! TSContactThread).name()
+            let callMissedTipsModal = CallMissedTipsModal(caller: caller)
+            present(callMissedTipsModal, animated: true, completion: nil)
+        } else if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
             // Show the failed message sheet
             showFailedMessageSheet(for: message)
         } else {

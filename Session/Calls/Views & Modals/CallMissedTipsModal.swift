@@ -29,7 +29,7 @@ final class CallMissedTipsModal : Modal {
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = NSLocalizedString("modal_call_missed_tips_title", comment: "")
         titleLabel.textAlignment = .center
         // Message
