@@ -184,6 +184,15 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         return result
     }()
     
+    private lazy var callDurationLabel: UILabel = {
+        let result = UILabel()
+        result.isHidden = true
+        result.textColor = .white
+        result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.textAlignment = .center
+        return result
+    }()
+    
     // MARK: Lifecycle
     init(for call: SessionCall) {
         self.call = call
@@ -225,6 +234,8 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 self.durationTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                     self.updateDuration()
                 }
+                self.callInfoLabel.isHidden = true
+                self.callDurationLabel.isHidden = false
             }
         }
         self.call.hasEndedDidChange = {
@@ -236,13 +247,15 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         }
         self.call.hasStartedReconnecting = {
             DispatchQueue.main.async {
-                self.callInfoLabel.text = "Reconnecting..."
                 self.callInfoLabel.isHidden = false
+                self.callDurationLabel.isHidden = true
+                self.callInfoLabel.text = "Reconnecting..."
             }
         }
         self.call.hasReconnected = {
             DispatchQueue.main.async {
                 self.callInfoLabel.isHidden = true
+                self.callDurationLabel.isHidden = false
             }
         }
     }
@@ -322,8 +335,11 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         callInfoLabelContainer.pin(.bottom, to: .bottom, of: profilePictureContainer)
         callInfoLabelContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: view)
         callInfoLabelContainer.addSubview(callInfoLabel)
+        callInfoLabelContainer.addSubview(callDurationLabel)
         callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
         callInfoLabel.center(in: callInfoLabelContainer)
+        callDurationLabel.translatesAutoresizingMaskIntoConstraints = false
+        callDurationLabel.center(in: callInfoLabelContainer)
     }
     
     private func addLocalVideoView() {
@@ -391,6 +407,8 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     
     func handleEndCallMessage() {
         SNLog("[Calls] Ending call.")
+        self.callInfoLabel.isHidden = false
+        self.callDurationLabel.isHidden = true
         callInfoLabel.text = "Call Ended"
         UIView.animate(withDuration: 0.25) {
             self.remoteVideoView.alpha = 0
@@ -429,7 +447,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     @objc private func updateDuration() {
-        callInfoLabel.text = String(format: "%.2d:%.2d", duration/60, duration%60)
+        callDurationLabel.text = String(format: "%.2d:%.2d", duration/60, duration%60)
         duration += 1
     }
     
@@ -522,11 +540,11 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     @objc private func handleRemoteVieioViewTapped(gesture: UITapGestureRecognizer) {
-        let isHidden = callInfoLabel.alpha < 0.5
+        let isHidden = callDurationLabel.alpha < 0.5
         UIView.animate(withDuration: 0.5) {
             self.operationPanel.alpha = isHidden ? 1 : 0
             self.responsePanel.alpha = isHidden ? 1 : 0
-            self.callInfoLabel.alpha = isHidden ? 1 : 0
+            self.callDurationLabel.alpha = isHidden ? 1 : 0
         }
     }
 }
