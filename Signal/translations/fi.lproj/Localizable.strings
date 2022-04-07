@@ -586,8 +586,17 @@
 /* notification body */
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Saapuva äänipuhelu…";
 
-/* notification body */
+/* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+
+/* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Vastaamaton äänipuhelu";
+
+/* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+
+/* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Soita puheluita ja lähetä ääniviestejä sallimalla mikrofonin käyttö iOS:n asetuksissa.";
@@ -619,8 +628,17 @@
 /* notification body */
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Saapuva videopuhelu…";
 
-/* notification body */
+/* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+
+/* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Vastaamaton videopuhelu";
+
+/* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+
+/* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Vastaa ilman videota";
@@ -785,7 +803,7 @@
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Et voi enää lähettää tai vastaanottaa viestejä tässä ryhmässä.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Haluatko varmasti poistua?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Poistutaanko ryhmästä?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Yhdistä uusi laite";
@@ -986,7 +1004,7 @@
 "CONTEXT_MENU_DETAILS" = "Tietoja";
 
 /* Context menu button title */
-"CONTEXT_MENU_FORWARD_MESSAGE" = "Välittäminen";
+"CONTEXT_MENU_FORWARD_MESSAGE" = "Välitä";
 
 /* Context menu button title */
 "CONTEXT_MENU_REPLY" = "Vastaa";
@@ -1235,7 +1253,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Valitse, kuka voi lähettää viestejä ja aloittaa puheluja ryhmässä.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Lähetä viestejä";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Viestien lähettäminen";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Vain ylläpitäjät";
@@ -1442,7 +1460,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Pysäytä siirto";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Tämän ikkunan sulkeminen pysäyttää käynnissä olevan siirron. Haluatko varmasti jatkaa?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Ikkunan sulkeminen pysäyttää käynnissä olevan siirron. Jatketaanko?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Pysäytetäänkö siirto?";
@@ -1886,7 +1904,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Lisää viesti";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Edelleenlähetys kohteeseen";
+"FORWARD_MESSAGE_TITLE" = "Valitse vastaanottaja";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Keskustelussa ei ole vielä yhtään mediatiedostoa.";
@@ -2951,10 +2969,10 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Arkisto";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Valitse keskustelut";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Valitse keskusteluja";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
-"HOME_VIEW_TOOLBAR_READ_ALL" = "Lue kaikki";
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Merkitse luetuiksi";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Sumenna piirtämällä kohdan päällä";
@@ -3224,7 +3242,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tämä viesti poistetaan kaikilta keskustelussa olevilta, jos he käyttävät Signalin uusinta versiota. He näkevät, että poistit viestin.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Keneltä haluat poistaa tämän viestin?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Keneltä viesti poistetaan?";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "Poista minulta";
@@ -3305,7 +3323,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "Lähetysaika kopioitu";
 
 /* Title for the 'sent from' section on the 'message details' view. */
-"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "Lähetetty käyttäjältä";
+"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "Lähettäjä";
 
 /* Label for file size of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Tiedoston koko";
@@ -4751,7 +4769,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Vahvistus epäonnistui";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Syöttämäsi numerot eivät vastaa lähettämäämme koodia. Haluatko tarkistaa vielä uudelleen?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Syötetyt numerot eivät vastaa lähetettyä koodia. Yritetäänkö uudelleen?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Virheellinen rekisteröintieston tunnusluku.";
@@ -5027,7 +5045,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Yhdistyskoodia ei voitu noutaa";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Jotta laitteen voi liittää toiseen tiliin, se täytyy palauttaa oletusasetuksiin. Haluatko varmasti poistaa kaiken toimintahistorian (viestit, liitteet, puhelut jne.)? Toimintoa ei ovi kumota.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Laitteen liittäminen toiseen tiliin edellyttää laitteen asetusten nollaamista. Poistetaanko kaikki toimintohistoria, kuten viestit, tiedostot ja puhelut? Toimintoa ei voi perua.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Poista kaikki";
@@ -5117,7 +5135,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Kutsutaanko kaveri suojaamattomalla tekstiviestillä?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Haluatko kutsua seuraavan numeron käyttämään Signalia:";
+"SEND_SMS_INVITE_TITLE" = "Kutsutaan seuraava numero käyttämään Signalia:";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "Korkea";
@@ -6091,11 +6109,53 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Poista";
 
+/* Text indication a story caption can be tapped to read more. */
+"STORIES_CAPTION_READ_MORE" = "Read more";
+
+/* Context menu action to copy the selected story reply */
+"STORIES_COPY_REPLY_ACTION" = "Copy";
+
+/* Context menu action to delete the selected story reply */
+"STORIES_DELETE_REPLY_ACTION" = "Delete";
+
+/* Context menu action to forward the selected story */
+"STORIES_FORWARD_STORY_ACTION" = "Forward";
+
+/* Context menu action to open the chat associated with the selected story */
+"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+
+/* Context menu action to hide the selected story */
+"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+
+/* Context menu action to privately reply to the selected story reply */
+"STORIES_PRIVATE_REPLY_ACTION" = "Private Reply";
+
+/* Context menu action to share the selected story */
+"STORIES_SHARE_STORY_ACTION" = "Share";
+
 /* Title for the stories view. */
 "STORIES_TITLE" = "Tarinat";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Avaa linkki";
+
+/* Button for replying to a story with a single existing reply. */
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+
+/* Button for replying to a story with N existing replies. {embeds the number of replies} */
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+
+/* Button for replying to a story with no existing replies. */
+"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Reply";
+
+/* Text indicating a story has been reacted to */
+"STORY_REPLY_REACTION" = "Reacted to the story";
+
+/* placeholder text for replying to a story */
+"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
+
+/* Author text when the local user author's a story reply */
+"STORY_REPLY_YOU_AUTHOR" = "You";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Kunniamerkit";
@@ -6383,7 +6443,7 @@
 "UNARCHIVE_ACTION" = "Palauta arkistosta";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Käyttäjä ei ole yhteystiedoissasi. Haluatko estää tämän käyttäjän?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Käyttäjä ei ole yhteystiedoissasi. Estetäänkö käyttäjä?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Tuntematon yhteystieto";
@@ -6608,7 +6668,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Poista kaikki taustakuvat";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Haluatko ohittaa kaikki keskustelujen vanhat värit?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Ohitetaanko kaikki keskustelujen vanhat värit?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Poista keskustelujen väri";
@@ -6632,7 +6692,7 @@
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Poista taustakuvat";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Haluatko ohittaa kaikki taustakuvat?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Ohitetaanko kaikki taustakuvat?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Poista taustakuva";

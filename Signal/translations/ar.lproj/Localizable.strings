@@ -586,8 +586,17 @@
 /* notification body */
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 مكالمة صوتية واردة...";
 
-/* notification body */
+/* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+
+/* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 مكالمة صوتية فائتة";
+
+/* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+
+/* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من خلال ‫تطبيق إعدادات iOS‬، للتمكن من إجراء مكالمات وإرسال رسائل صوتية في Signal. ";
@@ -619,8 +628,17 @@
 /* notification body */
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة واردة...";
 
-/* notification body */
+/* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+
+/* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة فائتة";
+
+/* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+
+/* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "أجِب بلا فيديو";
@@ -3122,7 +3140,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "فشل ربط الجهاز";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "هذا الجهاز سوف يتمكن من رؤية مجموعاتك وجهات اتصالك، الوصول إلى محادثاتك وإرسال الرسائل باسمك.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "سيتمكن هذا الجهاز من رؤية مجموعاتك وجهات اتصالك، والوصول إلى محادثاتك، وإرسال الرسائل باسمك.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "ربط هذا الجهاز؟";
@@ -3134,7 +3152,7 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "اِمسَح رَمز الاِستِجابَة السّريعَة الظَّاهِر عَلَى الجِهاز الَّذي تُريدُ رَبطَه.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "اِمسَح رَمزَ الاِستِجابَةِ السَّريعَة لِرَبطِ جِهَازٍ جَديد.";
+"LINK_NEW_DEVICE_SUBTITLE" = "امسح رمز الاستجابة السريعة لربط جهاز جديد.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "ربط جهاز جديد";
@@ -6091,11 +6109,53 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "إلغاء التثبيت";
 
+/* Text indication a story caption can be tapped to read more. */
+"STORIES_CAPTION_READ_MORE" = "Read more";
+
+/* Context menu action to copy the selected story reply */
+"STORIES_COPY_REPLY_ACTION" = "Copy";
+
+/* Context menu action to delete the selected story reply */
+"STORIES_DELETE_REPLY_ACTION" = "Delete";
+
+/* Context menu action to forward the selected story */
+"STORIES_FORWARD_STORY_ACTION" = "Forward";
+
+/* Context menu action to open the chat associated with the selected story */
+"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+
+/* Context menu action to hide the selected story */
+"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+
+/* Context menu action to privately reply to the selected story reply */
+"STORIES_PRIVATE_REPLY_ACTION" = "Private Reply";
+
+/* Context menu action to share the selected story */
+"STORIES_SHARE_STORY_ACTION" = "Share";
+
 /* Title for the stories view. */
 "STORIES_TITLE" = "القِصَص";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "زيارة الرابط";
+
+/* Button for replying to a story with a single existing reply. */
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+
+/* Button for replying to a story with N existing replies. {embeds the number of replies} */
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+
+/* Button for replying to a story with no existing replies. */
+"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Reply";
+
+/* Text indicating a story has been reacted to */
+"STORY_REPLY_REACTION" = "Reacted to the story";
+
+/* placeholder text for replying to a story */
+"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
+
+/* Author text when the local user author's a story reply */
+"STORY_REPLY_YOU_AUTHOR" = "You";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "شارات";
@@ -6431,7 +6491,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "لن يتمكن هذا الجهاز بعد الآن من إرسال الرسائل أو استقبالها إذا تمَّ إلغاء ربطه.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "إلغاء ربط \"%@\"؟";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "فك ارتباط \"%@\"؟";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "لم يعُد الجهاز مُرتبطًا. أعد ربط Signal مع الهاتف الخاص بك لمُتابعة التراسُل.";
@@ -6557,7 +6617,7 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "إضغَط مَعَ الاِستِمرار فِي الضَّغط لِلتَسجِيل.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "أكمل الإعداد على تطبيق Signal سَطح المَكتب.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "أكمل الإعداد على تطبيق Signal Desktop.";
 
 /* Placeholder text for header of the wallpaper mini preview */
 "WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "اسم جهة الاتصال";
