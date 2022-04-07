@@ -3976,13 +3976,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     [envelopeBuilder setSourceDevice:sourceDevice];
     envelopeBuilder.content = content;
     NSError *envelopeError;
-    NSData *_Nullable envelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeError];
-    if (envelopeError || !envelopeData) {
+    SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&envelopeError];
+    if (envelopeError || !envelope) {
         OWSFailDebug(@"Could not serialize envelope: %@.", envelopeError);
         return;
     }
 
-    [self processDecryptedEnvelopeData:envelopeData plaintextData:plaintextData];
+    [self processDecryptedEnvelope:envelope plaintextData:plaintextData];
 }
 
 + (void)performRandomActions:(NSUInteger)counter thread:(TSThread *)thread

@@ -1,6 +1,8 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
+
+import SignalServiceKit
 
 #if DEBUG
 
@@ -27,12 +29,12 @@ public extension DebugUIMessages {
         }
     }
 
-    static func processDecryptedEnvelopeData(_ envelopeData: Data,
-                                             plaintextData: Data) {
-        messageProcessor.processDecryptedEnvelopeData(envelopeData,
-                                                      plaintextData: plaintextData,
-                                                      serverDeliveryTimestamp: 0,
-                                                      wasReceivedByUD: false) { error in
+    static func processDecryptedEnvelope(_ envelope: SSKProtoEnvelope,
+                                         plaintextData: Data) {
+        messageProcessor.processDecryptedEnvelope(envelope,
+                                                  plaintextData: plaintextData,
+                                                  serverDeliveryTimestamp: 0,
+                                                  wasReceivedByUD: false) { error in
             switch error {
             case MessageProcessingError.duplicatePendingEnvelope?:
                 Logger.warn("duplicatePendingEnvelope.")

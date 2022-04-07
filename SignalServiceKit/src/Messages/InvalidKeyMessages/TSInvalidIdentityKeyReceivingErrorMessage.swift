@@ -25,7 +25,6 @@ extension TSInvalidIdentityKeyReceivingErrorMessage {
                 continue
             }
             messageProcessor.processEncryptedEnvelopeData(envelopeData,
-                                                          encryptedEnvelope: nil,
                                                           serverDeliveryTimestamp: 0,
                                                           envelopeSource: .identityChangeError) { _ in
                 // Here we remove the existing error message because handleReceivedEnvelope will
