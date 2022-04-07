@@ -313,7 +313,13 @@ public class AccountManager: NSObject {
                                                               authKey: serverAuthToken,
                                                               encryptedDeviceName: encryptedDeviceName)
         }.done { (response: VerifySecondaryDeviceResponse) in
-            owsAssertDebug(self.tsAccountManager.pniAwaitingVerification == response.pni)
+            if let pniFromPrimary = self.tsAccountManager.pniAwaitingVerification {
+                if pniFromPrimary != response.pni {
+                    throw OWSAssertionError("primary PNI is out of sync with the server")
+                }
+            } else {
+                self.tsAccountManager.pniAwaitingVerification = response.pni
+            }
 
             self.databaseStorage.write { transaction in
                 self.identityManager.storeIdentityKeyPair(provisionMessage.aciIdentityKeyPair,
