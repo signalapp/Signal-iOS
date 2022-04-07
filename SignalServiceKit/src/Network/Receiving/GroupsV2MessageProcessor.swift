@@ -400,12 +400,14 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         return jobInfo
     }
 
-    public static func discardMode(envelopeData: Data,
-                                   plaintextData: Data?,
+    public static func discardMode(forMessageFrom sourceAddress: SignalServiceAddress,
                                    groupContext: SSKProtoGroupContextV2,
-                                   wasReceivedByUD: Bool,
-                                   serverDeliveryTimestamp: UInt64,
                                    transaction: SDSAnyReadTransaction) -> DiscardMode {
+        guard groupContext.hasRevision else {
+            Logger.info("Missing revision in group context")
+            return .discard
+        }
+
         let groupContextInfo: GroupV2ContextInfo
         do {
             groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
@@ -413,16 +415,11 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             owsFailDebug("Invalid group context: \(error).")
             return .discard
         }
-        let groupId = groupContextInfo.groupId
-        let job = IncomingGroupsV2MessageJob(envelopeData: envelopeData,
-                                             plaintextData: plaintextData,
-                                             groupId: groupId,
-                                             wasReceivedByUD: wasReceivedByUD,
-                                             serverDeliveryTimestamp: serverDeliveryTimestamp)
-        let jobInfo = self.jobInfo(forJob: job, transaction: transaction)
-        return self.discardMode(forJobInfo: jobInfo,
-                                 hasGroupBeenUpdated: true,
-                                 transaction: transaction)
+
+        return self.discardMode(forMessageFrom: sourceAddress,
+                                groupContextInfo: groupContextInfo,
+                                hasGroupBeenUpdated: true,
+                                transaction: transaction)
     }
 
     public enum DiscardMode {
@@ -438,32 +435,33 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     private static func discardMode(forJobInfo jobInfo: IncomingGroupsV2MessageJobInfo,
                                     hasGroupBeenUpdated: Bool,
                                     transaction: SDSAnyReadTransaction) -> DiscardMode {
-
-        // We want to discard asap to avoid problems with batching.
         guard let envelope = jobInfo.envelope else {
             owsFailDebug("Missing envelope.")
-            return .discard
-        }
-        guard let groupContext = jobInfo.groupContext else {
-            owsFailDebug("Missing groupContext.")
             return .discard
         }
         guard let groupContextInfo = jobInfo.groupContextInfo else {
             owsFailDebug("Missing groupContextInfo.")
             return .discard
         }
-        guard let sourceAddress = envelope.sourceAddress,
-            sourceAddress.isValid else {
-                owsFailDebug("Invalid source address.")
+        guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
+            owsFailDebug("Invalid source address.")
             return .discard
         }
+        return discardMode(forMessageFrom: sourceAddress,
+                           groupContextInfo: groupContextInfo,
+                           hasGroupBeenUpdated: hasGroupBeenUpdated,
+                           transaction: transaction)
+    }
+
+    private static func discardMode(forMessageFrom sourceAddress: SignalServiceAddress,
+                                    groupContextInfo: GroupV2ContextInfo,
+                                    hasGroupBeenUpdated: Bool,
+                                    transaction: SDSAnyReadTransaction) -> DiscardMode {
+        // We want to discard asap to avoid problems with batching.
+
         guard !blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) &&
             !blockingManager.isGroupIdBlocked(groupContextInfo.groupId, transaction: transaction) else {
                 Logger.info("Discarding blocked envelope.")
-            return .discard
-        }
-        guard groupContext.hasRevision else {
-            Logger.info("Missing revision.")
             return .discard
         }
 

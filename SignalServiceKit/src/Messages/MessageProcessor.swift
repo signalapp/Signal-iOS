@@ -313,11 +313,16 @@ public class MessageProcessor: NSObject {
                 return
             }
 
+            guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
+                owsFailDebug("Successful decryption with no source address; discarding message")
+                return
+            }
+
             // Pre-processing happens during the same transaction that performed decryption
             messageManager.preprocessEnvelope(envelope: envelope, plaintext: result.plaintextData, transaction: transaction)
 
             // If the sender is in the block list, we can skip scheduling any additional processing.
-            if let sourceAddress = envelope.sourceAddress, blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) {
+            if blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) {
                 Logger.info("Skipping processing for blocked envelope: \(sourceAddress)")
 
                 let error = MessageProcessingError.blockedSender
@@ -348,14 +353,9 @@ public class MessageProcessor: NSObject {
                     // updated before they can be processed.
                     return .enqueueForGroupProcessing
                 }
-                let discardMode = GroupsMessageProcessor.discardMode(
-                    envelopeData: result.envelopeData,
-                    plaintextData: result.plaintextData,
-                    groupContext: groupContextV2,
-                    wasReceivedByUD: result.wasReceivedByUD,
-                    serverDeliveryTimestamp: result.serverDeliveryTimestamp,
-                    transaction: transaction
-                )
+                let discardMode = GroupsMessageProcessor.discardMode(forMessageFrom: sourceAddress,
+                                                                     groupContext: groupContextV2,
+                                                                     transaction: transaction)
                 if discardMode == .discard {
                     // Some v2 group messages should be discarded and not processed.
                     Logger.verbose("Discarding job.")
