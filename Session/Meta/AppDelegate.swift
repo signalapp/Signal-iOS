@@ -77,11 +77,15 @@ extension AppDelegate {
                 // Add missed call message for call offer messages from more than one minute
                 let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
                 infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
+                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
                 return
             }
             guard SSKPreferences.areCallsEnabled else {
                 let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
                 infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
+                let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
+                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
                 let contactName = Storage.shared.getContact(with: message.sender!, using: transaction)?.displayName(for: Contact.Context.regular) ?? message.sender!
                 DispatchQueue.main.async {
                     self.showMissedCallTipsIfNeeded(caller: contactName)

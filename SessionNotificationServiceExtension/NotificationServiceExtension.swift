@@ -79,6 +79,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                             if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), !thread.isMessageRequest(using: transaction) {
                                 let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
                                 infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
+                                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
                             }
                             break
                         }
@@ -92,6 +93,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                                 MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
                                 let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
                                 infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
                             }
                             break
                         }

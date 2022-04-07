@@ -105,6 +105,45 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         SNLog("Finish adding remote notification request")
     }
     
+    public func notifyUser(forIncomingCall callInfoMessage: TSInfoMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+        guard !thread.isMuted else { return }
+        guard !thread.isGroupThread() else { return } // Calls shouldn't happen in groups
+        guard let threadID = thread.uniqueId else { return }
+        guard [ .missed, .permissionDenied ].contains(callInfoMessage.callState) else { return } // Only notify missed call
+        
+        var userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
+        userInfo[NotificationServiceExtension.threadIdKey] = threadID
+        
+        let notificationContent = UNMutableNotificationContent()
+        notificationContent.userInfo = userInfo
+        notificationContent.sound = OWSSounds.notificationSound(for: thread).notificationSound(isQuiet: false)
+        
+        // Badge Number
+        let newBadgeNumber = CurrentAppContext().appUserDefaults().integer(forKey: "currentBadgeNumber") + 1
+        notificationContent.badge = NSNumber(value: newBadgeNumber)
+        CurrentAppContext().appUserDefaults().set(newBadgeNumber, forKey: "currentBadgeNumber")
+        
+        notificationContent.title = callInfoMessage.previewText(with: transaction)
+        notificationContent.body = ""
+        if callInfoMessage.callState == .permissionDenied {
+            notificationContent.body = String(format: "modal_call_missed_tips_explanation".localized(), thread.name(with: transaction))
+        }
+        
+        // Add request
+        let identifier = UUID().uuidString
+        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
+        SNLog("Add remote notification request: \(notificationContent.body)")
+        let semaphore = DispatchSemaphore(value: 0)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                SNLog("Failed to add notification request due to error:\(error)")
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
+        SNLog("Finish adding remote notification request")
+    }
+    
     public func cancelNotification(_ identifier: String) {
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [ identifier ])
