@@ -235,6 +235,7 @@ public enum PushRegistrationError: Error {
         voipTokenResolver.fulfill(pushCredentials.token)
     }
     
+    // NOTE: This function MUST report an incoming call.
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         SNLog("[Calls] Receive new voip notification.")
         owsAssertDebug(CurrentAppContext().isMainApp)

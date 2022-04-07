@@ -23,8 +23,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
 
         // Abort if the main app is running
         var isMainAppAndActive = false
+        var isCallOngoing = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
             isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+            isCallOngoing = sharedUserDefaults.bool(forKey: "isCallOngoing")
         }
         guard !isMainAppAndActive else { return self.completeSilenty() }
 
@@ -74,9 +76,22 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         MessageReceiver.handleCallMessage(callMessage, using: transaction)
                         guard case .preOffer = callMessage.kind else { return self.completeSilenty() }
                         if !SSKPreferences.areCallsEnabled {
-                            if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), thread.hasOutgoingInteraction(with: transaction) {
+                            if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), !thread.isMessageRequest(using: transaction) {
                                 let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
                                 infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
+                            }
+                            break
+                        }
+                        if isCallOngoing {
+                            if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), !thread.isMessageRequest(using: transaction) {
+                                // Handle call in busy state
+                                let message = CallMessage()
+                                message.uuid = callMessage.uuid
+                                message.kind = .endCall
+                                SNLog("[Calls] Sending end call message because there is an ongoing call.")
+                                MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
+                                let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
+                                infoMessage.updateCallInfoMessage(.missed, using: transaction)
                             }
                             break
                         }

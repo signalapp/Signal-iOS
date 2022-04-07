@@ -60,6 +60,7 @@ public final class SessionCallManager: NSObject {
     // MARK: Report calls
     public func reportOutgoingCall(_ call: SessionCall) {
         AssertIsOnMainThread()
+        UserDefaults(suiteName: "group.com.loki-project.loki-messenger")?.set(true, forKey: "isCallOngoing")
         call.stateDidChange = {
             if call.hasStartedConnecting {
                 self.provider.reportOutgoingCall(with: call.callID, startedConnectingAt: call.connectingDate)
@@ -88,6 +89,7 @@ public final class SessionCallManager: NSObject {
                 completion(error)
                 return
             }
+            UserDefaults(suiteName: "group.com.loki-project.loki-messenger")?.set(true, forKey: "isCallOngoing")
             completion(nil)
         }
     }
@@ -108,6 +110,7 @@ public final class SessionCallManager: NSObject {
         call.webRTCSession.dropConnection()
         self.currentCall = nil
         WebRTCSession.current = nil
+        UserDefaults(suiteName: "group.com.loki-project.loki-messenger")?.set(false, forKey: "isCallOngoing")
     }
     
     // MARK: Util
@@ -132,7 +135,6 @@ public final class SessionCallManager: NSObject {
         SNLog("[Calls] Sending end call message because there is an ongoing call.")
         MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
         let infoMessage = TSInfoMessage.from(offerMessage, associatedWith: thread)
-        infoMessage.save(with: transaction)
         infoMessage.updateCallInfoMessage(.missed, using: transaction)
     }
     
