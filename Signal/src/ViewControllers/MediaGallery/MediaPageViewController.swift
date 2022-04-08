@@ -154,7 +154,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // The bars might obscure part of the content, but they can easily be hidden by tapping
         // The alternative would be that content would shift when the navbars hide.
         self.extendedLayoutIncludesOpaqueBars = true
-        self.automaticallyAdjustsScrollViewInsets = false
 
         // Get reference to paged content which lives in a scrollView created by the superclass
         // We show/hide this content during presentation
