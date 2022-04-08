@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 //  Originally based on https://github.com/almassapargali/LocationPicker
@@ -7,10 +7,11 @@
 //  Created by Almas Sapargali on 7/29/15.
 //  Parts Copyright (c) 2015 almassapargali. All rights reserved.
 
-import UIKit
 import MapKit
+import Contacts
 import CoreLocation
 import CoreServices
+import UIKit
 
 @objc
 public protocol LocationPickerDelegate {
@@ -392,7 +393,7 @@ class LocationSearchResults: UITableViewController {
         let location = locations[indexPath.row]
         cell.textLabel?.text = location.name
         cell.textLabel?.textColor = Theme.primaryTextColor
-        cell.detailTextLabel?.text = location.address
+        cell.detailTextLabel?.text = location.singleLineAddress
         cell.detailTextLabel?.textColor = Theme.secondaryTextAndIconColor
         cell.backgroundColor = Theme.backgroundColor
 
@@ -413,10 +414,24 @@ public class Location: NSObject {
     public let location: CLLocation
     public let placemark: CLPlacemark
 
+    static let postalAddressFormatter = CNPostalAddressFormatter()
+
     public var address: String? {
-        guard let addressDictionary = placemark.addressDictionary,
-            let lines = addressDictionary["FormattedAddressLines"] as? [String] else { return nil }
-        return lines.joined(separator: ", ")
+        guard let postalAddress = placemark.postalAddress else {
+            return nil
+        }
+        return Location.postalAddressFormatter.string(from: postalAddress)
+    }
+
+    public var singleLineAddress: String? {
+        guard let formattedAddress = address else {
+            return nil
+        }
+        let addressLines = formattedAddress.components(separatedBy: .newlines)
+        guard #available(iOS 13, *) else {
+            return addressLines.joined(separator: ", ")
+        }
+        return ListFormatter.localizedString(byJoining: addressLines)
     }
 
     public var urlString: String {
@@ -531,10 +546,9 @@ extension Location: MKAnnotation {
     public var title: String? {
         if let name = name {
             return name
-        } else if let addressDictionary = placemark.addressDictionary,
-            let lines = addressDictionary["FormattedAddressLines"] as? [String],
-            let firstLine = lines.first {
-            return firstLine
+        } else if let postalAddress = placemark.postalAddress,
+                  let firstAddressLine = Location.postalAddressFormatter.string(from: postalAddress).components(separatedBy: .newlines).first {
+            return firstAddressLine
         } else {
             return "\(coordinate.latitude), \(coordinate.longitude)"
         }
