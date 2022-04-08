@@ -4,11 +4,31 @@
 # master. After committing to master, this script audits that all tags have been
 # reverse integrated.
 import subprocess
-from distutils.version import LooseVersion
 import logging
 import argparse
+import re
 
 # logging.basicConfig(level=logging.DEBUG)
+
+
+class Version:
+    def __init__(self, version_string):
+        self.parts = []
+        for part_string in version_string.split("."):
+            matches = re.findall("^[0-9]+", part_string)
+            if len(matches) == 0:
+                continue
+            just_digits = matches[0]
+            self.parts.append(int(just_digits))
+
+
+    def __gt__(self, other_version):
+        for part, other_part in zip(self.parts, other_version.parts):
+            if part > other_part:
+                return True
+            if part < other_part:
+                return False
+        return False
 
 
 def is_on_master():
@@ -53,7 +73,7 @@ def main():
     logging.debug("ignoring tags before epoch_tag: %s" % epoch_tag)
 
     tags_of_concern = [
-        tag for tag in unmerged_tags if LooseVersion(tag) > LooseVersion(epoch_tag)
+        tag for tag in unmerged_tags if Version(tag) > Version(epoch_tag)
     ]
 
     # Don't reverse integrate tags for adhoc builds
