@@ -155,6 +155,7 @@ def main():
         "5.13.0.14",
         "5.20.0.27-nightly",
         "5.21.0.59-beta",
+        "5.23.0.22-beta"
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
 
