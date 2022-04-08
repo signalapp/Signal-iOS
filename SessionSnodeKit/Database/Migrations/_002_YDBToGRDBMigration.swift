@@ -74,26 +74,28 @@ enum _002_YDBToGRDBMigration: Migration {
         
         // Insert the data into GRDB
         
-        db[.lastSnodePoolRefreshDate] = lastSnodePoolRefreshDate
-        
-        try snodeResult.forEach { legacySnode in
-            try Snode(
-                address: legacySnode.address,
-                port: legacySnode.port,
-                ed25519PublicKey: legacySnode.publicKeySet.ed25519Key,
-                x25519PublicKey: legacySnode.publicKeySet.x25519Key
-            ).insert(db)
-        }
-        
-        try snodeSetResult.forEach { key, legacySnodeSet in
-            try legacySnodeSet.enumerated().forEach { nodeIndex, legacySnode in
-                // Note: In this case the 'nodeIndex' is irrelivant
-                try SnodeSet(
-                    key: key,
-                    nodeIndex: nodeIndex,
+        try autoreleasepool {
+            db[.lastSnodePoolRefreshDate] = lastSnodePoolRefreshDate
+            
+            try snodeResult.forEach { legacySnode in
+                try Snode(
                     address: legacySnode.address,
-                    port: legacySnode.port
+                    port: legacySnode.port,
+                    ed25519PublicKey: legacySnode.publicKeySet.ed25519Key,
+                    x25519PublicKey: legacySnode.publicKeySet.x25519Key
                 ).insert(db)
+            }
+            
+            try snodeSetResult.forEach { key, legacySnodeSet in
+                try legacySnodeSet.enumerated().forEach { nodeIndex, legacySnode in
+                    // Note: In this case the 'nodeIndex' is irrelivant
+                    try SnodeSet(
+                        key: key,
+                        nodeIndex: nodeIndex,
+                        address: legacySnode.address,
+                        port: legacySnode.port
+                    ).insert(db)
+                }
             }
         }
         
@@ -121,22 +123,24 @@ enum _002_YDBToGRDBMigration: Migration {
             }
         }
 
-        try receivedMessageResults.forEach { key, hashes in
-            try hashes.forEach { hash in
+        try autoreleasepool {
+            try receivedMessageResults.forEach { key, hashes in
+                try hashes.forEach { hash in
+                    try SnodeReceivedMessageInfo(
+                        key: key,
+                        hash: hash,
+                        expirationDateMs: 0
+                    ).insert(db)
+                }
+            }
+            
+            try lastMessageResults.forEach { key, data in
                 try SnodeReceivedMessageInfo(
                     key: key,
-                    hash: hash,
-                    expirationDateMs: 0
+                    hash: data.hash,
+                    expirationDateMs: ((data.json["expirationDate"] as? Int64) ?? 0)
                 ).insert(db)
             }
-        }
-        
-        try lastMessageResults.forEach { key, data in
-            try SnodeReceivedMessageInfo(
-                key: key,
-                hash: data.hash,
-                expirationDateMs: ((data.json["expirationDate"] as? Int64) ?? 0)
-            ).insert(db)
         }
     }
 }

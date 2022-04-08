@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import PromiseKit
 import SessionSnodeKit
+import SessionMessagingKit
 
 @objc(LKBackgroundPoller)
 public final class BackgroundPoller : NSObject {
@@ -13,6 +17,7 @@ public final class BackgroundPoller : NSObject {
         promises = []
         promises.append(pollForMessages())
         promises.append(contentsOf: pollForClosedGroupMessages())
+        
         let v2OpenGroupServers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
         v2OpenGroupServers.forEach { server in
             let poller = OpenGroupPollerV2(for: server)

@@ -6,9 +6,13 @@ import SessionUtilitiesKit
 
 public struct SessionThread: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "thread" }
-    static let disappearingMessagesConfiguration = hasOne(DisappearingMessagesConfiguration.self)
-    static let closedGroup = hasOne(ClosedGroup.self)
-    static let openGroup = hasOne(OpenGroup.self)
+    private static let closedGroup = hasOne(ClosedGroup.self, using: ClosedGroup.threadForeignKey)
+    private static let openGroup = hasOne(OpenGroup.self, using: OpenGroup.threadForeignKey)
+    private static let disappearingMessagesConfiguration = hasOne(
+        DisappearingMessagesConfiguration.self,
+        using: DisappearingMessagesConfiguration.threadForeignKey
+    )
+    private static let interactions = hasMany(Interaction.self, using: Interaction.threadForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -29,8 +33,8 @@ public struct SessionThread: Codable, Identifiable, FetchableRecord, Persistable
     }
     
     public enum NotificationMode: Int, Codable, DatabaseValueConvertible {
-        case all
         case none
+        case all
         case mentionsOnly   // Only applicable to group threads
     }
 
@@ -43,11 +47,7 @@ public struct SessionThread: Codable, Identifiable, FetchableRecord, Persistable
     public let notificationMode: NotificationMode
     public let mutedUntilTimestamp: TimeInterval?
     
-    public var disappearingMessagesConfiguration: QueryInterfaceRequest<DisappearingMessagesConfiguration> {
-        request(for: SessionThread.disappearingMessagesConfiguration)
-    }
-    
-//    public var lastInteraction
+    // MARK: - Relationships
     
     public var closedGroup: QueryInterfaceRequest<ClosedGroup> {
         request(for: SessionThread.closedGroup)
@@ -56,4 +56,13 @@ public struct SessionThread: Codable, Identifiable, FetchableRecord, Persistable
     public var openGroup: QueryInterfaceRequest<OpenGroup> {
         request(for: SessionThread.openGroup)
     }
+    
+    public var disappearingMessagesConfiguration: QueryInterfaceRequest<DisappearingMessagesConfiguration> {
+        request(for: SessionThread.disappearingMessagesConfiguration)
+    }
+    
+    public var interactions: QueryInterfaceRequest<Interaction> {
+        request(for: SessionThread.interactions)
+    }
+    
 }

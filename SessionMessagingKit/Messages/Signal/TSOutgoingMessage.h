@@ -73,6 +73,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @interface TSOutgoingMessage : TSMessage
 
+@property (atomic, nullable) NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap;
+
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body

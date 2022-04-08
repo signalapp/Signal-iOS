@@ -753,6 +753,10 @@
 		FD09798B27FD1CFE00936362 /* Capability.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09798A27FD1CFE00936362 /* Capability.swift */; };
 		FD09798D27FD1D8900936362 /* DisappearingMessageConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09798C27FD1D8900936362 /* DisappearingMessageConfiguration.swift */; };
 		FD09799127FD499200936362 /* BoxKeyPair+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09799027FD499200936362 /* BoxKeyPair+Utilities.swift */; };
+		FD09799527FE7B8E00936362 /* Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09799227FE693200936362 /* Interaction.swift */; };
+		FD09799727FFA84A00936362 /* RecipientState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09799627FFA84900936362 /* RecipientState.swift */; };
+		FD09799927FFC1A300936362 /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09799827FFC1A300936362 /* Attachment.swift */; };
+		FD09799B27FFC82D00936362 /* Quote.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD09799A27FFC82D00936362 /* Quote.swift */; };
 		FD17D79927F40AB800122BE0 /* _002_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79827F40AB800122BE0 /* _002_YDBToGRDBMigration.swift */; };
 		FD17D79C27F40B2E00122BE0 /* SMKLegacyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */; };
 		FD17D7A027F40CC800122BE0 /* _001_InitialSetupMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D79F27F40CC800122BE0 /* _001_InitialSetupMigration.swift */; };
@@ -798,6 +802,7 @@
 		FD88BAD927A7439C00BBC442 /* MessageRequestsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */; };
 		FD88BADB27A750F200BBC442 /* MessageRequestsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */; };
 		FDC4389E27BA2B8A00C60D73 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
+		FDF0B73C27FFD3D6004C14C5 /* LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF0B73B27FFD3D6004C14C5 /* LinkPreview.swift */; };
 		FDFD645827EC1F4000808CA1 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645727EC1F4000808CA1 /* Atomic.swift */; };
 /* End PBXBuildFile section */
 
@@ -1800,6 +1805,10 @@
 		FD09798A27FD1CFE00936362 /* Capability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Capability.swift; sourceTree = "<group>"; };
 		FD09798C27FD1D8900936362 /* DisappearingMessageConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessageConfiguration.swift; sourceTree = "<group>"; };
 		FD09799027FD499200936362 /* BoxKeyPair+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BoxKeyPair+Utilities.swift"; sourceTree = "<group>"; };
+		FD09799227FE693200936362 /* Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interaction.swift; sourceTree = "<group>"; };
+		FD09799627FFA84900936362 /* RecipientState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientState.swift; sourceTree = "<group>"; };
+		FD09799827FFC1A300936362 /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
+		FD09799A27FFC82D00936362 /* Quote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quote.swift; sourceTree = "<group>"; };
 		FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _001_InitialSetupMigration.swift; sourceTree = "<group>"; };
 		FD17D79827F40AB800122BE0 /* _002_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _002_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
 		FD17D79B27F40B2E00122BE0 /* SMKLegacyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMKLegacyModels.swift; sourceTree = "<group>"; };
@@ -1845,6 +1854,7 @@
 		FD88BAD827A7439C00BBC442 /* MessageRequestsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsCell.swift; sourceTree = "<group>"; };
 		FD88BADA27A750F200BBC442 /* MessageRequestsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestsMigration.swift; sourceTree = "<group>"; };
 		FD9039443F7CB729CF71350E /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-SessionNotificationServiceExtension.debug.xcconfig"; sourceTree = "<group>"; };
+		FDF0B73B27FFD3D6004C14C5 /* LinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreview.swift; sourceTree = "<group>"; };
 		FDFD645727EC1F4000808CA1 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		FEDBAE1B98C49BBE8C87F575 /* Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit/Pods-GlobalDependencies-FrameworkAndExtensionDependencies-ExtendedDependencies-SessionUtilitiesKit.debug.xcconfig"; sourceTree = "<group>"; };
 		FF9BA33D021B115B1F5B4E46 /* Pods-SessionMessagingKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionMessagingKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SessionMessagingKit/Pods-SessionMessagingKit.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -3610,6 +3620,11 @@
 				FD09798827FD1C5A00936362 /* OpenGroup.swift */,
 				FD09798627FD1B7800936362 /* GroupMember.swift */,
 				FD09798A27FD1CFE00936362 /* Capability.swift */,
+				FD09799227FE693200936362 /* Interaction.swift */,
+				FD09799627FFA84900936362 /* RecipientState.swift */,
+				FD09799827FFC1A300936362 /* Attachment.swift */,
+				FD09799A27FFC82D00936362 /* Quote.swift */,
+				FDF0B73B27FFD3D6004C14C5 /* LinkPreview.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4842,6 +4857,7 @@
 				C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */,
 				C300A5D32554B05A00555489 /* TypingIndicator.swift in Sources */,
 				C3A3A156256E1B91004D228D /* ProtoUtils.m in Sources */,
+				FD09799927FFC1A300936362 /* Attachment.swift in Sources */,
 				C3471ECB2555356A00297E91 /* MessageSender+Encryption.swift in Sources */,
 				C352A32F2557549C00338F3E /* NotifyPNServerJob.swift in Sources */,
 				7B4C75CB26B37E0F0000AC89 /* UnsendRequest.swift in Sources */,
@@ -4860,6 +4876,7 @@
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
 				C3227FF6260AAD66006EA627 /* OpenGroupMessageV2.swift in Sources */,
 				C32C5C89256DD0D2003C73A2 /* Storage+Jobs.swift in Sources */,
+				FD09799727FFA84A00936362 /* RecipientState.swift in Sources */,
 				C300A5FC2554B0A000555489 /* MessageReceiver.swift in Sources */,
 				7B1581E2271E743B00848B49 /* OWSSounds.swift in Sources */,
 				C32C5A76256DBBCF003C73A2 /* SignalAttachment.swift in Sources */,
@@ -4872,6 +4889,7 @@
 				B8856D1A256F114D001CE70E /* ProximityMonitoringManager.swift in Sources */,
 				C3D9E52725677DF20040E4F3 /* OWSThumbnailService.swift in Sources */,
 				C32C5E75256DE020003C73A2 /* YapDatabaseTransaction+OWS.m in Sources */,
+				FDF0B73C27FFD3D6004C14C5 /* LinkPreview.swift in Sources */,
 				FD09797527FAB64300936362 /* ProfileManager.swift in Sources */,
 				C3BBE0802554CDD70050F1E3 /* Storage.swift in Sources */,
 				C3DB66AC260ACA42001EFC55 /* OpenGroupManagerV2.swift in Sources */,
@@ -4930,6 +4948,7 @@
 				C3DB66CC260AF1F3001EFC55 /* OpenGroupAPIV2+ObjC.swift in Sources */,
 				C32C5BEF256DC8EE003C73A2 /* OWSDisappearingMessagesJob.m in Sources */,
 				C34A977425A3E34A00852C71 /* ClosedGroupControlMessage.swift in Sources */,
+				FD09799527FE7B8E00936362 /* Interaction.swift in Sources */,
 				B88FA7B826045D100049422F /* OpenGroupAPIV2.swift in Sources */,
 				C32C5E97256DE0CB003C73A2 /* OWSPrimaryStorage.m in Sources */,
 				C32C5EB9256DE130003C73A2 /* OWSQuotedReplyModel+Conversion.swift in Sources */,
@@ -4958,6 +4977,7 @@
 				B8856CA8256F0F42001CE70E /* OWSBackupFragment.m in Sources */,
 				C32C5C3D256DCBAF003C73A2 /* AppReadiness.m in Sources */,
 				B87EF17126367CF800124B3C /* FileServerAPIV2.swift in Sources */,
+				FD09799B27FFC82D00936362 /* Quote.swift in Sources */,
 				C3A3A18A256E2092004D228D /* SignalRecipient.m in Sources */,
 				C3C2A74425539EB700C340D1 /* Message.swift in Sources */,
 				C32C5F11256DF79A003C73A2 /* SSKIncrementingIdFinder.swift in Sources */,

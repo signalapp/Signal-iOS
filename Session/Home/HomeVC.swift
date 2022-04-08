@@ -396,7 +396,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     @objc private func handleProfileDidChangeNotification(_ notification: Notification) {
-        tableView.reloadData() // TODO: Just reload the affected cell
+        DispatchQueue.main.async {
+            self.tableView.reloadData() // TODO: Just reload the affected cell
+        }
     }
     
     @objc private func handleLocalProfileDidChangeNotification(_ notification: Notification) {

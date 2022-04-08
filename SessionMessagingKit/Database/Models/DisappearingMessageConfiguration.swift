@@ -6,17 +6,27 @@ import SessionUtilitiesKit
 
 public struct DisappearingMessagesConfiguration: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "disappearingMessagesConfiguration" }
+    internal static let threadForeignKey = ForeignKey([Columns.threadId], to: [SessionThread.Columns.id])
+    private static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
-        case id
+        case threadId
         case isEnabled
         case durationSeconds
     }
+    
+    public var id: String { threadId }  // Identifiable
 
-    public let id: String
+    public let threadId: String
     public let isEnabled: Bool
     public let durationSeconds: TimeInterval
+    
+    // MARK: - Relationships
+    
+    public var thread: QueryInterfaceRequest<SessionThread> {
+        request(for: DisappearingMessagesConfiguration.thread)
+    }
 }
 
 // MARK: - Convenience

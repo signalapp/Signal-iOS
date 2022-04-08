@@ -197,7 +197,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        let senderName = Profile.displayName(for: incomingMessage.authorId, thread: incomingMessage.thread)
+        let senderName = Profile.displayName(for: incomingMessage.authorId, thread: thread)
 
         let notificationTitle: String?
         var notificationBody: String?

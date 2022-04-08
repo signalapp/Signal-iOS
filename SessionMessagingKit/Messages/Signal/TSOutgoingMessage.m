@@ -79,7 +79,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 @property (atomic) NSString *customMessage;
 @property (atomic) NSString *mostRecentFailureText;
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
-@property (atomic, nullable) NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap;
 
 @end
 

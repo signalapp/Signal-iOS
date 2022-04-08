@@ -20,6 +20,10 @@ public class TypedTableDefinition<T> where T: TableRecord, T: ColumnExpressible 
         definition.primaryKey(columns.map { $0.name }, onConflict: onConflict)
     }
     
+    public func uniqueKey(_ columns: [T.Columns], onConflict: Database.ConflictResolution? = nil) {
+        definition.uniqueKey(columns.map { $0.name }, onConflict: onConflict)
+    }
+    
     public func foreignKey<Other>(
         _ columns: [T.Columns],
         references table: Other.Type,

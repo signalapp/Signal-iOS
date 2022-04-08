@@ -65,31 +65,32 @@ enum _002_YDBToGRDBMigration: Migration {
             
             throw GRDBStorageError.migrationFailed
         }
-        
-        // Insert the data into GRDB
-        try Identity(
-            variant: .seed,
-            data: Data(hex: seedHexString)
-        ).insert(db)
-        
-        try Identity(
-            variant: .ed25519SecretKey,
-            data: Data(hex: userEd25519SecretKeyHexString)
-        ).insert(db)
-        
-        try Identity(
-            variant: .ed25519PublicKey,
-            data: Data(hex: userEd25519PublicKeyHexString)
-        ).insert(db)
-        
-        try Identity(
-            variant: .x25519PrivateKey,
-            data: userX25519KeyPair.privateKey
-        ).insert(db)
-        
-        try Identity(
-            variant: .x25519PublicKey,
-            data: userX25519KeyPair.publicKey
-        ).insert(db)
+        try autoreleasepool {
+            // Insert the data into GRDB
+            try Identity(
+                variant: .seed,
+                data: Data(hex: seedHexString)
+            ).insert(db)
+            
+            try Identity(
+                variant: .ed25519SecretKey,
+                data: Data(hex: userEd25519SecretKeyHexString)
+            ).insert(db)
+            
+            try Identity(
+                variant: .ed25519PublicKey,
+                data: Data(hex: userEd25519PublicKeyHexString)
+            ).insert(db)
+            
+            try Identity(
+                variant: .x25519PrivateKey,
+                data: userX25519KeyPair.privateKey
+            ).insert(db)
+            
+            try Identity(
+                variant: .x25519PublicKey,
+                data: userX25519KeyPair.publicKey
+            ).insert(db)
+        }
     }
 }

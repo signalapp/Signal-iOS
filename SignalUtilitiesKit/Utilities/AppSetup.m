@@ -100,6 +100,9 @@ NS_ASSUME_NONNULL_BEGIN
                 }];
             });
         }];
+        
+        // Must happen after the performUpdateCheck above to ensure all legacy database migrations have run
+        [SNConfiguration performDatabaseSetup];
     });
 }
 

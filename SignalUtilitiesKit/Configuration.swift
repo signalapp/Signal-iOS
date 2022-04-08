@@ -16,6 +16,11 @@ public final class Configuration : NSObject {
             maxFileSize: UInt(Double(FileServerAPIV2.maxFileSize) / FileServerAPIV2.fileSizeORMultiplier)
         )
         
+        SNMessagingKit.configure(storage: Storage.shared)
+        SNSnodeKit.configure()
+    }
+    
+    @objc public static func performDatabaseSetup() {
         if !isSetup {
             isSetup = true
 
@@ -30,8 +35,5 @@ public final class Configuration : NSObject {
                 ]
             )
         }
-        
-        SNMessagingKit.configure(storage: Storage.shared)
-        SNSnodeKit.configure()
     }
 }

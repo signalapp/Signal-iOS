@@ -65,6 +65,9 @@ public struct Profile: Codable, Identifiable, FetchableRecord, PersistableRecord
                     OWSFileSystem.deleteFileIfExists(path)
                 }
             }
+            
+            // Since it's possible this profile is currently being displayed, send notifications
+            // indicating that it has been updated
             NotificationCenter.default.post(name: .profileUpdated, object: id)
             
             if id == getUserHexEncodedPublicKey(db) {

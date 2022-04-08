@@ -6,21 +6,36 @@ import SessionUtilitiesKit
 
 public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "closedGroup" }
-    static let keyPairs = hasMany(ClosedGroupKeyPair.self)
-    static let members = hasMany(GroupMember.self)
+    internal static let threadForeignKey = ForeignKey([Columns.threadId], to: [SessionThread.Columns.id])
+    private static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
+    private static let keyPairs = hasMany(
+        ClosedGroupKeyPair.self,
+        using: ClosedGroupKeyPair.closedGroupForeignKey
+    )
+    private static let members = hasMany(GroupMember.self, using: GroupMember.closedGroupForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
-        case publicKey
+        case threadId
         case name
         case formationTimestamp
     }
     
-    public var id: String { publicKey }
+    public var id: String { threadId }  // Identifiable
+    public var publicKey: String { threadId }
 
-    public let publicKey: String
+    /// The id for the thread this closed group belongs to
+    ///
+    /// **Note:** This value will always be publicKey for the closed group
+    public let threadId: String
     public let name: String
     public let formationTimestamp: TimeInterval
+    
+    // MARK: - Relationships
+    
+    public var thread: QueryInterfaceRequest<SessionThread> {
+        request(for: ClosedGroup.thread)
+    }
     
     public var keyPairs: QueryInterfaceRequest<ClosedGroupKeyPair> {
         request(for: ClosedGroup.keyPairs)
@@ -44,5 +59,15 @@ public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRe
     public var adminIds: QueryInterfaceRequest<GroupMember> {
         request(for: ClosedGroup.members)
             .filter(GroupMember.Columns.role == GroupMember.Role.admin)
+    }
+    
+    // MARK: - Custom Database Interaction
+    
+    public func delete(_ db: Database) throws -> Bool {
+        // Delete all 'GroupMember' records associated with this ClosedGroup (can't
+        // have a proper ForeignKey constraint as 'GroupMember' is reused for the
+        // 'OpenGroup' table as well)
+        try request(for: ClosedGroup.members).deleteAll(db)
+        return try performDelete(db)
     }
 }

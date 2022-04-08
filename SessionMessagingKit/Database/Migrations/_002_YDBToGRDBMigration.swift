@@ -15,14 +15,25 @@ enum _002_YDBToGRDBMigration: Migration {
         var shouldFailMigration: Bool = false
         var contacts: Set<Legacy.Contact> = []
         var contactThreadIds: Set<String> = []
+        
         var threads: Set<TSThread> = []
         var disappearingMessagesConfiguration: [String: Legacy.DisappearingMessagesConfiguration] = [:]
+        
         var closedGroupKeys: [String: (timestamp: TimeInterval, keys: SessionUtilitiesKit.Legacy.KeyPair)] = [:]
         var closedGroupName: [String: String] = [:]
         var closedGroupFormation: [String: UInt64] = [:]
         var closedGroupModel: [String: TSGroupModel] = [:]
         var closedGroupZombieMemberIds: [String: Set<String>] = [:]
+        
         var openGroupInfo: [String: OpenGroupV2] = [:]
+        var openGroupUserCount: [String: Int] = [:]
+        var openGroupImage: [String: Data] = [:]
+        var openGroupLastMessageServerId: [String: Int64] = [:]    // Optional
+        var openGroupLastDeletionServerId: [String: Int64] = [:]   // Optional
+        
+        var interactions: [String: [TSInteraction]] = [:]
+        var attachments: [String: TSAttachment] = [:]
+        var readReceipts: [String: [Double]] = [:]
         
         Storage.read { transaction in
             // Process the Contacts
@@ -30,7 +41,8 @@ enum _002_YDBToGRDBMigration: Migration {
                 guard let contact = object as? Legacy.Contact else { return }
                 contacts.insert(contact)
             }
-            
+        
+            print("RAWR [\(Date().timeIntervalSince1970)] - Process threads - Start")
             let userClosedGroupPublicKeys: [String] = transaction.allKeys(inCollection: Legacy.closedGroupPublicKeyCollection)
             
             // Process the threads
@@ -52,6 +64,8 @@ enum _002_YDBToGRDBMigration: Migration {
                     .asType(Legacy.DisappearingMessagesConfiguration.self)
                     .defaulting(to: Legacy.DisappearingMessagesConfiguration.defaultWith(threadId))
                 
+                // Process the interactions
+                
                 // Process group-specific info
                 guard let groupThread: TSGroupThread = thread as? TSGroupThread else { return }
                 
@@ -64,15 +78,14 @@ enum _002_YDBToGRDBMigration: Migration {
                     guard
                         let groupIdData: Data = Data(base64Encoded: base64GroupId),
                         let groupId: String = String(data: groupIdData, encoding: .utf8),
-                        let publicKey: String = groupId.split(separator: "!").last.map({ String($0) }),
-                        let formationTimestamp: UInt64 = transaction.object(forKey: publicKey, inCollection: Legacy.closedGroupFormationTimestampCollection) as? UInt64
+                        let publicKey: String = groupId.split(separator: "!").last.map({ String($0) })
                     else {
-                        SNLog("Unable to decode Closed Group during migration")
+                        SNLog("[Migration Error] Unable to decode Closed Group")
                         shouldFailMigration = true
                         return
                     }
                     guard userClosedGroupPublicKeys.contains(publicKey) else {
-                        SNLog("Found unexpected invalid closed group public key during migration")
+                        SNLog("[Migration Error] Found unexpected invalid closed group public key")
                         shouldFailMigration = true
                         return
                     }
@@ -81,7 +94,7 @@ enum _002_YDBToGRDBMigration: Migration {
                     
                     closedGroupName[threadId] = groupThread.name(with: transaction)
                     closedGroupModel[threadId] = groupThread.groupModel
-                    closedGroupFormation[threadId] = formationTimestamp
+                    closedGroupFormation[threadId] = ((transaction.object(forKey: publicKey, inCollection: Legacy.closedGroupFormationTimestampCollection) as? UInt64) ?? 0)
                     closedGroupZombieMemberIds[threadId] = transaction.object(
                         forKey: publicKey,
                         inCollection: Legacy.closedGroupZombieMembersCollection
@@ -96,11 +109,48 @@ enum _002_YDBToGRDBMigration: Migration {
                     }
                 }
                 else if groupThread.isOpenGroup {
+                    guard let openGroup: OpenGroupV2 = transaction.object(forKey: threadId, inCollection: Legacy.openGroupCollection) as? OpenGroupV2 else {
+                        SNLog("[Migration Error] Unable to find open group info")
+                        shouldFailMigration = true
+                        return
+                    }
                     
+                    openGroupInfo[threadId] = openGroup
+                    openGroupUserCount[threadId] = ((transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupUserCountCollection) as? Int) ?? 0)
+                    openGroupImage[threadId] = transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupImageCollection) as? Data
+                    openGroupLastMessageServerId[threadId] = transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupLastMessageServerIDCollection) as? Int64
+                    openGroupLastDeletionServerId[threadId] = transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupLastDeletionServerIDCollection) as? Int64
+                }
+            }
+            print("RAWR [\(Date().timeIntervalSince1970)] - Process threads - End")
+            
+            // Process interactions
+            print("RAWR [\(Date().timeIntervalSince1970)] - Process interactions - Start")
+            transaction.enumerateKeysAndObjects(inCollection: Legacy.interactionCollection) { _, object, _ in
+                guard let interaction: TSInteraction = object as? TSInteraction else {
+                    SNLog("[Migration Error] Unable to process interaction")
+                    shouldFailMigration = true
+                    return
                 }
                 
+                interactions[interaction.uniqueThreadId] = (interactions[interaction.uniqueThreadId] ?? [])
+                    .appending(interaction)
+            }
+            print("RAWR [\(Date().timeIntervalSince1970)] - Process interactions - End")
+            
+            // Process attachments
+            print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - Start")
+            transaction.enumerateKeysAndObjects(inCollection: Legacy.attachmentsCollection) { key, object, _ in
+                guard let attachment: TSAttachment = object as? TSAttachment else {
+                    SNLog("[Migration Error] Unable to process attachment")
+                    shouldFailMigration = true
+                    return
+                }
                 
-                
+                attachments[key] = attachment
+            }
+            print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - End")
+            
             }
         }
         
@@ -111,45 +161,48 @@ enum _002_YDBToGRDBMigration: Migration {
         
         // MARK: - Insert Contacts
         
-        let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
-        
-        try contacts.forEach { contact in
-            let isCurrentUser: Bool = (contact.sessionID == currentUserPublicKey)
-            let contactThreadId: String = TSContactThread.threadID(fromContactSessionID: contact.sessionID)
+        try autoreleasepool {
+            let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
             
-            // Create the "Profile" for the legacy contact
-            try Profile(
-                id: contact.sessionID,
-                name: (contact.name ?? contact.sessionID),
-                nickname: contact.nickname,
-                profilePictureUrl: contact.profilePictureURL,
-                profilePictureFileName: contact.profilePictureFileName,
-                profileEncryptionKey: contact.profileEncryptionKey
-            ).insert(db)
-            
-            // Determine if this contact is a "real" contact (don't want to create contacts for
-            // every user in the new structure but still want profiles for every user)
-            if
-                isCurrentUser ||
-                contactThreadIds.contains(contactThreadId) ||
-                contact.isApproved ||
-                contact.didApproveMe ||
-                contact.isBlocked ||
-                contact.hasBeenBlocked {
-                // Create the contact
-                // TODO: Closed group admins???
-                try Contact(
+            try contacts.forEach { contact in
+                let isCurrentUser: Bool = (contact.sessionID == currentUserPublicKey)
+                let contactThreadId: String = TSContactThread.threadID(fromContactSessionID: contact.sessionID)
+                
+                // Create the "Profile" for the legacy contact
+                try Profile(
                     id: contact.sessionID,
-                    isTrusted: (isCurrentUser || contact.isTrusted),
-                    isApproved: (isCurrentUser || contact.isApproved),
-                    isBlocked: (!isCurrentUser && contact.isBlocked),
-                    didApproveMe: (isCurrentUser || contact.didApproveMe),
-                    hasBeenBlocked: (!isCurrentUser && (contact.hasBeenBlocked || contact.isBlocked))
+                    name: (contact.name ?? contact.sessionID),
+                    nickname: contact.nickname,
+                    profilePictureUrl: contact.profilePictureURL,
+                    profilePictureFileName: contact.profilePictureFileName,
+                    profileEncryptionKey: contact.profileEncryptionKey
                 ).insert(db)
+                
+                // Determine if this contact is a "real" contact (don't want to create contacts for
+                // every user in the new structure but still want profiles for every user)
+                if
+                    isCurrentUser ||
+                    contactThreadIds.contains(contactThreadId) ||
+                    contact.isApproved ||
+                    contact.didApproveMe ||
+                    contact.isBlocked ||
+                    contact.hasBeenBlocked {
+                    // Create the contact
+                    try Contact(
+                        id: contact.sessionID,
+                        isTrusted: (isCurrentUser || contact.isTrusted),
+                        isApproved: (isCurrentUser || contact.isApproved),
+                        isBlocked: (!isCurrentUser && contact.isBlocked),
+                        didApproveMe: (isCurrentUser || contact.didApproveMe),
+                        hasBeenBlocked: (!isCurrentUser && (contact.hasBeenBlocked || contact.isBlocked))
+                    ).insert(db)
+                }
             }
         }
         
         // MARK: - Insert Threads
+        
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - Start")
         
         try threads.forEach { thread in
             guard let legacyThreadId: String = thread.uniqueId else { return }
@@ -161,11 +214,17 @@ enum _002_YDBToGRDBMigration: Migration {
             switch thread {
                 case let groupThread as TSGroupThread:
                     if groupThread.isOpenGroup {
-                        id = legacyThreadId//openGroup.id
+                        guard let openGroup: OpenGroupV2 = openGroupInfo[legacyThreadId] else {
+                            SNLog("[Migration Error] Open group missing required data")
+                            throw GRDBStorageError.migrationFailed
+                        }
+                        
+                        id = openGroup.id
                         variant = .openGroup
                     }
                     else {
                         guard let publicKey: Data = closedGroupKeys[legacyThreadId]?.keys.publicKey else {
+                            SNLog("[Migration Error] Closed group missing public key")
                             throw GRDBStorageError.migrationFailed
                         }
                         
@@ -186,71 +245,262 @@ enum _002_YDBToGRDBMigration: Migration {
                     notificationMode = (thread.isMuted ? .none : .all)
             }
             
-            try SessionThread(
-                id: id,
-                variant: variant,
-                creationDateTimestamp: thread.creationDate.timeIntervalSince1970,
-                shouldBeVisible: thread.shouldBeVisible,
-                isPinned: thread.isPinned,
-                messageDraft: thread.messageDraft,
-                notificationMode: notificationMode,
-                mutedUntilTimestamp: thread.mutedUntilDate?.timeIntervalSince1970
-            ).insert(db)
-            
-            // Disappearing Messages Configuration
-            if let config: Legacy.DisappearingMessagesConfiguration = disappearingMessagesConfiguration[id] {
-                try DisappearingMessagesConfiguration(
+            try autoreleasepool {
+                try SessionThread(
                     id: id,
-                    isEnabled: config.isEnabled,
-                    durationSeconds: TimeInterval(config.durationSeconds)
+                    variant: variant,
+                    creationDateTimestamp: thread.creationDate.timeIntervalSince1970,
+                    shouldBeVisible: thread.shouldBeVisible,
+                    isPinned: thread.isPinned,
+                    messageDraft: thread.messageDraft,
+                    notificationMode: notificationMode,
+                    mutedUntilTimestamp: thread.mutedUntilDate?.timeIntervalSince1970
                 ).insert(db)
+                
+                // Disappearing Messages Configuration
+                if let config: Legacy.DisappearingMessagesConfiguration = disappearingMessagesConfiguration[id] {
+                    try DisappearingMessagesConfiguration(
+                        threadId: id,
+                        isEnabled: config.isEnabled,
+                        durationSeconds: TimeInterval(config.durationSeconds)
+                    ).insert(db)
+                }
+                
+                // Closed Groups
+                if (thread as? TSGroupThread)?.isClosedGroup == true {
+                    guard
+                        let keyInfo = closedGroupKeys[legacyThreadId],
+                        let name: String = closedGroupName[legacyThreadId],
+                        let groupModel: TSGroupModel = closedGroupModel[legacyThreadId],
+                        let formationTimestamp: UInt64 = closedGroupFormation[legacyThreadId]
+                    else {
+                        SNLog("[Migration Error] Closed group missing required data")
+                        throw GRDBStorageError.migrationFailed
+                    }
+                    
+                    try ClosedGroup(
+                        threadId: id,
+                        name: name,
+                        formationTimestamp: TimeInterval(formationTimestamp)
+                    ).insert(db)
+                    
+                    try ClosedGroupKeyPair(
+                        publicKey: keyInfo.keys.publicKey.toHexString(),
+                        secretKey: keyInfo.keys.privateKey,
+                        receivedTimestamp: keyInfo.timestamp
+                    ).insert(db)
+                    
+                    try groupModel.groupMemberIds.forEach { memberId in
+                        try GroupMember(
+                            groupId: id,
+                            profileId: memberId,
+                            role: .standard
+                        ).insert(db)
+                    }
+                    
+                    try groupModel.groupAdminIds.forEach { adminId in
+                        try GroupMember(
+                            groupId: id,
+                            profileId: adminId,
+                            role: .admin
+                        ).insert(db)
+                    }
+                    
+                    try (closedGroupZombieMemberIds[legacyThreadId] ?? []).forEach { zombieId in
+                        try GroupMember(
+                            groupId: id,
+                            profileId: zombieId,
+                            role: .zombie
+                        ).insert(db)
+                    }
+                }
+                
+                // Open Groups
+                if (thread as? TSGroupThread)?.isOpenGroup == true {
+                    guard let openGroup: OpenGroupV2 = openGroupInfo[legacyThreadId] else {
+                        SNLog("[Migration Error] Open group missing required data")
+                        throw GRDBStorageError.migrationFailed
+                    }
+                    
+                    try OpenGroup(
+                        server: openGroup.server,
+                        room: openGroup.room,
+                        publicKey: openGroup.publicKey,
+                        name: openGroup.name,
+                        groupDescription: nil,  // TODO: Add with SOGS V4
+                        imageId: nil,  // TODO: Add with SOGS V4
+                        imageData: openGroupImage[legacyThreadId],
+                        userCount: (openGroupUserCount[legacyThreadId] ?? 0),  // Will be updated next poll
+                        infoUpdates: 0  // TODO: Add with SOGS V4
+                    ).insert(db)
+                }
             }
             
-            // Closed Groups
-            if (thread as? TSGroupThread)?.isClosedGroup == true {
-                guard
-                    let keyInfo = closedGroupKeys[legacyThreadId],
-                    let name: String = closedGroupName[legacyThreadId],
-                    let groupModel: TSGroupModel = closedGroupModel[legacyThreadId],
-                    let formationTimestamp: UInt64 = closedGroupFormation[legacyThreadId]
-                else { throw GRDBStorageError.migrationFailed }
+            try autoreleasepool {
+                let currentUserPublicKey: String = getUserHexEncodedPublicKey(db)
                 
-                try ClosedGroup(
-                    publicKey: keyInfo.keys.publicKey.toHexString(),
-                    name: name,
-                    formationTimestamp: TimeInterval(formationTimestamp)
-                ).insert(db)
-                
-                try ClosedGroupKeyPair(
-                    publicKey: keyInfo.keys.publicKey.toHexString(),
-                    secretKey: keyInfo.keys.privateKey,
-                    receivedTimestamp: keyInfo.timestamp
-                ).insert(db)
-                
-                try groupModel.groupMemberIds.forEach { memberId in
-                    try GroupMember(
-                        groupId: id,
-                        profileId: memberId,
-                        role: .standard
-                    ).insert(db)
-                }
-                
-                try groupModel.groupAdminIds.forEach { adminId in
-                    try GroupMember(
-                        groupId: id,
-                        profileId: adminId,
-                        role: .admin
-                    ).insert(db)
-                }
-                
-                try (closedGroupZombieMemberIds[legacyThreadId] ?? []).forEach { zombieId in
-                    try GroupMember(
-                        groupId: id,
-                        profileId: zombieId,
-                        role: .zombie
-                    ).insert(db)
+                try interactions[legacyThreadId]?
+                    .sorted(by: { lhs, rhs in lhs.sortId < rhs.sortId }) // Maintain sort order
+                    .forEach { legacyInteraction in
+                        let serverHash: String?
+                        let variant: Interaction.Variant
+                        let authorId: String
+                        let body: String?
+                        let expiresInSeconds: UInt32?
+                        let expiresStartedAtMs: UInt64?
+                        let openGroupInvitationName: String?
+                        let openGroupInvitationUrl: String?
+                        let openGroupServerMessageId: UInt64?
+                        let recipientStateMap: [String: TSOutgoingMessageRecipientState]?
+                        let attachmentIds: [String]
+                        
+                        // Handle the common 'TSMessage' values first
+                        if let legacyMessage: TSMessage = legacyInteraction as? TSMessage {
+                            serverHash = legacyMessage.serverHash
+                            openGroupInvitationName = legacyMessage.openGroupInvitationName
+                            openGroupInvitationUrl = legacyMessage.openGroupInvitationURL
+                            
+                            // The legacy code only considered '!= 0' ids as valid so set those
+                            // values to be null to avoid the unique constraint (it's also more
+                            // correct for the values to be null)
+                            openGroupServerMessageId = (legacyMessage.openGroupServerMessageID == 0 ?
+                                nil :
+                                legacyMessage.openGroupServerMessageID
+                            )
+                            attachmentIds = try legacyMessage.attachmentIds.map { legacyId in
+                                guard let attachmentId: String = legacyId as? String else {
+                                    SNLog("[Migration Error] Unable to process attachment id")
+                                    throw GRDBStorageError.migrationFailed
+                                }
+                                
+                                return attachmentId
+                            }
+                        }
+                        else {
+                            serverHash = nil
+                            openGroupInvitationName = nil
+                            openGroupInvitationUrl = nil
+                            openGroupServerMessageId = nil
+                            attachmentIds = []
+                        }
+                        
+                        // Then handle the behaviours for each message type
+                        switch legacyInteraction {
+                            case let incomingMessage as TSIncomingMessage:
+                                variant = .standardIncoming
+                                authorId = incomingMessage.authorId
+                                body = incomingMessage.body
+                                expiresInSeconds = incomingMessage.expiresInSeconds
+                                expiresStartedAtMs = incomingMessage.expireStartedAt
+                                recipientStateMap = [:]
+                                
+                                
+                            case let outgoingMessage as TSOutgoingMessage:
+                                variant = .standardOutgoing
+                                authorId = currentUserPublicKey
+                                body = outgoingMessage.body
+                                expiresInSeconds = outgoingMessage.expiresInSeconds
+                                expiresStartedAtMs = outgoingMessage.expireStartedAt
+                                recipientStateMap = outgoingMessage.recipientStateMap
+                                
+                            case let infoMessage as TSInfoMessage:
+                                authorId = currentUserPublicKey
+                                body = ((infoMessage.body ?? "").isEmpty ?
+                                    infoMessage.customMessage :
+                                    infoMessage.body
+                                )
+                                expiresInSeconds = nil    // Info messages don't expire
+                                expiresStartedAtMs = nil  // Info messages don't expire
+                                recipientStateMap = [:]
+                                
+                                switch infoMessage.messageType {
+                                    case .groupCreated: variant = .infoClosedGroupCreated
+                                    case .groupUpdated: variant = .infoClosedGroupUpdated
+                                    case .groupCurrentUserLeft: variant = .infoClosedGroupCurrentUserLeft
+                                    case .disappearingMessagesUpdate: variant = .infoDisappearingMessagesUpdate
+                                    case .messageRequestAccepted: variant = .infoMessageRequestAccepted
+                                    case .screenshotNotification: variant = .infoScreenshotNotification
+                                    case .mediaSavedNotification: variant = .infoMediaSavedNotification
+                                    
+                                    @unknown default:
+                                        SNLog("[Migration Error] Unsupported info message type")
+                                        throw GRDBStorageError.migrationFailed
+                                }
+                                
+                            default:
+                                SNLog("[Migration Error] Unsupported interaction type")
+                                throw GRDBStorageError.migrationFailed
+                        }
+                        
+                        // Insert the data
+                        let interaction = try Interaction(
+                            serverHash: serverHash,
+                            threadId: id,
+                            authorId: authorId,
+                            variant: variant,
+                            body: body,
+                            timestampMs: Double(legacyInteraction.timestamp),
+                            receivedAtTimestampMs: Double(legacyInteraction.receivedAtTimestamp),
+                            expiresInSeconds: expiresInSeconds.map { TimeInterval($0) },
+                            expiresStartedAtMs: expiresStartedAtMs.map { Double($0) },
+                            openGroupInvitationName: openGroupInvitationName,
+                            openGroupInvitationUrl: openGroupInvitationUrl,
+                            openGroupServerMessageId: openGroupServerMessageId.map { Int64($0) },
+                            openGroupWhisperMods: false, // TODO: This
+                            openGroupWhisperTo: nil // TODO: This
+                        ).inserted(db)
+                        
+                        guard let interactionId: Int64 = interaction.id else {
+                            SNLog("[Migration Error] Failed to insert interaction")
+                            throw GRDBStorageError.migrationFailed
+                        }
+                        
+                        try recipientStateMap?.forEach { recipientId, legacyState in
+                            try RecipientState(
+                                interactionId: interactionId,
+                                recipientId: recipientId,
+                                state: {
+                                    switch legacyState.state {
+                                        case .failed: return .failed
+                                        case .sending: return .sending
+                                        case .skipped: return .skipped
+                                        case .sent: return .sent
+                                        @unknown default: throw GRDBStorageError.migrationFailed
+                                    }
+                                }(),
+                                readTimestampMs: legacyState.readTimestamp?.doubleValue
+                            ).insert(db)
+                        }
+                        try attachmentIds.forEach { attachmentId in
+                            guard let attachment: TSAttachment = attachments[attachmentId] else {
+                                SNLog("[Migration Error] Unsupported interaction type")
+                                throw GRDBStorageError.migrationFailed
+                            }
+                            try Attachment(
+                                interactionId: interactionId,
+                                serverId: "\(attachment.serverId)",
+                                variant: (attachment.isVoiceMessage ? .voiceMessage : .standard),
+                                state: .pending, // TODO: This
+                                contentType: attachment.contentType,
+                                byteCount: UInt(attachment.byteCount),
+                                creationTimestamp: 0, // TODO: This
+                                sourceFilename: attachment.sourceFilename,
+                                downloadUrl: attachment.downloadURL,
+                                width: 0, // TODO: This attachment.mediaSize,
+                                height: 0, // TODO: This attachment.mediaSize,
+                                encryptionKey: attachment.encryptionKey,
+                                digest: nil, // TODO: This attachment.digest,
+                                caption: attachment.caption,
+                                quoteId: nil,   // TODO: THis
+                                linkPreviewUrl: nil    // TODO: This
+                            ).insert(db)
+                        }
                 }
             }
         }
+        
+        print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - End")
+        
+        print("RAWR Done!!!")
     }
 }

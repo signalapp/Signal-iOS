@@ -16,9 +16,21 @@ public enum Legacy {
     public static let contactCollection = "LokiContactCollection"
     internal static let threadCollection = "TSThread"
     internal static let disappearingMessagesCollection = "OWSDisappearingMessagesConfiguration"
+    
     internal static let closedGroupPublicKeyCollection = "SNClosedGroupPublicKeyCollection"
     internal static let closedGroupFormationTimestampCollection = "SNClosedGroupFormationTimestampCollection"
     internal static let closedGroupZombieMembersCollection = "SNClosedGroupZombieMembersCollection"
+    
+    internal static let openGroupCollection = "SNOpenGroupCollection"
+    internal static let openGroupUserCountCollection = "SNOpenGroupUserCountCollection"
+    internal static let openGroupImageCollection = "SNOpenGroupImageCollection"
+    internal static let openGroupLastMessageServerIDCollection = "SNLastMessageServerIDCollection"
+    internal static let openGroupLastDeletionServerIDCollection = "SNLastDeletionServerIDCollection"
+    internal static let openGroupServerIdToUniqueIdLookupCollection = "SNOpenGroupServerIdToUniqueIdLookup"
+    
+    internal static let interactionCollection = "TSInteraction"
+    internal static let attachmentsCollection = "TSAttachements"
+    internal static let readReceiptManagerCollection = "kOutgoingReadReceiptManagerCollection"
     
     // MARK: - Types
     
@@ -221,5 +233,87 @@ public class _LegacyContact: NSObject, NSCoding { // NSObject/NSCoding conforman
     @objc(contextForThread:)
     public static func context(for thread: TSThread) -> Context {
         return ((thread as? TSGroupThread)?.isOpenGroup == true) ? .openGroup : .regular
+
+@objc(OWSDisappearingMessagesConfiguration)
+public class _LegacyDisappearingMessagesConfiguration: MTLModel {
+    public let uniqueId: String
+    @objc public var isEnabled: Bool
+    @objc public var durationSeconds: UInt32
+    
+    @objc public var durationIndex: UInt32 = 0
+    @objc public var durationString: String?
+    
+    var originalDictionaryValue: [String: Any]?
+    @objc public var isNewRecord: Bool = false
+    
+    @objc public static func defaultWith(_ threadId: String) -> Legacy.DisappearingMessagesConfiguration {
+        return Legacy.DisappearingMessagesConfiguration(
+            threadId: threadId,
+            enabled: false,
+            durationSeconds: (24 * 60 * 60)
+        )
+    }
+    
+    public static func fetch(uniqueId: String, transaction: YapDatabaseReadTransaction? = nil) -> Legacy.DisappearingMessagesConfiguration? {
+        return nil
+    }
+    
+    @objc public static func fetchObject(uniqueId: String) -> Legacy.DisappearingMessagesConfiguration? {
+        return nil
+    }
+    
+    @objc public static func fetchOrBuildDefault(threadId: String, transaction: YapDatabaseReadTransaction) -> Legacy.DisappearingMessagesConfiguration? {
+        return defaultWith(threadId)
+    }
+    
+    @objc public static var validDurationsSeconds: [UInt32] = []
+    
+    // MARK: - Initialization
+    
+    init(threadId: String, enabled: Bool, durationSeconds: UInt32) {
+        self.uniqueId = threadId
+        self.isEnabled = enabled
+        self.durationSeconds = durationSeconds
+        self.isNewRecord = true
+        
+        super.init()
+    }
+    
+    required init(coder: NSCoder) {
+        self.uniqueId = coder.decodeObject(forKey: "uniqueId") as! String
+        self.isEnabled = coder.decodeObject(forKey: "enabled") as! Bool
+        self.durationSeconds = coder.decodeObject(forKey: "durationSeconds") as! UInt32
+        
+        // Intentionally not calling 'super.init(coder:) here
+        super.init()
+    }
+    
+    required init(dictionary dictionaryValue: [String : Any]!) throws {
+        fatalError("init(dictionary:) has not been implemented")
+    }
+    
+    // MARK: - Dirty Tracking
+    
+    @objc public override static func storageBehaviorForProperty(withKey propertyKey: String) -> MTLPropertyStorage {
+        // Don't persist transient properties
+        if
+            propertyKey == "TAG" ||
+            propertyKey == "originalDictionaryValue" ||
+            propertyKey == "newRecord"
+        {
+            return MTLPropertyStorageNone
+        }
+        
+        return super.storageBehaviorForProperty(withKey: propertyKey)
+    }
+    
+    @objc public var dictionaryValueDidChange: Bool {
+        return false
+    }
+    
+    @objc(saveWithTransaction:)
+    public func save(with transaction: YapDatabaseReadWriteTransaction) {
+        self.originalDictionaryValue = self.dictionaryValue
+        self.isNewRecord = false
     }
 }
