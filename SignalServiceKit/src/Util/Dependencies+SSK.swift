@@ -282,14 +282,6 @@ public extension NSObject {
         SSKEnvironment.shared.signalProtocolStoreRef(for: identity)
     }
 
-    final var identityKeyStore: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManagerRef
-    }
-
-    static var identityKeyStore: OWSIdentityManager {
-        SSKEnvironment.shared.identityManagerRef
-    }
-
     final var appExpiry: AppExpiry {
         SSKEnvironment.shared.appExpiryRef
     }
@@ -777,14 +769,6 @@ public extension Dependencies {
 
     static func signalProtocolStore(for identity: OWSIdentity) -> SignalProtocolStore {
         SSKEnvironment.shared.signalProtocolStoreRef(for: identity)
-    }
-
-    var identityKeyStore: OWSIdentityManager {
-        return SSKEnvironment.shared.identityManagerRef
-    }
-
-    static var identityKeyStore: OWSIdentityManager {
-        SSKEnvironment.shared.identityManagerRef
     }
 
     var appExpiry: AppExpiry {

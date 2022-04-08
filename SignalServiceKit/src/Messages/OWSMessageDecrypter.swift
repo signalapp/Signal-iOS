@@ -529,7 +529,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 plaintext = try signalDecrypt(message: message,
                                               from: protocolAddress,
                                               sessionStore: signalProtocolStore.sessionStore,
-                                              identityStore: Self.identityManager,
+                                              identityStore: identityManager.store(for: .aci, transaction: transaction),
                                               context: transaction)
                 sendReactiveProfileKeyIfNecessary(address: sourceAddress, transaction: transaction)
             case .preKey:
@@ -537,7 +537,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 plaintext = try signalDecryptPreKey(message: message,
                                                     from: protocolAddress,
                                                     sessionStore: signalProtocolStore.sessionStore,
-                                                    identityStore: Self.identityManager,
+                                                    identityStore: identityManager.store(for: .aci,
+                                                                                         transaction: transaction),
                                                     preKeyStore: signalProtocolStore.preKeyStore,
                                                     signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                                                     context: transaction)
@@ -648,7 +649,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 sessionStore: signalProtocolStore.sessionStore,
                 preKeyStore: signalProtocolStore.preKeyStore,
                 signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
-                identityStore: Self.identityManager,
+                identityStore: identityManager.store(for: .aci, transaction: transaction),
                 senderKeyStore: Self.senderKeyStore
             )
         } catch {

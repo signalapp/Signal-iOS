@@ -315,7 +315,7 @@ public extension MessageSender {
             try processPreKeyBundle(bundle,
                                     for: protocolAddress,
                                     sessionStore: signalProtocolStore(for: .aci).sessionStore,
-                                    identityStore: identityManager,
+                                    identityStore: identityManager.store(for: .aci, transaction: transaction),
                                     context: transaction)
         } catch SignalError.untrustedIdentity(_) {
             handleUntrustedIdentityKeyError(accountId: accountId,
@@ -1168,11 +1168,12 @@ extension MessageSender {
         let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
 
         if let udSendingAccess = messageSend.udSendingAccess {
-            let secretCipher = try SMKSecretSessionCipher(sessionStore: signalProtocolStore.sessionStore,
-                                                          preKeyStore: signalProtocolStore.preKeyStore,
-                                                          signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
-                                                          identityStore: Self.identityManager,
-                                                          senderKeyStore: Self.senderKeyStore)
+            let secretCipher = try SMKSecretSessionCipher(
+                sessionStore: signalProtocolStore.sessionStore,
+                preKeyStore: signalProtocolStore.preKeyStore,
+                signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
+                identityStore: identityManager.store(for: .aci, transaction: transaction),
+                senderKeyStore: Self.senderKeyStore)
 
             serializedMessage = try secretCipher.encryptMessage(
                 recipient: recipientAddress,
@@ -1189,7 +1190,7 @@ extension MessageSender {
             let result = try signalEncrypt(message: paddedPlaintext,
                                            for: protocolAddress,
                                            sessionStore: signalProtocolStore.sessionStore,
-                                           identityStore: Self.identityManager,
+                                           identityStore: identityManager.store(for: .aci, transaction: transaction),
                                            context: transaction)
 
             switch result.messageType {
@@ -1258,7 +1259,7 @@ extension MessageSender {
             let outerBytes = try sealedSenderEncrypt(
                 usmc,
                 for: protocolAddress,
-                identityStore: identityManager,
+                identityStore: identityManager.store(for: .aci, transaction: transaction),
                 context: transaction)
 
             serializedMessage = Data(outerBytes)

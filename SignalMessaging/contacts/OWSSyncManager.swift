@@ -102,7 +102,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
                 return owsFailDebug("Missing thread")
             }
 
-            guard let keyPair = self.identityKeyStore.identityKeyPair(for: .pni) else {
+            guard let keyPair = self.identityManager.identityKeyPair(for: .pni) else {
                 Logger.warn("no PNI identity key yet; ignoring request")
                 return
             }

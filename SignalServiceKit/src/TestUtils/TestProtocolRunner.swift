@@ -218,7 +218,9 @@ public struct LocalSignalClient: TestSignalClient {
     }
 
     public var identityKeyStore: IdentityKeyStore {
-        return SSKEnvironment.shared.identityManager
+        return SSKEnvironment.shared.databaseStorage.read { transaction in
+            return try! SSKEnvironment.shared.identityManager.store(for: .aci, transaction: transaction)
+        }
     }
 }
 
