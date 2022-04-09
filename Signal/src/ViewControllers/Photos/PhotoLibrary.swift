@@ -380,6 +380,14 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
         processPHAssetCollections((fetchResult: PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .albumRegular, options: fetchOptions),
                                    hideIfEmpty: true))
 
+        // Albums synced to the device from iPhoto.
+        processPHAssetCollections((fetchResult: PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumSyncedAlbum, options: fetchOptions),
+                                   hideIfEmpty: true))
+
+        // Albums imported from a camera or external storage.
+        processPHAssetCollections((fetchResult: PHAssetCollection.fetchAssetCollections(with: .album, subtype: .albumImported, options: fetchOptions),
+                                   hideIfEmpty: true))
+
         // User-created albums.
         processPHCollections((fetchResult: PHAssetCollection.fetchTopLevelUserCollections(with: fetchOptions),
                               hideIfEmpty: true))
