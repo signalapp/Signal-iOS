@@ -182,38 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
     return TSAccountManager.localAddress;
 }
 
-- (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    return [self.blockingManager isAddressBlocked:address];
-}
-
-- (BOOL)isGroupIdBlocked:(NSData *)groupId
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    return [self.blockingManager isGroupIdBlocked:groupId];
-}
-
-- (BOOL)isThreadBlocked:(TSThread *)thread
-{
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        return [self isSignalServiceAddressBlocked:contactThread.contactAddress];
-    } else if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-        return [self isGroupIdBlocked:groupThread.groupModel.groupId];
-    } else {
-        OWSFailDebug(@"%@ failure: unexpected thread: %@", self.logTag, thread.class);
-        return NO;
-    }
-}
-
 - (BOOL)hasUpdatedContactsAtLeastOnce
 {
     OWSAssertDebug(!CurrentAppContext().isNSE);

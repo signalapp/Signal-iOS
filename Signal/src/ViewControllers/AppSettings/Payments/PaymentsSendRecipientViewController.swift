@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -148,10 +148,10 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
         // TODO: Nice-to-have: filter out recipients that do not support payments.
         switch recipient.identifier {
         case .address(let address):
-            guard contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
+            guard blockingManager.isAddressBlocked(address, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
-            guard contactsViewHelper.isThreadBlocked(thread) else { return nil }
+            guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

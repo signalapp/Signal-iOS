@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -227,13 +227,13 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
         }
 
         if groupDetails.isBlocked {
-            if !self.blockingManager.isGroupIdBlocked(groupDetails.groupId) {
+            if !self.blockingManager.isGroupIdBlocked(groupDetails.groupId, transaction: transaction) {
                 self.blockingManager.addBlockedGroup(groupModel: groupModel,
                                                      blockMode: .remote,
                                                      transaction: transaction)
             }
         } else {
-            if self.blockingManager.isGroupIdBlocked(groupDetails.groupId) {
+            if self.blockingManager.isGroupIdBlocked(groupDetails.groupId, transaction: transaction) {
                 self.blockingManager.removeBlockedGroup(groupId: groupDetails.groupId,
                                                         wasLocallyInitiated: false,
                                                         transaction: transaction)

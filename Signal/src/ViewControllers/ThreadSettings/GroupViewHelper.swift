@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -54,7 +54,7 @@ class GroupViewHelper: NSObject {
         guard !isBlockedByMigration else {
             return false
         }
-        guard !blockingManager.isThreadBlocked(groupThread) else {
+        guard !threadViewModel.isBlocked else {
             return false
         }
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {

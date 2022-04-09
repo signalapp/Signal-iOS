@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -197,23 +197,22 @@ extension ConversationViewController {
         }
 
         let actionSheet = ActionSheetController(title: e164)
+        let isBlocked = databaseStorage.read { blockingManager.isAddressBlocked(address, transaction: $0) }
 
-        if address.isLocalAddress {
-            // Show no options.
-        } else if blockingManager.isAddressBlocked(address) {
-            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString(
-                "BLOCK_LIST_UNBLOCK_BUTTON",
-                comment: "Button label for the 'unblock' button"
-            ),
-                                                    accessibilityIdentifier: "phone_number_unblock",
-                                                    style: .default) { [weak self] _ in
-                guard let self = self else { return }
-                BlockListUIUtils.showUnblockAddressActionSheet(
-                    address,
-                    from: self,
-                    completionBlock: nil
-                )
-            })
+        if isBlocked {
+            actionSheet.addAction(
+                ActionSheetAction(
+                    title: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "Button label for the 'unblock' button"),
+                    accessibilityIdentifier: "phone_number_unblock",
+                    style: .default
+                ) { [weak self] _ in
+                    guard let self = self else { return }
+                    BlockListUIUtils.showUnblockAddressActionSheet(
+                        address,
+                        from: self,
+                        completionBlock: nil)
+                })
+
         } else {
             // https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_PHONE_NUMBER_CALL",

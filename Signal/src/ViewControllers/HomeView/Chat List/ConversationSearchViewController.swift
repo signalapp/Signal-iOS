@@ -582,11 +582,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
         return nil
     }
 
-    private func isBlocked(thread: ThreadViewModel) -> Bool {
-        owsAssertDebug(thread.chatListInfo != nil)
-
-        return thread.chatListInfo?.isBlocked == true
-    }
+    private func isBlocked(thread: ThreadViewModel) -> Bool { thread.isBlocked }
 }
 
 // MARK: - UIScrollViewDelegate

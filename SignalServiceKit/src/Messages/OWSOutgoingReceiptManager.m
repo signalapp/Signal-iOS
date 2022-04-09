@@ -4,6 +4,7 @@
 
 #import "OWSOutgoingReceiptManager.h"
 #import "AppReadiness.h"
+#import "FunctionalUtil.h"
 #import "MessageSender.h"
 #import "OWSError.h"
 #import "OWSReceiptsForSenderMessage.h"
@@ -192,9 +193,27 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 
 - (NSArray<AnyPromise *> *)sendReceiptsForReceiptType:(OWSReceiptType)receiptType {
     __block NSDictionary<SignalServiceAddress *, MessageReceiptSet *> *queuedReceiptMap;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        queuedReceiptMap = [self fetchAllReceiptSetsWithType:receiptType transaction:transaction];
-    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+    [self.databaseStorage
+        readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            NSMutableDictionary *receiptSetsToSend = [[self fetchAllReceiptSetsWithType:receiptType
+                                                                            transaction:transaction] mutableCopy];
+            NSArray *blockedAddresses = [receiptSetsToSend.allKeys filter:^BOOL(SignalServiceAddress *address) {
+                return [self.blockingManager isAddressBlocked:address transaction:transaction];
+            }];
+
+            for (SignalServiceAddress *address in blockedAddresses) {
+                OWSLogWarn(@"Skipping send for blocked address: %@", address);
+                // If an address is blocked, we don't bother sending a receipt.
+                // We remove it from our fetched list, and dequeue it from our pending receipt set
+                MessageReceiptSet *receiptSet = receiptSetsToSend[address];
+                [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
+                [receiptSetsToSend removeObjectForKey:address];
+            }
+            queuedReceiptMap = [receiptSetsToSend copy];
+        }
+                 file:__FILE__
+             function:__FUNCTION__
+                 line:__LINE__];
 
     NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
 
@@ -207,12 +226,6 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
         MessageReceiptSet *receiptSet = queuedReceiptMap[address];
         if (receiptSet.timestamps.count < 1) {
             OWSFailDebug(@"Missing timestamps.");
-            continue;
-        }
-
-        if ([self.blockingManager isAddressBlocked:address]) {
-            OWSLogWarn(@"Skipping send for blocked address: %@", address);
-            [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
             continue;
         }
 

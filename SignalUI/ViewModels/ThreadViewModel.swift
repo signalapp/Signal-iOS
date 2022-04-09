@@ -19,6 +19,7 @@ public class ThreadViewModel: NSObject {
     @objc public let groupCallInProgress: Bool
     @objc public let hasWallpaper: Bool
     @objc public let isWallpaperPhoto: Bool
+    @objc public let isBlocked: Bool
 
     public let storyState: ConversationAvatarView.Configuration.StoryState
 
@@ -110,6 +111,8 @@ public class ThreadViewModel: NSObject {
         } else {
             self.storyState = .none
         }
+
+        isBlocked = Self.blockingManager.isThreadBlocked(thread, transaction: transaction)
     }
 
     @objc
@@ -127,7 +130,6 @@ public class ThreadViewModel: NSObject {
 public class ChatListInfo: Dependencies {
 
     public let lastMessageDate: Date?
-    public let isBlocked: Bool
     public let snippet: CLVSnippet
 
     @objc
@@ -136,22 +138,20 @@ public class ChatListInfo: Dependencies {
                 hasPendingMessageRequest: Bool,
                 transaction: SDSAnyReadTransaction) {
 
-        self.isBlocked = Self.blockingManager.isThreadBlocked(thread)
-
         self.lastMessageDate = lastMessageForInbox?.timestampDate
 
         self.snippet = Self.buildCLVSnippet(thread: thread,
-                                           isBlocked: isBlocked,
                                            hasPendingMessageRequest: hasPendingMessageRequest,
                                            lastMessageForInbox: lastMessageForInbox,
                                            transaction: transaction)
     }
 
     private static func buildCLVSnippet(thread: TSThread,
-                                       isBlocked: Bool,
                                        hasPendingMessageRequest: Bool,
                                        lastMessageForInbox: TSInteraction?,
                                        transaction: SDSAnyReadTransaction) -> CLVSnippet {
+
+        let isBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
 
         func loadDraftText() -> String? {
             guard let draftMessageBody = thread.currentDraft(shouldFetchLatest: false,

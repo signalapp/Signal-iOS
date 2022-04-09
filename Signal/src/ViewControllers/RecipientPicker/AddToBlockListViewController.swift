@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -75,12 +75,14 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     ) -> RecipientPickerRecipientState {
         switch recipient.identifier {
         case .address(let address):
-            guard !contactsViewHelper.isSignalServiceAddressBlocked(address) else {
+            let isAddressBlocked = databaseStorage.read { blockingManager.isAddressBlocked(address, transaction: $0) }
+            guard !isAddressBlocked else {
                 return .userAlreadyInBlocklist
             }
             return .canBeSelected
         case .group(let thread):
-            guard !contactsViewHelper.isThreadBlocked(thread) else {
+            let isThreadBlocked = databaseStorage.read { blockingManager.isThreadBlocked(thread, transaction: $0) }
+            guard !isThreadBlocked else {
                 return .conversationAlreadyInBlocklist
             }
             return .canBeSelected
@@ -122,10 +124,10 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):
-            guard contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
+            guard blockingManager.isAddressBlocked(address, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
-            guard contactsViewHelper.isThreadBlocked(thread) else { return nil }
+            guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }
             return MessageStrings.conversationIsBlocked
         }
     }

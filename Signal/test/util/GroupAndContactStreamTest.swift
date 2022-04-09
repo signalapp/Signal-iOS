@@ -285,7 +285,8 @@ class GroupAndContactStreamTest: SignalBaseTest {
                                        contactsManager: contactsManager,
                                        disappearingMessagesConfiguration: nil,
                                        isArchived: false,
-                                       inboxPosition: nil)
+                                       inboxPosition: nil,
+                                       isBlocked: false)
         }
 
         dataOutputStream.close()

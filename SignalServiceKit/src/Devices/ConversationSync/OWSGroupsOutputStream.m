@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     [groupBuilder setMembersE164:membersE164];
     [groupBuilder setMembers:members];
 
-    if ([BlockingManager.shared isGroupIdBlocked:group.groupId]) {
+    if ([BlockingManager.shared isGroupIdBlocked:group.groupId transaction:transaction]) {
         [groupBuilder setBlocked:YES];
     }
 

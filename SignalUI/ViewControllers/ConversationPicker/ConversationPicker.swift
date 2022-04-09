@@ -185,7 +185,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 
     func buildGroupItem(_ groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) -> GroupConversationItem {
-        let isBlocked = self.blockingManager.isThreadBlocked(groupThread)
+        let isBlocked = self.blockingManager.isThreadBlocked(groupThread, transaction: transaction)
         let dmConfig = groupThread.disappearingMessagesConfiguration(with: transaction)
         return GroupConversationItem(groupThreadId: groupThread.uniqueId,
                                      isBlocked: isBlocked,
@@ -193,7 +193,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 
     func buildContactItem(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> ContactConversationItem {
-        let isBlocked = self.blockingManager.isAddressBlocked(address)
+        let isBlocked = self.blockingManager.isAddressBlocked(address, transaction: transaction)
         let dmConfig = TSContactThread.getWithContactAddress(address, transaction: transaction)?.disappearingMessagesConfiguration(with: transaction)
 
         let contactName = contactsManager.displayName(for: address,

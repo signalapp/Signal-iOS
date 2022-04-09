@@ -9,7 +9,7 @@ import CoreServices
 extension ConversationViewController: ConversationInputToolbarDelegate {
 
     public func isBlockedConversation() -> Bool {
-        blockingManager.isThreadBlocked(thread)
+        threadViewModel.isBlocked
     }
 
     public func isGroup() -> Bool {

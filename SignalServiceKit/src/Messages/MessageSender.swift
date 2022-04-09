@@ -666,28 +666,26 @@ extension MessageSender {
             currentValidRecipients.remove(localAddress)
             recipientAddresses.formIntersection(currentValidRecipients)
 
-            recipientAddresses.subtract(self.blockingManager.blockedAddresses)
+            let blockedAddresses = databaseStorage.read { blockingManager.blockedAddresses(transaction: $0) }
+            recipientAddresses.subtract(blockedAddresses)
 
             if recipientAddresses.contains(localAddress) {
                 owsFailDebug("Message send recipients should not include self.")
             }
             return Array(recipientAddresses)
-        } else if let contactThread = thread as? TSContactThread {
-            let contactAddress = contactThread.contactAddress
-            if contactAddress.isLocalAddress {
-                return [contactAddress]
-            }
-
+        } else if let contactAddress = (thread as? TSContactThread)?.contactAddress {
             // Treat 1:1 sends to blocked contacts as failures.
             // If we block a user, don't send 1:1 messages to them. The UI
             // should prevent this from occurring, but in some edge cases
             // you might, for example, have a pending outgoing message when
             // you block them.
-            guard !self.blockingManager.isAddressBlocked(contactAddress) else {
+            let isBlocked = databaseStorage.read { blockingManager.isAddressBlocked(contactAddress, transaction: $0) }
+            if isBlocked {
                 Logger.info("Skipping 1:1 send to blocked contact: \(contactAddress).")
                 throw MessageSenderError.blockedContactRecipient
+            } else {
+                return [contactAddress]
             }
-            return [contactAddress]
         } else {
             owsFailDebug("Invalid thread.")
             throw SSKUnretryableError.invalidThread
