@@ -6113,13 +6113,13 @@
 "STORIES_CAPTION_READ_MORE" = "Read more";
 
 /* Context menu action to copy the selected story reply */
-"STORIES_COPY_REPLY_ACTION" = "Copy";
+"STORIES_COPY_REPLY_ACTION" = "Kopyahin";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "Delete";
+"STORIES_DELETE_REPLY_ACTION" = "Burahin";
 
 /* Context menu action to forward the selected story */
-"STORIES_FORWARD_STORY_ACTION" = "Forward";
+"STORIES_FORWARD_STORY_ACTION" = "Ipasa";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
@@ -6131,7 +6131,7 @@
 "STORIES_PRIVATE_REPLY_ACTION" = "Private Reply";
 
 /* Context menu action to share the selected story */
-"STORIES_SHARE_STORY_ACTION" = "Share";
+"STORIES_SHARE_STORY_ACTION" = "Ibahagi";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Stories";
@@ -6146,16 +6146,16 @@
 "STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Reply";
+"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Tugon";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reacted to the story";
 
 /* placeholder text for replying to a story */
-"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
+"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Tugon";
 
 /* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "You";
+"STORY_REPLY_YOU_AUTHOR" = "Ikaw";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Badges";
