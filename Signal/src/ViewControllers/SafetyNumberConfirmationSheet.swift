@@ -58,7 +58,7 @@ class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc
@@ -515,7 +515,7 @@ private class SafetyNumberCell: ContactTableViewCell {
     }
 
     required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     func configure(item: SafetyNumberConfirmationSheet.Item, theme: Theme.ActionSheet, viewController: UIViewController) {

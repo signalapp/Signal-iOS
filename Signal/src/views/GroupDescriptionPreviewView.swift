@@ -56,7 +56,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
     }
 
     @objc required init(name: String) {
-        fatalError("init(name:) has not been implemented")
+        notImplemented()
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {

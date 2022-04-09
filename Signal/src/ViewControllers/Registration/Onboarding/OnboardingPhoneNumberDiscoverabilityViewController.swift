@@ -207,7 +207,7 @@ private class ButtonRow: UIButton {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc

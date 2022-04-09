@@ -25,7 +25,7 @@ class GroupCallVideoGrid: UICollectionView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     deinit { call.removeObserver(self) }
@@ -141,7 +141,7 @@ class GroupCallVideoGridCell: UICollectionViewCell {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     func cleanupVideoViews() {

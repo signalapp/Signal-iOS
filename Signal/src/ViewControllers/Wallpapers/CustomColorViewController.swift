@@ -977,7 +977,7 @@ private class CustomColorPreviewView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     fileprivate lazy var updateMockConversationEvent = {
@@ -1081,7 +1081,7 @@ private class CustomColorPreviewView: UIView {
         private static let showKnobLabels = false
 
         required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+            notImplemented()
         }
 
         func updateSelection() {
@@ -1492,7 +1492,7 @@ private class CustomColorTooltip: TooltipView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc

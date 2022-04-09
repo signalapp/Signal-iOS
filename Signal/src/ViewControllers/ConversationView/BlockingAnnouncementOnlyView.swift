@@ -82,7 +82,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
     }
 
     required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     override var intrinsicContentSize: CGSize {
@@ -139,7 +139,7 @@ class MessageUserSubsetSheet: InteractiveSheetViewController {
     }
 
     public required init() {
-        fatalError("init() has not been implemented")
+        notImplemented()
     }
 
     // MARK: -

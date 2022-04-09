@@ -44,7 +44,7 @@ class EmojiPickerSectionToolbar: BlurredToolbarContainer {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     func createSectionButton(icon: ThemeIcon) -> UIButton {

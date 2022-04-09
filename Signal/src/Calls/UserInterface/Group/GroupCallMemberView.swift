@@ -70,7 +70,7 @@ class GroupCallMemberView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     enum ErrorState {
@@ -180,7 +180,7 @@ class GroupCallLocalMemberView: GroupCallMemberView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     private var hasBeenConfigured = false
@@ -316,7 +316,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     private var hasBeenConfigured = false

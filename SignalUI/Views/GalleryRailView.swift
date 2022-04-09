@@ -42,7 +42,7 @@ public class GalleryRailCellView: UIView {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: Actions
@@ -126,7 +126,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: Public

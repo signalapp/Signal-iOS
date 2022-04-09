@@ -415,7 +415,7 @@ private class ChatColorPicker: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     fileprivate func selectionDidChange(chatColorViewController: ChatColorViewController) {
@@ -588,7 +588,7 @@ private class ChatColorPicker: UIView {
         }
 
         required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+            notImplemented()
         }
 
         private func configure(chatColorViewController: ChatColorViewController,
@@ -698,7 +698,7 @@ private class ChatColorTooltip: TooltipView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc

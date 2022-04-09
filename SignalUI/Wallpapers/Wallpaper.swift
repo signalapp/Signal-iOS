@@ -503,7 +503,7 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
 
     @available(swift, obsoleted: 1.0)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     public static let contentDownscalingFactor: CGFloat = 8

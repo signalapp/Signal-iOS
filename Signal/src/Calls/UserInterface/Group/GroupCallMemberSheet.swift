@@ -18,7 +18,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     }
 
     public required init() {
-        fatalError("init() has not been implemented")
+        notImplemented()
     }
 
     deinit { call.removeObserver(self) }
@@ -295,7 +295,7 @@ private class GroupCallMemberCell: UITableViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     func configure(item: GroupCallMemberSheet.JoinedMember) {
@@ -345,6 +345,6 @@ private class GroupCallEmptyCell: UITableViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 }

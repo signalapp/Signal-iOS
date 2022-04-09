@@ -51,7 +51,7 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
     }
 
     public required init() {
-        fatalError("init() has not been implemented")
+        notImplemented()
     }
 
     fileprivate var replyLoader: StoryGroupReplyLoader?

@@ -458,7 +458,7 @@ public class ActionSheetAction: NSObject {
         }
 
         required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+            notImplemented()
         }
 
         public func applyActionSheetTheme(_ theme: Theme.ActionSheet) {

@@ -52,7 +52,7 @@ class BadgeCollectionView: UICollectionView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // MARK: - Sizing
@@ -231,7 +231,7 @@ class BadgeCollectionViewCell: UICollectionViewCell {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     override var isSelected: Bool {

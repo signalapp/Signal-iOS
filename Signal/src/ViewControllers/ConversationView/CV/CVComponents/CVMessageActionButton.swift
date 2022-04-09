@@ -16,7 +16,7 @@ public class CVMessageActionButton: CVLabel {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     private func configure() {

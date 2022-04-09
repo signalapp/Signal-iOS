@@ -26,7 +26,7 @@ open class ContactTableViewCell: UITableViewCell {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     private func configure() {

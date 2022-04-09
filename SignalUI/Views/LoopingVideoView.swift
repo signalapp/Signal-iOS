@@ -147,7 +147,7 @@ public class LoopingVideoView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     override public static var layerClass: AnyClass { AVPlayerLayer.self }

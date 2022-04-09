@@ -52,7 +52,7 @@ public class ResizingScrollView<ResizingViewType: ResizingView>: UIView, UIScrol
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     private var current: State = .zero

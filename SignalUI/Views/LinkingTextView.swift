@@ -22,7 +22,7 @@ public class LinkingTextView: UITextView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     // required to prevent blue background selection from any situation

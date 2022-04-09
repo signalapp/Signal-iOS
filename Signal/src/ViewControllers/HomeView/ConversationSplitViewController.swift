@@ -76,7 +76,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

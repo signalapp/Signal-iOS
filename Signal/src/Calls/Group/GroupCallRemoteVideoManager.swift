@@ -174,7 +174,7 @@ class GroupCallRemoteVideoView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     deinit { videoTrack = nil }

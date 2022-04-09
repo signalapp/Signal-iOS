@@ -43,7 +43,7 @@ class MemberActionSheet: InteractiveSheetViewController {
     }
 
     public required init() {
-        fatalError("init() has not been implemented")
+        notImplemented()
     }
 
     static func fetchThreadViewModel(address: SignalServiceAddress) -> ThreadViewModel {

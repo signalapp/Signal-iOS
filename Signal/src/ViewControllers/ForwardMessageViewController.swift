@@ -48,11 +48,11 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     }
 
     required init() {
-        fatalError("init() has not been implemented")
+        notImplemented()
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     public class func present(forItemViewModels itemViewModels: [CVItemViewModelImpl],

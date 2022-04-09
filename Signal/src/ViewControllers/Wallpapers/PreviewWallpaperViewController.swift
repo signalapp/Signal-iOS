@@ -42,7 +42,7 @@ class PreviewWallpaperViewController: UIViewController {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -310,7 +310,7 @@ private class WallpaperPage: UIViewController {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     var wallpaperViewHeightPriorityConstraints = [NSLayoutConstraint]()
@@ -524,7 +524,7 @@ class BlurButton: UIButton {
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     override func layoutSubviews() {

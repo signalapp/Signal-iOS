@@ -57,7 +57,7 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
     }
 
     public required init() {
-        fatalError("init() has not been implemented")
+        notImplemented()
     }
 
     // MARK: -

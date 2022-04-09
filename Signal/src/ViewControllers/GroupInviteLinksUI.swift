@@ -11,7 +11,7 @@ public class GroupInviteLinksUI: UIView {
 
     @available(*, unavailable, message: "Do not instantiate this class.")
     required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc

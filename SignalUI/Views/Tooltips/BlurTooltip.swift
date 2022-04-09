@@ -16,7 +16,7 @@ public class BlurTooltip: TooltipView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     @objc

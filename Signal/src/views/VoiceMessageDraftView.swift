@@ -81,7 +81,7 @@ class VoiceMessageDraftView: UIStackView, OWSAudioPlayerDelegate {
     }
 
     required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     private var isScrubbing = false

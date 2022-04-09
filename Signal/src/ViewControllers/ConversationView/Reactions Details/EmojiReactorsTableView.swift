@@ -26,7 +26,7 @@ class EmojiReactorsTableView: UITableView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     func configure(for reactions: [OWSReaction], transaction: SDSAnyReadTransaction) {
@@ -98,7 +98,7 @@ private class EmojiReactorCell: UITableViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     func configure(item: EmojiReactorsTableView.ReactorItem) {

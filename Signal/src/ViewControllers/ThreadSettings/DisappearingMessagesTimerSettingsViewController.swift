@@ -319,7 +319,7 @@ private class CustomTimePicker: UIPickerView, UIPickerViewDataSource, UIPickerVi
     }
 
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        notImplemented()
     }
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 2 }
