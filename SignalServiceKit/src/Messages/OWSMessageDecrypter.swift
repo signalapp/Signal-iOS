@@ -320,7 +320,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return wrappedError
         }
 
-        guard !blockingManager.isAddressBlocked(sourceAddress) else {
+        guard !blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) else {
             Logger.info("Ignoring decryption error for blocked user \(sourceAddress) \(wrappedError).")
             return wrappedError
         }
@@ -613,7 +613,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return
         }
 
-        guard !blockingManager.isAddressBlocked(address) else {
+        guard !blockingManager.isAddressBlocked(address, transaction: transaction) else {
             Logger.info("Skipping send of reactive profile key to blocked address")
             return
         }

@@ -208,10 +208,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                           groupSecretParamsData: Data,
                                           groupUpdateMode: GroupUpdateMode,
                                           groupModelOptions: TSGroupModelOptions) -> Promise<TSGroupThread> {
-
-        guard !Self.blockingManager.isGroupIdBlocked(groupId) else {
-            return Promise(error: GroupsV2Error.groupBlocked)
-        }
         let isThrottled = { () -> Bool in
             guard groupUpdateMode.shouldThrottle else {
                 return false
@@ -224,13 +220,22 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) < refreshFrequency
         }()
 
-        if let groupThread = (databaseStorage.read { transaction in
-            TSGroupThread.fetch(groupId: groupId, transaction: transaction)
-        }) {
-            guard !isThrottled else {
+        let earlyPromise: Promise<TSGroupThread>? = databaseStorage.read {
+            // - If we're blocked, it's an immediate error
+            // - If we're throttled, return the current thread state if we have it
+            // - Otherwise, we want to proceed with group update
+            if blockingManager.isGroupIdBlocked(groupId, transaction: $0) {
+                return Promise(error: GroupsV2Error.groupBlocked)
+            } else if isThrottled, let thread = TSGroupThread.fetch(groupId: groupId, transaction: $0) {
                 Logger.verbose("Skipping redundant v2 group refresh.")
-                return Promise.value(groupThread)
+                return Promise.value(thread)
+            } else {
+                return nil
             }
+        }
+
+        if let earlyPromise = earlyPromise {
+            return earlyPromise
         }
 
         let operation = GroupV2UpdateOperation(groupId: groupId,

@@ -379,10 +379,17 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return
         }
-        guard (Self.databaseStorage.read { transaction in
-            !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
-                                                                       transaction: transaction)
-        }) else {
+
+        let (isPreExistingMember, isBlocked) = databaseStorage.read { readTx -> (Bool, Bool) in
+            let isPreexisting = groupMemberViewDelegate.groupMemberViewIsPreExistingMember(
+                recipient,
+                transaction: readTx)
+            let isBlocked = blockingManager.isAddressBlocked(address, transaction: readTx)
+
+            return (isPreexisting, isBlocked)
+        }
+
+        guard !isPreExistingMember else {
             owsFailDebug("Can't re-add pre-existing member.")
             return
         }
@@ -392,8 +399,6 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
-
         let addRecipientCompletion = { [weak self] in
             guard let self = self else {
                 return
@@ -527,7 +532,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
+        let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
 
         if isCurrentMember {
             return nil
@@ -555,7 +560,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = self.contactsViewHelper.isSignalServiceAddressBlocked(address)
+        let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
         let isPreExistingMember = groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient,
                                                                                              transaction: transaction)
 

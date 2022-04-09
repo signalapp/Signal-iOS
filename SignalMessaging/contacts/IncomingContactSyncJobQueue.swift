@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -319,13 +319,13 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
 
         if contactDetails.isBlocked {
-            if !self.blockingManager.isAddressBlocked(contactDetails.address) {
+            if !self.blockingManager.isAddressBlocked(contactDetails.address, transaction: transaction) {
                 self.blockingManager.addBlockedAddress(contactDetails.address,
                                                        blockMode: .remote,
                                                        transaction: transaction)
             }
         } else {
-            if self.blockingManager.isAddressBlocked(contactDetails.address) {
+            if self.blockingManager.isAddressBlocked(contactDetails.address, transaction: transaction) {
                 self.blockingManager.removeBlockedAddress(contactDetails.address,
                                                           wasLocallyInitiated: false,
                                                           transaction: transaction)

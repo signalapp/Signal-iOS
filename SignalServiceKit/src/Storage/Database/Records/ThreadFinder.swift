@@ -167,7 +167,7 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
 
         // If this thread is blocked AND we're still in the thread, show the message
         // request view regardless of if we have sent messages or not.
-        if blockingManager.isThreadBlocked(thread) { return true }
+        if blockingManager.isThreadBlocked(thread, transaction: transaction.asAnyRead) { return true }
 
         let isGroupThread = thread is TSGroupThread
         let isLocalUserInGroup = (thread as? TSGroupThread)?.isLocalUserFullOrInvitedMember == true
