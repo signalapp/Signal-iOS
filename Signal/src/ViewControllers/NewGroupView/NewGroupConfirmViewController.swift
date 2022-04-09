@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -379,7 +379,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
         let alertTitle: String
         let alertMessage: String
-        if pendingMembers.count > 0 {
+        if pendingMembers.count > 1 {
             let alertTitleFormat = NSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT",
                                            comment: "Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }}")
             alertTitle = String(format: alertTitleFormat, OWSFormat.formatInt(pendingMembers.count))
