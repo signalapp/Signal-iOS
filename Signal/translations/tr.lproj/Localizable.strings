@@ -785,7 +785,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Hangi kişilerinizin Signal kullandığını görmek için iOS Ayarlar uygulamasından kişiler erişimini etkinleştirebilirsiniz.";
 
 /* Configure reactions title text */
-"CONFIGURE_REACTIONS" = "Configure Reactions";
+"CONFIGURE_REACTIONS" = "Reaksiyonları Yapılandır";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "Bu, iletilerinizi silerek uygulamayı sıfırlayacaktır. Bu işlem tamamlandıktan sonra uygulama kapanacaktır.";
@@ -6110,52 +6110,52 @@
 "STICKERS_UNINSTALL_BUTTON" = "Kaldır";
 
 /* Text indication a story caption can be tapped to read more. */
-"STORIES_CAPTION_READ_MORE" = "Read more";
+"STORIES_CAPTION_READ_MORE" = "Devamını oku";
 
 /* Context menu action to copy the selected story reply */
-"STORIES_COPY_REPLY_ACTION" = "Copy";
+"STORIES_COPY_REPLY_ACTION" = "Kopyala";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "Delete";
+"STORIES_DELETE_REPLY_ACTION" = "Sil";
 
 /* Context menu action to forward the selected story */
-"STORIES_FORWARD_STORY_ACTION" = "Forward";
+"STORIES_FORWARD_STORY_ACTION" = "Yönlendir";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "Sohbete Git";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "Hikayeyi Gizle";
 
 /* Context menu action to privately reply to the selected story reply */
 "STORIES_PRIVATE_REPLY_ACTION" = "Private Reply";
 
 /* Context menu action to share the selected story */
-"STORIES_SHARE_STORY_ACTION" = "Share";
+"STORIES_SHARE_STORY_ACTION" = "Paylaş";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "Hikayeler";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Bağlantıyı ziyaret et";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> yanıt";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> yanıt";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Reply";
+"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Cevapla";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reacted to the story";
 
 /* placeholder text for replying to a story */
-"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
+"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Cevapla";
 
 /* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "You";
+"STORY_REPLY_YOU_AUTHOR" = "Siz";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Rozetler";

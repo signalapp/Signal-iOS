@@ -587,16 +587,16 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Indgående lydopkald ...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Ubesvaret lydopkald kl. %@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Mistet lydopkald";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Ubesvaret lydopkald";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Ubesvaret lydopkald den %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Ubesvaret lydopkald %@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivere mikrofonadgang i iOS Indstillinger-appen for at foretage opkald og optage talebeskeder i Signal.";
@@ -629,16 +629,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Indgående videoopkald ...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Ubesvaret videoopkald kl. %@";
 
 /* notification body for a call that was just missed */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Mistet videoopkald";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Ubesvaret videoopkald";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Ubesvaret videoopkald den %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Ubesvaret videoopkald %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Besvar uden video";
@@ -3005,7 +3005,7 @@
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Besvares på en anden enhed";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Mistet pga. et igangværende opkald på en anden enhed.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Misset pga. et igangværende opkald på en anden enhed.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Afvises på anden enhed";
@@ -6110,28 +6110,28 @@
 "STICKERS_UNINSTALL_BUTTON" = "Afinstallér";
 
 /* Text indication a story caption can be tapped to read more. */
-"STORIES_CAPTION_READ_MORE" = "Read more";
+"STORIES_CAPTION_READ_MORE" = "Læs mere";
 
 /* Context menu action to copy the selected story reply */
-"STORIES_COPY_REPLY_ACTION" = "Copy";
+"STORIES_COPY_REPLY_ACTION" = "Kopiér";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "Delete";
+"STORIES_DELETE_REPLY_ACTION" = "Slet";
 
 /* Context menu action to forward the selected story */
-"STORIES_FORWARD_STORY_ACTION" = "Forward";
+"STORIES_FORWARD_STORY_ACTION" = "Videresend";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "Gå til samtale";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "Skjul historie";
 
 /* Context menu action to privately reply to the selected story reply */
-"STORIES_PRIVATE_REPLY_ACTION" = "Private Reply";
+"STORIES_PRIVATE_REPLY_ACTION" = "Privat svar";
 
 /* Context menu action to share the selected story */
-"STORIES_SHARE_STORY_ACTION" = "Share";
+"STORIES_SHARE_STORY_ACTION" = "Del";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Historier";
@@ -6140,22 +6140,22 @@
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Besøg link";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> svar";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> svar";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Reply";
+"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Besvar";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "Reagerede på historien";
 
 /* placeholder text for replying to a story */
-"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
+"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Besvar";
 
 /* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "You";
+"STORY_REPLY_YOU_AUTHOR" = "Dig";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Emblemer";

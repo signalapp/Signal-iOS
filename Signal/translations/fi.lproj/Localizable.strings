@@ -587,16 +587,16 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Saapuva äänipuhelu…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Vastaamaton äänipuhelu kello %@";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Vastaamaton äänipuhelu";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Vastaamaton äänipuhelu %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Vastaamaton äänipuhelu %@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Soita puheluita ja lähetä ääniviestejä sallimalla mikrofonin käyttö iOS:n asetuksissa.";
@@ -629,16 +629,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Saapuva videopuhelu…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Vastaamaton videopuhelu kello %@";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Vastaamaton videopuhelu";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Vastaamaton videopuhelu %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Vastaamaton videopuhelu %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Vastaa ilman videota";
@@ -6110,28 +6110,28 @@
 "STICKERS_UNINSTALL_BUTTON" = "Poista";
 
 /* Text indication a story caption can be tapped to read more. */
-"STORIES_CAPTION_READ_MORE" = "Read more";
+"STORIES_CAPTION_READ_MORE" = "Lue lisää";
 
 /* Context menu action to copy the selected story reply */
-"STORIES_COPY_REPLY_ACTION" = "Copy";
+"STORIES_COPY_REPLY_ACTION" = "Kopioi";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "Delete";
+"STORIES_DELETE_REPLY_ACTION" = "Poista";
 
 /* Context menu action to forward the selected story */
-"STORIES_FORWARD_STORY_ACTION" = "Forward";
+"STORIES_FORWARD_STORY_ACTION" = "Välitä";
 
 /* Context menu action to open the chat associated with the selected story */
-"STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
+"STORIES_GO_TO_CHAT_ACTION" = "Siirry keskusteluun";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "Piilota tarina";
 
 /* Context menu action to privately reply to the selected story reply */
-"STORIES_PRIVATE_REPLY_ACTION" = "Private Reply";
+"STORIES_PRIVATE_REPLY_ACTION" = "Yksityinen vastaus";
 
 /* Context menu action to share the selected story */
-"STORIES_SHARE_STORY_ACTION" = "Share";
+"STORIES_SHARE_STORY_ACTION" = "Jaa";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Tarinat";
@@ -6140,22 +6140,22 @@
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Avaa linkki";
 
 /* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
+"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> vastaus";
 
 /* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> replies";
+"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> vastausta";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Reply";
+"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Vastaa";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "Reagoi tarinaan";
 
 /* placeholder text for replying to a story */
-"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
+"STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Vastaa";
 
 /* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "You";
+"STORY_REPLY_YOU_AUTHOR" = "Sinä";
 
 /* Title for the 'Badges' button in sustainer view. */
 "SUBSCRIBER_BADGES" = "Kunniamerkit";
