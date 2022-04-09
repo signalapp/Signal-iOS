@@ -116,8 +116,9 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
         guard let thread = thread else {
             return owsFailDebug("Unexpectedly missing thread")
         }
+        let isThreadBlocked = databaseStorage.read { blockingManager.isThreadBlocked(thread, transaction: $0) }
 
-        guard !blockingManager.isThreadBlocked(thread) else {
+        guard !isThreadBlocked else {
             BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
                 guard !isBlocked else { return }
                 self?.tryToSendMessage(message)
