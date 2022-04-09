@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,7 +26,7 @@ extension DeviceTransferService {
             throw OWSAssertionError("failed to get base64 certificate hash")
         }
 
-        guard let base64PeerId = NSKeyedArchiver.archivedData(withRootObject: peerId).base64EncodedString().encodeURIComponent else {
+        guard let base64PeerId = try NSKeyedArchiver.archivedData(withRootObject: peerId, requiringSecureCoding: false).base64EncodedString().encodeURIComponent else {
             throw OWSAssertionError("failed to get base64 peerId")
         }
 
@@ -73,7 +73,7 @@ extension DeviceTransferService {
         guard let base64PeerId = queryItemsDictionary[DeviceTransferService.peerIdKey],
             let uriDecodedPeerId = base64PeerId.removingPercentEncoding,
             let peerIdData = Data(base64Encoded: uriDecodedPeerId),
-            let peerId = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(peerIdData) as? MCPeerID else {
+            let peerId = try NSKeyedUnarchiver.unarchivedObject(ofClass: MCPeerID.self, from: peerIdData) else {
                 throw OWSAssertionError("failed to decode MCPeerId")
         }
 
