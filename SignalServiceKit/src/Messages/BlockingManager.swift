@@ -512,10 +512,12 @@ extension BlockingManager {
 
             var didInsert = false
             if let phoneNumber = address.phoneNumber {
-                didInsert = didInsert || blockedPhoneNumbers.insert(phoneNumber).inserted
+                let result = blockedPhoneNumbers.insert(phoneNumber)
+                didInsert = didInsert || result.inserted
             }
             if let uuidString = address.uuidString {
-                didInsert = didInsert || blockedUUIDStrings.insert(uuidString).inserted
+                let result = blockedUUIDStrings.insert(uuidString)
+                didInsert = didInsert || result.inserted
             }
             isDirty = isDirty || didInsert
             return didInsert
