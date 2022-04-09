@@ -205,9 +205,9 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
                 OWSLogWarn(@"Skipping send for blocked address: %@", address);
                 // If an address is blocked, we don't bother sending a receipt.
                 // We remove it from our fetched list, and dequeue it from our pending receipt set
-                [receiptSetsToSend removeObjectForKey:address];
                 MessageReceiptSet *receiptSet = receiptSetsToSend[address];
                 [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
+                [receiptSetsToSend removeObjectForKey:address];
             }
             queuedReceiptMap = [receiptSetsToSend copy];
         }

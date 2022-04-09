@@ -57,7 +57,7 @@ public class BlockingManager: NSObject {
     }
 
     fileprivate func withCurrentState<T>(transaction: SDSAnyReadTransaction, _ handler: (State) -> T) -> T {
-        return lock.withLock {
+        lock.withLock {
             state.reloadIfNecessary(transaction)
             return handler(state)
         }
@@ -65,7 +65,7 @@ public class BlockingManager: NSObject {
 
     @discardableResult
     fileprivate func updateCurrentState(transaction: SDSAnyWriteTransaction, wasLocallyInitiated: Bool, _ handler: (inout State) -> Void) -> Bool {
-        return lock.withLock {
+        lock.withLock {
             state.reloadIfNecessary(transaction)
             handler(&state)
             let didUpdate = state.persistIfNecessary(transaction)
@@ -95,7 +95,10 @@ extension BlockingManager {
 
     @objc
     public func isAddressBlocked(_ address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        withCurrentState(transaction: transaction) { state in
+        guard !address.isLocalAddress else {
+            return false
+        }
+        return withCurrentState(transaction: transaction) { state in
             if let phoneNumber = address.phoneNumber, state.blockedPhoneNumbers.contains(phoneNumber) {
                 return true
             }
@@ -149,6 +152,10 @@ extension BlockingManager {
             owsFailDebug("Invalid address: \(address).")
             return
         }
+        guard !address.isLocalAddress else {
+            owsFailDebug("Cannot block the local address")
+            return
+        }
         updateCurrentState(transaction: transaction, wasLocallyInitiated: blockMode.locallyInitiated) { state in
             let didAdd = state.addBlockedAddress(address)
             if didAdd && blockMode.locallyInitiated {
@@ -160,6 +167,10 @@ extension BlockingManager {
     @objc public func removeBlockedAddress(_ address: SignalServiceAddress, wasLocallyInitiated: Bool, transaction: SDSAnyWriteTransaction) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
+            return
+        }
+        guard !address.isLocalAddress else {
+            owsFailDebug("Cannot unblock the local address")
             return
         }
         updateCurrentState(transaction: transaction, wasLocallyInitiated: wasLocallyInitiated) { state in
@@ -461,13 +472,9 @@ extension BlockingManager {
                 // If we don't have a last synced change token, we can use the existence of one of our
                 // old KVS keys as a hint that we may need to sync. If they don't exist this is
                 // probably a fresh install and we don't need to sync.
-                func storesValueForKey(key: String) -> Bool {
-                    Self.keyValueStore.hasValue(forKey: key, transaction: readTx)
+                let hasOldKey = PersistenceKey.Legacy.allCases.contains { key in
+                    Self.keyValueStore.hasValue(forKey: key.rawValue, transaction: readTx)
                 }
-                var hasOldKey = false
-                hasOldKey = hasOldKey || storesValueForKey(key: Keys.legacy_syncedBlockedUUIDsKey.rawValue)
-                hasOldKey = hasOldKey || storesValueForKey(key: Keys.legacy_syncedBlockedPhoneNumbersKey.rawValue)
-                hasOldKey = hasOldKey || storesValueForKey(key: Keys.legacy_syncedBlockedGroupIdsKey.rawValue)
                 return hasOldKey
             }
         }
@@ -485,8 +492,12 @@ extension BlockingManager {
             blockedPhoneNumbers = Set()
             blockedUUIDStrings = Set()
             blockedAddresses.forEach { blockedAddress in
-                blockedAddress.phoneNumber.map { _ = blockedPhoneNumbers.insert($0) }
-                blockedAddress.uuidString.map { _ = blockedUUIDStrings.insert($0) }
+                if let phoneNumber = blockedAddress.phoneNumber {
+                    blockedPhoneNumbers.insert(phoneNumber)
+                }
+                if let uuidString = blockedAddress.uuidString {
+                    blockedUUIDStrings.insert(uuidString)
+                }
             }
 
             isDirty = false
@@ -500,13 +511,11 @@ extension BlockingManager {
             owsAssertDebug(changeToken != Self.invalidChangeToken)
 
             var didInsert = false
-            if let phoneNumber = address.phoneNumber, !blockedPhoneNumbers.contains(phoneNumber) {
-                blockedPhoneNumbers.insert(phoneNumber)
-                didInsert = true
+            if let phoneNumber = address.phoneNumber {
+                didInsert = didInsert || blockedPhoneNumbers.insert(phoneNumber).inserted
             }
-            if let uuidString = address.uuidString, !blockedUUIDStrings.contains(uuidString) {
-                blockedUUIDStrings.insert(uuidString)
-                didInsert = true
+            if let uuidString = address.uuidString {
+                didInsert = didInsert || blockedUUIDStrings.insert(uuidString).inserted
             }
             isDirty = isDirty || didInsert
             return didInsert
@@ -555,25 +564,26 @@ extension BlockingManager {
 
         static let keyValueStore = SDSKeyValueStore(collection: "kOWSBlockingManager_BlockedPhoneNumbersCollection")
 
-        enum Keys: String {
-            // Currently in use
+        enum PersistenceKey: String {
             case changeTokenKey = "kOWSBlockingManager_ChangeTokenKey"
             case lastSyncedChangeTokenKey = "kOWSBlockingManager_LastSyncedChangeTokenKey"
             case blockedPhoneNumbersKey = "kOWSBlockingManager_BlockedPhoneNumbersKey"
             case blockedUUIDsKey = "kOWSBlockingManager_BlockedUUIDsKey"
             case blockedGroupMapKey = "kOWSBlockingManager_BlockedGroupMapKey"
 
-            // Legacy
-            case legacy_syncedBlockedPhoneNumbersKey = "kOWSBlockingManager_SyncedBlockedPhoneNumbersKey"
-            case legacy_syncedBlockedUUIDsKey = "kOWSBlockingManager_SyncedBlockedUUIDsKey"
-            case legacy_syncedBlockedGroupIdsKey = "kOWSBlockingManager_SyncedBlockedGroupIdsKey"
+            // No longer in use
+            enum Legacy: String, CaseIterable {
+                case syncedBlockedPhoneNumbersKey = "kOWSBlockingManager_SyncedBlockedPhoneNumbersKey"
+                case syncedBlockedUUIDsKey = "kOWSBlockingManager_SyncedBlockedUUIDsKey"
+                case syncedBlockedGroupIdsKey = "kOWSBlockingManager_SyncedBlockedGroupIdsKey"
+            }
         }
 
         mutating func reloadIfNecessary(_ transaction: SDSAnyReadTransaction) {
             owsAssertDebug(isDirty == false)
 
             let databaseChangeToken: UInt64 = Self.keyValueStore.getUInt64(
-                Keys.changeTokenKey.rawValue,
+                PersistenceKey.changeTokenKey.rawValue,
                 defaultValue: Self.initialChangeToken,
                 transaction: transaction)
 
@@ -587,12 +597,12 @@ extension BlockingManager {
                     }
                 }
                 changeToken = Self.keyValueStore.getUInt64(
-                    Keys.changeTokenKey.rawValue,
+                    PersistenceKey.changeTokenKey.rawValue,
                     defaultValue: Self.initialChangeToken,
                     transaction: transaction)
-                blockedPhoneNumbers = Set(fetchObject(of: [String].self, key: Keys.blockedPhoneNumbersKey.rawValue, defaultValue: []))
-                blockedUUIDStrings = Set(fetchObject(of: [String].self, key: Keys.blockedUUIDsKey.rawValue, defaultValue: []))
-                blockedGroupMap = fetchObject(of: [Data: TSGroupModel].self, key: Keys.blockedGroupMapKey.rawValue, defaultValue: [:])
+                blockedPhoneNumbers = Set(fetchObject(of: [String].self, key: PersistenceKey.blockedPhoneNumbersKey.rawValue, defaultValue: []))
+                blockedUUIDStrings = Set(fetchObject(of: [String].self, key: PersistenceKey.blockedUUIDsKey.rawValue, defaultValue: []))
+                blockedGroupMap = fetchObject(of: [Data: TSGroupModel].self, key: PersistenceKey.blockedGroupMapKey.rawValue, defaultValue: [:])
                 isDirty = false
             }
         }
@@ -605,16 +615,16 @@ extension BlockingManager {
 
             if isDirty {
                 let databaseChangeToken = Self.keyValueStore.getUInt64(
-                    Keys.changeTokenKey.rawValue,
+                    PersistenceKey.changeTokenKey.rawValue,
                     defaultValue: Self.initialChangeToken,
                     transaction: transaction)
                 owsAssertDebug(databaseChangeToken == changeToken)
 
                 changeToken = databaseChangeToken + 1
-                Self.keyValueStore.setUInt64(changeToken, key: Keys.changeTokenKey.rawValue, transaction: transaction)
-                Self.keyValueStore.setObject(Array(blockedPhoneNumbers), key: Keys.blockedPhoneNumbersKey.rawValue, transaction: transaction)
-                Self.keyValueStore.setObject(Array(blockedUUIDStrings), key: Keys.blockedUUIDsKey.rawValue, transaction: transaction)
-                Self.keyValueStore.setObject(blockedGroupMap, key: Keys.blockedGroupMapKey.rawValue, transaction: transaction)
+                Self.keyValueStore.setUInt64(changeToken, key: PersistenceKey.changeTokenKey.rawValue, transaction: transaction)
+                Self.keyValueStore.setObject(Array(blockedPhoneNumbers), key: PersistenceKey.blockedPhoneNumbersKey.rawValue, transaction: transaction)
+                Self.keyValueStore.setObject(Array(blockedUUIDStrings), key: PersistenceKey.blockedUUIDsKey.rawValue, transaction: transaction)
+                Self.keyValueStore.setObject(blockedGroupMap, key: PersistenceKey.blockedGroupMapKey.rawValue, transaction: transaction)
                 isDirty = false
                 return true
 
@@ -624,11 +634,11 @@ extension BlockingManager {
         }
 
         static func fetchLastSyncedChangeToken(_ readTx: SDSAnyReadTransaction) -> UInt64? {
-            Self.keyValueStore.getUInt64(Keys.lastSyncedChangeTokenKey.rawValue, transaction: readTx)
+            Self.keyValueStore.getUInt64(PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: readTx)
         }
 
         static func setLastSyncedChangeToken(_ newValue: UInt64, transaction writeTx: SDSAnyWriteTransaction) {
-            Self.keyValueStore.setUInt64(newValue, key: Keys.lastSyncedChangeTokenKey.rawValue, transaction: writeTx)
+            Self.keyValueStore.setUInt64(newValue, key: PersistenceKey.lastSyncedChangeTokenKey.rawValue, transaction: writeTx)
         }
     }
 }

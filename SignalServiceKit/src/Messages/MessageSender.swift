@@ -673,12 +673,7 @@ extension MessageSender {
                 owsFailDebug("Message send recipients should not include self.")
             }
             return Array(recipientAddresses)
-        } else if let contactThread = thread as? TSContactThread {
-            let contactAddress = contactThread.contactAddress
-            if contactAddress.isLocalAddress {
-                return [contactAddress]
-            }
-
+        } else if let contactAddress = (thread as? TSContactThread)?.contactAddress {
             // Treat 1:1 sends to blocked contacts as failures.
             // If we block a user, don't send 1:1 messages to them. The UI
             // should prevent this from occurring, but in some edge cases

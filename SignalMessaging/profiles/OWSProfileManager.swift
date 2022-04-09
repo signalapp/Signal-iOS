@@ -211,7 +211,7 @@ public extension OWSProfileManager {
 
         return allWhitelistedNumbers.filter { candidate in
             let address = SignalServiceAddress(phoneNumber: candidate)
-            return !address.isLocalAddress && blockingManager.isAddressBlocked(address, transaction: readTx)
+            return blockingManager.isAddressBlocked(address, transaction: readTx)
         }
     }
 
@@ -221,7 +221,7 @@ public extension OWSProfileManager {
 
         return allWhitelistedUUIDs.filter { candidate in
             let address = SignalServiceAddress(uuidString: candidate)
-            return !address.isLocalAddress && blockingManager.isAddressBlocked(address, transaction: readTx)
+            return blockingManager.isAddressBlocked(address, transaction: readTx)
         }
     }
 

@@ -18,7 +18,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
 
     // MARK: Mutations
 
-    func testAddBlockedAddress() {
+    func testAddBlockedItems() {
         // Setup
         let originalChangeToken = dut.changeToken
         let blockedGroup = generateRandomGroupModel()
@@ -48,7 +48,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         XCTAssertTrue(dut.changeToken == originalChangeToken, "Change tokens shouldn't update until we persist")
     }
 
-    func testRemoveBlockedAddress() {
+    func testRemoveBlockedItems() {
         // Setup
         let originalChangeToken = dut.changeToken
 
@@ -195,15 +195,15 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         let oldUUIDStrings = oldAddresses.compactMap { $0.uuidString }
         let oldGroupMap = generateGroupMap(count: 30)
 
-        typealias Keys = BlockingManager.State.Keys
+        typealias Key = BlockingManager.State.PersistenceKey
         let storage = BlockingManager.State.keyValueStore
         databaseStorage.write {
-            storage.setObject(oldPhoneNumberStrings, key: Keys.blockedPhoneNumbersKey.rawValue, transaction: $0)
-            storage.setObject(oldPhoneNumberStrings, key: Keys.legacy_syncedBlockedPhoneNumbersKey.rawValue, transaction: $0)
-            storage.setObject(oldUUIDStrings, key: Keys.blockedUUIDsKey.rawValue, transaction: $0)
-            storage.setObject(oldUUIDStrings, key: Keys.legacy_syncedBlockedUUIDsKey.rawValue, transaction: $0)
-            storage.setObject(oldGroupMap, key: Keys.blockedGroupMapKey.rawValue, transaction: $0)
-            storage.setObject(Array(oldGroupMap.keys), key: Keys.legacy_syncedBlockedGroupIdsKey.rawValue, transaction: $0)
+            storage.setObject(oldPhoneNumberStrings, key: Key.blockedPhoneNumbersKey.rawValue, transaction: $0)
+            storage.setObject(oldPhoneNumberStrings, key: Key.Legacy.syncedBlockedPhoneNumbersKey.rawValue, transaction: $0)
+            storage.setObject(oldUUIDStrings, key: Key.blockedUUIDsKey.rawValue, transaction: $0)
+            storage.setObject(oldUUIDStrings, key: Key.Legacy.syncedBlockedUUIDsKey.rawValue, transaction: $0)
+            storage.setObject(oldGroupMap, key: Key.blockedGroupMapKey.rawValue, transaction: $0)
+            storage.setObject(Array(oldGroupMap.keys), key: Key.Legacy.syncedBlockedGroupIdsKey.rawValue, transaction: $0)
         }
 
         databaseStorage.read {

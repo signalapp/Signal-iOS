@@ -380,7 +380,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             return
         }
 
-        let (isPreexistingMember, isBlocked) = databaseStorage.read { readTx -> (Bool, Bool) in
+        let (isPreExistingMember, isBlocked) = databaseStorage.read { readTx -> (Bool, Bool) in
             let isPreexisting = groupMemberViewDelegate.groupMemberViewIsPreExistingMember(
                 recipient,
                 transaction: readTx)
@@ -389,7 +389,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             return (isPreexisting, isBlocked)
         }
 
-        guard !isPreexistingMember else {
+        guard !isPreExistingMember else {
             owsFailDebug("Can't re-add pre-existing member.")
             return
         }
