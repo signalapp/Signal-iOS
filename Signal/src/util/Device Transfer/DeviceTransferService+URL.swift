@@ -26,7 +26,7 @@ extension DeviceTransferService {
             throw OWSAssertionError("failed to get base64 certificate hash")
         }
 
-        guard let base64PeerId = try NSKeyedArchiver.archivedData(withRootObject: peerId, requiringSecureCoding: false).base64EncodedString().encodeURIComponent else {
+        guard let base64PeerId = try NSKeyedArchiver.archivedData(withRootObject: peerId, requiringSecureCoding: true).base64EncodedString().encodeURIComponent else {
             throw OWSAssertionError("failed to get base64 peerId")
         }
 
