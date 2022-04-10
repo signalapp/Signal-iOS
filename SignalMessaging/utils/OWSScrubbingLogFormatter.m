@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         NSError *error;
         regex = [NSRegularExpression
-            regularExpressionWithPattern:@"\\{length = \\d+, bytes = 0x([\\da-f]{2})([\\da-f]{2})*\\}"
+            regularExpressionWithPattern:@"\\{length = \\d+, bytes = 0x([\\da-f]{2})[\\.\\da-f ]*\\}"
                                  options:NSRegularExpressionCaseInsensitive
                                    error:&error];
         if (error || !regex) {
