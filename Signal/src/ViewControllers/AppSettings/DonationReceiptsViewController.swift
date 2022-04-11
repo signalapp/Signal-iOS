@@ -187,6 +187,13 @@ class DonationReceiptsViewController: OWSTableViewController2 {
             sectionForThisYear.add(tableItem)
         }
 
+        let footerSection = OWSTableSection()
+        footerSection.footerTitle = NSLocalizedString(
+            "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED",
+            comment: "Text at the bottom of the donation receipts list, telling users that receipts might not be available"
+        )
+        result.append(footerSection)
+
         return result
     }
 }
