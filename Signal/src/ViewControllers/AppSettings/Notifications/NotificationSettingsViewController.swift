@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -140,7 +140,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         let currentValue = databaseStorage.read { SSKPreferences.includeMutedThreadsInBadgeCount(transaction: $0) }
         guard currentValue != sender.isOn else { return }
         databaseStorage.write { SSKPreferences.setIncludeMutedThreadsInBadgeCount(sender.isOn, transaction: $0) }
-        OWSMessageUtils.updateApplicationBadgeCount()
+        messageManager.updateApplicationBadgeCount()
     }
 
     @objc

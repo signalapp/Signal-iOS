@@ -20,7 +20,6 @@
 #import "OWSGroupInfoRequestMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSMessageUtils.h"
 #import "OWSOutgoingReceiptManager.h"
 #import "OWSReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
@@ -96,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     // When app is not active, we should update badge count whenever
     // changes to interactions are committed.
     if (CurrentAppContext().isMainApp && !CurrentAppContext().isMainAppAndActive) {
-        [OWSMessageUtils updateApplicationBadgeCount];
+        [self updateApplicationBadgeCount];
     }
 }
 
@@ -111,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [OWSMessageUtils updateApplicationBadgeCount];
+    [self updateApplicationBadgeCount];
 }
 
 - (void)databaseChangesDidUpdateExternally
@@ -119,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    [OWSMessageUtils updateApplicationBadgeCount];
+    [self updateApplicationBadgeCount];
 }
 
 - (void)databaseChangesDidReset
@@ -127,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    [OWSMessageUtils updateApplicationBadgeCount];
+    [self updateApplicationBadgeCount];
 }
 
 #pragma mark - Blocking

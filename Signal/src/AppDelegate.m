@@ -780,7 +780,7 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         [AppEnvironment.shared.notificationPresenter clearAllNotifications];
-        [OWSMessageUtils updateApplicationBadgeCount];
+        [self.messageManager updateApplicationBadgeCount];
     });
 }
 
