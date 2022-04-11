@@ -18,6 +18,15 @@ public class StoryManager: NSObject {
         // Drop all story messages until the feature is enabled.
         guard FeatureFlags.stories else { return }
 
+        guard StoryFinder.story(
+            timestamp: timestamp,
+            author: author,
+            transaction: transaction
+        ) == nil else {
+            owsFailDebug("Dropping duplicate story message with timestamp \(timestamp) from author \(author)")
+            return
+        }
+
         guard let message = try StoryMessage.create(
             withIncomingStoryMessage: storyMessage,
             timestamp: timestamp,
