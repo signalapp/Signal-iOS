@@ -11,6 +11,7 @@ public enum PhotoGridItemType {
 
 public protocol PhotoGridItem: AnyObject {
     var type: PhotoGridItemType { get }
+    var duration: TimeInterval { get } // proxy to PHAsset.duration, always 0 for non-movie assets
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage?
 }
 
@@ -20,7 +21,9 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
     public let imageView: UIImageView
 
-    private let contentTypeBadgeView: UIImageView
+    private var contentTypeBadgeView: UIImageView?
+    private var durationLabel: UILabel?
+    private var durationLabelBackground: UIView?
     private let outlineBadgeView: UIView
     private let selectedBadgeView: UIView
 
@@ -29,7 +32,6 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
     var item: PhotoGridItem?
 
-    private static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
     private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
     private static let selectedBadgeImage = UIImage(named: "media-composer-checkmark")
     public var loadingColor = Theme.washColor
@@ -46,7 +48,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
         }
     }
 
-    func updateSelectionState() {
+    private func updateSelectionState() {
         if isSelected {
             outlineBadgeView.isHidden = false
             selectedBadgeView.isHidden = false
@@ -70,13 +72,9 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         let selectionBadgeSize: CGFloat = 22
-        let contentTypeBadgeSize: CGFloat = 12
 
         imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-
-        contentTypeBadgeView = UIImageView()
-        contentTypeBadgeView.isHidden = true
 
         selectedBadgeView = CircleView(diameter: selectionBadgeSize)
         selectedBadgeView.backgroundColor = .ows_accentBlue
@@ -107,7 +105,6 @@ public class PhotoGridViewCell: UICollectionViewCell {
         clipsToBounds = true
 
         contentView.addSubview(imageView)
-        contentView.addSubview(contentTypeBadgeView)
         contentView.addSubview(highlightedMaskView)
         contentView.addSubview(selectedMaskView)
         contentView.addSubview(selectedBadgeView)
@@ -116,12 +113,6 @@ public class PhotoGridViewCell: UICollectionViewCell {
         imageView.autoPinEdgesToSuperviewEdges()
         highlightedMaskView.autoPinEdgesToSuperviewEdges()
         selectedMaskView.autoPinEdgesToSuperviewEdges()
-
-        // Note assets were rendered to match exactly. We don't want to re-size with
-        // content mode lest they become less legible.
-        contentTypeBadgeView.autoSetDimensions(to: CGSize(square: contentTypeBadgeSize))
-        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
-        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
 
         outlineBadgeView.autoSetDimensions(to: CGSize(square: selectionBadgeSize))
         outlineBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
@@ -137,6 +128,14 @@ public class PhotoGridViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if let durationLabel = durationLabel {
+            durationLabel.font = .ows_dynamicTypeCaption1.ows_semibold
+        }
+    }
+
     var image: UIImage? {
         get { return imageView.image }
         set {
@@ -145,12 +144,65 @@ public class PhotoGridViewCell: UICollectionViewCell {
         }
     }
 
-    var contentTypeBadgeImage: UIImage? {
-        get { return contentTypeBadgeView.image }
-        set {
-            contentTypeBadgeView.image = newValue
-            contentTypeBadgeView.isHidden = newValue == nil
+    private func setContentTypeBadge(image: UIImage?) {
+        guard image != nil else {
+            contentTypeBadgeView?.isHidden = true
+            return
         }
+
+        if contentTypeBadgeView == nil {
+            let contentTypeBadgeView = UIImageView()
+            contentView.addSubview(contentTypeBadgeView)
+            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 4)
+            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
+            self.contentTypeBadgeView = contentTypeBadgeView
+        }
+        contentTypeBadgeView?.isHidden = false
+        contentTypeBadgeView?.image = image
+        contentTypeBadgeView?.sizeToFit()
+    }
+
+    private func setMedia(duration: TimeInterval) {
+        guard duration > 0 else {
+            durationLabel?.isHidden = true
+            durationLabelBackground?.isHidden = true
+            return
+        }
+
+        if durationLabel == nil {
+            let durationLabel = UILabel()
+            durationLabel.textColor = .ows_gray05
+            durationLabel.font = .ows_dynamicTypeCaption1.ows_semibold
+            durationLabel.adjustsFontForContentSizeCategory = true
+            self.durationLabel = durationLabel
+        }
+        if durationLabelBackground == nil {
+            let gradientView = GradientView(colors: [ (UIColor.clear, 0), (UIColor.ows_blackAlpha10, 0.5), (UIColor.ows_blackAlpha60, 1) ])
+            gradientView.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
+            gradientView.gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+            self.durationLabelBackground = gradientView
+        }
+
+        guard let durationLabel = durationLabel, let durationLabelBackground = durationLabelBackground else {
+            return
+        }
+
+        if durationLabel.superview == nil {
+            contentView.addSubview(durationLabel)
+            durationLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
+            durationLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
+        }
+        if durationLabelBackground.superview == nil {
+            contentView.insertSubview(durationLabelBackground, belowSubview: durationLabel)
+            durationLabelBackground.autoPinWidthToSuperview()
+            durationLabelBackground.autoPinEdge(toSuperviewEdge: .bottom)
+            durationLabelBackground.heightAnchor.constraint(equalTo: durationLabel.heightAnchor, multiplier: 4).isActive = true
+        }
+
+        durationLabel.isHidden = false
+        durationLabelBackground.isHidden = false
+        durationLabel.text = OWSFormat.localizedDurationString(from: duration)
+        durationLabel.sizeToFit()
     }
 
     public func configure(item: PhotoGridItem) {
@@ -178,13 +230,13 @@ public class PhotoGridViewCell: UICollectionViewCell {
             self.image = image
         }
 
+        setMedia(duration: item.duration)
+
         switch item.type {
-        case .video:
-            self.contentTypeBadgeImage = PhotoGridViewCell.videoBadgeImage
         case .animated:
-            self.contentTypeBadgeImage = PhotoGridViewCell.animatedBadgeImage
-        case .photo:
-            self.contentTypeBadgeImage = nil
+            setContentTypeBadge(image: PhotoGridViewCell.animatedBadgeImage)
+        case .photo, .video:
+            setContentTypeBadge(image: nil)
         }
     }
 
@@ -193,7 +245,9 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
         item = nil
         imageView.image = nil
-        contentTypeBadgeView.isHidden = true
+        contentTypeBadgeView?.isHidden = true
+        durationLabel?.isHidden = true
+        durationLabelBackground?.isHidden = true
         highlightedMaskView.isHidden = true
         selectedMaskView.isHidden = true
         selectedBadgeView.isHidden = true

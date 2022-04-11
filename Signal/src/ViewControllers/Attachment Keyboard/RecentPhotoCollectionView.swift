@@ -326,11 +326,9 @@ class RecentPhotoCell: UICollectionViewCell {
         }
 
         switch item.type {
-        case .video:
-            self.contentTypeBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
         case .animated:
             self.contentTypeBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
-        case .photo:
+        case .photo, .video:
             self.contentTypeBadgeImage = nil
         }
 

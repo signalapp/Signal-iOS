@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,6 +44,11 @@ class PhotoPickerAssetItem: PhotoGridItem {
         } else {
             return .photo
         }
+    }
+
+    var duration: TimeInterval {
+        guard asset.mediaType == .video else { return 0 }
+        return asset.duration
     }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
