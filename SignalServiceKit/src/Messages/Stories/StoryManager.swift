@@ -23,7 +23,19 @@ public class StoryManager: NSObject {
             author: author,
             transaction: transaction
         ) == nil else {
-            owsFailDebug("Dropping duplicate story message with timestamp \(timestamp) from author \(author)")
+            owsFailDebug("Dropping story message with duplicate timestamp \(timestamp) from author \(author)")
+            return
+        }
+
+        guard let thread: TSThread = {
+            if let masterKey = storyMessage.group?.masterKey,
+                let contextInfo = try? groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey) {
+                return TSGroupThread.fetch(groupId: contextInfo.groupId, transaction: transaction)
+            } else {
+                return TSContactThread.getWithContactAddress(author, transaction: transaction)
+            }
+        }(), !thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) else {
+            Logger.warn("Dropping story message with timestamp \(timestamp) from author \(author) with pending message request.")
             return
         }
 
