@@ -9,6 +9,7 @@ import SignalUI
 
 class StoriesViewController: OWSViewController {
     let tableView = UITableView()
+    private var presentedContextOrder: [StoryContext]?
     private var models = [IncomingStoryViewModel]()
 
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
@@ -209,6 +210,7 @@ class StoriesViewController: OWSViewController {
 
             DispatchQueue.main.async {
                 self.models = newModels
+                guard self.isViewLoaded else { return }
                 self.tableView.beginUpdates()
                 for update in batchUpdateItems {
                     switch update.updateType {
@@ -317,20 +319,8 @@ extension StoriesViewController: UITableViewDataSource {
 }
 
 extension StoriesViewController: StoryPageViewControllerDataSource {
-    func storyPageViewController(_ storyPageViewController: StoryPageViewController, storyContextBefore storyContext: StoryContext) -> StoryContext? {
-        guard let contextIndex = models.firstIndex(where: { $0.context == storyContext }),
-              let contextBefore = models[safe: contextIndex.advanced(by: -1)]?.context else {
-                  return nil
-              }
-        return contextBefore
-    }
-
-    func storyPageViewController(_ storyPageViewController: StoryPageViewController, storyContextAfter storyContext: StoryContext) -> StoryContext? {
-        guard let contextIndex = models.firstIndex(where: { $0.context == storyContext }),
-              let contextAfter = models[safe: contextIndex.advanced(by: 1)]?.context else {
-                  return nil
-              }
-        return contextAfter
+    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
+        models.map { $0.context }
     }
 }
 

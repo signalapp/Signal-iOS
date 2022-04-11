@@ -6,8 +6,7 @@ import Foundation
 import UIKit
 
 protocol StoryPageViewControllerDataSource: AnyObject {
-    func storyPageViewController(_ storyPageViewController: StoryPageViewController, storyContextBefore storyContext: StoryContext) -> StoryContext?
-    func storyPageViewController(_ storyPageViewController: StoryPageViewController, storyContextAfter storyContext: StoryContext) -> StoryContext?
+    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext]
 }
 
 class StoryPageViewController: UIPageViewController {
@@ -20,7 +19,10 @@ class StoryPageViewController: UIPageViewController {
     var currentContextViewController: StoryContextViewController {
         viewControllers!.first as! StoryContextViewController
     }
-    weak var contextDataSource: StoryPageViewControllerDataSource?
+    weak var contextDataSource: StoryPageViewControllerDataSource? {
+        didSet { initiallyAvailableContexts = contextDataSource?.storyPageViewControllerAvailableContexts(self) ?? [currentContext] }
+    }
+    lazy var initiallyAvailableContexts: [StoryContext] = [currentContext]
 
     required init(context: StoryContext) {
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
@@ -98,28 +100,44 @@ extension StoryPageViewController: UIPageViewControllerDelegate {
 
 extension StoryPageViewController: UIPageViewControllerDataSource {
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let contextBefore = contextDataSource?.storyPageViewController(self, storyContextBefore: currentContext) else {
-            return nil
-        }
-
+        guard let contextBefore = previousStoryContext else { return nil }
         return StoryContextViewController(context: contextBefore, delegate: self)
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let contextAfter = contextDataSource?.storyPageViewController(self, storyContextAfter: currentContext) else {
-            return nil
-        }
-
+        guard let contextAfter = nextStoryContext else { return nil }
         return StoryContextViewController(context: contextAfter, delegate: self)
     }
 }
 
 extension StoryPageViewController: StoryContextViewControllerDelegate {
+    var availableContexts: [StoryContext] {
+        guard let contextDataSource = contextDataSource else { return initiallyAvailableContexts }
+        let availableContexts = contextDataSource.storyPageViewControllerAvailableContexts(self)
+        return initiallyAvailableContexts.filter { availableContexts.contains($0) }
+    }
+
+    var previousStoryContext: StoryContext? {
+        guard let contextIndex = availableContexts.firstIndex(of: currentContext),
+              let contextBefore = availableContexts[safe: contextIndex.advanced(by: -1)] else {
+            return nil
+        }
+        return contextBefore
+    }
+
+    var nextStoryContext: StoryContext? {
+        guard let contextIndex = availableContexts.firstIndex(of: currentContext),
+              let contextAfter = availableContexts[safe: contextIndex.advanced(by: 1)] else {
+            return nil
+        }
+        return contextAfter
+    }
+
     func storyContextViewControllerWantsTransitionToNextContext(
         _ storyContextViewController: StoryContextViewController,
         loadPositionIfRead: StoryContextViewController.LoadPosition
     ) {
-        guard let nextContext = contextDataSource?.storyPageViewController(self, storyContextAfter: currentContext) else {
+        guard let nextContext = nextStoryContext else {
             dismiss(animated: true)
             return
         }
@@ -134,7 +152,7 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
         _ storyContextViewController: StoryContextViewController,
         loadPositionIfRead: StoryContextViewController.LoadPosition
     ) {
-        guard let previousContext = contextDataSource?.storyPageViewController(self, storyContextBefore: currentContext) else {
+        guard let previousContext = previousStoryContext else {
             storyContextViewController.resetForPresentation()
             return
         }
