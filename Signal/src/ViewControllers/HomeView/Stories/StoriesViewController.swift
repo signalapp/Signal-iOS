@@ -13,6 +13,12 @@ class StoriesViewController: OWSViewController {
 
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
+    override init() {
+        super.init()
+        reloadStories()
+        databaseStorage.appendDatabaseChangeDelegate(self)
+    }
+
     override func loadView() {
         view = tableView
         tableView.delegate = self
@@ -24,14 +30,11 @@ class StoriesViewController: OWSViewController {
 
         title = NSLocalizedString("STORIES_TITLE", comment: "Title for the stories view.")
 
-        databaseStorage.appendDatabaseChangeDelegate(self)
-
         tableView.register(StoryCell.self, forCellReuseIdentifier: StoryCell.reuseIdentifier)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 116
 
-        reloadStories()
         updateNavigationBar()
 
         tableView.addInteraction(contextMenu)
