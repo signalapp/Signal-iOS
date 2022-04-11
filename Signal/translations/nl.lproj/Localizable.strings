@@ -1394,7 +1394,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "Informatie over foutopsporingslogs";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Registratie opzeggen";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Registratie opzeggen & gegevens wissen";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Hiermee wis je al je Signal-gegevens zowel van de servers als van je telefoon. De Signal-app zal zichzelf sluiten nadat je dit doet.";
@@ -1424,7 +1424,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Bevestig je telefoonnummer";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Registratie opzeggen";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Registratie opzeggen & gegevens wissen";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Het telefoonnummer wat je hebt ingevuld komt niet overeen met het telefoonnummer wat je voor Signal gebruikt.";
@@ -6326,7 +6326,7 @@
 "SUSTAINER_VIEW_TITLE" = "Signal wordt onder andere gefinancierd door donaties van mensen zoals jij.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Vandaag wordt het volledige bedrag (%@) voor de maandelijkse donatie afgeschreven.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Het nieuw ingestelde bedrag (%@) zal vandaag al worden afgeschreven. Datzelfde bedrag zal dan steeds precies een maand later opnieuw worden afgeschreven.";
 
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Maandelijkse donaties bijwerken?";

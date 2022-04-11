@@ -5915,7 +5915,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Cacher l'écran dans le changeur d’appli";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Montrer la liste d'appels \"Récents\" dans l'application téléphone d'iOS.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Afficher les appels dans la liste « Récents » dans l'appli Téléphone d’iOS.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sons";

@@ -2960,7 +2960,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ tilføjede dig til gruppen";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Rediger forespørgsel";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Beskedanmodning";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Ingen fundne resultater for '%@'";
@@ -3422,16 +3422,16 @@
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Hvis du ikke er sikker på, hvem anmodningen er fra, skal du gennemgå kontakterne nedenfor og vælg en handling.";
 
 /* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Forespørgsel";
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Anmodning";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Gennemgå forespørgsel";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Gennemgå anmodning";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Opdatér kontakt";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Gennemgå forespørgsel";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Gennemgå anmodning";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Rapporteret som spam og blokeret.";
@@ -3476,7 +3476,7 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Ophæv blokade";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Annullér forespørgsel";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Annullér anmodning";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Annuller din anmodning om at deltage i gruppen?";
@@ -4025,7 +4025,7 @@
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "Til %@";
 
 /* Label for the 'new payment request' button. */
-"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Forespørgsel";
+"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Anmodning";
 
 /* Label for the payments notification banner for a single payment notification. */
 "PAYMENTS_NOTIFICATION_BANNER_1" = "1 ny betalingsnotifikation";
