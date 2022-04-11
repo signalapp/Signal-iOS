@@ -4,11 +4,10 @@
 
 public class GradientView: UIView {
 
-    let gradientLayer = CAGradientLayer()
+    public let gradientLayer = CAGradientLayer()
     public var colors: [(color: UIColor, location: Double)] {
         didSet {
-            gradientLayer.colors = colors.map { $0.color.cgColor }
-            gradientLayer.locations = colors.map { NSNumber(value: $0.location) }
+            updateColors()
         }
     }
 
@@ -22,6 +21,7 @@ public class GradientView: UIView {
     public required init(colors: [(color: UIColor, location: Double)]) {
         self.colors = colors
         super.init(frame: .zero)
+        updateColors()
         layer.addSublayer(gradientLayer)
     }
 
@@ -32,5 +32,10 @@ public class GradientView: UIView {
     public override func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer.frame = self.bounds
+    }
+
+    private func updateColors() {
+        gradientLayer.colors = colors.map { $0.color.cgColor }
+        gradientLayer.locations = colors.map { NSNumber(value: $0.location) }
     }
 }
