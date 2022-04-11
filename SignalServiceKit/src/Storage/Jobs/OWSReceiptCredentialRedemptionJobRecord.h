@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSUInteger targetSubscriptionLevel;
 @property (nonatomic, readonly) NSUInteger priorSubscriptionLevel;
 @property (nonatomic, readonly) BOOL isBoost;
+@property (nonatomic, readonly, nullable) NSDecimalNumber *amount;
+@property (nonatomic, readonly, nullable) NSString *currencyCode;
 @property (nonatomic, readonly) NSString *boostPaymentIntentID;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
@@ -27,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 targetSubscriptionLevel:(NSUInteger)targetSubscriptionLevel
                                  priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
                                                 isBoost:(BOOL)isBoost
+                                                 amount:(nullable NSDecimalNumber *)amount
+                                           currencyCode:(nullable NSString *)currencyCode
                                    boostPaymentIntentID:(NSString *)boostPaymentIntentID
                                                   label:(NSString *)label NS_DESIGNATED_INITIALIZER;
 
@@ -53,7 +57,9 @@ NS_ASSUME_NONNULL_BEGIN
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
+                          amount:(nullable NSDecimalNumber *)amount
             boostPaymentIntentID:(NSString *)boostPaymentIntentID
+                    currencyCode:(nullable NSString *)currencyCode
                          isBoost:(BOOL)isBoost
           priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
@@ -61,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
    receiptCredentialPresentation:(nullable NSData *)receiptCredentialPresentation
                     subscriberID:(NSData *)subscriberID
          targetSubscriptionLevel:(NSUInteger)targetSubscriptionLevel
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:boostPaymentIntentID:isBoost:priorSubscriptionLevel:receiptCredentailRequest:receiptCredentailRequestContext:receiptCredentialPresentation:subscriberID:targetSubscriptionLevel:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:amount:boostPaymentIntentID:currencyCode:isBoost:priorSubscriptionLevel:receiptCredentailRequest:receiptCredentailRequestContext:receiptCredentialPresentation:subscriberID:targetSubscriptionLevel:));
 
 // clang-format on
 

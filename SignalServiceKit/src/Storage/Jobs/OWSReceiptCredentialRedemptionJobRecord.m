@@ -19,6 +19,8 @@
                                 targetSubscriptionLevel:(NSUInteger)targetSubscriptionLevel
                                  priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
                                                 isBoost:(BOOL)isBoost
+                                                 amount:(nullable NSDecimalNumber *)amount
+                                           currencyCode:(nullable NSString *)currencyCode
                                    boostPaymentIntentID:(NSString *)boostPaymentIntentID
                                                   label:(NSString *)label
 {
@@ -30,6 +32,8 @@
         _targetSubscriptionLevel = targetSubscriptionLevel;
         _priorSubscriptionLevel = priorSubscriptionLevel;
         _isBoost = isBoost;
+        _amount = amount;
+        _currencyCode = currencyCode;
         _boostPaymentIntentID = boostPaymentIntentID;
     }
     return self;
@@ -54,7 +58,9 @@
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
+                          amount:(nullable NSDecimalNumber *)amount
             boostPaymentIntentID:(NSString *)boostPaymentIntentID
+                    currencyCode:(nullable NSString *)currencyCode
                          isBoost:(BOOL)isBoost
           priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
@@ -75,7 +81,9 @@
         return self;
     }
 
+    _amount = amount;
     _boostPaymentIntentID = boostPaymentIntentID;
+    _currencyCode = currencyCode;
     _isBoost = isBoost;
     _priorSubscriptionLevel = priorSubscriptionLevel;
     _receiptCredentailRequest = receiptCredentailRequest;

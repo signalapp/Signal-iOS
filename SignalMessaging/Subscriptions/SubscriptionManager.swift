@@ -521,14 +521,13 @@ public class SubscriptionManager: NSObject {
 
         databaseStorage.asyncWrite { transaction in
 
-            self.subscriptionJobQueue.add(isBoost: false,
-                                          receiptCredentialRequestContext: request.context.serialize().asData,
-                                          receiptCredentailRequest: request.request.serialize().asData,
-                                          subscriberID: subscriberID,
-                                          targetSubscriptionLevel: subscriptionLevel,
-                                          priorSubscriptionLevel: priorSubscriptionLevel,
-                                          boostPaymentIntentID: String(),
-                                          transaction: transaction)
+            self.subscriptionJobQueue.addSubscriptionJob(receiptCredentialRequestContext: request.context.serialize().asData,
+                                                         receiptCredentailRequest: request.request.serialize().asData,
+                                                         subscriberID: subscriberID,
+                                                         targetSubscriptionLevel: subscriptionLevel,
+                                                         priorSubscriptionLevel: priorSubscriptionLevel,
+                                                         boostPaymentIntentID: String(),
+                                                         transaction: transaction)
         }
     }
 
@@ -957,7 +956,9 @@ public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryable
 }
 
 extension SubscriptionManager {
-    public class func createAndRedeemBoostReceipt(for intentId: String) throws {
+    public class func createAndRedeemBoostReceipt(for intentId: String,
+                                                  amount: Decimal,
+                                                  currencyCode: Currency.Code) throws {
         let request = try generateRecieptRequest()
 
         // Remove prior operations if one exists (allow prior job to complete)
@@ -968,15 +969,12 @@ extension SubscriptionManager {
         }
 
         databaseStorage.asyncWrite { transaction in
-
-            self.subscriptionJobQueue.add(isBoost: true,
-                                          receiptCredentialRequestContext: request.context.serialize().asData,
-                                          receiptCredentailRequest: request.request.serialize().asData,
-                                          subscriberID: Data(),
-                                          targetSubscriptionLevel: 0,
-                                          priorSubscriptionLevel: 0,
-                                          boostPaymentIntentID: intentId,
-                                          transaction: transaction)
+            self.subscriptionJobQueue.addBoostJob(amount: amount,
+                                                  currencyCode: currencyCode,
+                                                  receiptCredentialRequestContext: request.context.serialize().asData,
+                                                  receiptCredentailRequest: request.request.serialize().asData,
+                                                  boostPaymentIntentID: intentId,
+                                                  transaction: transaction)
         }
     }
 

@@ -255,6 +255,8 @@ CREATE
             ,"boostPaymentIntentID" TEXT
             ,"isBoost" BOOLEAN
             ,"receiptCredentialPresentation" BLOB
+            ,"amount" NUMERIC
+            ,"currencyCode" TEXT
         )
 ;
 
@@ -1314,4 +1316,17 @@ CREATE
     ,"storyAuthorUuidString"
     ,"isGroupStoryReply"
 )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_DonationReceipt" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"timestamp" INTEGER NOT NULL
+            ,"subscriptionLevel" INTEGER
+            ,"amount" NUMERIC NOT NULL
+            ,"currencyCode" TEXT NOT NULL
+        )
 ;

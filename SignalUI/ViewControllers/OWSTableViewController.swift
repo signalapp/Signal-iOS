@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalMessaging
+import UIKit
 
 @objc
 public extension OWSTableItem {
@@ -18,6 +19,10 @@ public extension OWSTableItem {
 
     static var iconSpacing: CGFloat { 16 }
     static var iconSize: CGFloat { 24 }
+
+    private static func accessoryGray() -> UIColor {
+        Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45
+    }
 
     static func buildCell(name: String, iconView: UIView) -> UITableViewCell {
         return buildCell(name: name, iconView: iconView, iconSpacing: self.iconSpacing)
@@ -49,13 +54,19 @@ public extension OWSTableItem {
                           tintColor: UIColor? = nil,
                           iconSize: CGFloat = iconSize) -> UIImageView {
         let iconImage = Theme.iconImage(icon)
-        let iconView = UIImageView(image: iconImage)
+        let iconView = imageView(forImage: iconImage)
         iconView.tintColor = tintColor ?? Theme.primaryIconColor
-        iconView.contentMode = .scaleAspectFit
-        iconView.layer.minificationFilter = .trilinear
-        iconView.layer.magnificationFilter = .trilinear
-        iconView.autoSetDimensions(to: CGSize(square: iconSize))
         return iconView
+    }
+
+    private static func imageView(forImage: UIImage,
+                                  iconSize: CGFloat = iconSize) -> UIImageView {
+        let result = UIImageView(image: forImage)
+        result.contentMode = .scaleAspectFit
+        result.layer.minificationFilter = .trilinear
+        result.layer.magnificationFilter = .trilinear
+        result.autoSetDimensions(to: CGSize(square: iconSize))
+        return result
     }
 
     static func buildCell(name: String,
@@ -138,6 +149,7 @@ public extension OWSTableItem {
     static func item(icon: ThemeIcon? = nil,
                      tintColor: UIColor? = nil,
                      name: String,
+                     subtitle: String? = nil,
                      maxNameLines: Int? = nil,
                      textColor: UIColor? = nil,
                      accessoryText: String? = nil,
@@ -152,6 +164,7 @@ public extension OWSTableItem {
             icon: icon,
             tintColor: tintColor,
             itemName: name,
+            subtitle: subtitle,
             maxItemNameLines: maxNameLines,
             textColor: textColor,
             accessoryText: accessoryText,
@@ -183,6 +196,7 @@ public extension OWSTableItem {
     static func buildCellWithAccessoryLabel(icon: ThemeIcon? = nil,
                                             tintColor: UIColor? = nil,
                                             itemName: String,
+                                            subtitle: String? = nil,
                                             maxItemNameLines: Int? = nil,
                                             textColor: UIColor? = nil,
                                             accessoryText: String? = nil,
@@ -193,6 +207,7 @@ public extension OWSTableItem {
         buildIconNameCell(icon: icon,
                           tintColor: tintColor,
                           itemName: itemName,
+                          subtitle: subtitle,
                           maxItemNameLines: maxItemNameLines,
                           textColor: textColor,
                           accessoryText: accessoryText,
@@ -206,6 +221,7 @@ public extension OWSTableItem {
     static func buildIconNameCell(icon: ThemeIcon? = nil,
                                   tintColor: UIColor? = nil,
                                   itemName: String,
+                                  subtitle: String? = nil,
                                   maxItemNameLines: Int? = nil,
                                   textColor: UIColor? = nil,
                                   accessoryText: String? = nil,
@@ -215,6 +231,64 @@ public extension OWSTableItem {
                                   accessoryView: UIView? = nil,
                                   customColor: UIColor? = nil,
                                   accessibilityIdentifier: String? = nil) -> UITableViewCell {
+        var imageView: UIImageView?
+        if let icon = icon {
+            let iconView = self.imageView(forIcon: icon, tintColor: customColor ?? tintColor, iconSize: iconSize)
+            iconView.setCompressionResistanceHorizontalHigh()
+            imageView = iconView
+        }
+        return buildImageViewNameCell(imageView: imageView,
+                                      itemName: itemName,
+                                      subtitle: subtitle,
+                                      maxItemNameLines: maxItemNameLines,
+                                      textColor: textColor,
+                                      accessoryText: accessoryText,
+                                      accessoryTextColor: accessoryTextColor,
+                                      accessoryType: accessoryType,
+                                      accessoryImage: accessoryImage,
+                                      accessoryView: accessoryView,
+                                      customColor: customColor,
+                                      accessibilityIdentifier: accessibilityIdentifier)
+    }
+
+    @nonobjc
+    static func buildImageNameCell(image: UIImage? = nil,
+                                   itemName: String,
+                                   subtitle: String? = nil,
+                                   accessoryText: String? = nil,
+                                   accessoryTextColor: UIColor? = nil,
+                                   accessoryType: UITableViewCell.AccessoryType = .none,
+                                   accessibilityIdentifier: String? = nil) -> UITableViewCell {
+        var imageView: UIImageView?
+        if let image = image {
+            let imgView = self.imageView(forImage: image)
+            imgView.setCompressionResistanceHorizontalHigh()
+            imageView = imgView
+        }
+
+        return buildImageViewNameCell(imageView: imageView,
+                                      itemName: itemName,
+                                      subtitle: subtitle,
+                                      accessoryText: accessoryText,
+                                      accessoryTextColor: accessoryTextColor,
+                                      accessoryType: accessoryType,
+                                      accessibilityIdentifier: accessibilityIdentifier)
+    }
+
+    @nonobjc
+    private static func buildImageViewNameCell(imageView: UIImageView? = nil,
+                                               tintColor: UIColor? = nil,
+                                               itemName: String,
+                                               subtitle: String? = nil,
+                                               maxItemNameLines: Int? = nil,
+                                               textColor: UIColor? = nil,
+                                               accessoryText: String? = nil,
+                                               accessoryTextColor: UIColor? = nil,
+                                               accessoryType: UITableViewCell.AccessoryType = .none,
+                                               accessoryImage: UIImage? = nil,
+                                               accessoryView: UIView? = nil,
+                                               customColor: UIColor? = nil,
+                                               accessibilityIdentifier: String? = nil) -> UITableViewCell {
 
         // We can't use the built-in UITableViewCell with CellStyle.value1,
         // because if the content of the primary label and the accessory label
@@ -226,10 +300,8 @@ public extension OWSTableItem {
 
         var subviews = [UIView]()
 
-        if let icon = icon {
-            let iconView = self.imageView(forIcon: icon, tintColor: customColor ?? tintColor, iconSize: iconSize)
-            iconView.setCompressionResistanceHorizontalHigh()
-            subviews.append(iconView)
+        if let imageView = imageView {
+            subviews.append(imageView)
         }
 
         let nameLabel = UILabel()
@@ -262,7 +334,20 @@ public extension OWSTableItem {
 
         nameLabel.setContentHuggingLow()
         nameLabel.setCompressionResistanceHigh()
-        subviews.append(nameLabel)
+
+        if subtitle == nil {
+            subviews.append(nameLabel)
+        } else {
+            let subtitleLabel = UILabel()
+            subtitleLabel.text = subtitle
+            subtitleLabel.textColor = accessoryGray()
+            subtitleLabel.font = .ows_dynamicTypeFootnoteClamped
+
+            let labels = UIStackView(arrangedSubviews: [nameLabel, subtitleLabel])
+            labels.axis = .vertical
+            subviews.append(labels)
+        }
+
         if let customColor = customColor {
             nameLabel.textColor = customColor
         }
@@ -274,7 +359,7 @@ public extension OWSTableItem {
         } else if let accessoryText = accessoryText {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
-            accessoryLabel.textColor = accessoryTextColor ?? (Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray45)
+            accessoryLabel.textColor = accessoryTextColor ?? accessoryGray()
             accessoryLabel.font = OWSTableItem.accessoryLabelFont
             accessoryLabel.adjustsFontForContentSizeCategory = true
 

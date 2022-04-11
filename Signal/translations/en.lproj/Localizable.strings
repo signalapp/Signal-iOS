@@ -1606,6 +1606,24 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
 
+/* Section title for donation date on receipts */
+"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+
+/* Title on the view where you can see a single receipt */
+"DONATION_RECEIPT_DETAILS" = "Details";
+
+/* Title for one-time donation receipts */
+"DONATION_RECEIPT_ONE_TIME" = "One-time";
+
+/* Title for recurring donation receipts */
+"DONATION_RECEIPT_RECURRING" = "Recurring";
+
+/* Section title for donation type on receipts */
+"DONATION_RECEIPT_TYPE" = "Type";
+
+/* Title of view where you can see all of your donation receipts, or button to take you there */
+"DONATION_RECEIPTS" = "Donation Receipts";
+
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
 
