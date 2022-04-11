@@ -145,9 +145,7 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.receivedAtTimestampMs, .double).notNull()
             t.column(.expiresInSeconds, .double)
             t.column(.expiresStartedAtMs, .double)
-            
-            t.column(.openGroupInvitationName, .text)
-            t.column(.openGroupInvitationUrl, .text)
+            t.column(.linkPreviewUrl, .text)
             
             t.column(.openGroupServerMessageId, .integer)
                 .indexed()                                            // Quicker querying
@@ -203,17 +201,18 @@ enum _001_InitialSetupMigration: Migration {
         try db.create(table: LinkPreview.self) { t in
             t.column(.url, .text)
                 .notNull()
-                .primaryKey()
-            t.column(.interactionId, .integer)
+                .indexed()                                            // Quicker querying
+            t.column(.timestamp, .double)
                 .notNull()
                 .indexed()                                            // Quicker querying
-                .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
+            t.column(.variant, .integer).notNull()
             t.column(.title, .text)
+            
+            t.primaryKey([.url, .timestamp])
         }
         
         try db.create(table: Attachment.self) { t in
             t.column(.interactionId, .integer)
-                .notNull()
                 .indexed()                                            // Quicker querying
                 .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
             t.column(.serverId, .text)
@@ -231,10 +230,6 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.encryptionKey, .blob)
             t.column(.digest, .blob)
             t.column(.caption, .text)
-            t.column(.quoteId, .text)
-                .references(Quote.self, onDelete: .cascade)           // Delete if Quote deleted
-            t.column(.linkPreviewUrl, .text)
-                .references(LinkPreview.self, onDelete: .cascade)     // Delete if LinkPreview deleted
         }
     }
 }

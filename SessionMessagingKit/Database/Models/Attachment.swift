@@ -7,14 +7,7 @@ import SessionUtilitiesKit
 public struct Attachment: Codable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "attachment" }
     internal static let interactionForeignKey = ForeignKey([Columns.interactionId], to: [Interaction.Columns.id])
-    internal static let quoteForeignKey = ForeignKey([Columns.quoteId], to: [Quote.Columns.interactionId])
-    internal static let linkPreviewForeignKey = ForeignKey(
-        [Columns.linkPreviewUrl],
-        to: [LinkPreview.Columns.url]
-    )
     private static let interaction = belongsTo(Interaction.self, using: interactionForeignKey)
-    private static let quote = belongsTo(Quote.self, using: quoteForeignKey)
-    private static let linkPreview = belongsTo(LinkPreview.self, using: linkPreviewForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -32,8 +25,6 @@ public struct Attachment: Codable, FetchableRecord, PersistableRecord, TableReco
         case encryptionKey
         case digest
         case caption
-        case quoteId
-        case linkPreviewUrl
     }
     
     public enum Variant: Int, Codable, DatabaseValueConvertible {
@@ -50,8 +41,8 @@ public struct Attachment: Codable, FetchableRecord, PersistableRecord, TableReco
         case failed
     }
     
-    /// The id for the interaction this attachment belongs to
-    public let interactionId: Int64
+    /// The id for the Interaction this attachment belongs to
+    public let interactionId: Int64?
     
     /// The id for the attachment returned by the server
     ///
@@ -78,6 +69,7 @@ public struct Attachment: Codable, FetchableRecord, PersistableRecord, TableReco
     ///
     /// **Uploaded:** This will be the timestamp the file finished uploading
     /// **Downloaded:** This will be the timestamp the file finished downloading
+    /// **Other:** This will be null
     public let creationTimestamp: TimeInterval?
     
     /// Represents the "source" filename sent or received in the protos, not the filename on disk
@@ -103,29 +95,9 @@ public struct Attachment: Codable, FetchableRecord, PersistableRecord, TableReco
     /// Caption for the attachment
     public let caption: String?
     
-    /// The id for the QuotedMessage if this attachment belongs to one
-    ///
-    /// **Note:** If this value is present then this attachment shouldn't be returned as a
-    /// standard attachment for the interaction
-    public let quoteId: String?
-    
-    /// The id for the LinkPreview if this attachment belongs to one
-    ///
-    /// **Note:** If this value is present then this attachment shouldn't be returned as a
-    /// standard attachment for the interaction
-    public let linkPreviewUrl: String?
-    
     // MARK: - Relationships
     
     public var interaction: QueryInterfaceRequest<Interaction> {
         request(for: Attachment.interaction)
-    }
-    
-    public var quote: QueryInterfaceRequest<Quote> {
-        request(for: Attachment.quote)
-    }
-    
-    public var linkPreview: QueryInterfaceRequest<LinkPreview> {
-        request(for: Attachment.linkPreview)
     }
 }

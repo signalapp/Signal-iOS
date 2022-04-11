@@ -348,17 +348,16 @@ enum _002_YDBToGRDBMigration: Migration {
                         let body: String?
                         let expiresInSeconds: UInt32?
                         let expiresStartedAtMs: UInt64?
-                        let openGroupInvitationName: String?
-                        let openGroupInvitationUrl: String?
                         let openGroupServerMessageId: UInt64?
                         let recipientStateMap: [String: TSOutgoingMessageRecipientState]?
-                        let attachmentIds: [String]
+                        let quotedMessage: TSQuotedMessage?
+                        let linkPreview: OWSLinkPreview?
+                        let linkPreviewVariant: LinkPreview.Variant
+                        var attachmentIds: [String]
                         
                         // Handle the common 'TSMessage' values first
                         if let legacyMessage: TSMessage = legacyInteraction as? TSMessage {
                             serverHash = legacyMessage.serverHash
-                            openGroupInvitationName = legacyMessage.openGroupInvitationName
-                            openGroupInvitationUrl = legacyMessage.openGroupInvitationURL
                             
                             // The legacy code only considered '!= 0' ids as valid so set those
                             // values to be null to avoid the unique constraint (it's also more
@@ -367,27 +366,52 @@ enum _002_YDBToGRDBMigration: Migration {
                                 nil :
                                 legacyMessage.openGroupServerMessageID
                             )
-                            attachmentIds = try legacyMessage.attachmentIds.map { legacyId in
-                                guard let attachmentId: String = legacyId as? String else {
-                                    SNLog("[Migration Error] Unable to process attachment id")
-                                    throw GRDBStorageError.migrationFailed
-                                }
-                                
-                                return attachmentId
+                            quotedMessage = legacyMessage.quotedMessage
+                            
+                            // Convert the 'OpenGroupInvitation' into a LinkPreview
+                            if let openGroupInvitationName: String = legacyMessage.openGroupInvitationName, let openGroupInvitationUrl: String = legacyMessage.openGroupInvitationURL {
+                                linkPreviewVariant = .openGroupInvitation
+                                linkPreview = OWSLinkPreview(
+                                    urlString: openGroupInvitationUrl,
+                                    title: openGroupInvitationName,
+                                    imageAttachmentId: nil
+                                )
                             }
+                            else {
+                                linkPreviewVariant = .standard
+                                linkPreview = legacyMessage.linkPreview
+                            }
+                            
+                            // Attachments for deleted messages won't exist
+                            attachmentIds = (legacyMessage.isDeleted ?
+                                [] :
+                                try legacyMessage.attachmentIds.map { legacyId in
+                                    guard let attachmentId: String = legacyId as? String else {
+                                        SNLog("[Migration Error] Unable to process attachment id")
+                                        throw GRDBStorageError.migrationFailed
+                                    }
+                                    
+                                    return attachmentId
+                                }
+                            )
                         }
                         else {
                             serverHash = nil
-                            openGroupInvitationName = nil
-                            openGroupInvitationUrl = nil
                             openGroupServerMessageId = nil
+                            quotedMessage = nil
+                            linkPreviewVariant = .standard
+                            linkPreview = nil
                             attachmentIds = []
                         }
                         
                         // Then handle the behaviours for each message type
                         switch legacyInteraction {
                             case let incomingMessage as TSIncomingMessage:
-                                variant = .standardIncoming
+                                // Note: We want to distinguish deleted messages from normal ones
+                                variant = (incomingMessage.isDeleted ?
+                                    .standardIncomingDeleted :
+                                    .standardIncoming
+                                )
                                 authorId = incomingMessage.authorId
                                 body = incomingMessage.body
                                 expiresInSeconds = incomingMessage.expiresInSeconds
@@ -443,8 +467,7 @@ enum _002_YDBToGRDBMigration: Migration {
                             receivedAtTimestampMs: Double(legacyInteraction.receivedAtTimestamp),
                             expiresInSeconds: expiresInSeconds.map { TimeInterval($0) },
                             expiresStartedAtMs: expiresStartedAtMs.map { Double($0) },
-                            openGroupInvitationName: openGroupInvitationName,
-                            openGroupInvitationUrl: openGroupInvitationUrl,
+                            linkPreviewUrl: linkPreview?.urlString, // Only a soft link so save to set
                             openGroupServerMessageId: openGroupServerMessageId.map { Int64($0) },
                             openGroupWhisperMods: false, // TODO: This
                             openGroupWhisperTo: nil // TODO: This
@@ -454,6 +477,8 @@ enum _002_YDBToGRDBMigration: Migration {
                             SNLog("[Migration Error] Failed to insert interaction")
                             throw GRDBStorageError.migrationFailed
                         }
+                        
+                        // Handle the recipient states
                         
                         try recipientStateMap?.forEach { recipientId, legacyState in
                             try RecipientState(
@@ -471,11 +496,68 @@ enum _002_YDBToGRDBMigration: Migration {
                                 readTimestampMs: legacyState.readTimestamp?.doubleValue
                             ).insert(db)
                         }
+                        
+                        // Handle any quote
+                        
+                        if let quotedMessage: TSQuotedMessage = quotedMessage {
+                            try Quote(
+                                interactionId: interactionId,
+                                authorId: quotedMessage.authorId,
+                                timestampMs: Double(quotedMessage.timestamp),
+                                body: quotedMessage.body
+                            ).insert(db)
+                            
+                            // Ensure the quote thumbnail works properly
+                            
+                            
+                            // Note: Quote attachments are now attached directly to the interaction
+                            attachmentIds = attachmentIds.appending(
+                                contentsOf: quotedMessage.quotedAttachments.compactMap { attachmentInfo in
+                                    if let attachmentId: String = attachmentInfo.attachmentId {
+                                        return attachmentId
+                                    }
+                                    else if let attachmentId: String = attachmentInfo.thumbnailAttachmentPointerId {
+                                        return attachmentId
+                                    }
+                                    // TODO: Looks like some of these might be busted???
+                                    return attachmentInfo.thumbnailAttachmentStreamId
+                                }
+                            )
+                        }
+                        
+                        // Handle any LinkPreview
+                        
+                        if let linkPreview: OWSLinkPreview = linkPreview, let urlString: String = linkPreview.urlString {
+                            // Note: The `legacyInteraction.timestamp` value is in milliseconds
+                            let timestamp: TimeInterval = LinkPreview.timestampFor(sentTimestampMs: Double(legacyInteraction.timestamp))
+                            
+                            // Note: It's possible for there to be duplicate values here so we use 'save'
+                            // instead of insert (ie. upsert)
+                            try LinkPreview(
+                                url: urlString,
+                                timestamp: timestamp,
+                                variant: linkPreviewVariant,
+                                title: linkPreview.title
+                            ).save(db)
+                            
+                            // Note: LinkPreview attachments are now attached directly to the interaction
+                            attachmentIds = attachmentIds.appending(linkPreview.imageAttachmentId)
+                        }
+                        
+                        // Handle any attachments
                         try attachmentIds.forEach { attachmentId in
                             guard let attachment: TSAttachment = attachments[attachmentId] else {
                                 SNLog("[Migration Error] Unsupported interaction type")
                                 throw GRDBStorageError.migrationFailed
                             }
+                            
+                            let size: CGSize = {
+                                switch attachment {
+                                    case let stream as TSAttachmentStream: return stream.calculateImageSize()
+                                    case let pointer as TSAttachmentPointer: return pointer.mediaSize
+                                    default: return CGSize.zero
+                                }
+                            }()
                             try Attachment(
                                 interactionId: interactionId,
                                 serverId: "\(attachment.serverId)",
@@ -483,16 +565,14 @@ enum _002_YDBToGRDBMigration: Migration {
                                 state: .pending, // TODO: This
                                 contentType: attachment.contentType,
                                 byteCount: UInt(attachment.byteCount),
-                                creationTimestamp: 0, // TODO: This
+                                creationTimestamp: (attachment as? TSAttachmentStream)?.creationTimestamp.timeIntervalSince1970,
                                 sourceFilename: attachment.sourceFilename,
                                 downloadUrl: attachment.downloadURL,
-                                width: 0, // TODO: This attachment.mediaSize,
-                                height: 0, // TODO: This attachment.mediaSize,
+                                width: (size == .zero ? nil : UInt(size.width)),
+                                height: (size == .zero ? nil : UInt(size.height)),
                                 encryptionKey: attachment.encryptionKey,
-                                digest: nil, // TODO: This attachment.digest,
-                                caption: attachment.caption,
-                                quoteId: nil,   // TODO: THis
-                                linkPreviewUrl: nil    // TODO: This
+                                digest: (attachment as? TSAttachmentStream)?.digest,
+                                caption: attachment.caption
                             ).insert(db)
                         }
                 }

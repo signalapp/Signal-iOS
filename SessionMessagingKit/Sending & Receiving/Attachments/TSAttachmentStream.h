@@ -60,6 +60,7 @@ typedef void (^OWSThumbnailFailure)(void);
 
 - (BOOL)shouldHaveImageSize;
 - (CGSize)imageSize;
+- (CGSize)calculateImageSize;
 
 - (CGFloat)audioDurationSeconds;
 

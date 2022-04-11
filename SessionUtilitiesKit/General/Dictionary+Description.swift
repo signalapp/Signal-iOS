@@ -16,6 +16,15 @@ public extension Dictionary {
     }
 }
 
+public extension Dictionary {
+    func setting(_ key: Key, _ value: Value?) -> [Key: Value] {
+        var updatedDictionary: [Key: Value] = self
+        updatedDictionary[key] = value
+
+        return updatedDictionary
+    }
+}
+
 public extension Dictionary.Values {
     func asArray() -> [Value] {
         return Array(self)

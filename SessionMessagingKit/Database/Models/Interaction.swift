@@ -8,6 +8,10 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
     public static var databaseTableName: String { "interaction" }
     internal static let threadForeignKey = ForeignKey([Columns.threadId], to: [SessionThread.Columns.id])
     internal static let profileForeignKey = ForeignKey([Columns.authorId], to: [Profile.Columns.id])
+    internal static let linkPreviewForeignKey = ForeignKey(
+        [Columns.linkPreviewUrl],
+        to: [LinkPreview.Columns.url]
+    )
     private static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
     private static let profile = hasOne(Profile.self, using: profileForeignKey)
     private static let attachments = hasMany(Attachment.self, using: Attachment.interactionForeignKey)
@@ -29,9 +33,7 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
         
         case expiresInSeconds
         case expiresStartedAtMs
-        
-        case openGroupInvitationName
-        case openGroupInvitationUrl
+        case linkPreviewUrl
         
         // Open Group specific properties
         
@@ -43,6 +45,7 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
     public enum Variant: Int, Codable, DatabaseValueConvertible {
         case standardIncoming
         case standardOutgoing
+        case standardIncomingDeleted
         
         // Info Message Types (spacing the values out to make it easier to extend)
         case infoClosedGroupCreated = 1000
@@ -93,11 +96,10 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
     /// message has expired)
     public fileprivate(set) var expiresStartedAtMs: Double? = nil
     
-    /// When sending an Open Group invitation this will be populated with the name of the open group
-    public let openGroupInvitationName: String?
-    
-    /// When sending an Open Group invitation this will be populated with the url of the open group
-    public let openGroupInvitationUrl: String?
+    /// This value is the url for the link preview for this interaction
+    ///
+    /// **Note:** This is also used for open group invitations
+    public let linkPreviewUrl: String?
     
     // Open Group specific properties
     
@@ -122,10 +124,6 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
     
     public var attachments: QueryInterfaceRequest<Attachment> {
         request(for: Interaction.attachments)
-            .filter(
-                Attachment.Columns.quoteId == nil &&
-                Attachment.Columns.linkPreviewUrl == nil
-            )
     }
 
     public var quote: QueryInterfaceRequest<Quote> {
@@ -133,7 +131,20 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
     }
 
     public var linkPreview: QueryInterfaceRequest<LinkPreview> {
-        request(for: Interaction.linkPreview)
+        let linkPreviewAlias: TableAlias = TableAlias()
+        
+        return LinkPreview
+            .aliased(linkPreviewAlias)
+            .joining(
+                required: LinkPreview.interactions
+                    .filter(literal: [
+                        "(ROUND((\(Interaction.Columns.timestampMs) / 1000 / 100000) - 0.5) * 100000)",
+                        "=",
+                        "\(linkPreviewAlias[LinkPreview.Columns.timestamp])"
+                    ].joined(separator: " "))
+                    .limit(1)   // Avoid joining to multiple interactions
+            )
+            .limit(1)   // Avoid joining to multiple interactions
     }
     
     public var recipientStates: QueryInterfaceRequest<RecipientState> {
@@ -153,8 +164,7 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
         receivedAtTimestampMs: Double,
         expiresInSeconds: TimeInterval?,
         expiresStartedAtMs: Double?,
-        openGroupInvitationName: String?,
-        openGroupInvitationUrl: String?,
+        linkPreviewUrl: String?,
         openGroupServerMessageId: Int64?,
         openGroupWhisperMods: Bool,
         openGroupWhisperTo: String?
@@ -168,8 +178,7 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
         self.receivedAtTimestampMs = receivedAtTimestampMs
         self.expiresInSeconds = expiresInSeconds
         self.expiresStartedAtMs = expiresStartedAtMs
-        self.openGroupInvitationName = openGroupInvitationName
-        self.openGroupInvitationUrl = openGroupInvitationUrl
+        self.linkPreviewUrl = linkPreviewUrl
         self.openGroupServerMessageId = openGroupServerMessageId
         self.openGroupWhisperMods = openGroupWhisperMods
         self.openGroupWhisperTo = openGroupWhisperTo
@@ -179,6 +188,32 @@ public struct Interaction: Codable, FetchableRecord, MutablePersistableRecord, T
     
     public mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
+    }
+    
+    public func delete(_ db: Database) throws -> Bool {
+        // If we have a LinkPreview then check if this is the only interaction that has it
+        // and delete the LinkPreview if so
+        if linkPreviewUrl != nil {
+            let interactionAlias: TableAlias = TableAlias()
+            let numInteractions: Int? = try? Interaction
+                .aliased(interactionAlias)
+                .joining(
+                    required: Interaction.linkPreview
+                        .filter(literal: [
+                            "(ROUND((\(interactionAlias[Columns.timestampMs]) / 1000 / 100000) - 0.5) * 100000)",
+                            "=",
+                            "\(LinkPreview.Columns.timestamp)"
+                        ].joined(separator: " "))
+                )
+                .fetchCount(db)
+            let tmp = try linkPreview.fetchAll(db)
+            
+            if numInteractions == 1 {
+                try linkPreview.deleteAll(db)
+            }
+        }
+        
+        return try performDelete(db)
     }
 }
 
