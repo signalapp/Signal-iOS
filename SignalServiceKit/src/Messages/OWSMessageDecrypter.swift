@@ -4,45 +4,39 @@
 
 import LibSignalClient
 
-@objcMembers
-public class OWSMessageDecryptResult: NSObject {
-    public let envelopeData: Data
+public struct OWSMessageDecryptResult: Dependencies {
+    public let envelope: SSKProtoEnvelope
+    public let envelopeData: Data?
     public let plaintextData: Data?
-    public let sourceAddress: SignalServiceAddress
-    public let sourceDevice: UInt32
-    public let isUDMessage: Bool
 
     fileprivate init(
-        envelopeData: Data,
+        envelope: SSKProtoEnvelope,
+        envelopeData: Data?,
         plaintextData: Data?,
-        sourceAddress: SignalServiceAddress,
-        sourceDevice: UInt32,
-        isUDMessage: Bool,
         transaction: SDSAnyWriteTransaction
-    ) throws {
-        owsAssertDebug(sourceAddress.isValid)
-        owsAssertDebug(sourceDevice > 0)
+    ) {
+        self.envelope = envelope
+        self.envelopeData = envelopeData
+        self.plaintextData = plaintextData
 
-        let localDeviceId = Self.tsAccountManager.storedDeviceId()
-        guard !(sourceAddress.isLocalAddress && sourceDevice == localDeviceId) else {
-            // Self-sent messages should be discarded during the decryption process.
-            throw OWSAssertionError("Unexpected self-sent sync message.")
+        guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
+            owsFailDebug("missing source address")
+            return
         }
+        owsAssertDebug(envelope.sourceDevice > 0)
+
+        // Self-sent messages should be discarded during the decryption process.
+        let localDeviceId = Self.tsAccountManager.storedDeviceId()
+        owsAssertDebug(!(sourceAddress.isLocalAddress && envelope.sourceDevice == localDeviceId))
 
         // Having received a valid (decryptable) message from this user,
         // make note of the fact that they have a valid Signal account.
         SignalRecipient.mark(
             asRegisteredAndGet: sourceAddress,
-            deviceId: sourceDevice,
+            deviceId: envelope.sourceDevice,
             trustLevel: .high,
             transaction: transaction
         )
-
-        self.envelopeData = envelopeData
-        self.plaintextData = plaintextData
-        self.sourceAddress = sourceAddress
-        self.sourceDevice = sourceDevice
-        self.isUDMessage = isUDMessage
     }
 }
 
@@ -77,7 +71,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    public func decryptEnvelope(_ envelope: SSKProtoEnvelope, envelopeData: Data, transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
+    public func decryptEnvelope(_ envelope: SSKProtoEnvelope,
+                                envelopeData: Data?,
+                                transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
         owsAssertDebug(tsAccountManager.isRegistered)
 
         Logger.info("decrypting envelope: \(description(for: envelope))")
@@ -104,55 +100,38 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
         }
 
+        let plaintextDataOrError: Result<Data, Error>
         switch envelope.unwrappedType {
         case .ciphertext:
-            return decrypt(
-                envelope,
-                envelopeData: envelopeData,
-                cipherType: .whisper,
-                transaction: transaction
-            )
+            plaintextDataOrError = decrypt(envelope, cipherType: .whisper, transaction: transaction)
         case .prekeyBundle:
             TSPreKeyManager.checkPreKeysIfNecessary()
-            return decrypt(
-                envelope,
-                envelopeData: envelopeData,
-                cipherType: .preKey,
-                transaction: transaction
-            )
+            plaintextDataOrError = decrypt(envelope, cipherType: .preKey, transaction: transaction)
         case .receipt, .keyExchange, .unknown:
-            guard let sourceAddress = envelope.sourceAddress else {
-                return .failure(OWSAssertionError("incoming envelope missing source address"))
-            }
-            do {
-                return .success(try OWSMessageDecryptResult(
-                    envelopeData: envelopeData,
-                    plaintextData: nil,
-                    sourceAddress: sourceAddress,
-                    sourceDevice: envelope.sourceDevice,
-                    isUDMessage: false,
-                    transaction: transaction
-                ))
-            } catch {
-                return .failure(error)
-            }
+            return .success(OWSMessageDecryptResult(
+                envelope: envelope,
+                envelopeData: envelopeData,
+                plaintextData: nil,
+                transaction: transaction
+            ))
         case .unidentifiedSender:
             return decryptUnidentifiedSenderEnvelope(envelope, transaction: transaction)
         case .senderkeyMessage:
-            return decrypt(
-                envelope,
-                envelopeData: envelopeData,
-                cipherType: .senderKey,
-                transaction: transaction)
+            plaintextDataOrError = decrypt(envelope, cipherType: .senderKey, transaction: transaction)
         case .plaintextContent:
-            return decrypt(
-                envelope,
-                envelopeData: envelopeData,
-                cipherType: .plaintext,
-                transaction: transaction)
+            plaintextDataOrError = decrypt(envelope, cipherType: .plaintext, transaction: transaction)
         @unknown default:
             Logger.warn("Received unhandled envelope type: \(envelope.unwrappedType)")
             return .failure(OWSGenericError("Received unhandled envelope type: \(envelope.unwrappedType)"))
+        }
+
+        return plaintextDataOrError.map {
+            OWSMessageDecryptResult(
+                envelope: envelope,
+                envelopeData: envelopeData,
+                plaintextData: $0,
+                transaction: transaction
+            )
         }
     }
 
@@ -514,9 +493,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     private func decrypt(_ envelope: SSKProtoEnvelope,
-                         envelopeData: Data,
                          cipherType: CiphertextMessage.MessageType,
-                         transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
+                         transaction: SDSAnyWriteTransaction) -> Result<Data, Error> {
 
         do {
             guard let sourceAddress = envelope.sourceAddress else {
@@ -583,16 +561,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
 
             let plaintextData = (Data(plaintext) as NSData).removePadding()
-            let result = try OWSMessageDecryptResult(
-                envelopeData: envelopeData,
-                plaintextData: plaintextData,
-                sourceAddress: sourceAddress,
-                sourceDevice: deviceId,
-                isUDMessage: false,
-                transaction: transaction
-            )
 
-            return .success(result)
+            return .success(plaintextData)
         } catch {
             let wrappedError = processError(
                 error,
@@ -740,26 +710,18 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         identifiedEnvelopeBuilder.setSourceDevice(UInt32(sourceDeviceId))
 
         let identifiedEnvelope: SSKProtoEnvelope
-        let identifiedEnvelopeData: Data
         do {
             identifiedEnvelope = try identifiedEnvelopeBuilder.build()
-            identifiedEnvelopeData = try identifiedEnvelope.serializedData()
         } catch {
             return .failure(OWSAssertionError("Could not update UD envelope data: \(error)"))
         }
 
-        do {
-            return .success(try OWSMessageDecryptResult(
-                envelopeData: identifiedEnvelopeData,
-                plaintextData: plaintextData,
-                sourceAddress: sourceAddress,
-                sourceDevice: UInt32(sourceDeviceId),
-                isUDMessage: true,
-                transaction: transaction
-            ))
-        } catch {
-            return .failure(error)
-        }
+        return .success(OWSMessageDecryptResult(
+            envelope: identifiedEnvelope,
+            envelopeData: nil,
+            plaintextData: plaintextData,
+            transaction: transaction
+        ))
     }
 
     func handleUnidentifiedSenderDecryptionError(

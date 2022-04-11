@@ -93,11 +93,7 @@ extension OWSMessageManager {
     }
 
     @objc
-    func isValidEnvelope(_ envelope: SSKProtoEnvelope?) -> Bool {
-        guard let envelope = envelope else {
-            owsFailDebug("Missing envelope")
-            return false
-        }
+    func isValidEnvelope(_ envelope: SSKProtoEnvelope) -> Bool {
         guard envelope.timestamp >= 1 else {
             owsFailDebug("Invalid timestamp")
             return false

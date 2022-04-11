@@ -117,17 +117,13 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         startMeasuring()
 
-        let envelopeJobs: [MessageProcessor.EnvelopeJob] = envelopeDatas.map {
-            MessageProcessor.EnvelopeJob(encryptedEnvelopeData: $0,
-                                         encryptedEnvelope: nil,
-                                         completion: { XCTAssertNil($0) })
+        for data in envelopeDatas {
+            messageProcessor.processEncryptedEnvelopeData(data,
+                                                          serverDeliveryTimestamp: 0,
+                                                          envelopeSource: .tests) { error in
+                XCTAssertNil(error)
+            }
         }
-
-        messageProcessor.processEncryptedEnvelopes(
-            envelopeJobs: envelopeJobs,
-            serverDeliveryTimestamp: 0,
-            envelopeSource: .tests
-        )
 
         waitForExpectations(timeout: 15.0) { _ in
             self.stopMeasuring()
