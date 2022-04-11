@@ -250,9 +250,8 @@ public enum PushRegistrationError: Error {
                 call.callMessageID = infoMessage.uniqueId
             }
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            // NOTE: Just start 1-1 poller so that it won't wait for polling group messages
             appDelegate.startPollerIfNeeded()
-            appDelegate.startClosedGroupPoller()
-            appDelegate.startOpenGroupPollersIfNeeded()
             call.reportIncomingCallIfNeeded { error in
                 if let error = error {
                     SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
