@@ -158,8 +158,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             IncomingGroupsV2MessageJob.table,
             TSPaymentModel.table,
             TSPaymentRequestModel.table
-            // NOTE: We don't include OWSMessageDecryptJob,
-            // since we should never use it with GRDB.
         ]
     }
 
