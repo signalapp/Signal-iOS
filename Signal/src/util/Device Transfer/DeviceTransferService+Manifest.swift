@@ -89,9 +89,11 @@ extension DeviceTransferService {
                 // Filter out any keys we think are managed by Apple, we don't need to transfer them.
                 guard !isAppleKey(key) else { continue }
 
+                guard let encodedValue = try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true) else { continue }
+
                 let defaultBuilder = DeviceTransferProtoDefault.builder(
                     key: key,
-                    encodedValue: NSKeyedArchiver.archivedData(withRootObject: value)
+                    encodedValue: encodedValue
                 )
                 manifestBuilder.addStandardDefaults(try defaultBuilder.build())
             }
@@ -104,9 +106,11 @@ extension DeviceTransferService {
                 // Filter out any keys we think are managed by Apple, we don't need to transfer them.
                 guard !isAppleKey(key) else { continue }
 
+                guard let encodedValue = try? NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true) else { continue }
+
                 let defaultBuilder = DeviceTransferProtoDefault.builder(
                     key: key,
-                    encodedValue: NSKeyedArchiver.archivedData(withRootObject: value)
+                    encodedValue: encodedValue
                 )
                 manifestBuilder.addAppDefaults(try defaultBuilder.build())
             }

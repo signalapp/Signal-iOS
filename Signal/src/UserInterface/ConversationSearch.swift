@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,7 +56,7 @@ public class ConversationSearchController: NSObject {
             // don't toggle nav bar visibility on legacy platforms.
             uiSearchController.hidesNavigationBarDuringPresentation = false
         }
-        uiSearchController.dimsBackgroundDuringPresentation = false
+        uiSearchController.obscuresBackgroundDuringPresentation = false
 
         applyTheme()
     }

@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-import Foundation
-import Social
 import ContactsUI
+import Foundation
 import MessageUI
 import SignalServiceKit
 
@@ -37,7 +36,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     @objc
     public func present(isAnimated: Bool, completion: (() -> Void)?) {
-        let actions = [messageAction(), mailAction(), tweetAction()].compactMap { $0 }
+        let actions = [messageAction(), mailAction()].compactMap { $0 }
         if actions.count > 1 {
             let actionSheetController = ActionSheetController(title: nil, message: nil)
             actionSheetController.addAction(OWSActionSheets.dismissAction)
@@ -49,8 +48,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             presentInviteViaSMSFlow()
         } else if mailAction() != nil {
             presentInviteViaMailFlow()
-        } else if tweetAction() != nil {
-            presentInviteViaTwitterFlow()
         }
     }
 
@@ -67,41 +64,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
         modalVC.dismiss(animated: true, completion: completion)
         self.modalPresentationViewController = nil
-    }
-
-    // MARK: Twitter
-
-    private func canTweet() -> Bool {
-        return SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTwitter)
-    }
-
-    private func tweetAction() -> ActionSheetAction? {
-        guard canTweet()  else {
-            Logger.info("Twitter not supported.")
-            return nil
-        }
-
-        let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment: "action sheet item")
-        return ActionSheetAction(title: tweetTitle, style: .default) { [weak self] _ in
-            Logger.debug("Chose tweet")
-            self?.presentInviteViaTwitterFlow()
-        }
-    }
-
-    private func presentInviteViaTwitterFlow() {
-        guard let twitterViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter) else {
-            owsFailDebug("twitterViewController was unexpectedly nil")
-            return
-        }
-
-        let tweetString = NSLocalizedString("SETTINGS_INVITE_TWITTER_TEXT", comment: "content of tweet when inviting via twitter - please do not translate URL")
-        twitterViewController.setInitialText(tweetString)
-
-        let tweetUrl = URL(string: installUrl)
-        twitterViewController.add(tweetUrl)
-        twitterViewController.add(#imageLiteral(resourceName: "twitter_sharing_image"))
-
-        presentingViewController?.present(twitterViewController, animated: true)
     }
 
     // MARK: ContactsPickerDelegate
