@@ -173,13 +173,19 @@ public class PhotoGridViewCell: UICollectionViewCell {
             let durationLabel = UILabel()
             durationLabel.textColor = .ows_gray05
             durationLabel.font = .ows_dynamicTypeCaption1.ows_semibold
+            durationLabel.layer.shadowColor = UIColor.ows_blackAlpha20.cgColor
+            durationLabel.layer.shadowOffset = CGSize(width: -1, height: -1)
+            durationLabel.layer.shadowOpacity = 1
+            durationLabel.layer.shadowRadius = 4
+            durationLabel.shadowOffset = CGSize(width: 0, height: 1)
             durationLabel.adjustsFontForContentSizeCategory = true
             self.durationLabel = durationLabel
         }
         if durationLabelBackground == nil {
-            let gradientView = GradientView(colors: [ (UIColor.clear, 0), (UIColor.ows_blackAlpha10, 0.5), (UIColor.ows_blackAlpha60, 1) ])
-            gradientView.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
-            gradientView.gradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
+            let gradientView = GradientView(from: .ows_blackAlpha40, to: .clear)
+            gradientView.gradientLayer.type = .radial
+            gradientView.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
+            gradientView.gradientLayer.endPoint = CGPoint(x: 0, y: 90/122) // 122 x 58 oval
             self.durationLabelBackground = gradientView
         }
 
@@ -194,9 +200,10 @@ public class PhotoGridViewCell: UICollectionViewCell {
         }
         if durationLabelBackground.superview == nil {
             contentView.insertSubview(durationLabelBackground, belowSubview: durationLabel)
-            durationLabelBackground.autoPinWidthToSuperview()
-            durationLabelBackground.autoPinEdge(toSuperviewEdge: .bottom)
-            durationLabelBackground.heightAnchor.constraint(equalTo: durationLabel.heightAnchor, multiplier: 4).isActive = true
+            durationLabelBackground.autoPinEdge(.top, to: .top, of: durationLabel, withOffset: -10)
+            durationLabelBackground.autoPinEdge(.leading, to: .leading, of: durationLabel, withOffset: -24)
+            durationLabelBackground.centerXAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+            durationLabelBackground.centerYAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
         }
 
         durationLabel.isHidden = false
