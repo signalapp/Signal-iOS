@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewController.h"
@@ -413,7 +413,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 #pragma mark -
 
-- (void)showSharingActivityWithCompletion:(nullable void (^)(void))completionHandler
+- (void)showSharingActivity
 {
     OWSLogDebug(@"Sharing safety numbers");
 
@@ -426,15 +426,6 @@ typedef void (^CustomLayoutBlock)(void);
     UIActivityViewController *activityController =
         [[UIActivityViewController alloc] initWithActivityItems:@[ shareString ]
                                           applicationActivities:@[ compareActivity ]];
-
-    activityController.completionWithItemsHandler = ^void(UIActivityType __nullable activityType,
-        BOOL completed,
-        NSArray *__nullable returnedItems,
-        NSError *__nullable activityError) {
-        if (completionHandler) {
-            completionHandler();
-        }
-    };
 
     if (activityController.popoverPresentationController) {
         activityController.popoverPresentationController.barButtonItem = self.shareButton;
@@ -495,7 +486,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)didTapShareButton
 {
-    [self showSharingActivityWithCompletion:nil];
+    [self showSharingActivity];
 }
 
 - (void)showScanner
@@ -519,7 +510,7 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)fingerprintLabelTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [self showSharingActivityWithCompletion:nil];
+        [self showSharingActivity];
     }
 }
 
