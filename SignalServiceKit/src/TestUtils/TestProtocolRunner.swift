@@ -12,8 +12,12 @@ public struct TestProtocolRunner {
 
     public init() { }
 
-    public func initialize(senderClient: TestSignalClient, recipientClient: TestSignalClient, transaction: SDSAnyWriteTransaction) throws {
-
+    /// Sets up a session for `senderClient` to send to `recipientClient`, but not vice versa.
+    ///
+    /// Messages from `senderClient` will be PreKey messages.
+    public func initializePreKeys(senderClient: TestSignalClient,
+                                  recipientClient: TestSignalClient,
+                                  transaction: SDSAnyWriteTransaction) throws {
         _ = OWSAccountIdFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
         _ = OWSAccountIdFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
 
@@ -59,6 +63,16 @@ public struct TestProtocolRunner {
             ),
             id: signedPrekeyId,
             context: transaction)
+    }
+
+    /// Sets up a session between `senderClient` and `recipientClient`, so that either can talk to the other.
+    ///
+    /// Messages between both clients will be "Whisper" / "ciphertext" / "Signal" messages.
+    public func initialize(senderClient: TestSignalClient,
+                           recipientClient: TestSignalClient,
+                           transaction: SDSAnyWriteTransaction) throws {
+
+        try initializePreKeys(senderClient: senderClient, recipientClient: recipientClient, transaction: transaction)
 
         // Then Alice sends a message to Bob so he gets her pre-key as well.
         let aliceMessage = try encrypt(Data(),
@@ -188,11 +202,14 @@ public struct FakeSignalClient: TestSignalClient {
 /// Represents the local user, backed by the same protocol stores, etc.
 /// used in the app.
 public struct LocalSignalClient: TestSignalClient {
+    public let identity: OWSIdentity
 
-    public init() { }
+    public init(identity: OWSIdentity = .aci) {
+        self.identity = identity
+    }
 
     public var identityKeyPair: ECKeyPair {
-        return SSKEnvironment.shared.identityManager.identityKeyPair(for: .aci)!
+        return SSKEnvironment.shared.identityManager.identityKeyPair(for: identity)!
     }
 
     public var e164Identifier: SignalE164Identifier? {
@@ -200,26 +217,29 @@ public struct LocalSignalClient: TestSignalClient {
     }
 
     public var uuid: UUID {
-        return TSAccountManager.shared.localUuid!
+        switch identity {
+        case .aci: return TSAccountManager.shared.localUuid!
+        case .pni: return TSAccountManager.shared.localPni!
+        }
     }
 
     public let deviceId: UInt32 = 1
 
     public var sessionStore: SessionStore {
-        return SSKEnvironment.shared.signalProtocolStore(for: .aci).sessionStore
+        return SSKEnvironment.shared.signalProtocolStore(for: identity).sessionStore
     }
 
     public var preKeyStore: PreKeyStore {
-        return SSKEnvironment.shared.signalProtocolStore(for: .aci).preKeyStore
+        return SSKEnvironment.shared.signalProtocolStore(for: identity).preKeyStore
     }
 
     public var signedPreKeyStore: SignedPreKeyStore {
-        return SSKEnvironment.shared.signalProtocolStore(for: .aci).signedPreKeyStore
+        return SSKEnvironment.shared.signalProtocolStore(for: identity).signedPreKeyStore
     }
 
     public var identityKeyStore: IdentityKeyStore {
         return SSKEnvironment.shared.databaseStorage.read { transaction in
-            return try! SSKEnvironment.shared.identityManager.store(for: .aci, transaction: transaction)
+            return try! SSKEnvironment.shared.identityManager.store(for: identity, transaction: transaction)
         }
     }
 }

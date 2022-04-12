@@ -955,13 +955,18 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid
 {
+    [self registerForTestsWithLocalNumber:localNumber uuid:uuid pni:nil];
+}
+
+- (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid pni:(NSUUID *_Nullable)pni
+{
     OWSAssertDebug(SSKFeatureFlags.storageMode == StorageModeGrdbTests);
     OWSAssertDebug(CurrentAppContext().isRunningTests);
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(uuid != nil);
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self storeLocalNumber:localNumber aci:uuid pni:nil transaction:transaction];
+        [self storeLocalNumber:localNumber aci:uuid pni:pni transaction:transaction];
     });
 }
 

@@ -27,11 +27,11 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let trustRoot = IdentityKeyPair.generate()
 
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-        let senderCertificate = createCertificateFor(trustRoot: trustRoot,
-                                                     senderAddress: aliceMockClient.address,
-                                                     senderDeviceId: UInt32(aliceMockClient.deviceId),
-                                                     identityKey: aliceMockClient.identityKeyPair.publicKey,
-                                                     expirationTimestamp: 31337)
+        let senderCertificate = Self.createCertificateFor(trustRoot: trustRoot,
+                                                          senderAddress: aliceMockClient.address,
+                                                          senderDeviceId: UInt32(aliceMockClient.deviceId),
+                                                          identityKey: aliceMockClient.identityKeyPair.publicKey,
+                                                          expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
@@ -78,11 +78,11 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let trustRoot = IdentityKeyPair.generate()
         let falseTrustRoot = IdentityKeyPair.generate()
         // SenderCertificate   senderCertificate = createCertificateFor(falseTrustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-        let senderCertificate = createCertificateFor(trustRoot: falseTrustRoot,
-                                                     senderAddress: aliceMockClient.address,
-                                                     senderDeviceId: UInt32(aliceMockClient.deviceId),
-                                                     identityKey: aliceMockClient.identityKeyPair.publicKey,
-                                                     expirationTimestamp: 31337)
+        let senderCertificate = Self.createCertificateFor(trustRoot: falseTrustRoot,
+                                                          senderAddress: aliceMockClient.address,
+                                                          senderDeviceId: UInt32(aliceMockClient.deviceId),
+                                                          identityKey: aliceMockClient.identityKeyPair.publicKey,
+                                                          expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
@@ -151,11 +151,11 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let trustRoot = IdentityKeyPair.generate()
 
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-        let senderCertificate = createCertificateFor(trustRoot: trustRoot,
-                                                     senderAddress: aliceMockClient.address,
-                                                     senderDeviceId: UInt32(aliceMockClient.deviceId),
-                                                     identityKey: aliceMockClient.identityKeyPair.publicKey,
-                                                     expirationTimestamp: 31337)
+        let senderCertificate = Self.createCertificateFor(trustRoot: trustRoot,
+                                                          senderAddress: aliceMockClient.address,
+                                                          senderDeviceId: UInt32(aliceMockClient.deviceId),
+                                                          identityKey: aliceMockClient.identityKeyPair.publicKey,
+                                                          expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
@@ -227,11 +227,11 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // ECKeyPair           randomKeyPair     = Curve.generateKeyPair();
         let randomKeyPair = IdentityKeyPair.generate()
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, randomKeyPair.getPublicKey(), 31337);
-        let senderCertificate = createCertificateFor(trustRoot: trustRoot,
-                                                     senderAddress: aliceMockClient.address,
-                                                     senderDeviceId: UInt32(aliceMockClient.deviceId),
-                                                     identityKey: randomKeyPair.publicKey,
-                                                     expirationTimestamp: 31337)
+        let senderCertificate = Self.createCertificateFor(trustRoot: trustRoot,
+                                                          senderAddress: aliceMockClient.address,
+                                                          senderDeviceId: UInt32(aliceMockClient.deviceId),
+                                                          identityKey: randomKeyPair.publicKey,
+                                                          expirationTimestamp: 31337)
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
 
@@ -275,7 +275,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
 
         let trustRoot = IdentityKeyPair.generate()
-        let senderCertificate = createCertificateFor(
+        let senderCertificate = Self.createCertificateFor(
             trustRoot: trustRoot,
             senderAddress: aliceMockClient.address,
             senderDeviceId: UInt32(aliceMockClient.deviceId),
@@ -334,7 +334,7 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
 
         let trustRoot = IdentityKeyPair.generate()
-        let senderCertificate = createCertificateFor(
+        let senderCertificate = Self.createCertificateFor(
             trustRoot: trustRoot,
             senderAddress: aliceMockClient.address,
             senderDeviceId: UInt32(aliceMockClient.deviceId),
@@ -406,11 +406,11 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
 
     // private SenderCertificate createCertificateFor(ECKeyPair trustRoot, String sender, int deviceId, ECPublicKey identityKey, long expires)
     //     throws InvalidKeyException, InvalidCertificateException, InvalidProtocolBufferException {
-    private func createCertificateFor(trustRoot: IdentityKeyPair,
-                                      senderAddress: SignalServiceAddress,
-                                      senderDeviceId: UInt32,
-                                      identityKey: PublicKey,
-                                      expirationTimestamp: UInt64) -> SenderCertificate {
+    internal static func createCertificateFor(trustRoot: IdentityKeyPair,
+                                              senderAddress: SignalServiceAddress,
+                                              senderDeviceId: UInt32,
+                                              identityKey: PublicKey,
+                                              expirationTimestamp: UInt64) -> SenderCertificate {
         let serverKey = IdentityKeyPair.generate()
         let serverCertificate = try! ServerCertificate(keyId: 1,
                                                        publicKey: serverKey.publicKey,

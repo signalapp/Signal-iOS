@@ -681,6 +681,7 @@ public class PendingEnvelopes {
 
 public enum MessageProcessingError: Error {
     case wrongDestinationUuid
+    case invalidMessageTypeForDestinationUuid
     case duplicatePendingEnvelope
     case blockedSender
 }
