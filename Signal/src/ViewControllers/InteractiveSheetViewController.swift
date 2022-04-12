@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -45,6 +45,7 @@ public class InteractiveSheetViewController: OWSViewController {
 
         // Prefer to be full width, but don't exceed the maximum width
         contentView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
+        contentView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
             contentView.autoPinWidthToSuperview()
         }

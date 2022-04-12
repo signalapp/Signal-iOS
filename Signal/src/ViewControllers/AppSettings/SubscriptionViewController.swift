@@ -1444,7 +1444,8 @@ private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
         stackView.isLayoutMarginsRelativeArrangement = true
         contentScrollView.addSubview(stackView)
         stackView.autoPinHeightToSuperview()
-        stackView.autoPinWidth(toWidthOf: view)
+        // Pin to the scroll view's viewport, not to its scrollable area
+        stackView.autoPinWidth(toWidthOf: contentScrollView)
 
         contentScrollView.autoPinWidthToSuperview()
         contentScrollView.autoPinEdge(toSuperviewEdge: .bottom)
