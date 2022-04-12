@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
@@ -78,6 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
         @"{length = 32, bytes = 0x0000}" : @"[ REDACTED_DATA:00... ]",
         @"{length = 32, bytes = 0x99}" : @"[ REDACTED_DATA:99... ]",
         @"{length = 32, bytes = 0x999999}" : @"[ REDACTED_DATA:99... ]",
+        @"{length = 32, bytes = 0x00010203 44556677 89898989 abcdef01 ... aabbccdd eeff1234 }" :
+            @"[ REDACTED_DATA:00... ]",
         @"My data is: <01234567 89a23def 23234567 89ab1223>" : @"My data is: [ REDACTED_DATA:01... ]",
         @"My data is <12345670 89a23def 23234567 89ab1223> their data is <87654321 89ab1234>" :
             @"My data is [ REDACTED_DATA:12... ] their data is [ REDACTED_DATA:87... ]"
