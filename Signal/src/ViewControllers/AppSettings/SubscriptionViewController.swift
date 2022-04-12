@@ -128,6 +128,10 @@ class SubscriptionViewController: OWSTableViewController2 {
         return failureReason
     }
 
+    private var hasAnyDonationReceipts: Bool {
+        self.databaseStorage.read { DonationReceiptFinder.hasAny(transaction: $0) }
+    }
+
     private let bottomFooterStackView = UIStackView()
 
     open override var bottomFooter: UIView? {
@@ -717,11 +721,7 @@ class SubscriptionViewController: OWSTableViewController2 {
             }
         ))
 
-        let shouldShowReceiptsButton: Bool = (
-            FeatureFlags.viewDonationReceipts &&
-            self.databaseStorage.read { DonationReceiptFinder.hasAny(transaction: $0) }
-        )
-        if shouldShowReceiptsButton {
+        if hasAnyDonationReceipts {
             managementSection.add(.disclosureItem(
                 icon: .settingsReceipts,
                 name: NSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there"),
