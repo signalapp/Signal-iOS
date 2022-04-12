@@ -331,7 +331,7 @@ class RegistrationVerificationViewModel: NSObject {
         } else {
             let countdownInterval = abs(codeCountdownStart.timeIntervalSinceNow)
             let countdownRemaining = max(0, Self.countdownDuration - countdownInterval)
-            let formattedCountdown = OWSFormat.formatDurationSeconds(Int(round(countdownRemaining)))
+            let formattedCountdown = OWSFormat.localizedDurationString(from: round(countdownRemaining))
 
             let resendCodeCountdownFormat = NSLocalizedString(
                 "ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT",

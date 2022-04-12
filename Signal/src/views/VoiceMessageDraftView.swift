@@ -120,7 +120,7 @@ class VoiceMessageDraftView: UIStackView, OWSAudioPlayerDelegate {
     func updateAudioProgress(currentTime: TimeInterval) {
         guard let duration = voiceMessageModel.duration else { return }
         waveformView.value = CGFloatClamp01(CGFloat(currentTime / duration))
-        playbackTimeLabel.text = OWSFormat.formatDurationSeconds(Int(duration - currentTime))
+        playbackTimeLabel.text = OWSFormat.localizedDurationString(from: duration - currentTime)
     }
 
     @objc
