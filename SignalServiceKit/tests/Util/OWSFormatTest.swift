@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class OWSFormatTest: SSKBaseTestSwift  {
+class OWSFormatTest: SSKBaseTestSwift {
 
     func testTimeIntervals() throws {
         XCTAssertEqual(OWSFormat.localizedDurationString(from: 1), "0:01")
