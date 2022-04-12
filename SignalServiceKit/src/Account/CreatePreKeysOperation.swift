@@ -16,13 +16,22 @@ public class CreatePreKeysOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        let identityKeyPair = self.identityManager.identityKeyPair(for: identity) ??
-            self.identityManager.generateNewIdentityKey(for: identity)
-        let identityKey: Data = identityKeyPair.publicKey
+        let identityKeyPair: ECKeyPair
+        if let existingIdentityKeyPair = identityManager.identityKeyPair(for: identity) {
+            identityKeyPair = existingIdentityKeyPair
+        } else if tsAccountManager.isPrimaryDevice {
+            identityKeyPair = identityManager.generateNewIdentityKey(for: identity)
+        } else {
+            Logger.warn("cannot create \(identity) pre-keys; missing identity key")
+            owsAssertDebug(identity != .aci)
+            self.reportCancelled()
+            return
+        }
 
         let signalProtocolStore = self.signalProtocolStore(for: identity)
         let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
         let preKeyRecords: [PreKeyRecord] = signalProtocolStore.preKeyStore.generatePreKeyRecords()
+        let identityKey: Data = identityKeyPair.publicKey
 
         self.databaseStorage.write { transaction in
             signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
