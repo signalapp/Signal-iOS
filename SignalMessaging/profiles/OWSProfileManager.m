@@ -30,7 +30,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels = 1024;
-const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_UserProfileWriter";
+NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_UserProfileWriter";
+static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfileKeyCheckTimestamp";
 
 @interface OWSProfileManager ()
 
@@ -39,6 +40,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 @property (nonatomic, readonly) AtomicUInt *profileAvatarDataLoadCounter;
 @property (nonatomic, readonly) AtomicUInt *profileAvatarImageLoadCounter;
+
+@property (nonatomic, readonly) SDSKeyValueStore *metadataStore;
 
 @end
 
@@ -103,6 +106,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserUUIDWhitelistCollection"];
     _whitelistedGroupsStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
+    _metadataStore = [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_Metadata"];
     _badgeStore = [[BadgeStore alloc] init];
 
     OWSSingletonAssert();
@@ -541,11 +545,14 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         __block NSArray<NSString *> *victimPhoneNumbers = @[];
         __block NSArray<NSString *> *victimUUIDs = @[];
         __block NSArray<NSData *> *victimGroupIds = @[];
+        __block NSDate *lastGroupProfileKeyCheckTimestamp = nil;
         [self.databaseStorage
             readWithBlock:^(SDSAnyReadTransaction *transaction) {
                 victimPhoneNumbers = [self blockedPhoneNumbersInWhitelistWithTransaction:transaction];
                 victimUUIDs = [self blockedUUIDsInWhitelistWithTransaction:transaction];
                 victimGroupIds = [self blockedGroupIDsInWhitelistWithTransaction:transaction];
+                lastGroupProfileKeyCheckTimestamp = [self.metadataStore getDate:kLastGroupProfileKeyCheckTimestampKey
+                                                                    transaction:transaction];
             }
                      file:__FILE__
                  function:__FUNCTION__
@@ -557,6 +564,19 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         victimCount += victimGroupIds.count;
         if (victimCount == 0) {
             // No need to rotate the profile key.
+            if (self.tsAccountManager.isPrimaryDevice) {
+                // But if it's been more than a week since we checked that our groups are up to date, schedule that.
+                if (lastGroupProfileKeyCheckTimestamp == nil
+                    || -lastGroupProfileKeyCheckTimestamp.timeIntervalSinceNow > kWeekInterval) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                        [self.groupsV2 scheduleAllGroupsV2ForProfileKeyUpdateWithTransaction:transaction];
+                        [self.metadataStore setDate:[NSDate date]
+                                                key:kLastGroupProfileKeyCheckTimestampKey
+                                        transaction:transaction];
+                    });
+                    [self.groupsV2 processProfileKeyUpdates];
+                }
+            }
             return success();
         }
 
