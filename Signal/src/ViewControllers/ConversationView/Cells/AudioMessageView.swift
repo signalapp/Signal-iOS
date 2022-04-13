@@ -306,7 +306,7 @@ class AudioMessageView: ManualStackView {
                                                                conversationStyle: ConversationStyle) -> CVLabelConfig {
         // playbackTimeLabel uses a monospace font, so we measure the
         // worst-case width using the full duration of the audio.
-        let text = OWSFormat.formatDurationSeconds(Int(audioAttachment.durationSeconds))
+        let text = OWSFormat.localizedDurationString(from: audioAttachment.durationSeconds)
         return playbackTimeLabelConfig(text: text,
                                        isIncoming: isIncoming,
                                        conversationStyle: conversationStyle)
@@ -437,8 +437,8 @@ class AudioMessageView: ManualStackView {
     }
 
     private func updateElapsedTime(_ elapsedSeconds: TimeInterval) {
-        let timeRemaining = Int(durationSeconds - elapsedSeconds)
-        playbackTimeLabel.text = OWSFormat.formatDurationSeconds(timeRemaining)
+        let timeRemaining = durationSeconds - elapsedSeconds
+        playbackTimeLabel.text = OWSFormat.localizedDurationString(from: timeRemaining)
     }
 
     private func updateAudioProgress() {

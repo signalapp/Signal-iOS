@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -936,7 +936,7 @@ class TrimVideoTimelineView: UIView {
         }
 
         let label = UILabel()
-        label.text = OWSFormat.formatDurationSeconds(Int(round(time)))
+        label.text = OWSFormat.localizedDurationString(from: round(time))
         label.textColor = .ows_white
         label.font = .ows_dynamicTypeCaption1
         timeBubbleView.addSubview(label)

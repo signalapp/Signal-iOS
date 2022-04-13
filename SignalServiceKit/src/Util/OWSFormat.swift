@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -117,5 +117,63 @@ public extension OWSFormat {
 
     class func formatUInt64(_ value: UInt64) -> String {
         return formatNSInt(NSNumber(value: value))
+    }
+}
+
+// MARK: - Numbers
+
+public extension OWSFormat {
+
+    private static let decimalNumberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
+
+    static func localizedDecimalString(from number: Int) -> String {
+        let result = decimalNumberFormatter.string(for: number)
+        owsAssertDebug(result != nil, "Formatted string is nil. number=[\(number)]")
+        return result ?? ""
+    }
+}
+
+// MARK: - Time
+public extension OWSFormat {
+
+    private static let durationFormatterS: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        // `dropTrailing` produces a single leading zero: "0:ss".
+        formatter.zeroFormattingBehavior = .dropTrailing
+        formatter.formattingContext = .standalone
+        formatter.allowedUnits = [ .minute, .second ]
+        return formatter
+    }()
+
+    private static let durationFormatterMS: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.formattingContext = .standalone
+        formatter.allowedUnits = [ .minute, .second ]
+        return formatter
+    }()
+
+    private static let durationFormatterHMS: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.formattingContext = .standalone
+        formatter.allowedUnits = [ .hour, .minute, .second ]
+        return formatter
+    }()
+
+    static func localizedDurationString(from timeInterval: TimeInterval) -> String {
+        var result: String?
+        switch timeInterval {
+        case 0..<60:
+            result = durationFormatterS.string(from: timeInterval)
+        case 3600...:
+            result = durationFormatterHMS.string(from: timeInterval)
+        default:
+            result = durationFormatterMS.string(from: timeInterval)
+        }
+        owsAssertDebug(result != nil, "Formatted string is nil. ti=[\(timeInterval)]")
+        return result ?? ""
     }
 }
