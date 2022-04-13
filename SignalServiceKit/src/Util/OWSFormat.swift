@@ -165,11 +165,12 @@ public extension OWSFormat {
 
     static func localizedDurationString(from timeInterval: TimeInterval) -> String {
         var result: String?
-        if timeInterval > 0 && timeInterval < 60 {
+        switch timeInterval {
+        case 0..<60:
             result = durationFormatterS.string(from: timeInterval)
-        } else if timeInterval >= 3600 {
+        case 3600...:
             result = durationFormatterHMS.string(from: timeInterval)
-        } else {
+        default:
             result = durationFormatterMS.string(from: timeInterval)
         }
         owsAssertDebug(result != nil, "Formatted string is nil. ti=[\(timeInterval)]")
