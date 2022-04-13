@@ -51,7 +51,9 @@ public class BlockingManager: NSObject {
         }
         // Once we're ready to send a message, check to see if we need to sync.
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.sendBlockListSyncMessage(force: false)
+            DispatchQueue.global().async {
+                self.sendBlockListSyncMessage(force: false)
+            }
         }
         observeNotifications()
     }
