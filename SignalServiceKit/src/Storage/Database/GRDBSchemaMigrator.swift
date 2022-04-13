@@ -1641,22 +1641,18 @@ public class GRDBSchemaMigrator: NSObject {
         // These index migrations are *expensive* for users with large interaction tables. For external
         // users who don't yet have access to stories and don't have need for the indices, we will perform
         // one migration per release to keep the blocking time low (ideally one 5-7s migration per release).
-        if FeatureFlags.storiesMigration1 {
+        migrator.registerMigration(MigrationId.updateConversationLoadInteractionCountIndex.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
 
-            migrator.registerMigration(MigrationId.updateConversationLoadInteractionCountIndex.rawValue) { db in
-                let transaction = GRDBWriteTransaction(database: db)
-                defer { transaction.finalizeTransaction() }
-                guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
+            try db.execute(sql: """
+                DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
 
-                try db.execute(sql: """
-                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
-
-                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
-                    ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
-                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-                """)
-            }
-
+                CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+                ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
+                WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+            """)
         }
 
         if FeatureFlags.storiesMigration2 {
