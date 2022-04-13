@@ -27,6 +27,8 @@ lane :release do |options|
 
   app_store_connect_api_key
 
+  cert
+
   # Signal provisioning
   sigh(
     app_identifier: app_identifier,
