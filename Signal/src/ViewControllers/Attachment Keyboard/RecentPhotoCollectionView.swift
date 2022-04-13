@@ -266,7 +266,9 @@ class RecentPhotoCell: UICollectionViewCell {
     static let reuseIdentifier = "RecentPhotoCell"
 
     let imageView = UIImageView()
-    let contentTypeBadgeView = UIImageView()
+    private var contentTypeBadgeView: UIImageView?
+    private var durationLabel: UILabel?
+    private var durationLabelBackground: UIView?
     let loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
 
     var item: PhotoGridItem?
@@ -281,11 +283,6 @@ class RecentPhotoCell: UICollectionViewCell {
 
         contentView.addSubview(imageView)
         imageView.autoPinEdgesToSuperviewEdges()
-
-        imageView.addSubview(contentTypeBadgeView)
-        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 3)
-        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
-        contentTypeBadgeView.autoSetDimensions(to: CGSize(width: 18, height: 12))
 
         loadingIndicator.layer.shadowColor = UIColor.black.cgColor
         loadingIndicator.layer.shadowOffset = .zero
@@ -309,12 +306,72 @@ class RecentPhotoCell: UICollectionViewCell {
         }
     }
 
-    var contentTypeBadgeImage: UIImage? {
-        get { return contentTypeBadgeView.image }
-        set {
-            contentTypeBadgeView.image = newValue
-            contentTypeBadgeView.isHidden = newValue == nil
+    private func setContentTypeBadge(image: UIImage?) {
+        guard image != nil else {
+            contentTypeBadgeView?.isHidden = true
+            return
         }
+
+        if contentTypeBadgeView == nil {
+            let contentTypeBadgeView = UIImageView()
+            contentView.addSubview(contentTypeBadgeView)
+            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 4)
+            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
+            self.contentTypeBadgeView = contentTypeBadgeView
+        }
+        contentTypeBadgeView?.isHidden = false
+        contentTypeBadgeView?.image = image
+        contentTypeBadgeView?.sizeToFit()
+    }
+
+    private func setMedia(duration: TimeInterval) {
+        guard duration > 0 else {
+            durationLabel?.isHidden = true
+            durationLabelBackground?.isHidden = true
+            return
+        }
+
+        if durationLabel == nil {
+            let durationLabel = UILabel()
+            durationLabel.textColor = .ows_gray05
+            durationLabel.font = .ows_dynamicTypeCaption1.ows_semibold
+            durationLabel.layer.shadowColor = UIColor.ows_blackAlpha20.cgColor
+            durationLabel.layer.shadowOffset = CGSize(width: -1, height: -1)
+            durationLabel.layer.shadowOpacity = 1
+            durationLabel.layer.shadowRadius = 4
+            durationLabel.shadowOffset = CGSize(width: 0, height: 1)
+            durationLabel.adjustsFontForContentSizeCategory = true
+            self.durationLabel = durationLabel
+        }
+        if durationLabelBackground == nil {
+            let gradientView = GradientView(from: .ows_blackAlpha40, to: .clear)
+            gradientView.gradientLayer.type = .radial
+            gradientView.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
+            gradientView.gradientLayer.endPoint = CGPoint(x: 0, y: 90/122) // 122 x 58 oval
+            self.durationLabelBackground = gradientView
+        }
+
+        guard let durationLabel = durationLabel, let durationLabelBackground = durationLabelBackground else {
+            return
+        }
+
+        if durationLabel.superview == nil {
+            contentView.addSubview(durationLabel)
+            durationLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 6)
+            durationLabel.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
+        }
+        if durationLabelBackground.superview == nil {
+            contentView.insertSubview(durationLabelBackground, belowSubview: durationLabel)
+            durationLabelBackground.autoPinEdge(.top, to: .top, of: durationLabel, withOffset: -10)
+            durationLabelBackground.autoPinEdge(.leading, to: .leading, of: durationLabel, withOffset: -24)
+            durationLabelBackground.centerXAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+            durationLabelBackground.centerYAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        }
+
+        durationLabel.isHidden = false
+        durationLabelBackground.isHidden = false
+        durationLabel.text = OWSFormat.localizedDurationString(from: duration)
+        durationLabel.sizeToFit()
     }
 
     public func configure(item: PhotoGridItem, isLoading: Bool) {
@@ -325,11 +382,13 @@ class RecentPhotoCell: UICollectionViewCell {
             self.image = image
         }
 
+        setMedia(duration: item.duration)
+
         switch item.type {
         case .animated:
-            self.contentTypeBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
+            setContentTypeBadge(image: #imageLiteral(resourceName: "ic_gallery_badge_gif"))
         case .photo, .video:
-            self.contentTypeBadgeImage = nil
+            setContentTypeBadge(image: nil)
         }
 
         if isLoading { startLoading() }
