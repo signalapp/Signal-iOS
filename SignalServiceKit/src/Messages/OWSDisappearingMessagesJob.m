@@ -370,15 +370,8 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
-    [self.disappearingMessagesFinder
-        enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *message, BOOL *stop) {
-            OWSFailDebug(@"starting old timer for message timestamp: %llu", message.timestamp);
 
-            [messageIds addObject:message.uniqueId];
-        }
-                                                 transaction:transaction];
-
+    NSArray<NSString *> *messageIds = [self.disappearingMessagesFinder fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:transaction];
     for (NSString *messageId in messageIds) {
         TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:messageId transaction:transaction];
         if (message == nil) {

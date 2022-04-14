@@ -14,8 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateExpiredMessagesWithBlock:(void (^_Nonnull)(TSMessage *message))block
                               transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)enumerateMessagesWhichFailedToStartExpiringWithBlock:(void (^_Nonnull)(TSMessage *message, BOOL *stop))block
-                                                 transaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray<NSString *> *)fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * @return

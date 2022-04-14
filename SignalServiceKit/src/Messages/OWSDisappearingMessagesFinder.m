@@ -24,33 +24,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSNumber *)nextExpirationTimestampWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
+    TSMessage *_Nullable message = nil;
+    message = [InteractionFinder nextMessageWithStartedPerConversationExpirationToExpireWithTransaction:transaction];
 
-    __block TSMessage *firstMessage;
-    [InteractionFinder
-        enumerateMessagesWithStartedPerConversationExpirationWithTransaction:transaction
-                                                                       block:^(TSInteraction *interaction, BOOL *stop) {
-                                                                           if (![interaction
-                                                                                   isKindOfClass:[TSMessage class]]) {
-                                                                               OWSFailDebug(@"Unexpected object: %@",
-                                                                                   interaction.class);
-                                                                               return;
-                                                                           }
-                                                                           firstMessage = (TSMessage *)interaction;
-                                                                           *stop = YES;
-                                                                       }];
-    if (firstMessage && firstMessage.expiresAt > 0) {
-        return [NSNumber numberWithUnsignedLongLong:firstMessage.expiresAt];
+    if (message.expiresAt > 0) {
+        return @(message.expiresAt);
+    } else {
+        return nil;
     }
-
-    return nil;
 }
 
-- (void)enumerateMessagesWhichFailedToStartExpiringWithBlock:(void (^_Nonnull)(TSMessage *message, BOOL *stop))block
-                                                 transaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<NSString *> *)fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-
-    [InteractionFinder enumerateMessagesWhichFailedToStartExpiringWithTransaction:transaction block:block];
+    return [InteractionFinder fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:transaction];
 }
 
 #ifdef DEBUG
@@ -81,12 +68,14 @@ NS_ASSUME_NONNULL_BEGIN
     // Since we can't directly mutate the enumerated expired messages, we store only their ids in hopes of saving a
     // little memory and then enumerate the (larger) TSMessage objects one at a time.
     for (NSString *expiredMessageId in [self fetchExpiredMessageIdsWithTransaction:transaction]) {
-        TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:expiredMessageId transaction:transaction];
-        if (message == nil) {
-            OWSFailDebug(@"Missing interaction.");
-            continue;
+        @autoreleasepool {
+            TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:expiredMessageId transaction:transaction];
+            if (message == nil) {
+                OWSFailDebug(@"Missing interaction.");
+                continue;
+            }
+            block(message);
         }
-        block(message);
     }
 }
 

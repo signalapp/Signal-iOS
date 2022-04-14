@@ -133,6 +133,7 @@ public class GRDBSchemaMigrator: NSObject {
         case updateConversationUnreadCountIndex
         case createDonationReceiptTable
         case addBoostAmountToSubscriptionDurableJob
+        case improvedDisappearingMessageIndices
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1702,6 +1703,25 @@ public class GRDBSchemaMigrator: NSObject {
                 }
             }
 
+            migrator.registerMigration(MigrationId.improvedDisappearingMessageIndices.rawValue) { db in
+                do {
+                    // The old index was created in an order that made it practically useless for the query
+                    // we needed it for. This rebuilds it as a partial index.
+                    try db.execute(sql: """
+                        DROP INDEX index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt;
+
+                        CREATE INDEX index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt
+                        ON model_TSInteraction(uniqueThreadId, uniqueId)
+                        WHERE
+                            storedShouldStartExpireTimer IS TRUE
+                        AND
+                            (expiresAt IS 0 OR expireStartedAt IS 0)
+                        ;
+                    """)
+                } catch {
+                    owsFail("Error: \(error)")
+                }
+            }
         }
 
         // MARK: - Schema Migration Insertion Point
