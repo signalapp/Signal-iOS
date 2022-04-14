@@ -223,7 +223,7 @@ extension CVItemViewModelImpl {
         switch messageCellType {
         case .unknown, .dateHeader, .typingIndicator, .unreadIndicator, .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             return false
-        case .textOnlyMessage, .audio, .genericAttachment, .contactShare, .bodyMedia, .viewOnce, .stickerMessage:
+        case .textOnlyMessage, .audio, .genericAttachment, .contactShare, .bodyMedia, .viewOnce, .stickerMessage, .quoteOnlyMessage:
             return !hasUnloadedAttachments
         }
     }

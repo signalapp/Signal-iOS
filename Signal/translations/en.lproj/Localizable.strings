@@ -4651,6 +4651,15 @@
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
 
+/* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+
+/* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+
+/* Message header when you are quoting a story. Embeds {{ story author name }} */
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
 
@@ -6165,6 +6174,9 @@
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+
+/* Text indicating a story that was replied to is no longer available. */
+"STORY_NO_LONGER_AVAILABLE" = "No longer available";
 
 /* Button for replying to a story with a single existing reply. */
 "STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";

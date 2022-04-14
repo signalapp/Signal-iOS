@@ -6,11 +6,11 @@ import Foundation
 import UIKit
 import SignalServiceKit
 
-class TextAttachmentView: UIView {
+public class TextAttachmentView: UIView {
     private(set) weak var linkPreviewView: UIView?
     private let textAttachment: TextAttachment
 
-    init(attachment: TextAttachment) {
+    public init(attachment: TextAttachment) {
         self.textAttachment = attachment
 
         super.init(frame: .zero)
@@ -79,18 +79,29 @@ class TextAttachmentView: UIView {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
     }
 
+    public func asThumbnailView() -> UIView {
+        // We render the textView at a large 3:2 size (matching the aspect of
+        // the thumbnail container), so the fonts and gradients all render properly
+        // for the preview. We then scale it down to render a "thumbnail" view.
+        let thumbnailRenderSize = CGSize(width: 375, height: 563)
+
+        let thumbnailView = OWSLayerView(frame: .zero) { view in
+            self.transform = .scale(view.width / thumbnailRenderSize.width)
+            self.frame = view.bounds
+        }
+        thumbnailView.addSubview(self)
+
+        return thumbnailView
+    }
+
     public var isPresentingLinkTooltip: Bool { linkPreviewTooltipView != nil }
 
     private var linkPreviewTooltipView: LinkPreviewTooltipView?
-    func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
+    public func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
         if let linkPreviewTooltipView = linkPreviewTooltipView {
             if let container = linkPreviewTooltipView.superview,
                linkPreviewTooltipView.frame.contains(gesture.location(in: container)) {
-                UIApplication.shared.open(
-                    linkPreviewTooltipView.url,
-                    options: [:],
-                    completionHandler: nil
-                )
+                CurrentAppContext().open(linkPreviewTooltipView.url)
             } else {
                 linkPreviewTooltipView.removeFromSuperview()
                 self.linkPreviewTooltipView = nil

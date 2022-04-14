@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,6 +15,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
     case bodyMedia
     case viewOnce
     case stickerMessage
+    case quoteOnlyMessage
 
     // Most of these other message cell types use a special root view.
     case dateHeader
@@ -32,6 +33,7 @@ public enum CVMessageCellType: Int, CustomStringConvertible, Equatable {
             switch self {
             case .unknown: return "unknown"
             case .textOnlyMessage: return "textOnlyMessage"
+            case .quoteOnlyMessage: return "quoteOnlyMessage"
             case .audio: return "audio"
             case .genericAttachment: return "genericAttachment"
             case .contactShare: return "contactShare"

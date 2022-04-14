@@ -267,6 +267,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     [UIApplication.sharedApplication openSystemSettings];
 }
 
+- (void)openURL:(NSURL *)url completion:(void (^__nullable)(BOOL success))completion
+{
+    [UIApplication.sharedApplication openURL:url options:@{} completionHandler:completion];
+}
+
 - (BOOL)isRunningTests
 {
     return getenv("runningTests_dontStartApp");

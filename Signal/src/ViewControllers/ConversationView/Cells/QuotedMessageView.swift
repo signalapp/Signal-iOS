@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,6 +40,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private let quotedAuthorLabel = CVLabel()
     private let quotedTextLabel = CVLabel()
     private let quoteContentSourceLabel = CVLabel()
+    private let quoteReactionHeaderLabel = CVLabel()
+    private let quoteReactionLabel = CVLabel()
     private let quotedImageView = CVImageView()
     private let remotelySourcedContentIconView = CVImageView()
 
@@ -115,8 +117,16 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quotedAuthorHeight: CGFloat { quotedAuthorFont.lineHeight }
         let quotedAttachmentSizeWithoutQuotedText: CGFloat = 64
         let quotedAttachmentSizeWithQuotedText: CGFloat = 72
-        var quotedAttachmentSize: CGFloat {
-            hasQuotedText ? quotedAttachmentSizeWithQuotedText : quotedAttachmentSizeWithoutQuotedText
+        var quotedAttachmentSize: CGSize {
+            let height = hasQuotedText ? quotedAttachmentSizeWithQuotedText : quotedAttachmentSizeWithoutQuotedText
+            if quotedReplyModel.isStory {
+                return CGSize(width: 0.625 * height, height: height)
+            } else {
+                return CGSize(square: height)
+            }
+        }
+        var quotedReactionRect: CGRect {
+            CGRect(x: 0, y: quotedAttachmentSize.height - 32, width: hasQuotedThumbnail ? 32 : 40, height: 32)
         }
         let remotelySourcedContentIconSize: CGFloat = 16
         let cancelIconSize: CGFloat = 20
@@ -125,7 +135,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var outerStackConfig: CVStackViewConfig {
             CVStackViewConfig(axis: .vertical,
                               alignment: .fill,
-                              spacing: 0,
+                              spacing: 8,
                               layoutMargins: UIEdgeInsets(hMargin: isForPreview ? 0 : 8,
                                                           vMargin: 0))
         }
@@ -158,8 +168,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                               layoutMargins: UIEdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 4))
         }
 
-        var hasQuotedAttachment: Bool {
-            contentType != nil && OWSMimeTypeOversizeTextMessage != contentType
+        var hasQuotedThumbnail: Bool {
+            (contentType != nil && OWSMimeTypeOversizeTextMessage != contentType) || quotedReplyModel.thumbnailViewFactory != nil
+        }
+
+        var hasReaction: Bool {
+            quotedReplyModel.reactionEmoji != nil
         }
 
         var contentType: String? {
@@ -186,28 +200,26 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             return MIMETypeUtil.isVideo(contentType)
         }
 
-        var hasQuotedAttachmentThumbnailImage: Bool {
-            guard let contentType = self.contentType,
-                  OWSMimeTypeOversizeTextMessage != contentType,
-                  TSAttachmentStream.hasThumbnail(forMimeType: contentType) else {
-                return false
-            }
-            return true
-        }
-
         var highlightColor: UIColor {
             conversationStyle.quotedReplyHighlightColor()
         }
 
         var quotedAuthorLabelConfig: CVLabelConfig {
-            let text: String
+            let authorName: String
             if quotedReplyModel.authorAddress.isLocalAddress {
-                text = NSLocalizedString("QUOTED_REPLY_AUTHOR_INDICATOR_YOU",
+                authorName = NSLocalizedString("QUOTED_REPLY_AUTHOR_INDICATOR_YOU",
                                          comment: "message header label when someone else is quoting you")
             } else {
-                let format = NSLocalizedString("QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
-                                               comment: "Indicates the author of a quoted message. Embeds {{the author's name or phone number}}.")
-                text = String(format: format, quotedAuthorName)
+                authorName = quotedAuthorName
+            }
+
+            let text: String
+            if quotedReplyModel.isStory {
+                let format = NSLocalizedString("QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
+                                               comment: "Message header when you are quoting a story. Embeds {{ story author name }}")
+                text = String(format: format, authorName)
+            } else {
+                text = authorName
             }
 
             return CVLabelConfig(text: text,
@@ -264,7 +276,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             return CVLabelConfig(attributedText: attributedText,
                                  font: quotedTextFont,
                                  textColor: quotedTextColor,
-                                 numberOfLines: isForPreview || hasQuotedAttachment ? 1 : 2,
+                                 numberOfLines: isForPreview || hasQuotedThumbnail ? 1 : 2,
                                  lineBreakMode: .byTruncatingTail,
                                  textAlignment: textAlignment)
         }
@@ -275,6 +287,28 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             return CVLabelConfig(text: text,
                                  font: UIFont.ows_dynamicTypeFootnote,
                                  textColor: Theme.lightThemePrimaryColor)
+        }
+
+        var quoteReactionHeaderLabelConfig: CVLabelConfig {
+            let text: String
+            if quotedReplyModel.authorAddress.isLocalAddress {
+                text = NSLocalizedString("QUOTED_REPLY_REACTION_TO_OWN_STORY",
+                                         comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to your own story.")
+            } else {
+                let formatText = NSLocalizedString("QUOTED_REPLY_REACTION_TO_STORY_FORMAT",
+                                                   comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }}")
+                text = String(format: formatText, quotedAuthorName)
+            }
+
+            return CVLabelConfig(text: text,
+                                 font: UIFont.ows_dynamicTypeFootnote,
+                                 textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming))
+        }
+
+        var quoteReactionLabelConfig: CVLabelConfig {
+            return CVLabelConfig(attributedText: (quotedReplyModel.reactionEmoji ?? "").styled(with: .lineHeightMultiple(0.6)),
+                                 font: UIFont.systemFont(ofSize: 28),
+                                 textColor: quotedTextColor)
         }
 
         var fileTypeForSnippet: String? {
@@ -389,13 +423,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                               subviews: innerVStackSubviews)
         hStackSubviews.append(innerVStack)
 
-        let trailingView: UIView = {
-            guard configurator.hasQuotedAttachment else {
-                // If there's no attachment, add an empty view so that
-                // the stack view's spacing serves as a margin between
-                // the text views and the trailing edge.
-                return UIView.transparentSpacer()
-            }
+        let thumbnailView: UIView? = {
+            guard configurator.hasQuotedThumbnail else { return nil }
+
+            if let thumbnailView = configurator.quotedReplyModel.thumbnailViewFactory?() { return thumbnailView }
 
             let quotedImageView = self.quotedImageView
             // Use trilinear filters for better scaling quality at
@@ -404,9 +435,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             quotedImageView.layer.magnificationFilter = .trilinear
 
             func tryToLoadThumbnailImage() -> UIImage? {
-                guard configurator.hasQuotedAttachmentThumbnailImage else {
-                    return nil
-                }
+                guard let contentType = configurator.contentType,
+                        OWSMimeTypeOversizeTextMessage != contentType,
+                        TSAttachmentStream.hasThumbnail(forMimeType: contentType) else { return nil }
 
                 // TODO: Possibly ignore data that is too large.
                 let image = quotedReplyModel.thumbnailImage
@@ -443,7 +474,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 quotedImageView.setTemplateImageName("btnRefresh--white", tintColor: .white)
                 quotedImageView.contentMode = .scaleAspectFit
                 quotedImageView.clipsToBounds = false
-                let iconSize = CGSize.square(configurator.quotedAttachmentSize * 0.5)
+                let iconSize = CGSize.square(configurator.quotedAttachmentSize.width * 0.5)
                 wrapper.addSubviewToCenterOnSuperview(quotedImageView, size: iconSize)
 
                 wrapper.addGestureRecognizer(UITapGestureRecognizer(target: self,
@@ -459,11 +490,48 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 quotedImageView.tintColor = nil
 
                 let wrapper = ManualLayoutView(name: "genericAttachmentWrapper")
-                let iconSize = CGSize.square(configurator.quotedAttachmentSize * 0.5)
+                let iconSize = CGSize.square(configurator.quotedAttachmentSize.width * 0.5)
                 wrapper.addSubviewToCenterOnSuperview(quotedImageView, size: iconSize)
                 return wrapper
             }
         }()
+
+        let trailingView: UIView
+        if let thumbnailView = thumbnailView {
+            if configurator.hasReaction {
+                let wrapper = ManualLayoutView(name: "thumbnailWithReactionWrapper")
+
+                wrapper.addSubview(thumbnailView) { _ in
+                    thumbnailView.frame = CGRect(origin: CGPoint(x: 16, y: 0), size: configurator.quotedAttachmentSize)
+                }
+
+                let reactionLabelConfig = configurator.quoteReactionLabelConfig
+                reactionLabelConfig.applyForRendering(label: quoteReactionLabel)
+
+                quoteReactionLabel.frame = configurator.quotedReactionRect
+                wrapper.addSubview(quoteReactionLabel)
+
+                trailingView = wrapper
+            } else {
+                trailingView = thumbnailView
+            }
+        } else if configurator.hasReaction {
+            let wrapper = ManualLayoutView(name: "reactionWrapper")
+
+            let reactionLabelConfig = configurator.quoteReactionLabelConfig
+            reactionLabelConfig.applyForRendering(label: quoteReactionLabel)
+
+            quoteReactionLabel.frame = configurator.quotedReactionRect
+            wrapper.addSubview(quoteReactionLabel)
+
+            trailingView = wrapper
+        } else {
+            // If there's no attachment, add an empty view so that
+            // the stack view's spacing serves as a margin between
+            // the text views and the trailing edge.
+            trailingView = UIView.transparentSpacer()
+        }
+
         hStackSubviews.append(trailingView)
 
         if configurator.isForPreview {
@@ -485,6 +553,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                          subviews: hStackSubviews)
 
         var outerVStackSubviews = [UIView]()
+
         outerVStackSubviews.append(hStack)
 
         if quotedReplyModel.isRemotelySourced {
@@ -510,17 +579,26 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                               measurementKey: Self.measurementKey_outerVStack,
                               subviews: outerVStackSubviews)
 
+        var outerStackViews = [UIView]()
+
+        if configurator.hasReaction {
+            let reactionLabelConfig = configurator.quoteReactionHeaderLabelConfig
+            reactionLabelConfig.applyForRendering(label: quoteReactionHeaderLabel)
+            outerStackViews.append(quoteReactionHeaderLabel)
+        }
+
         let bubbleView = createBubbleView(sharpCorners: sharpCorners,
                                           conversationStyle: conversationStyle,
                                           configurator: configurator,
                                           componentDelegate: componentDelegate)
         bubbleView.addSubviewToFillSuperviewEdges(outerVStack)
         bubbleView.clipsToBounds = true
+        outerStackViews.append(bubbleView)
 
         self.configure(config: configurator.outerStackConfig,
                        cellMeasurement: cellMeasurement,
                        measurementKey: Self.measurementKey_outerStack,
-                       subviews: [ bubbleView ])
+                       subviews: outerStackViews)
     }
 
     // MARK: - Measurement
@@ -541,8 +619,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let hStackConfig = configurator.hStackConfig
         let innerVStackConfig = configurator.innerVStackConfig
         let outerVStackConfig = configurator.outerVStackConfig
-        let hasQuotedAttachment = configurator.hasQuotedAttachment
+        let hasQuotedThumbnail = configurator.hasQuotedThumbnail
+        let hasReaction = configurator.hasReaction
         let quotedAttachmentSize = configurator.quotedAttachmentSize
+        let quotedReactionRect = configurator.quotedReactionRect
         let quotedReplyModel = configurator.quotedReplyModel
 
         var maxLabelWidth = (maxWidth - (configurator.stripeThickness +
@@ -551,8 +631,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                             innerVStackConfig.layoutMargins.totalWidth +
                                             outerVStackConfig.layoutMargins.totalWidth +
                                             outerStackConfig.layoutMargins.totalWidth))
-        if hasQuotedAttachment {
-            maxLabelWidth -= quotedAttachmentSize
+        if hasQuotedThumbnail {
+            maxLabelWidth -= quotedAttachmentSize.width
+            if hasReaction { maxLabelWidth -= quotedReactionRect.width / 2 }
+        } else if hasReaction {
+            maxLabelWidth -= quotedReactionRect.width
         }
         maxLabelWidth = max(0, maxLabelWidth)
 
@@ -580,10 +663,18 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         hStackSubviewInfos.append(innerVStackMeasurement.measuredSize.asManualSubviewInfo)
 
-        let avatarSize: CGSize = (hasQuotedAttachment
-                                    ? .square(quotedAttachmentSize)
-                                    : .square(0))
-        hStackSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedWidth: true))
+        if hasQuotedThumbnail {
+            if hasReaction {
+                let attachmentPlusReactionSize = quotedAttachmentSize + CGSize(width: quotedReactionRect.width / 2, height: 0)
+                hStackSubviewInfos.append(attachmentPlusReactionSize.asManualSubviewInfo(hasFixedWidth: true))
+            } else {
+                hStackSubviewInfos.append(quotedAttachmentSize.asManualSubviewInfo(hasFixedWidth: true))
+            }
+        } else if hasReaction {
+            hStackSubviewInfos.append(CGSize(width: quotedReactionRect.width, height: quotedAttachmentSize.height).asManualSubviewInfo(hasFixedWidth: true))
+        } else {
+            hStackSubviewInfos.append(CGSize.zero.asManualSubviewInfo(hasFixedWidth: true))
+        }
 
         if configurator.isForPreview {
             let cancelIconSize = CGSize.square(configurator.cancelIconSize)
@@ -597,6 +688,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                         subviewInfos: hStackSubviewInfos)
 
         var outerVStackSubviewInfos = [ManualStackSubviewInfo]()
+
         outerVStackSubviewInfos.append(hStackMeasurement.measuredSize.asManualSubviewInfo)
 
         if quotedReplyModel.isRemotelySourced {
@@ -621,12 +713,20 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                                              measurementKey: Self.measurementKey_outerVStack,
                                                              subviewInfos: outerVStackSubviewInfos)
 
+        var outerStackSubviewInfos = [ManualStackSubviewInfo]()
+
+        if hasReaction {
+            let reactionLabelConfig = configurator.quoteReactionHeaderLabelConfig
+            let reactionLabelSize = CVText.measureLabel(config: reactionLabelConfig, maxWidth: maxLabelWidth)
+            outerStackSubviewInfos.append(reactionLabelSize.asManualSubviewInfo)
+        }
+
+        outerStackSubviewInfos.append(outerVStackMeasurement.measuredSize.asManualSubviewInfo)
+
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: [
-                                                                outerVStackMeasurement.measuredSize.asManualSubviewInfo
-                                                            ],
+                                                            subviewInfos: outerStackSubviewInfos,
                                                             maxWidth: maxWidth)
         return outerStackMeasurement.measuredSize
     }
@@ -675,6 +775,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         quotedAuthorLabel.text = nil
         quotedTextLabel.text = nil
         quoteContentSourceLabel.text = nil
+        quoteReactionHeaderLabel.text = nil
+        quoteReactionLabel.text = nil
         quotedImageView.image = nil
         remotelySourcedContentIconView.image = nil
 

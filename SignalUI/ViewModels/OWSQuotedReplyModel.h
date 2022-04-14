@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSQuotedMessage.h>
@@ -34,7 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 // or attachment with caption.
 @property (nullable, nonatomic, readonly) NSString *body;
 @property (nullable, nonatomic, readonly) MessageBodyRanges *bodyRanges;
+@property (nullable, nonatomic, readonly) NSString *reactionEmoji;
 @property (nonatomic, readonly) BOOL isRemotelySourced;
+@property (nonatomic, readonly) BOOL isStory;
 
 #pragma mark - Attachments
 
@@ -44,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) UIImage *thumbnailImage;
+@property (nonatomic, readonly, nullable) UIView * (^thumbnailViewFactory)(void);
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

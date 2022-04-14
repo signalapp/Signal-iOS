@@ -83,14 +83,19 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var sharpCornersForQuotedMessage: OWSDirectionalRectCorner {
-        if itemViewState.senderNameState != nil {
-            return .allCorners
-        } else {
-            var rawValue = sharpCorners.rawValue
-            rawValue |= OWSDirectionalRectCorner.bottomLeading.rawValue
-            rawValue |= OWSDirectionalRectCorner.bottomTrailing.rawValue
-            return OWSDirectionalRectCorner(rawValue: rawValue)
+        var sharpCorners = sharpCorners
+
+        if itemViewState.senderNameState != nil || componentState.quotedReply?.quotedReplyModel.reactionEmoji != nil {
+            sharpCorners.insert(.topLeading)
+            sharpCorners.insert(.topTrailing)
         }
+
+        if componentState.bodyText != nil || !itemViewState.shouldHideFooter {
+            sharpCorners.insert(.bottomLeading)
+            sharpCorners.insert(.bottomTrailing)
+        }
+
+        return sharpCorners
     }
 
     private func subcomponent(forKey key: CVComponentKey) -> CVComponent? {
@@ -953,18 +958,20 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         switch sectionType {
         case .topFullWidth:
-            return buildFullWidthStackConfig(includeTopMargin: false)
+            return buildFullWidthStackConfig(includeTopMargin: false, includeBottomMargin: false)
         case .bottomFullWidth:
             var applyTopMargin = false
+            var applyBottomMargin = false
             if previousSectionItems.isEmpty,
                quotedReply != nil {
                 applyTopMargin = true
+                applyBottomMargin = bodyText == nil && standaloneFooter == nil
             } else if let previousSectionItem = previousSectionItems.last,
                       previousSectionItem.componentKey == .linkPreview,
                       quotedReply != nil {
                 applyTopMargin = true
             }
-            return buildFullWidthStackConfig(includeTopMargin: applyTopMargin)
+            return buildFullWidthStackConfig(includeTopMargin: applyTopMargin, includeBottomMargin: applyBottomMargin)
         case .topNested, .bottomNestedShare, .bottomNestedText:
             let topMargin: ContentStackMargin
             if let previousSectionItem = previousSectionItems.last {
@@ -2487,10 +2494,13 @@ fileprivate extension CVComponentMessage {
         buildNoMarginsStackConfig()
     }
 
-    func buildFullWidthStackConfig(includeTopMargin: Bool) -> CVStackViewConfig {
+    func buildFullWidthStackConfig(includeTopMargin: Bool, includeBottomMargin: Bool) -> CVStackViewConfig {
         var layoutMargins = UIEdgeInsets.zero
         if includeTopMargin {
             layoutMargins.top = conversationStyle.textInsets.top
+        }
+        if includeBottomMargin {
+            layoutMargins.bottom = conversationStyle.textInsets.bottom
         }
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .fill,

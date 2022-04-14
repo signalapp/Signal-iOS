@@ -228,6 +228,10 @@ NS_ASSUME_NONNULL_BEGIN
     return;
 }
 
+- (void)openURL:(NSURL *)url completion:(void (^__nullable)(BOOL))completion
+{
+}
+
 - (BOOL)isRunningTests
 {
     // We don't need to distinguish this in the SAE.

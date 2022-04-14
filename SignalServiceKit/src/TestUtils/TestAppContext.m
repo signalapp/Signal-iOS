@@ -132,6 +132,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
 }
 
+- (void)openURL:(NSURL *)url completion:(void (^__nullable)(BOOL))completion
+{
+}
+
 - (BOOL)isRunningTests
 {
     return YES;

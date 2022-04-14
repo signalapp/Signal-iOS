@@ -522,6 +522,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
+    if (bodyDescription == nil) {
+        bodyDescription = self.storyReactionEmoji;
+    }
+
     NSString *_Nullable attachmentEmoji = nil;
     NSString *_Nullable attachmentDescription = nil;
 

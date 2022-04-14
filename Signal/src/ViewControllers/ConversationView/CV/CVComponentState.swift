@@ -447,6 +447,9 @@ public class CVComponentState: Equatable, Dependencies {
             if bodyText != nil {
                 return .textOnlyMessage
             }
+            if quotedReply != nil {
+                return .quoteOnlyMessage
+            }
 
             Logger.verbose("interaction: \(interaction.debugDescription)")
             owsFailDebug("Unknown state.")

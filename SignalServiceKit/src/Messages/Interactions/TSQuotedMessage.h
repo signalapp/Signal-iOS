@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -19,7 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
     TSQuotedMessageContentSourceUnknown,
     TSQuotedMessageContentSourceLocal,
-    TSQuotedMessageContentSourceRemote
+    TSQuotedMessageContentSourceRemote,
+    TSQuotedMessageContentSourceStory
 };
 
 @interface TSQuotedMessage : MTLModel

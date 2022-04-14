@@ -108,6 +108,7 @@ class NSEContext: NSObject, AppContext {
 
     func frontmostViewController() -> UIViewController? { nil }
     func openSystemSettings() {}
+    func open(_ url: URL, completion: ((Bool) -> Void)? = nil) {}
 
     func setNetworkActivityIndicatorVisible(_ value: Bool) {}
 

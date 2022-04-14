@@ -108,6 +108,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (nullable UIViewController *)frontmostViewController;
 
 - (void)openSystemSettings;
+- (void)openURL:(NSURL *)url completion:(void (^__nullable)(BOOL success))completion;
 
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;

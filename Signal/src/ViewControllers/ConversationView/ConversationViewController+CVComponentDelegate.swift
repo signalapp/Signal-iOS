@@ -229,7 +229,16 @@ extension ConversationViewController: CVComponentDelegate {
         owsAssertDebug(quotedReply.timestamp > 0)
         owsAssertDebug(quotedReply.authorAddress.isValid)
 
-        scrollToQuotedMessage(quotedReply, isAnimated: true)
+        if quotedReply.isStory {
+            guard let quotedStory = databaseStorage.read(
+                block: { StoryFinder.story(timestamp: quotedReply.timestamp, author: quotedReply.authorAddress, transaction: $0) }
+            ) else { return }
+
+            let vc = StoryPageViewController(context: quotedStory.context)
+            present(vc, animated: true)
+        } else {
+            scrollToQuotedMessage(quotedReply, isAnimated: true)
+        }
     }
 
     public func cvc_didTapLinkPreview(_ linkPreview: OWSLinkPreview) {

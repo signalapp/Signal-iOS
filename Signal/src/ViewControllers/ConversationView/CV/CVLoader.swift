@@ -388,7 +388,7 @@ public class CVLoader: NSObject {
             rootComponent = CVComponentSystemMessage(itemModel: itemModel,
                                                      systemMessage: defaultDisappearingMessageTimer)
         case .textOnlyMessage, .audio, .genericAttachment, .contactShare,
-             .bodyMedia, .viewOnce, .stickerMessage:
+                .bodyMedia, .viewOnce, .stickerMessage, .quoteOnlyMessage:
             rootComponent = CVComponentMessage(itemModel: itemModel)
         case .typingIndicator:
             guard let typingIndicator = itemModel.componentState.typingIndicator else {
