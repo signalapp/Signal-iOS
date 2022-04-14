@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesFinder.h"
@@ -34,7 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSArray<NSString *> *)fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<NSString *> *)fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:
+    (SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     return [InteractionFinder fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:transaction];
@@ -69,7 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
     // little memory and then enumerate the (larger) TSMessage objects one at a time.
     for (NSString *expiredMessageId in [self fetchExpiredMessageIdsWithTransaction:transaction]) {
         @autoreleasepool {
-            TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:expiredMessageId transaction:transaction];
+            TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:expiredMessageId
+                                                                      transaction:transaction];
             if (message == nil) {
                 OWSFailDebug(@"Missing interaction.");
                 continue;

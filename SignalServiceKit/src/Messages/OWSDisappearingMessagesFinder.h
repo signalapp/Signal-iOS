@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enumerateExpiredMessagesWithBlock:(void (^_Nonnull)(TSMessage *message))block
                               transaction:(SDSAnyReadTransaction *)transaction;
 
-- (NSArray<NSString *> *)fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray<NSString *> *)fetchAllMessageUniqueIdsWhichFailedToStartExpiringWithTransaction:
+    (SDSAnyReadTransaction *)transaction;
 
 /**
  * @return
