@@ -36,7 +36,7 @@ public class MessageTimerView: ManualLayoutView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init(name: String) {
-        notImplemented()
+        fatalError("init(name:) has not been implemented")
     }
 
     deinit {

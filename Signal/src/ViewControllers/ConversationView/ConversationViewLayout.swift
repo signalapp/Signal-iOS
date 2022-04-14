@@ -462,7 +462,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     @available(*, unavailable, message: "Use other constructor instead.")
     public required init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public func update(conversationStyle: ConversationStyle) {

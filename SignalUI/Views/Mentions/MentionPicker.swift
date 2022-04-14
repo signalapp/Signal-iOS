@@ -85,7 +85,7 @@ class MentionPicker: UIView {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc public override var center: CGPoint {
@@ -342,7 +342,7 @@ private class MentionableUserCell: UITableViewCell {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     func configure(with mentionableUser: MentionPicker.MentionableUser, style: Mention.Style) {

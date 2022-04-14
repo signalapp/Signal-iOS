@@ -25,11 +25,11 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc required public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
-        notImplemented()
+        fatalError("init(allowsMultipleSelection:subtitleCellType:) has not been implemented")
     }
 
     // MARK: - ContactsPickerDelegate

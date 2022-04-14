@@ -26,7 +26,7 @@ public class SpamCaptchaViewController: UIViewController, CaptchaViewDelegate {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override public func viewDidLoad() {

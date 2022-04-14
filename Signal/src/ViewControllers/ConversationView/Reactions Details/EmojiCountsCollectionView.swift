@@ -49,7 +49,7 @@ public class EmojiCountsCollectionView: UICollectionView {
     }
 
     required public init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -129,7 +129,7 @@ class EmojiCountCell: UICollectionViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     func configure(with item: EmojiItem) {

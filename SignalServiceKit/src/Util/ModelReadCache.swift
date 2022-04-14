@@ -58,7 +58,7 @@ struct ModelCacheKey<KeyType: Hashable & Equatable> {
 
 class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType: BaseModel> {
     func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-        notImplemented()
+        fatalError("Unimplemented")
     }
 
     func read(keys: [KeyType], transaction: SDSAnyReadTransaction) -> [ValueType?] {
@@ -72,15 +72,15 @@ class ModelCacheAdapter<KeyType: Hashable & Equatable, ValueType: BaseModel> {
     }
 
     func key(forValue value: ValueType) -> KeyType {
-        notImplemented()
+        fatalError("Unimplemented")
     }
 
     func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-        notImplemented()
+        fatalError("Unimplemented")
     }
 
     func copy(value: ValueType) throws -> ValueType {
-        notImplemented()
+        fatalError("Unimplemented")
     }
 
     let cacheName: String

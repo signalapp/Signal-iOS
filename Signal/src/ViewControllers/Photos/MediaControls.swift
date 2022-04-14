@@ -113,7 +113,7 @@ class CameraCaptureControl: UIView {
 
     @available(*, unavailable, message: "Use init(axis:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - UI State
@@ -602,7 +602,7 @@ private class LockView: UIView {
 
     @available(*, unavailable, message: "Use init(frame:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override var intrinsicContentSize: CGSize {
@@ -710,12 +710,12 @@ class CameraOverlayButton: UIButton, UserInterfaceStyleOverride {
 
     @available(*, unavailable, message: "Use init(image:userInterfaceStyleOverride:) instead")
     override init(frame: CGRect) {
-        notImplemented()
+        fatalError("init(frame:) has not been implemented")
     }
 
     @available(*, unavailable, message: "Use init(image:userInterfaceStyleOverride:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func layoutSubviews() {
@@ -842,7 +842,7 @@ class MediaDoneButton: UIButton, UserInterfaceStyleOverride {
 
     @available(*, unavailable, message: "Use init(frame:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

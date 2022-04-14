@@ -503,11 +503,11 @@ class MessageSendLogTests: SSKBaseTestSwift {
         }
 
         required init?(coder: NSCoder) {
-            notImplemented()
+            fatalError("init(coder:) has not been implemented")
         }
 
         required init(dictionary dictionaryValue: [String: Any]!) throws {
-            notImplemented()
+            fatalError("init(dictionary:) has not been implemented")
         }
 
         var _contentHint: SealedSenderContentHint = .resendable

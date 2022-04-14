@@ -30,7 +30,7 @@ class DismissInputBar: UIToolbar {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc
@@ -55,7 +55,7 @@ public class DismissableTextField: OWSTextField, DismissInputBarDelegate {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: DismissInputBarDelegate

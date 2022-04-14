@@ -74,7 +74,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init(name: String) {
-        notImplemented()
+        fatalError("init(name:) has not been implemented")
     }
 
     deinit {
@@ -174,7 +174,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
         @available(*, unavailable, message: "use other constructor instead.")
             public required init(name: String) {
-            notImplemented()
+                fatalError("init(name:) has not been implemented")
         }
 
         private func applyState(oldState: State, newState: State) {

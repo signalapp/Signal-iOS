@@ -390,7 +390,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: UIViewController

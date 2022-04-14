@@ -105,7 +105,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     @available(*, unavailable, message: "use attachment: constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     let kSpacingBetweenItems: CGFloat = 20

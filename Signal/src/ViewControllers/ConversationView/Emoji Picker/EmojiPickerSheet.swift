@@ -46,7 +46,7 @@ class EmojiPickerSheet: InteractiveSheetViewController {
     }
 
     public required init() {
-        notImplemented()
+        fatalError("init() has not been implemented")
     }
 
     override func willDismissInteractively() {

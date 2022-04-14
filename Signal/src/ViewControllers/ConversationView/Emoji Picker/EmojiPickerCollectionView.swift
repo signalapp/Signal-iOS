@@ -119,7 +119,7 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // This is not an exact calculation, but is simple and works for our purposes.
@@ -410,7 +410,7 @@ private class EmojiCell: UICollectionViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     func configure(emoji: EmojiWithSkinTones) {
@@ -441,7 +441,7 @@ private class EmojiSectionHeader: UICollectionReusableView {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {

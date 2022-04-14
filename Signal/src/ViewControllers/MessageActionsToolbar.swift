@@ -98,7 +98,7 @@ public class MessageActionsToolbar: UIToolbar {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: -
@@ -228,7 +228,7 @@ class MessageActionsToolbarButton: UIBarButtonItem {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc

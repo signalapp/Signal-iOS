@@ -115,7 +115,7 @@ class TextAttachmentView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func transformedText(_ text: String, for textStyle: TextAttachment.TextStyle) -> String {
@@ -319,7 +319,7 @@ private class LinkPreviewTooltipView: TooltipView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public override func bubbleContentView() -> UIView {

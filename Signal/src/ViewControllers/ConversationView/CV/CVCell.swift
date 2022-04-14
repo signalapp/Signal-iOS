@@ -80,7 +80,7 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 
     @available(*, unavailable, message: "Unimplemented")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public static func registerReuseIdentifiers(collectionView: UICollectionView) {
@@ -256,7 +256,7 @@ public class CVCellView: UIView, CVRootComponentHost {
 
     @available(*, unavailable, message: "Unimplemented")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     func reset() {

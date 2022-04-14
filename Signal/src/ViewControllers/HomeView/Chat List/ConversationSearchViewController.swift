@@ -71,7 +71,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public override func viewDidLoad() {
@@ -627,7 +627,7 @@ class EmptySearchResultCell: UITableViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public func configure(searchText: String) {

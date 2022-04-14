@@ -170,7 +170,7 @@ class StoryGroupReplyCell: UITableViewCell {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     func configure(with item: StoryGroupReplyViewItem) {

@@ -163,7 +163,7 @@ public class ChatListCell: UITableViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func commonInit() {

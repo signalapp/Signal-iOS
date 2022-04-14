@@ -57,7 +57,7 @@ class EmojiMoodPickerView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Layout

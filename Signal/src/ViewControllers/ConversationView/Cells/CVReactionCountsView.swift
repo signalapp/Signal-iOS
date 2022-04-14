@@ -183,11 +183,11 @@ class CVReactionCountsView: ManualStackView {
         }
 
         required init?(coder aDecoder: NSCoder) {
-            notImplemented()
+            fatalError("init(coder:) has not been implemented")
         }
 
         required init(name: String, arrangedSubviews: [UIView] = []) {
-            notImplemented()
+            fatalError("init(name:arrangedSubviews:) has not been implemented")
         }
 
         static var stackConfig: CVStackViewConfig {

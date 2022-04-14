@@ -118,7 +118,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 

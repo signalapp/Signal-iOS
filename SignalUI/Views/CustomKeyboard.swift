@@ -28,7 +28,7 @@ open class CustomKeyboard: UIInputView {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     open func willPresent() {}
@@ -144,7 +144,7 @@ private class CustomKeyboardResponder: UITextView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public override var canBecomeFirstResponder: Bool {

@@ -66,7 +66,7 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -193,7 +193,7 @@ class AttachmentFormatCell: UICollectionViewCell {
 
     @available(*, unavailable, message: "Unimplemented")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public func configure(type: AttachmentType) {

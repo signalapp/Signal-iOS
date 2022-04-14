@@ -99,7 +99,7 @@ class RecentPhotosCollectionView: UICollectionView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -257,7 +257,7 @@ class SelectMorePhotosCell: UICollectionViewCell {
 
     @available(*, unavailable, message: "Unimplemented")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -298,7 +298,7 @@ class RecentPhotoCell: UICollectionViewCell {
 
     @available(*, unavailable, message: "Unimplemented")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     var image: UIImage? {

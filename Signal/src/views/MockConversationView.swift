@@ -48,7 +48,7 @@ class MockConversationView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc
@@ -202,11 +202,11 @@ private class MockIncomingMessage: TSIncomingMessage {
     }
 
     required init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     required init(dictionary dictionaryValue: [String: Any]!) throws {
-        notImplemented()
+        fatalError("init(dictionary:) has not been implemented")
     }
 
     public override var shouldBeSaved: Bool {
@@ -227,11 +227,11 @@ private class MockOutgoingMessage: TSOutgoingMessage {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     required init(dictionary dictionaryValue: [String: Any]!) throws {
-        notImplemented()
+        fatalError("init(dictionary:) has not been implemented")
     }
 
     public override var shouldBeSaved: Bool {

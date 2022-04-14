@@ -79,7 +79,7 @@ class AttachmentKeyboard: CustomKeyboard {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: Recent Photos
@@ -315,7 +315,7 @@ private class RecentPhotosErrorView: UIView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     func updateMessaging() {

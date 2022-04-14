@@ -52,7 +52,7 @@ class TransferProgressView: UIStackView {
     }
 
     required init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     var isObservingProgress = false

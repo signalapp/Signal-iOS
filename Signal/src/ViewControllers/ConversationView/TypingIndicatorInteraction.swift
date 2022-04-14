@@ -18,12 +18,12 @@ public class TypingIndicatorInteraction: TSInteraction {
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        notImplemented()
+        fatalError("init(dictionary:) has not been implemented")
     }
 
     public let address: SignalServiceAddress

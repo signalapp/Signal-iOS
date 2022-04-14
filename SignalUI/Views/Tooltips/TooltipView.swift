@@ -25,7 +25,7 @@ open class TooltipView: UIView {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private let tailHeight: CGFloat = 8

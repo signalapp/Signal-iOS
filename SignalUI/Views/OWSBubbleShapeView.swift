@@ -61,7 +61,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
     @available(*, unavailable, message: "use other constructor instead.")
     @objc
     public required init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public override func updateConstraints() {

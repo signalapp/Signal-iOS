@@ -248,7 +248,7 @@ class CallControls: UIView {
     }
 
     required init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func createButton(iconName: String, action: Selector) -> CallButton {

@@ -40,7 +40,7 @@ open class ManualStackView: ManualLayoutView {
     @available(*, unavailable, message: "use other constructor instead.")
     @objc
     public required init(name: String) {
-        notImplemented()
+        fatalError("init(name:) has not been implemented")
     }
 
     // MARK: - Config

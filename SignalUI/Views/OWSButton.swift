@@ -67,7 +67,7 @@ public class OWSButton: UIButton {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Common Style Reuse

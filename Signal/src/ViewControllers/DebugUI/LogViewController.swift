@@ -105,7 +105,7 @@ public class LogViewController: UIViewController {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     let textView = UITextView()

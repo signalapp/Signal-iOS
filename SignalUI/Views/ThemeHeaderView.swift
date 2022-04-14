@@ -59,7 +59,7 @@ public class ThemeHeaderView: UIView {
 
     @available(*, unavailable, message: "Unimplemented")
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public func configure(title: String) {
@@ -84,7 +84,7 @@ public class ThemeCollectionViewSectionHeader: UICollectionReusableView {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public override func prepareForReuse() {

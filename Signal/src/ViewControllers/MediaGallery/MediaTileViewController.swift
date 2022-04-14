@@ -34,7 +34,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: Subviews
@@ -866,7 +866,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
 
     @available(*, unavailable, message: "Unimplemented")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public func configure(title: String) {

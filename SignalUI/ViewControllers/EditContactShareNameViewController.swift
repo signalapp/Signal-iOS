@@ -26,7 +26,7 @@ class ContactNameFieldView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     required init(name: String, value: String?, delegate: ContactNameFieldViewDelegate) {

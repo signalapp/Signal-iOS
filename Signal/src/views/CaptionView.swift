@@ -69,7 +69,7 @@ public class CaptionContainerView: UIView {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: Subviews
@@ -122,7 +122,7 @@ private class CaptionView: UIView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: UIView overrides

@@ -118,7 +118,7 @@ public class ApprovalFooterView: UIView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public override var intrinsicContentSize: CGSize {

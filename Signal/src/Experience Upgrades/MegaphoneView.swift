@@ -117,7 +117,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     }
 
     required init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private var hasPresented = false

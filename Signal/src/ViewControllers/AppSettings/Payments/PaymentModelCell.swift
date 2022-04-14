@@ -42,7 +42,7 @@ public class PaymentModelCell: UITableViewCell {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private static var avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.thirtySix

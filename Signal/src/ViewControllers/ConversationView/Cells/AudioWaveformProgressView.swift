@@ -91,7 +91,7 @@ class AudioWaveformProgressView: UIView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func redrawSamples() {

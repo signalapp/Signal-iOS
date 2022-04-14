@@ -110,11 +110,11 @@ public class ConversationHeaderView: UIStackView {
     }
 
     required public init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     required public override init(frame: CGRect) {
-        notImplemented()
+        fatalError("init(frame:) has not been implemented")
     }
 
     public func configure(threadViewModel: ThreadViewModel) {

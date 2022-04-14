@@ -108,7 +108,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     @available(*, unavailable, message: "Unimplemented")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     deinit {

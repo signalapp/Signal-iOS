@@ -23,7 +23,7 @@ class LegacyGroupView: UIView {
 
     @available(*, unavailable, message: "use other init() instead.")
     required public init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private let label = UILabel()
@@ -162,7 +162,7 @@ public class LegacyGroupViewLearnMoreView: UIView {
     }
 
     required init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     func present(fromViewController: UIViewController) {

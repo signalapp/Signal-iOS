@@ -72,7 +72,7 @@ class NotificationPermissionReminderMegaphone: MegaphoneView {
     }
 
     required init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
@@ -210,6 +210,6 @@ class TurnOnPermissionView: UIStackView {
     }
 
     required init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }

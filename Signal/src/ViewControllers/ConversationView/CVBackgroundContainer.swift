@@ -33,7 +33,7 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
 
     @available(*, unavailable, message: "use other constructor instead.")
     public required init(name: String) {
-        notImplemented()
+        fatalError("init(name:) has not been implemented")
     }
 
     public func set(wallpaperView: WallpaperView?) {

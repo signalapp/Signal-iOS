@@ -52,7 +52,7 @@ class StoryContextViewController: OWSViewController {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     func resetForPresentation() {

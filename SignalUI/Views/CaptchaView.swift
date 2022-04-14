@@ -79,7 +79,7 @@ public class CaptchaView: UIView {
     }()
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public weak var delegate: CaptchaViewDelegate?

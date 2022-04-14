@@ -70,7 +70,7 @@ public class NewGroupMembersBar: UIView {
     @available(*, unavailable, message: "use other constructor instead.")
     @objc
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func configure() {
@@ -314,7 +314,7 @@ private class NewGroupMembersBarLayout: UICollectionViewLayout {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: Methods

@@ -32,7 +32,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     }
 
     public required init() {
-        notImplemented()
+        fatalError("init() has not been implemented")
     }
 
     // MARK: -

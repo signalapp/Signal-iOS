@@ -29,7 +29,7 @@ class GroupCallNotificationView: UIView {
     deinit { call.removeObserver(self) }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private var hasJoined = false
@@ -263,6 +263,6 @@ private class BannerView: UIView {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }

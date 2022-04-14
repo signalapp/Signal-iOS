@@ -49,7 +49,7 @@ public class AvatarTableViewCell: UITableViewCell {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc

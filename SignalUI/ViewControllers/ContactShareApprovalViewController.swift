@@ -63,7 +63,7 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: NSObject, Contac
     }
 
     func applyToContact(contact: ContactShareViewModel) {
-        notImplemented()
+        fatalError("applyToContact(contact:) has not been implemented")
     }
 }
 
@@ -167,7 +167,7 @@ class ContactShareFieldView: UIStackView {
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     required init(field: ContactShareField, previewViewBlock : @escaping (() -> UIView), delegate: ContactShareFieldViewDelegate) {

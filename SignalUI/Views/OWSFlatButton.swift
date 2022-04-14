@@ -73,7 +73,7 @@ public class OWSFlatButton: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func createContent() {

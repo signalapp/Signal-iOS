@@ -25,7 +25,7 @@ class GroupCallVideoGridLayout: UICollectionViewLayout {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override init() {

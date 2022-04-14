@@ -851,7 +851,7 @@ private class TopBar: UIView {
 
     @available(*, unavailable, message: "Use init(frame:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Mode
@@ -946,7 +946,7 @@ private class BottomBar: UIView {
 
     @available(*, unavailable, message: "Use init(frame:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func updateCompactHeightLayoutConstraints() {
@@ -1003,7 +1003,7 @@ private class SideBar: UIView {
 
     @available(*, unavailable, message: "Use init(frame:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -1238,7 +1238,7 @@ class CapturePreviewView: UIView {
 
     @available(*, unavailable, message: "Use init(session:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -1265,7 +1265,7 @@ private class RecordingTimerView: PillView {
 
     @available(*, unavailable, message: "Use init(frame:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Subviews
@@ -1418,7 +1418,7 @@ private class CameraZoomSelectionControl: PillView {
 
     @available(*, unavailable, message: "Use init(availableCameras:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Selection
@@ -1484,7 +1484,7 @@ private class CameraZoomSelectionControl: PillView {
 
         @available(*, unavailable, message: "Use init(camera:defaultZoomFactor:) instead")
         required init?(coder: NSCoder) {
-            notImplemented()
+            fatalError("init(coder:) has not been implemented")
         }
 
         override func layoutSubviews() {

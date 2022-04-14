@@ -812,7 +812,7 @@ private class CustomValueTextField: UIView {
     }
 
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     var text: String? {

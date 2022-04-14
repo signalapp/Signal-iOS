@@ -72,7 +72,7 @@ class BlockingGroupMigrationView: UIStackView {
     }
 
     required init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override var intrinsicContentSize: CGSize {

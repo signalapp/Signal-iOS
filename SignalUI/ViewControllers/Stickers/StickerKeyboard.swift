@@ -52,7 +52,7 @@ public class StickerKeyboard: CustomKeyboard {
     }
 
     required public init(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     private func createSubviews() {
