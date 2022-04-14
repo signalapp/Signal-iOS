@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)wipeLogs;
 
-- (void)removeObsoleteDebugLogs;
+- (void)postLaunchLogCleanup;
 
 - (NSArray<NSString *> *)allLogFilePaths;
 

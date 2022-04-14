@@ -9,6 +9,7 @@
 #import <CocoaLumberjack/DDTTYLogger.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TestAppContext.h>
@@ -227,6 +228,21 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
             }
         }
     }
+}
+
+static NSString *const kLastCleanupVersionKey = @"kLastCleanupVersionKey";
+static NSString *const kFirstValidLogVersion = @"5.35.1.2";
+- (void)postLaunchLogCleanup
+{
+    NSString *lastCleanupVersion = [CurrentAppContext().appUserDefaults stringForKey:kLastCleanupVersionKey] ?: @"0";
+
+    if ([AppVersion compareAppVersion:lastCleanupVersion with:kFirstValidLogVersion] == NSOrderedAscending) {
+        [self wipeLogs];
+        OWSLogWarn(@"Wiped logs. (%@ < %@)", lastCleanupVersion, kFirstValidLogVersion);
+    }
+    [self removeObsoleteDebugLogs];
+
+    [CurrentAppContext().appUserDefaults setObject:AppVersion.shared.currentAppVersion4 forKey:kLastCleanupVersionKey];
 }
 
 @end

@@ -55,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isFirstLaunch;
 
++ (NSComparisonResult)compareAppVersion:(NSString *)lhs with:(NSString *)rhs;
+
 @end
 
 NS_ASSUME_NONNULL_END
