@@ -26,12 +26,12 @@ class TypingIndicatorView: ManualStackView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init(name: String, arrangedSubviews: [UIView] = []) {
-        notImplemented()
+        fatalError("init(name:arrangedSubviews:) has not been implemented")
     }
 
     // MARK: - Notifications
@@ -157,12 +157,12 @@ class TypingIndicatorView: ManualStackView {
 
         @available(*, unavailable, message: "use other constructor instead.")
         required init?(coder aDecoder: NSCoder) {
-            notImplemented()
+            fatalError("init(coder:) has not been implemented")
         }
 
         @available(*, unavailable, message: "use other constructor instead.")
         override init(frame: CGRect) {
-            notImplemented()
+            fatalError("init(frame:) has not been implemented")
         }
 
         init(dotType: DotType) {

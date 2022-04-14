@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -48,7 +48,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     // Currently we only use one mode (AttachmentApproval), so we could simplify this class, but it's kind

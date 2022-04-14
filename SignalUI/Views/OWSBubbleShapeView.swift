@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -61,7 +61,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
     @available(*, unavailable, message: "use other constructor instead.")
     @objc
     public required init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public override func updateConstraints() {

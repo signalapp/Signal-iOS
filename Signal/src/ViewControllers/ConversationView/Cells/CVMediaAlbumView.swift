@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,12 +21,12 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
     @available(*, unavailable, message: "use other init() instead.")
     required public init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @available(*, unavailable, message: "use other init() instead.")
     public required init(name: String, arrangedSubviews: [UIView] = []) {
-        notImplemented()
+        fatalError("init(name:arrangedSubviews:) has not been implemented")
     }
 
     public required init() {

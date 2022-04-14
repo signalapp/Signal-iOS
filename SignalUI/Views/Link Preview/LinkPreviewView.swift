@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import YYImage
@@ -26,12 +26,12 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init(name: String, arrangedSubviews: [UIView] = []) {
-        notImplemented()
+        fatalError("init(name:arrangedSubviews:) has not been implemented")
     }
 
     public var state: LinkPreviewState?
@@ -1213,7 +1213,7 @@ private class LinkPreviewImageView: CVImageView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     public override func reset() {

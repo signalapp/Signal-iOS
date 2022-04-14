@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,7 +40,7 @@ open class ManualStackView: ManualLayoutView {
     @available(*, unavailable, message: "use other constructor instead.")
     @objc
     public required init(name: String) {
-        notImplemented()
+        fatalError("init(name:) has not been implemented")
     }
 
     // MARK: - Config

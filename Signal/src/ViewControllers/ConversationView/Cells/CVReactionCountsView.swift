@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -187,7 +187,7 @@ class CVReactionCountsView: ManualStackView {
         }
 
         required init(name: String, arrangedSubviews: [UIView] = []) {
-            fatalError("init(coder:) has not been implemented")
+            fatalError("init(name:arrangedSubviews:) has not been implemented")
         }
 
         static var stackConfig: CVStackViewConfig {

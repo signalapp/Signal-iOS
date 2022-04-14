@@ -602,7 +602,7 @@ private class TitleView: UIView {
 
     @available(*, unavailable, message: "Use init(frame:) instead")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func tintColorDidChange() {

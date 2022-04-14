@@ -969,6 +969,6 @@ public class CLVTableView: UITableView {
 
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }

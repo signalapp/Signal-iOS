@@ -221,7 +221,7 @@ class TrackingSlider: UISlider {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -272,7 +272,7 @@ public class PlayerProgressBar: UIView {
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     override public init(frame: CGRect) {

@@ -137,7 +137,7 @@ public class OWSTabBar: UITabBar {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc
