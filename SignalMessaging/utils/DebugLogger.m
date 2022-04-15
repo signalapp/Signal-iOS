@@ -230,19 +230,15 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     }
 }
 
-static NSString *const kLastCleanupVersionKey = @"kLastCleanupVersionKey";
-static NSString *const kFirstValidLogVersion = @"5.35.1.2";
+static NSString *const kFirstValidLogVersion = @"5.35.1";
 - (void)postLaunchLogCleanup
 {
-    NSString *lastCleanupVersion = [CurrentAppContext().appUserDefaults stringForKey:kLastCleanupVersionKey] ?: @"0";
-
-    if ([AppVersion compareAppVersion:lastCleanupVersion with:kFirstValidLogVersion] == NSOrderedAscending) {
+    NSString *lastCompletedAppLaunch = AppVersion.shared.lastCompletedLaunchMainAppVersion;
+    if ([AppVersion compareAppVersion:lastCompletedAppLaunch with:kFirstValidLogVersion] == NSOrderedAscending) {
         [self wipeLogs];
-        OWSLogWarn(@"Wiped logs. (%@ < %@)", lastCleanupVersion, kFirstValidLogVersion);
+        OWSLogWarn(@"Wiped logs. (%@ < %@)", lastCompletedAppLaunch, kFirstValidLogVersion);
     }
     [self removeObsoleteDebugLogs];
-
-    [CurrentAppContext().appUserDefaults setObject:AppVersion.shared.currentAppVersion4 forKey:kLastCleanupVersionKey];
 }
 
 @end
