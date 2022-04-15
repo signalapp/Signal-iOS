@@ -1208,9 +1208,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
 
         switch queryMode {
         case .excludeGroupReplies:
-            return "AND \(columnPrefix)\(interactionColumn: .isGroupStoryReply) = 0"
+            // Treat NULL and 0 as equivalent.
+            return "AND \(columnPrefix)\(interactionColumn: .isGroupStoryReply) IS NOT 1"
         case .onlyGroupReplies(let storyTimestamp):
-            return "AND \(columnPrefix)\(interactionColumn: .isGroupStoryReply) = 1 AND \(columnPrefix)\(interactionColumn: .storyTimestamp) = \(storyTimestamp)"
+            return "AND \(columnPrefix)\(interactionColumn: .isGroupStoryReply) IS 1 AND \(columnPrefix)\(interactionColumn: .storyTimestamp) = \(storyTimestamp)"
         case .includeAllReplies:
             return ""
         }
