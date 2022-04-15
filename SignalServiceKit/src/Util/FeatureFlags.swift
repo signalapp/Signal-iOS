@@ -115,18 +115,6 @@ public class FeatureFlags: BaseFlags {
         return false
     }
 
-    public static func buildFlagMap() -> [String: Any] {
-        BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
-            FeatureFlags.value(forKey: key)
-        }
-    }
-
-    public static var allTestableFlags: [TestableFlag] {
-        BaseFlags.findTestableFlags(for: FeatureFlags.self) { (key: String) -> Any? in
-            FeatureFlags.value(forKey: key)
-        }
-    }
-
     @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
@@ -507,18 +495,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let deviceTransferThrowAway = false
 
-    public static func buildFlagMap() -> [String: Any] {
-        BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
-            DebugFlags.value(forKey: key)
-        }
-    }
-
-    public static var allTestableFlags: [TestableFlag] {
-        BaseFlags.findTestableFlags(for: DebugFlags.self) { (key: String) -> Any? in
-            DebugFlags.value(forKey: key)
-        }
-    }
-
     @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
@@ -543,17 +519,17 @@ public class DebugFlags: BaseFlags {
 
 @objc
 public class BaseFlags: NSObject {
-    static func buildFlagMap(for flagsClass: Any, flagFunc: (String) -> Any?) -> [String: Any] {
+    public static func buildFlagMap() -> [String: Any] {
         var result = [String: Any]()
         var count: CUnsignedInt = 0
-        let methods = class_copyPropertyList(object_getClass(flagsClass), &count)!
+        let methods = class_copyPropertyList(object_getClass(self), &count)!
         for i in 0 ..< count {
             let selector = property_getName(methods.advanced(by: Int(i)).pointee)
             if let key = String(cString: selector, encoding: .utf8) {
                 guard !key.hasPrefix("_") else {
                     continue
                 }
-                if let value = flagFunc(key) {
+                if let value = self.value(forKey: key) {
                     result[key] = value
                 }
             }
@@ -561,8 +537,8 @@ public class BaseFlags: NSObject {
         return result
     }
 
-    static func findTestableFlags(for flagsClass: Any, flagFunc: (String) -> Any?) -> [TestableFlag] {
-        return self.buildFlagMap(for: flagsClass, flagFunc: flagFunc).values.compactMap { $0 as? TestableFlag }
+    public static var allTestableFlags: [TestableFlag] {
+        return self.buildFlagMap().values.compactMap { $0 as? TestableFlag }
     }
 }
 

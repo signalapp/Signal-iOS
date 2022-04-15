@@ -366,12 +366,6 @@ public class RemoteConfig: BaseFlags {
             logFlag("Flag", key, value)
         }
     }
-
-    public static func buildFlagMap() -> [String: Any] {
-        BaseFlags.buildFlagMap(for: RemoteConfig.self) { (key: String) -> Any? in
-            RemoteConfig.value(forKey: key)
-        }
-    }
 }
 
 // MARK: -

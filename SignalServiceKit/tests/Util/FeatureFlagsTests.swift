@@ -35,16 +35,4 @@ class TestFlags: BaseFlags {
     // This can be any TestableFlag -- if this one is removed, just pick another.
     @objc
     public static let testableFlag = DebugFlags.disableMessageProcessing
-
-    static func buildFlagMap() -> [String: Any] {
-        BaseFlags.buildFlagMap(for: TestFlags.self) { (key: String) -> Any? in
-            TestFlags.value(forKey: key)
-        }
-    }
-
-    static var allTestableFlags: [TestableFlag] {
-        BaseFlags.findTestableFlags(for: TestFlags.self) { (key: String) -> Any? in
-            TestFlags.value(forKey: key)
-        }
-    }
 }
