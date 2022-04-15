@@ -197,6 +197,8 @@ class GifPickerCell: UICollectionViewCell {
         }
         if isSelected {
             activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
         }
 
         if asset.assetDescription.fileExtension == "mp4",
