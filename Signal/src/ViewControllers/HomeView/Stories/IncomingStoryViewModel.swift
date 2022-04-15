@@ -33,7 +33,7 @@ struct IncomingStoryViewModel: Dependencies {
         }
 
         self.context = latestMessage.context
-        self.hasReplies = InteractionFinder.hasReplies(for: latestMessage.context, transaction: transaction)
+        self.hasReplies = InteractionFinder.hasReplies(for: sortedFilteredMessages, transaction: transaction)
 
         if let groupId = latestMessage.groupId {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
