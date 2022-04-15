@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,6 +37,11 @@ class InteractionFinderTest: SSKBaseTestSwift {
                                                                      wasIdentityVerified: false)
         let errorMessage2 = TSErrorMessageBuilder(thread: contactThread1,
                                                   errorType: .groupCreationFailed).build()
+        // Non-message interactions
+        let missedCall = TSCall(callType: .incomingMissed,
+                                offerType: .audio,
+                                thread: contactThread1,
+                                sentAtTimestamp: NSDate.ows_millisecondTimeStamp())
 
         let finder1 = InteractionFinder(threadUniqueId: contactThread1.uniqueId)
         let finder2 = InteractionFinder(threadUniqueId: contactThread2.uniqueId)
@@ -58,10 +63,12 @@ class InteractionFinderTest: SSKBaseTestSwift {
             outgoingMessage3.anyInsert(transaction: transaction)
             errorMessage1.anyInsert(transaction: transaction)
             errorMessage2.anyInsert(transaction: transaction)
+            // Non-message interactions
+            missedCall.anyInsert(transaction: transaction)
         }
 
         self.read { transaction in
-            XCTAssertEqual(3, finder1.count(transaction: transaction))
+            XCTAssertEqual(4, finder1.count(transaction: transaction))
             XCTAssertEqual(2, finder2.count(transaction: transaction))
         }
     }
