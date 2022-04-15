@@ -8,16 +8,19 @@ public struct OWSMessageDecryptResult: Dependencies {
     public let envelope: SSKProtoEnvelope
     public let envelopeData: Data?
     public let plaintextData: Data?
+    public let identity: OWSIdentity
 
     fileprivate init(
         envelope: SSKProtoEnvelope,
         envelopeData: Data?,
         plaintextData: Data?,
+        identity: OWSIdentity,
         transaction: SDSAnyWriteTransaction
     ) {
         self.envelope = envelope
         self.envelopeData = envelopeData
         self.plaintextData = plaintextData
+        self.identity = identity
 
         guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
             owsFailDebug("missing source address")
@@ -71,6 +74,26 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
+    private func localIdentity(forDestinationUuidString destinationUuidString: String?,
+                               transaction: SDSAnyReadTransaction) throws -> OWSIdentity {
+        guard let destinationUuidString = destinationUuidString else {
+            return .aci
+        }
+        guard let destinationUuid = UUID(uuidString: destinationUuidString) else {
+            throw OWSAssertionError("incoming envelope has invalid destinationUuid: \(destinationUuidString)")
+        }
+
+        switch destinationUuid {
+        case tsAccountManager.uuid(with: transaction):
+            return .aci
+        case tsAccountManager.pni(with: transaction):
+            return .pni
+        default:
+            // PNI TODO: Handle past PNIs?
+            throw MessageProcessingError.wrongDestinationUuid
+        }
+    }
+
     public func decryptEnvelope(_ envelope: SSKProtoEnvelope,
                                 envelopeData: Data?,
                                 transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
@@ -100,26 +123,44 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
         }
 
+        let identity: OWSIdentity
+        do {
+            identity = try localIdentity(forDestinationUuidString: envelope.destinationUuid,
+                                         transaction: transaction)
+            // Check expected envelope types.
+            switch (identity, envelope.unwrappedType) {
+            case (.aci, _):
+                break
+            case (.pni, .prekeyBundle), (.pni, .receipt):
+                break
+            default:
+                throw MessageProcessingError.invalidMessageTypeForDestinationUuid
+            }
+        } catch {
+            return .failure(error)
+        }
+
         let plaintextDataOrError: Result<Data, Error>
         switch envelope.unwrappedType {
         case .ciphertext:
-            plaintextDataOrError = decrypt(envelope, cipherType: .whisper, transaction: transaction)
+            plaintextDataOrError = decrypt(envelope, sentTo: identity, cipherType: .whisper, transaction: transaction)
         case .prekeyBundle:
             TSPreKeyManager.checkPreKeysIfNecessary()
-            plaintextDataOrError = decrypt(envelope, cipherType: .preKey, transaction: transaction)
+            plaintextDataOrError = decrypt(envelope, sentTo: identity, cipherType: .preKey, transaction: transaction)
         case .receipt, .keyExchange, .unknown:
             return .success(OWSMessageDecryptResult(
                 envelope: envelope,
                 envelopeData: envelopeData,
                 plaintextData: nil,
+                identity: identity,
                 transaction: transaction
             ))
         case .unidentifiedSender:
-            return decryptUnidentifiedSenderEnvelope(envelope, transaction: transaction)
+            return decryptUnidentifiedSenderEnvelope(envelope, sentTo: identity, transaction: transaction)
         case .senderkeyMessage:
-            plaintextDataOrError = decrypt(envelope, cipherType: .senderKey, transaction: transaction)
+            plaintextDataOrError = decrypt(envelope, sentTo: identity, cipherType: .senderKey, transaction: transaction)
         case .plaintextContent:
-            plaintextDataOrError = decrypt(envelope, cipherType: .plaintext, transaction: transaction)
+            plaintextDataOrError = decrypt(envelope, sentTo: identity, cipherType: .plaintext, transaction: transaction)
         @unknown default:
             Logger.warn("Received unhandled envelope type: \(envelope.unwrappedType)")
             return .failure(OWSGenericError("Received unhandled envelope type: \(envelope.unwrappedType)"))
@@ -130,6 +171,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 envelope: envelope,
                 envelopeData: envelopeData,
                 plaintextData: $0,
+                identity: identity,
                 transaction: transaction
             )
         }
@@ -264,6 +306,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     private func processError(
         _ error: Error,
         envelope: SSKProtoEnvelope,
+        sentTo identity: OWSIdentity,
         untrustedGroupId: Data?,
         cipherType: CiphertextMessage.MessageType,
         contentHint: SealedSenderContentHint,
@@ -316,7 +359,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 address: sourceAddress,
                 transaction: transaction)
             let contentSupportsResend = envelopeContentSupportsResend(envelope: envelope, cipherType: cipherType, transaction: transaction)
-            let supportsModernResend = remoteUserSupportsSenderKey && localUserSupportsSenderKey && contentSupportsResend
+            let supportsModernResend =
+                (identity == .aci) && remoteUserSupportsSenderKey && localUserSupportsSenderKey && contentSupportsResend
 
             if supportsModernResend && !RemoteConfig.messageResendKillSwitch {
                 Logger.info("Performing modern resend of \(contentHint) content with timestamp \(envelope.timestamp)")
@@ -349,7 +393,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     cipherType: cipherType,
                     failedEnvelopeGroupId: untrustedGroupId,
                     transaction: transaction)
-            } else {
+            } else if identity == .aci {
                 Logger.info("Performing legacy session reset of \(contentHint) content with timestamp \(envelope.timestamp)")
 
                 let didReset = resetSessionIfNecessary(
@@ -363,6 +407,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 } else {
                     errorMessage = nil
                 }
+            } else {
+                Logger.info("Not resetting or requesting resend of message sent to \(identity)")
+                errorMessage = TSErrorMessage.failedDecryption(
+                    for: envelope,
+                    untrustedGroupId: untrustedGroupId,
+                    with: transaction)
             }
         } else {
             owsFailDebug("Received envelope missing UUID \(sourceAddress).\(envelope.sourceDevice)")
@@ -493,6 +543,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     private func decrypt(_ envelope: SSKProtoEnvelope,
+                         sentTo identity: OWSIdentity,
                          cipherType: CiphertextMessage.MessageType,
                          transaction: SDSAnyWriteTransaction) -> Result<Data, Error> {
 
@@ -519,8 +570,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             }
 
             let protocolAddress = try ProtocolAddress(from: sourceAddress, deviceId: deviceId)
-            // PNI TODO: make this dependent on destinationUuid
-            let signalProtocolStore = signalProtocolStore(for: .aci)
+            let signalProtocolStore = signalProtocolStore(for: identity)
 
             let plaintext: [UInt8]
             switch cipherType {
@@ -529,7 +579,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 plaintext = try signalDecrypt(message: message,
                                               from: protocolAddress,
                                               sessionStore: signalProtocolStore.sessionStore,
-                                              identityStore: Self.identityManager,
+                                              identityStore: identityManager.store(for: identity,
+                                                                                   transaction: transaction),
                                               context: transaction)
                 sendReactiveProfileKeyIfNecessary(address: sourceAddress, transaction: transaction)
             case .preKey:
@@ -537,7 +588,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 plaintext = try signalDecryptPreKey(message: message,
                                                     from: protocolAddress,
                                                     sessionStore: signalProtocolStore.sessionStore,
-                                                    identityStore: Self.identityManager,
+                                                    identityStore: identityManager.store(for: identity,
+                                                                                         transaction: transaction),
                                                     preKeyStore: signalProtocolStore.preKeyStore,
                                                     signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
                                                     context: transaction)
@@ -567,6 +619,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             let wrappedError = processError(
                 error,
                 envelope: envelope,
+                sentTo: identity,
                 untrustedGroupId: nil,
                 cipherType: cipherType,
                 contentHint: .default,
@@ -626,7 +679,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    private func decryptUnidentifiedSenderEnvelope(_ envelope: SSKProtoEnvelope, transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
+    private func decryptUnidentifiedSenderEnvelope(
+        _ envelope: SSKProtoEnvelope,
+        sentTo identity: OWSIdentity,
+        transaction: SDSAnyWriteTransaction
+    ) -> Result<OWSMessageDecryptResult, Error> {
         guard let encryptedData = envelope.content else {
             return .failure(OWSAssertionError("UD Envelope is missing content."))
         }
@@ -639,8 +696,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return .failure(OWSAssertionError("Invalid serverTimestamp."))
         }
 
-        // PNI TODO: make this dependent on destinationUuid
-        let signalProtocolStore = Self.signalProtocolStore(for: .aci)
+        let signalProtocolStore = Self.signalProtocolStore(for: identity)
 
         let cipher: SMKSecretSessionCipher
         do {
@@ -648,7 +704,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 sessionStore: signalProtocolStore.sessionStore,
                 preKeyStore: signalProtocolStore.preKeyStore,
                 signedPreKeyStore: signalProtocolStore.signedPreKeyStore,
-                identityStore: Self.identityManager,
+                identityStore: identityManager.store(for: identity, transaction: transaction),
                 senderKeyStore: Self.senderKeyStore
             )
         } catch {
@@ -666,8 +722,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             )
         } catch let outerError as SecretSessionKnownSenderError {
             return .failure(handleUnidentifiedSenderDecryptionError(
-                error: outerError.underlyingError,
+                outerError.underlyingError,
                 envelope: envelope.buildIdentifiedCopy(using: outerError),
+                sentTo: .aci,
                 untrustedGroupId: outerError.groupId,
                 cipherType: outerError.cipherType,
                 contentHint: SealedSenderContentHint(outerError.contentHint),
@@ -675,8 +732,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             )
         } catch {
             return .failure(handleUnidentifiedSenderDecryptionError(
-                error: error,
+                error,
                 envelope: envelope,
+                sentTo: .aci,
                 untrustedGroupId: nil,
                 cipherType: .plaintext,
                 contentHint: .default,
@@ -720,13 +778,15 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             envelope: identifiedEnvelope,
             envelopeData: nil,
             plaintextData: plaintextData,
+            identity: identity,
             transaction: transaction
         ))
     }
 
     func handleUnidentifiedSenderDecryptionError(
-        error: Error,
+        _ error: Error,
         envelope: SSKProtoEnvelope,
+        sentTo identity: OWSIdentity,
         untrustedGroupId: Data?,
         cipherType: CiphertextMessage.MessageType,
         contentHint: SealedSenderContentHint,
@@ -738,6 +798,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         } else if isSignalClientError(error) {
             return processError(error,
                                 envelope: envelope,
+                                sentTo: identity,
                                 untrustedGroupId: untrustedGroupId,
                                 cipherType: cipherType,
                                 contentHint: contentHint,

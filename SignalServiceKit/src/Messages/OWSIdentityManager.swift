@@ -32,47 +32,56 @@ extension LibSignalClient.IdentityKey {
     }
 }
 
-// PNI TODO: Maybe have a wrapper around OWSIdentityManager to change the behavior of identityKeyPair(context:)?
-extension OWSIdentityManager: IdentityKeyStore {
-    public func identityKeyPair(context: StoreContext) throws -> IdentityKeyPair {
-        let transaction = context.asTransaction
-        if let keyPair = self.identityKeyPair(for: .aci, transaction: transaction) {
-            return keyPair.identityKeyPair
-        }
+public class IdentityStore: IdentityKeyStore {
+    public let identityManager: OWSIdentityManager
+    public let identityKeyPair: IdentityKeyPair
 
-        let newKeyPair = IdentityKeyPair.generate()
-        self.storeIdentityKeyPair(ECKeyPair(newKeyPair), for: .aci, transaction: transaction)
-        return newKeyPair
+    fileprivate init(identityManager: OWSIdentityManager, identityKeyPair: IdentityKeyPair) {
+        self.identityManager = identityManager
+        self.identityKeyPair = identityKeyPair
+    }
+
+    public func identityKeyPair(context: StoreContext) throws -> IdentityKeyPair {
+        return identityKeyPair
     }
 
     public func localRegistrationId(context: StoreContext) throws -> UInt32 {
-        return UInt32(bitPattern: self.localRegistrationId(with: context.asTransaction))
+        return UInt32(bitPattern: identityManager.localRegistrationId(with: context.asTransaction))
     }
 
     public func saveIdentity(_ identity: LibSignalClient.IdentityKey,
                              for address: ProtocolAddress,
                              context: StoreContext) throws -> Bool {
-        self.saveRemoteIdentity(identity.serializeAsData(),
-                                address: SignalServiceAddress(from: address),
-                                transaction: context.asTransaction)
+        identityManager.saveRemoteIdentity(identity.serializeAsData(),
+                                           address: SignalServiceAddress(from: address),
+                                           transaction: context.asTransaction)
     }
 
     public func isTrustedIdentity(_ identity: LibSignalClient.IdentityKey,
                                   for address: ProtocolAddress,
                                   direction: Direction,
                                   context: StoreContext) throws -> Bool {
-        self.isTrustedIdentityKey(identity.serializeAsData(),
-                                  address: SignalServiceAddress(from: address),
-                                  direction: TSMessageDirection(direction),
-                                  transaction: context.asTransaction)
+        identityManager.isTrustedIdentityKey(identity.serializeAsData(),
+                                             address: SignalServiceAddress(from: address),
+                                             direction: TSMessageDirection(direction),
+                                             transaction: context.asTransaction)
     }
 
     public func identity(for address: ProtocolAddress, context: StoreContext) throws -> LibSignalClient.IdentityKey? {
-        guard let data = self.identityKey(for: SignalServiceAddress(from: address),
-                                          transaction: context.asTransaction) else {
+        guard let data = identityManager.identityKey(for: SignalServiceAddress(from: address),
+                                                     transaction: context.asTransaction) else {
             return nil
         }
         return try LibSignalClient.IdentityKey(publicKey: ECPublicKey(keyData: data).key)
+    }
+}
+
+extension OWSIdentityManager {
+    public func store(for identity: OWSIdentity, transaction: SDSAnyReadTransaction) throws -> IdentityStore {
+        guard let identityKeyPair = self.identityKeyPair(for: identity, transaction: transaction) else {
+            throw OWSAssertionError("no identity key pair for \(identity)")
+        }
+        return IdentityStore(identityManager: self, identityKeyPair: identityKeyPair.identityKeyPair)
     }
 
     @objc
@@ -80,9 +89,7 @@ extension OWSIdentityManager: IdentityKeyStore {
                                               transaction: SDSAnyReadTransaction) -> Bool {
         return OWSRecipientIdentity.groupContainsUnverifiedMember(groupUniqueID, transaction: transaction)
     }
-}
 
-extension OWSIdentityManager {
     @objc
     public func processIncomingPniIdentityProto(_ pniIdentity: SSKProtoSyncMessagePniIdentity,
                                                 transaction: SDSAnyWriteTransaction) {

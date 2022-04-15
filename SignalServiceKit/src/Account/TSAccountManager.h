@@ -172,6 +172,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 #ifdef TESTABLE_BUILD
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid;
+- (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid pni:(NSUUID *_Nullable)pni;
 #endif
 
 @end

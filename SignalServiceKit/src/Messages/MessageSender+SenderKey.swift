@@ -664,7 +664,7 @@ extension MessageSender {
             sessionStore: Self.signalProtocolStore(for: .aci).sessionStore,
             preKeyStore: Self.signalProtocolStore(for: .aci).preKeyStore,
             signedPreKeyStore: Self.signalProtocolStore(for: .aci).signedPreKeyStore,
-            identityStore: Self.identityKeyStore,
+            identityStore: Self.identityManager.store(for: .aci, transaction: writeTx),
             senderKeyStore: Self.senderKeyStore)
 
         let distributionId = senderKeyStore.distributionIdForSendingToThread(thread, writeTx: writeTx)

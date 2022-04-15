@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -38,11 +38,11 @@ public class SSKBaseTestSwift: XCTestCase {
     }
 
     @objc
-    public func read(_ block: @escaping (SDSAnyReadTransaction) -> Void) {
+    public func read(_ block: (SDSAnyReadTransaction) -> Void) {
         return databaseStorage.read(block: block)
     }
 
-    public func write<T>(_ block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
+    public func write<T>(_ block: (SDSAnyWriteTransaction) -> T) -> T {
         return databaseStorage.write(block: block)
     }
 

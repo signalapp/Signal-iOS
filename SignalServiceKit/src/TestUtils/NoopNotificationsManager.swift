@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 @objc
 public class NoopNotificationsManager: NSObject, NotificationsProtocol {
+    public var expectErrors: Bool = false
 
     public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
                            thread: TSThread,
@@ -37,7 +38,7 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
     }
 
     public func notifyTestPopulation(ofErrorMessage errorString: String) {
-        owsFailDebug("Internal error message: \(errorString)")
+        owsAssertDebug(expectErrors, "Internal error message: \(errorString)")
         Logger.warn("Skipping internal error notification: \(errorString)")
     }
 
