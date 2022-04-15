@@ -382,9 +382,6 @@ public class DebugFlags: BaseFlags {
     public static let forceDonorBadgeDisplay = build.includes(.qa)
 
     @objc
-    public static let forceDonorBadgeAcquisition = build.includes(.qa)
-
-    @objc
     public static let forceSubscriptionMegaphone = build.includes(.qa)
 
     @objc

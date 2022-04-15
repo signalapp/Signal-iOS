@@ -5,6 +5,10 @@
 import Foundation
 import BonMot
 
+/* From BonMot 6.0.0: If you're targeting iOS 15 or higher, you may want to check out [AttributedString](https://developer.apple.com/documentation/foundation/attributedstring) instead.
+ If you're an existing user of BonMot using Xcode 13, you may want to add the following `typealias` somewhere in your project to avoid a conflict with `Foundation.StringStyle`: */
+typealias StringStyle = BonMot.StringStyle
+
 @objc
 public protocol ConversationSearchViewDelegate: AnyObject {
     func conversationSearchViewWillBeginDragging()

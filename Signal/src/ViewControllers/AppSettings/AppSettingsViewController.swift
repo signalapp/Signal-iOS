@@ -272,67 +272,54 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.showInviteFlow()
             }
         ))
-        if RemoteConfig.donorBadgeAcquisition {
-            if DonationUtilities.isApplePayAvailable {
-                section4.add(.init(customCellBlock: { [weak self] in
-                    guard let self = self else { return UITableViewCell() }
-                    let cell = OWSTableItem.buildCellWithAccessoryLabel(
-                        icon: .settingsDonate,
+        if DonationUtilities.isApplePayAvailable {
+            section4.add(.init(customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                    icon: .settingsDonate,
                     itemName: self.hasCurrentSubscription ? NSLocalizedString("SETTINGS_CURRENT_SUBSCRIPTION", comment: "Title for the 'Subscription' link in settings.") : NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'monthly donation' link in settings."),
-                        accessoryType: .disclosureIndicator,
+                    accessoryType: .disclosureIndicator,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sustainer"))
 
-                    if self.hasExpiredSubscription {
-                        let imageView = UIImageView(image: UIImage(named: "info-solid-24")?.withRenderingMode(.alwaysTemplate))
-                        imageView.tintColor = Theme.accentBlueColor
-                        cell.contentView.addSubview(imageView)
+                if self.hasExpiredSubscription {
+                    let imageView = UIImageView(image: UIImage(named: "info-solid-24")?.withRenderingMode(.alwaysTemplate))
+                    imageView.tintColor = Theme.accentBlueColor
+                    cell.contentView.addSubview(imageView)
 
-                        imageView.autoSetDimensions(to: CGSize(square: 24))
-                        imageView.autoVCenterInSuperview()
-                        imageView.autoPinEdge(.trailing, to: .trailing, of: cell.contentView, withOffset: -8)
-                    }
+                    imageView.autoSetDimensions(to: CGSize(square: 24))
+                    imageView.autoVCenterInSuperview()
+                    imageView.autoPinEdge(.trailing, to: .trailing, of: cell.contentView, withOffset: -8)
+                }
 
-                    return cell
-                }, actionBlock: { [weak self] in
-                    let vc = SubscriptionViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }))
+                return cell
+            }, actionBlock: { [weak self] in
+                let vc = SubscriptionViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }))
 
-                section4.add(.disclosureItem(
-                    icon: .settingsBoost,
-                    name: NSLocalizedString("SETTINGS_ONE_TIME_DONATION", comment: "Title for the 'one time donation' link in settings."),
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "one time donation"),
-                    actionBlock: { [weak self] in
-                        let vc = BoostViewController()
-                        self?.navigationController?.pushViewController(vc, animated: true)
-                    }
-                ))
-            } else {
-                section4.add(.item(icon: .settingsDonate,
-                                   tintColor: Theme.primaryIconColor,
-                                   name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
-                                   maxNameLines: 0,
-                                   textColor: Theme.primaryTextColor,
-                                   accessoryText: nil,
-                                   accessoryType: .none,
-                                   accessoryImage: #imageLiteral(resourceName: "open-20").withRenderingMode(.alwaysTemplate),
-                                   accessoryView: nil,
-                                   accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
-                                   actionBlock: { () in
-                    UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
-                }))
-            }
-
-        } else {
             section4.add(.disclosureItem(
-                icon: .settingsDonate,
-                name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
+                icon: .settingsBoost,
+                name: NSLocalizedString("SETTINGS_ONE_TIME_DONATION", comment: "Title for the 'one time donation' link in settings."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "one time donation"),
                 actionBlock: { [weak self] in
-                    let vc = DonationViewController()
+                    let vc = BoostViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))
+        } else {
+            section4.add(.item(icon: .settingsDonate,
+                               tintColor: Theme.primaryIconColor,
+                               name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
+                               maxNameLines: 0,
+                               textColor: Theme.primaryTextColor,
+                               accessoryText: nil,
+                               accessoryType: .none,
+                               accessoryImage: #imageLiteral(resourceName: "open-20").withRenderingMode(.alwaysTemplate),
+                               accessoryView: nil,
+                               accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
+                               actionBlock: { () in
+                UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
+            }))
         }
 
         contents.addSection(section4)
