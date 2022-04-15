@@ -954,20 +954,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
 
     static func countReplies(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> UInt {
         do {
-            let threadUniqueId: String
-            switch storyMessage.context {
-            case .groupId(let data):
-                threadUniqueId = TSGroupThread.threadId(
-                    forGroupId: data,
-                    transaction: transaction.asAnyRead
-                )
-            case .authorUuid(let uuid):
-                guard let contactThread = TSContactThread.getWithContactAddress(
-                    SignalServiceAddress(uuid: uuid),
-                    transaction: transaction.asAnyRead
-                ) else { return 0 }
-                threadUniqueId = contactThread.uniqueId
-            case .none:
+            guard let threadUniqueId = storyMessage.context.threadUniqueId(transaction: transaction.asAnyRead) else {
                 owsFailDebug("Unexpected context for StoryMessage")
                 return 0
             }
@@ -995,20 +982,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     static func hasReplies(for stories: [StoryMessage], transaction: GRDBReadTransaction) -> Bool {
         var storyFilters = ""
         for story in stories {
-            let threadUniqueId: String
-            switch story.context {
-            case .groupId(let data):
-                threadUniqueId = TSGroupThread.threadId(
-                    forGroupId: data,
-                    transaction: transaction.asAnyRead
-                )
-            case .authorUuid(let uuid):
-                guard let contactThread = TSContactThread.getWithContactAddress(
-                    SignalServiceAddress(uuid: uuid),
-                    transaction: transaction.asAnyRead
-                ) else { continue }
-                threadUniqueId = contactThread.uniqueId
-            case .none:
+            guard let threadUniqueId = story.context.threadUniqueId(transaction: transaction.asAnyRead) else {
                 owsFailDebug("Unexpected context for StoryMessage")
                 continue
             }

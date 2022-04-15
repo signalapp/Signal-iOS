@@ -22,6 +22,7 @@ protocol StoryReplyInputToolbarDelegate: AnyObject {
 class StoryReplyInputToolbar: UIView {
 
     weak var delegate: StoryReplyInputToolbarDelegate?
+    let quotedReplyModel: OWSQuotedReplyModel?
 
     var messageBody: MessageBody? {
         get { textView.messageBody }
@@ -48,7 +49,8 @@ class StoryReplyInputToolbar: UIView {
 
     // MARK: - Initializers
 
-    init() {
+    init(quotedReplyModel: OWSQuotedReplyModel? = nil) {
+        self.quotedReplyModel = quotedReplyModel
         super.init(frame: CGRect.zero)
 
         // When presenting or dismissing the keyboard, there may be a slight
@@ -173,19 +175,30 @@ class StoryReplyInputToolbar: UIView {
 
     private lazy var textContainer: UIView = {
         let textContainer = UIView()
-        let textBubble = UIView()
-        textContainer.addSubview(textBubble)
+
+        let bubbleView = UIStackView()
+        bubbleView.axis = .vertical
+        bubbleView.addBackgroundView(withBackgroundColor: .ows_gray75, cornerRadius: minTextViewHeight / 2)
+
+        textContainer.addSubview(bubbleView)
         let inset = (40 - minTextViewHeight) / 2
-        textBubble.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: inset, trailing: 0))
+        bubbleView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: inset, trailing: 0))
 
-        textBubble.layer.cornerRadius = minTextViewHeight / 2
-        textBubble.clipsToBounds = true
-        textBubble.backgroundColor = .ows_gray75
+        if let quotedReplyModel = quotedReplyModel {
+            let previewView = StoryReplyPreviewView(quotedReplyModel: quotedReplyModel)
+            let previewViewContainer = UIView()
+            previewViewContainer.addSubview(previewView)
+            previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: 8, vMargin: 8))
+            bubbleView.addArrangedSubview(previewViewContainer)
+        }
 
-        textBubble.addSubview(placeholderTextView)
+        let textAndPlaceholderContainer = UIView()
+        bubbleView.addArrangedSubview(textAndPlaceholderContainer)
+
+        textAndPlaceholderContainer.addSubview(placeholderTextView)
         placeholderTextView.autoPinEdgesToSuperviewEdges()
 
-        textBubble.addSubview(textView)
+        textAndPlaceholderContainer.addSubview(textView)
         textView.autoPinEdgesToSuperviewEdges()
 
         return textContainer

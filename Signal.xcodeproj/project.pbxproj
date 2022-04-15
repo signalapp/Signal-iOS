@@ -831,6 +831,9 @@
 		883A7FD3269F651800841DF9 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
 		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		8841584C252F9F1C0078903D /* SignalCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8841584B252F9F1C0078903D /* SignalCall.swift */; };
+		88423A52280A171E007D2918 /* StoryDirectReplySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88423A51280A171E007D2918 /* StoryDirectReplySheet.swift */; };
+		88423A54280A2675007D2918 /* StoryReplyPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88423A53280A2675007D2918 /* StoryReplyPreviewView.swift */; };
+		88423A56280A373C007D2918 /* StoryReplySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88423A55280A373C007D2918 /* StoryReplySheet.swift */; };
 		8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */; };
 		8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */; };
 		8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */; };
@@ -2063,6 +2066,9 @@
 		883A7FD1269F642F00841DF9 /* AvatarModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarModel.swift; sourceTree = "<group>"; };
 		88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+LastVisibleSortId.swift"; sourceTree = "<group>"; };
 		8841584B252F9F1C0078903D /* SignalCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalCall.swift; sourceTree = "<group>"; };
+		88423A51280A171E007D2918 /* StoryDirectReplySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryDirectReplySheet.swift; sourceTree = "<group>"; };
+		88423A53280A2675007D2918 /* StoryReplyPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReplyPreviewView.swift; sourceTree = "<group>"; };
+		88423A55280A373C007D2918 /* StoryReplySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReplySheet.swift; sourceTree = "<group>"; };
 		884596EF24B93E13002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/Localizable.strings; sourceTree = "<group>"; };
 		884596F024B93E32002F66D3 /* cy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cy; path = translations/cy.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDescriptionPreviewView.swift; sourceTree = "<group>"; };
@@ -4058,6 +4064,18 @@
 			path = Avatars;
 			sourceTree = "<group>";
 		};
+		88423A50280A1703007D2918 /* Reply Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				8864072F27F21AA7009916B6 /* Group Reply Sheet */,
+				88423A51280A171E007D2918 /* StoryDirectReplySheet.swift */,
+				88423A55280A373C007D2918 /* StoryReplySheet.swift */,
+				8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */,
+				88423A53280A2675007D2918 /* StoryReplyPreviewView.swift */,
+			);
+			path = "Reply Sheets";
+			sourceTree = "<group>";
+		};
 		884DB94A27DE66E000C6A309 /* Context View */ = {
 			isa = PBXGroup;
 			children = (
@@ -4075,7 +4093,7 @@
 				8852572827DD366D0032073C /* StoriesViewController.swift */,
 				884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */,
 				884DB94627DD754700C6A309 /* StoryCell.swift */,
-				8864072F27F21AA7009916B6 /* Group Reply Sheet */,
+				88423A50280A1703007D2918 /* Reply Sheets */,
 				884DB94A27DE66E000C6A309 /* Context View */,
 			);
 			path = Stories;
@@ -4160,7 +4178,6 @@
 				8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */,
 				8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */,
 				8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */,
-				8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */,
 			);
 			path = "Group Reply Sheet";
 			sourceTree = "<group>";
@@ -6348,6 +6365,7 @@
 				883A7FC3269F4C0000841DF9 /* AvatarSettingsViewController.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				34ACA7D72733159600E47AD4 /* OnboardingTransferProgressViewController.swift in Sources */,
+				88423A52280A171E007D2918 /* StoryDirectReplySheet.swift in Sources */,
 				34ACA7E42733159600E47AD4 /* OnboardingPermissionsViewController.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
@@ -6390,6 +6408,7 @@
 				348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */,
 				346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */,
 				34A4D8892679296600A794E7 /* ConversationViewController+UIScrollView.swift in Sources */,
+				88423A54280A2675007D2918 /* StoryReplyPreviewView.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				329D42A725AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift in Sources */,
 				880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */,
@@ -6505,6 +6524,7 @@
 				889DFA10264EE76F00D03921 /* GroupNameViewController.swift in Sources */,
 				8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */,
 				4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */,
+				88423A56280A373C007D2918 /* StoryReplySheet.swift in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */,
 				347DE5BC2548967900C32CDC /* BlockingGroupMigrationView.swift in Sources */,

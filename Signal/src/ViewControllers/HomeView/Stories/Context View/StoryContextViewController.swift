@@ -140,8 +140,10 @@ class StoryContextViewController: OWSViewController {
                 self.pause()
                 self.present(groupReplyVC, animated: true)
             case .authorUuid:
-                // todo: 1:1 replies
-                break
+                let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
+                directReplyVC.dismissHandler = { [weak self] in self?.play() }
+                self.pause()
+                self.present(directReplyVC, animated: true)
             case .none:
                 owsFailDebug("Unexpected context")
             }

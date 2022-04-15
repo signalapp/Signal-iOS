@@ -6151,9 +6151,6 @@
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
-/* Context menu action to privately reply to the selected story reply */
-"STORIES_PRIVATE_REPLY_ACTION" = "Private Reply";
-
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Share";
 

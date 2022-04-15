@@ -149,6 +149,21 @@ NS_ASSUME_NONNULL_BEGIN
                                reactionEmoji:message.storyReactionEmoji];
     }
 
+    return [self quotedReplyFromStoryMessage:storyMessage
+                               reactionEmoji:message.storyReactionEmoji
+                                 transaction:transaction];
+}
+
++ (nullable instancetype)quotedReplyFromStoryMessage:(StoryMessage *)storyMessage
+                                         transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self quotedReplyFromStoryMessage:storyMessage reactionEmoji:nil transaction:transaction];
+}
+
++ (nullable instancetype)quotedReplyFromStoryMessage:(StoryMessage *)storyMessage
+                                       reactionEmoji:(nullable NSString *)reactionEmoji
+                                         transaction:(SDSAnyReadTransaction *)transaction
+{
     UIImage *_Nullable thumbnailImage = [storyMessage thumbnailImageWithTransaction:transaction];
     TSAttachmentStream *_Nullable attachmentStream;
     TSAttachmentPointer *_Nullable failedAttachmentPointer;
@@ -170,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
                             sourceFilename:nil
                           attachmentStream:attachmentStream
           failedThumbnailAttachmentPointer:failedAttachmentPointer
-                             reactionEmoji:message.storyReactionEmoji];
+                             reactionEmoji:reactionEmoji];
 }
 
 + (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item
