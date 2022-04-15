@@ -320,8 +320,8 @@ class BoostViewController: OWSTableViewController2 {
                     ))
                     donateButton.layer.cornerRadius = 24
                     donateButton.clipsToBounds = true
-                    donateButton.setPressedBlock { [weak self] in
-                        self?.openDonateWebsite()
+                    donateButton.setPressedBlock {
+                        DonationViewsUtil.openDonateWebsite()
                     }
 
                     cell.contentView.addSubview(donateButton)

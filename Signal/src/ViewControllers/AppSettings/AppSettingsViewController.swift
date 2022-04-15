@@ -125,8 +125,67 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
+        section1.add(.disclosureItem(
+            icon: .settingsDonate,
+            name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
+            actionBlock: { [weak self] in
+                self?.navigationController?.pushViewController(DonationViewController(), animated: true)
+            }
+        ))
+        contents.addSection(section1)
+
+        let section2 = OWSTableSection()
+        section2.add(.disclosureItem(
+            icon: .settingsAppearance,
+            name: NSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "appearance"),
+            actionBlock: { [weak self] in
+                let vc = AppearanceSettingsTableViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        section2.add(.disclosureItem(
+            icon: .settingsChats,
+            name: NSLocalizedString("SETTINGS_CHATS", comment: "Title for the 'chats' link in settings."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "chats"),
+            actionBlock: { [weak self] in
+                let vc = ChatsSettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        section2.add(.disclosureItem(
+            icon: .settingsNotifications,
+            name: NSLocalizedString("SETTINGS_NOTIFICATIONS", comment: "The title for the notification settings."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "notifications"),
+            actionBlock: { [weak self] in
+                let vc = NotificationSettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        section2.add(.disclosureItem(
+            icon: .settingsPrivacy,
+            name: NSLocalizedString("SETTINGS_PRIVACY_TITLE", comment: "The title for the privacy settings."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "privacy"),
+            actionBlock: { [weak self] in
+                let vc = PrivacySettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        section2.add(.disclosureItem(
+            icon: .settingsDataUsage,
+            name: NSLocalizedString("SETTINGS_DATA", comment: "Label for the 'data' section of the app settings."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "data-usage"),
+            actionBlock: { [weak self] in
+                let vc = DataSettingsTableViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        contents.addSection(section2)
+
         if payments.shouldShowPaymentsUI {
-            section1.add(.init(
+            let paymentsSection = OWSTableSection()
+            paymentsSection.add(.init(
                 customCellBlock: {
                     let cell = OWSTableItem.newCell()
                     cell.preservesSuperviewLayoutMargins = true
@@ -201,55 +260,6 @@ class AppSettingsViewController: OWSTableViewController2 {
                 }
             ))
         }
-        contents.addSection(section1)
-
-        let section2 = OWSTableSection()
-        section2.add(.disclosureItem(
-            icon: .settingsAppearance,
-            name: NSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "appearance"),
-            actionBlock: { [weak self] in
-                let vc = AppearanceSettingsTableViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }
-        ))
-        section2.add(.disclosureItem(
-            icon: .settingsChats,
-            name: NSLocalizedString("SETTINGS_CHATS", comment: "Title for the 'chats' link in settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "chats"),
-            actionBlock: { [weak self] in
-                let vc = ChatsSettingsViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }
-        ))
-        section2.add(.disclosureItem(
-            icon: .settingsNotifications,
-            name: NSLocalizedString("SETTINGS_NOTIFICATIONS", comment: "The title for the notification settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "notifications"),
-            actionBlock: { [weak self] in
-                let vc = NotificationSettingsViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }
-        ))
-        section2.add(.disclosureItem(
-            icon: .settingsPrivacy,
-            name: NSLocalizedString("SETTINGS_PRIVACY_TITLE", comment: "The title for the privacy settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "privacy"),
-            actionBlock: { [weak self] in
-                let vc = PrivacySettingsViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }
-        ))
-        section2.add(.disclosureItem(
-            icon: .settingsDataUsage,
-            name: NSLocalizedString("SETTINGS_DATA", comment: "Label for the 'data' section of the app settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "data-usage"),
-            actionBlock: { [weak self] in
-                let vc = DataSettingsTableViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }
-        ))
-        contents.addSection(section2)
 
         let section3 = OWSTableSection()
         section3.add(.disclosureItem(
@@ -261,10 +271,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        contents.addSection(section3)
-
-        let section4 = OWSTableSection()
-        section4.add(.item(
+        section3.add(.item(
             icon: .settingsInvite,
             name: NSLocalizedString("SETTINGS_INVITE_TITLE", comment: "Settings table view cell label"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "invite"),
@@ -272,57 +279,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.showInviteFlow()
             }
         ))
-        if DonationUtilities.isApplePayAvailable {
-            section4.add(.init(customCellBlock: { [weak self] in
-                guard let self = self else { return UITableViewCell() }
-                let cell = OWSTableItem.buildCellWithAccessoryLabel(
-                    icon: .settingsDonate,
-                    itemName: self.hasCurrentSubscription ? NSLocalizedString("SETTINGS_CURRENT_SUBSCRIPTION", comment: "Title for the 'Subscription' link in settings.") : NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'monthly donation' link in settings."),
-                    accessoryType: .disclosureIndicator,
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sustainer"))
-
-                if self.hasExpiredSubscription {
-                    let imageView = UIImageView(image: UIImage(named: "info-solid-24")?.withRenderingMode(.alwaysTemplate))
-                    imageView.tintColor = Theme.accentBlueColor
-                    cell.contentView.addSubview(imageView)
-
-                    imageView.autoSetDimensions(to: CGSize(square: 24))
-                    imageView.autoVCenterInSuperview()
-                    imageView.autoPinEdge(.trailing, to: .trailing, of: cell.contentView, withOffset: -8)
-                }
-
-                return cell
-            }, actionBlock: { [weak self] in
-                let vc = SubscriptionViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }))
-
-            section4.add(.disclosureItem(
-                icon: .settingsBoost,
-                name: NSLocalizedString("SETTINGS_ONE_TIME_DONATION", comment: "Title for the 'one-time donation' link in settings."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "one-time donation"),
-                actionBlock: { [weak self] in
-                    let vc = BoostViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
-        } else {
-            section4.add(.item(icon: .settingsDonate,
-                               tintColor: Theme.primaryIconColor,
-                               name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
-                               maxNameLines: 0,
-                               textColor: Theme.primaryTextColor,
-                               accessoryText: nil,
-                               accessoryType: .none,
-                               accessoryImage: #imageLiteral(resourceName: "open-20").withRenderingMode(.alwaysTemplate),
-                               accessoryView: nil,
-                               accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
-                               actionBlock: { () in
-                UIApplication.shared.open(TSConstants.donateUrl, options: [:], completionHandler: nil)
-            }))
-        }
-
-        contents.addSection(section4)
+        contents.addSection(section3)
 
         if DebugFlags.internalSettings {
             let internalSection = OWSTableSection()
