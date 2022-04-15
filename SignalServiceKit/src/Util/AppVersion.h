@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -54,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)nseLaunchDidComplete;
 
 - (BOOL)isFirstLaunch;
+
++ (NSComparisonResult)compareAppVersion:(NSString *)lhs with:(NSString *)rhs;
 
 @end
 
