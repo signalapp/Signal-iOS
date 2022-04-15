@@ -18,6 +18,8 @@ class StoriesViewController: OWSViewController {
         super.init()
         reloadStories()
         databaseStorage.appendDatabaseChangeDelegate(self)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(profileDidChange), name: .localProfileDidChange, object: nil)
     }
 
     override func loadView() {
@@ -108,7 +110,29 @@ class StoriesViewController: OWSViewController {
         updateNavigationBar()
     }
 
+    @objc
+    func profileDidChange() { updateNavigationBar() }
+
     private func updateNavigationBar() {
+        let avatarButton = UIButton(type: .custom)
+        avatarButton.accessibilityLabel = CommonStrings.openSettingsButton
+        avatarButton.addTarget(self, action: #selector(showAppSettings), for: .touchUpInside)
+
+        let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser)
+        databaseStorage.read { transaction in
+            avatarView.update(transaction) { config in
+                if let address = tsAccountManager.localAddress(with: transaction) {
+                    config.dataSource = .address(address)
+                    config.applyConfigurationSynchronously()
+                }
+            }
+        }
+
+        avatarButton.addSubview(avatarView)
+        avatarView.autoPinEdgesToSuperviewEdges()
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
+
         let cameraButton = UIBarButtonItem(image: Theme.iconImage(.cameraButton), style: .plain, target: self, action: #selector(showCameraView))
         cameraButton.accessibilityLabel = NSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
         cameraButton.accessibilityHint = NSLocalizedString("CAMERA_BUTTON_HINT", comment: "Accessibility hint describing what you can do with the camera button")
@@ -118,6 +142,8 @@ class StoriesViewController: OWSViewController {
 
     @objc
     func showCameraView() {
+        AssertIsOnMainThread()
+
         // Dismiss any message actions if they're presented
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
 
@@ -137,6 +163,14 @@ class StoriesViewController: OWSViewController {
                 self.presentFullScreen(modal, animated: true)
             }
         }
+    }
+
+    @objc
+    func showAppSettings() {
+        AssertIsOnMainThread()
+
+        conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
+        presentFormSheet(AppSettingsViewController.inModalNavigationController(), animated: true)
     }
 
     private static let loadingQueue = DispatchQueue(label: "StoriesViewController.loadingQueue", qos: .userInitiated)
