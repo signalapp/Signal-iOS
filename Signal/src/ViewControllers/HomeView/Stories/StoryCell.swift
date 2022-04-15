@@ -115,11 +115,7 @@ class StoryCell: UITableViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
 
-        stream.thumbnailImageSmall {
-            imageView.image = $0
-        } failure: {
-            owsFailDebug("Failed to generate thumbnail")
-        }
+        applyThumbnailImage(to: imageView, for: stream)
 
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         imageView.addSubview(blurView)
@@ -135,13 +131,23 @@ class StoryCell: UITableViewCell {
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.allowsEdgeAntialiasing = true
 
-        stream.thumbnailImageSmall {
-            imageView.image = $0
-        } failure: {
-            owsFailDebug("Failed to generate thumbnail")
-        }
+        applyThumbnailImage(to: imageView, for: stream)
 
         return imageView
+    }
+
+    private static let thumbnailCache = LRUCache<String, UIImage>(maxSize: 64, shouldEvacuateInBackground: true)
+    private func applyThumbnailImage(to imageView: UIImageView, for stream: TSAttachmentStream) {
+        if let thumbnailImage = Self.thumbnailCache[stream.uniqueId] {
+            imageView.image = thumbnailImage
+        } else {
+            stream.thumbnailImageSmall { thumbnailImage in
+                imageView.image = thumbnailImage
+                Self.thumbnailCache.setObject(thumbnailImage, forKey: stream.uniqueId)
+            } failure: {
+                owsFailDebug("Failed to generate thumbnail")
+            }
+        }
     }
 
     private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer) -> UIView? {
