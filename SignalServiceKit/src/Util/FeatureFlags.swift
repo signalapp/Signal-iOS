@@ -522,6 +522,7 @@ public class BaseFlags: NSObject {
     private static var allPropertyNames: [String] {
         var propertyCount: CUnsignedInt = 0
         let firstProperty = class_copyPropertyList(object_getClass(self), &propertyCount)
+        defer { free(firstProperty) }
         let properties = UnsafeMutableBufferPointer(start: firstProperty, count: Int(propertyCount))
         return properties.map { String(cString: property_getName($0)) }
     }
