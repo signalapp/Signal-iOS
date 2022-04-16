@@ -1,5 +1,4 @@
 platform :ios, '12.2'
-plugin 'cocoapods-binary'
 
 use_frameworks!
 
