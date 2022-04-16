@@ -519,20 +519,23 @@ public class DebugFlags: BaseFlags {
 
 @objc
 public class BaseFlags: NSObject {
+    private static var allPropertyNames: [String] {
+        var propertyCount: CUnsignedInt = 0
+        let firstProperty = class_copyPropertyList(object_getClass(self), &propertyCount)
+        let properties = UnsafeMutableBufferPointer(start: firstProperty, count: Int(propertyCount))
+        return properties.map { String(cString: property_getName($0)) }
+    }
+
     public static var allFlags: [String: Any] {
         var result = [String: Any]()
-        var count: CUnsignedInt = 0
-        let methods = class_copyPropertyList(object_getClass(self), &count)!
-        for i in 0 ..< count {
-            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
-            if let key = String(cString: selector, encoding: .utf8) {
-                guard !key.hasPrefix("_") else {
-                    continue
-                }
-                if let value = self.value(forKey: key) {
-                    result[key] = value
-                }
+        for propertyName in self.allPropertyNames {
+            guard !propertyName.hasPrefix("_") else {
+                continue
             }
+            guard let value = self.value(forKey: propertyName) else {
+                continue
+            }
+            result[propertyName] = value
         }
         return result
     }
