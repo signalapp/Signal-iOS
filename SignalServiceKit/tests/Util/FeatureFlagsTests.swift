@@ -1,0 +1,50 @@
+//
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+import XCTest
+
+@testable import SignalServiceKit
+
+class FeatureFlagsTests: XCTestCase {
+    /// Test that all `@objc static let` properties are fetched from `TestFlags`.
+    func testAllFlags() {
+        let expectedKeys = [
+            "trueProperty",
+            "falseProperty",
+            "testableFlag"
+        ]
+        let actualKeys = Array(TestFlags.buildFlagMap().keys)
+        XCTAssertEqual(actualKeys.sorted(), expectedKeys.sorted())
+    }
+
+    /// Test that the correct number of properties with type `FeatureFlag` are returned.
+    func testAllTestableFlags() {
+        XCTAssertEqual(TestFlags.allTestableFlags.count, 1)
+    }
+}
+
+class TestFlags: BaseFlags {
+    @objc
+    public static let trueProperty = true
+
+    @objc
+    public static let falseProperty = false
+
+    // This can be any TestableFlag -- if this one is removed, just pick another.
+    @objc
+    public static let testableFlag = DebugFlags.disableMessageProcessing
+
+    static func buildFlagMap() -> [String: Any] {
+        BaseFlags.buildFlagMap(for: TestFlags.self) { (key: String) -> Any? in
+            TestFlags.value(forKey: key)
+        }
+    }
+
+    static var allTestableFlags: [TestableFlag] {
+        BaseFlags.findTestableFlags(for: TestFlags.self) { (key: String) -> Any? in
+            TestFlags.value(forKey: key)
+        }
+    }
+}
