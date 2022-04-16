@@ -333,6 +333,17 @@ extension StoriesViewController: UITableViewDataSource {
         models[safe: indexPath.row]
     }
 
+    func model(for context: StoryContext) -> IncomingStoryViewModel? {
+        models.first { $0.context == context }
+    }
+
+    func cell(for context: StoryContext) -> StoryCell? {
+        guard let row = models.firstIndex(where: { $0.context == context }) else { return nil }
+        let indexPath = IndexPath(row: row, section: 0)
+        guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return nil }
+        return tableView.cellForRow(at: indexPath) as? StoryCell
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: StoryCell.reuseIdentifier) as! StoryCell
         guard let model = model(for: indexPath) else {

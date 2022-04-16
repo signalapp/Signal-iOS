@@ -79,20 +79,7 @@ public class TextAttachmentView: UIView {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
     }
 
-    public func asThumbnailView() -> UIView {
-        // We render the textView at a large 3:2 size (matching the aspect of
-        // the thumbnail container), so the fonts and gradients all render properly
-        // for the preview. We then scale it down to render a "thumbnail" view.
-        let thumbnailRenderSize = CGSize(width: 375, height: 563)
-
-        let thumbnailView = OWSLayerView(frame: .zero) { view in
-            self.transform = .scale(view.width / thumbnailRenderSize.width)
-            self.frame = view.bounds
-        }
-        thumbnailView.addSubview(self)
-
-        return thumbnailView
-    }
+    public func asThumbnailView() -> TextAttachmentThumbnailView { TextAttachmentThumbnailView(self) }
 
     public var isPresentingLinkTooltip: Bool { linkPreviewTooltipView != nil }
 
@@ -162,20 +149,20 @@ public class TextAttachmentView: UIView {
     }
 
     private func addGradientBackground(_ gradient: TextAttachment.Background.Gradient) {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
+        class GradientLayerView: UIView {
+            override class var layerClass: AnyClass { CAGradientLayer.self }
+            var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
+        }
+
+        let gradientView = GradientLayerView()
+        gradientView.gradientLayer.colors = [
             gradient.startColor.cgColor,
             gradient.endColor.cgColor
         ]
-        gradientLayer.setAngle(gradient.angle)
+        gradientView.gradientLayer.setAngle(gradient.angle)
 
-        let layerView = OWSLayerView(frame: .zero) { view in
-            gradientLayer.frame = view.bounds
-        }
-        layerView.layer.addSublayer(gradientLayer)
-
-        addSubview(layerView)
-        layerView.autoPinEdgesToSuperviewEdges()
+        addSubview(gradientView)
+        gradientView.autoPinEdgesToSuperviewEdges()
     }
 
     private static let dateFormatter: DateFormatter = {
@@ -362,4 +349,35 @@ private class LinkPreviewTooltipView: TooltipView {
 
     public override var tailDirection: TooltipView.TailDirection { .down }
     public override var dismissOnTap: Bool { false }
+}
+
+public class TextAttachmentThumbnailView: UIView {
+    // By default, we render the textView at a large 3:2 size (matching the aspect
+    //  of the thumbnail container), so the fonts and gradients all render properly
+    // for the preview. We then scale it down to render a "thumbnail" view.
+    public static let defaultRenderSize = CGSize(width: 375, height: 563)
+
+    public lazy var renderSize = Self.defaultRenderSize {
+        didSet {
+            textAttachmentView.transform = .scale(width / renderSize.width)
+        }
+    }
+
+    private let textAttachmentView: TextAttachmentView
+    public init(_ textAttachmentView: TextAttachmentView) {
+        self.textAttachmentView = textAttachmentView
+        super.init(frame: .zero)
+        addSubview(textAttachmentView)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+
+        textAttachmentView.transform = .scale(width / renderSize.width)
+        textAttachmentView.frame = bounds
+    }
 }

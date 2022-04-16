@@ -11,7 +11,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     fileprivate var deviceTransferNavController: DeviceTransferNavigationController?
 
-    private let homeVC = HomeTabBarController()
+    let homeVC = HomeTabBarController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
 
     private var chatListNavController: OWSNavigationController { homeVC.chatListNavController }

@@ -358,6 +358,15 @@ class StoryContextViewController: OWSViewController {
         widthConstraint.priority = .defaultHigh
         constraints.append(widthConstraint)
 
+        let maxWidthConstraint = mediaViewContainer.autoMatch(
+            .width,
+            to: .width,
+            of: view,
+            withOffset: 0,
+            relation: .lessThanOrEqual
+        )
+        constraints.append(maxWidthConstraint)
+
         return constraints
     }()
 
@@ -380,7 +389,7 @@ class StoryContextViewController: OWSViewController {
         )
     ]
 
-    private func applyConstraints(newSize: CGSize = CurrentAppContext().frame.size) {
+    private func applyConstraints() {
         NSLayoutConstraint.deactivate(iPhoneConstraints)
         NSLayoutConstraint.deactivate(iPadConstraints)
         NSLayoutConstraint.deactivate(iPadPortraitConstraints)
@@ -388,7 +397,7 @@ class StoryContextViewController: OWSViewController {
 
         if UIDevice.current.isIPad {
             NSLayoutConstraint.activate(iPadConstraints)
-            if newSize.width > newSize.height {
+            if UIDevice.current.orientation.isLandscape {
                 NSLayoutConstraint.activate(iPadLandscapeConstraints)
             } else {
                 NSLayoutConstraint.activate(iPadPortraitConstraints)
@@ -401,7 +410,7 @@ class StoryContextViewController: OWSViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate { _ in
-            self.applyConstraints(newSize: size)
+            self.applyConstraints()
         } completion: { _ in
             self.applyConstraints()
         }
