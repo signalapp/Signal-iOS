@@ -562,21 +562,7 @@ public class BaseFlags: NSObject {
     }
 
     static func findTestableFlags(for flagsClass: Any, flagFunc: (String) -> Any?) -> [TestableFlag] {
-        var result = [TestableFlag]()
-        var count: CUnsignedInt = 0
-        let methods = class_copyPropertyList(object_getClass(flagsClass), &count)!
-        for i in 0 ..< count {
-            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
-            if let key = String(cString: selector, encoding: .utf8) {
-                guard !key.hasPrefix("_") else {
-                    continue
-                }
-                if let value = flagFunc(key) as? TestableFlag {
-                    result.append(value)
-                }
-            }
-        }
-        return result
+        return self.buildFlagMap(for: flagsClass, flagFunc: flagFunc).values.compactMap { $0 as? TestableFlag }
     }
 }
 
