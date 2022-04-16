@@ -15,7 +15,7 @@ class FeatureFlagsTests: XCTestCase {
             "falseProperty",
             "testableFlag"
         ]
-        let actualKeys = Array(TestFlags.buildFlagMap().keys)
+        let actualKeys = Array(TestFlags.allFlags.keys)
         XCTAssertEqual(actualKeys.sorted(), expectedKeys.sorted())
     }
 

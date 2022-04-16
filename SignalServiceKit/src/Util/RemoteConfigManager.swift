@@ -360,7 +360,7 @@ public class RemoteConfig: BaseFlags {
             logFlag("Config.StickyValues", flag.rawFlag, value)
         }
 
-        let flagMap = buildFlagMap()
+        let flagMap = allFlags
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
             logFlag("Flag", key, value)

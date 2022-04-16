@@ -125,7 +125,7 @@ public class FeatureFlags: BaseFlags {
             }
         }
 
-        let flagMap = buildFlagMap()
+        let flagMap = allFlags
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
             logFlag("FeatureFlag", key, value)
@@ -507,7 +507,7 @@ public class DebugFlags: BaseFlags {
             }
         }
 
-        let flagMap = buildFlagMap()
+        let flagMap = allFlags
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
             logFlag("DebugFlag", key, value)
@@ -519,7 +519,7 @@ public class DebugFlags: BaseFlags {
 
 @objc
 public class BaseFlags: NSObject {
-    public static func buildFlagMap() -> [String: Any] {
+    public static var allFlags: [String: Any] {
         var result = [String: Any]()
         var count: CUnsignedInt = 0
         let methods = class_copyPropertyList(object_getClass(self), &count)!
@@ -538,7 +538,7 @@ public class BaseFlags: NSObject {
     }
 
     public static var allTestableFlags: [TestableFlag] {
-        return self.buildFlagMap().values.compactMap { $0 as? TestableFlag }
+        return self.allFlags.values.compactMap { $0 as? TestableFlag }
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,9 +17,9 @@ class FlagsViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        contents.addSection(buildSection(title: "Remote Config", flagMap: RemoteConfig.buildFlagMap()))
-        contents.addSection(buildSection(title: "Feature Flags", flagMap: FeatureFlags.buildFlagMap()))
-        contents.addSection(buildSection(title: "Debug Flags", flagMap: DebugFlags.buildFlagMap()))
+        contents.addSection(buildSection(title: "Remote Config", flagMap: RemoteConfig.allFlags))
+        contents.addSection(buildSection(title: "Feature Flags", flagMap: FeatureFlags.allFlags))
+        contents.addSection(buildSection(title: "Debug Flags", flagMap: DebugFlags.allFlags))
 
         self.contents = contents
     }
