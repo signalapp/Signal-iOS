@@ -19,9 +19,12 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
     }()
     let storyMessage: StoryMessage
     lazy var thread: TSThread? = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
+    weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
 
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?
+
+    let backdropView: UIView? = UIView()
 
     @objc
     init(storyMessage: StoryMessage) {
@@ -71,51 +74,33 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
     }
 }
 
-// MARK: -
-
-private class StoryDirectReplySheetPresentationController: UIPresentationController {
-    let backdropView = UIView()
-
-    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
-        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-
-        let alpha: CGFloat = Theme.isDarkThemeEnabled ? 0.7 : 0.6
-        backdropView.backgroundColor = UIColor.black.withAlphaComponent(alpha)
-    }
-
-    override func presentationTransitionWillBegin() {
-        guard let containerView = containerView else { return }
-
-        backdropView.alpha = 0
-        containerView.addSubview(backdropView)
-        backdropView.autoPinEdgesToSuperviewEdges()
-        containerView.layoutIfNeeded()
-
-        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
-            self.backdropView.alpha = 1
-        }, completion: nil)
-    }
-
-    override func dismissalTransitionWillBegin() {
-        presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
-            self.backdropView.alpha = 0
-        }, completion: { _ in
-            self.backdropView.removeFromSuperview()
-        })
-    }
-
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        guard let presentedView = presentedView else { return }
-        coordinator.animate(alongsideTransition: { _ in
-            presentedView.frame = self.frameOfPresentedViewInContainerView
-            presentedView.layoutIfNeeded()
-        }, completion: nil)
-    }
-}
-
 extension StoryDirectReplySheet: UIViewControllerTransitioningDelegate {
-    public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return StoryDirectReplySheetPresentationController(presentedViewController: presented, presenting: presenting)
+    public func animationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController,
+        source: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
+        return StoryReplySheetAnimator(
+            isPresenting: true,
+            isInteractive: interactiveTransitionCoordinator != nil,
+            backdropView: backdropView
+        )
+    }
+
+    public func animationController(
+        forDismissed dismissed: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
+        return StoryReplySheetAnimator(
+            isPresenting: false,
+            isInteractive: false,
+            backdropView: backdropView
+        )
+    }
+
+    public func interactionControllerForPresentation(
+        using animator: UIViewControllerAnimatedTransitioning
+    ) -> UIViewControllerInteractiveTransitioning? {
+        interactiveTransitionCoordinator?.mode = .reply
+        return interactiveTransitionCoordinator
     }
 }

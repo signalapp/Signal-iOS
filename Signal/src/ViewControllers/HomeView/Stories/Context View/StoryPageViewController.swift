@@ -24,7 +24,7 @@ class StoryPageViewController: UIPageViewController {
         didSet { initiallyAvailableContexts = contextDataSource?.storyPageViewControllerAvailableContexts(self) ?? [currentContext] }
     }
     lazy var initiallyAvailableContexts: [StoryContext] = [currentContext]
-    private var interactiveDismissCoordinator: InteractiveDismissCoordinator?
+    private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
 
     required init(context: StoryContext) {
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
@@ -49,7 +49,7 @@ class StoryPageViewController: UIPageViewController {
         delegate = self
         view.backgroundColor = .black
 
-        interactiveDismissCoordinator = InteractiveDismissCoordinator(pageViewController: self)
+        interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -169,15 +169,12 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
         )
     }
 
-    func pause() { displayLink?.isPaused = true }
-    func resume() { displayLink?.isPaused = false }
-
     func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController) {
-        pause()
+        displayLink?.isPaused = true
     }
 
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController) {
-        resume()
+        displayLink?.isPaused = false
     }
 }
 
@@ -193,7 +190,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         ) else {
             return nil
         }
-        return ZoomAnimator(storyTransitionContext: storyTransitionContext)
+        return StoryZoomAnimator(storyTransitionContext: storyTransitionContext)
     }
 
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
@@ -202,14 +199,14 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             presentingViewController: presentingViewController,
             isPresenting: false
         ) else {
-            return SlideAnimator(interactiveEdge: interactiveDismissCoordinator?.interactiveEdge ?? .none)
+            return StorySlideAnimator(interactiveEdge: interactiveDismissCoordinator?.interactiveEdge ?? .none)
         }
-        return ZoomAnimator(storyTransitionContext: storyTransitionContext)
+        return StoryZoomAnimator(storyTransitionContext: storyTransitionContext)
     }
 
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         guard let interactiveDismissCoordinator = interactiveDismissCoordinator, interactiveDismissCoordinator.interactionInProgress else { return nil }
-        interactiveDismissCoordinator.mode = animator is ZoomAnimator ? .zoom : .slide
+        interactiveDismissCoordinator.mode = animator is StoryZoomAnimator ? .zoom : .slide
         return interactiveDismissCoordinator
     }
 
@@ -285,355 +282,5 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         storyView.clipsToBounds = true
 
         return storyView
-    }
-}
-
-private class InteractiveDismissCoordinator: UIPercentDrivenInteractiveTransition, UIGestureRecognizerDelegate {
-    weak var pageViewController: StoryPageViewController!
-    lazy var panGestureRecognizer = UIPanGestureRecognizer(
-        target: self,
-        action: #selector(handlePan(_:))
-    )
-    init(pageViewController: StoryPageViewController) {
-        self.pageViewController = pageViewController
-        super.init()
-        pageViewController.view.addGestureRecognizer(panGestureRecognizer)
-        panGestureRecognizer.delegate = self
-
-        for subview in pageViewController.view.subviews {
-            guard let scrollView = subview as? UIScrollView else { continue }
-            scrollView.panGestureRecognizer.require(toFail: panGestureRecognizer)
-            break
-        }
-    }
-
-    var interactionInProgress: Bool { interactiveEdge != .none }
-
-    enum Edge {
-        case leading
-        case top
-        case bottom
-        case none
-    }
-    var interactiveEdge: Edge = .none
-
-    enum Mode {
-        case zoom
-        case slide
-    }
-    var mode: Mode = .zoom
-
-    @objc
-    func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        switch gestureRecognizer.state {
-        case .began:
-            gestureRecognizer.setTranslation(.zero, in: pageViewController.view)
-            pageViewController.pause()
-            pageViewController.dismiss(animated: true)
-        case .changed:
-            update(calculateProgress(gestureRecognizer))
-        case .cancelled:
-            pageViewController.resume()
-            cancel()
-            interactiveEdge = .none
-        case .ended:
-            let progress = calculateProgress(gestureRecognizer)
-
-            if progress >= 0.5 || hasExceededVelocityThreshold(gestureRecognizer) {
-                finish()
-            } else {
-                pageViewController.resume()
-                cancel()
-            }
-
-            interactiveEdge = .none
-        default:
-            cancel()
-            interactiveEdge = .none
-        }
-    }
-
-    func calculateProgress(_ gestureRecognizer: UIPanGestureRecognizer) -> CGFloat {
-        let offset = gestureRecognizer.translation(in: pageViewController.view)
-        let totalDistance: CGFloat
-
-        switch mode {
-        case .zoom: totalDistance = 150
-        case .slide:
-            switch interactiveEdge {
-            case .top, .bottom: totalDistance = pageViewController.view.height
-            case .leading, .none: totalDistance = pageViewController.view.width
-            }
-        }
-
-        switch interactiveEdge {
-        case .top:
-            return offset.y / totalDistance
-        case .leading:
-            return ((CurrentAppContext().isRTL ? -1 : 1) * offset.x) / totalDistance
-        case .bottom:
-            return -offset.y / totalDistance
-        case .none:
-            return 0
-        }
-    }
-
-    func hasExceededVelocityThreshold(_ gestureRecognizer: UIPanGestureRecognizer) -> Bool {
-        let velocity = gestureRecognizer.velocity(in: pageViewController.view)
-        let velocityThreshold: CGFloat = 500
-
-        switch interactiveEdge {
-        case .top:
-            return velocity.y > velocityThreshold
-        case .leading:
-            return ((CurrentAppContext().isRTL ? -1 : 1) * velocity.x) > velocityThreshold
-        case .bottom:
-            return -velocity.y > velocityThreshold
-        case .none:
-            return false
-        }
-    }
-
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard gestureRecognizer == panGestureRecognizer else { return false }
-        let translation = panGestureRecognizer.translation(in: pageViewController.view)
-
-        if !CurrentAppContext().isRTL, translation.x > 0 {
-            interactiveEdge = .leading
-            return true
-        } else if CurrentAppContext().isRTL, translation.x < 0 {
-            interactiveEdge = .leading
-            return true
-        } else if pageViewController.previousStoryContext == nil, translation.y > 0 {
-            interactiveEdge = .top
-            return true
-        } else if pageViewController.nextStoryContext == nil, translation.y < 0 {
-            interactiveEdge = .bottom
-            return true
-        } else {
-            interactiveEdge = .none
-            return false
-        }
-    }
-
-    func gestureRecognizer(
-        _ gestureRecognizer: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
-    ) -> Bool {
-        gestureRecognizer == panGestureRecognizer
-    }
-}
-
-private struct StoryTransitionContext {
-    let isPresenting: Bool
-    let thumbnailView: UIView
-    let storyView: UIView
-    let thumbnailRepresentsStoryView: Bool
-    weak var pageViewController: StoryPageViewController!
-}
-
-private class ZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
-    private let context: StoryTransitionContext
-    private let backgroundView = UIView()
-
-    init(storyTransitionContext: StoryTransitionContext) {
-        self.context = storyTransitionContext
-        super.init()
-    }
-
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval { totalDuration }
-    var totalDuration: TimeInterval { presentationDelay + presentationDuration + crossFadeDuration }
-    var crossFadeDuration: TimeInterval { 0.1 }
-    var presentationDelay: TimeInterval {
-        if context.isPresenting {
-            return context.thumbnailRepresentsStoryView ? 0 : crossFadeDuration
-        } else {
-            return crossFadeDuration
-        }
-    }
-    var presentationDuration: TimeInterval { 0.2 }
-
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let containerView = transitionContext.containerView
-
-        guard let toVC = transitionContext.viewController(forKey: .to) else {
-            owsFailDebug("Missing toVC")
-            transitionContext.completeTransition(false)
-            return
-        }
-
-        let dismissedFrame = containerView.convert(
-            context.thumbnailView.frame,
-            from: context.thumbnailView.superview
-        )
-        var presentedFrame = transitionContext.finalFrame(for: toVC)
-
-        let heightScalar = UIDevice.current.isIPad
-            ? UIDevice.current.orientation.isLandscape ? 0.75 : 0.65
-            : 1
-
-        let maxHeight = presentedFrame.height * heightScalar
-        presentedFrame.size.height = min(maxHeight, presentedFrame.width * (16 / 9))
-        presentedFrame.size.width = presentedFrame.height * (9 / 16)
-
-        if UIDevice.current.isIPad {
-            // Center in view
-            presentedFrame.origin = CGPoint(
-                x: containerView.safeAreaLayoutGuide.layoutFrame.midX - (presentedFrame.width / 2),
-                y: containerView.safeAreaLayoutGuide.layoutFrame.midY - (presentedFrame.height / 2)
-            )
-        } else {
-            // Pin to top of view
-            presentedFrame.origin.y = containerView.safeAreaInsets.top
-        }
-
-        backgroundView.backgroundColor = .ows_black
-        backgroundView.frame = transitionContext.finalFrame(for: toVC)
-
-        toVC.view.frame = transitionContext.finalFrame(for: toVC)
-
-        if context.isPresenting {
-            containerView.addSubview(backgroundView)
-            containerView.addSubview(context.storyView)
-            containerView.addSubview(toVC.view)
-
-            context.storyView.frame = dismissedFrame
-            context.storyView.layoutIfNeeded()
-
-            backgroundView.alpha = 0
-            toVC.view.alpha = 0
-
-            context.storyView.layer.cornerRadius = 12
-            context.storyView.alpha = 0
-
-            UIView.animateKeyframes(withDuration: totalDuration, delay: 0) {
-                self.animateThumbnailFade()
-                self.animatePresentation(delay: self.presentationDelay, endFrame: presentedFrame)
-                self.animateChromeFade(delay: self.presentationDelay + self.presentationDuration)
-            } completion: { _ in
-                self.context.storyView.removeFromSuperview()
-                self.context.thumbnailView.alpha = 1
-                self.backgroundView.removeFromSuperview()
-                transitionContext.completeTransition(true)
-            }
-        } else {
-            containerView.addSubview(toVC.view)
-            containerView.addSubview(backgroundView)
-            containerView.addSubview(context.storyView)
-            containerView.addSubview(context.pageViewController.view)
-
-            context.storyView.layer.cornerRadius = UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad ? 18 : 0
-            context.storyView.frame = presentedFrame
-            if let storyView = context.storyView as? TextAttachmentThumbnailView {
-                storyView.renderSize = presentedFrame.size
-            }
-            context.storyView.layoutIfNeeded()
-
-            context.thumbnailView.alpha = 0
-
-            UIView.animateKeyframes(withDuration: totalDuration, delay: 0) {
-                self.animateChromeFade()
-                self.animatePresentation(delay: self.presentationDelay, endFrame: dismissedFrame)
-                self.animateThumbnailFade(delay: self.presentationDuration + self.crossFadeDuration)
-            } completion: { _ in
-                self.context.storyView.removeFromSuperview()
-                self.backgroundView.removeFromSuperview()
-
-                if transitionContext.transitionWasCancelled {
-                    toVC.view.removeFromSuperview()
-                    self.context.pageViewController.view.alpha = 1
-                    self.context.thumbnailView.alpha = 1
-                } else {
-                    self.context.pageViewController.view.removeFromSuperview()
-                }
-
-                transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-            }
-        }
-    }
-
-    /// Cross-fade the thumbnail on the stories list if it doesn't match the presented story
-    private func animateThumbnailFade(delay: TimeInterval = 0) {
-        let duration = context.thumbnailRepresentsStoryView ? 0 : crossFadeDuration
-        UIView.addKeyframe(withRelativeStartTime: delay / totalDuration, relativeDuration: duration / totalDuration) {
-            self.context.storyView.alpha = self.context.isPresenting ? 1 : 0
-            self.context.thumbnailView.alpha = self.context.isPresenting ? 0 : 1
-        }
-    }
-
-    /// Move the story to its final location
-    private func animatePresentation(delay: TimeInterval = 0, endFrame: CGRect) {
-        UIView.addKeyframe(withRelativeStartTime: delay / totalDuration, relativeDuration: presentationDuration / totalDuration) {
-            if let storyView = self.context.storyView as? TextAttachmentThumbnailView {
-                storyView.renderSize = self.context.isPresenting
-                    ? endFrame.size : TextAttachmentThumbnailView.defaultRenderSize
-            }
-            self.context.storyView.layer.cornerRadius = self.context.isPresenting
-                ? UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad ? 18 : 0
-                : 12
-            self.context.storyView.frame = endFrame
-            self.context.storyView.layoutIfNeeded()
-            self.backgroundView.alpha = self.context.isPresenting ? 1 : 0
-        }
-    }
-
-    /// Fade the UI chrome
-    private func animateChromeFade(delay: TimeInterval = 0) {
-        UIView.addKeyframe(withRelativeStartTime: delay / totalDuration, relativeDuration: crossFadeDuration / totalDuration) {
-            self.context.pageViewController.view.alpha = self.context.isPresenting ? 1 : 0
-        }
-    }
-}
-
-private class SlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
-    let interactiveEdge: InteractiveDismissCoordinator.Edge
-    init(interactiveEdge: InteractiveDismissCoordinator.Edge) {
-        self.interactiveEdge = interactiveEdge
-    }
-
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        0.2
-    }
-
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let containerView = transitionContext.containerView
-
-        guard let fromVC = transitionContext.viewController(forKey: .from),
-              let toVC = transitionContext.viewController(forKey: .to) else {
-            owsFailDebug("Missing vcs")
-            transitionContext.completeTransition(false)
-            return
-        }
-
-        containerView.addSubview(toVC.view)
-
-        containerView.addSubview(fromVC.view)
-        fromVC.view.frame = transitionContext.initialFrame(for: fromVC)
-
-        let endFrame: CGRect
-        switch interactiveEdge {
-        case .leading:
-            endFrame = fromVC.view.frame.offsetBy(dx: (CurrentAppContext().isRTL ? -1 : 1) * fromVC.view.width, dy: 0)
-        case .top, .none:
-            endFrame = fromVC.view.frame.offsetBy(dx: 0, dy: fromVC.view.height)
-        case .bottom:
-            endFrame = fromVC.view.frame.offsetBy(dx: 0, dy: -fromVC.view.height)
-        }
-
-        UIView.animate(
-            withDuration: transitionDuration(using: transitionContext),
-            delay: 0,
-            options: interactiveEdge != .none ? .curveLinear : .curveEaseInOut
-        ) {
-            fromVC.view.frame = endFrame
-        } completion: { _ in
-            if transitionContext.transitionWasCancelled {
-                toVC.view.removeFromSuperview()
-            } else {
-                fromVC.view.removeFromSuperview()
-            }
-
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        }
     }
 }

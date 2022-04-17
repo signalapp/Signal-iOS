@@ -36,6 +36,13 @@ class StoryContextViewController: OWSViewController {
     }
     var currentItemMediaView: StoryItemMediaView?
 
+    var allowsReplies: Bool {
+        guard let currentItem = currentItem else {
+            return false
+        }
+        return currentItem.message.localUserAllowedToReply
+    }
+
     enum LoadPosition {
         case `default`
         case newest
@@ -131,23 +138,7 @@ class StoryContextViewController: OWSViewController {
 
         view.addSubview(mediaViewContainer)
 
-        replyButton.setPressedBlock { [weak self] in
-            guard let self = self, let currentItem = self.currentItem else { return }
-            switch self.context {
-            case .groupId:
-                let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
-                groupReplyVC.dismissHandler = { [weak self] in self?.play() }
-                self.pause()
-                self.present(groupReplyVC, animated: true)
-            case .authorUuid:
-                let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
-                directReplyVC.dismissHandler = { [weak self] in self?.play() }
-                self.pause()
-                self.present(directReplyVC, animated: true)
-            case .none:
-                owsFailDebug("Unexpected context")
-            }
-        }
+        replyButton.setPressedBlock { [weak self] in self?.presentReplySheet() }
         replyButton.setBackgroundColors(upColor: .clear)
         replyButton.autoSetDimension(.height, toSize: 64)
         replyButton.setTitleColor(Theme.darkThemePrimaryColor)
@@ -471,6 +462,30 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             self.replyButton.alpha = 1
         }
         delegate?.storyContextViewControllerDidResume(self)
+    }
+
+    func presentReplySheet(interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator? = nil) {
+        guard let currentItem = currentItem, currentItem.message.localUserAllowedToReply else {
+            owsFailDebug("Unexpectedly attempting to present reply sheet")
+            return
+        }
+
+        switch self.context {
+        case .groupId:
+            let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
+            groupReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
+            groupReplyVC.dismissHandler = { [weak self] in self?.play() }
+            self.pause()
+            self.present(groupReplyVC, animated: true)
+        case .authorUuid:
+            let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
+            directReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
+            directReplyVC.dismissHandler = { [weak self] in self?.play() }
+            self.pause()
+            self.present(directReplyVC, animated: true)
+        case .none:
+            owsFailDebug("Unexpected context")
+        }
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
