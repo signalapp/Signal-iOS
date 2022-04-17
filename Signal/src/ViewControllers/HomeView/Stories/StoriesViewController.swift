@@ -12,6 +12,19 @@ class StoriesViewController: OWSViewController {
     private var presentedContextOrder: [StoryContext]?
     private var models = [IncomingStoryViewModel]()
 
+    private lazy var emptyStateLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = Theme.secondaryTextAndIconColor
+        label.font = .ows_dynamicTypeBody
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.text = NSLocalizedString("STORIES_NO_RECENT_MESSAGES", comment: "Indicates that there are no recent stories to render")
+        label.isHidden = true
+        label.isUserInteractionEnabled = false
+        tableView.backgroundView = label
+        return label
+    }()
+
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
     override init() {
@@ -90,6 +103,8 @@ class StoriesViewController: OWSViewController {
 
     override func applyTheme() {
         super.applyTheme()
+
+        emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
 
         contextMenu.dismissMenu(animated: true) {}
 
@@ -359,7 +374,9 @@ extension StoriesViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return models.count
+        let numberOfRows = models.count
+        emptyStateLabel.isHidden = numberOfRows > 0
+        return numberOfRows
     }
 }
 
