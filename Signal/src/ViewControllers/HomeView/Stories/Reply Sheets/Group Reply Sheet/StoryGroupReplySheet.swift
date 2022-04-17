@@ -23,6 +23,17 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
         return placeholder
     }()
 
+    private lazy var emptyStateView: UIView = {
+        let label = UILabel()
+        label.font = .ows_dynamicTypeBody
+        label.textColor = .ows_gray45
+        label.textAlignment = .center
+        label.text = NSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet")
+        label.isHidden = true
+        label.isUserInteractionEnabled = false
+        return label
+    }()
+
     let storyMessage: StoryMessage
     lazy var thread: TSThread? = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
     weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
@@ -92,6 +103,11 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
         }
 
         replyLoader = StoryGroupReplyLoader(storyMessage: storyMessage, threadUniqueId: thread?.uniqueId, tableView: tableView)
+
+        contentView.addSubview(emptyStateView)
+        emptyStateView.autoPinWidthToSuperview()
+        emptyStateView.autoPinEdge(toSuperviewEdge: .top)
+        emptyStateView.autoPinEdge(.bottom, to: .top, of: inputToolbar)
     }
 
     public override var inputAccessoryView: UIView? { inputAccessoryPlaceholder }
@@ -151,7 +167,9 @@ extension StoryGroupReplySheet: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        replyLoader?.numberOfRows ?? 0
+        let numberOfRows = replyLoader?.numberOfRows ?? 0
+        emptyStateView.isHidden = numberOfRows > 0
+        return numberOfRows
     }
 }
 
