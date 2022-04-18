@@ -278,7 +278,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                     guard let self = self else { return UITableViewCell() }
                     let cell = OWSTableItem.buildCellWithAccessoryLabel(
                         icon: .settingsDonate,
-                    itemName: self.hasCurrentSubscription ? NSLocalizedString("SETTINGS_CURRENT_SUBSCRIPTION", comment: "Title for the 'Subscription' link in settings.") : NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'become a sustainer' link in settings."),
+                    itemName: self.hasCurrentSubscription ? NSLocalizedString("SETTINGS_CURRENT_SUBSCRIPTION", comment: "Title for the 'Subscription' link in settings.") : NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'monthly donation' link in settings."),
                         accessoryType: .disclosureIndicator,
                     accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sustainer"))
 
@@ -300,8 +300,8 @@ class AppSettingsViewController: OWSTableViewController2 {
 
                 section4.add(.disclosureItem(
                     icon: .settingsBoost,
-                    name: NSLocalizedString("SETTINGS_SIGNAL_BOOST", comment: "Title for the 'signal boost' link in settings."),
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "signal boost"),
+                    name: NSLocalizedString("SETTINGS_ONE_TIME_DONATION", comment: "Title for the 'one time donation' link in settings."),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "one time donation"),
                     actionBlock: { [weak self] in
                         let vc = BoostViewController()
                         self?.navigationController?.pushViewController(vc, animated: true)
