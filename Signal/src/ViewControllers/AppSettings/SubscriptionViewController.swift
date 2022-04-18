@@ -141,7 +141,6 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .current
         formatter.dateStyle = .medium
         return formatter
     }()

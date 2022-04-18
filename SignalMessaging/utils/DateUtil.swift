@@ -9,7 +9,6 @@ extension DateUtil {
     @objc
     public static let timeFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .current
         formatter.timeStyle = .short
         formatter.dateStyle = .none
         return formatter
@@ -122,7 +121,6 @@ extension DateUtil {
 
     private static let dateHeaderRecentDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .current
         // Tue, Jun 6
         formatter.setLocalizedDateFormatFromTemplate("EE, MMM d")
         return formatter
@@ -130,7 +128,6 @@ extension DateUtil {
 
     private static let dateHeaderOldDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .current
         formatter.timeStyle = .none
         // Mar 8, 2017
         formatter.dateStyle = .medium
@@ -139,7 +136,6 @@ extension DateUtil {
 
     private static let dateHeaderRelativeDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .current
         formatter.timeStyle = .none
         formatter.dateStyle = .short
         // Today / Yesterday

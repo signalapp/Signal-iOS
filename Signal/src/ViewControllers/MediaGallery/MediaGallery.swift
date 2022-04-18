@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -146,14 +146,12 @@ struct GalleryDate: Hashable, Comparable, Equatable {
 
     static let thisYearFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .current
         formatter.setLocalizedDateFormatFromTemplate("MMMM")
         return formatter
     }()
 
     static let olderFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .current
         formatter.setLocalizedDateFormatFromTemplate("MMMMyyyy")
         return formatter
     }()

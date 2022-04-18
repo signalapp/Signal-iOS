@@ -44,7 +44,6 @@ class DonationReceiptsViewController: OWSTableViewController2 {
 
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = .current
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
         return formatter
