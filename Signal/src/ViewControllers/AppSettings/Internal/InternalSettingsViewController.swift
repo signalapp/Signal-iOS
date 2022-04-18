@@ -5,6 +5,7 @@
 import Foundation
 import SignalServiceKit
 import SignalMessaging
+import UIKit
 
 @objc
 class InternalSettingsViewController: OWSTableViewController2 {
@@ -57,6 +58,15 @@ class InternalSettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 let vc = TestingViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        debugSection.add(.actionItem(
+            withText: "Export Database",
+            actionBlock: { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                SignalApp.showExportDatabaseUI(from: self)
             }
         ))
 

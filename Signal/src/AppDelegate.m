@@ -416,6 +416,20 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:alertTitle message:alertMessage];
 
+    if (SSKDebugFlags.internalSettings) {
+        [actionSheet addAction:[[ActionSheetAction alloc]
+                                   initWithTitle:@"Export Database (internal)"
+                                           style:ActionSheetActionStyleDefault
+                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                             [SignalApp
+                                                 showExportDatabaseUIFromViewController:viewController
+                                                                             completion:^{
+                                                                                 [viewController
+                                                                                     presentActionSheet:actionSheet];
+                                                                             }];
+                                         }]];
+    }
+
     [actionSheet
         addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
                                                      style:ActionSheetActionStyleDefault

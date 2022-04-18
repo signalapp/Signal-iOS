@@ -46,3 +46,53 @@ extension SignalApp {
         conversationSplitViewController.showAppSettingsWithMode(mode)
     }
 }
+
+extension SignalApp {
+    @objc(showExportDatabaseUIFromViewController:completion:)
+    public static func showExportDatabaseUI(from parentVC: UIViewController, completion: @escaping () -> Void = {}) {
+        guard OWSIsTestableBuild() || DebugFlags.internalSettings else {
+            // This should NEVER be exposed outside of internal settings.
+            // We do not want to expose users to phishing scams. This should only be used for debugging purposes.
+            Logger.warn("cannot export database in a public build")
+            completion()
+            return
+        }
+
+        let alert = UIAlertController(
+            title: "⚠️⚠️⚠️ Warning!!! ⚠️⚠️⚠️",
+            message: "This contains all your contacts, groups, and messages. "
+                + "The database file will remain encrypted and the password provided after export, "
+                + "but it is still much less secure because it's now out of the app's control.\n\n"
+                + "NO ONE AT SIGNAL CAN MAKE YOU DO THIS! Don't do it if you're not comfortable.",
+            preferredStyle: .alert)
+        alert.addAction(.init(title: "Export", style: .destructive) { _ in
+            if SSKEnvironment.hasShared() {
+                // Try to sync the database first, since we don't export the WAL.
+                _ = try? SSKEnvironment.shared.grdbStorageAdapter.syncTruncatingCheckpoint()
+            }
+            let databaseFileUrl = GRDBDatabaseStorageAdapter.databaseFileUrl()
+            let shareSheet = UIActivityViewController(activityItems: [databaseFileUrl], applicationActivities: nil)
+            shareSheet.completionWithItemsHandler = { _, completed, _, error in
+                guard completed && error == nil,
+                      let password = GRDBDatabaseStorageAdapter.debugOnly_keyData?.hexadecimalString else {
+                    completion()
+                    return
+                }
+                UIPasteboard.general.string = password
+                let passwordAlert = UIAlertController(title: "Your database password has been copied to the clipboard",
+                                                      message: nil,
+                                                      preferredStyle: .alert)
+                passwordAlert.addAction(.init(title: "OK", style: .default) { _ in
+                    completion()
+                })
+                parentVC.present(passwordAlert, animated: true)
+            }
+            parentVC.present(shareSheet, animated: true)
+        })
+        alert.addAction(.init(title: "Cancel", style: .cancel) { _ in
+            completion()
+        })
+        parentVC.present(alert, animated: true)
+    }
+
+}
