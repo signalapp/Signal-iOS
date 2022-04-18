@@ -127,6 +127,7 @@ public class ReactionManager: NSObject {
         reactor: SignalServiceAddress,
         timestamp: UInt64,
         serverTimestamp: UInt64,
+        expiresInSeconds: UInt32,
         transaction: SDSAnyWriteTransaction
     ) -> ReactionProcessingResult {
         guard let emoji = reaction.emoji.strippedOrNil else {
@@ -195,6 +196,10 @@ public class ReactionManager: NSObject {
                 builder.storyReactionEmoji = reaction.emoji
                 builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
                 builder.storyAuthorAddress = storyMessage.authorAddress
+
+                // Group story replies do not follow the thread DM timer, instead they
+                // disappear automatically when their parent story disappears.
+                builder.expiresInSeconds = thread.isGroupThread ? 0 : expiresInSeconds
             }
 
             let message: TSMessage

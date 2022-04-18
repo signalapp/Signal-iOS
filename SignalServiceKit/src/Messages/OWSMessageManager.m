@@ -1611,6 +1611,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                      reactor:envelope.sourceAddress
                                                                                    timestamp:syncMessage.sent.timestamp
                                                                              serverTimestamp:envelope.serverTimestamp
+                                                                            expiresInSeconds:dataMessage.expireTimer
                                                                                  transaction:transaction];
             switch (result) {
                 case OWSReactionProcessingResultSuccess:
@@ -1963,6 +1964,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                  reactor:envelope.sourceAddress
                                                                                timestamp:timestamp
                                                                          serverTimestamp:envelope.serverTimestamp
+                                                                        expiresInSeconds:dataMessage.expireTimer
                                                                              transaction:transaction];
 
         switch (result) {
