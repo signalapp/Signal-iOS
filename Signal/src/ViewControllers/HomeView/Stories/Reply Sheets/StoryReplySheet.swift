@@ -5,6 +5,7 @@
 import Foundation
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, MessageReactionPickerDelegate {
     var inputToolbar: StoryReplyInputToolbar { get }
@@ -71,6 +72,8 @@ extension StoryReplySheet {
         builder.storyAuthorAddress = storyMessage.authorAddress
 
         tryToSendMessage(builder.build())
+
+        ReactionFlybyAnimation(reaction: reaction).present(from: self)
     }
 }
 
