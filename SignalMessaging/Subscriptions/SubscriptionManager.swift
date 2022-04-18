@@ -365,7 +365,7 @@ public class SubscriptionManager: NSObject {
         if failureReason != .none {
             Logger.info("[Subscriptions] Upgrading subscription with a prior known error state, cancelling and re-setting up")
             return firstly {
-                try self.cancelSubscription(for: subscriberID)
+                self.cancelSubscription(for: subscriberID)
             }.then(on: .sharedUserInitiated) {
                 try self.setupNewSubscription(subscription: subscription, payment: payment, currencyCode: currencyCode)
             }

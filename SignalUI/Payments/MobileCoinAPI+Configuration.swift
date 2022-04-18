@@ -655,7 +655,7 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
         request.httpBody = body
 
         if let headers = headers {
-            var owsHeaders = OWSHttpHeaders(httpHeaders: headers)
+            let owsHeaders = OWSHttpHeaders(httpHeaders: headers)
             owsHeaders.addHeaderMap(headers, overwriteOnConflict: true)
             owsAssertDebug(owsHeaders.headers.count == headers.count)
             headers.forEach({ key, value in

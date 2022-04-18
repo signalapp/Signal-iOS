@@ -429,11 +429,11 @@ public extension Stripe {
         "ZAR",
         "ZMW"
     ]
-    public static let supportedCurrencyInfos: [Currency.Info] = {
+    static let supportedCurrencyInfos: [Currency.Info] = {
         Currency.infos(for: supportedCurrencyCodes, ignoreMissingNames: false, shouldSort: true)
     }()
 
-    public static let preferredCurrencyCodes: [Currency.Code] = [
+    static let preferredCurrencyCodes: [Currency.Code] = [
         "USD",
         "AUD",
         "BRL",
@@ -449,11 +449,11 @@ public extension Stripe {
         "SEK",
         "CHF"
     ]
-    public static let preferredCurrencyInfos: [Currency.Info] = {
+    static let preferredCurrencyInfos: [Currency.Info] = {
         Currency.infos(for: preferredCurrencyCodes, ignoreMissingNames: true, shouldSort: false)
     }()
 
-    public static let zeroDecimalCurrencyCodes: [Currency.Code] = [
+    static let zeroDecimalCurrencyCodes: [Currency.Code] = [
         "BIF",
         "CLP",
         "DJF",
@@ -472,7 +472,7 @@ public extension Stripe {
         "XPF"
     ]
 
-    public static let minimumIntegralChargePerCurrencyCode: [Currency.Code: UInt] = [
+    static let minimumIntegralChargePerCurrencyCode: [Currency.Code: UInt] = [
         "USD": 50,
         "AED": 200,
         "AUD": 50,
@@ -498,7 +498,7 @@ public extension Stripe {
         "SGD": 50
     ]
 
-    public static let defaultCurrencyCode: Currency.Code = {
+    static let defaultCurrencyCode: Currency.Code = {
         if let localeCurrencyCode = Locale.current.currencyCode?.uppercased(), supportedCurrencyCodes.contains(localeCurrencyCode) {
             return localeCurrencyCode
         }

@@ -152,7 +152,7 @@ class MessageReactionPicker: UIStackView {
         var buttonToWiggle: OWSFlatButton?
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             for (index, view) in self.arrangedSubviews.enumerated() {
-                if let button = view as? OWSFlatButton, let emoji = button.button.title(for: .normal) {
+                if let button = view as? OWSFlatButton {
                     // Shrink and fade
                     if index != position {
                         button.alpha = 0.3

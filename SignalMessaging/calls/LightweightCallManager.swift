@@ -65,6 +65,7 @@ open class LightweightCallManager: NSObject, Dependencies {
         }
     }
 
+    @discardableResult
     public func updateGroupCallMessageWithInfo(_ info: PeekInfo, for thread: TSGroupThread, timestamp: UInt64) -> Guarantee<Void> {
         databaseStorage.write(.promise) { writeTx in
             let results = GRDBInteractionFinder.unendedCallsForGroupThread(thread, transaction: writeTx)
