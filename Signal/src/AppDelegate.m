@@ -452,7 +452,8 @@ static void uncaughtExceptionHandler(NSException *exception)
                       initWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
                               style:ActionSheetActionStyleDefault
                             handler:^(ActionSheetAction *_Nonnull action) {
-                                [Pastelog submitLogsWithCompletion:^{ OWSFail(@"exiting after sharing debug logs."); }];
+                                [Pastelog submitLogsWithSupportTag:NSStringForLaunchFailure(launchFailure)
+                                                        completion:^{ OWSFail(@"exiting after sharing debug logs."); }];
                             }]];
     [viewController presentActionSheet:actionSheet];
 }

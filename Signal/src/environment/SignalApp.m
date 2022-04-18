@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalApp.h"
@@ -286,8 +286,8 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     registerGesture.delaysTouchesEnded = NO;
     [navController.view addGestureRecognizer:registerGesture];
 #else
-    UITapGestureRecognizer *submitLogGesture = [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
-                                                                                       action:@selector(submitLogs)];
+    UITapGestureRecognizer *submitLogGesture =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(submitOnboardingLogs)];
     submitLogGesture.numberOfTapsRequired = 8;
     submitLogGesture.delaysTouchesEnded = NO;
     [navController.view addGestureRecognizer:submitLogGesture];
@@ -297,6 +297,11 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     appDelegate.window.rootViewController = navController;
 
     self.conversationSplitViewController = nil;
+}
+
+- (void)submitOnboardingLogs
+{
+    [Pastelog submitLogsWithSupportTag:@"Onboarding" completion:nil];
 }
 
 - (void)ensureRootViewController:(NSTimeInterval)launchStartedAt
