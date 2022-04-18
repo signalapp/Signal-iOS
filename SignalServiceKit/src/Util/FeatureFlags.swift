@@ -125,7 +125,7 @@ public class FeatureFlags: BaseFlags {
             }
         }
 
-        let flagMap = allFlags
+        let flagMap = allFlags()
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
             logFlag("FeatureFlag", key, value)
@@ -507,7 +507,7 @@ public class DebugFlags: BaseFlags {
             }
         }
 
-        let flagMap = allFlags
+        let flagMap = allFlags()
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
             logFlag("DebugFlag", key, value)
@@ -519,7 +519,7 @@ public class DebugFlags: BaseFlags {
 
 @objc
 public class BaseFlags: NSObject {
-    private static var allPropertyNames: [String] {
+    private static func allPropertyNames() -> [String] {
         var propertyCount: CUnsignedInt = 0
         let firstProperty = class_copyPropertyList(object_getClass(self), &propertyCount)
         defer { free(firstProperty) }
@@ -527,9 +527,9 @@ public class BaseFlags: NSObject {
         return properties.map { String(cString: property_getName($0)) }
     }
 
-    public static var allFlags: [String: Any] {
+    public static func allFlags() -> [String: Any] {
         var result = [String: Any]()
-        for propertyName in self.allPropertyNames {
+        for propertyName in self.allPropertyNames() {
             guard !propertyName.hasPrefix("_") else {
                 continue
             }
@@ -541,8 +541,8 @@ public class BaseFlags: NSObject {
         return result
     }
 
-    public static var allTestableFlags: [TestableFlag] {
-        return self.allFlags.values.compactMap { $0 as? TestableFlag }
+    public static func allTestableFlags() -> [TestableFlag] {
+        return self.allFlags().values.compactMap { $0 as? TestableFlag }
     }
 }
 

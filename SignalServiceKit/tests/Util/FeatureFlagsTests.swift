@@ -15,13 +15,13 @@ class FeatureFlagsTests: XCTestCase {
             "falseProperty",
             "testableFlag"
         ]
-        let actualKeys = Array(TestFlags.allFlags.keys)
+        let actualKeys = Array(TestFlags.allFlags().keys)
         XCTAssertEqual(actualKeys.sorted(), expectedKeys.sorted())
     }
 
     /// Test that the correct number of properties with type `FeatureFlag` are returned.
     func testAllTestableFlags() {
-        XCTAssertEqual(TestFlags.allTestableFlags.count, 1)
+        XCTAssertEqual(TestFlags.allTestableFlags().count, 1)
     }
 }
 
