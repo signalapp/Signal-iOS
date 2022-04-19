@@ -706,7 +706,7 @@ public class SDSKeyValueStore: NSObject {
             return
         }
         // TODO: We could use setArgumentsWithValidation for more safety.
-        statement.unsafeSetArguments(statementArguments)
+        statement.setUncheckedArguments(statementArguments)
 
         do {
             try statement.execute()

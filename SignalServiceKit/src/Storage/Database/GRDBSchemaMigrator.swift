@@ -49,7 +49,8 @@ public class GRDBSchemaMigrator: NSObject {
             try! self.fixit_setupMigrations(transaction.database)
         }
 
-        return try! incrementalMigrator.appliedMigrations(in: grdbStorageAdapter.pool)
+        let migrations = try! grdbStorageAdapter.pool.read(incrementalMigrator.appliedMigrations)
+        return Set(migrations)
     }
 
     private func fixit_setupMigrations(_ db: Database) throws {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,8 +7,8 @@ import GRDB
 
 @objc
 public final class MediaGalleryManager: NSObject {
-    public static func setup(storage: GRDBDatabaseStorageAdapter) {
-        storage.add(function: isVisualMediaContentTypeDatabaseFunction)
+    public static func setup(database: GRDB.Database) {
+        database.add(function: isVisualMediaContentTypeDatabaseFunction)
     }
 
     public static let isVisualMediaContentTypeDatabaseFunction = DatabaseFunction("IsVisualMediaContentType") { (args: [DatabaseValue]) -> DatabaseValueConvertible? in

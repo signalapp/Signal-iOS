@@ -132,10 +132,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         unregisterKVO?()
     }
 
-    public func add(function: DatabaseFunction) {
-        pool.add(function: function)
-    }
-
     static var tables: [SDSTableMetadata] {
         [
             // Models
@@ -254,7 +250,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     func setup() throws {
-        MediaGalleryManager.setup(storage: self)
         try setupDatabaseChangeObserver()
     }
 
@@ -900,9 +895,18 @@ private struct GRDBStorage {
         var configuration = Configuration()
         configuration.readonly = false
         configuration.foreignKeysEnabled = true // Default is already true
-        configuration.trace = { logString in
-            dbQueryLog(logString)
-        }
+
+        #if DEBUG
+        configuration.publicStatementArguments = true
+        #endif
+
+        // TODO: We should set this to `false` (or simply remove this line, as `false` is the default).
+        // Historically, we took advantage of SQLite's old permissive behavior, but the SQLite
+        // developers [regret this][0] and may change it in the future.
+        //
+        // [0]: https://sqlite.org/quirks.html#dblquote
+        configuration.acceptsDoubleQuotedStringLiterals = true
+
         // Useful when your app opens multiple databases
         configuration.label = "GRDB Storage"
         let isMainApp = CurrentAppContext().isMainApp
@@ -928,8 +932,12 @@ private struct GRDBStorage {
                 return true
             }
         })
-        configuration.prepareDatabase = { db in
+        configuration.prepareDatabase { db in
             try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyspec: keyspec)
+
+            db.trace { dbQueryLog("\($0)") }
+
+            MediaGalleryManager.setup(database: db)
         }
         configuration.defaultTransactionKind = .immediate
         configuration.allowsUnsafeTransactions = true

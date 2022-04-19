@@ -255,7 +255,7 @@ public extension GRDBWriteTransaction {
         do {
             let statement = try database.makeUpdateStatement(sql: sql)
             // TODO: We could use setArgumentsWithValidation for more safety.
-            statement.unsafeSetArguments(arguments)
+            statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
             handleFatalDatabaseError(error)
@@ -269,7 +269,7 @@ public extension GRDBWriteTransaction {
         do {
             let statement = try database.cachedUpdateStatement(sql: sql)
             // TODO: We could use setArgumentsWithValidation for more safety.
-            statement.unsafeSetArguments(arguments)
+            statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
             handleFatalDatabaseError(error)
@@ -315,28 +315,13 @@ public extension GRDB.Database {
 
 // MARK: -
 
-func handleFatalDatabaseError(_ error: Error, message: String = "Error") -> Never {
-    let errorMessage = handleDatabaseErrorAndGetMessage(error, message: message)
-    owsFail(errorMessage)
-}
-
-func handleNonFatalDatabaseError(_ error: Error, message: String = "Error") {
-    let errorMessage = handleDatabaseErrorAndGetMessage(error, message: message)
-    owsFailDebug(errorMessage)
-}
-
-private func handleDatabaseErrorAndGetMessage(_ error: Error, message: String) -> String {
-    guard let error = error as? DatabaseError else {
-        return "\(message): \(error)"
-    }
-
+private func handleFatalDatabaseError(_ error: Error) -> Never {
     // If the attempt to write to GRDB flagged that the database was
     // corrupt, in addition to crashing we flag this so that we can
     // attempt to perform recovery.
-    if error.resultCode == .SQLITE_CORRUPT {
+    if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
         SSKPreferences.setHasGrdbDatabaseCorruption(true)
     }
 
-    // We don't log the full error because it is difficult to redact.
-    return "\(message). Result code is \(error.resultCode). Extended result code is \(error.extendedResultCode)"
+    owsFail("Error: \(error)")
 }

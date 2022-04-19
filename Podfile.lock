@@ -12,7 +12,7 @@ PODS:
     - CocoaLumberjack
     - LibSignalClient (>= 0.15.0)
     - SignalCoreKit
-  - GRDB.swift/SQLCipher (4.3.0):
+  - GRDB.swift/SQLCipher (5.23.0):
     - SQLCipher (>= 3.4.0)
   - LibMobileCoin/CoreHTTP (1.2.0-pre10):
     - SwiftProtobuf (~> 1.5)
@@ -262,7 +262,7 @@ SPEC CHECKSUMS:
   BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   Curve25519Kit: 1b98dc2d6e7e3d5b6756b05b96758f6161e6d58d
-  GRDB.swift: 083ec261ce573888d8ed2eae1b49bc0bf40d9e2c
+  GRDB.swift: e4a950fe99d113ea5d24571d49eaae0062303c14
   LibMobileCoin: 40d2d7d685321a6128871b6c6b4bb7cba25e848f
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
   LibSignalClient: b2bff77a92088045aa587843834102e01e8b3caf

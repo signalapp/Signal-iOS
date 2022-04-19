@@ -80,7 +80,7 @@ public extension SDSRecord {
                 owsFail("Could not convert values.")
             }
             // TODO: We could use setArgumentsWithValidation for more safety.
-            statement.unsafeSetArguments(arguments)
+            statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
             // If the attempt to write to GRDB flagged that the database was
