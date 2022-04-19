@@ -4,6 +4,7 @@
 
 import Foundation
 import GRDB
+import UIKit
 
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
@@ -1050,6 +1051,29 @@ extension GRDBDatabaseStorageAdapter {
         return containerPathItems
             .filter { $0.hasPrefix(DirectoryMode.commonGRDBPrefix) }
             .map { containerDirectory.appendingPathComponent($0) }
+    }
+
+    public static func runIntegrityCheck() -> Promise<String> {
+        return firstly(on: .global(qos: .userInitiated)) {
+            let storageCoordinator: StorageCoordinator
+            if SSKEnvironment.hasShared() {
+                storageCoordinator = SSKEnvironment.shared.storageCoordinator
+            } else {
+                storageCoordinator = StorageCoordinator()
+            }
+            // Workaround to disambiguate between NSObject.databaseStorage and StorageCoordinator.databaseStorage.
+            let databaseStorage = storageCoordinator.value(forKey: "databaseStorage") as! SDSDatabaseStorage
+            // Use quick_check (O(N)) instead of integrity_check (O(NlogN)).
+            let sql = "PRAGMA quick_check"
+            let results: String = databaseStorage.read { transaction in
+                do {
+                    return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql).joined(separator: "\n")
+                } catch {
+                    return "error"
+                }
+            }
+            return "\(sql)\n\(results)"
+        }
     }
 }
 

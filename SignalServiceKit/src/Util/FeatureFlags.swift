@@ -493,6 +493,9 @@ public class DebugFlags: BaseFlags {
     public static let deviceTransferThrowAway = false
 
     @objc
+    public static let databaseIntegrityCheck = DebugFlags.internalSettings
+
+    @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
             if let flag = value as? TestableFlag {
