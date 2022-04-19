@@ -1702,7 +1702,11 @@ public class GRDBSchemaMigrator: NSObject {
                     owsFail("Error: \(error)")
                 }
             }
+        }
 
+        // This will be a big perf win, but since we only allow one migration per release it'll wait until
+        // the rest of the stories changes make it in.
+        if FeatureFlags.storiesMigration5 {
             migrator.registerMigration(MigrationId.improvedDisappearingMessageIndices.rawValue) { db in
                 do {
                     // The old index was created in an order that made it practically useless for the query
