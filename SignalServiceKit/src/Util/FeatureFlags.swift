@@ -115,18 +115,6 @@ public class FeatureFlags: BaseFlags {
         return false
     }
 
-    public static func buildFlagMap() -> [String: Any] {
-        BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
-            FeatureFlags.value(forKey: key)
-        }
-    }
-
-    public static var allTestableFlags: [TestableFlag] {
-        BaseFlags.findTestableFlags(for: FeatureFlags.self) { (key: String) -> Any? in
-            FeatureFlags.value(forKey: key)
-        }
-    }
-
     @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
@@ -137,7 +125,7 @@ public class FeatureFlags: BaseFlags {
             }
         }
 
-        let flagMap = buildFlagMap()
+        let flagMap = allFlags()
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
             logFlag("FeatureFlag", key, value)
@@ -507,18 +495,6 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let deviceTransferThrowAway = false
 
-    public static func buildFlagMap() -> [String: Any] {
-        BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
-            DebugFlags.value(forKey: key)
-        }
-    }
-
-    public static var allTestableFlags: [TestableFlag] {
-        BaseFlags.findTestableFlags(for: DebugFlags.self) { (key: String) -> Any? in
-            DebugFlags.value(forKey: key)
-        }
-    }
-
     @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
@@ -531,7 +507,7 @@ public class DebugFlags: BaseFlags {
             }
         }
 
-        let flagMap = buildFlagMap()
+        let flagMap = allFlags()
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
             logFlag("DebugFlag", key, value)
@@ -543,40 +519,30 @@ public class DebugFlags: BaseFlags {
 
 @objc
 public class BaseFlags: NSObject {
-    static func buildFlagMap(for flagsClass: Any, flagFunc: (String) -> Any?) -> [String: Any] {
+    private static func allPropertyNames() -> [String] {
+        var propertyCount: CUnsignedInt = 0
+        let firstProperty = class_copyPropertyList(object_getClass(self), &propertyCount)
+        defer { free(firstProperty) }
+        let properties = UnsafeMutableBufferPointer(start: firstProperty, count: Int(propertyCount))
+        return properties.map { String(cString: property_getName($0)) }
+    }
+
+    public static func allFlags() -> [String: Any] {
         var result = [String: Any]()
-        var count: CUnsignedInt = 0
-        let methods = class_copyPropertyList(object_getClass(flagsClass), &count)!
-        for i in 0 ..< count {
-            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
-            if let key = String(cString: selector, encoding: .utf8) {
-                guard !key.hasPrefix("_") else {
-                    continue
-                }
-                if let value = flagFunc(key) {
-                    result[key] = value
-                }
+        for propertyName in self.allPropertyNames() {
+            guard !propertyName.hasPrefix("_") else {
+                continue
             }
+            guard let value = self.value(forKey: propertyName) else {
+                continue
+            }
+            result[propertyName] = value
         }
         return result
     }
 
-    static func findTestableFlags(for flagsClass: Any, flagFunc: (String) -> Any?) -> [TestableFlag] {
-        var result = [TestableFlag]()
-        var count: CUnsignedInt = 0
-        let methods = class_copyPropertyList(object_getClass(flagsClass), &count)!
-        for i in 0 ..< count {
-            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
-            if let key = String(cString: selector, encoding: .utf8) {
-                guard !key.hasPrefix("_") else {
-                    continue
-                }
-                if let value = flagFunc(key) as? TestableFlag {
-                    result.append(value)
-                }
-            }
-        }
-        return result
+    public static func allTestableFlags() -> [TestableFlag] {
+        return self.allFlags().values.compactMap { $0 as? TestableFlag }
     }
 }
 
