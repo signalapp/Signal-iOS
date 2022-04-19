@@ -71,9 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
     __block __weak OWSTableItem *makeNextAppLaunchFailItemRef;
     [items addObject:[OWSTableItem itemWithTitle:@"Make next app launch fail"
                                      actionBlock:^{
-                                         [[CurrentAppContext() appUserDefaults]
-                                             setBool:YES
-                                              forKey:kShouldFailNextLaunchForTestingPurposesKey];
+                                         [[CurrentAppContext() appUserDefaults] setInteger:10
+                                                                                    forKey:kAppLaunchesAttemptedKey];
                                          [makeNextAppLaunchFailItemRef.tableViewController
                                              presentToastWithText:@"Okay, the next app launch will fail!"
                                                       extraVInset:0];

@@ -44,7 +44,7 @@
 #import <WebRTC/WebRTC.h>
 
 NSString *const AppDelegateStoryboardMain = @"Main";
-NSString *const kShouldFailNextLaunchForTestingPurposesKey = @"ShouldFailNextLaunchForTestingPurposes";
+NSString *const kAppLaunchesAttemptedKey = @"AppLaunchesAttempted";
 
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
 NSString *const kURLSchemeSGNLKey = @"sgnl";
@@ -61,7 +61,7 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
     LaunchFailure_UnknownDatabaseVersion,
     LaunchFailure_CouldNotRestoreTransferredData,
     LaunchFailure_DatabaseUnrecoverablyCorrupted,
-    LaunchFailure_PretendFailureForTestingPurposes,
+    LaunchFailure_LastAppLaunchCrashed,
 };
 
 static NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
@@ -77,8 +77,8 @@ static NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             return @"LaunchFailure_CouldNotRestoreTransferredData";
         case LaunchFailure_DatabaseUnrecoverablyCorrupted:
             return @"LaunchFailure_DatabaseUnrecoverablyCorrupted";
-        case LaunchFailure_PretendFailureForTestingPurposes:
-            return @"LaunchFailure_PretendFailureForTestingPurposes";
+        case LaunchFailure_LastAppLaunchCrashed:
+            return @"LaunchFailure_LastAppLaunchCrashed";
     }
 }
 
@@ -212,24 +212,24 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     [InstrumentsMonitor trackEventWithName:@"AppStart"];
 
+    [AppVersion shared];
+
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access the database, files on disk, or NSUserDefaults.
-    NSError *_Nullable launchError = nil;
     LaunchFailure launchFailure = LaunchFailure_None;
+    NSInteger launchAttemptFailureThreshold = SSKDebugFlags.betaLogging ? 1 : 3;
 
     if (deviceTransferRestoreFailed) {
         launchFailure = LaunchFailure_CouldNotRestoreTransferredData;
-    } else if (launchError != nil) {
-        launchFailure = LaunchFailure_CouldNotLoadDatabase;
     } else if (StorageCoordinator.hasInvalidDatabaseVersion) {
         // Prevent:
         // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
         launchFailure = LaunchFailure_UnknownDatabaseVersion;
     } else if ([SSKPreferences hasGrdbDatabaseCorruption]) {
         launchFailure = LaunchFailure_DatabaseUnrecoverablyCorrupted;
-    } else if ([[CurrentAppContext() appUserDefaults] boolForKey:kShouldFailNextLaunchForTestingPurposesKey]) {
-        [[CurrentAppContext() appUserDefaults] removeObjectForKey:kShouldFailNextLaunchForTestingPurposesKey];
-        launchFailure = LaunchFailure_PretendFailureForTestingPurposes;
+    } else if ([[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey]
+        >= launchAttemptFailureThreshold) {
+        launchFailure = LaunchFailure_LastAppLaunchCrashed;
     }
     if (launchFailure != LaunchFailure_None) {
         [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
@@ -239,14 +239,23 @@ static void uncaughtExceptionHandler(NSException *exception)
         return YES;
     }
 
-    [AppVersion shared];
+    [self launchToHomeScreen:launchOptions instrumentsMonitorId:monitorId];
+    return YES;
+}
 
+- (BOOL)launchToHomeScreen:(NSDictionary *_Nullable)launchOptions instrumentsMonitorId:(unsigned long long)monitorId
+{
     [self setupNSEInteroperation];
 
     if (CurrentAppContext().isRunningTests) {
         [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
         return YES;
     }
+
+    NSInteger appLaunchesAttempted = [[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey];
+    [[CurrentAppContext() appUserDefaults] setInteger:appLaunchesAttempted + 1 forKey:kAppLaunchesAttemptedKey];
+    AppReadinessRunNowOrWhenUIDidBecomeReadySync(
+        ^{ [[CurrentAppContext() appUserDefaults] removeObjectForKey:kAppLaunchesAttemptedKey]; });
 
     [AppSetup setupEnvironmentWithPaymentsEvents:[PaymentsEventsMainApp new]
                                 mobileCoinHelper:[MobileCoinHelperSDK new]
@@ -263,7 +272,7 @@ static void uncaughtExceptionHandler(NSException *exception)
 
             if (error != nil) {
                 OWSFailDebug(@"Error: %@", error);
-                [self showUIForLaunchFailure:LaunchFailure_DatabaseUnrecoverablyCorrupted];
+                [self showUIForLaunchFailure:LaunchFailure_CouldNotLoadDatabase];
             } else {
                 [self versionMigrationsDidComplete];
             }
@@ -271,9 +280,12 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     [UIUtil setupSignalAppearence];
 
-    UIWindow *mainWindow = [OWSWindow new];
-    self.window = mainWindow;
-    CurrentAppContext().mainWindow = mainWindow;
+    UIWindow *mainWindow = self.window;
+    if (mainWindow == nil) {
+        mainWindow = [OWSWindow new];
+        self.window = mainWindow;
+        CurrentAppContext().mainWindow = mainWindow;
+    }
     // Show LoadingViewController until the async database view registrations are complete.
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
@@ -321,6 +333,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     [OWSAnalytics appLaunchDidBegin];
 
     [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
+
     return YES;
 }
 
@@ -371,8 +384,6 @@ static void uncaughtExceptionHandler(NSException *exception)
     self.didAppLaunchFail = YES;
 
     // We perform a subset of the [application:didFinishLaunchingWithOptions:].
-    [AppVersion shared];
-
     if (self.window == nil) {
         self.window = [OWSWindow new];
         CurrentAppContext().mainWindow = self.window;
@@ -390,7 +401,6 @@ static void uncaughtExceptionHandler(NSException *exception)
         = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE", @"Message for the 'app launch failed' alert.");
     switch (launchFailure) {
         case LaunchFailure_DatabaseUnrecoverablyCorrupted:
-            // Fallthrough
         case LaunchFailure_CouldNotLoadDatabase:
             alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
                 @"Error indicating that the app could not launch because the database could not be loaded.");
@@ -407,7 +417,13 @@ static void uncaughtExceptionHandler(NSException *exception)
             alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
                 @"Error indicating that the app could not restore transferred data.");
             break;
-        default:
+        case LaunchFailure_LastAppLaunchCrashed:
+            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
+                @"Error indicating that the app crashed during the previous launch.");
+            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
+                @"Error indicating that the app crashed during the previous launch.");
+            break;
+        case LaunchFailure_None:
             OWSFailDebug(@"Unknown launch failure.");
             alertTitle
                 = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE", @"Title for the 'app launch failed' alert.");
@@ -453,8 +469,30 @@ static void uncaughtExceptionHandler(NSException *exception)
                               style:ActionSheetActionStyleDefault
                             handler:^(ActionSheetAction *_Nonnull action) {
                                 [Pastelog submitLogsWithSupportTag:NSStringForLaunchFailure(launchFailure)
-                                                        completion:^{ OWSFail(@"exiting after sharing debug logs."); }];
+                                                        completion:^{
+                                                            if (launchFailure == LaunchFailure_LastAppLaunchCrashed) {
+                                                                // Pretend we didn't fail!
+                                                                self.didAppLaunchFail = NO;
+                                                                [self launchToHomeScreen:nil instrumentsMonitorId:0];
+                                                            } else {
+                                                                OWSFail(@"exiting after sharing debug logs.");
+                                                            }
+                                                        }];
                             }]];
+
+    if (launchFailure == LaunchFailure_LastAppLaunchCrashed) {
+        [actionSheet
+            addAction:[[ActionSheetAction alloc]
+                          initWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_CONTINUE",
+                                            @"Button to try launching the app even though the last launch failed")
+                                  style:ActionSheetActionStyleDefault
+                                handler:^(ActionSheetAction *_Nonnull action) {
+                                    // Pretend we didn't fail!
+                                    self.didAppLaunchFail = NO;
+                                    [self launchToHomeScreen:nil instrumentsMonitorId:0];
+                                }]];
+    }
+
     [viewController presentActionSheet:actionSheet];
 }
 

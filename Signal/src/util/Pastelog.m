@@ -112,13 +112,15 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                                  completion();
                                              }]];
 #ifdef DEBUG
-        [alert
-            addAction:[[ActionSheetAction alloc]
-                                    initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
-                                                      @"Label for the 'send to self' option of the debug log alert.")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_to_self")
-                                            style:ActionSheetActionStyleDefault
-                                          handler:^(ActionSheetAction *action) { [Pastelog.shared sendToSelf:url]; }]];
+        [alert addAction:[[ActionSheetAction alloc]
+                                       initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
+                                                         @"Label for the 'send to self' option of the debug log alert.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_to_self")
+                                               style:ActionSheetActionStyleDefault
+                                             handler:^(ActionSheetAction *action) {
+                                                 [Pastelog.shared sendToSelf:url];
+                                                 completion();
+                                             }]];
 #endif
         [alert
             addAction:[[ActionSheetAction
@@ -139,7 +141,10 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                                                                 sender:nil
                                                                             completion:completion];
                                              }]];
-        [alert addAction:[OWSActionSheets cancelAction]];
+        [alert addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                          accessibilityIdentifier:@"OWSActionSheets.cancel"
+                                                            style:ActionSheetActionStyleCancel
+                                                          handler:^(ActionSheetAction *action) { completion(); }]];
         UIViewController *presentingViewController
             = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
         [presentingViewController presentActionSheet:alert];
