@@ -243,7 +243,6 @@
 		342FFE6B271EF502000AC89F /* OWSWindowManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE69271EF500000AC89F /* OWSWindowManager.m */; };
 		342FFE76271EF581000AC89F /* CNContactViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */; };
 		342FFE77271EF581000AC89F /* UIApplication+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */; };
-		342FFE78271EF581000AC89F /* AVAudioSession+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE71271EF580000AC89F /* AVAudioSession+OWS.m */; };
 		342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE73271EF580000AC89F /* UIResponder+OWS.swift */; };
 		342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */; };
 		342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */; };
@@ -1293,11 +1292,9 @@
 		342FFE67271EF4FF000AC89F /* ConversationSearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConversationSearch.swift; path = UserInterface/ConversationSearch.swift; sourceTree = "<group>"; };
 		342FFE68271EF500000AC89F /* OWSWindowManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSWindowManager.h; path = UserInterface/OWSWindowManager.h; sourceTree = "<group>"; };
 		342FFE69271EF500000AC89F /* OWSWindowManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSWindowManager.m; path = UserInterface/OWSWindowManager.m; sourceTree = "<group>"; };
-		342FFE6D271EF580000AC89F /* AVAudioSession+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AVAudioSession+OWS.h"; sourceTree = "<group>"; };
 		342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CNContactViewController+OWS.m"; sourceTree = "<group>"; };
 		342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+OWS.swift"; sourceTree = "<group>"; };
 		342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CNContactViewController+OWS.h"; sourceTree = "<group>"; };
-		342FFE71271EF580000AC89F /* AVAudioSession+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVAudioSession+OWS.m"; sourceTree = "<group>"; };
 		342FFE73271EF580000AC89F /* UIResponder+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIResponder+OWS.swift"; sourceTree = "<group>"; };
 		342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+OWS.swift"; sourceTree = "<group>"; };
 		342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReturnToCallViewController.swift; sourceTree = "<group>"; };
@@ -2716,11 +2713,9 @@
 		342FFE6C271EF580000AC89F /* Categories */ = {
 			isa = PBXGroup;
 			children = (
-				342FFE6D271EF580000AC89F /* AVAudioSession+OWS.h */,
 				342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */,
 				342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */,
 				342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */,
-				342FFE71271EF580000AC89F /* AVAudioSession+OWS.m */,
 				342FFE73271EF580000AC89F /* UIResponder+OWS.swift */,
 				342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */,
 			);
@@ -6265,7 +6260,6 @@
 				F0CA67FA2728A89A002B9DFE /* SubscriptionViewController.swift in Sources */,
 				342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */,
 				32AC5CF1255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift in Sources */,
-				342FFE78271EF581000AC89F /* AVAudioSession+OWS.m in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				347C3849252D004C00F3D941 /* CVComponentDateHeader.swift in Sources */,
 				34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */,

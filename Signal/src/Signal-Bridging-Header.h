@@ -3,7 +3,6 @@
 //
 
 // Separate iOS Frameworks from other imports.
-#import "AVAudioSession+OWS.h"
 #import "AppDelegate.h"
 #import "BlockListViewController.h"
 #import "ChatListViewController.h"
