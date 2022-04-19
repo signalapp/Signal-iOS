@@ -13,6 +13,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
 
     public static let isFromRemoteKey = "remote"
     public static let threadIdKey = "Signal.AppNotificationsUserInfoKey.threadId"
+    public static let threadNotificationCounter = "Session.AppNotificationsUserInfoKey.threadNotificationCounter"
 
     // MARK: Did receive a remote push notification request
     

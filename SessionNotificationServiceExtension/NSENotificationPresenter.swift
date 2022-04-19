@@ -5,6 +5,8 @@ import UserNotifications
 
 public class NSENotificationPresenter: NSObject, NotificationsProtocol {
     
+    private var notifications: [String: UNNotificationRequest] = [:]
+    
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
         guard !thread.isMuted else { return }
         guard let threadID = thread.uniqueId else { return }
@@ -36,6 +38,9 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
         
+        let identifier = incomingMessage.notificationIdentifier ?? UUID().uuidString
+        let isBackgroudPoll = identifier == threadID
+        
         let context = Contact.context(for: thread)
         let senderName = Storage.shared.getContact(with: senderPublicKey, using: transaction)?.displayName(for: context) ?? senderPublicKey
         
@@ -50,7 +55,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             if groupName.count < 1 {
                 groupName = MessageStrings.newGroupDefaultTitle
             }
-            notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
+            notificationTitle = isBackgroudPoll ? groupName : String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
         }
         
         let snippet = incomingMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
@@ -91,14 +96,29 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         }
         
         // Add request
-        let identifier = incomingMessage.notificationIdentifier ?? UUID().uuidString
-        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
+        let trigger: UNNotificationTrigger?
+        if isBackgroudPoll {
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+            let numberOfNotifications: Int
+            if let lastRequest = notifications[identifier], let counter = lastRequest.content.userInfo[NotificationServiceExtension.threadNotificationCounter] as? Int  {
+                numberOfNotifications = counter + 1
+                notificationContent.body = String(format: NotificationStrings.incomingCollapsedMessagesBody, "\(numberOfNotifications)")
+            } else {
+                numberOfNotifications = 1
+            }
+            notificationContent.userInfo[NotificationServiceExtension.threadNotificationCounter] = numberOfNotifications
+        } else {
+            trigger = nil
+        }
+
+        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)
         SNLog("Add remote notification request: \(notificationContent.body)")
         let semaphore = DispatchSemaphore(value: 0)
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 SNLog("Failed to add notification request due to error:\(error)")
             }
+            self.notifications[identifier] = request
             semaphore.signal()
         }
         semaphore.wait()
