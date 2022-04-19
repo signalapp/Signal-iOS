@@ -102,7 +102,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     }
                 } catch {
                     if let error = error as? MessageReceiver.Error, error.isRetryable {
-                        self.handleFailure(for: notificationContent)
+                        switch error {
+                        case .invalidGroupPublicKey, .noGroupKeyPair: self.completeSilenty()
+                        default: self.handleFailure(for: notificationContent)
+                        }
                     }
                 }
             }
@@ -257,7 +260,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         let servers = Set(Storage.shared.getAllV2OpenGroups().values.map { $0.server })
         servers.forEach { server in
             let poller = OpenGroupPollerV2(for: server)
-            let promise = poller.poll().timeout(seconds: 20, timeoutError: NotificationServiceError.timeout)
+            let promise = poller.poll(isBackgroundPoll: true).timeout(seconds: 20, timeoutError: NotificationServiceError.timeout)
             promises.append(promise)
         }
         return promises
