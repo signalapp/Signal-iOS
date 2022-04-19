@@ -58,7 +58,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
 @property (nonatomic, readonly) SDSKeyValueStore *ownIdentityKeyValueStore;
 @property (nonatomic, readonly) SDSKeyValueStore *queuedVerificationStateSyncMessagesKeyValueStore;
-@property (nonatomic, readonly) UnfairLock *unfairLock;
 
 @end
 
@@ -78,7 +77,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
         [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerIdentityKeyStoreCollection"];
     _queuedVerificationStateSyncMessagesKeyValueStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"OWSIdentityManager_QueuedVerificationStateSyncMessages"];
-    _unfairLock = [UnfairLock new];
 
     OWSSingletonAssert();
 
@@ -111,20 +109,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     }
 }
 
-- (void)writeWithUnfairLock:(void(^ _Nonnull)(SDSAnyWriteTransaction *transaction))block
-{
-    [self.unfairLock withLockObjc:^{
-        DatabaseStorageWrite(self.databaseStorage, block);
-    }];
-}
-
-- (void)readWithUnfairLock:(void(^ _Nonnull)(SDSAnyReadTransaction *transaction))block
-{
-    [self.unfairLock withLockObjc:^{
-        [self.databaseStorage readWithBlock:block file:__FILE__ function:__FUNCTION__ line:__LINE__];
-    }];
-}
-
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -136,10 +120,10 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (ECKeyPair *)generateNewIdentityKeyForIdentity:(OWSIdentity)identity
 {
     __block ECKeyPair *newKeyPair;
-    [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         newKeyPair = [Curve25519 generateKeyPair];
         [self storeIdentityKeyPair:newKeyPair forIdentity:identity transaction:transaction];
-    }];
+    });
     return newKeyPair;
 }
 
@@ -167,9 +151,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (nullable NSData *)identityKeyForAddress:(SignalServiceAddress *)address
 {
     __block NSData *_Nullable result = nil;
-    [self readWithUnfairLock:^(SDSAnyReadTransaction *transaction) {
-        result = [self identityKeyForAddress:address transaction:transaction];
-    }];
+    [self.databaseStorage readWithBlock:^(
+        SDSAnyReadTransaction *transaction) { result = [self identityKeyForAddress:address transaction:transaction]; }];
     return result;
 }
 
@@ -194,7 +177,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (nullable ECKeyPair *)identityKeyPairForIdentity:(OWSIdentity)identity
 {
     __block ECKeyPair *_Nullable identityKeyPair = nil;
-    [self readWithUnfairLock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         identityKeyPair = [self identityKeyPairForIdentity:identity transaction:transaction];
     }];
     return identityKeyPair;
@@ -225,9 +208,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSAssertDebug(address.isValid);
 
     __block BOOL result;
-    [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         result = [self saveRemoteIdentity:identityKey address:address transaction:transaction];
-    }];
+    });
 
     return result;
 }
@@ -327,13 +310,13 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
     OWSAssertDebug(address.isValid);
 
-    [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self setVerificationState:verificationState
                        identityKey:identityKey
                            address:address
              isUserInitiatedChange:isUserInitiatedChange
                        transaction:transaction];
-    }];
+    });
 }
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
@@ -390,7 +373,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (BOOL)groupContainsUnverifiedMember:(NSString *)threadUniqueID
 {
     __block BOOL result = NO;
-    [self readWithUnfairLock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
         result = [self groupContainsUnverifiedMember:threadUniqueID transaction:transaction];
     }];
     return result;
@@ -406,7 +389,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (OWSVerificationState)verificationStateForAddress:(SignalServiceAddress *)address
 {
     __block OWSVerificationState result;
-    [self readWithUnfairLock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         result = [self verificationStateForAddress:address transaction:transaction];
     }];
     return result;
@@ -437,7 +420,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSAssertDebug(address.isValid);
 
     __block OWSRecipientIdentity *_Nullable result;
-    [self readWithUnfairLock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         result = [self recipientIdentityForAddress:address transaction:transaction];
     }];
 
@@ -461,7 +444,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSAssertDebug(address.isValid);
 
     __block OWSRecipientIdentity *_Nullable result;
-    [self readWithUnfairLock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         result = [self untrustedIdentityForSendingToAddress:address transaction:transaction];
     }];
 
@@ -672,7 +655,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
             return;
         }
         NSMutableArray<OWSVerificationStateSyncMessage *> *messages = [NSMutableArray new];
-        [self readWithUnfairLock:^(SDSAnyReadTransaction *transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self.queuedVerificationStateSyncMessagesKeyValueStore
                 enumerateKeysAndObjectsWithTransaction:transaction
                                                  block:^(NSString *key, id value, BOOL *stop) {
@@ -771,7 +754,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
     // DURABLE CLEANUP - we could replace the custom durability logic in this class
     // with a durable JobQueue.
-    [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.messageSenderJobQueue addPromiseWithMessage:nullMessage.asPreparer
                                 removeMessageAfterSending:NO
                             limitToCurrentProcessLifetime:YES
@@ -779,7 +762,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                               transaction:transaction]
             .doneInBackground(^(id value) {
                 OWSLogInfo(@"Successfully sent verification state NullMessage");
-                [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
                                             removeMessageAfterSending:NO
                                         limitToCurrentProcessLifetime:YES
@@ -789,15 +772,15 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                             OWSLogInfo(@"Successfully sent verification state sync message");
 
                             // Record that this verification state was successfully synced.
-                            [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+                            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                 [self clearSyncMessageForAddress:message.verificationForRecipientAddress
                                                      transaction:transaction];
-                            }];
+                            });
                         })
                         .catchInBackground(^(NSError *error) {
                             OWSLogError(@"Failed to send verification state sync message with error: %@", error);
                         });
-                }];
+                });
             })
             .catchInBackground(^(NSError *error) {
                 OWSLogError(@"Failed to send verification state NullMessage with error: %@", error);
@@ -806,13 +789,13 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                         @"Removing retries for syncing verification state, since user is no longer registered: %@",
                         message.verificationForRecipientAddress);
                     // Otherwise this will fail forever.
-                    [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                         [self clearSyncMessageForAddress:message.verificationForRecipientAddress
                                              transaction:transaction];
-                    }];
+                    });
                 }
             });
-    }];
+    });
 }
 
 - (void)clearSyncMessageForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
