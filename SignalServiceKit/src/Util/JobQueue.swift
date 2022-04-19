@@ -443,6 +443,28 @@ class GRDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
 }
 
 extension GRDBJobRecordFinder: JobRecordFinder {
+    private func iterateJobsWith(cursor: SSKJobRecordCursor, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        var stop: ObjCBool = false
+        while true {
+            do {
+                if let next = try cursor.next() {
+                    guard let jobRecord = next as? JobRecordType else {
+                        owsFailDebug("expecting jobRecord but found: \(next)")
+                        return
+                    }
+                    block(jobRecord, &stop)
+                    if stop.boolValue {
+                        return
+                    }
+                } else {
+                    return
+                }
+            } catch let error {
+                owsFailDebug("error fetching jobRecord: \(error)")
+            }
+        }
+    }
+
     func enumerateJobRecords(label: String, transaction: GRDBReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         let sql = """
@@ -454,18 +476,7 @@ extension GRDBJobRecordFinder: JobRecordFinder {
         let cursor = JobRecordType.grdbFetchCursor(sql: sql,
                                                    arguments: [label],
                                                    transaction: transaction)
-        var stop: ObjCBool = false
-        // GRDB TODO make cursor.next fail hard to remove this `try!`
-        while let next = try! cursor.next() {
-            guard let jobRecord = next as? JobRecordType else {
-                owsFailDebug("expecting jobRecord but found: \(next)")
-                return
-            }
-            block(jobRecord, &stop)
-            if stop.boolValue {
-                return
-            }
-        }
+        iterateJobsWith(cursor: cursor, block: block)
     }
 
     func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: GRDBReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
@@ -480,17 +491,6 @@ extension GRDBJobRecordFinder: JobRecordFinder {
         let cursor = JobRecordType.grdbFetchCursor(sql: sql,
                                                    arguments: [status.rawValue, label],
                                                    transaction: transaction)
-        var stop: ObjCBool = false
-        // GRDB TODO make cursor.next fail hard to remove this `try?`
-        while let next = try? cursor.next() {
-            guard let jobRecord = next as? JobRecordType else {
-                owsFailDebug("expecting jobRecord but found: \(next)")
-                return
-            }
-            block(jobRecord, &stop)
-            if stop.boolValue {
-                return
-            }
-        }
+        iterateJobsWith(cursor: cursor, block: block)
     }
 }
