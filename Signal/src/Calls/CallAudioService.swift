@@ -520,58 +520,39 @@ protocol CallAudioServiceDelegate: AnyObject {
     // The default option upon entry is always .mixWithOthers, so we will set that
     // as our default value if no options are provided.
     private func setAudioSession(category: AVAudioSession.Category,
-                                 mode: AVAudioSession.Mode? = nil,
+                                 mode: AVAudioSession.Mode,
                                  options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions.mixWithOthers) {
         AssertIsOnMainThread()
 
         var audioSessionChanged = false
         do {
-            if let mode = mode {
-                let oldCategory = avAudioSession.category
-                let oldMode = avAudioSession.mode
-                let oldOptions = avAudioSession.categoryOptions
+            let oldCategory = avAudioSession.category
+            let oldMode = avAudioSession.mode
+            let oldOptions = avAudioSession.categoryOptions
 
-                guard oldCategory != category || oldMode != mode || oldOptions != options else {
-                    return
-                }
-
-                audioSessionChanged = true
-
-                if oldCategory != category {
-                    Logger.debug("audio session changed category: \(oldCategory) -> \(category) ")
-                }
-                if oldMode != mode {
-                    Logger.debug("audio session changed mode: \(oldMode) -> \(mode) ")
-                }
-                if oldOptions != options {
-                    Logger.debug("audio session changed options: \(oldOptions) -> \(options) ")
-                }
-                try avAudioSession.setCategory(category, mode: mode, options: options)
-            } else {
-                let oldCategory = avAudioSession.category
-                let oldOptions = avAudioSession.categoryOptions
-
-                guard avAudioSession.category != category || avAudioSession.categoryOptions != options else {
-                    return
-                }
-
-                audioSessionChanged = true
-
-                if oldCategory != category {
-                    Logger.debug("audio session changed category: \(oldCategory) -> \(category) ")
-                }
-                if oldOptions != options {
-                    Logger.debug("audio session changed options: \(oldOptions) -> \(options) ")
-                }
-                try avAudioSession.ows_setCategory(category, with: options)
+            guard oldCategory != category || oldMode != mode || oldOptions != options else {
+                return
             }
+
+            audioSessionChanged = true
+
+            if oldCategory != category {
+                Logger.debug("audio session changed category: \(oldCategory) -> \(category) ")
+            }
+            if oldMode != mode {
+                Logger.debug("audio session changed mode: \(oldMode) -> \(mode) ")
+            }
+            if oldOptions != options {
+                Logger.debug("audio session changed options: \(oldOptions) -> \(options) ")
+            }
+            try avAudioSession.setCategory(category, mode: mode, options: options)
         } catch {
-            let message = "failed to set category: \(category), mode: \(String(describing: mode)), options: \(options) with error: \(error)"
+            let message = "failed to set category: \(category), mode: \(mode), options: \(options) with error: \(error)"
             owsFailDebug(message)
         }
 
         if audioSessionChanged {
-            Logger.info("audio session changed category: \(category), mode: \(String(describing: mode)), options: \(options)")
+            Logger.info("audio session changed category: \(category), mode: \(mode), options: \(options)")
             self.delegate?.callAudioServiceDidChangeAudioSession(self)
         }
     }
