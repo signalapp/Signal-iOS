@@ -281,7 +281,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     /// - Returns: The key data, if available.
     @objc
     public static var debugOnly_keyData: Data? {
-        owsAssert(OWSIsTestableBuild())
+        owsAssert(OWSIsTestableBuild() || DebugFlags.internalSettings)
         return try? keyspec.fetchData()
     }
 
