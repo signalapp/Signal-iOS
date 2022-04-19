@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -481,8 +481,8 @@ extension GRDBJobRecordFinder: JobRecordFinder {
                                                    arguments: [status.rawValue, label],
                                                    transaction: transaction)
         var stop: ObjCBool = false
-        // GRDB TODO make cursor.next fail hard to remove this `try!`
-        while let next = try! cursor.next() {
+        // GRDB TODO make cursor.next fail hard to remove this `try?`
+        while let next = try? cursor.next() {
             guard let jobRecord = next as? JobRecordType else {
                 owsFailDebug("expecting jobRecord but found: \(next)")
                 return
