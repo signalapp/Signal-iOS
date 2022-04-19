@@ -299,8 +299,8 @@ class AppSettingsViewController: OWSTableViewController2 {
 
             section4.add(.disclosureItem(
                 icon: .settingsBoost,
-                name: NSLocalizedString("SETTINGS_ONE_TIME_DONATION", comment: "Title for the 'one time donation' link in settings."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "one time donation"),
+                name: NSLocalizedString("SETTINGS_ONE_TIME_DONATION", comment: "Title for the 'one-time donation' link in settings."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "one-time donation"),
                 actionBlock: { [weak self] in
                     let vc = BoostViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)

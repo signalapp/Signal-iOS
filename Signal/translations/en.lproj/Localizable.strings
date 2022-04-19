@@ -497,7 +497,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
@@ -5449,8 +5449,8 @@
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
-/* Title for the 'one time donation' link in settings. */
-"SETTINGS_ONE_TIME_DONATION" = "One Time Donation";
+/* Title for the 'one-time donation' link in settings. */
+"SETTINGS_ONE_TIME_DONATION" = "One-time Donation";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activate";
