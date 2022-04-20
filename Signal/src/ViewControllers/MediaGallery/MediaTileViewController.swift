@@ -897,6 +897,11 @@ class GalleryGridCellItem: PhotoGridItem {
         }
     }
 
+    var duration: TimeInterval {
+        // TODO: return video duration
+        0
+    }
+
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         return galleryItem.thumbnailImage(async: completion)
     }
