@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -198,7 +198,11 @@ public class AttachmentPrepViewController: OWSViewController {
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
+        // Handle:
+        // • iPhone rotation to/from landscape: `verticalSizeClass` changes.
+        // • Resizing of app window on iPad: `horizontalSizeClass` might change.
+        if traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass ||
+            traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
             updateLayoutConstraints()
         }
     }
@@ -281,7 +285,7 @@ public class AttachmentPrepViewController: OWSViewController {
     }
 
     private func updateLayoutConstraints() {
-        let isPortraitLayout = traitCollection.horizontalSizeClass == .compact
+        let isPortraitLayout = traitCollection.verticalSizeClass == .regular && traitCollection.horizontalSizeClass == .compact
 
         var constraintsToRemove: [NSLayoutConstraint]?
         var constraintsToAdd: [NSLayoutConstraint]?
