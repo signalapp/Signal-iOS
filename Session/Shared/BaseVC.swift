@@ -107,7 +107,7 @@ class BaseVC : UIViewController {
     }
     
     @objc func appDidBecomeActive(_ notification: Notification) {
-        // To be implemented
+        // To be implemented by child class
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
