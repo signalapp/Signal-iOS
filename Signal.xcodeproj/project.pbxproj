@@ -1032,7 +1032,6 @@
 		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
-		F9D64D2F2810613600BCAD81 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D64D2E2810613600BCAD81 /* SubscriptionManagerTest.swift */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
@@ -2382,8 +2381,7 @@
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
-		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppSettingsViewsUtil.swift; path = Signal/src/ViewControllers/AppSettings/AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
-		F9D64D2E2810613600BCAD81 /* SubscriptionManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SubscriptionManagerTest.swift; path = SignalServiceKit/tests/Subscriptions/SubscriptionManagerTest.swift; sourceTree = "<group>"; };
+		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		FD351756BE688D00B63E00CD /* Pods-SignalMessaging.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.testable release.xcconfig"; sourceTree = "<group>"; };
@@ -2640,6 +2638,7 @@
 		340FC87A204DAC8C007AEB0F /* AppSettings */ = {
 			isa = PBXGroup;
 			children = (
+				F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */,
 				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
 				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
 				88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */,
@@ -4569,8 +4568,6 @@
 		D221A07E169C9E5E00537ABF = {
 			isa = PBXGroup;
 			children = (
-				F9D64D2E2810613600BCAD81 /* SubscriptionManagerTest.swift */,
-				F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */,
 				D221A093169C9E5E00537ABF /* Signal */,
 				453518931FC63DBF00210559 /* SignalMessaging */,
 				342FFE8927245850000AC89F /* SignalNSE */,
@@ -6577,7 +6574,6 @@
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
-				F9D64D2F2810613600BCAD81 /* SubscriptionManagerTest.swift in Sources */,
 				45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
 				4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */,
