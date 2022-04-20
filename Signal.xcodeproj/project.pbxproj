@@ -1018,6 +1018,7 @@
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
+		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
 		F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FD273F6388000B5ABD /* DonationUtilities.swift */; };
 		F0038601273F6388000B5ABD /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FE273F6388000B5ABD /* Stripe.swift */; };
 		F02564D8274EDF4600D7B48A /* BadgeExpirationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */; };
@@ -2366,6 +2367,7 @@
 		E27EBB962FA58BAC64DD64A3 /* Pods-SignalUITests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.app store release.xcconfig"; sourceTree = "<group>"; };
 		E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
+		E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManagerTest.swift; sourceTree = "<group>"; };
 		F00385FD273F6388000B5ABD /* DonationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationUtilities.swift; sourceTree = "<group>"; };
 		F00385FE273F6388000B5ABD /* Stripe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stripe.swift; sourceTree = "<group>"; };
 		F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheet.swift; sourceTree = "<group>"; };
@@ -4489,7 +4491,6 @@
 		B660F66C1C29867F00687D6E /* test */ = {
 			isa = PBXGroup;
 			children = (
-				45A3579927DBD5A20051CE8B /* profiles */,
 				34C6B0A41FA0E46F00D35993 /* Assets */,
 				1704690725D4C2DA000793D8 /* attachments */,
 				B660F6751C29867F00687D6E /* contact */,
@@ -4498,10 +4499,12 @@
 				458E38381D6699110094BD24 /* Models */,
 				3471210D25ED5F850037CD1F /* Payments */,
 				4C10B1C523176DB00099396B /* PerformanceTests */,
+				45A3579927DBD5A20051CE8B /* profiles */,
 				34843B2321432293004DED45 /* SignalBaseTest.h */,
 				34843B2221432292004DED45 /* SignalBaseTest.m */,
 				4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest+Swift.swift */,
 				4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */,
+				E75DD3DC2810CD3500E32C36 /* subscriptions */,
 				4C3EF8002109184A0007EBF7 /* SSKTests */,
 				B660F69D1C29868000687D6E /* Supporting Files */,
 				B660F6A01C29868000687D6E /* TestUtil.h */,
@@ -4675,6 +4678,14 @@
 				882F8DE5251AB23600AA4359 /* Settings.bundle */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		E75DD3DC2810CD3500E32C36 /* subscriptions */ = {
+			isa = PBXGroup;
+			children = (
+				E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */,
+			);
+			path = subscriptions;
 			sourceTree = "<group>";
 		};
 		F00385FB273F6388000B5ABD /* Subscriptions */ = {
@@ -6574,6 +6585,7 @@
 				454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */,
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
+				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
 				45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
 				4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */,
