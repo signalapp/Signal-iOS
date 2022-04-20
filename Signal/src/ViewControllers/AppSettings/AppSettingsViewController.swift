@@ -318,7 +318,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                                accessoryView: nil,
                                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
                                actionBlock: { () in
-                UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
+                UIApplication.shared.open(TSConstants.donateUrl, options: [:], completionHandler: nil)
             }))
         }
 

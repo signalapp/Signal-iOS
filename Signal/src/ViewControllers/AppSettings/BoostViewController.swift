@@ -336,7 +336,7 @@ class BoostViewController: OWSTableViewController2 {
     }
 
     private func openDonateWebsite() {
-        UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
+        UIApplication.shared.open(TSConstants.donateUrl, options: [:], completionHandler: nil)
     }
 }
 

@@ -21,6 +21,7 @@ public class TSConstants: NSObject {
     private override init() {}
 
     public static let legalTermsUrl = URL(string: "https://signal.org/legal/")!
+    public static let donateUrl = URL(string: "https://signal.org/donate/")!
 
     @objc
     public static var mainServiceWebSocketAPI_identified: String { shared.mainServiceWebSocketAPI_identified }
