@@ -46,6 +46,9 @@ extension AppDelegate {
                             conversationVC.inputAccessoryView?.isHidden = true
                             conversationVC.inputAccessoryView?.alpha = 0
                             presentingVC.present(callVC, animated: true, completion: nil)
+                        } else if !SSKPreferences.isCallKitSupported {
+                            let incomingCallBanner = IncomingCallBanner(for: call)
+                            incomingCallBanner.show()
                         }
                     }
                 }
