@@ -227,7 +227,7 @@ public class NotificationActionHandler: NSObject {
 
     private class func submitDebugLogs() -> Promise<Void> {
         Promise { future in
-            Pastelog.submitLogs {
+            Pastelog.submitLogs(withSupportTag: nil) {
                 future.resolve()
             }
         }

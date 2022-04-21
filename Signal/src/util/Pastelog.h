@@ -15,7 +15,7 @@ typedef void (^UploadDebugLogsFailure)(NSString *localizedErrorMessage, NSString
 
 + (void)submitLogs;
 
-+ (void)submitLogsWithCompletion:(nullable SubmitDebugLogsCompletion)completion;
++ (void)submitLogsWithSupportTag:(nullable NSString *)tag completion:(nullable SubmitDebugLogsCompletion)completion;
 
 + (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam;
 

@@ -66,10 +66,10 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
 
 + (void)submitLogs
 {
-    [self submitLogsWithCompletion:nil];
+    [self submitLogsWithSupportTag:nil completion:nil];
 }
 
-+ (void)submitLogsWithCompletion:(nullable SubmitDebugLogsCompletion)completionParam
++ (void)submitLogsWithSupportTag:(nullable NSString *)tag completion:(nullable SubmitDebugLogsCompletion)completionParam
 {
     SubmitDebugLogsCompletion completion = ^{
         if (completionParam) {
@@ -78,6 +78,11 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                 dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), completionParam);
         }
     };
+
+    NSString *supportFilter = @"Signal - iOS Debug Log";
+    if (tag) {
+        supportFilter = [supportFilter stringByAppendingFormat:@" - %@", tag];
+    }
 
     [[self shared] uploadLogsWithUIWithSuccess:^(NSURL *url) {
         ActionSheetController *alert = [[ActionSheetController alloc]
@@ -91,8 +96,7 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                             style:ActionSheetActionStyleDefault
                                           handler:^(ActionSheetAction *action) {
                                               [ComposeSupportEmailOperation
-                                                  sendEmailWithDefaultErrorHandlingWithSupportFilter:
-                                                      @"Signal - iOS Debug Log"
+                                                  sendEmailWithDefaultErrorHandlingWithSupportFilter:supportFilter
                                                                                               logUrl:url];
                                               completion();
                                           }]];

@@ -95,4 +95,48 @@ extension SignalApp {
         parentVC.present(alert, animated: true)
     }
 
+    @objc(showDatabaseIntegrityCheckUIFromViewController:completion:)
+    public static func showDatabaseIntegrityCheckUI(from parentVC: UIViewController,
+                                                    completion: @escaping () -> Void = {}) {
+        let alert = UIAlertController(
+            title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_TITLE",
+                                     comment: "Title for alert before running a database integrity check"),
+            message: NSLocalizedString("DATABASE_INTEGRITY_CHECK_MESSAGE",
+                                       comment: "Message for alert before running a database integrity check"),
+            preferredStyle: .alert)
+        alert.addAction(.init(title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_ACTION_RUN",
+                                                       comment: "Button to run the database integrity check"),
+                              style: .default) { _ in
+            let progressView = UIActivityIndicatorView(style: .whiteLarge)
+            progressView.color = .gray
+            parentVC.view.addSubview(progressView)
+            progressView.autoCenterInSuperview()
+            progressView.startAnimating()
+
+            _ = GRDBDatabaseStorageAdapter.runIntegrityCheck().done { results in
+                progressView.removeFromSuperview()
+
+                let resultsAlert = UIAlertController(
+                    title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_RESULTS_TITLE",
+                                             comment: "Title for alert after running a database integrity check"),
+                    message: results,
+                    preferredStyle: .alert)
+                resultsAlert.addAction(.init(title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG",
+                                                                      comment: "Button to save database integrity check results to the debug log"),
+                                             style: .default) { _ in
+                    Logger.info(results)
+                    completion()
+                })
+                resultsAlert.addAction(.init(title: CommonStrings.cancelButton, style: .default) { _ in
+                    completion()
+                })
+                parentVC.present(resultsAlert, animated: true)
+            }
+        })
+        alert.addAction(.init(title: CommonStrings.cancelButton,
+                              style: .cancel) { _ in
+            completion()
+        })
+        parentVC.present(alert, animated: true)
+    }
 }
