@@ -20,7 +20,7 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     private lazy var displayNameLabel: UILabel = {
         let result = UILabel()
         result.textColor = UIColor.white
-        result.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.lineBreakMode = .byTruncatingTail
         return result
     }()
@@ -78,8 +78,8 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     }
     
     private func setUpViewHierarchy() {
-        self.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(0.9)
-        self.layer.cornerRadius = Values.veryLargeSpacing
+        self.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(0.8)
+        self.layer.cornerRadius = Values.largeSpacing
         self.layer.masksToBounds = true
         self.set(.height, to: 100)
         profilePictureView.publicKey = call.sessionID

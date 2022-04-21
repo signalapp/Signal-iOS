@@ -128,6 +128,7 @@
 		7B0EFDF2275449AA00FFAAE7 /* TSInfoMessage+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0EFDF1275449AA00FFAAE7 /* TSInfoMessage+Calls.swift */; };
 		7B0EFDF4275490EA00FFAAE7 /* ringing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7B0EFDF3275490EA00FFAAE7 /* ringing.mp3 */; };
 		7B0EFDF62755CC5400FFAAE7 /* CallMissedTipsModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0EFDF52755CC5400FFAAE7 /* CallMissedTipsModal.swift */; };
+		7B13E1E92810F01300BD4F64 /* SessionCallManager+Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13E1E82810F01300BD4F64 /* SessionCallManager+Action.swift */; };
 		7B1581E2271E743B00848B49 /* OWSSounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E1271E743B00848B49 /* OWSSounds.swift */; };
 		7B1581E4271FC59D00848B49 /* CallModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E3271FC59C00848B49 /* CallModal.swift */; };
 		7B1581E6271FD2A100848B49 /* VideoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */; };
@@ -1115,6 +1116,7 @@
 		7B0EFDF1275449AA00FFAAE7 /* TSInfoMessage+Calls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Calls.swift"; sourceTree = "<group>"; };
 		7B0EFDF3275490EA00FFAAE7 /* ringing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ringing.mp3; sourceTree = "<group>"; };
 		7B0EFDF52755CC5400FFAAE7 /* CallMissedTipsModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMissedTipsModal.swift; sourceTree = "<group>"; };
+		7B13E1E82810F01300BD4F64 /* SessionCallManager+Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+Action.swift"; sourceTree = "<group>"; };
 		7B1581E1271E743B00848B49 /* OWSSounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSounds.swift; sourceTree = "<group>"; };
 		7B1581E3271FC59C00848B49 /* CallModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallModal.swift; sourceTree = "<group>"; };
 		7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewVC.swift; sourceTree = "<group>"; };
@@ -2098,6 +2100,7 @@
 				7BC707F127290ACB002817AD /* SessionCallManager.swift */,
 				7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */,
 				7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */,
+				7B13E1E82810F01300BD4F64 /* SessionCallManager+Action.swift */,
 			);
 			path = "Call Management";
 			sourceTree = "<group>";
@@ -4952,6 +4955,7 @@
 				7B7CB190270FB2150079FF93 /* MiniCallView.swift in Sources */,
 				B875885A264503A6000E60D0 /* JoinOpenGroupModal.swift in Sources */,
 				B8CCF6432397711F0091D419 /* SettingsVC.swift in Sources */,
+				7B13E1E92810F01300BD4F64 /* SessionCallManager+Action.swift in Sources */,
 				C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */,
 				7B1581E827210ECC00848B49 /* RenderView.swift in Sources */,
 				7BC707F227290ACB002817AD /* SessionCallManager.swift in Sources */,

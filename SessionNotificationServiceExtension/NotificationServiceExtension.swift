@@ -203,7 +203,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     }
     
     private func handleSuccessForIncomingCall(for callMessage: CallMessage, using transaction: YapDatabaseReadWriteTransaction) {
-        if #available(iOSApplicationExtension 14.5, *) {
+        if #available(iOSApplicationExtension 14.5, *), SSKPreferences.isCallKitSupported {
             if let uuid = callMessage.uuid, let caller = callMessage.sender, let timestamp = callMessage.sentTimestamp {
                 let payload: JSON = ["uuid": uuid, "caller": caller, "timestamp": timestamp]
                 CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
@@ -239,8 +239,15 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         }
         let identifier = self.request?.identifier ?? UUID().uuidString
         let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
+        let semaphore = DispatchSemaphore(value: 0)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                SNLog("Failed to add notification request due to error:\(error)")
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
         SNLog("Add remote notification request")
-        UNUserNotificationCenter.current().add(request)
     }
 
     private func handleSuccess(for content: UNMutableNotificationContent) {

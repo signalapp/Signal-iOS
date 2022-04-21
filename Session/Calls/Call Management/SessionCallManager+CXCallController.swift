@@ -5,45 +5,62 @@ extension SessionCallManager {
     public func startCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
         guard case .offer = call.mode else { return }
         guard !call.hasConnected else { return }
-        let handle = CXHandle(type: .generic, value: call.sessionID)
-        let startCallAction = CXStartCallAction(call: call.callID, handle: handle)
-        
-        startCallAction.isVideo = false
-        
-        let transaction = CXTransaction()
-        transaction.addAction(startCallAction)
-        
         reportOutgoingCall(call)
-        requestTransaction(transaction, completion: completion)
+        if callController != nil {
+            let handle = CXHandle(type: .generic, value: call.sessionID)
+            let startCallAction = CXStartCallAction(call: call.callID, handle: handle)
+            
+            startCallAction.isVideo = false
+            
+            let transaction = CXTransaction()
+            transaction.addAction(startCallAction)
+            
+            requestTransaction(transaction, completion: completion)
+        } else {
+            startCallAction()
+            completion?(nil)
+        }
     }
     
     public func answerCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
-        let answerCallAction = CXAnswerCallAction(call: call.callID)
-        let transaction = CXTransaction()
-        transaction.addAction(answerCallAction)
+        if callController != nil {
+            let answerCallAction = CXAnswerCallAction(call: call.callID)
+            let transaction = CXTransaction()
+            transaction.addAction(answerCallAction)
 
-        requestTransaction(transaction, completion: completion)
+            requestTransaction(transaction, completion: completion)
+        } else {
+            answerCallAction()
+            completion?(nil)
+        }
     }
     
     public func endCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
-        let endCallAction = CXEndCallAction(call: call.callID)
-        let transaction = CXTransaction()
-        transaction.addAction(endCallAction)
+        if callController != nil {
+            let endCallAction = CXEndCallAction(call: call.callID)
+            let transaction = CXTransaction()
+            transaction.addAction(endCallAction)
 
-        requestTransaction(transaction, completion: completion)
+            requestTransaction(transaction, completion: completion)
+        } else {
+            endCallAction()
+            completion?(nil)
+        }
     }
     
     // Not currently in use
     public func setOnHoldStatus(for call: SessionCall) {
-        let setHeldCallAction = CXSetHeldCallAction(call: call.callID, onHold: true)
-        let transaction = CXTransaction()
-        transaction.addAction(setHeldCallAction)
+        if callController != nil {
+            let setHeldCallAction = CXSetHeldCallAction(call: call.callID, onHold: true)
+            let transaction = CXTransaction()
+            transaction.addAction(setHeldCallAction)
 
-        requestTransaction(transaction)
+            requestTransaction(transaction)
+        }
     }
     
     private func requestTransaction(_ transaction: CXTransaction, completion: ((Error?) -> Void)? = nil) {
-        callController.request(transaction) { error in
+        callController?.request(transaction) { error in
             if let error = error {
                 SNLog("Error requesting transaction: \(error)")
             } else {

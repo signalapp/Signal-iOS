@@ -2,8 +2,8 @@ import CallKit
 import SessionMessagingKit
 
 public final class SessionCallManager: NSObject {
-    let provider: CXProvider
-    let callController = CXCallController()
+    let provider: CXProvider?
+    let callController: CXCallController?
     var currentCall: SessionCall? = nil {
         willSet {
             if (newValue != nil) {
@@ -49,12 +49,16 @@ public final class SessionCallManager: NSObject {
     
     init(useSystemCallLog: Bool = false) {
         AssertIsOnMainThread()
-        self.provider = type(of: self).sharedProvider(useSystemCallLog: useSystemCallLog)
-        
+        if SSKPreferences.isCallKitSupported {
+            self.provider = type(of: self).sharedProvider(useSystemCallLog: useSystemCallLog)
+            self.callController = CXCallController()
+        } else {
+            self.provider = nil
+            self.callController = nil
+        }
         super.init()
-
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
-        self.provider.setDelegate(self, queue: nil)
+        self.provider?.setDelegate(self, queue: nil)
     }
     
     // MARK: Report calls
@@ -63,10 +67,10 @@ public final class SessionCallManager: NSObject {
         UserDefaults(suiteName: "group.com.loki-project.loki-messenger")?.set(true, forKey: "isCallOngoing")
         call.stateDidChange = {
             if call.hasStartedConnecting {
-                self.provider.reportOutgoingCall(with: call.callID, startedConnectingAt: call.connectingDate)
+                self.provider?.reportOutgoingCall(with: call.callID, startedConnectingAt: call.connectingDate)
             }
             if call.hasConnected {
-                self.provider.reportOutgoingCall(with: call.callID, connectedAt: call.connectedDate)
+                self.provider?.reportOutgoingCall(with: call.callID, connectedAt: call.connectedDate)
             }
         }
     }
@@ -74,21 +78,26 @@ public final class SessionCallManager: NSObject {
     public func reportIncomingCall(_ call: SessionCall, callerName: String, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
         
-        // Construct a CXCallUpdate describing the incoming call, including the caller.
-        let update = CXCallUpdate()
-        update.localizedCallerName = callerName
-        update.remoteHandle = CXHandle(type: .generic, value: call.callID.uuidString)
-        update.hasVideo = false
+        if let provider = provider {
+            // Construct a CXCallUpdate describing the incoming call, including the caller.
+            let update = CXCallUpdate()
+            update.localizedCallerName = callerName
+            update.remoteHandle = CXHandle(type: .generic, value: call.callID.uuidString)
+            update.hasVideo = false
 
-        disableUnsupportedFeatures(callUpdate: update)
+            disableUnsupportedFeatures(callUpdate: update)
 
-        // Report the incoming call to the system
-        self.provider.reportNewIncomingCall(with: call.callID, update: update) { error in
-            guard error == nil else {
-                self.reportCurrentCallEnded(reason: .failed)
-                completion(error)
-                return
+            // Report the incoming call to the system
+            provider.reportNewIncomingCall(with: call.callID, update: update) { error in
+                guard error == nil else {
+                    self.reportCurrentCallEnded(reason: .failed)
+                    completion(error)
+                    return
+                }
+                UserDefaults(suiteName: "group.com.loki-project.loki-messenger")?.set(true, forKey: "isCallOngoing")
+                completion(nil)
             }
+        } else {
             UserDefaults(suiteName: "group.com.loki-project.loki-messenger")?.set(true, forKey: "isCallOngoing")
             completion(nil)
         }
@@ -97,7 +106,7 @@ public final class SessionCallManager: NSObject {
     public func reportCurrentCallEnded(reason: CXCallEndedReason?) {
         guard let call = currentCall else { return }
         if let reason = reason {
-            self.provider.reportCall(with: call.callID, endedAt: nil, reason: reason)
+            self.provider?.reportCall(with: call.callID, endedAt: nil, reason: reason)
             switch (reason) {
             case .answeredElsewhere: call.updateCallMessage(mode: .answeredElsewhere)
             case .unanswered: call.updateCallMessage(mode: .unanswered)
