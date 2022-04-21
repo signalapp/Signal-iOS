@@ -261,51 +261,34 @@ extension EmojiGenerator {
     }
 
     static func writeStringConversionsFile(from emojiModel: EmojiModel) {
-        // Inline helpers:
-        var firstItem = true
-        func conditionalCheckForEmojiItem(_ item: EmojiModel.EmojiDefinition.Emoji) -> String {
-            let isFirst = (firstItem == true)
-            firstItem = false
-
-            let prefix = isFirst ? "" : "} else "
-            let suffix = "if rawValue == \"\(item.emojiChar)\" {"
-            return prefix + suffix
-        }
-        func conversionForEmojiItem(_ item: EmojiModel.EmojiDefinition.Emoji, definition: EmojiModel.EmojiDefinition) -> String {
-            let skinToneString: String
-            if item.skintoneSequence.isEmpty {
-                skinToneString = "nil"
-            } else {
-                skinToneString = "[\(item.skintoneSequence.map { ".\($0)" }.joined(separator: ", "))]"
-            }
-            return "self.init(baseEmoji: .\(definition.enumName), skinTones: \(skinToneString))"
-        }
-
         // Conversion from String: Creates an initializer mapping a single character emoji string to an EmojiWithSkinTones
-        // e.g.
-        // if rawValue == "😀" { self.init(baseEmoji: .grinning, skinTones: nil) }
-        // else if rawValue == "🦻🏻" { self.init(baseEmoji: .earWithHearingAid, skinTones: [.light])
         writeBlock(fileName: "EmojiWithSkinTones+String.swift") { fileHandle in
             fileHandle.writeLine("extension EmojiWithSkinTones {")
             fileHandle.indent {
                 fileHandle.writeLine("init?(rawValue: String) {")
                 fileHandle.indent {
                     fileHandle.writeLine("guard rawValue.isSingleEmoji else { return nil }")
+                    fileHandle.writeLine("")
 
+                    fileHandle.writeLine("let baseEmoji: Emoji")
+                    fileHandle.writeLine("var skinTones: [Emoji.SkinTone]? = nil")
+                    fileHandle.writeLine("switch rawValue {")
                     emojiModel.definitions.forEach { definition in
                         definition.variants.forEach { emoji in
-                            fileHandle.writeLine(conditionalCheckForEmojiItem(emoji))
+                            fileHandle.writeLine("case \"\(emoji.emojiChar)\":")
                             fileHandle.indent {
-                                fileHandle.writeLine(conversionForEmojiItem(emoji, definition: definition))
+                                fileHandle.writeLine("baseEmoji = Emoji.\(definition.enumName)")
+                                if !emoji.skintoneSequence.isEmpty {
+                                    fileHandle.writeLine("skinTones = [\(emoji.skintoneSequence.map { "Emoji.SkinTone.\($0)" }.joined(separator: ", "))]")
+                                }
                             }
                         }
                     }
-
-                    fileHandle.writeLine("} else {")
-                    fileHandle.indent {
-                        fileHandle.writeLine("return nil")
-                    }
+                    fileHandle.writeLine("default: return nil")
                     fileHandle.writeLine("}")
+                    fileHandle.writeLine("")
+
+                    fileHandle.writeLine("self.init(baseEmoji: baseEmoji, skinTones: skinTones)")
                 }
                 fileHandle.writeLine("}")
             }
@@ -351,6 +334,7 @@ extension EmojiGenerator {
                 // Start emojiPerSkinTonePermutation
                 fileHandle.writeLine("var emojiPerSkinTonePermutation: [[SkinTone]: String]? {")
                 fileHandle.indent {
+                    fileHandle.writeLine("var result = [[SkinTone]: String]()")
                     fileHandle.writeLine("switch self {")
                     emojiModel.definitions.forEach { emojiDef in
                         let skintoneVariants = emojiDef.variants.filter({ $0.skintoneSequence != .none})
@@ -361,18 +345,15 @@ extension EmojiGenerator {
 
                         fileHandle.writeLine("case .\(emojiDef.enumName):")
                         fileHandle.indent {
-                            fileHandle.writeLine("return [")
-                            fileHandle.indent {
-                                skintoneVariants.forEach {
-                                    let skintoneSequenceKey = $0.skintoneSequence.map({ ".\($0)" }).joined(separator: ", ")
-                                    fileHandle.writeLine("[\(skintoneSequenceKey)]: \"\($0.emojiChar)\",")
-                                }
+                            skintoneVariants.forEach {
+                                let skintoneSequenceKey = $0.skintoneSequence.map({ "SkinTone.\($0)" }).joined(separator: ", ")
+                                fileHandle.writeLine("result[[\(skintoneSequenceKey)]] = \"\($0.emojiChar)\"")
                             }
-                            fileHandle.writeLine("]")
                         }
                     }
                     fileHandle.writeLine("default: return nil")
                     fileHandle.writeLine("}")
+                    fileHandle.writeLine("return result")
                 }
                 fileHandle.writeLine("}")
             }
@@ -581,7 +562,7 @@ extension EmojiGenerator {
         defer { fileHandle.close() }
 
         fileHandle.writeLine("//")
-        fileHandle.writeLine("//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.")
+        fileHandle.writeLine("//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.")
         fileHandle.writeLine("//")
 
         fileHandle.writeLine("")
