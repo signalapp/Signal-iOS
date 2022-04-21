@@ -294,6 +294,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         [userDefaults setBool:YES forKey:@"hasSeenCallIPExposureWarning"];
         CallModal *modal = [[CallModal alloc] initOnCallEnabled:^{
             OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
+            [self objc_requestMicrophonePermissionIfNeeded];
         }];
         [self presentViewController:modal animated:YES completion:nil];
     } else {
