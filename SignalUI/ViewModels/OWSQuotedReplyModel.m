@@ -347,7 +347,14 @@ NS_ASSUME_NONNULL_BEGIN
                                  reactionEmoji:nil];
     }
 
-    NSString *_Nullable quotedText = message.body;
+    NSString *_Nullable quotedText;
+
+    if (message.body.length > 0) {
+        quotedText = message.body;
+    } else if (message.storyReactionEmoji.length > 0) {
+        quotedText = message.storyReactionEmoji;
+    }
+
     BOOL hasText = quotedText.length > 0;
 
     TSAttachment *_Nullable attachment =

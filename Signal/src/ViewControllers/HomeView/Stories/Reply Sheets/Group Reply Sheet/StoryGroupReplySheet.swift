@@ -23,8 +23,20 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
         return placeholder
     }()
 
+    private lazy var emptyStateView: UIView = {
+        let label = UILabel()
+        label.font = .ows_dynamicTypeBody
+        label.textColor = .ows_gray45
+        label.textAlignment = .center
+        label.text = NSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet")
+        label.isHidden = true
+        label.isUserInteractionEnabled = false
+        return label
+    }()
+
     let storyMessage: StoryMessage
     lazy var thread: TSThread? = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
+    weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
 
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?
@@ -91,9 +103,12 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
         }
 
         replyLoader = StoryGroupReplyLoader(storyMessage: storyMessage, threadUniqueId: thread?.uniqueId, tableView: tableView)
-    }
 
-    public override var canBecomeFirstResponder: Bool { true }
+        contentView.addSubview(emptyStateView)
+        emptyStateView.autoPinWidthToSuperview()
+        emptyStateView.autoPinEdge(toSuperviewEdge: .top)
+        emptyStateView.autoPinEdge(.bottom, to: .top, of: inputToolbar)
+    }
 
     public override var inputAccessoryView: UIView? { inputAccessoryPlaceholder }
 
@@ -152,7 +167,9 @@ extension StoryGroupReplySheet: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        replyLoader?.numberOfRows ?? 0
+        let numberOfRows = replyLoader?.numberOfRows ?? 0
+        emptyStateView.isHidden = numberOfRows > 0
+        return numberOfRows
     }
 }
 
@@ -281,4 +298,43 @@ extension StoryGroupReplySheet: ContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
 
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
+}
+
+extension StoryGroupReplySheet {
+    override func presentationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController?,
+        source: UIViewController
+    ) -> UIPresentationController? {
+        return nil
+    }
+
+    public func animationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController,
+        source: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
+        return StoryReplySheetAnimator(
+            isPresenting: true,
+            isInteractive: interactiveTransitionCoordinator != nil,
+            backdropView: backdropView
+        )
+    }
+
+    public func animationController(
+        forDismissed dismissed: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
+        return StoryReplySheetAnimator(
+            isPresenting: false,
+            isInteractive: false,
+            backdropView: backdropView
+        )
+    }
+
+    public func interactionControllerForPresentation(
+        using animator: UIViewControllerAnimatedTransitioning
+    ) -> UIViewControllerInteractiveTransitioning? {
+        interactiveTransitionCoordinator?.mode = .reply
+        return interactiveTransitionCoordinator
+    }
 }

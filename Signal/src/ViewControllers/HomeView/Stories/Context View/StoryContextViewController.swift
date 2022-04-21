@@ -36,6 +36,13 @@ class StoryContextViewController: OWSViewController {
     }
     var currentItemMediaView: StoryItemMediaView?
 
+    var allowsReplies: Bool {
+        guard let currentItem = currentItem else {
+            return false
+        }
+        return currentItem.message.localUserAllowedToReply
+    }
+
     enum LoadPosition {
         case `default`
         case newest
@@ -131,23 +138,7 @@ class StoryContextViewController: OWSViewController {
 
         view.addSubview(mediaViewContainer)
 
-        replyButton.setPressedBlock { [weak self] in
-            guard let self = self, let currentItem = self.currentItem else { return }
-            switch self.context {
-            case .groupId:
-                let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
-                groupReplyVC.dismissHandler = { [weak self] in self?.play() }
-                self.pause()
-                self.present(groupReplyVC, animated: true)
-            case .authorUuid:
-                let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
-                directReplyVC.dismissHandler = { [weak self] in self?.play() }
-                self.pause()
-                self.present(directReplyVC, animated: true)
-            case .none:
-                owsFailDebug("Unexpected context")
-            }
-        }
+        replyButton.setPressedBlock { [weak self] in self?.presentReplySheet() }
         replyButton.setBackgroundColors(upColor: .clear)
         replyButton.autoSetDimension(.height, toSize: 64)
         replyButton.setTitleColor(Theme.darkThemePrimaryColor)
@@ -358,6 +349,15 @@ class StoryContextViewController: OWSViewController {
         widthConstraint.priority = .defaultHigh
         constraints.append(widthConstraint)
 
+        let maxWidthConstraint = mediaViewContainer.autoMatch(
+            .width,
+            to: .width,
+            of: view,
+            withOffset: 0,
+            relation: .lessThanOrEqual
+        )
+        constraints.append(maxWidthConstraint)
+
         return constraints
     }()
 
@@ -380,7 +380,7 @@ class StoryContextViewController: OWSViewController {
         )
     ]
 
-    private func applyConstraints(newSize: CGSize = CurrentAppContext().frame.size) {
+    private func applyConstraints() {
         NSLayoutConstraint.deactivate(iPhoneConstraints)
         NSLayoutConstraint.deactivate(iPadConstraints)
         NSLayoutConstraint.deactivate(iPadPortraitConstraints)
@@ -388,7 +388,7 @@ class StoryContextViewController: OWSViewController {
 
         if UIDevice.current.isIPad {
             NSLayoutConstraint.activate(iPadConstraints)
-            if newSize.width > newSize.height {
+            if UIDevice.current.orientation.isLandscape {
                 NSLayoutConstraint.activate(iPadLandscapeConstraints)
             } else {
                 NSLayoutConstraint.activate(iPadPortraitConstraints)
@@ -401,7 +401,7 @@ class StoryContextViewController: OWSViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate { _ in
-            self.applyConstraints(newSize: size)
+            self.applyConstraints()
         } completion: { _ in
             self.applyConstraints()
         }
@@ -462,6 +462,30 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             self.replyButton.alpha = 1
         }
         delegate?.storyContextViewControllerDidResume(self)
+    }
+
+    func presentReplySheet(interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator? = nil) {
+        guard let currentItem = currentItem, currentItem.message.localUserAllowedToReply else {
+            owsFailDebug("Unexpectedly attempting to present reply sheet")
+            return
+        }
+
+        switch self.context {
+        case .groupId:
+            let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
+            groupReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
+            groupReplyVC.dismissHandler = { [weak self] in self?.play() }
+            self.pause()
+            self.present(groupReplyVC, animated: true)
+        case .authorUuid:
+            let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
+            directReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
+            directReplyVC.dismissHandler = { [weak self] in self?.play() }
+            self.pause()
+            self.present(directReplyVC, animated: true)
+        case .none:
+            owsFailDebug("Unexpected context")
+        }
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {

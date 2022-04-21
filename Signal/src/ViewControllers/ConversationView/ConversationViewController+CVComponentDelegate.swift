@@ -235,7 +235,7 @@ extension ConversationViewController: CVComponentDelegate {
             ) else { return }
 
             let vc = StoryPageViewController(context: quotedStory.context)
-            present(vc, animated: true)
+            presentFullScreen(vc, animated: true)
         } else {
             scrollToQuotedMessage(quotedReply, isAnimated: true)
         }

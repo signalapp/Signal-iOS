@@ -5,11 +5,14 @@
 import Foundation
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, MessageReactionPickerDelegate {
     var inputToolbar: StoryReplyInputToolbar { get }
     var storyMessage: StoryMessage { get }
     var thread: TSThread? { get }
+    var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator? { get set }
+    var backdropView: UIView? { get }
 
     var dismissHandler: (() -> Void)? { get set }
 
@@ -22,7 +25,7 @@ protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, Mes
 // MARK: - Sending
 
 extension StoryReplySheet {
-    func tryToSendMessage(_ message: TSOutgoingMessage) {
+    func tryToSendMessage(_ builder: TSOutgoingMessageBuilder) {
         guard let thread = thread else {
             return owsFailDebug("Unexpectedly missing thread")
         }
@@ -31,7 +34,7 @@ extension StoryReplySheet {
         guard !isThreadBlocked else {
             BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
                 guard !isBlocked else { return }
-                self?.tryToSendMessage(message)
+                self?.tryToSendMessage(builder)
             }
             return
         }
@@ -41,16 +44,27 @@ extension StoryReplySheet {
             confirmationText: SafetyNumberStrings.confirmSendButton,
             completion: { [weak self] didConfirmIdentity in
                 guard didConfirmIdentity else { return }
-                self?.tryToSendMessage(message)
+                self?.tryToSendMessage(builder)
             }
         ) else { return }
 
+        // We only use the thread's DM timer for 1:1 story replies,
+        // group replies last for the lifetime of the story.
+        let shouldUseThreadDMTimer = !thread.isGroupThread
+
         ThreadUtil.enqueueSendAsyncWrite { [weak self] transaction in
-            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(thread: thread, setDefaultTimerIfNecessary: false, transaction: transaction)
+            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(thread: thread, setDefaultTimerIfNecessary: shouldUseThreadDMTimer, transaction: transaction)
 
+            if shouldUseThreadDMTimer {
+                let dmConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
+                builder.expiresInSeconds = dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0
+            }
+
+            let message = builder.build()
             message.anyInsert(transaction: transaction)
-
             Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+
+            if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
 
             transaction.addAsyncCompletionOnMain { self?.didSendMessage() }
         }
@@ -68,7 +82,9 @@ extension StoryReplySheet {
         builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
         builder.storyAuthorAddress = storyMessage.authorAddress
 
-        tryToSendMessage(builder.build())
+        tryToSendMessage(builder)
+
+        ReactionFlybyAnimation(reaction: reaction).present(from: self)
     }
 }
 
@@ -110,7 +126,7 @@ extension StoryReplySheet {
         builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
         builder.storyAuthorAddress = storyMessage.authorAddress
 
-        tryToSendMessage(builder.build())
+        tryToSendMessage(builder)
     }
 
     func storyReplyInputToolbarDidTapReact(_ storyReplyInputToolbar: StoryReplyInputToolbar) {

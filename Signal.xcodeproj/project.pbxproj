@@ -904,6 +904,11 @@
 		888017902741E5DB00346E9A /* boost_fire.json in Resources */ = {isa = PBXBuildFile; fileRef = 8880178A2741E5DB00346E9A /* boost_fire.json */; };
 		888017922741F33B00346E9A /* BoostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888017912741F33B00346E9A /* BoostViewController.swift */; };
 		8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8880179327430DDB00346E9A /* BadgeThanksSheet.swift */; };
+		88863A4E280CAE0800977F69 /* StorySlideAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88863A4D280CAE0800977F69 /* StorySlideAnimator.swift */; };
+		88863A50280CAE4400977F69 /* StoryZoomAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88863A4F280CAE4400977F69 /* StoryZoomAnimator.swift */; };
+		88863A52280CAE6A00977F69 /* StoryInteractiveTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88863A51280CAE6A00977F69 /* StoryInteractiveTransitionCoordinator.swift */; };
+		88863A54280CAEAA00977F69 /* StoryReplySheetAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88863A53280CAEAA00977F69 /* StoryReplySheetAnimator.swift */; };
+		88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88863A55280CD04A00977F69 /* ReactionFlybyAnimation.swift */; };
 		888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
@@ -2153,6 +2158,11 @@
 		8880178A2741E5DB00346E9A /* boost_fire.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = boost_fire.json; sourceTree = "<group>"; };
 		888017912741F33B00346E9A /* BoostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoostViewController.swift; sourceTree = "<group>"; };
 		8880179327430DDB00346E9A /* BadgeThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeThanksSheet.swift; sourceTree = "<group>"; };
+		88863A4D280CAE0800977F69 /* StorySlideAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySlideAnimator.swift; sourceTree = "<group>"; };
+		88863A4F280CAE4400977F69 /* StoryZoomAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryZoomAnimator.swift; sourceTree = "<group>"; };
+		88863A51280CAE6A00977F69 /* StoryInteractiveTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryInteractiveTransitionCoordinator.swift; sourceTree = "<group>"; };
+		88863A53280CAEAA00977F69 /* StoryReplySheetAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryReplySheetAnimator.swift; sourceTree = "<group>"; };
+		88863A55280CD04A00977F69 /* ReactionFlybyAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionFlybyAnimation.swift; sourceTree = "<group>"; };
 		888A27E324B3E97E0045D639 /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt_BR; path = translations/pt_BR.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A27E424B3E97E0045D639 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = translations/ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A27E524B3E97E0045D639 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = translations/ca.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -3990,6 +4000,7 @@
 				45D308AC2049A439000189E4 /* PinEntryView.m */,
 				457F671A20746193000EABCD /* QuotedReplyPreview.swift */,
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
+				88863A55280CD04A00977F69 /* ReactionFlybyAnimation.swift */,
 				88A4CC0F246CE2760082211F /* TransferProgressView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */,
@@ -4093,8 +4104,9 @@
 				8852572827DD366D0032073C /* StoriesViewController.swift */,
 				884DB94427DD70F700C6A309 /* IncomingStoryViewModel.swift */,
 				884DB94627DD754700C6A309 /* StoryCell.swift */,
-				88423A50280A1703007D2918 /* Reply Sheets */,
 				884DB94A27DE66E000C6A309 /* Context View */,
+				88423A50280A1703007D2918 /* Reply Sheets */,
+				88863A4C280CADDC00977F69 /* Transitions */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -4284,6 +4296,17 @@
 				888017892741E5DB00346E9A /* boost_smile.json */,
 			);
 			path = Boost;
+			sourceTree = "<group>";
+		};
+		88863A4C280CADDC00977F69 /* Transitions */ = {
+			isa = PBXGroup;
+			children = (
+				88863A51280CAE6A00977F69 /* StoryInteractiveTransitionCoordinator.swift */,
+				88863A4D280CAE0800977F69 /* StorySlideAnimator.swift */,
+				88863A4F280CAE4400977F69 /* StoryZoomAnimator.swift */,
+				88863A53280CAEAA00977F69 /* StoryReplySheetAnimator.swift */,
+			);
+			path = Transitions;
 			sourceTree = "<group>";
 		};
 		88A4CC13246CE41E0082211F /* Device Transfer */ = {
@@ -6090,6 +6113,7 @@
 				32E03522273901710081EE11 /* BadgeConfigurationViewController.swift in Sources */,
 				34A95501271B503E00B05242 /* DisplayableText.swift in Sources */,
 				34ACA7F32733161000E47AD4 /* RegistrationCaptchaViewController.swift in Sources */,
+				88863A54280CAEAA00977F69 /* StoryReplySheetAnimator.swift in Sources */,
 				347B83FD24378DDF0019A52C /* GroupMemberRequestsAndInvitesViewController.swift in Sources */,
 				3426A366255C854B0036407F /* CVItemViewModelImpl.swift in Sources */,
 				348815CC2554216A00D4F4C4 /* CVAudioPlayback.swift in Sources */,
@@ -6104,6 +6128,7 @@
 				3406D32625DD5EAF00885B14 /* ChatListViewController.swift in Sources */,
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
+				88863A4E280CAE0800977F69 /* StorySlideAnimator.swift in Sources */,
 				88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */,
 				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
 				8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */,
@@ -6193,6 +6218,7 @@
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
 				88D23D2023CEC0C700B0E74B /* IndividualCallService.swift in Sources */,
+				88863A52280CAE6A00977F69 /* StoryInteractiveTransitionCoordinator.swift in Sources */,
 				8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */,
 				4CD675BE22E7BE35008010D2 /* MediaDismissAnimationController.swift in Sources */,
 				88EFF4F825AD1F0D000FAFBA /* ForwardMessageViewController.swift in Sources */,
@@ -6223,6 +6249,7 @@
 				34A4D8852677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift in Sources */,
 				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
 				8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */,
+				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
 				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
 				34B14D8F24F41C4300CC3A9A /* GroupLinkQRCodeViewController.swift in Sources */,
@@ -6567,6 +6594,7 @@
 				88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */,
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */,
+				88863A50280CAE4400977F69 /* StoryZoomAnimator.swift in Sources */,
 				34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */,
 				AC12B86D0DA4943DF1DE9CE6 /* OWSAddToContactViewController.swift in Sources */,
 			);

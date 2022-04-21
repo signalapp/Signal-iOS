@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSQuotedMessage.h"
@@ -307,6 +307,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         // Contact share bodies are special-cased in OWSQuotedReplyModel
         // We need to account for that here.
         body = [@"👤 " stringByAppendingString:quotedMessage.contactShare.name.displayName];
+    } else if (quotedMessage.storyReactionEmoji.length > 0) {
+        body = quotedMessage.storyReactionEmoji;
     }
 
     SSKProtoDataMessageQuoteQuotedAttachment *_Nullable firstAttachmentProto = proto.attachments.firstObject;

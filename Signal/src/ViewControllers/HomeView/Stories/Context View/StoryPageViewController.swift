@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import SignalUI
 
 protocol StoryPageViewControllerDataSource: AnyObject {
     func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext]
@@ -23,10 +24,13 @@ class StoryPageViewController: UIPageViewController {
         didSet { initiallyAvailableContexts = contextDataSource?.storyPageViewControllerAvailableContexts(self) ?? [currentContext] }
     }
     lazy var initiallyAvailableContexts: [StoryContext] = [currentContext]
+    private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
 
     required init(context: StoryContext) {
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
         self.currentContext = context
+        modalPresentationStyle = .fullScreen
+        transitioningDelegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -44,6 +48,8 @@ class StoryPageViewController: UIPageViewController {
         dataSource = self
         delegate = self
         view.backgroundColor = .black
+
+        interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -169,5 +175,114 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
 
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController) {
         displayLink?.isPaused = false
+    }
+}
+
+extension StoryPageViewController: UIViewControllerTransitioningDelegate {
+    public func animationController(
+        forPresented presented: UIViewController,
+        presenting: UIViewController,
+        source: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
+        guard let storyTransitionContext = try? storyTransitionContext(
+            presentingViewController: presenting,
+            isPresenting: true
+        ) else {
+            return nil
+        }
+        return StoryZoomAnimator(storyTransitionContext: storyTransitionContext)
+    }
+
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard let presentingViewController = presentingViewController else { return nil }
+        guard let storyTransitionContext = try? storyTransitionContext(
+            presentingViewController: presentingViewController,
+            isPresenting: false
+        ) else {
+            return StorySlideAnimator(interactiveEdge: interactiveDismissCoordinator?.interactiveEdge ?? .none)
+        }
+        return StoryZoomAnimator(storyTransitionContext: storyTransitionContext)
+    }
+
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        guard let interactiveDismissCoordinator = interactiveDismissCoordinator, interactiveDismissCoordinator.interactionInProgress else { return nil }
+        interactiveDismissCoordinator.mode = animator is StoryZoomAnimator ? .zoom : .slide
+        return interactiveDismissCoordinator
+    }
+
+    private func storyTransitionContext(presentingViewController: UIViewController, isPresenting: Bool) throws -> StoryTransitionContext? {
+        // If we're not presenting from the stories tab, use a default animation
+        guard let splitViewController = presentingViewController as? ConversationSplitViewController else { return nil }
+        guard splitViewController.homeVC.selectedTab == .stories else { return nil }
+
+        let storiesVC = splitViewController.homeVC.storiesViewController
+
+        // If the story cell isn't visible, use a default animation
+        guard let storyCell = storiesVC.cell(for: currentContext) else { return nil }
+
+        guard let storyModel = storiesVC.model(for: currentContext), !storyModel.messages.isEmpty else {
+            throw OWSAssertionError("Unexpectedly missing story model for presentation")
+        }
+
+        let storyMessage: StoryMessage
+        if let currentMessage = currentContextViewController.currentItem?.message {
+            storyMessage = currentMessage
+        } else {
+            storyMessage = storyModel.messages.first(where: { $0.localUserViewedTimestamp == nil }) ?? storyModel.messages.first!
+        }
+
+        return .init(
+            isPresenting: isPresenting,
+            thumbnailView: storyCell.attachmentThumbnail,
+            storyView: try storyView(for: storyMessage),
+            thumbnailRepresentsStoryView: storyMessage.uniqueId == storyModel.messages.last?.uniqueId,
+            pageViewController: self,
+            interactiveGesture: interactiveDismissCoordinator?.interactionInProgress == true
+                ? interactiveDismissCoordinator?.panGestureRecognizer : nil
+        )
+    }
+
+    private func storyView(for presentingMessage: StoryMessage) throws -> UIView {
+        let storyView: UIView
+        switch presentingMessage.attachment {
+        case .file(let attachmentId):
+            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: attachmentId, transaction: $0) }) else {
+                throw OWSAssertionError("Unexpectedly missing attachment for story message")
+            }
+
+            let view = UIView()
+            storyView = view
+
+            if let stream = attachment as? TSAttachmentStream, let thumbnailImage = stream.thumbnailImageSmallSync() {
+                let blurredImageView = UIImageView()
+                blurredImageView.contentMode = .scaleAspectFill
+                blurredImageView.image = thumbnailImage
+
+                let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+                blurredImageView.addSubview(blurView)
+                blurView.autoPinEdgesToSuperviewEdges()
+
+                view.addSubview(blurredImageView)
+                blurredImageView.autoPinEdgesToSuperviewEdges()
+
+                let imageView = UIImageView()
+                imageView.contentMode = .scaleAspectFit
+                imageView.image = thumbnailImage
+                view.addSubview(imageView)
+                imageView.autoPinEdgesToSuperviewEdges()
+            } else if let blurHash = attachment.blurHash, let blurHashImage = BlurHash.image(for: blurHash) {
+                let blurHashImageView = UIImageView()
+                blurHashImageView.contentMode = .scaleAspectFill
+                blurHashImageView.image = blurHashImage
+                view.addSubview(blurHashImageView)
+                blurHashImageView.autoPinEdgesToSuperviewEdges()
+            }
+        case .text(let attachment):
+            storyView = TextAttachmentView(attachment: attachment).asThumbnailView()
+        }
+
+        storyView.clipsToBounds = true
+
+        return storyView
     }
 }
