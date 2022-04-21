@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -77,6 +77,11 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
             self.tryToScheduleGroupForProfileKeyUpdate(groupThread: groupThread,
                                                        transaction: transaction)
         }
+
+        // Note that we don't kick off updates yet (don't schedule tryToUpdateNext for the end of the transaction)
+        // because we want to make sure that any profile key update is committed to the server first.
+        // This isn't a guarantee because there could *already* be a series of updates going,
+        // but it helps in the common case.
     }
 
     private func tryToScheduleGroupForProfileKeyUpdate(groupThread: TSGroupThread,
