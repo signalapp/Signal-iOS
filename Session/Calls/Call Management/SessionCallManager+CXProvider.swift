@@ -8,9 +8,11 @@ extension SessionCallManager: CXProviderDelegate {
     
     public func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
         AssertIsOnMainThread()
-        guard let call = self.currentCall else { return action.fail() }
-        call.startSessionCall()
-        action.fulfill()
+        if startCallAction() {
+            action.fulfill()
+        } else {
+            action.fail()
+        }
     }
     
     public func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
@@ -18,21 +20,11 @@ extension SessionCallManager: CXProviderDelegate {
         print("[CallKit] Perform CXAnswerCallAction")
         guard let call = self.currentCall else { return action.fail() }
         if CurrentAppContext().isMainAppAndActive {
-            if let _ = CurrentAppContext().frontmostViewController() as? CallVC {
-                call.answerSessionCall()
+            if answerCallAction() {
+                action.fulfill()
             } else {
-                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // FIXME: Handle more gracefully
-                let callVC = CallVC(for: self.currentCall!)
-                if let conversationVC = presentingVC as? ConversationVC {
-                    callVC.conversationVC = conversationVC
-                    conversationVC.inputAccessoryView?.isHidden = true
-                    conversationVC.inputAccessoryView?.alpha = 0
-                }
-                presentingVC.present(callVC, animated: true) {
-                    call.answerSessionCall()
-                }
+                action.fail()
             }
-            action.fulfill()
         } else {
             call.answerSessionCallInBackground(action: action)
         }
@@ -41,22 +33,21 @@ extension SessionCallManager: CXProviderDelegate {
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         print("[CallKit] Perform CXEndCallAction")
         AssertIsOnMainThread()
-        guard let call = self.currentCall else { return action.fail() }
-        call.endSessionCall()
-        if call.didTimeout {
-            reportCurrentCallEnded(reason: .unanswered)
+        if endCallAction() {
+            action.fulfill()
         } else {
-            reportCurrentCallEnded(reason: nil)
+            action.fail()
         }
-        action.fulfill()
     }
     
     public func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
         print("[CallKit] Perform CXSetMutedCallAction, isMuted: \(action.isMuted)")
         AssertIsOnMainThread()
-        guard let call = self.currentCall else { return action.fail() }
-        call.isMuted = action.isMuted
-        action.fulfill()
+        if setMutedCallAction(isMuted: action.isMuted) {
+            action.fulfill()
+        } else {
+            action.fail()
+        }
     }
     
     public func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {

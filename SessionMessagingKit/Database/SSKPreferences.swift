@@ -39,7 +39,7 @@ public class SSKPreferences: NSObject {
     }
     
     @objc
-    public static var isCallKitSupported() -> Bool {
+    public static var isCallKitSupported: Bool {
         let userLocale = NSLocale.current
         
         guard let regionCode = userLocale.regionCode else { return false }
