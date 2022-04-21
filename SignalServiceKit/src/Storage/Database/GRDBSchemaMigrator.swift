@@ -1656,22 +1656,18 @@ public class GRDBSchemaMigrator: NSObject {
             """)
         }
 
-        if FeatureFlags.storiesMigration2 {
+        migrator.registerMigration(MigrationId.updateConversationLoadInteractionDistanceIndex.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
 
-            migrator.registerMigration(MigrationId.updateConversationLoadInteractionDistanceIndex.rawValue) { db in
-                let transaction = GRDBWriteTransaction(database: db)
-                defer { transaction.finalizeTransaction() }
-                guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
+            try db.execute(sql: """
+                DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
 
-                try db.execute(sql: """
-                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
-
-                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
-                    ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
-                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-                """)
-            }
-
+                CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+                ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
+                WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+            """)
         }
 
         if FeatureFlags.storiesMigration3 {
