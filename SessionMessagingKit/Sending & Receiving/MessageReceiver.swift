@@ -174,9 +174,9 @@ public enum MessageReceiver {
                 // • This method was invoked and the received message timestamps table was updated
                 // • Processing wasn't finished
                 // • The user doesn't see the new closed group
-            } else if let message = message as? CallMessage, message.kind?.description != "preOffer" {
-                // Allow duplicates for all call messages except preOffer which may generate
-                // a new incoming call
+            } else if message.isKind(of: CallMessage.self) {
+                // Allow duplicates for all call messages
+                // The double checking will be done on message handling to make sure the messages are for the same ongoing call
             } else {
                 guard !Set(storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) || isRetry else { throw Error.duplicateMessage }
                 storage.addReceivedMessageTimestamp(envelope.timestamp, using: transaction)
