@@ -154,6 +154,9 @@
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "ਗਲਤੀ";
 
+/* No comment provided by engineer. */
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "ਡਾਟਾਬੇਸ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ";
 
@@ -209,7 +212,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "ਸੁਰਖੀ";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "ਅਟੈਚਮੈਂਟ ਨਿਰਯਾਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "ਅਟੈਚਮੈਂਟ ਐਕਸਪੋਰਟ ਕਰਨ ਵਿੱਚ ਅਸਫ਼ਲ ਹੈ।";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "ਸੰਭਾਲਣ ਲਈ ਅਸਫ਼ਲ ਹੈ";
@@ -227,10 +230,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "ਹੌਲੀ, ਵੱਧ ਡੇਟਾ";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Faster, less data";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "ਵੱਧ ਤੇਜ਼, ਘੱਟ ਡਾਟਾ";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "ਮੀਡੀਆ ਕੁਆਲਿਟੀ";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "ਮੀਡੀਆ ਕੁਆਲਟੀ";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ ਨੂੰ ਸੁਨੇਹਾ ਦਿਓ";
@@ -365,10 +368,10 @@
 "BACK_BUTTON" = "ਵਾਪਸ";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "ਮੇਰੇ ਬਿੱਲੇ";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "ਬੈਜ";
+"BADGE_CONFIGURATION_TITLE" = "ਬਿੱਲਾ";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "ਸਹਾਇਕ ਬਣੋ";
@@ -377,13 +380,13 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal ਨੂੰ ਸਹਿਯੋਗ ਦਿਓ";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "ਸਹਾਇਕ ਬਣੋ";
@@ -398,7 +401,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "ਬੂਸਟ ਲਈ ਧੰਨਵਾਦ ਹੈ!";
@@ -416,7 +419,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "ਜਦੋਂ ਤੁਹਾਡੇ ਕੋਲ ਇੱਕ ਤੋਂ ਵੱਧ ਬਿੱਲੇ ਹੋਣ ਤਾਂ ਤੁਸੀਂ ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਉੱਤੇ ਹੋਰਾਂ ਨੂੰ ਦਿਖਾਉਣ ਲਈ ਇੱਕ ਬਿੱਲਾ ਚੁਣ ਸਕਦੇ ਹੋ।";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ਬੈਨਰ ਬੰਦ ਕਰੋ";
@@ -428,7 +431,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "ਬਲਾਕ";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" ਗਰੁੱਪ ਨੂੰ ਬਲੌਕ ਕਰਨਾ ਅਤੇ ਛੱਡਣਾ ਹੈ?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" ਗਰੁੱਪ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਉਣੀ ਅਤੇ ਛੱਡਣਾ ਹੈ?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਉਣੀ ਹੈ?";
@@ -479,7 +482,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "ਤੁਸੀਂ ਖੁਦ ਉੱਤੇ ਪਾਬੰਦੀ ਨਹੀਂ ਲਾ ਸਕਦੇ ਹੋ।";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ਤਰੁੱਟੀ";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ਗਲਤੀ";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ਤੋਂ ਪਾਬੰਦੀ ਹਟਾਈ ਜਾ ਚੁੱਕੀ ਹੈ। ";
@@ -497,7 +500,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
@@ -572,7 +575,7 @@
 "BUTTON_SUBMIT" = "ਭੇਜੋ";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "ਅਨਮਿਊਟ ਕਰੋ";
+"BUTTON_UNMUTE" = "ਅਣ-ਮਿਊਟ ਕਰੋ";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "ਵੇਖੋ";
@@ -587,22 +590,22 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ਆ ਰਹੀ ਆਡੀਓ ਕਾਲ…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call at %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "%@ ਵਜੇ 📞 ਖੁੰਝੀ ਆਡੀਓ ਕਾਲ";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 ਖੁੰਝੀ ਆਡੀਓ ਕਾਲ";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "%@ ਨੂੰ 📞 ਖੁੰਝੀ ਆਡੀਓ ਕਾਲ";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Missed audio call on %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "%@ ਨੂੰ 📞 ਖੁੰਝੀ ਆਡੀਓ ਕਾਲ";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "ਤੁਸੀਂ Signal ਵਿੱਚ ਕਾਲਾਂ ਕਰਨ ਅਤੇ ਵੌਇਸ ਸੁਨੇਹੇ ਰਿਕਾਰਡ ਕਰਨ ਲਈ iOS Settings ਐਪ ਵਿੱਚ ਮਾਈਕ੍ਰੋਫੋਨ ਐਕਸੈਸ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "ਤੁਸੀਂ Signal ਵਿੱਚ ਕਾਲਾਂ ਕਰਨ ਅਤੇ ਵੌਇਸ ਸੁਨੇਹੇ ਰਿਕਾਰਡ ਕਰਨ ਲਈ iOS Settings ਐਪ ਵਿੱਚ ਮਾਈਕ੍ਰੋਫੋਨ ਪਹੁੰਚ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ।";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "ਮਾਈਕ੍ਰੋਫੋਨ ਐਕਸੈਸ ਦੀ ਲੋੜ ਹੈ";
+"CALL_AUDIO_PERMISSION_TITLE" = "ਮਾਈਕ੍ਰੋਫੋਨ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ ਮਿਸਡ ਕਾਲ ਕਿਉਂਕਿ ਕਾਲਰ ਦਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਬਦਲ ਗਿਆ.";
@@ -629,16 +632,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 ਆ ਰਹੀ ਵੀਡੀਓ ਕਾਲ…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call at %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "%@ ਵਜੇ 📹 ਖੁੰਝੀ ਵੀਡੀਓ ਕਾਲ";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 ਖੁੰਝੀ ਵੀਡੀਓ ਕਾਲ";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "%@ ਨੂੰ 📹 ਖੁੰਝੀ ਵੀਡੀਓ ਕਾਲ";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Missed video call on %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "%@ ਨੂੰ 📹 ਖੁੰਝੀ ਵੀਡੀਓ ਕਾਲ";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ਵੀਡੀਓ ਤੋਂ  ਬਿਨਾ ਜਵਾਬ ਦਿਓ ";
@@ -695,7 +698,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "ਦੇਸ਼ ਚੁਣੋ";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "ਫ਼ੋਟੋ ਨੂੰ ਸੋਧੋ";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Your new number should not be the same as your old one. Please enter a new phone number to change your number.";
@@ -836,7 +839,7 @@
 "CONTACT_FIELD_ADDRESS_COUNTRY" = "ਦੇਸ਼";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "ਨੇਬਰਹੁੱਡ";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "ਗੁਆਂਢ";
 
 /* Label for the 'pobox' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_POBOX" = "ਪੀ.ਓ. ਬਾਕਸ";
@@ -914,7 +917,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "ਨਾ-ਢੁੱਕਵਾਂ ਸੰਪਰਕ।";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "ਕੋਈ ਸੰਪਰਕ ਖੇਤਰ ਚੁਣੇ ਨਹੀਂ ਹਨ.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "ਕੋਈ ਸੰਪਰਕ ਖੇਤਰ ਚੁਣੇ ਨਹੀਂ ਹਨ।";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "ਸੰਪਰਕ ਸਹਾਇਤਾ";
@@ -1025,7 +1028,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ਚੈਟ ਹਟਾਉਣੀ ਹੈ?";
 
 /* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "%@ਚੈਟਾਂ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
@@ -1055,13 +1058,13 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "ਗਰੁੱਪ";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "ਹਾਲ ਦੀਆਂ ਗੱਲਾਂ";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "ਸੱਜਰੀਆਂ ਗੱਲਾਂ";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "ਲੋਕ";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "ਪ੍ਰਾਪਤਕਰਤਾ ਦੀ ਚੋਣ ਕਰੋ";
+"CONVERSATION_PICKER_TITLE" = "ਪ੍ਰਾਪਤਕਰਤਾ ਚੁਣੋ";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "ਕੋਈ ਮੇਲ ਨਹੀਂ ਹਨ";
@@ -1103,7 +1106,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "ਬੈਜ";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "ਬਿੱਲੇ";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "ਤੁਸੀਂ ਹੁਣ ਇਸ ਵਰਤੋਂਕਾਰ ਨੂੰ ਸੁਨੇਹੇ ਭੇਜ ਜਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।";
@@ -1274,7 +1277,7 @@
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ਸੰਪਰਕ ਵੇਰਵੇ";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "ਪ੍ਰੋਫਾਈਲ ਸਾਂਝੀ ਕਰੋ";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "ਪ੍ਰੋਫਾਈਲ ਸਾਂਝਾ ਕਰੋ";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "ਸੰਪਰਕਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ";
@@ -1326,6 +1329,21 @@
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "ਗਰੇਡੀਐਂਟ ਦੀ ਦਿਸ਼ਾ ਬਦਲਣ ਲਈ ਡ੍ਰੈਗ ਕਰੋ";
+
+/* Button to run the database integrity check */
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+
+/* Message for alert before running a database integrity check */
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+
+/* Button to save database integrity check results to the debug log */
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+
+/* Title for alert after running a database integrity check */
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+
+/* Title for alert before running a database integrity check */
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ.";
@@ -1606,38 +1624,41 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ਸੈਂਸਰਸ਼ਿਪ ਤਰਤੀਬ ਟਿਕਾਣਾ";
 
-/* Donation amount label for the donate to signal view */
-"DONATION_VIEW_AMOUNT_LABEL" = "ਦਾਨ ਦੀ ਰਕਮ";
+/* Section title for donation amount on receipts */
+"DONATION_RECEIPT_AMOUNT" = "Amount";
 
-/* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "ਪਸੰਦੀਦਾ ਰਕਮ ਦਿਓ";
+/* Section title for donation date on receipts */
+"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+
+/* Title on the view where you can see a single receipt */
+"DONATION_RECEIPT_DETAILS" = "ਵੇਰਵਾ";
+
+/* Text on the button that exports the receipt */
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+
+/* Footer text at the bottom of donation receipts */
+"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+
+/* Title for one-time donation receipts */
+"DONATION_RECEIPT_ONE_TIME" = "One-time";
+
+/* Title for recurring donation receipts */
+"DONATION_RECEIPT_RECURRING" = "Recurring";
+
+/* Title on donation receipts */
+"DONATION_RECEIPT_TITLE" = "Donation receipt";
+
+/* Section title for donation type on receipts */
+"DONATION_RECEIPT_TYPE" = "Type";
+
+/* Title of view where you can see all of your donation receipts, or button to take you there */
+"DONATION_RECEIPTS" = "Donation Receipts";
+
+/* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal ਨੂੰ ਦਾਨ ਦਿਓ";
-
-/* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "ਦਾਨ ਦੇਣ ਦੇ ਹੋਰ ਢੰਗ";
-
-/* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "ਦਾਨ ਦੇਣ ਲਈ ਵੱਡੀ ਰਕਮ ਚੁਣੋ";
-
-/* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "ਦਾਨ ਦੇਣ ਲਈ ਘੱਟ ਰਕਮ ਚੁਣੋ";
-
-/* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "ਦਾਨ ਦੇਣ ਲਈ ਰਕਮ ਚੁਣੋ";
-
-/* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "ਤੁਹਾਡੇ ਸਹਿਯੋਗ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ ਹੈ!";
-
-/* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal ਨੂੰ ਤੁਹਾਡੇ ਵਰਗੇ ਲੋਕਾਂ ਦਾ ਆਸਰਾ ਹੈ।";
-
-/* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "Signal ਦੀ ਟੀਮ ਓਪਨ ਸੋਰਸ ਪਰਦੇਦਾਰੀ ਤਕਨੀਕ ਵਿਕਸਤ ਕਰਨ ਦੇ ਮਿਸ਼ਨ ਲਈ ਵਚਨਬੱਧ ਹੈ ਜੋ ਆਜ਼ਾਦ ਖੁਲਾਸੇ ਦੀ ਰੱਖਿਆ ਕਰਦੀ ਹੈ ਅਤੇ ਸੁਰੱਖਿਅਤ ਵਿਸ਼ਵਵਿਆਪੀ ਸੰਚਾਰ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਂਦੀ ਹੈ। ਤੁਹਾਡਾ ਯੋਗਦਾਨ ਇਸ ਮਿਸ਼ਨ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ। ਕੋਈ ਇਸ਼ਤਿਹਾਰ ਨਹੀਂ। ਕੋਈ ਟਰੈਕਰ ਨਹੀਂ। ਕੋਈ ਮਜ਼ਾਕ ਨਹੀਂ।\n\nਤੁਹਾਡਾ ਦਾਨ ਦੁਨੀਆ ਭਰ ਦੇ ਲੱਖਾਂ ਲੋਕਾਂ ਦੁਆਰਾ ਪ੍ਰਾਈਵੇਟ ਅਤੇ ਤਤਕਾਲ ਸੰਚਾਰ ਲਈ ਵਰਤੇ ਜਾਂਦੇ ਐਪ ਦੇ ਵਿਕਾਸ ਕਰਨ ਲਈ, ਸਰਵਰਾਂ ਅਤੇ ਬੈਂਡਵਿਡਥ ਲਈ ਅਦਾਇਗੀ ਕਰਨ ਵਿੱਚ ਸਹਾਇਤਾ ਕਰਦਾ ਹੈ।";
-
-/* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "ਦਾਨ ਕਿਉਂ ਦੇਈਏ?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "ਤੁਸੀਂ iOS ਸੈਟਿੰਗਸ ਐਪ ਵਿੱਚ ਐਕਸੈਸ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ.";
@@ -1862,7 +1883,7 @@
 "FAILED_VERIFICATION_TITLE" = "ਸੁਰੱਖਿਆ ਨੰਬਰ ਦੀ ਤਸਦੀਕ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "ਬਿੱਲਾ ਚੁਣੋ";
 
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
@@ -1898,7 +1919,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "ਸੁਨੇਹਾ ਭੇਜਿਆ";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "ਸੁਨੇਹੇ ਭੇਜੇ";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "ਸੁਨੇਹੇ ਭੇਜਿਆ";
 
 /* Indicates that the user can add a text message to forwarded messages. */
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "ਸੁਨੇਹਾ ਜੋੜੋ";
@@ -2969,7 +2990,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "ਆਰਕਾਈਵ ਕਰੋ";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Select Chats";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "ਚੈਟਾਂ ਚੁਣੋ";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
@@ -3056,7 +3077,7 @@
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "ਆਵਾਜ਼ ਦਾ ਸੁਨੇਹਾ";
 
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ਅਵੈਧ ਆਡੀਓ ਫਾਈਲ.";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ਗਲਤ ਆਡੀਓ ਫਾਈਲ ਹੈ।";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "ਤੁਸੀਂ ਆਪਣੇ ਦੋਸਤਾਂ ਨੂੰ Signal ਨਾਲ ਜੁੜਨ ਵਾਸਤੇ ਸੱਦਾ ਭੇਜਣ ਲਈ iOS ਸੈਟਿੰਗਸ ਐਪ ਵਿੱਚ ਸੰਪਰਕਾਂ ਤਾਈਂ ਪਹੁੰਚ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ.";
@@ -3131,7 +3152,7 @@
 "LEAVE_GROUP_ACTION" = "ਗਰੁੱਪ ਛੱਡੋ";
 
 /* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "ਗਰੁੱਪ ਨੂੰ ਛੱਡਣ ਵੇਲੇ ਤਰੁਟੀ ਹੋਈ.";
+"LEAVE_GROUP_FAILED" = "ਗਰੁੱਪ ਨੂੰ ਛੱਡਣ ਵੇਲੇ ਗਲਤੀ ਆਈ ਹੈ।";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "ਇਹ QR ਕੋਡ ਵੈਧ ਨਹੀਂ ਹੈ. ਕਿਰਪਾ ਕਰਕੇ ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਸੀਂ ਉਸ ਡਿਵਾਈਸ 'ਤੇ ਦਿਖਾਏ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰ ਰਹੇ ਹੋ ਜਿਸ ਨੂੰ ਤੁਸੀਂ ਲਿੰਕ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ.";
@@ -3605,7 +3626,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ਫੋਨ ਨੰਬਰ ਨਾਲ ਖੋਜੋ";
 
 /* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
+"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 ਮੈਂਬਰ";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "ਨਵਾਂ ਗਰੁੱਪ";
@@ -4400,7 +4421,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "ਪਿੰਨ ਅਸਮਰੱਥ ਕਰਨਾ ਅਸਫ਼ਲ ਹੈ";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "ਪਿਨ ਸਿਰਜਣਾ ਅਸਫਲ ਰਿਹਾ";
+"PIN_RECREATION_ERROR_TITLE" = "PIN ਬਣਾਉਣਾ ਅਸਫ਼ਲ";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
 "PIN_RECRETION_ERROR_MESSAGE" = "Couldn’t create your PIN. Check your connection and try again.";
@@ -4618,6 +4639,15 @@
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "ਮੂਲ ਸੁਨੇਹਾ ਨਹੀਂ ਲੱਭਿਆ.";
 
+/* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+
+/* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+
+/* Message header when you are quoting a story. Embeds {{ story author name }} */
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "ਹਾਲੇ ਨਹੀਂ";
 
@@ -4724,7 +4754,7 @@
 "REGISTER_2FA_SUBMIT_BUTTON" = "ਜਮ੍ਹਾਂ ਕਰੋ";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "ਸੁਆਗਤ ਹੈ!";
+"REGISTER_CONTACTS_WELCOME" = "ਜੀ ਆਇਆਂ ਨੂੰ!";
 
 /* action sheet body */
 "REGISTER_RATE_LIMITING_BODY" = "ਤੁਸੀਂ ਬਹੁਤ ਜਲਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਲਈ. ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇੱਕ ਮਿੰਟ ਲਈ ਉਡੀਕ ਕਰੋ.";
@@ -4739,7 +4769,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "ਦੇਸ਼ ਦਾ ਕੋਡ";
 
 /* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "ਨੰਬਰ ਦਰਜ ਕਰੋ";
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "ਨੰਬਰ ਦਿਓ";
 
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਤਰੁਟੀ";
@@ -4814,7 +4844,7 @@
 "REREGISTER_FOR_PUSH" = "ਪੁਸ਼ ਸੂਚਨਾਵਾਂ ਮੁੜ-ਰਜਿਸਟਰ ਕਰੋ";
 
 /* Configure reactions reset button text */
-"RESET" = "ਰੀਸੈੱਟ ਕਰੋ";
+"RESET" = "ਮੁੜ-ਸੈੱਟ ਕਰੋ";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "ਮੁੜ-ਕੋਸ਼ਿਸ਼ ਕਰੋ";
@@ -4883,7 +4913,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "ਪ੍ਰਮਾਣੀਕਰਨ ਅਸਫਲ ਰਿਹਾ";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ਨੂੰ ਅਨਲੌਕ ਕਰੋ";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ਨੂੰ ਅਣ-ਲਾਕ ਕਰੋ";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "ਟੀਨਾ ਵਰਮਾ";
@@ -5243,7 +5273,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Edit Number";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "ਫ਼ੋਨ ਨੰਬਰ ਬਦਲੋ";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
 "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
@@ -5264,22 +5294,22 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "ਉਦਾਹਰਨ: %@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Your New Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "ਤੁਹਾਡਾ ਨਵਾਂ ਨੰਬਰ";
 
 /* Title for the 'old phone number' section in the 'change phone number' settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "Your Old Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE" = "ਤੁਹਾਡਾ ਪੁਰਾਣਾ ਨੰਬਰ";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "ਫੋਨ ਨੰਬਰ";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Verifying %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ ਦੀ ਤਸਦੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Use this to change your current phone number to a new phone number. You can’t undo this change.\n\nBefore continuing, make sure your new number can receive SMS or calls.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "ਫ਼ੋਨ ਨੰਬਰ ਬਦਲੋ";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "ਨੰਬਰ ਬਦਲੋ";
@@ -5371,9 +5401,6 @@
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "ਆਪਣੇ ਦੋਸਤਾਂ ਨੂੰ ਸੱਦੋ";
 
-/* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "ਤੁਸੀਂ ਮੇਰੇ ਨਾਲ @signalapp ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਸੰਪਰਕ ਕਰ ਸਕਦੇ ਹੋ. ਹੁਣੇ ਪ੍ਰਾਪਤ ਕਰੋ: https://signal.org/download/";
-
 /* Label for settings view that allows user to change the chat color and wallpaper. */
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "ਚੈਟ ਰੰਗ ਤੇ ਵਾਲਪੇਪਰ";
 
@@ -5439,6 +5466,9 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "ਸੂਚਨਾਵਾਂ ";
+
+/* Title for the 'one-time donation' link in settings. */
+"SETTINGS_ONE_TIME_DONATION" = "One-time Donation";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "ਸਰਗਰਮ ਕਰੋ";
@@ -5953,11 +5983,8 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
-/* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Signal ਬੂਸਟ";
-
-/* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "ਇੱਕ Signal ਸਹਾਇਕ ਬਣੋ";
+/* Title for the 'monthly donation' link in settings. */
+"SETTINGS_SUBSCRIPTION" = "Monthly Donation";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਲੌਕ";
@@ -5991,9 +6018,6 @@
 
 /* action sheet item to open native messages app */
 "SHARE_ACTION_MESSAGE" = "ਸੁਨੇਹਾ";
-
-/* action sheet item */
-"SHARE_ACTION_TWEET" = "ਟਵਿਟਰ";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "%@ ਦੇ ਨਾਲ ਤੁਹਾਡਾ ਸੁਰੱਖਿਆ ਨੰਬਰ ਹਾਲ ਹੀ ਵਿੱਚ ਬਦਲ ਗਿਆ ਹੈ. ਤੁਸੀਂ ਇਸ ਨੂੰ ਦੁਬਾਰਾ ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਮੁੱਖ ਪੰਨੇ ਵਿੱਚ ਇਸ ਦੀ ਤਸਦੀਕ ਕਰਨਾ ਚਾਹ ਸਕਦੇ ਹੋ.";
@@ -6047,25 +6071,25 @@
 "SOUNDS_NONE" = "ਕੋਈ ਨਹੀਂ";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "ਪ੍ਰਮਾਣੀਕਰਣ ਪੂਰਾ।";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "ਤਸਦੀਕ ਕਰਨਾ ਪੂਰਾ ਹੋਇਆ।";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ਜੇ ਤੁਸੀਂ ਪ੍ਰਮਾਣੀਕਰਣ ਨੂੰ ਛੱਡਣ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਦੂਜੇ ਲੋਕਾਂ ਦੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਖੁੰਝਾ ਦਿਓ ਅਤੇ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਭੇਜੇ ਜਾਣ ਵਿੱਚ ਅਸਫ਼ਲ ਰਹਿਣ।";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ਜੇ ਤੁਸੀਂ ਤਸਦੀਕ ਕਰਨ ਨੂੰ ਛੱਡਣ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਦੂਜੇ ਲੋਕਾਂ ਦੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਖੁੰਝਾ ਦਿਓ ਅਤੇ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਭੇਜੇ ਜਾਣ ਵਿੱਚ ਅਸਫ਼ਲ ਰਹਿਣ।";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ਪ੍ਰਮਾਣਿਤ ਕੀਤੇ ਬਗੈਰ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ਤਸਦੀਕ ਕੀਤੇ ਬਗੈਰ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?";
 
 /* Body for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_BODY" = "Signal 'ਤੇ ਸਪੈਮ ਨੂੰ ਰੋਕਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਤਸਦੀਕ ਨੂੰ ਪੂਰਾ ਕਰੋ।\n\nਤਸਦੀਕ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਸੀਂ ਸੁਨੇਹਾ ਭੇਜਣਾ ਜਾਰੀ ਰੱਖ ਸਕਦੇ ਹੋ। ਕੋਈ ਵੀ ਰੁਕੇ ਹੋਏ ਸੁਨੁਹੇ ਆਪਣੇ ਆਪ ਭੇਜੇ ਜਾਣਗੇ।";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "ਮੈਸੇਜਿੰਗ ਨੂੰ ਜਾਰੀ ਰੱਖਣ ਲਈ ਪ੍ਰਮਾਣਿਤ ਕਰੋ";
+"SPAM_CAPTCHA_SHEET_TITLE" = "ਮੈਸੇਜਿੰਗ ਨੂੰ ਜਾਰੀ ਰੱਖਣ ਲਈ ਤਸਦੀਕ ਕਰੋ";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ਪ੍ਰਮਾਣੀਕਰਣ ਨੂੰ ਛੱਡੋ";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ਤਸਦੀਕ ਕਰਨ ਨੂੰ ਛੱਡੋ";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "ਪ੍ਰਮਾਣੀਕਰਣ ਪੂਰਾ ਕਰੋ";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "ਤਸਦੀਕ ਪੂਰੀ ਕਰੋ";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "ਸਟਿੱਕਰ ਸੁਨੇਹਾ";
@@ -6119,7 +6143,7 @@
 "STORIES_DELETE_REPLY_ACTION" = "ਹਟਾਓ";
 
 /* Context menu action to forward the selected story */
-"STORIES_FORWARD_STORY_ACTION" = "ਅੱਗੇ ਭੇਜੋ ";
+"STORIES_FORWARD_STORY_ACTION" = "ਅੱਗੇ ਭੇਜੋ";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
@@ -6127,17 +6151,23 @@
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
-/* Context menu action to privately reply to the selected story reply */
-"STORIES_PRIVATE_REPLY_ACTION" = "Private Reply";
+/* Indicates that there are no recent stories to render */
+"STORIES_NO_RECENT_MESSAGES" = "No recent updates to show right now.";
+
+/* Indicates that this story has no replies yet */
+"STORIES_NO_REPLIES_YET" = "No replies yet";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "ਸਾਂਝਾ ਕਰੋ";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "ਕਹਾਣੀਆਂ";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+
+/* Text indicating a story that was replied to is no longer available. */
+"STORY_NO_LONGER_AVAILABLE" = "ਹੁਣ ਮੌਜੂਦ ਨਹੀਂ ਹੈ";
 
 /* Button for replying to a story with a single existing reply. */
 "STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> reply";
@@ -6158,7 +6188,7 @@
 "STORY_REPLY_YOU_AUTHOR" = "ਤੁਸੀਂ";
 
 /* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "ਬੈਜ";
+"SUBSCRIBER_BADGES" = "ਬਿੱਲੇ";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
 "SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
@@ -6167,13 +6197,13 @@
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "ਮੈਂਬਰੀ ਲਈ ਸਵਾਲ-ਜਵਾਬ";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "ਯੋਗਦਾਨ";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "خیرات کرو";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
 
 /* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "ਨਹੀਂ ਧੰਨਵਾਦ";
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "ਹਾਲੇ ਨਹੀਂ";
 
 /* Title for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "ਸਹਾਇਕ ਬਣੋ";
@@ -6236,16 +6266,16 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ ...";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "ਯੋਗਦਾਨ ਕਿਓ ਪਾਈਏ?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "ਦਾਨ ਕਿਉਂ ਦੇਈਏ?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
@@ -6260,13 +6290,13 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "ਮੈਂਬਰੀ ਰੱਦ ਕਰੋ";
 
 /* Confirm Cancellation? Action sheet confirm button */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "ਪੁਸ਼ਟੀ ਕਰੋ";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "ਤਸਦੀਕ";
 
 /* Confirm Cancellation? Action sheet message */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ਪੱਕਾ ਰੱਦ ਕਰਨਾ ਹੈ?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ਤਸਦੀਕ ਰੱਦ ਕਰਨਾ ਹੈ?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
@@ -6308,7 +6338,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Read more.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";
@@ -6335,7 +6365,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "ਅੱਪਡੇਟ ਕਰੋ";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "ਬੰਦ ";
@@ -6527,7 +6557,7 @@
 "UPDATE_CONTACT_ACTION" = "ਸੰਪਰਕ ਅੱਪਡੇਟ ਕਰੋ";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "ਗਰੁੱਪ ਨੂੰ ਅਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ.";
+"UPDATE_GROUP_FAILED" = "ਗਰੁੱਪ ਨੂੰ ਅਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ਨਵਾਂ ਗਰੁੱਪ ਅੱਪਡੇਟ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਆਪਣਾ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ ਅਤੇ ਫੇਰ ਅਜ਼ਮਾਓ।";
@@ -6611,7 +6641,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "ਰੱਦ ਕਰਨ ਲਈ ਸਲਾਈਡ ਕਰੋ";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "ਆਵਾਜ਼ ਵਾਲਾ ਸੁਨੇਹਾ";
+"VOICE_MESSAGE_FILE_NAME" = "ਵੌਇਸ ਸੁਨੇਹਾ";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਪ੍ਰੈੱਸ ਕਰੋ ਤੇ ਦਬਾ ਕੇ ਰੱਖੋ।";
