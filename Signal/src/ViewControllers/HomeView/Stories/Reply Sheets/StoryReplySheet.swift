@@ -49,7 +49,7 @@ extension StoryReplySheet {
         ) else { return }
 
         // We only use the thread's DM timer for 1:1 story replies,
-        // group relies last for the lifetime of the story.
+        // group replies last for the lifetime of the story.
         let shouldUseThreadDMTimer = !thread.isGroupThread
 
         ThreadUtil.enqueueSendAsyncWrite { [weak self] transaction in

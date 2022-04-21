@@ -236,7 +236,9 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             thumbnailView: storyCell.attachmentThumbnail,
             storyView: try storyView(for: storyMessage),
             thumbnailRepresentsStoryView: storyMessage.uniqueId == storyModel.messages.last?.uniqueId,
-            pageViewController: self
+            pageViewController: self,
+            interactiveGesture: interactiveDismissCoordinator?.interactionInProgress == true
+                ? interactiveDismissCoordinator?.panGestureRecognizer : nil
         )
     }
 

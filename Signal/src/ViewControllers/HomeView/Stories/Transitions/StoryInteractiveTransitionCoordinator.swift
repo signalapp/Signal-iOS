@@ -47,7 +47,7 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
         case .began:
             gestureRecognizer.setTranslation(.zero, in: pageViewController.view)
 
-            pageViewController.currentContextViewController.pause()
+            pageViewController.currentContextViewController.pause(hideChrome: true)
 
             switch interactiveEdge {
             case .none:
