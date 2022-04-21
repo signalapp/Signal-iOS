@@ -100,41 +100,55 @@ public final class ClosedGroupPoller : NSObject {
 
     private func poll(_ groupPublicKey: String) -> Promise<Void> {
         guard isPolling(for: groupPublicKey) else { return Promise.value(()) }
-        let promise = SnodeAPI.getSwarm(for: groupPublicKey).then2 { [weak self] swarm -> Promise<(Snode, [SnodeReceivedMessage])> in
-            // randomElement() uses the system's default random generator, which is cryptographically secure
-            guard let snode = swarm.randomElement() else { return Promise(error: Error.insufficientSnodes) }
-            guard let self = self, self.isPolling(for: groupPublicKey) else {
-                return Promise(error: Error.pollingCanceled)
-            }
-            
-            return SnodeAPI.getRawMessages(from: snode, associatedWith: groupPublicKey).map2 {
-                let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse($0, from: snode, associatedWith: groupPublicKey)
+        
+        let promise = SnodeAPI.getSwarm(for: groupPublicKey)
+            .then2 { [weak self] swarm -> Promise<(Snode, [SnodeReceivedMessage])> in
+                // randomElement() uses the system's default random generator, which is cryptographically secure
+                guard let snode = swarm.randomElement() else { return Promise(error: Error.insufficientSnodes) }
+                guard let self = self, self.isPolling(for: groupPublicKey) else {
+                    return Promise(error: Error.pollingCanceled)
+                }
                 
-                return (snode, messages)
+                return SnodeAPI.getRawMessages(from: snode, associatedWith: groupPublicKey)
+                    .map2 {
+                        let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse($0, from: snode, associatedWith: groupPublicKey)
+                        
+                        return (snode, messages)
+                    }
             }
-        }
+        
         promise.done2 { [weak self] snode, messages in
             guard let self = self, self.isPolling(for: groupPublicKey) else { return }
+            
             if !messages.isEmpty {
                 SNLog("Received \(messages.count) new message(s) in closed group with public key: \(groupPublicKey).")
-            }
-            messages.forEach { message in
-                guard let envelope = SNProtoEnvelope.from(message) else { return }
-                do {
-                    let data = try envelope.serializedData()
-                    let job = MessageReceiveJob(data: data, serverHash: message.info.hash, isBackgroundPoll: false)
-                    SNMessagingKitConfiguration.shared.storage.write { transaction in
-                        SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
-                    }
-                } catch {
-                    SNLog("Failed to deserialize envelope due to error: \(error).")
-                }
-            }
-            
-            // Now that the MessageReceiveJob's have been created we can persist the received messages
-            if !messages.isEmpty {
+                
                 GRDBStorage.shared.write { db in
-                    messages.forEach { try? $0.info.save(db) }
+                    messages.forEach { message in
+                        guard let envelope = SNProtoEnvelope.from(message) else { return }
+                        
+                        do {
+                            JobRunner.add(
+                                db,
+                                job: Job(
+                                    variant: .messageReceive,
+                                    behaviour: .runOnce,
+                                    threadId: groupPublicKey,
+                                    details: MessageReceiveJob.Details(
+                                        data: try envelope.serializedData(),
+                                        serverHash: message.info.hash,
+                                        isBackgroundPoll: false
+                                    )
+                                )
+                            )
+                            
+                            // Persist the received message after the MessageReceiveJob is created
+                            try message.info.save(db)
+                        }
+                        catch {
+                            SNLog("Failed to deserialize envelope due to error: \(error).")
+                        }
+                    }
                 }
             }
         }

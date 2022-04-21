@@ -115,7 +115,7 @@ public extension Identity {
                 return nil
             }
             
-            return try? Box.KeyPair(
+            return Box.KeyPair(
                 publicKey: publicKey.data.bytes,
                 secretKey: privateKey.data.bytes
             )
@@ -156,7 +156,7 @@ public extension Identity {
         }
     }
     
-    static func clearUserKeyPair() {
+    static func clearAll() {
         GRDBStorage.shared.write { db in
             try Identity.deleteAll(db)
         }
@@ -165,8 +165,8 @@ public extension Identity {
 
 @objc(SUKIdentity)
 public class objc_Identity: NSObject {
-    @objc(clearUserKeyPair)
-    public static func objc_clearUserKeyPair() {
-        Identity.clearUserKeyPair()
+    @objc(clearAll)
+    public static func objc_clearAll() {
+        Identity.clearAll()
     }
 }

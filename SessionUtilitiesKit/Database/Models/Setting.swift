@@ -87,16 +87,34 @@ public extension Setting {
         public init(unicodeScalarLiteral value: String) { self.init(value) }
         public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
     }
+    
+    struct EnumKey: RawRepresentable, ExpressibleByStringLiteral {
+        public let rawValue: String
+        
+        public init(_ rawValue: String) { self.rawValue = rawValue }
+        public init?(rawValue: String) { self.rawValue = rawValue }
+        public init(stringLiteral value: String) { self.init(value) }
+        public init(unicodeScalarLiteral value: String) { self.init(value) }
+        public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
+    }
 }
+
+public protocol EnumSetting: RawRepresentable where RawValue == Int {}
 
 // MARK: - GRDB Interactions
 
 public extension GRDBStorage {
-    subscript(key: Setting.BoolKey) -> Bool? { return read { db in db[key] } }
+    subscript(key: Setting.BoolKey) -> Bool {
+        // Default to false if it doesn't exist
+        return (read { db in db[key] } ?? false)
+    }
+    
     subscript(key: Setting.DoubleKey) -> Double? { return read { db in db[key] } }
     subscript(key: Setting.IntKey) -> Int? { return read { db in db[key] } }
     subscript(key: Setting.StringKey) -> String? { return read { db in db[key] } }
     subscript(key: Setting.DateKey) -> Date? { return read { db in db[key] } }
+    
+    subscript<T: EnumSetting>(key: Setting.EnumKey) -> T? { return read { db in db[key] } }
 }
 
 public extension Database {
@@ -112,8 +130,11 @@ public extension Database {
         }
     }
     
-    subscript(key: Setting.BoolKey) -> Bool? {
-        get { self[key.rawValue]?.value(as: Bool.self) }
+    subscript(key: Setting.BoolKey) -> Bool {
+        get {
+            // Default to false if it doesn't exist
+            (self[key.rawValue]?.value(as: Bool.self) ?? false)
+        }
         set { self[key.rawValue] = Setting(key: key.rawValue, value: newValue) }
     }
     
@@ -129,6 +150,17 @@ public extension Database {
     
     subscript(key: Setting.StringKey) -> String? {
         get { self[key.rawValue]?.value(as: String.self) }
+        set { self[key.rawValue] = Setting(key: key.rawValue, value: newValue) }
+    }
+    
+    subscript<T: EnumSetting>(key: Setting.EnumKey) -> T? {
+        get {
+            guard let rawValue: Int = self[key.rawValue]?.value(as: Int.self) else {
+                return nil
+            }
+            
+            return T(rawValue: rawValue)
+        }
         set { self[key.rawValue] = Setting(key: key.rawValue, value: newValue) }
     }
     

@@ -6,7 +6,7 @@ import SessionUtilitiesKit
 
 extension ConfigurationMessage {
 
-    public static func getCurrent(_ db: Database) throws -> ConfigurationMessage? {
+    public static func getCurrent(_ db: Database) throws -> ConfigurationMessage {
         let profile: Profile = Profile.fetchOrCreateCurrentUser(db)
         
         let displayName: String = profile.name

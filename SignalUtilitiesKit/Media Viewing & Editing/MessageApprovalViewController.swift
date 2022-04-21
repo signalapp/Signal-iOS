@@ -163,7 +163,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             return recipientRow
         }
 
-        nameLabel.text = Profile.displayName(for: contactThread.contactSessionID())
+        nameLabel.text = Profile.displayName(id: contactThread.contactSessionID())
         nameLabel.textColor = Colors.text
 
         if let profileName = self.profileName(contactThread: contactThread) {
@@ -188,7 +188,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     }
 
     private func profileName(contactThread: TSContactThread) -> String? {
-        return Profile.displayName(for: contactThread.contactSessionID())
+        return Profile.displayName(id: contactThread.contactSessionID())
     }
 
     // MARK: - Event Handlers

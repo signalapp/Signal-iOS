@@ -125,7 +125,7 @@ final class NukeDataModal : Modal {
     @objc private func clearDeviceOnly() {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] _ in
             GRDBStorage.shared.write { db in
-                MessageSender.syncConfiguration(db, forceSyncNow: true)
+                try MessageSender.syncConfiguration(db, forceSyncNow: true)
                     .ensure(on: DispatchQueue.main) {
                         self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                         UserDefaults.removeAll() // Not done in the nuke data implementation as unlinking requires this to happen later

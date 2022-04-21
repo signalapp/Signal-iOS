@@ -56,3 +56,27 @@ public class SSKPreferences: NSObject {
         OWSPrimaryStorage.dbReadWriteConnection().setBool(value, forKey: key, inCollection: collection)
     }
 }
+
+// MARK: - Objective C Support
+
+public extension SSKPreferences {
+    @objc(setScreenSecurity:)
+    static func objc_setScreenSecurity(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.preferencesAppSwitcherPreviewEnabled] = enabled }
+    }
+    
+    @objc(setAreReadReceiptsEnabled:)
+    static func objc_setAreReadReceiptsEnabled(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.areReadReceiptsEnabled] = enabled }
+    }
+    
+    @objc(setTypingIndicatorsEnabled:)
+    static func objc_setTypingIndicatorsEnabled(_ enabled: Bool) {
+        GRDBStorage.shared.write { db in db[.typingIndicatorsEnabled] = enabled }
+    }
+    
+    @objc(areTypingIndicatorsEnabled)
+    static func objc_areTypingIndicatorsEnabled() -> Bool {
+        return (GRDBStorage.shared.read { db in db[.typingIndicatorsEnabled] } == true)
+    }
+}

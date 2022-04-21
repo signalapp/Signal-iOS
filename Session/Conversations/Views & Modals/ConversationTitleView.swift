@@ -88,7 +88,7 @@ final class ConversationTitleView : UIView {
             let sessionID = (thread as! TSContactThread).contactSessionID()
             let middleTruncatedHexKey: String = "\(sessionID.prefix(4))...\(sessionID.suffix(4))"
             
-            return Profile.displayName(for: sessionID, customFallback: middleTruncatedHexKey)
+            return Profile.displayName(id: sessionID, customFallback: middleTruncatedHexKey)
         }
     }
 

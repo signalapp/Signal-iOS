@@ -1,7 +1,15 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
 @objc(SNMessageRequestResponse)
 public final class MessageRequestResponse: ControlMessage {
+    private enum CodingKeys: String, CodingKey {
+        case isApproved
+    }
+    
     public var isApproved: Bool
     
     // MARK: - Initialization
@@ -28,6 +36,24 @@ public final class MessageRequestResponse: ControlMessage {
         coder.encode(isApproved, forKey: "isApproved")
     }
     
+    // MARK: - Codable
+    
+    required init(from decoder: Decoder) throws {
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+        
+        isApproved = try container.decode(Bool.self, forKey: .isApproved)
+        
+        try super.init(from: decoder)
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        
+        var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encodeIfPresent(isApproved, forKey: .isApproved)
+    }
+    
     // MARK: - Proto Conversion
 
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> MessageRequestResponse? {
@@ -38,7 +64,7 @@ public final class MessageRequestResponse: ControlMessage {
         return MessageRequestResponse(isApproved: isApproved)
     }
 
-    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+    public override func toProto(_ db: Database) -> SNProtoContent? {
         let messageRequestResponseProto = SNProtoMessageRequestResponse.builder(isApproved: isApproved)
         let contentProto = SNProtoContent.builder()
         

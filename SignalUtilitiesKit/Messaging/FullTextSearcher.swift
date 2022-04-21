@@ -44,7 +44,7 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
     // MARK: Equatable
 
     public static func == (lhs: ConversationSearchResult, rhs: ConversationSearchResult) -> Bool {
-        return lhs.thread.threadRecord.uniqueId == rhs.thread.threadRecord.uniqueId &&
+        return lhs.thread.thread == rhs.thread.thread &&
         lhs.message?.uniqueId == rhs.message?.uniqueId
     }
 }
@@ -103,7 +103,7 @@ public class GroupSearchResult: NSObject, Comparable {
     // MARK: Equatable
 
     public static func == (lhs: GroupSearchResult, rhs: GroupSearchResult) -> Bool {
-        return lhs.thread.threadRecord.uniqueId == rhs.thread.threadRecord.uniqueId
+        return lhs.thread.thread == rhs.thread.thread
     }
 }
 

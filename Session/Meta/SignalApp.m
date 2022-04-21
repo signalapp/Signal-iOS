@@ -3,7 +3,6 @@
 //
 
 #import "SignalApp.h"
-#import "AppDelegate.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/Threading.h>
 #import <SessionMessagingKit/Environment.h>

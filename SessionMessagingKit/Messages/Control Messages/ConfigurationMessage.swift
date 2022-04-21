@@ -1,11 +1,21 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import Curve25519Kit
 import SessionUtilitiesKit
 
 @objc(SNConfigurationMessage)
 public final class ConfigurationMessage : ControlMessage {
+    private enum CodingKeys: String, CodingKey {
+        case closedGroups
+        case openGroups
+        case displayName
+        case profilePictureURL
+        case profileKey
+        case contacts
+    }
+    
     public var closedGroups: Set<ClosedGroup> = []
     public var openGroups: Set<String> = []
     public var displayName: String?
@@ -48,6 +58,34 @@ public final class ConfigurationMessage : ControlMessage {
         coder.encode(profileKey, forKey: "profileKey")
         coder.encode(contacts, forKey: "contacts")
     }
+    
+    // MARK: - Codable
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+        
+        closedGroups = ((try? container.decode(Set<ClosedGroup>.self, forKey: .closedGroups)) ?? [])
+        openGroups = ((try? container.decode(Set<String>.self, forKey: .openGroups)) ?? [])
+        displayName = try? container.decode(String.self, forKey: .displayName)
+        profilePictureURL = try? container.decode(String.self, forKey: .profilePictureURL)
+        profileKey = try? container.decode(Data.self, forKey: .profileKey)
+        contacts = ((try? container.decode(Set<CMContact>.self, forKey: .contacts)) ?? [])
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        
+        var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encodeIfPresent(closedGroups, forKey: .closedGroups)
+        try container.encodeIfPresent(openGroups, forKey: .openGroups)
+        try container.encodeIfPresent(displayName, forKey: .displayName)
+        try container.encodeIfPresent(profilePictureURL, forKey: .profilePictureURL)
+        try container.encodeIfPresent(profileKey, forKey: .profileKey)
+        try container.encodeIfPresent(contacts, forKey: .contacts)
+    }
 
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> ConfigurationMessage? {
@@ -62,7 +100,7 @@ public final class ConfigurationMessage : ControlMessage {
             closedGroups: closedGroups, openGroups: openGroups, contacts: contacts)
     }
 
-    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+    public override func toProto(_ db: Database) -> SNProtoContent? {
         let configurationProto = SNProtoConfigurationMessage.builder()
         if let displayName = displayName { configurationProto.setDisplayName(displayName) }
         if let profilePictureURL = profilePictureURL { configurationProto.setProfilePicture(profilePictureURL) }
@@ -99,7 +137,17 @@ public final class ConfigurationMessage : ControlMessage {
 extension ConfigurationMessage {
 
     @objc(SNClosedGroup)
-    public final class ClosedGroup : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    public final class ClosedGroup: NSObject, Codable, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+        private enum CodingKeys: String, CodingKey {
+            case publicKey
+            case name
+            case encryptionKeyPublicKey
+            case encryptionKeySecretKey
+            case members
+            case admins
+            case expirationTimer
+        }
+        
         public let publicKey: String
         public let name: String
         public let encryptionKeyPair: ECKeyPair
@@ -140,6 +188,34 @@ extension ConfigurationMessage {
             coder.encode(members, forKey: "members")
             coder.encode(admins, forKey: "admins")
             coder.encode(expirationTimer, forKey: "expirationTimer")
+        }
+        
+        // MARK: - Codable
+        
+        public required init(from decoder: Decoder) throws {
+            let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+            
+            publicKey = try container.decode(String.self, forKey: .publicKey)
+            name = try container.decode(String.self, forKey: .name)
+            encryptionKeyPair = try ECKeyPair(
+                publicKeyData: try container.decode(Data.self, forKey: .encryptionKeyPublicKey),
+                privateKeyData: try container.decode(Data.self, forKey: .encryptionKeySecretKey)
+            )
+            members = try container.decode(Set<String>.self, forKey: .members)
+            admins = try container.decode(Set<String>.self, forKey: .admins)
+            expirationTimer = try container.decode(UInt32.self, forKey: .expirationTimer)
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+
+            try container.encode(publicKey, forKey: .publicKey)
+            try container.encode(name, forKey: .name)
+            try container.encode(encryptionKeyPair.publicKey, forKey: .encryptionKeyPublicKey)
+            try container.encode(encryptionKeyPair.privateKey, forKey: .encryptionKeySecretKey)
+            try container.encode(members, forKey: .members)
+            try container.encode(admins, forKey: .admins)
+            try container.encode(expirationTimer, forKey: .expirationTimer)
         }
 
         public static func fromProto(_ proto: SNProtoConfigurationMessageClosedGroup) -> ClosedGroup? {
@@ -192,7 +268,21 @@ extension ConfigurationMessage {
 extension ConfigurationMessage {
 
     @objc(SNConfigurationMessageContact)
-    public final class CMContact : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    public final class CMContact: NSObject, Codable, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+        private enum CodingKeys: String, CodingKey {
+            case publicKey
+            case displayName
+            case profilePictureURL
+            case profileKey
+            
+            case hasIsApproved
+            case isApproved
+            case hasIsBlocked
+            case isBlocked
+            case hasDidApproveMe
+            case didApproveMe
+        }
+        
         public var publicKey: String?
         public var displayName: String?
         public var profilePictureURL: String?
@@ -257,6 +347,24 @@ extension ConfigurationMessage {
             coder.encode(isBlocked, forKey: "isBlocked")
             coder.encode(hasDidApproveMe, forKey: "hasDidApproveMe")
             coder.encode(didApproveMe, forKey: "didApproveMe")
+        }
+        
+        // MARK: - Codable
+        
+        public required init(from decoder: Decoder) throws {
+            let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+            
+            publicKey = try? container.decode(String.self, forKey: .publicKey)
+            displayName = try? container.decode(String.self, forKey: .displayName)
+            profilePictureURL = try? container.decode(String.self, forKey: .profilePictureURL)
+            profileKey = try? container.decode(Data.self, forKey: .profileKey)
+            
+            hasIsApproved = try container.decode(Bool.self, forKey: .hasIsApproved)
+            isApproved = try container.decode(Bool.self, forKey: .isApproved)
+            hasIsBlocked = try container.decode(Bool.self, forKey: .hasIsBlocked)
+            isBlocked = try container.decode(Bool.self, forKey: .isBlocked)
+            hasDidApproveMe = try container.decode(Bool.self, forKey: .hasDidApproveMe)
+            didApproveMe = try container.decode(Bool.self, forKey: .didApproveMe)
         }
 
         public static func fromProto(_ proto: SNProtoConfigurationMessageContact) -> CMContact? {

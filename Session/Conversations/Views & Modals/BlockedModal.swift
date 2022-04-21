@@ -25,7 +25,7 @@ final class BlockedModal: Modal {
     
     override func populateContentView() {
         // Name
-        let name = Profile.displayName(for: publicKey)
+        let name = Profile.displayName(id: publicKey)
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
@@ -80,7 +80,7 @@ final class BlockedModal: Modal {
                     .update(db)
             },
             completion: { db, _ in
-                MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
         )
         

@@ -22,6 +22,12 @@ public extension Array {
         updatedArray.append(contentsOf: other)
         return updatedArray
     }
+    
+    mutating func popFirst() -> Element? {
+        guard !self.isEmpty else { return nil }
+        
+        return self.removeFirst()
+    }
 }
 
 

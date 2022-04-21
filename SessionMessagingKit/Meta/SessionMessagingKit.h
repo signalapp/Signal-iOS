@@ -5,7 +5,6 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 
 #import <SessionMessagingKit/AppReadiness.h>
 #import <SessionMessagingKit/Environment.h>
-#import <SessionMessagingKit/NotificationsProtocol.h>
 #import <SessionMessagingKit/NSData+messagePadding.h>
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SessionMessagingKit/OWSBackgroundTask.h>
@@ -28,7 +27,6 @@ FOUNDATION_EXPORT const unsigned char SessionMessagingKitVersionString[];
 #import <SessionMessagingKit/OWSStorage+Subclass.h>
 #import <SessionMessagingKit/OWSUserProfile.h>
 #import <SessionMessagingKit/OWSWindowManager.h>
-#import <SessionMessagingKit/ProfileManagerProtocol.h>
 #import <SessionMessagingKit/ProtoUtils.h>
 #import <SessionMessagingKit/SignalRecipient.h>
 #import <SessionMessagingKit/SSKEnvironment.h>

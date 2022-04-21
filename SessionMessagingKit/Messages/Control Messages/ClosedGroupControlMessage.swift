@@ -1,11 +1,16 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import Sodium
 import Curve25519Kit
 import SessionUtilitiesKit
 
 public final class ClosedGroupControlMessage : ControlMessage {
+    private enum CodingKeys: String, CodingKey {
+        case kind
+    }
+    
     public var kind: Kind?
 
     public override var ttl: UInt64 {
@@ -18,7 +23,19 @@ public final class ClosedGroupControlMessage : ControlMessage {
     public override var isSelfSendValid: Bool { true }
     
     // MARK: Kind
-    public enum Kind : CustomStringConvertible {
+    public enum Kind: CustomStringConvertible, Codable {
+        private enum CodingKeys: String, CodingKey {
+            case description
+            case publicKey
+            case name
+            case encryptionPublicKey
+            case encryptionSecretKey
+            case members
+            case admins
+            case expirationTimer
+            case wrappers
+        }
+        
         case new(publicKey: Data, name: String, encryptionKeyPair: Box.KeyPair, members: [Data], admins: [Data], expirationTimer: UInt32)
         /// An encryption key pair encrypted for each member individually.
         ///
@@ -41,11 +58,101 @@ public final class ClosedGroupControlMessage : ControlMessage {
             case .encryptionKeyPairRequest: return "encryptionKeyPairRequest"
             }
         }
+        
+        public init(from decoder: Decoder) throws {
+            let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+            
+            // Compare the descriptions to find the appropriate case
+            let description: String = try container.decode(String.self, forKey: .description)
+            let newDescription: String = Kind.new(
+                publicKey: Data(),
+                name: "",
+                encryptionKeyPair: Box.KeyPair(publicKey: [], secretKey: []),
+                members: [],
+                admins: [],
+                expirationTimer: 0
+            ).description
+            
+            switch description {
+                case newDescription:
+                    self = .new(
+                        publicKey: try container.decode(Data.self, forKey: .publicKey),
+                        name: try container.decode(String.self, forKey: .name),
+                        encryptionKeyPair: Box.KeyPair(
+                            publicKey: try container.decode([UInt8].self, forKey: .encryptionPublicKey),
+                            secretKey: try container.decode([UInt8].self, forKey: .encryptionSecretKey)
+                        ),
+                        members: try container.decode([Data].self, forKey: .members),
+                        admins: try container.decode([Data].self, forKey: .admins),
+                        expirationTimer: try container.decode(UInt32.self, forKey: .expirationTimer)
+                    )
+                    
+                case Kind.encryptionKeyPair(publicKey: nil, wrappers: []).description:
+                    self = .encryptionKeyPair(
+                        publicKey: try? container.decode(Data.self, forKey: .publicKey),
+                        wrappers: try container.decode([ClosedGroupControlMessage.KeyPairWrapper].self, forKey: .wrappers)
+                    )
+                    
+                case Kind.nameChange(name: "").description:
+                    self = .nameChange(
+                        name: try container.decode(String.self, forKey: .name)
+                    )
+                    
+                case Kind.membersAdded(members: []).description:
+                    self = .membersAdded(
+                        members: try container.decode([Data].self, forKey: .members)
+                    )
+                    
+                case Kind.membersRemoved(members: []).description:
+                    self = .membersRemoved(
+                        members: try container.decode([Data].self, forKey: .members)
+                    )
+                    
+                case Kind.memberLeft.description:
+                    self = .memberLeft
+                    
+                case Kind.encryptionKeyPairRequest.description:
+                    self = .encryptionKeyPairRequest
+                    
+                default: fatalError("Invalid case when trying to decode ClosedGroupControlMessage.Kind")
+            }
+        }
+        
+        public func encode(to encoder: Encoder) throws {
+            var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+
+            try container.encode(description, forKey: .description)
+            
+            // Note: If you modify the below make sure to update the above 'init(from:)' method
+            switch self {
+                case .new(let publicKey, let name, let encryptionKeyPair, let members, let admins, let expirationTimer):
+                    try container.encode(publicKey, forKey: .publicKey)
+                    try container.encode(name, forKey: .name)
+                    try container.encode(encryptionKeyPair.publicKey, forKey: .encryptionPublicKey)
+                    try container.encode(encryptionKeyPair.secretKey, forKey: .encryptionSecretKey)
+                    try container.encode(members, forKey: .members)
+                    try container.encode(admins, forKey: .admins)
+                    try container.encode(expirationTimer, forKey: .expirationTimer)
+                    
+                case .encryptionKeyPair(let publicKey, let wrappers):
+                    try container.encode(publicKey, forKey: .publicKey)
+                    try container.encode(wrappers, forKey: .wrappers)
+                    
+                case .nameChange(let name):
+                    try container.encode(name, forKey: .name)
+                    
+                case .membersAdded(let members), .membersRemoved(let members):
+                    try container.encode(members, forKey: .members)
+                    
+                case .memberLeft: break                 // Only 'description'
+                case .encryptionKeyPairRequest: break   // Only 'description'
+            }
+        }
     }
 
     // MARK: Key Pair Wrapper
     @objc(SNKeyPairWrapper)
-    public final class KeyPairWrapper : NSObject, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
+    public final class KeyPairWrapper: NSObject, Codable, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
         public var publicKey: String?
         public var encryptedKeyPair: Data?
 
@@ -143,7 +250,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
         default: return nil
         }
     }
-
+    
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
         guard let kind = kind else { return }
@@ -174,6 +281,24 @@ public final class ClosedGroupControlMessage : ControlMessage {
         case .encryptionKeyPairRequest:
             coder.encode("encryptionKeyPairRequest", forKey: "kind")
         }
+    }
+    
+    // MARK: - Codable
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+        
+        kind = try container.decode(Kind.self, forKey: .kind)
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        
+        var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(kind, forKey: .kind)
     }
 
     // MARK: Proto Conversion
@@ -207,7 +332,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
         return ClosedGroupControlMessage(kind: kind)
     }
 
-    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+    public override func toProto(_ db: Database) -> SNProtoContent? {
         guard let kind = kind else {
             SNLog("Couldn't construct closed group update proto from: \(self).")
             return nil
@@ -253,7 +378,7 @@ public final class ClosedGroupControlMessage : ControlMessage {
             let dataMessageProto = SNProtoDataMessage.builder()
             dataMessageProto.setClosedGroupControlMessage(try closedGroupControlMessage.build())
             // Group context
-            try setGroupContextIfNeeded(on: dataMessageProto, using: transaction)
+            try setGroupContextIfNeeded(db, on: dataMessageProto)
             contentProto.setDataMessage(try dataMessageProto.build())
             return try contentProto.build()
         } catch {
@@ -269,5 +394,67 @@ public final class ClosedGroupControlMessage : ControlMessage {
             kind: \(kind?.description ?? "null")
         )
         """
+    }
+}
+
+// MARK: - Convenience
+
+public extension ClosedGroupControlMessage.Kind {
+    func infoMessage(_ db: Database, sender: String) throws -> String? {
+        switch self {
+            case .nameChange(let name):
+                return String(format: "GROUP_TITLE_CHANGED".localized(), name)
+                
+            case .membersAdded(let membersAsData):
+                let addedMemberNames: [String] = try Profile
+                    .fetchAll(db, ids: membersAsData.map { $0.toHexString() })
+                    .map { $0.displayName() }
+                
+                return String(
+                    format: "GROUP_MEMBER_JOINED".localized(),
+                    addedMemberNames.joined(separator: ", ")
+                )
+                
+            case .membersRemoved(let membersAsData):
+                let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                let memberIds: Set<String> = membersAsData
+                    .map { $0.toHexString() }
+                    .asSet()
+                
+                var infoMessage: String = ""
+                
+                if !memberIds.removing(userPublicKey).isEmpty {
+                    let removedMemberNames: [String] = try Profile
+                        .fetchAll(db, ids: memberIds.removing(userPublicKey))
+                        .map { $0.displayName() }
+                    let format: String = (removedMemberNames.count > 1 ?
+                        "GROUP_MEMBERS_REMOVED".localized() :
+                        "GROUP_MEMBER_REMOVED".localized()
+                    )
+
+                    infoMessage = infoMessage.appending(
+                        String(format: format, removedMemberNames.joined(separator: ", "))
+                    )
+                }
+                
+                if memberIds.contains(userPublicKey) {
+                    infoMessage = infoMessage.appending("YOU_WERE_REMOVED".localized())
+                }
+                
+                return infoMessage
+                
+            case .memberLeft:
+                let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                
+                guard sender != userPublicKey else { return "GROUP_YOU_LEFT".localized() }
+                
+                if let displayName: String = Profile.displayNameNoFallback(db, id: sender) {
+                    return String(format: "GROUP_MEMBER_LEFT".localized(), displayName)
+                }
+                
+                return "GROUP_UPDATED".localized()
+                
+            default: return nil
+        }
     }
 }

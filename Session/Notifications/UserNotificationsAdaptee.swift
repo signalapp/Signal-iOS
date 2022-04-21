@@ -139,21 +139,21 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
 
         Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
-        if isReplacingNotification { cancelNotification(identifier: notificationIdentifier) }
+        if isReplacingNotification { cancelNotifications(identifiers: [notificationIdentifier]) }
         notificationCenter.add(request)
         notifications[notificationIdentifier] = request
     }
 
-    func cancelNotification(identifier: String) {
+    func cancelNotifications(identifiers: [String]) {
         AssertIsOnMainThread()
-        notifications.removeValue(forKey: identifier)
-        notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
-        notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
+        identifiers.forEach { notifications.removeValue(forKey: $0) }
+        notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiers)
+        notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiers)
     }
 
     func cancelNotification(_ notification: UNNotificationRequest) {
         AssertIsOnMainThread()
-        cancelNotification(identifier: notification.identifier)
+        cancelNotifications(identifiers: [notification.identifier])
     }
 
     func cancelNotifications(threadId: String) {

@@ -94,7 +94,7 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         infoUpdates: Int
     ) {
         // Always force the server to lowercase
-        self.threadId = "\(server.lowercased()).\(room)"    // TODO: Validate this (doesn't seem to happen in the old code...)
+        self.threadId = OpenGroup.idFor(room: room, server: server)
         self.server = server.lowercased()
         self.room = room
         self.publicKey = publicKey
@@ -114,5 +114,13 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         // 'ClosedGroup' table as well)
         try request(for: OpenGroup.members).deleteAll(db)
         return try performDelete(db)
+    }
+}
+
+// MARK: - Convenience
+
+public extension OpenGroup {
+    static func idFor(room: String, server: String) -> String {
+        return "\(server.lowercased()).\(room)"
     }
 }

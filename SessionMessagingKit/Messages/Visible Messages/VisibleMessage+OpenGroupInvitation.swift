@@ -1,9 +1,13 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
 
     @objc(SNOpenGroupInvitation)
-    class OpenGroupInvitation : NSObject, NSCoding {
+    class OpenGroupInvitation: NSObject, Codable, NSCoding {
         public var name: String?
         public var url: String?
 
@@ -52,5 +56,18 @@ public extension VisibleMessage {
             )
             """
         }
+    }
+}
+
+// MARK: - Database Type Conversion
+
+public extension VisibleMessage.OpenGroupInvitation {
+    static func from(_ db: Database, linkPreview: LinkPreview) -> VisibleMessage.OpenGroupInvitation? {
+        guard let name: String = linkPreview.title else { return nil }
+        
+        return VisibleMessage.OpenGroupInvitation(
+            name: name,
+            url: linkPreview.url
+        )
     }
 }

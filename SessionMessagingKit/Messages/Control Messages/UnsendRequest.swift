@@ -1,7 +1,16 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
 @objc(SNUnsendRequest)
 public final class UnsendRequest: ControlMessage {
+    private enum CodingKeys: String, CodingKey {
+        case timestamp
+        case author
+    }
+    
     public var timestamp: UInt64?
     public var author: String?
     
@@ -35,6 +44,26 @@ public final class UnsendRequest: ControlMessage {
         coder.encode(author, forKey: "author")
     }
     
+    // MARK: - Codable
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+        
+        timestamp = try? container.decode(UInt64.self, forKey: .timestamp)
+        author = try? container.decode(String.self, forKey: .author)
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        
+        var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encodeIfPresent(timestamp, forKey: .timestamp)
+        try container.encodeIfPresent(author, forKey: .author)
+    }
+    
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> UnsendRequest? {
         guard let unsendRequestProto = proto.unsendRequest else { return nil }
@@ -43,7 +72,7 @@ public final class UnsendRequest: ControlMessage {
         return UnsendRequest(timestamp: timestamp, author: author)
     }
 
-    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+    public override func toProto(_ db: Database) -> SNProtoContent? {
         guard let timestamp = timestamp, let author = author else {
             SNLog("Couldn't construct unsend request proto from: \(self).")
             return nil

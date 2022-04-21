@@ -1,7 +1,15 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
 @objc(SNReadReceipt)
 public final class ReadReceipt : ControlMessage {
+    private enum CodingKeys: String, CodingKey {
+        case timestamps
+    }
+    
     @objc public var timestamps: [UInt64]?
 
     // MARK: Initialization
@@ -29,6 +37,24 @@ public final class ReadReceipt : ControlMessage {
         super.encode(with: coder)
         coder.encode(timestamps, forKey: "messageTimestamps")
     }
+    
+    // MARK: - Codable
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+        
+        timestamps = try? container.decode([UInt64].self, forKey: .timestamps)
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        
+        var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encodeIfPresent(timestamps, forKey: .timestamps)
+    }
 
     // MARK: Proto Conversion
     public override class func fromProto(_ proto: SNProtoContent, sender: String) -> ReadReceipt? {
@@ -38,7 +64,7 @@ public final class ReadReceipt : ControlMessage {
         return ReadReceipt(timestamps: timestamps)
     }
 
-    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+    public override func toProto(_ db: Database) -> SNProtoContent? {
         guard let timestamps = timestamps else {
             SNLog("Couldn't construct read receipt proto from: \(self).")
             return nil

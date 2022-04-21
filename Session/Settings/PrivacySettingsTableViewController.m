@@ -14,6 +14,7 @@
 #import <SessionUtilitiesKit/NSString+SSK.h>
 #import <SignalUtilitiesKit/ThreadUtil.h>
 #import <SessionMessagingKit/OWSReadReceiptManager.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -54,23 +55,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Dependencies
-
-- (OWSPreferences *)preferences
-{
-    return Environment.shared.preferences;
-}
-
-- (OWSReadReceiptManager *)readReceiptManager
-{
-    return OWSReadReceiptManager.sharedManager;
-}
-
-- (id<OWSTypingIndicators>)typingIndicators
-{
-    return SSKEnvironment.shared.typingIndicators;
-}
-
 #pragma mark - Table Contents
 
 - (void)updateTableContents
@@ -107,7 +91,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Label for the 'typing indicators' setting.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"typing_indicators"]
                     isOnBlock:^{
-                        return [SSKEnvironment.shared.typingIndicators areTypingIndicatorsEnabled];
+                        return [SSKPreferences areTypingIndicatorsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -236,21 +220,21 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled screen security: %@", enabled ? @"ON" : @"OFF");
-    [self.preferences setScreenSecurity:enabled];
+    [SSKPreferences setScreenSecurity:enabled];
 }
 
 - (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areReadReceiptsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [self.readReceiptManager setAreReadReceiptsEnabled:enabled];
+    [SSKPreferences setAreReadReceiptsEnabled:enabled];
 }
 
 - (void)didToggleTypingIndicatorsSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areTypingIndicatorsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [self.typingIndicators setTypingIndicatorsEnabledWithValue:enabled];
+    [SSKPreferences setTypingIndicatorsEnabled:enabled];
 }
 
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender

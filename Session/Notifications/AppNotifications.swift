@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import GRDB
 import PromiseKit
 import SessionMessagingKit
 import SignalUtilitiesKit
@@ -98,7 +99,7 @@ protocol NotificationPresenterAdaptee: AnyObject {
     func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?)
 
     func cancelNotifications(threadId: String)
-    func cancelNotification(identifier: String)
+    func cancelNotifications(identifiers: [String])
     func clearAllNotifications()
 }
 
@@ -154,74 +155,75 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return adaptee.registerNotificationSettings()
     }
 
-    public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
-        guard !thread.isMuted else { return }
-        guard let threadId = thread.uniqueId else { return }
-        let isMessageRequest = thread.isMessageRequest(using: transaction)
+    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
+        guard thread.notificationMode != .none else { return }
+        
+        let isMessageRequest = thread.isMessageRequest(db)
         
         // If the thread is a message request and the user hasn't hidden message requests then we need
         // to check if this is the only message request thread (group threads can't be message requests
         // so just ignore those and if the user has hidden message requests then we want to show the
         // notification regardless of how many message requests there are)
-        if !thread.isGroupThread() && isMessageRequest && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
-            let threads = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
-            let numMessageRequests = threads.numberOfItems(inGroup: TSMessageRequestGroup)
-            
-            // Allow this to show a notification if there are no message requests (ie. this is the first one)
-            guard numMessageRequests == 0 else { return }
-        }
-        else if isMessageRequest && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
-            // If there are other interactions on this thread already then don't show the notification
-            if thread.numberOfInteractions(with: transaction) > 1 { return }
-            
-            CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
+        if thread.variant == .contact {
+            if isMessageRequest && !db[.hasHiddenMessageRequests] {
+                let numMessageRequestThreads: Int? = try? SessionThread.messageRequestThreads(db)
+                    .fetchCount(db)
+                
+                // Allow this to show a notification if there are no message requests (ie. this is the first one)
+                guard (numMessageRequestThreads ?? 0) == 0 else { return }
+            }
+            else if isMessageRequest && db[.hasHiddenMessageRequests] {
+                // If there are other interactions on this thread already then don't show the notification
+                if ((try? thread.interactions.fetchCount(db)) ?? 0) > 1 { return }
+                
+                db[.hasHiddenMessageRequests] = false
+            }
         }
         
-        let identifier: String = incomingMessage.notificationIdentifier ?? UUID().uuidString
-        
-        let isBackgroudPoll = identifier == threadId
+        let identifier: String = interaction.notificationIdentifier(isBackgroundPoll: isBackgroundPoll)
 
         // While batch processing, some of the necessary changes have not been commited.
-        let rawMessageText = incomingMessage.previewText(with: transaction)
+        let rawMessageText = interaction.previewText(db)
 
         // iOS strips anything that looks like a printf formatting character from
         // the notification body, so if we want to dispay a literal "%" in a notification
         // it must be escaped.
         // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
         // for more details.
-        let messageText = DisplayableText.filterNotificationText(rawMessageText)
+        let messageText: String? = DisplayableText.filterNotificationText(rawMessageText)
         
         // Don't fire the notification if the current user isn't mentioned
         // and isOnlyNotifyingForMentions is on.
-        if let groupThread = thread as? TSGroupThread, groupThread.isOnlyNotifyingForMentions && !incomingMessage.isUserMentioned {
+        if thread.notificationMode == .mentionsOnly && !interaction.isUserMentioned(db) {
             return
         }
 
-        let senderName = Profile.displayName(for: incomingMessage.authorId, thread: thread)
-
         let notificationTitle: String?
         var notificationBody: String?
-        let previewType = preferences.notificationPreviewType(with: transaction)
+        
+        let senderName = Profile.displayName(db, id: interaction.authorId, thread: thread)
+        let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+            .defaulting(to: .nameAndPreview)
         
         switch previewType {
             case .noNameNoPreview:
                 notificationTitle = "Session"
                 
-            case .nameNoPreview, .namePreview:
-                switch thread {
-                    case is TSContactThread:
+            case .nameNoPreview, .nameAndPreview:
+                switch thread.variant {
+                    case .contact:
                         notificationTitle = (isMessageRequest ? "Session" : senderName)
                         
-                    case is TSGroupThread:
-                        var groupName = thread.name(with: transaction)
-                        if groupName.count < 1 {
-                            groupName = MessageStrings.newGroupDefaultTitle
-                        }
-                        notificationTitle = isBackgroudPoll ? groupName : String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
+                    case .closedGroup, .openGroup:
+                        let groupName: String = thread.name(db)
                         
-                    default:
-                        owsFailDebug("unexpected thread: \(thread)")
-                        return
+                        notificationTitle = (isBackgroundPoll ? groupName:
+                            String(
+                                format: NotificationStrings.incomingGroupMessageTitleFormat,
+                                senderName,
+                                groupName
+                            )
+                        )
                 }
                 
             default:
@@ -230,14 +232,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         
         switch previewType {
             case .noNameNoPreview, .nameNoPreview: notificationBody = NotificationStrings.incomingMessageBody
-            case .namePreview: notificationBody = messageText
+            case .nameAndPreview: notificationBody = messageText
             default: notificationBody = NotificationStrings.incomingMessageBody
         }
         
         // If it's a message request then overwrite the body to be something generic (only show a notification
         // when receiving a new message request if there aren't any others or the user had hidden them)
         if isMessageRequest {
-            notificationBody = NSLocalizedString("MESSAGE_REQUESTS_NOTIFICATION", comment: "")
+            notificationBody = "MESSAGE_REQUESTS_NOTIFICATION".localized()
         }
 
         assert((notificationBody ?? notificationTitle) != nil)
@@ -247,11 +249,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let category = AppNotificationCategory.incomingMessage
 
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: thread.id
         ]
 
         DispatchQueue.main.async {
-            notificationBody = MentionUtilities.highlightMentions(in: notificationBody!, threadID: thread.uniqueId!)
+            notificationBody = MentionUtilities.highlightMentions(
+                in: (notificationBody ?? ""),
+                threadId: thread.id
+            )
             let sound = self.requestSound(thread: thread)
             
             self.adaptee.notify(
@@ -265,42 +270,37 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyForFailedSend(inThread thread: TSThread) {
+    public func notifyForFailedSend(_ db: Database, in thread: SessionThread) {
         let notificationTitle: String?
+        
         switch previewType {
-        case .noNameNoPreview:
-            notificationTitle = nil
-        case .nameNoPreview, .namePreview:
-            notificationTitle = thread.name()
-        default:
-            notificationTitle = nil
+            case .noNameNoPreview: notificationTitle = nil
+            case .nameNoPreview, .namePreview: notificationTitle = thread.name(db)
+            default: notificationTitle = nil
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
 
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: thread.id
         ]
 
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .errorMessage,
-                                title: notificationTitle,
-                                body: notificationBody,
-                                userInfo: userInfo,
-                                sound: sound)
+            self.adaptee.notify(
+                category: .errorMessage,
+                title: notificationTitle,
+                body: notificationBody,
+                userInfo: userInfo,
+                sound: sound
+            )
         }
     }
     
     @objc
-    public func cancelNotification(_ identifier: String) {
+    public func cancelNotifications(identifiers: [String]) {
         DispatchQueue.main.async {
-            self.adaptee.cancelNotification(identifier: identifier)
+            self.adaptee.cancelNotifications(identifiers: identifiers)
         }
     }
 
@@ -318,12 +318,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
 
-    private func requestSound(thread: TSThread) -> OWSSound? {
+    private func requestSound(thread: SessionThread) -> OWSSound? {
         guard checkIfShouldPlaySound() else {
             return nil
         }
 
-        return OWSSounds.notificationSound(for: thread)
+        return OWSSounds.notificationSound(forThreadId: thread.id)
     }
 
     private func checkIfShouldPlaySound() -> Bool {
@@ -388,27 +388,31 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
 
-        guard let thread = TSThread.fetch(uniqueId: threadId) else {
+        guard let thread: SessionThread = GRDBStorage.shared.read({ db in try SessionThread.fetchOne(db, id: threadId) }) else {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
-
-        return markAsRead(thread: thread).then { () -> Promise<Void> in
-            let message = VisibleMessage()
-            message.sentTimestamp = NSDate.millisecondTimestamp()
-            message.text = replyText
-            let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
-            Storage.write { transaction in
-                tsMessage.save(with: transaction)
-            }
-            var promise: Promise<Void>!
-            Storage.writeSync { transaction in
-                promise = MessageSender.sendNonDurably(message, in: thread, using: transaction)
-            }
-            promise.catch { [weak self] error in
-                self?.notificationPresenter.notifyForFailedSend(inThread: thread)
-            }
-            return promise
+        
+        let promise: Promise<Void> = GRDBStorage.shared.write { db in
+            let interaction: Interaction = try Interaction(
+                threadId: thread.id,
+                authorId: getUserHexEncodedPublicKey(db),
+                variant: .standardOutgoing,
+                body: replyText,
+                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+            ).inserted(db)
+            
+            _ = try interaction.markingAsRead(db, includingOlder: true, trySendReadReceipt: true)
+            
+            return MessageSender.sendNonDurably(db, interaction: interaction, in: thread)
         }
+        
+        promise.catch { [weak self] error in
+            GRDBStorage.shared.read { db in
+                self?.notificationPresenter.notifyForFailedSend(db, in: thread)
+            }
+        }
+        
+        return promise
     }
 
     func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {

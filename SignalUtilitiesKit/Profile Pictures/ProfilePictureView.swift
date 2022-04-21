@@ -1,7 +1,12 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import GRDB
 import SessionUIKit
+import SessionMessagingKit
 
 @objc(LKProfilePictureView)
-public final class ProfilePictureView : UIView {
+public final class ProfilePictureView: UIView {
     private var hasTappableProfilePicture: Bool = false
     @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
     @objc public var useFallbackPicture = false
@@ -49,56 +54,74 @@ public final class ProfilePictureView : UIView {
     
     // MARK: Updating
     @objc(updateForContact:)
-    public func update(for publicKey: String) {
+    public func update(for publicKey: String) { // TODO: Confirm this is still used
+        GRDBStorage.shared.read { db in update(db, publicKey: publicKey) }
+    }
+        
+    public func update(_ db: Database, publicKey: String) {
         openGroupProfilePicture = nil
         self.publicKey = publicKey
         additionalPublicKey = nil
         useFallbackPicture = false
-        update()
+        update(db)
     }
 
-    @objc(updateForThread:)
-    public func update(for thread: TSThread) {
+    public func update(_ db: Database, thread: SessionThread) {
         openGroupProfilePicture = nil
-        if let thread = thread as? TSGroupThread {
-            if let openGroupProfilePicture = thread.groupModel.groupImage { // An open group with a profile picture
-                self.openGroupProfilePicture = openGroupProfilePicture
-                useFallbackPicture = false
-                hasTappableProfilePicture = true
-            } else if thread.groupModel.groupType == .openGroup { // An open group without a profile picture or an RSS feed
-                publicKey = ""
-                useFallbackPicture = true
-            } else { // A closed group
-                var users = Set(thread.groupModel.groupMemberIds)
-                users.remove(getUserHexEncodedPublicKey())
-                var randomUsers = users.sorted() // Sort to provide a level of stability
-                if users.count == 1 {
-                    randomUsers.insert(getUserHexEncodedPublicKey(), at: 0) // Ensure the current user is at the back visually
+        
+        switch thread.variant {
+            case .contact: update(db, publicKey: thread.id)
+                
+            case .closedGroup:
+                let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                var randomUsers: [String] = (try? thread.closedGroup
+                    .fetchOne(db)?
+                    .members
+                    .fetchAll(db)
+                    .map { $0.profileId }
+                    .filter { $0 != userPublicKey }
+                    .sorted())   // Sort to provide a level of stability
+                    .defaulting(to: [])
+                
+                if randomUsers.count == 1 {
+                    // Ensure the current user is at the back visually
+                    randomUsers.insert(userPublicKey, at: 0)
                 }
-                publicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
-                additionalPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                
+                publicKey = (randomUsers.first ?? "")
+                additionalPublicKey = (randomUsers.count >= 2 ? randomUsers[1] : "")
                 useFallbackPicture = false
-            }
-            update()
-        } else { // A one-to-one chat
-            let thread = thread as! TSContactThread
-            update(for: thread.contactSessionID())
+                update(db)
+                
+            case .openGroup:
+                openGroupProfilePicture = (try? thread.openGroup
+                    .fetchOne(db)?
+                    .imageData)
+                    .map { UIImage(data: $0) }
+                publicKey = ""
+                useFallbackPicture = (openGroupProfilePicture == nil)
+                hasTappableProfilePicture = (openGroupProfilePicture != nil)
+                update(db)
         }
     }
 
-    @objc public func update() {
+    @objc public func update() { // TODO: Confirm this is still used
+        GRDBStorage.shared.read { db in update(db) }
+    }
+    
+    public func update(_ db: Database) {
         AssertIsOnMainThread()
         func getProfilePicture(of size: CGFloat, for publicKey: String) -> UIImage? {
             guard !publicKey.isEmpty else { return nil }
             
-            if let profilePicture: UIImage = ProfileManager.profileAvatar(for: publicKey) {
+            if let profilePicture: UIImage = ProfileManager.profileAvatar(db, id: publicKey) {
                 hasTappableProfilePicture = true
                 return profilePicture
             }
             
             hasTappableProfilePicture = false
             // TODO: Pass in context?
-            let displayName: String = Profile.displayName(for: publicKey)
+            let displayName: String = Profile.displayName(db, id: publicKey)
             return Identicon.generatePlaceholderIcon(seed: publicKey, text: displayName, size: size)
         }
         
@@ -111,30 +134,35 @@ public final class ProfilePictureView : UIView {
             } else {
                 size = Values.smallProfilePictureSize
             }
+            
             imageViewWidthConstraint.constant = size
             imageViewHeightConstraint.constant = size
             additionalImageViewWidthConstraint.constant = size
             additionalImageViewHeightConstraint.constant = size
             additionalImageView.isHidden = false
             additionalImageView.image = getProfilePicture(of: size, for: additionalPublicKey)
-        } else {
+        }
+        else {
             size = self.size
             imageViewWidthConstraint.constant = size
             imageViewHeightConstraint.constant = size
             additionalImageView.isHidden = true
             additionalImageView.image = nil
         }
+        
         guard publicKey != nil || openGroupProfilePicture != nil else { return }
+        
         imageView.image = useFallbackPicture ? nil : (openGroupProfilePicture ?? getProfilePicture(of: size, for: publicKey))
         imageView.backgroundColor = useFallbackPicture ? UIColor(rgbHex: 0x353535) : Colors.unimportant
         imageView.layer.cornerRadius = size / 2
         additionalImageView.layer.cornerRadius = size / 2
         imageView.contentMode = useFallbackPicture ? .center : .scaleAspectFit
+        
         if useFallbackPicture {
             switch size {
-            case Values.smallProfilePictureSize..<Values.mediumProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite16")
-            case Values.mediumProfilePictureSize..<Values.largeProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite24")
-            default: imageView.image = #imageLiteral(resourceName: "SessionWhite40")
+                case Values.smallProfilePictureSize..<Values.mediumProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite16")
+                case Values.mediumProfilePictureSize..<Values.largeProfilePictureSize: imageView.image = #imageLiteral(resourceName: "SessionWhite24")
+                default: imageView.image = #imageLiteral(resourceName: "SessionWhite40")
             }
         }
     }

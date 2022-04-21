@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import PromiseKit
 import SignalCoreKit
 
 public enum GRDBStorageError: Error {  // TODO: Rename to `StorageError`
@@ -9,6 +10,10 @@ public enum GRDBStorageError: Error {  // TODO: Rename to `StorageError`
     case migrationFailed
     case invalidKeySpec
     case decodingFailed
+    
+    case failedToSave
+    case objectNotFound
+    case objectNotSaved
 }
 
 // TODO: Protocol for storage (just need to have 'read' and 'write' methods and mock 'Database'?
@@ -26,6 +31,12 @@ public final class GRDBStorage {
     private static var databasePath: String { "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)" }
     private static var databasePathShm: String { "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)-shm" }
     private static var databasePathWal: String { "\(GRDBStorage.sharedDatabaseDirectoryPath)/\(GRDBStorage.dbFileName)-wal" }
+    
+    public static var isDatabasePasswordAccessible: Bool {
+        guard (try? getDatabaseCipherKeySpec()) != nil else { return false }
+        
+        return true
+    }
     
     private let dbPool: DatabasePool
     private let migrator: DatabaseMigrator
@@ -217,11 +228,53 @@ public final class GRDBStorage {
         return try? dbPool.write(updates)
     }
     
-    public func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Result<T, Error>) -> Void) {
-        dbPool.asyncWrite(updates, completion: completion)
+    public func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Swift.Result<T, Error>) throws -> Void) {
+        dbPool.asyncWrite(
+            updates,
+            completion: { db, result in
+                try? completion(db, result)
+            }
+        )
     }
     
     @discardableResult public func read<T>(_ value: (Database) throws -> T?) -> T? {
         return try? dbPool.read(value)
+    }
+    
+    /// Rever to the `ValueObservation.start` method for full documentation
+    ///
+    /// - parameter observation: The observation to start
+    /// - parameter scheduler: A Scheduler. By default, fresh values are
+    ///   dispatched asynchronously on the main queue.
+    /// - parameter onError: A closure that is provided eventual errors that
+    ///   happen during observation
+    /// - parameter onChange: A closure that is provided fresh values
+    /// - returns: a DatabaseCancellable
+    public func start<Reducer: ValueReducer>(
+        _ observation: ValueObservation<Reducer>,
+        scheduling scheduler: ValueObservationScheduler = .async(onQueue: .main),
+        onError: @escaping (Error) -> Void,
+        onChange: @escaping (Reducer.Value) -> Void
+    ) -> DatabaseCancellable {
+        observation.start(
+            in: dbPool,
+            scheduling: scheduler,
+            onError: onError,
+            onChange: onChange
+        )
+    }
+}
+
+// MARK: - Promise Extensions
+
+public extension GRDBStorage {
+    // FIXME: Would be good to replace this with Swift Combine
+    @discardableResult func write<T>(updates: (Database) throws -> Promise<T>) -> Promise<T> {
+        do {
+            return try dbPool.write(updates)
+        }
+        catch {
+            return Promise(error: error)
+        }
     }
 }

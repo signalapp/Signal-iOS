@@ -39,10 +39,11 @@ public struct ProfileManager {
         return ((profileName.data(using: .utf8)?.count ?? 0) > nameDataLength)
     }
     
-    public static func profileAvatar(for id: String) -> UIImage? {
-        guard let profile: Profile = GRDBStorage.shared.read({ db in try Profile.fetchOne(db, id: id) }) else {
-            return nil
+    public static func profileAvatar(_ db: Database? = nil, id: String) -> UIImage? {
+        guard let db: Database = db else {
+            return GRDBStorage.shared.read { db in profileAvatar(db, id: id) }
         }
+        guard let profile: Profile = try? Profile.fetchOne(db, id: id) else { return nil }
         
         if let profileFileName: String = profile.profilePictureFileName, !profileFileName.isEmpty {
             return loadProfileAvatar(for: profileFileName)
@@ -342,7 +343,7 @@ public struct ProfileManager {
 @objc(SMKProfileManager)
 public class SMKProfileManager: NSObject {
     @objc public static func profileAvatar(recipientId: String) -> UIImage? {
-        return ProfileManager.profileAvatar(for: recipientId)
+        return ProfileManager.profileAvatar(id: recipientId)
     }
     
     @objc public static func updateLocal(profileName: String, avatarImage: UIImage?, requiresSync: Bool) {

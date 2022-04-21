@@ -7,7 +7,6 @@
 #import <SessionUIKit/SessionUIKit.h>
 
 // Separate iOS Frameworks from other imports.
-#import "AppDelegate.h"
 #import "AvatarViewHelper.h"
 #import "AVAudioSession+OWS.h"
 #import "ContactCellView.h"
@@ -25,10 +24,12 @@
 #import "OWSMessageTimerView.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
+#import "OWSScreenLockUI.h"
 #import "OWSWindowManager.h"
 #import "PrivacySettingsTableViewController.h"
 #import "OWSQRCodeScanningViewController.h"
 #import "SignalApp.h"
+#import "MainAppContext.h"
 #import "UIViewController+Permissions.h"
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>

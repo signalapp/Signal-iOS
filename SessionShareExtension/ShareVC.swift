@@ -44,7 +44,9 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
-                SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+                SSKEnvironment.shared.notificationsManager.mutate {
+                    $0 = NoopNotificationsManager()
+                }
             },
             migrationCompletion: { [weak self] _, needsConfigSync in
                 AssertIsOnMainThread()
@@ -82,7 +84,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         // If we need a config sync then trigger it now
         if needsConfigSync {
             GRDBStorage.shared.write { db in
-                MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                try? MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
         }
 

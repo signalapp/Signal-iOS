@@ -224,32 +224,42 @@ public extension Profile {
 // MARK: - GRDB Interactions
 
 public extension Profile {
-    static func displayName(for id: ID, thread: TSThread, customFallback: String? = nil) -> String {
+    static func displayName(_ db: Database? = nil, id: ID, thread: SessionThread, customFallback: String? = nil) -> String {
         return displayName(
-            for: id,
-            context: ((thread as? TSGroupThread)?.isOpenGroup == true ? .openGroup : .regular),
+            db,
+            id: id,
+            context: (thread.variant == .openGroup ? .openGroup : .regular),
             customFallback: customFallback
         )
     }
     
-    static func displayName(for id: ID, context: Context = .regular, customFallback: String? = nil) -> String {
-        let existingDisplayName: String? = GRDBStorage.shared
-            .read { db in try Profile.fetchOne(db, id: id) }?
+    static func displayName(_ db: Database? = nil, id: ID, context: Context = .regular, customFallback: String? = nil) -> String {
+        guard let db: Database = db else {
+            return GRDBStorage.shared
+                .read { db in displayName(db, id: id, context: context, customFallback: customFallback) }
+                .defaulting(to: (customFallback ?? id))
+        }
+        
+        let existingDisplayName: String? = (try? Profile.fetchOne(db, id: id))?
             .displayName(for: context)
         
         return (existingDisplayName ?? (customFallback ?? id))
     }
     
-    static func displayNameNoFallback(for id: ID, thread: TSThread) -> String? {
+    static func displayNameNoFallback(_ db: Database? = nil, id: ID, thread: SessionThread) -> String? {
         return displayName(
-            for: id,
-            context: ((thread as? TSGroupThread)?.isOpenGroup == true ? .openGroup : .regular)
+            db,
+            id: id,
+            context: (thread.variant == .openGroup ? .openGroup : .regular)
         )
     }
     
-    static func displayNameNoFallback(for id: ID, context: Context = .regular) -> String? {
-        return GRDBStorage.shared
-            .read { db in try Profile.fetchOne(db, id: id) }?
+    static func displayNameNoFallback(_ db: Database? = nil, id: ID, context: Context = .regular) -> String? {
+        guard let db: Database = db else {
+            return GRDBStorage.shared.read { db in displayNameNoFallback(db, id: id, context: context) }
+        }
+        
+        return (try? Profile.fetchOne(db, id: id))?
             .displayName(for: context)
     }
     
@@ -344,11 +354,11 @@ public class SMKProfile: NSObject {
     }
     
     @objc public static func displayName(id: String) -> String {
-        return Profile.displayName(for: id)
+        return Profile.displayName(id: id)
     }
     
     @objc public static func displayName(id: String, customFallback: String) -> String {
-        return Profile.displayName(for: id, customFallback: customFallback)
+        return Profile.displayName(id: id, customFallback: customFallback)
     }
     
     @objc public static func displayName(id: String, context: Profile.Context = .regular) -> String {
@@ -359,8 +369,8 @@ public class SMKProfile: NSObject {
         return (existingProfile?.name ?? id)
     }
     
-    @objc public static func displayName(id: String, thread: TSThread) -> String {
-        return Profile.displayName(for: id, thread: thread)
+    public static func displayName(id: String, thread: SessionThread) -> String {
+        return Profile.displayName(id: id, thread: thread)
     }
     
     @objc public static var localProfileKey: OWSAES256Key? {

@@ -18,7 +18,7 @@ import SessionMessagingKit
             return
         }
         
-        let displayName: String = Profile.displayName(for: thread.contactSessionID())
+        let displayName: String = Profile.displayName(id: thread.contactSessionID())
         let actionSheet: UIAlertController = UIAlertController(
             title: String(
                 format: "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT".localized(),
@@ -69,7 +69,7 @@ import SessionMessagingKit
     ///
     /// **Note:** Make sure to force a config sync in the `completionBlock` if the blocked state was successfully changed
     @objc public static func showUnblockThreadActionSheet(_ thread: TSContactThread, from viewController: UIViewController, completionBlock: ((Bool) -> ())? = nil) {
-        let displayName: String = Profile.displayName(for: thread.contactSessionID())
+        let displayName: String = Profile.displayName(id: thread.contactSessionID())
         let actionSheet: UIAlertController = UIAlertController(
             title: String(
                 format: "BLOCK_LIST_UNBLOCK_TITLE_FORMAT".localized(),

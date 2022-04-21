@@ -1,10 +1,13 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import CoreGraphics
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
 
     @objc(SNAttachment)
-    class Attachment : NSObject, NSCoding {
+    class Attachment: NSObject, Codable, NSCoding {
         public var fileName: String?
         public var contentType: String?
         public var key: Data?
@@ -20,7 +23,7 @@ public extension VisibleMessage {
             contentType != nil && kind != nil && size != nil && sizeInBytes != nil && url != nil
         }
 
-        public enum Kind : String {
+        public enum Kind: String, Codable {
             case voiceMessage, generic
         }
 

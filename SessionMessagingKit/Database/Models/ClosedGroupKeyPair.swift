@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct ClosedGroupKeyPair: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct ClosedGroupKeyPair: Codable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "closedGroupKeyPair" }
     internal static let closedGroupForeignKey = ForeignKey(
         [Columns.publicKey],
@@ -19,8 +19,6 @@ public struct ClosedGroupKeyPair: Codable, Identifiable, FetchableRecord, Persis
         case receivedTimestamp
     }
     
-    public var id: String { publicKey }
-
     public let publicKey: String
     public let secretKey: Data
     public let receivedTimestamp: TimeInterval
@@ -29,5 +27,28 @@ public struct ClosedGroupKeyPair: Codable, Identifiable, FetchableRecord, Persis
     
     public var closedGroup: QueryInterfaceRequest<ClosedGroup> {
         request(for: ClosedGroupKeyPair.closedGroup)
+    }
+    
+    // MARK: - Initialization
+    
+    public init(
+        publicKey: String,
+        secretKey: Data,
+        receivedTimestamp: TimeInterval
+    ) {
+        self.publicKey = publicKey
+        self.secretKey = secretKey
+        self.receivedTimestamp = receivedTimestamp
+    }
+}
+
+// MARK: - GRDB Interactions
+
+public extension ClosedGroupKeyPair {
+    static func fetchLatestKeyPair(_ db: Database, publicKey: String) throws -> ClosedGroupKeyPair? {
+        return try ClosedGroupKeyPair
+            .filter(Columns.publicKey == publicKey)
+            .order(Columns.receivedTimestamp.desc)
+            .fetchOne(db)
     }
 }

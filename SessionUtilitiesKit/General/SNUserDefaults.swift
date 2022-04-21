@@ -7,7 +7,8 @@ public enum SNUserDefaults {
         case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
         case isUsingFullAPNs
-        case hasHiddenMessageRequests
+        case wasUnlinked
+        case isMainAppActive
     }
 
     public enum Date : Swift.String {

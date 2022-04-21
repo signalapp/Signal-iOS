@@ -19,11 +19,11 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         self.notificationContent = request.content.mutableCopy() as? UNMutableNotificationContent
 
         // Abort if the main app is running
-        var isMainAppAndActive = false
+        var isMainAppActive = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+            isMainAppActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
         }
-        guard !isMainAppAndActive else { return self.completeSilenty() }
+        guard !isMainAppActive else { return self.completeSilenty() }
 
         // Perform main setup
         DispatchQueue.main.sync { self.setUpIfNecessary() { } }
@@ -41,40 +41,45 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 let envelope = try? MessageWrapper.unwrap(data: data), let envelopeAsData = try? envelope.serializedData() else {
                 return self.handleFailure(for: notificationContent)
             }
-            // HACK: It is important to use writeSync() here to avoid a race condition
+            
+            // HACK: It is important to use write synchronously here to avoid a race condition
             // where the completeSilenty() is called before the local notification request
-            // is added to notification center.
+            // is added to notification center
             GRDBStorage.shared.write { db in
-                Storage.writeSync { transaction in // Intentionally capture self
-                    do {
-                        let (message, proto) = try MessageReceiver.parse(db, envelopeAsData, openGroupMessageServerID: nil, using: transaction)
-                        switch message {
+                do {
+                    let (message, proto) = try MessageReceiver.parse(db, data: envelopeAsData)
+                    switch message {
                         case let visibleMessage as VisibleMessage:
-                            let tsMessageID = try MessageReceiver.handleVisibleMessage(db, visibleMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: false, using: transaction)
-                            
-                            // Remove the notificaitons if there is an outgoing messages from a linked device
-                            if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction), tsMessage.isKind(of: TSOutgoingMessage.self), let threadID = tsMessage.thread(with: transaction).uniqueId {
-                                let semaphore = DispatchSemaphore(value: 0)
-                                let center = UNUserNotificationCenter.current()
-                                center.getDeliveredNotifications { notifications in
-                                    let matchingNotifications = notifications.filter({ $0.request.content.userInfo[NotificationServiceExtension.threadIdKey] as? String == threadID})
-                                    center.removeDeliveredNotifications(withIdentifiers: matchingNotifications.map({ $0.request.identifier }))
-                                    // Hack: removeDeliveredNotifications seems to be async,need to wait for some time before the delivered notifications can be removed.
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { semaphore.signal() }
-                                }
-                                semaphore.wait()
+                            let interactionId: Int64 = try MessageReceiver.handleVisibleMessage(db, message: visibleMessage, associatedWithProto: proto, openGroupId: nil, isBackgroundPoll: false)
+                        
+                            // Remove the notifications if there is an outgoing messages from a linked device
+                            if
+                                let interaction: Interaction = try? Interaction.fetchOne(db, id: interactionId),
+                                interaction.variant == .standardOutgoing
+                            {
+                            let semaphore = DispatchSemaphore(value: 0)
+                            let center = UNUserNotificationCenter.current()
+                            center.getDeliveredNotifications { notifications in
+                                let matchingNotifications = notifications.filter({ $0.request.content.userInfo[NotificationServiceExtension.threadIdKey] as? String == interaction.threadId })
+                                center.removeDeliveredNotifications(withIdentifiers: matchingNotifications.map({ $0.request.identifier }))
+                                // Hack: removeDeliveredNotifications seems to be async,need to wait for some time before the delivered notifications can be removed.
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { semaphore.signal() }
                             }
-                            
+                            semaphore.wait()
+                        }
+                        
                         case let unsendRequest as UnsendRequest:
-                            MessageReceiver.handleUnsendRequest(unsendRequest, using: transaction)
+                            try MessageReceiver.handleUnsendRequest(db, message: unsendRequest)
+                            
                         case let closedGroupControlMessage as ClosedGroupControlMessage:
-                            MessageReceiver.handleClosedGroupControlMessage(db, closedGroupControlMessage, using: transaction)
+                            try MessageReceiver.handleClosedGroupControlMessage(db, closedGroupControlMessage)
+                            
                         default: break
-                        }
-                    } catch {
-                        if let error = error as? MessageReceiver.Error, error.isRetryable {
-                            self.handleFailure(for: notificationContent)
-                        }
+                    }
+                }
+                catch {
+                    if let error = error as? MessageReceiverError, error.isRetryable {
+                        self.handleFailure(for: notificationContent)
                     }
                 }
             }
@@ -109,7 +114,9 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
 
         AppSetup.setupEnvironment(
             appSpecificSingletonBlock: {
-                SSKEnvironment.shared.notificationsManager = NSENotificationPresenter()
+                SSKEnvironment.shared.notificationsManager.mutate {
+                    $0 = NSENotificationPresenter()
+                }
             },
             migrationCompletion: { [weak self] _, needsConfigSync in
                 self?.versionMigrationsDidComplete(needsConfigSync: needsConfigSync)
@@ -129,7 +136,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         // If we need a config sync then trigger it now
         if needsConfigSync {
             GRDBStorage.shared.write { db in
-                MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
         }
 

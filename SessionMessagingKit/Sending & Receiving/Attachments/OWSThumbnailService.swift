@@ -44,17 +44,10 @@ private struct OWSThumbnailRequest {
     public typealias SuccessBlock = (OWSLoadedThumbnail) -> Void
     public typealias FailureBlock = (Error) -> Void
 
-    let attachment: TSAttachmentStream
-    let thumbnailDimensionPoints: UInt
+    let attachment: Attachment
+    let dimensions: UInt
     let success: SuccessBlock
     let failure: FailureBlock
-
-    init(attachment: TSAttachmentStream, thumbnailDimensionPoints: UInt, success: @escaping SuccessBlock, failure: @escaping FailureBlock) {
-        self.attachment = attachment
-        self.thumbnailDimensionPoints = thumbnailDimensionPoints
-        self.success = success
-        self.failure = failure
-    }
 }
 
 @objc public class OWSThumbnailService: NSObject {
@@ -75,7 +68,7 @@ private struct OWSThumbnailRequest {
     // arrive so that we prioritize the most recent view state.
     private var thumbnailRequestStack = [OWSThumbnailRequest]()
 
-    private func canThumbnailAttachment(attachment: TSAttachmentStream) -> Bool {
+    private func canThumbnailAttachment(attachment: Attachment) -> Bool {
         return attachment.isImage || attachment.isAnimated || attachment.isVideo
     }
 
@@ -88,6 +81,22 @@ private struct OWSThumbnailRequest {
         serialQueue.async {
             let thumbnailRequest = OWSThumbnailRequest(attachment: attachment, thumbnailDimensionPoints: thumbnailDimensionPoints, success: success, failure: failure)
             self.thumbnailRequestStack.append(thumbnailRequest)
+    
+    public func ensureThumbnail(
+        for attachment: Attachment,
+        dimensions: UInt,
+        success: @escaping SuccessBlock,
+        failure: @escaping FailureBlock
+    ) {
+        serialQueue.async {
+            self.thumbnailRequestStack.append(
+                OWSThumbnailRequest(
+                    attachment: attachment,
+                    dimensions: dimensions,
+                    success: success,
+                    failure: failure
+                )
+            )
 
             self.processNextRequestSync()
         }
@@ -130,7 +139,7 @@ private struct OWSThumbnailRequest {
         guard canThumbnailAttachment(attachment: attachment) else {
             throw OWSThumbnailError.failure(description: "Cannot thumbnail attachment.")
         }
-        let thumbnailPath = attachment.path(forThumbnailDimensionPoints: thumbnailRequest.thumbnailDimensionPoints)
+        let thumbnailPath = attachment.thumbnailPath(for: thumbnailRequest.dimensions)
         if FileManager.default.fileExists(atPath: thumbnailPath) {
             guard let image = UIImage(contentsOfFile: thumbnailPath) else {
                 throw OWSThumbnailError.failure(description: "Could not load thumbnail.")
@@ -145,7 +154,7 @@ private struct OWSThumbnailRequest {
         guard let originalFilePath = attachment.originalFilePath else {
             throw OWSThumbnailError.failure(description: "Missing original file path.")
         }
-        let maxDimension = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
+        let maxDimension = CGFloat(thumbnailRequest.dimensions)
         let thumbnailImage: UIImage
         if attachment.isImage || attachment.isAnimated {
             thumbnailImage = try OWSMediaUtils.thumbnail(forImageAtPath: originalFilePath, maxDimension: maxDimension)

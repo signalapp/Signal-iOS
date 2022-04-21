@@ -44,4 +44,16 @@ public struct GroupMember: Codable, FetchableRecord, PersistableRecord, TableRec
     public var profile: QueryInterfaceRequest<Profile> {
         request(for: GroupMember.profile)
     }
+    
+    // MARK: - Initialization
+    
+    public init(
+        groupId: String,
+        profileId: String,
+        role: Role
+    ) {
+        self.groupId = groupId
+        self.profileId = profileId
+        self.role = role
+    }
 }

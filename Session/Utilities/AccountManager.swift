@@ -85,9 +85,21 @@ public class AccountManager: NSObject {
 
     private func syncPushTokens() -> Promise<Void> {
         Logger.info("")
-        let job = SyncPushTokensJob(accountManager: self, preferences: self.preferences)
-        job.uploadOnlyIfStale = false
-        return job.run()
+        
+        guard let job: Job = Job(variant: .syncPushTokens, details: SyncPushTokensJob.Details(uploadOnlyIfStale: false)) else {
+            return Promise(error: GRDBStorageError.decodingFailed)
+        }
+        
+        let (promise, seal) = Promise<Void>.pending()
+        
+        SyncPushTokensJob.run(
+            job,
+            success: { _, _ in seal.fulfill(()) },
+            failure: { _, error, _ in seal.reject(error ?? GRDBStorageError.generic) },
+            deferred: { _ in seal.reject(GRDBStorageError.generic) }
+        )
+        
+        return promise
     }
 
     private func completeRegistration() {

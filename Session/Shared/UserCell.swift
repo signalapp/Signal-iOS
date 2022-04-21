@@ -82,7 +82,7 @@ final class UserCell : UITableViewCell {
     func update() {
         profilePictureView.publicKey = publicKey
         profilePictureView.update()
-        displayNameLabel.text = Profile.displayName(for: publicKey)
+        displayNameLabel.text = Profile.displayName(id: publicKey)
         
         switch accessory {
             case .none: accessoryImageView.isHidden = true

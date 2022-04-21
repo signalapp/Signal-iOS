@@ -1,5 +1,11 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class JoinOpenGroupModal : Modal {
+import UIKit
+import GRDB
+import SessionMessagingKit
+import SessionUtilitiesKit
+
+final class JoinOpenGroupModal: Modal {
     private let name: String
     private let url: String
     
@@ -63,24 +69,28 @@ final class JoinOpenGroupModal : Modal {
     
     // MARK: Interaction
     @objc private func joinOpenGroup() {
+        guard let presentingViewController: UIViewController = self.presentingViewController else { return }
         guard let (room, server, publicKey) = OpenGroupManagerV2.parseV2OpenGroup(from: url) else {
             let alert = UIAlertController(title: "Couldn't Join", message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-            return presentingViewController!.present(alert, animated: true, completion: nil)
+            return presentingViewController.present(alert, animated: true, completion: nil)
         }
-        presentingViewController!.dismiss(animated: true, completion: nil)
-        Storage.shared.write { [presentingViewController = self.presentingViewController!] transaction in
-            OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
-            .done(on: DispatchQueue.main) { _ in
-                GRDBStorage.shared.write { db in
-                    MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
-                }
+        
+        presentingViewController.dismiss(animated: true, completion: nil)
+        
+        GRDBStorage.shared.write { db in
+            OpenGroupManagerV2.shared
+                .add(db, room: room, server: server, publicKey: publicKey)
+        }
+        .done(on: DispatchQueue.main) { _ in
+            GRDBStorage.shared.write { db in
+                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
             }
-            .catch(on: DispatchQueue.main) { error in
-                let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                presentingViewController.present(alert, animated: true, completion: nil)
-            }
+        }
+        .catch(on: DispatchQueue.main) { error in
+            let alert = UIAlertController(title: "Couldn't Join", message: error.localizedDescription, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+            presentingViewController.present(alert, animated: true, completion: nil)
         }
     }
 }

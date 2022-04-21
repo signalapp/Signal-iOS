@@ -52,6 +52,7 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.notificationMode, .integer)
                 .notNull()
                 .defaults(to: SessionThread.NotificationMode.all)
+            t.column(.notificationSound, .integer)
             t.column(.mutedUntilTimestamp, .double)
         }
         
@@ -139,10 +140,14 @@ enum _001_InitialSetupMigration: Migration {
             
             t.column(.variant, .integer).notNull()
             t.column(.body, .text)
-            t.column(.timestampMs, .double)
+            t.column(.timestampMs, .integer)
                 .notNull()
                 .indexed()                                            // Quicker querying
-            t.column(.receivedAtTimestampMs, .double).notNull()
+            t.column(.receivedAtTimestampMs, .integer).notNull()
+            t.column(.wasRead, .boolean)
+                .notNull()
+                .indexed()                                            // Quicker querying
+                .defaults(to: false)
             t.column(.expiresInSeconds, .double)
             t.column(.expiresStartedAtMs, .double)
             t.column(.linkPreviewUrl, .text)
@@ -154,20 +159,26 @@ enum _001_InitialSetupMigration: Migration {
                 .defaults(to: false)
             t.column(.openGroupWhisperTo, .text)
             
-            // Null is not unique in SQLite which allows us to do this and we do
-            // a joint constraint with the `threadId` on the off chance there is
-            // a collision between different hashes on different servers
-            t.uniqueKey([.threadId, .serverHash])
-            
-            // The `openGroupServerMessageId` is unique on a per-thread basis
+            /// Note: The below unique constraints are added to prevent messages being duplicated, we need
+            /// multiple constraints because `null` is not unique in SQLite which means any unique constraint
+            /// which contained a nullable column would not be seen as unique if the value is null (this is good to
+            /// avoid outgoing message from conflicting due to not having a `serverHash` but bad when different
+            /// columns are only unique in certain circumstances)
+            ///
+            /// The values have the following behaviours:
+            ///
+            /// Threads with variants: [`contact`, `closedGroup`]:
+            ///    `threadId`                    - Unique per thread
+            ///    `serverHash`                - Unique per message for service-node-based messages
+            ///                       **Note:** Some InfoMessage's will have this intentionally left `null`
+            ///                       as we want to ignore any collisions and re-process them
+            ///    `timestampMs`              - Very low chance of collision (especially combined with other two)
+            ///
+            /// Threads with variants: [`openGroup`]:
+            /// `threadId`                                        - Unique per thread
+            /// `openGroupServerMessageId`     - Unique for VisibleMessage's on an OpenGroup server
+            t.uniqueKey([.threadId, .serverHash, .timestampMs])
             t.uniqueKey([.threadId, .openGroupServerMessageId])
-            
-            // Note: The timestamp will be unique on a per-message basis so we
-            // need to add the below unique constraint to handle cases where
-            // the `serverHash` and `openGroupServerMessageId` can both be null
-            // to try and prevent duplicate messages (it's theoretically possible
-            // to get a collision with this constraint but is astronomically unlikely)
-            t.uniqueKey([.threadId, .serverHash, .openGroupServerMessageId, .timestampMs])
         }
         
         try db.create(table: RecipientState.self) { t in
@@ -177,47 +188,28 @@ enum _001_InitialSetupMigration: Migration {
                 .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
             t.column(.recipientId, .text)
                 .notNull()
+                .indexed()                                            // Quicker querying
                 .references(Profile.self)
-            t.column(.state, .integer).notNull()
+            t.column(.state, .integer)
+                .notNull()
+                .indexed()                                            // Quicker querying
             t.column(.readTimestampMs, .double)
+            t.column(.mostRecentFailureText, .text)
             
             // We want to ensure that a recipient can only have a single state for
             // each interaction
-            t.uniqueKey([.interactionId, .recipientId])
-        }
-        
-        try db.create(table: Quote.self) { t in
-            t.column(.interactionId, .integer)
-                .notNull()
-                .primaryKey()
-                .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
-            t.column(.authorId, .text)
-                .notNull()
-                .references(Profile.self)
-            t.column(.timestampMs, .double).notNull()
-            t.column(.body, .text)
-        }
-        
-        try db.create(table: LinkPreview.self) { t in
-            t.column(.url, .text)
-                .notNull()
-                .indexed()                                            // Quicker querying
-            t.column(.timestamp, .double)
-                .notNull()
-                .indexed()                                            // Quicker querying
-            t.column(.variant, .integer).notNull()
-            t.column(.title, .text)
-            
-            t.primaryKey([.url, .timestamp])
+            t.primaryKey([.interactionId, .recipientId])
         }
         
         try db.create(table: Attachment.self) { t in
-            t.column(.interactionId, .integer)
-                .indexed()                                            // Quicker querying
-                .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
+            t.column(.id, .text)
+                .notNull()
+                .primaryKey()
             t.column(.serverId, .text)
             t.column(.variant, .integer).notNull()
-            t.column(.state, .integer).notNull()
+            t.column(.state, .integer)
+                .notNull()
+                .indexed()                                            // Quicker querying
             t.column(.contentType, .text).notNull()
             t.column(.byteCount, .integer)
                 .notNull()
@@ -230,6 +222,76 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.encryptionKey, .blob)
             t.column(.digest, .blob)
             t.column(.caption, .text)
+        }
+        
+        try db.create(table: InteractionAttachment.self) { t in
+            t.column(.interactionId, .integer)
+                .notNull()
+                .indexed()                                            // Quicker querying
+                .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
+            t.column(.attachmentId, .text)
+                .notNull()
+                .indexed()                                            // Quicker querying
+                .references(Attachment.self, onDelete: .cascade)      // Delete if attachment deleted
+        }
+        
+        try db.create(table: Quote.self) { t in
+            t.column(.interactionId, .integer)
+                .notNull()
+                .primaryKey()
+                .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
+            t.column(.authorId, .text)
+                .notNull()
+                .references(Profile.self)
+            t.column(.timestampMs, .double).notNull()
+            t.column(.body, .text)
+            t.column(.attachmentId, .text)
+                .references(Attachment.self, onDelete: .setNull)      // Clear if attachment deleted
+        }
+        
+        try db.create(table: LinkPreview.self) { t in
+            t.column(.url, .text)
+                .notNull()
+                .indexed()                                            // Quicker querying
+            t.column(.timestamp, .double)
+                .notNull()
+                .indexed()                                            // Quicker querying
+            t.column(.variant, .integer).notNull()
+            t.column(.title, .text)
+            t.column(.attachmentId, .text)
+                .references(Attachment.self, onDelete: .setNull)      // Clear if attachment deleted
+            
+            t.primaryKey([.url, .timestamp])
+        }
+        
+        try db.create(table: ControlMessageProcessRecord.self) { t in
+            t.column(.threadId, .text).notNull()
+            t.column(.sentTimestampMs, .integer).notNull()
+            t.column(.serverHash, .text).notNull()
+            t.column(.openGroupMessageServerId, .integer).notNull()
+            
+            t.uniqueKey([.threadId, .sentTimestampMs, .serverHash, .openGroupMessageServerId])
+        }
+        
+        try db.create(table: Job.self) { t in
+            t.column(.id, .integer)
+                .notNull()
+                .primaryKey(autoincrement: true)
+            t.column(.failureCount, .integer)
+                .notNull()
+                .defaults(to: 0)
+            t.column(.variant, .integer)
+                .notNull()
+                .indexed()                                            // Quicker querying
+            t.column(.behaviour, .integer).notNull()    // TODO: Indexed???
+            t.column(.nextRunTimestamp, .double)
+                .notNull()  // TODO: Should this just be nullable??? (or do we want to fetch by this?)
+                .indexed()                                            // Quicker querying
+                .defaults(to: 0)
+            t.column(.threadId, .text)
+                .indexed()                                            // Quicker querying
+                .references(SessionThread.self, onDelete: .cascade)   // Delete if thread deleted
+            t.column(.details, .blob)
         }
     }
 }

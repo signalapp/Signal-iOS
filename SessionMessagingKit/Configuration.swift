@@ -18,16 +18,26 @@ public enum SNMessagingKit { // Just to make the external API nice
             identifier: .messagingKit,
             migrations: [
                 [
-                    _001_InitialSetupMigration.self
+                    _001_InitialSetupMigration.self,
+                    _002_SetupStandardJobs.self
                 ],
                 [
-                    _002_YDBToGRDBMigration.self
+                    _003_YDBToGRDBMigration.self
                 ]
             ]
         )
     }
     
     public static func configure(storage: SessionMessagingKitStorageProtocol) {
+        // Configure the job executors
+        JobRunner.add(executor: DisappearingMessagesJob.self, for: .disappearingMessages)
+        JobRunner.add(executor: FailedMessagesJob.self, for: .failedMessages)
+        JobRunner.add(executor: FailedAttachmentDownloadsJob.self, for: .failedAttachmentDownloads)
+        JobRunner.add(executor: MessageSendJob.self, for: .messageSend)
+        JobRunner.add(executor: MessageReceiveJob.self, for: .messageReceive)
+        JobRunner.add(executor: NotifyPushServerJob.self, for: .notifyPushServer)
+        JobRunner.add(executor: SendReadReceiptsJob.self, for: .sendReadReceipts)
+        
         SNMessagingKitConfiguration.shared = SNMessagingKitConfiguration(storage: storage)
     }
 }

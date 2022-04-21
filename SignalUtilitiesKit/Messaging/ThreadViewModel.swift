@@ -1,66 +1,37 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import SessionMessagingKit
 
-@objc
-public class ThreadViewModel: NSObject {
-    @objc public let hasUnreadMessages: Bool
-    @objc public let lastMessageDate: Date
-    @objc public let isGroupThread: Bool
-    @objc public let threadRecord: TSThread
-    @objc public let unreadCount: UInt
-    @objc public let contactSessionID: String?
-    @objc public let name: String
-    @objc public let isMuted: Bool
-    @objc public let isPinned: Bool
-    @objc public let isOnlyNotifyingForMentions: Bool
-    @objc public let hasUnreadMentions: Bool
+public struct ThreadViewModel: Equatable {
+    public let thread: SessionThread
+    public let name: String
+    public let unreadCount: UInt
+    public let unreadMentionCount: UInt
 
-    var isContactThread: Bool {
-        return !isGroupThread
-    }
-
-    @objc public let lastMessageText: String?
-    @objc public let lastMessageForInbox: TSInteraction?
-
-    @objc
-    public init(thread: TSThread, transaction: YapDatabaseReadTransaction) {
-        self.threadRecord = thread
-
-        self.isGroupThread = thread.isGroupThread()
-        self.name = thread.name(with: transaction)
-        self.isMuted = thread.isMuted
-        self.isPinned = thread.isPinned
-        self.lastMessageText = thread.lastMessageText(transaction: transaction)
-        let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
-        self.lastMessageForInbox = lastInteraction
-        self.lastMessageDate = lastInteraction?.dateForUI() ?? thread.creationDate
-
-        if let contactThread = thread as? TSContactThread {
-            self.contactSessionID = contactThread.contactSessionID()
-        } else {
-            self.contactSessionID = nil
-        }
+    public let lastInteraction: Interaction?
+    public let lastInteractionDate: Date
+    public let lastInteractionText: String?
+    public let lastInteractionState: RecipientState.State?
+    
+    public init(
+        thread: SessionThread,
+        name: String,
+        unreadCount: UInt,
+        unreadMentionCount: UInt,
+        lastInteraction: Interaction?,
+        lastInteractionDate: Date,
+        lastInteractionText: String?,
+        lastInteractionState: RecipientState.State?
+    ) {
+        self.thread = thread
+        self.name = name
+        self.unreadCount = unreadCount
+        self.unreadMentionCount = unreadMentionCount
         
-        if let groupThread = thread as? TSGroupThread {
-            self.isOnlyNotifyingForMentions = groupThread.isOnlyNotifyingForMentions
-        } else {
-            self.isOnlyNotifyingForMentions = false
-        }
-
-        self.unreadCount = thread.unreadMessageCount(transaction: transaction)
-        self.hasUnreadMessages = unreadCount > 0
-        self.hasUnreadMentions = thread.unreadMentionMessageCount(with: transaction) > 0
-    }
-
-    @objc
-    override public func isEqual(_ object: Any?) -> Bool {
-        guard let otherThread = object as? ThreadViewModel else {
-            return super.isEqual(object)
-        }
-
-        return threadRecord.isEqual(otherThread.threadRecord)
+        self.lastInteraction = lastInteraction
+        self.lastInteractionDate = lastInteractionDate
+        self.lastInteractionText = lastInteractionText
+        self.lastInteractionState = lastInteractionState
     }
 }

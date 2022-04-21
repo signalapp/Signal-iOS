@@ -61,7 +61,9 @@ import SignalUtilitiesKit
     @objc
     public func setup() {
         // Hang certain singletons on SSKEnvironment too.
-        SSKEnvironment.shared.notificationsManager = notificationPresenter
+        SSKEnvironment.shared.notificationsManager.mutate {
+            $0 = notificationPresenter
+        }
         setupLogFiles()
     }
     

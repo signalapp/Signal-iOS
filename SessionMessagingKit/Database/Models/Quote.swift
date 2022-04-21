@@ -12,9 +12,11 @@ public struct Quote: Codable, FetchableRecord, PersistableRecord, TableRecord, C
         to: [Interaction.Columns.timestampMs, Interaction.Columns.authorId]
     )
     internal static let profileForeignKey = ForeignKey([Columns.authorId], to: [Profile.Columns.id])
-    private static let interaction = belongsTo(Interaction.self, using: interactionForeignKey)
+    private static let attachmentForeignKey = ForeignKey([Columns.attachmentId], to: [Attachment.Columns.id])
+    internal static let interaction = belongsTo(Interaction.self, using: interactionForeignKey)
     private static let profile = hasOne(Profile.self, using: profileForeignKey)
     private static let quotedInteraction = hasOne(Interaction.self, using: originalInteractionForeignKey)
+    internal static let attachment = hasOne(Attachment.self, using: attachmentForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -22,6 +24,7 @@ public struct Quote: Codable, FetchableRecord, PersistableRecord, TableRecord, C
         case authorId
         case timestampMs
         case body
+        case attachmentId
     }
     
     /// The id for the interaction this Quote belongs to
@@ -31,10 +34,13 @@ public struct Quote: Codable, FetchableRecord, PersistableRecord, TableRecord, C
     public let authorId: String
     
     /// The timestamp in milliseconds since epoch when the quoted interaction was sent
-    public let timestampMs: Double
+    public let timestampMs: Int64
     
     /// The body of the quoted message if the user is quoting a text message or an attachment with a caption
     public let body: String?
+    
+    /// The id for the attachment this Quote is associated with
+    public let attachmentId: String?
     
     // MARK: - Relationships
     
@@ -46,7 +52,113 @@ public struct Quote: Codable, FetchableRecord, PersistableRecord, TableRecord, C
         request(for: Quote.profile)
     }
     
+    public var attachment: QueryInterfaceRequest<Attachment> {
+        request(for: Quote.attachment)
+    }
+    
     public var originalInteraction: QueryInterfaceRequest<Interaction> {
         request(for: Quote.quotedInteraction)
+    }
+    
+    // MARK: - Interaction
+    
+    public init(
+        interactionId: Int64,
+        authorId: String,
+        timestampMs: Int64,
+        body: String?,
+        attachmentId: String?
+    ) {
+        self.interactionId = interactionId
+        self.authorId = authorId
+        self.timestampMs = timestampMs
+        self.body = body
+        self.attachmentId = attachmentId
+    }
+    
+    // MARK: - Custom Database Interaction
+    
+    public func delete(_ db: Database) throws -> Bool {
+        // If we have an Attachment then check if this is the only type that is referencing it
+        // and delete the Attachment if so
+        if let attachmentId: String = attachmentId {
+            let interactionUses: Int? = try? InteractionAttachment
+                .filter(InteractionAttachment.Columns.attachmentId == attachmentId)
+                .fetchCount(db)
+            let linkPreviewUses: Int? = try? LinkPreview
+                .filter(LinkPreview.Columns.attachmentId == attachmentId)
+                .fetchCount(db)
+            
+            if (interactionUses ?? 0) == 0 && (linkPreviewUses ?? 0) == 0 {
+                try attachment.deleteAll(db)
+            }
+        }
+        
+        return try performDelete(db)
+    }
+}
+
+// MARK: - Protobuf
+
+public extension Quote {
+    init?(_ db: Database, proto: SNProtoDataMessage, interactionId: Int64, thread: SessionThread) throws {
+        guard
+            let quote = proto.quote,
+            quote.id != 0,
+            !quote.author.isEmpty
+        else { return nil }
+        self.interactionId = interactionId
+        self.timestampMs = Int64(quote.id)
+        self.authorId = quote.author
+
+        // Prefer to generate the text snippet locally if available.
+        let quotedInteraction: Interaction? = try? thread
+            .interactions
+            .filter(Interaction.Columns.authorId == quote.author)
+            .filter(Interaction.Columns.timestampMs == Double(quote.id))
+            .fetchOne(db)
+        
+        if let quotedInteraction: Interaction = quotedInteraction, quotedInteraction.body?.isEmpty == false {
+            self.body = quotedInteraction.body
+        }
+        else if let body: String = proto.body, !body.isEmpty {
+            self.body = body
+        }
+        else {
+            self.body = nil
+        }
+        
+        // We only use the first attachment
+        if let attachment = proto.attachments.first {
+            let thumbnailAttachment: Attachment
+            
+            // We prefer deriving any thumbnail locally rather than fetching one from the network
+            if let quotedInteraction: Interaction = quotedInteraction {
+                if let attachment: Attachment = try? quotedInteraction.attachments.fetchOne(db) {
+                    thumbnailAttachment = attachment.cloneAsThumbnail()
+                }
+                else if let linkPreviewAttachment: Attachment = try? quotedInteraction.linkPreview.fetchOne(db)?.attachment.fetchOne(db) {
+                    thumbnailAttachment = linkPreviewAttachment.cloneAsThumbnail()
+                }
+                else {
+                    thumbnailAttachment = Attachment(proto: attachment)
+                }
+            }
+            else {
+                thumbnailAttachment = Attachment(proto: attachment)
+            }
+            
+            try thumbnailAttachment.save(db)
+            self.attachmentId = thumbnailAttachment.id
+        }
+        else {
+            self.attachmentId = nil
+        }
+        
+        // Make sure the quote is valid before completing
+        if self.body == nil && self.attachmentId == nil {
+            return nil
+        }
+
     }
 }

@@ -1118,7 +1118,7 @@ extension ConversationVC: UIDocumentInteractionControllerDelegate {
 
 extension ConversationVC {
     
-    fileprivate func approveMessageRequestIfNeeded(for thread: TSThread?, isNewThread: Bool, timestamp: UInt64) -> Promise<Void> {
+    fileprivate func approveMessageRequestIfNeeded(for thread: TSThread?, isNewThread: Bool, timestamp: Double) -> Promise<Void> {
         guard let contactThread: TSContactThread = thread as? TSContactThread else { return Promise.value(()) }
         
         // If the contact doesn't exist then we should create it so we can store the 'isApproved' state

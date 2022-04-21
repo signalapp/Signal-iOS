@@ -359,7 +359,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     private func updateProfile(isUpdatingDisplayName: Bool, isUpdatingProfilePicture: Bool) {
         let userDefaults = UserDefaults.standard
         let name: String? = (displayNameToBeUploaded ?? Profile.fetchOrCreateCurrentUser().name)
-        let profilePicture: UIImage? = (profilePictureToBeUploaded ?? ProfileManager.profileAvatar(for: getUserHexEncodedPublicKey()))
+        let profilePicture: UIImage? = (profilePictureToBeUploaded ?? ProfileManager.profileAvatar(id: getUserHexEncodedPublicKey()))
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self, displayNameToBeUploaded, profilePictureToBeUploaded] modalActivityIndicator in
             ProfileManager.updateLocal(
                 profileName: (name ?? ""),
@@ -373,7 +373,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                         userDefaults[.lastProfilePictureUpdate] = Date()
                     }
                     GRDBStorage.shared.write { db in
-                        MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                        try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
                     }
                     
                     DispatchQueue.main.async {

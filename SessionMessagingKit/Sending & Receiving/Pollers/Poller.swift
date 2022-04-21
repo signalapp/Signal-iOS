@@ -1,5 +1,9 @@
-import SessionSnodeKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import PromiseKit
+import Sodium
+import SessionSnodeKit
 
 @objc(LKPoller)
 public final class Poller : NSObject {
@@ -92,42 +96,64 @@ public final class Poller : NSObject {
     private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard isPolling else { return Promise { $0.fulfill(()) } }
         let userPublicKey = getUserHexEncodedPublicKey()
-        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: Threading.pollerQueue) { [weak self] rawResponse -> Promise<Void> in
-            guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
-            let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
-            if !messages.isEmpty {
-                SNLog("Received \(messages.count) new message(s).")
-            }
-            messages.forEach { message in
-                guard let envelope = SNProtoEnvelope.from(message) else { return }
-                do {
-                    let data = try envelope.serializedData()
-                    let job = MessageReceiveJob(data: data, serverHash: message.info.hash, isBackgroundPoll: false)
-                    SNMessagingKitConfiguration.shared.storage.write { transaction in
-                        SessionMessagingKit.JobQueue.shared.add(job, using: transaction)
-                    }
-                } catch {
-                    SNLog("Failed to deserialize envelope due to error: \(error).")
-                }
-            }
-            
-            // Now that the MessageReceiveJob's have been created we can persist the received messages
-            if !messages.isEmpty {
-                GRDBStorage.shared.write { db in
-                    messages.forEach { try? $0.info.save(db) }
-                }
-            }
-            
-            strongSelf.pollCount += 1
-            
-            guard strongSelf.pollCount < Poller.maxPollCount else {
-                throw Error.pollLimitReached
-            }
-            
-            return withDelay(Poller.pollInterval, completionQueue: Threading.pollerQueue) {
+        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey)
+            .then(on: Threading.pollerQueue) { [weak self] rawResponse -> Promise<Void> in
                 guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
-                return strongSelf.poll(snode, seal: longTermSeal)
+                
+                let messages: [SnodeReceivedMessage] = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
+                
+                if !messages.isEmpty {
+                    SNLog("Received \(messages.count) new message(s).")
+                    
+                    GRDBStorage.shared.write { db in
+                        messages.forEach { message in
+                            guard let envelope = SNProtoEnvelope.from(message) else { return }
+                            
+                            // Extract the sender public key (used as the threadId in contact threads) and add
+                            // that to the messageReceive job for multi-threading and garbage collection purposes
+                            //
+                            // Note: This is a slightly optimised version of the message decryption which
+                            // just skips the validation (handled when the job actually runs) and doesn't throw
+                            let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
+                            
+                            if threadId == nil {
+                            }
+                            
+                            do {
+                                JobRunner.add(
+                                    db,
+                                    job: Job(
+                                        variant: .messageReceive,
+                                        behaviour: .runOnce,
+                                        threadId: threadId,
+                                        details: MessageReceiveJob.Details(
+                                            data: try envelope.serializedData(),
+                                            serverHash: message.info.hash,
+                                            isBackgroundPoll: false
+                                        )
+                                    )
+                                )
+                                
+                                // Persist the received message after the MessageReceiveJob is created
+                                try message.info.save(db)
+                            }
+                            catch {
+                                SNLog("Failed to deserialize envelope due to error: \(error).")
+                            }
+                        }
+                    }
+                }
+                
+                strongSelf.pollCount += 1
+                
+                guard strongSelf.pollCount < Poller.maxPollCount else {
+                    throw Error.pollLimitReached
+                }
+                
+                return withDelay(Poller.pollInterval, completionQueue: Threading.pollerQueue) {
+                    guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
+                    return strongSelf.poll(snode, seal: longTermSeal)
+                }
             }
-        }
     }
 }

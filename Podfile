@@ -50,6 +50,7 @@ abstract_target 'GlobalDependencies' do
         pod 'SAMKeychain'
         pod 'SwiftProtobuf', '~> 1.5.0'
         pod 'YYImage', git: 'https://github.com/signalapp/YYImage'
+        pod 'DifferenceKit'
       end
       
       target 'SessionMessagingKit' do

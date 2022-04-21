@@ -2,14 +2,18 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+import Foundation
+import GRDB
+import SessionMessagingKit
+
 @objc
 public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
-    public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
         owsFailDebug("")
     }
     
-    public func cancelNotification(_ identifier: String) {
+    public func cancelNotifications(identifiers: [String]) {
         owsFailDebug("")
     }
 

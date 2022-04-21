@@ -69,17 +69,24 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   sounds:sounds
                                                            windowManager:windowManager]];
 
+        // TODO: Add this back
+        // TODO: Refactor this file to Swift
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithPrimaryStorage:primaryStorage
                                                                 tsAccountManager:tsAccountManager
-                                                         disappearingMessagesJob:disappearingMessagesJob
-                                                              readReceiptManager:readReceiptManager
-                                                          outgoingReceiptManager:outgoingReceiptManager
                                                              reachabilityManager:reachabilityManager
                                                                 typingIndicators:typingIndicators]];
+//        [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithPrimaryStorage:primaryStorage
+//                                                                tsAccountManager:tsAccountManager
+//                                                         disappearingMessagesJob:disappearingMessagesJob
+//                                                              readReceiptManager:readReceiptManager
+//                                                          outgoingReceiptManager:outgoingReceiptManager
+//                                                             reachabilityManager:reachabilityManager
+//                                                                typingIndicators:typingIndicators]];
 
         appSpecificSingletonBlock();
 
-        OWSAssertDebug(SSKEnvironment.shared.isComplete);
+        // TODO: Add this back?
+//        OWSAssertDebug(SSKEnvironment.shared.isComplete);
         
         [SNConfiguration performMainSetup]; // Must happen before the performUpdateCheck call below
 

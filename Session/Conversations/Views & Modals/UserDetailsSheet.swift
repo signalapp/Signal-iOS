@@ -30,7 +30,7 @@ final class UserDetailsSheet: Sheet {
         profilePictureView.update()
         // Display name label
         let displayNameLabel = UILabel()
-        let displayName = Profile.displayName(for: sessionID)
+        let displayName = Profile.displayName(id: sessionID)
         displayNameLabel.text = displayName
         displayNameLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
         displayNameLabel.textColor = Colors.text

@@ -29,10 +29,10 @@ public class Atomic<Value> {
     }
 
     // MARK: - Functions
-    
-    public func mutate(_ mutation: (inout Value) -> Void) {
+
+    @discardableResult public func mutate<T>(_ mutation: (inout Value) -> T) -> T {
         return queue.sync {
-            mutation(&value)
+            return mutation(&value)
         }
     }
 }

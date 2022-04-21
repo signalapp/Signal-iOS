@@ -1,21 +1,17 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 import SessionUIKit
+import SignalUtilitiesKit
 
 final class ConversationCell : UITableViewCell {
-    var isShowingGlobalSearchResult = false
-    var threadViewModel: ThreadViewModel! {
-        didSet {
-            isShowingGlobalSearchResult ? updateForSearchResult() : update()
-        }
-    }
-    
     static let reuseIdentifier = "ConversationCell"
-    
+
     // MARK: UI Components
     private let accentLineView = UIView()
-    
+
     private lazy var profilePictureView = ProfilePictureView()
-    
+
     private lazy var displayNameLabel: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
@@ -23,7 +19,7 @@ final class ConversationCell : UITableViewCell {
         result.lineBreakMode = .byTruncatingTail
         return result
     }()
-    
+
     private lazy var unreadCountView: UIView = {
         let result = UIView()
         result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
@@ -34,7 +30,7 @@ final class ConversationCell : UITableViewCell {
         result.layer.cornerRadius = size / 2
         return result
     }()
-    
+
     private lazy var unreadCountLabel: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
@@ -42,7 +38,7 @@ final class ConversationCell : UITableViewCell {
         result.textAlignment = .center
         return result
     }()
-    
+
     private lazy var hasMentionView: UIView = {
         let result = UIView()
         result.backgroundColor = Colors.accent
@@ -53,7 +49,7 @@ final class ConversationCell : UITableViewCell {
         result.layer.cornerRadius = size / 2
         return result
     }()
-    
+
     private lazy var hasMentionLabel: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
@@ -62,7 +58,7 @@ final class ConversationCell : UITableViewCell {
         result.textAlignment = .center
         return result
     }()
-    
+
     private lazy var isPinnedIcon: UIImageView = {
         let result = UIImageView(image: UIImage(named: "Pin")!.withRenderingMode(.alwaysTemplate))
         result.contentMode = .scaleAspectFit
@@ -73,7 +69,7 @@ final class ConversationCell : UITableViewCell {
         result.layer.masksToBounds = true
         return result
     }()
-    
+
     private lazy var timestampLabel: UILabel = {
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
@@ -82,7 +78,7 @@ final class ConversationCell : UITableViewCell {
         result.alpha = Values.lowOpacity
         return result
     }()
-    
+
     private lazy var snippetLabel: UILabel = {
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
@@ -90,9 +86,9 @@ final class ConversationCell : UITableViewCell {
         result.lineBreakMode = .byTruncatingTail
         return result
     }()
-    
+
     private lazy var typingIndicatorView = TypingIndicatorView()
-    
+
     private lazy var statusIndicatorView: UIImageView = {
         let result = UIImageView()
         result.contentMode = .scaleAspectFit
@@ -100,7 +96,7 @@ final class ConversationCell : UITableViewCell {
         result.layer.masksToBounds = true
         return result
     }()
-    
+
     private lazy var topLabelStackView: UIStackView = {
         let result = UIStackView()
         result.axis = .horizontal
@@ -108,7 +104,7 @@ final class ConversationCell : UITableViewCell {
         result.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
         return result
     }()
-    
+
     private lazy var bottomLabelStackView: UIStackView = {
         let result = UIStackView()
         result.axis = .horizontal
@@ -116,23 +112,23 @@ final class ConversationCell : UITableViewCell {
         result.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
         return result
     }()
-    
+
     // MARK: Settings
-    
+
     public static let unreadCountViewSize: CGFloat = 20
     private static let statusIndicatorSize: CGFloat = 14
-    
+
     // MARK: Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setUpViewHierarchy()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUpViewHierarchy()
     }
-    
+
     private func setUpViewHierarchy() {
         let cellHeight: CGFloat = 68
         // Background color
@@ -203,8 +199,21 @@ final class ConversationCell : UITableViewCell {
         stackView.set(.height, to: cellHeight)
     }
     
-    // MARK: Updating for search results
-    private func updateForSearchResult() {
+    // MARK: - Content
+    
+    public func update(with threadViewModel: ThreadViewModel?, isGlobalSearchResult: Bool = false) {
+        guard let threadViewModel: ThreadViewModel = threadViewModel else { return }
+        guard !isGlobalSearchResult else {
+            updateForSearchResult(threadViewModel)
+            return
+        }
+        
+        update(threadViewModel)
+    }
+
+    // MARK: - Updating for search results
+    
+    private func updateForSearchResult(_ threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
         guard let thread = threadViewModel?.threadRecord else { return }
         profilePictureView.update(for: thread)
@@ -212,15 +221,15 @@ final class ConversationCell : UITableViewCell {
         unreadCountView.isHidden = true
         hasMentionView.isHidden = true
     }
-    
-    public func configureForRecent() {
-        displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(), attributes: [.foregroundColor:Colors.text])
+
+    public func configureForRecent(_ threadViewModel: ThreadViewModel) {
+        displayNameLabel.attributedText = NSMutableAttributedString(string: getDisplayName(for: threadViewModel.thread), attributes: [.foregroundColor:Colors.text])
         bottomLabelStackView.isHidden = false
-        let snippet = String(format: NSLocalizedString("RECENT_SEARCH_LAST_MESSAGE_DATETIME", comment: ""), DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate))
+        let snippet = String(format: NSLocalizedString("RECENT_SEARCH_LAST_MESSAGE_DATETIME", comment: ""), DateUtil.formatDate(forDisplay: threadViewModel.lastInteractionDate))
         snippetLabel.attributedText = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
         timestampLabel.isHidden = true
     }
-    
+
     public func configure(snippet: String?, searchText: String, message: TSMessage? = nil) {
         let normalizedSearchText = searchText.lowercased()
         if let messageTimestamp = message?.timestamp, let snippet = snippet {
@@ -263,150 +272,182 @@ final class ConversationCell : UITableViewCell {
             timestampLabel.isHidden = true
         }
     }
-    
+
     private func getHighlightedSnippet(snippet: String, searchText: String, fontSize: CGFloat) -> NSMutableAttributedString {
         guard snippet != NSLocalizedString("NOTE_TO_SELF", comment: "") else {
             return NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text])
         }
-        
+
         let result = NSMutableAttributedString(string: snippet, attributes: [.foregroundColor:Colors.text.withAlphaComponent(Values.lowOpacity)])
         let normalizedSnippet = snippet.lowercased() as NSString
-        
+
         guard normalizedSnippet.contains(searchText) else { return result }
-        
+
         let range = normalizedSnippet.range(of: searchText)
         result.addAttribute(.foregroundColor, value: Colors.text, range: range)
         result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: fontSize), range: range)
         return result
     }
+
+    // MARK: - Updating
     
-    // MARK: Updating
-    private func update() {
-        AssertIsOnMainThread()
-        guard let thread = threadViewModel?.threadRecord else { return }
-        backgroundColor = threadViewModel.isPinned ? Colors.cellPinned : Colors.cellBackground
+    private func update(_ threadViewModel: ThreadViewModel) {
+        let thread: SessionThread = threadViewModel.thread
         
-        if thread.isBlocked() {
+        backgroundColor = (thread.isPinned ? Colors.cellPinned : Colors.cellBackground)
+        
+        if GRDBStorage.shared.read({ db in try thread.contact.fetchOne(db)?.isBlocked }) == true {
             accentLineView.backgroundColor = Colors.destructive
             accentLineView.alpha = 1
         }
         else {
             accentLineView.backgroundColor = Colors.accent
-            accentLineView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
+            accentLineView.alpha = (threadViewModel.unreadCount > 0 ? 1 : 0.0001) // Setting the alpha to exactly 0 causes an issue on iOS 12
         }
-        isPinnedIcon.isHidden = !threadViewModel.isPinned
-        unreadCountView.isHidden = !threadViewModel.hasUnreadMessages
-        let unreadCount = threadViewModel.unreadCount
-        unreadCountLabel.text = unreadCount < 10000 ? "\(unreadCount)" : "9999+"
-        let fontSize = (unreadCount < 10000) ? Values.verySmallFontSize : 8
-        unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
-        hasMentionView.isHidden = !(threadViewModel.hasUnreadMentions && thread.isGroupThread())
-        profilePictureView.update(for: thread)
-        displayNameLabel.text = getDisplayName()
-        timestampLabel.text = DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate)
-        if SSKEnvironment.shared.typingIndicators.typingRecipientId(forThread: thread) != nil {
-            snippetLabel.text = ""
-            typingIndicatorView.isHidden = false
-            typingIndicatorView.startAnimation()
-        } else {
-            snippetLabel.attributedText = getSnippet()
+        
+        isPinnedIcon.isHidden = !thread.isPinned
+        unreadCountView.isHidden = (threadViewModel.unreadCount <= 0)
+        unreadCountLabel.text = (threadViewModel.unreadCount < 10000 ? "\(threadViewModel.unreadCount)" : "9999+")
+        unreadCountLabel.font = .boldSystemFont(
+            ofSize: (threadViewModel.unreadCount < 10000 ? Values.verySmallFontSize : 8)
+        )
+        hasMentionView.isHidden = !(
+            (threadViewModel.unreadMentionCount > 0) &&
+            (thread.variant == .closedGroup || thread.variant == .openGroup)
+        )
+        GRDBStorage.shared.read { db in profilePictureView.update(db, thread: thread) }
+        displayNameLabel.text = getDisplayName(for: thread)
+        timestampLabel.text = DateUtil.formatDate(forDisplay: threadViewModel.lastInteractionDate)
+        // TODO: Add this back
+//        if SSKEnvironment.shared.typingIndicators.typingRecipientId(forThread: thread) != nil {
+//            snippetLabel.text = ""
+//            typingIndicatorView.isHidden = false
+//            typingIndicatorView.startAnimation()
+//        } else {
+            snippetLabel.attributedText = getSnippet(threadViewModel: threadViewModel)
             typingIndicatorView.isHidden = true
             typingIndicatorView.stopAnimation()
-        }
+//        }
+        
         statusIndicatorView.backgroundColor = nil
-        let lastMessage = threadViewModel.lastMessageForInbox
-        if let lastMessage = lastMessage as? TSOutgoingMessage {
-            let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: lastMessage)
+        
+        switch (threadViewModel.lastInteraction?.variant, threadViewModel.lastInteractionState) {
+            case (.standardOutgoing, .sending):
+                statusIndicatorView.image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
+                statusIndicatorView.tintColor = Colors.text
+                statusIndicatorView.isHidden = false
+                
+            case (.standardOutgoing, .sent):
+                statusIndicatorView.image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
+                statusIndicatorView.tintColor = Colors.text
+                statusIndicatorView.isHidden = false
+                
+            case (.standardOutgoing, .failed):
+                statusIndicatorView.image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
+                statusIndicatorView.tintColor = Colors.destructive
+                statusIndicatorView.isHidden = false
             
-            switch status {
-                case .uploading, .sending:
-                    statusIndicatorView.image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
-                    statusIndicatorView.tintColor = Colors.text
-                    
-                case .sent, .skipped, .delivered:
-                    statusIndicatorView.image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
-                    statusIndicatorView.tintColor = Colors.text
-                    
-                case .read:
-                    statusIndicatorView.image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
-                    statusIndicatorView.tintColor = nil
-                    statusIndicatorView.backgroundColor = (isLightMode ? .black : .white)
-                    
-                case .failed:
-                    statusIndicatorView.image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
-                    statusIndicatorView.tintColor = Colors.destructive
-            }
-            
-            statusIndicatorView.isHidden = false
-        }
-        else {
-            statusIndicatorView.isHidden = true
+            default:
+                statusIndicatorView.isHidden = false
         }
     }
-    
-    private func getMessageAuthorName(message: TSMessage) -> String? {
-        guard threadViewModel.isGroupThread else { return nil }
-        if let incomingMessage = message as? TSIncomingMessage {
-            return Profile.displayName(for: incomingMessage.authorId, customFallback: "Anonymous")
+
+    private func getAuthorName(thread: SessionThread, interaction: Interaction) -> String? {
+        switch (thread.variant, interaction.variant) {
+            case (.contact, .standardIncoming):
+                return Profile.displayName(id: interaction.authorId, customFallback: "Anonymous")
+                
+            default: return nil
         }
-        return nil
     }
-    
+
     private func getDisplayNameForSearch(_ sessionID: String) -> String {
         if threadViewModel.threadRecord.isNoteToSelf() {
             return NSLocalizedString("NOTE_TO_SELF", comment: "")
         }
         
         return [
-            Profile.displayName(for: sessionID),
+            Profile.displayName(id: sessionID),
             Profile.fetchOrCreate(id: sessionID).nickname.map { "(\($0)" }
         ]
         .compactMap { $0 }
         .joined(separator: " ")
     }
-    
-    private func getDisplayName() -> String {
-        if threadViewModel.isGroupThread {
-            if threadViewModel.name.isEmpty {
-                return "Unknown Group"
-            }
-            else {
-                return threadViewModel.name
-            }
+
+    private func getDisplayName(for thread: SessionThread) -> String {
+        if thread.variant == .closedGroup || thread.variant == .openGroup {
+            return GRDBStorage.shared.read({ db in thread.name(db) })
+                .defaulting(to: "Unknown Group")
         }
-        else {
-            if threadViewModel.threadRecord.isNoteToSelf() {
-                return NSLocalizedString("NOTE_TO_SELF", comment: "")
-            }
-            else {
-                let hexEncodedPublicKey: String = threadViewModel.contactSessionID!
-                let middleTruncatedHexKey: String = "\(hexEncodedPublicKey.prefix(4))...\(hexEncodedPublicKey.suffix(4))"
-                
-                return Profile.displayName(for: hexEncodedPublicKey, customFallback: middleTruncatedHexKey)
-            }
+        
+        if GRDBStorage.shared.read({ db in thread.isNoteToSelf(db) }) == true {
+            return "NOTE_TO_SELF".localized()
         }
+        
+        let hexEncodedPublicKey: String = thread.id
+        let middleTruncatedHexKey: String = "\(hexEncodedPublicKey.prefix(4))...\(hexEncodedPublicKey.suffix(4))"
+
+        return Profile.displayName(id: hexEncodedPublicKey, customFallback: middleTruncatedHexKey)
     }
-    
-    private func getSnippet() -> NSMutableAttributedString {
+
+    private func getSnippet(threadViewModel: ThreadViewModel) -> NSMutableAttributedString {
         let result = NSMutableAttributedString()
-        if threadViewModel.isMuted {
-            result.append(NSAttributedString(string: "\u{e067}  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
-        } else if threadViewModel.isOnlyNotifyingForMentions {
+        
+        if (threadViewModel.thread.notificationMode == .none) {
+            result.append(NSAttributedString(
+                string: "\u{e067}  ",
+                attributes: [
+                    .font: UIFont.ows_elegantIconsFont(10),
+                    .foregroundColor :Colors.unimportant
+                ]
+            ))
+        }
+        else if threadViewModel.thread.notificationMode == .mentionsOnly {
             let imageAttachment = NSTextAttachment()
             imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: Colors.unimportant)
             imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)
+            
             let imageString = NSAttributedString(attachment: imageAttachment)
             result.append(imageString)
-            result.append(NSAttributedString(string: "  ", attributes: [ .font : UIFont.ows_elegantIconsFont(10), .foregroundColor : Colors.unimportant ]))
+            result.append(NSAttributedString(
+                string: "  ",
+                attributes: [
+                    .font: UIFont.ows_elegantIconsFont(10),
+                    .foregroundColor: Colors.unimportant
+                ]
+            ))
         }
-        let font = threadViewModel.hasUnreadMessages ? UIFont.boldSystemFont(ofSize: Values.smallFontSize) : UIFont.systemFont(ofSize: Values.smallFontSize)
-        if threadViewModel.isGroupThread, let message = threadViewModel.lastMessageForInbox as? TSMessage, let name = getMessageAuthorName(message: message) {
-            result.append(NSAttributedString(string: "\(name): ", attributes: [ .font : font, .foregroundColor : Colors.text ]))
+        
+        let font: UIFont = (threadViewModel.unreadCount > 0 ?
+            .boldSystemFont(ofSize: Values.smallFontSize) :
+            .systemFont(ofSize: Values.smallFontSize)
+        )
+        
+        if
+            (threadViewModel.thread.variant == .closedGroup || threadViewModel.thread.variant == .openGroup),
+            let lastInteraction: Interaction = threadViewModel.lastInteraction,
+            let authorName: String = getAuthorName(thread: threadViewModel.thread, interaction: lastInteraction)
+        {
+            result.append(NSAttributedString(
+                string: "\(authorName): ",
+                attributes: [
+                    .font: font,
+                    .foregroundColor: Colors.text
+                ]
+            ))
         }
-        if let rawSnippet = threadViewModel.lastMessageText {
-            let snippet = MentionUtilities.highlightMentions(in: rawSnippet, threadID: threadViewModel.threadRecord.uniqueId!)
-            result.append(NSAttributedString(string: snippet, attributes: [ .font : font, .foregroundColor : Colors.text ]))
+            
+        if let rawSnippet: String = threadViewModel.lastInteractionText {
+            let snippet = MentionUtilities.highlightMentions(in: rawSnippet, threadId: threadViewModel.thread.id)
+            result.append(NSAttributedString(
+                string: snippet,
+                attributes: [
+                    .font: font,
+                    .foregroundColor: Colors.text
+                ]
+            ))
         }
+            
         return result
     }
 }

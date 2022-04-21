@@ -29,17 +29,64 @@ public struct DisappearingMessagesConfiguration: Codable, Identifiable, Fetchabl
     }
 }
 
+// MARK: - Mutation
+
+public extension DisappearingMessagesConfiguration {
+    static let defaultDuration: TimeInterval = (24 * 60 * 60)
+    
+    static func defaultWith(_ threadId: String) -> DisappearingMessagesConfiguration {
+        return DisappearingMessagesConfiguration(
+            threadId: threadId,
+            isEnabled: false,
+            durationSeconds: defaultDuration
+        )
+    }
+    
+    func with(
+        isEnabled: Bool? = nil,
+        durationSeconds: TimeInterval? = nil
+    ) -> DisappearingMessagesConfiguration {
+        return DisappearingMessagesConfiguration(
+            threadId: threadId,
+            isEnabled: (isEnabled ?? self.isEnabled),
+            durationSeconds: (durationSeconds ?? self.durationSeconds)
+        )
+    }
+}
+
 // MARK: - Convenience
 
-extension DisappearingMessagesConfiguration {
-    public var durationIndex: Int {
+public extension DisappearingMessagesConfiguration {
+    var durationIndex: Int {
         return DisappearingMessagesConfiguration.validDurationsSeconds
             .firstIndex(of: durationSeconds)
             .defaulting(to: 0)
     }
     
-    public var durationString: String {
+    var durationString: String {
         NSString.formatDurationSeconds(UInt32(durationSeconds), useShortFormat: false)
+    }
+    
+    func infoUpdateMessage(with senderName: String?) -> String {
+        guard let senderName: String = senderName else {
+            // Changed by localNumber on this device or via synced transcript
+            guard isEnabled, durationSeconds > 0 else { return "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION".localized() }
+            
+            return String(
+                format: "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
+                NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false)
+            )
+        }
+        
+        guard isEnabled, durationSeconds > 0 else {
+            return String(format: "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(), senderName)
+        }
+        
+        return String(
+            format: "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
+            NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false),
+            senderName
+        )
     }
 }
 

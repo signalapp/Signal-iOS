@@ -4,13 +4,15 @@ import Foundation
 import GRDB
 import Curve25519Kit
 import SessionUtilitiesKit
+import SessionSnodeKit
 
-enum _002_YDBToGRDBMigration: Migration {
+// Note: Looks like the oldest iOS device we support (min iOS 13.0) has 2Gb of RAM, processing
+// ~250k messages and ~1000 threads seems to take up
+enum _003_YDBToGRDBMigration: Migration {
     static let identifier: String = "YDBToGRDBMigration"
     
-    // TODO: Autorelease pool???.
     static func migrate(_ db: Database) throws {
-        // MARK: - Contacts & Threads
+        // MARK: - Process Contacts, Threads & Interactions
         
         var shouldFailMigration: Bool = false
         var contacts: Set<Legacy.Contact> = []
@@ -30,10 +32,11 @@ enum _002_YDBToGRDBMigration: Migration {
         var openGroupImage: [String: Data] = [:]
         var openGroupLastMessageServerId: [String: Int64] = [:]    // Optional
         var openGroupLastDeletionServerId: [String: Int64] = [:]   // Optional
+//        var openGroupServerToUniqueIdLookup: [String: [String]] = [:]   // TODO: Not needed????
         
         var interactions: [String: [TSInteraction]] = [:]
         var attachments: [String: TSAttachment] = [:]
-        var readReceipts: [String: [Double]] = [:]
+        var outgoingReadReceiptsTimestampsMs: [String: Set<Int64>] = [:]
         
         Storage.read { transaction in
             // Process the Contacts
@@ -85,6 +88,7 @@ enum _002_YDBToGRDBMigration: Migration {
                         return
                     }
                     guard userClosedGroupPublicKeys.contains(publicKey) else {
+                        // TODO: Determine if we want to remove this
                         SNLog("[Migration Error] Found unexpected invalid closed group public key")
                         shouldFailMigration = true
                         return
@@ -151,7 +155,109 @@ enum _002_YDBToGRDBMigration: Migration {
             }
             print("RAWR [\(Date().timeIntervalSince1970)] - Process attachments - End")
             
+            // Process read receipts
+            transaction.enumerateKeysAndObjects(inCollection: Legacy.outgoingReadReceiptManagerCollection) { key, object, _ in
+                guard let timestampsMs: Set<Int64> = object as? Set<Int64> else { return }
+                
+                outgoingReadReceiptsTimestampsMs[key] = (outgoingReadReceiptsTimestampsMs[key] ?? Set())
+                    .union(timestampsMs)
             }
+            
+            /*
+             guard let view = transaction.ext(viewName) as? YapDatabaseAutoViewTransaction else {
+                 owsFailDebug("Could not load view.")
+                 return
+             }
+             guard let group = group else {
+                 owsFailDebug("No group.")
+                 return
+             }
+
+             // Deserializing interactions is expensive, so we only
+             // do that when necessary.
+             let sortIdForItemId: (String) -> UInt64? = { (itemId) in
+                 guard let interaction = TSInteraction.fetch(uniqueId: itemId, transaction: transaction) else {
+                     owsFailDebug("Could not load interaction.")
+                     return nil
+                 }
+                 return interaction.sortId
+             }
+             self.viewName = TSMessageDatabaseViewExtensionName
+             self.group = group
+             // If we have a "pivot", load all items AFTER the pivot and up to minDesiredLength items BEFORE the pivot.
+             // If we do not have a "pivot", load up to minDesiredLength BEFORE the pivot.
+             var newItemIds = [ItemId]()
+             var canLoadMore = false
+             let desiredLength = self.desiredLength
+             // Not all items "count" towards the desired length. On an initial load, all items count.  Subsequently,
+             // only items above the pivot count.
+             var afterPivotCount: UInt = 0
+             var beforePivotCount: UInt = 0
+             // (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
+             view.enumerateKeys(inGroup: group, with: NSEnumerationOptions.reverse) { (_, key, _, stop) in
+                 let itemId = key
+
+                 // Load "uncounted" items after the pivot if possible.
+                 //
+                 // As an optimization, we can skip this check (which requires
+                 // deserializing the interaction) if beforePivotCount is non-zero,
+                 // e.g. after we "pass" the pivot.
+                 if beforePivotCount == 0,
+                     let pivotSortId = self.pivotSortId {
+                     if let sortId = sortIdForItemId(itemId) {
+                         let isAfterPivot = sortId > pivotSortId
+                         if isAfterPivot {
+                             newItemIds.append(itemId)
+                             afterPivotCount += 1
+                             return
+                         }
+                     } else {
+                         owsFailDebug("Could not determine sort id for interaction: \(itemId)")
+                     }
+                 }
+
+                 // Load "counted" items unless the load window overflows.
+                 if beforePivotCount >= desiredLength {
+                     // Overflow
+                     canLoadMore = true
+                     stop.pointee = true
+                 } else {
+                     newItemIds.append(itemId)
+                     beforePivotCount += 1
+                 }
+             }
+             NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
+             [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                 NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
+
+                 YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
+                 OWSAssertDebug(viewTransaction);
+                 for (NSString *uniqueId in loadedUniqueIds) {
+                     TSInteraction *_Nullable interaction =
+                         [TSInteraction fetchObjectWithUniqueID:uniqueId transaction:transaction];
+                     if (!interaction) {
+                         OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
+                         hasError = YES;
+                         continue;
+                     }
+                     if (!interaction.uniqueId) {
+                         OWSFailDebug(@"invalid interaction in message mapping: %@.", interaction);
+                         hasError = YES;
+                         continue;
+                     }
+                     [interactions addObject:interaction];
+                     if ([interactionIds containsObject:interaction.uniqueId]) {
+                         OWSFailDebug(@"Duplicate interaction: %@", interaction.uniqueId);
+                         continue;
+                     }
+                     [interactionIds addObject:interaction.uniqueId];
+                 }
+
+                 for (TSInteraction *interaction in interactions) {
+                     tryToAddViewItem(interaction, transaction);
+                 }
+             }];
+             */
         }
         
         // We can't properly throw within the 'enumerateKeysAndObjects' block so have to throw here
@@ -168,6 +274,7 @@ enum _002_YDBToGRDBMigration: Migration {
                 let isCurrentUser: Bool = (contact.sessionID == currentUserPublicKey)
                 let contactThreadId: String = TSContactThread.threadID(fromContactSessionID: contact.sessionID)
                 
+                // TODO: Contact 'hasOne' profile???
                 // Create the "Profile" for the legacy contact
                 try Profile(
                     id: contact.sessionID,
@@ -188,6 +295,7 @@ enum _002_YDBToGRDBMigration: Migration {
                     contact.isBlocked ||
                     contact.hasBeenBlocked {
                     // Create the contact
+                    // TODO: Closed group admins???
                     try Contact(
                         id: contact.sessionID,
                         isTrusted: (isCurrentUser || contact.isTrusted),
@@ -203,6 +311,29 @@ enum _002_YDBToGRDBMigration: Migration {
         // MARK: - Insert Threads
         
         print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - Start")
+        var legacyThreadIdToIdMap: [String: String] = [:]
+        var legacyInteractionToIdMap: [String: Int64] = [:]
+        var legacyInteractionIdentifierToIdMap: [String: Int64] = [:]
+        
+        func identifier(for threadId: String, sentTimestamp: UInt64, recipients: [String], destination: Message.Destination? = nil) -> String {
+            let recipientString: String = {
+                if let destination: Message.Destination = destination {
+                    switch destination {
+                        case .contact(let publicKey): return publicKey
+                        default: break
+                    }
+                }
+                
+                return (recipients.first ?? "0")
+            }()
+            
+            return [
+                "\(sentTimestamp)",
+                recipientString,
+                threadId
+            ]
+            .joined(separator: "-")
+        }
         
         try threads.forEach { thread in
             guard let legacyThreadId: String = thread.uniqueId else { return }
@@ -246,6 +377,8 @@ enum _002_YDBToGRDBMigration: Migration {
             }
             
             try autoreleasepool {
+                legacyThreadIdToIdMap[thread.uniqueId ?? ""] = id
+                
                 try SessionThread(
                     id: id,
                     variant: variant,
@@ -327,11 +460,11 @@ enum _002_YDBToGRDBMigration: Migration {
                         room: openGroup.room,
                         publicKey: openGroup.publicKey,
                         name: openGroup.name,
-                        groupDescription: nil,  // TODO: Add with SOGS V4
-                        imageId: nil,  // TODO: Add with SOGS V4
+                        groupDescription: nil,  // TODO: Add with SOGS V4.
+                        imageId: nil,  // TODO: Add with SOGS V4.
                         imageData: openGroupImage[legacyThreadId],
                         userCount: (openGroupUserCount[legacyThreadId] ?? 0),  // Will be updated next poll
-                        infoUpdates: 0  // TODO: Add with SOGS V4
+                        infoUpdates: 0  // TODO: Add with SOGS V4.
                     ).insert(db)
                 }
             }
@@ -346,10 +479,12 @@ enum _002_YDBToGRDBMigration: Migration {
                         let variant: Interaction.Variant
                         let authorId: String
                         let body: String?
+                        let wasRead: Bool
                         let expiresInSeconds: UInt32?
                         let expiresStartedAtMs: UInt64?
                         let openGroupServerMessageId: UInt64?
                         let recipientStateMap: [String: TSOutgoingMessageRecipientState]?
+                        let mostRecentFailureText: String?
                         let quotedMessage: TSQuotedMessage?
                         let linkPreview: OWSLinkPreview?
                         let linkPreviewVariant: LinkPreview.Variant
@@ -414,18 +549,22 @@ enum _002_YDBToGRDBMigration: Migration {
                                 )
                                 authorId = incomingMessage.authorId
                                 body = incomingMessage.body
+                                wasRead = incomingMessage.wasRead
                                 expiresInSeconds = incomingMessage.expiresInSeconds
                                 expiresStartedAtMs = incomingMessage.expireStartedAt
                                 recipientStateMap = [:]
+                                mostRecentFailureText = nil
                                 
                                 
                             case let outgoingMessage as TSOutgoingMessage:
                                 variant = .standardOutgoing
                                 authorId = currentUserPublicKey
                                 body = outgoingMessage.body
+                                wasRead = true // Outgoing messages are read by default
                                 expiresInSeconds = outgoingMessage.expiresInSeconds
                                 expiresStartedAtMs = outgoingMessage.expireStartedAt
                                 recipientStateMap = outgoingMessage.recipientStateMap
+                                mostRecentFailureText = outgoingMessage.mostRecentFailureText
                                 
                             case let infoMessage as TSInfoMessage:
                                 authorId = currentUserPublicKey
@@ -433,9 +572,11 @@ enum _002_YDBToGRDBMigration: Migration {
                                     infoMessage.customMessage :
                                     infoMessage.body
                                 )
+                                wasRead = infoMessage.wasRead
                                 expiresInSeconds = nil    // Info messages don't expire
                                 expiresStartedAtMs = nil  // Info messages don't expire
                                 recipientStateMap = [:]
+                                mostRecentFailureText = nil
                                 
                                 switch infoMessage.messageType {
                                     case .groupCreated: variant = .infoClosedGroupCreated
@@ -452,34 +593,48 @@ enum _002_YDBToGRDBMigration: Migration {
                                 }
                                 
                             default:
+                                // TODO: What message types have no body?
                                 SNLog("[Migration Error] Unsupported interaction type")
                                 throw GRDBStorageError.migrationFailed
                         }
                         
                         // Insert the data
-                        let interaction = try Interaction(
+                        let interaction: Interaction = try Interaction(
                             serverHash: serverHash,
                             threadId: id,
                             authorId: authorId,
                             variant: variant,
                             body: body,
-                            timestampMs: Double(legacyInteraction.timestamp),
-                            receivedAtTimestampMs: Double(legacyInteraction.receivedAtTimestamp),
+                            timestampMs: Int64(legacyInteraction.timestamp),
+                            receivedAtTimestampMs: Int64(legacyInteraction.receivedAtTimestamp),
+                            wasRead: wasRead,
                             expiresInSeconds: expiresInSeconds.map { TimeInterval($0) },
                             expiresStartedAtMs: expiresStartedAtMs.map { Double($0) },
                             linkPreviewUrl: linkPreview?.urlString, // Only a soft link so save to set
                             openGroupServerMessageId: openGroupServerMessageId.map { Int64($0) },
-                            openGroupWhisperMods: false, // TODO: This
-                            openGroupWhisperTo: nil // TODO: This
+                            openGroupWhisperMods: false, // TODO: This in SOGSV4
+                            openGroupWhisperTo: nil // TODO: This in SOGSV4
                         ).inserted(db)
                         
                         guard let interactionId: Int64 = interaction.id else {
+                            // TODO: Is it possible the old database has duplicates which could hit this case?
                             SNLog("[Migration Error] Failed to insert interaction")
                             throw GRDBStorageError.migrationFailed
                         }
                         
+                        // Store the interactionId in the lookup map to simplify job creation later
+                        let legacyIdentifier: String = identifier(
+                            for: legacyInteraction.uniqueThreadId,
+                            sentTimestamp: legacyInteraction.timestamp,
+                            recipients: ((legacyInteraction as? TSOutgoingMessage)?.recipientIds() ?? [])
+                        )
+                        legacyInteractionToIdMap[legacyInteraction.uniqueId ?? ""] = interactionId
+                        legacyInteractionIdentifierToIdMap[legacyIdentifier] = interactionId
+                        
                         // Handle the recipient states
                         
+                        // Note: Inserting an Interaction into the database will automatically create a 'RecipientState'
+                        // for outgoing messages
                         try recipientStateMap?.forEach { recipientId, legacyState in
                             try RecipientState(
                                 interactionId: interactionId,
@@ -493,26 +648,19 @@ enum _002_YDBToGRDBMigration: Migration {
                                         @unknown default: throw GRDBStorageError.migrationFailed
                                     }
                                 }(),
-                                readTimestampMs: legacyState.readTimestamp?.doubleValue
-                            ).insert(db)
+                                readTimestampMs: legacyState.readTimestamp?.int64Value,
+                                mostRecentFailureText: (legacyState.state == .failed ?
+                                    mostRecentFailureText :
+                                    nil
+                                )
+                            ).save(db)
                         }
                         
                         // Handle any quote
                         
                         if let quotedMessage: TSQuotedMessage = quotedMessage {
-                            try Quote(
-                                interactionId: interactionId,
-                                authorId: quotedMessage.authorId,
-                                timestampMs: Double(quotedMessage.timestamp),
-                                body: quotedMessage.body
-                            ).insert(db)
-                            
-                            // Ensure the quote thumbnail works properly
-                            
-                            
-                            // Note: Quote attachments are now attached directly to the interaction
-                            attachmentIds = attachmentIds.appending(
-                                contentsOf: quotedMessage.quotedAttachments.compactMap { attachmentInfo in
+                            let quoteAttachmentId: String? = quotedMessage.quotedAttachments
+                                .compactMap { attachmentInfo in
                                     if let attachmentId: String = attachmentInfo.attachmentId {
                                         return attachmentId
                                     }
@@ -522,7 +670,21 @@ enum _002_YDBToGRDBMigration: Migration {
                                     // TODO: Looks like some of these might be busted???
                                     return attachmentInfo.thumbnailAttachmentStreamId
                                 }
-                            )
+                                .first { attachments[$0] != nil }
+                            
+                            guard quotedMessage.quotedAttachments.isEmpty || quoteAttachmentId != nil else {
+                                // TODO: Is it possible to hit this case if a quoted attachment hasn't been downloaded?
+                                SNLog("[Migration Error] Missing quote attachment")
+                                throw GRDBStorageError.migrationFailed
+                            }
+                            
+                            try Quote(
+                                interactionId: interactionId,
+                                authorId: quotedMessage.authorId,
+                                timestampMs: Int64(quotedMessage.timestamp),
+                                body: quotedMessage.body,
+                                attachmentId: try attachmentId(db, for: quoteAttachmentId, attachments: attachments)
+                            ).insert(db)
                         }
                         
                         // Handle any LinkPreview
@@ -531,56 +693,370 @@ enum _002_YDBToGRDBMigration: Migration {
                             // Note: The `legacyInteraction.timestamp` value is in milliseconds
                             let timestamp: TimeInterval = LinkPreview.timestampFor(sentTimestampMs: Double(legacyInteraction.timestamp))
                             
+                            guard linkPreview.imageAttachmentId == nil || attachments[linkPreview.imageAttachmentId ?? ""] != nil else {
+                                // TODO: Is it possible to hit this case if a quoted attachment hasn't been downloaded?
+                                SNLog("[Migration Error] Missing link preview attachment")
+                                throw GRDBStorageError.migrationFailed
+                            }
+                            
                             // Note: It's possible for there to be duplicate values here so we use 'save'
                             // instead of insert (ie. upsert)
                             try LinkPreview(
                                 url: urlString,
                                 timestamp: timestamp,
                                 variant: linkPreviewVariant,
-                                title: linkPreview.title
+                                title: linkPreview.title,
+                                attachmentId: try attachmentId(db, for: linkPreview.imageAttachmentId, attachments: attachments)
                             ).save(db)
-                            
-                            // Note: LinkPreview attachments are now attached directly to the interaction
-                            attachmentIds = attachmentIds.appending(linkPreview.imageAttachmentId)
                         }
                         
                         // Handle any attachments
-                        try attachmentIds.forEach { attachmentId in
-                            guard let attachment: TSAttachment = attachments[attachmentId] else {
-                                SNLog("[Migration Error] Unsupported interaction type")
+                        
+                        print("ASD \(attachmentIds)")
+                        try attachmentIds.forEach { legacyAttachmentId in
+                            guard let attachmentId: String = try attachmentId(db, for: legacyAttachmentId, interactionVariant: variant, attachments: attachments) else {
+                                // TODO: Is it possible to hit this case if an interaction hasn't been viewed?
+                                SNLog("[Migration Error] Missing interaction attachment")
                                 throw GRDBStorageError.migrationFailed
                             }
                             
-                            let size: CGSize = {
-                                switch attachment {
-                                    case let stream as TSAttachmentStream: return stream.calculateImageSize()
-                                    case let pointer as TSAttachmentPointer: return pointer.mediaSize
-                                    default: return CGSize.zero
-                                }
-                            }()
-                            try Attachment(
+                            try InteractionAttachment(
                                 interactionId: interactionId,
-                                serverId: "\(attachment.serverId)",
-                                variant: (attachment.isVoiceMessage ? .voiceMessage : .standard),
-                                state: .pending, // TODO: This
-                                contentType: attachment.contentType,
-                                byteCount: UInt(attachment.byteCount),
-                                creationTimestamp: (attachment as? TSAttachmentStream)?.creationTimestamp.timeIntervalSince1970,
-                                sourceFilename: attachment.sourceFilename,
-                                downloadUrl: attachment.downloadURL,
-                                width: (size == .zero ? nil : UInt(size.width)),
-                                height: (size == .zero ? nil : UInt(size.height)),
-                                encryptionKey: attachment.encryptionKey,
-                                digest: (attachment as? TSAttachmentStream)?.digest,
-                                caption: attachment.caption
+                                attachmentId: attachmentId
                             ).insert(db)
                         }
                 }
             }
         }
         
+        // Clear out processed data (give the memory a change to be freed)
+        
+        contacts = []
+        contactThreadIds = []
+        
+        threads = []
+        disappearingMessagesConfiguration = [:]
+        
+        closedGroupKeys = [:]
+        closedGroupName = [:]
+        closedGroupFormation = [:]
+        closedGroupModel = [:]
+        closedGroupZombieMemberIds = [:]
+        
+        openGroupInfo = [:]
+        openGroupUserCount = [:]
+        openGroupImage = [:]
+        openGroupLastMessageServerId = [:]
+        openGroupLastDeletionServerId = [:]
+        
+        interactions = [:]
+        attachments = [:]
+        
+        // MARK: - Process Legacy Jobs
+        
+        var notifyPushServerJobs: Set<Legacy.NotifyPNServerJob> = []
+        var messageReceiveJobs: Set<Legacy.MessageReceiveJob> = []
+        var messageSendJobs: Set<Legacy.MessageSendJob> = []
+        var attachmentUploadJobs: Set<Legacy.AttachmentUploadJob> = []
+        var attachmentDownloadJobs: Set<Legacy.AttachmentDownloadJob> = []
+        
+        Storage.read { transaction in
+            transaction.enumerateRows(inCollection: Legacy.notifyPushServerJobCollection) { _, object, _, _ in
+                guard let job = object as? Legacy.NotifyPNServerJob else { return }
+                notifyPushServerJobs.insert(job)
+            }
+            
+            transaction.enumerateRows(inCollection: Legacy.messageReceiveJobCollection) { _, object, _, _ in
+                guard let job = object as? Legacy.MessageReceiveJob else { return }
+                messageReceiveJobs.insert(job)
+            }
+            
+            transaction.enumerateRows(inCollection: Legacy.messageSendJobCollection) { _, object, _, _ in
+                guard let job = object as? Legacy.MessageSendJob else { return }
+                messageSendJobs.insert(job)
+            }
+            
+            transaction.enumerateRows(inCollection: Legacy.attachmentUploadJobCollection) { _, object, _, _ in
+                guard let job = object as? Legacy.AttachmentUploadJob else { return }
+                attachmentUploadJobs.insert(job)
+            }
+            
+            transaction.enumerateRows(inCollection: Legacy.attachmentDownloadJobCollection) { _, object, _, _ in
+                guard let job = object as? Legacy.AttachmentDownloadJob else { return }
+                attachmentDownloadJobs.insert(job)
+            }
+        }
+        
+        // MARK: - Insert Jobs
+        
+        // MARK: - --notifyPushServer
+        
+        try autoreleasepool {
+            try notifyPushServerJobs.forEach { legacyJob in
+                _ = try Job(
+                    failureCount: legacyJob.failureCount,
+                    variant: .notifyPushServer,
+                    behaviour: .runOnce,
+                    nextRunTimestamp: 0,
+                    details: String(
+                        data: try JSONEncoder().encode(
+                            SnodeMessage(
+                                recipient: legacyJob.message.recipient,
+                                data: legacyJob.message.data.description,   // TODO: Test this (looks like it should be fine)
+                                ttl: legacyJob.message.ttl,
+                                timestampMs: legacyJob.message.timestamp
+                            )
+                        ),
+                        encoding: .utf8
+                    )
+                )?.inserted(db)
+            }
+        }
+        
+        // MARK: - --messageReceive
+        
+        try autoreleasepool {
+            try messageReceiveJobs.forEach { legacyJob in
+                // We haven't supported OpenGroup messageReceive jobs for a long time so if
+                // we see any then just ignore them
+                if legacyJob.openGroupID != nil && legacyJob.openGroupMessageServerID != nil {
+                    return
+                }
+                
+                _ = try Job(
+                    failureCount: legacyJob.failureCount,
+                    variant: .messageReceive,
+                    behaviour: .runOnce,
+                    nextRunTimestamp: 0,
+                    details: String(
+                        data: try JSONEncoder().encode(
+                            MessageReceiveJob.Details(
+                                data: legacyJob.data,
+                                serverHash: legacyJob.serverHash,
+                                isBackgroundPoll: legacyJob.isBackgroundPoll
+                            )
+                        ),
+                        encoding: .utf8
+                    )
+                )?.inserted(db)
+            }
+        }
+        
+        // MARK: - --messageSend
+        
+        var messageSendJobIdMap: [String: Int64] = [:]
+
+        try autoreleasepool {
+            try messageSendJobs.forEach { legacyJob in
+                let legacyIdentifier: String = identifier(
+                    for: (legacyJob.message.threadID ?? ""),
+                    sentTimestamp: (legacyJob.message.sentTimestamp ?? 0),
+                    recipients: (legacyJob.message.recipient.map { [$0] } ?? []),
+                    destination: legacyJob.destination
+                )
+                
+                // Fetch the interaction this job should be associated with
+                
+                let job: Job? = try Job(
+                    failureCount: legacyJob.failureCount,
+                    variant: .messageSend,
+                    behaviour: .runOnce,
+                    nextRunTimestamp: 0,
+                    threadId: legacyThreadIdToIdMap[legacyJob.message.threadID ?? ""],
+                    details: MessageSendJob.Details(
+                        // Note: There are some cases where there isn't actually a link between the 'MessageSendJob' and
+                        // it's associated interaction (ie. any ControlMessage), in these cases the 'interactionId' value
+                        // will be nil
+                        interactionId: legacyInteractionIdentifierToIdMap[legacyIdentifier],
+                        destination: legacyJob.destination,
+                        message: legacyJob.message
+                    )
+                )?.inserted(db)
+                
+                if let oldId: String = legacyJob.id, let newId: Int64 = job?.id {
+                    messageSendJobIdMap[oldId] = newId
+                }
+            }
+        }
+        
+        // MARK: - --attachmentUpload
+        
+        try autoreleasepool {
+            try attachmentUploadJobs.forEach { legacyJob in
+                guard let sendJobId: Int64 = messageSendJobIdMap[legacyJob.messageSendJobID] else {
+                    SNLog("[Migration Error] attachmentUpload job missing associated MessageSendJob")
+                    throw GRDBStorageError.migrationFailed
+                }
+                
+                _ = try Job(
+                    failureCount: legacyJob.failureCount,
+                    variant: .attachmentUpload,
+                    behaviour: .runOnce,
+                    nextRunTimestamp: 0,
+                    details: String(
+                        data: try JSONEncoder().encode(
+                            AttachmentUploadJob.Details(
+                                threadId: legacyJob.threadID,
+                                attachmentId: legacyJob.attachmentID,
+                                messageSendJobId: sendJobId
+                            )
+                        ),
+                        encoding: .utf8
+                    )
+                )?.inserted(db)
+            }
+        }
+        
+        // MARK: - --attachmentDownload
+        
+        try autoreleasepool {
+            try attachmentDownloadJobs.forEach { legacyJob in
+                guard let interactionId: Int64 = legacyInteractionToIdMap[legacyJob.tsMessageID] else {
+                    SNLog("[Migration Error] attachmentDownload job unable to find interaction")
+                    throw GRDBStorageError.migrationFailed
+                }
+
+                _ = try Job(
+                    failureCount: legacyJob.failureCount,
+                    variant: .attachmentDownload,
+                    behaviour: .runOnce,
+                    nextRunTimestamp: 0,
+                    details: String(
+                        data: try JSONEncoder().encode(
+                            AttachmentDownloadJob.Details(
+                                threadId: legacyJob.threadID,
+                                attachmentId: legacyJob.attachmentID
+                            )
+                        ),
+                        encoding: .utf8
+                    )
+                )?.inserted(db)
+            }
+        }
+        
+        // MARK: - --sendReadReceipts
+        
+        try autoreleasepool {
+            try outgoingReadReceiptsTimestampsMs.forEach { threadId, timestampsMs in
+                _ = try Job(
+                    variant: .sendReadReceipts,
+                    behaviour: .recurring,
+                    threadId: threadId,
+                    details: SendReadReceiptsJob.Details(
+                        destination: .contact(publicKey: threadId),
+                        timestampMsValues: timestampsMs
+                    )
+                )?.inserted(db)
+            }
+        }
+        
+        // MARK: - Process Preferences
+        
+        var legacyPreferences: [String: Any] = [:]
+        
+        Storage.read { transaction in
+            transaction.enumerateKeysAndObjects(inCollection: Legacy.preferencesCollection) { key, object, _ in
+                legacyPreferences[key] = object
+            }
+            
+            // Note: The 'int(forKey:inCollection:)' defaults to `0` which is an incorrect value for the notification
+            // sound so catch it and default
+            let globalNotificationSoundValue: Int32 = transaction.int(
+                forKey: Legacy.soundsGlobalNotificationKey,
+                inCollection: Legacy.soundsStorageNotificationCollection
+            )
+            legacyPreferences[Legacy.soundsGlobalNotificationKey] = (globalNotificationSoundValue > 0 ?
+                Int(globalNotificationSoundValue) :
+                Preferences.Sound.defaultNotificationSound.rawValue
+            )
+            
+            legacyPreferences[Legacy.readReceiptManagerAreReadReceiptsEnabled] = (transaction.bool(
+                forKey: Legacy.readReceiptManagerAreReadReceiptsEnabled,
+                inCollection: Legacy.readReceiptManagerCollection,
+                defaultValue: false
+            ) ? 1 : 0)
+            
+            legacyPreferences[Legacy.typingIndicatorsEnabledKey] = (transaction.bool(
+                forKey: Legacy.typingIndicatorsEnabledKey,
+                inCollection: Legacy.typingIndicatorsCollection,
+                defaultValue: false
+            ) ? 1 : 0)
+        }
+        
+        db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: legacyPreferences[Legacy.preferencesKeyNotificationPreviewType] as? Int ?? -1)
+            .defaulting(to: .nameAndPreview)
+        db[.defaultNotificationSound] = Preferences.Sound(rawValue: legacyPreferences[Legacy.soundsGlobalNotificationKey] as? Int ?? -1)
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
+        
+        if let lastPushToken: String = legacyPreferences[Legacy.preferencesKeyLastRecordedPushToken] as? String {
+            db[.lastRecordedPushToken] = lastPushToken
+        }
+        
+        if let lastVoipToken: String = legacyPreferences[Legacy.preferencesKeyLastRecordedVoipToken] as? String {
+            db[.lastRecordedVoipToken] = lastVoipToken
+        }
+        
+        // Note: The 'preferencesKeyScreenSecurityDisabled' value previously controlled whether the setting
+        // was disabled, this has been inverted to 'preferencesAppSwitcherPreviewEnabled' so it can default
+        // to 'false' (as most Bool values do)
+        db[.preferencesAppSwitcherPreviewEnabled] = (legacyPreferences[Legacy.preferencesKeyScreenSecurityDisabled] as? Bool == false)
+        db[.areReadReceiptsEnabled] = (legacyPreferences[Legacy.readReceiptManagerAreReadReceiptsEnabled] as? Bool == true)
+        db[.typingIndicatorsEnabled] = (legacyPreferences[Legacy.typingIndicatorsEnabledKey] as? Bool == true)
+        
+        db[.hasHiddenMessageRequests] = CurrentAppContext().appUserDefaults()
+            .bool(forKey: Legacy.userDefaultsHasHiddenMessageRequests)
+        
         print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - End")
         
         print("RAWR Done!!!")
+    }
+    
+    // MARK: - Convenience
+    
+    private static func attachmentId(_ db: Database, for legacyAttachmentId: String?, interactionVariant: Interaction.Variant? = nil, attachments: [String: TSAttachment]) throws -> String? {
+        guard let legacyAttachmentId: String = legacyAttachmentId else { return nil }
+
+        guard let legacyAttachment: TSAttachment = attachments[legacyAttachmentId] else {
+            SNLog("[Migration Error] Missing attachment")
+            throw GRDBStorageError.migrationFailed
+        }
+
+        let state: Attachment.State = {
+            switch legacyAttachment {
+                case let stream as TSAttachmentStream:  // Outgoing or already downloaded
+                    switch interactionVariant {
+                        case .standardOutgoing: return (stream.isUploaded ? .uploaded : .pending)
+                        default: return .downloaded
+                    }
+                
+                // All other cases can just be set to 'pending'
+                default: return .pending
+            }
+        }()
+        let size: CGSize = {
+            switch legacyAttachment {
+                case let stream as TSAttachmentStream: return stream.calculateImageSize()
+                case let pointer as TSAttachmentPointer: return pointer.mediaSize
+                default: return CGSize.zero
+            }
+        }()
+        
+        let attachment: Attachment = try Attachment(
+            serverId: "\(legacyAttachment.serverId)",
+            variant: (legacyAttachment.isVoiceMessage ? .voiceMessage : .standard),
+            state: state,
+            contentType: legacyAttachment.contentType,
+            byteCount: UInt(legacyAttachment.byteCount),
+            creationTimestamp: (legacyAttachment as? TSAttachmentStream)?.creationTimestamp.timeIntervalSince1970,
+            sourceFilename: legacyAttachment.sourceFilename,
+            downloadUrl: legacyAttachment.downloadURL,
+            width: (size == .zero ? nil : UInt(size.width)),
+            height: (size == .zero ? nil : UInt(size.height)),
+            encryptionKey: legacyAttachment.encryptionKey,
+            digest: (legacyAttachment as? TSAttachmentStream)?.digest,
+            caption: legacyAttachment.caption
+        ).inserted(db)
+        
+        return attachment.id
     }
 }

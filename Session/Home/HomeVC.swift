@@ -2,44 +2,20 @@
 
 import UIKit
 import GRDB
+import DifferenceKit
 import SessionMessagingKit
 import SessionUtilitiesKit
+import SignalUtilitiesKit
 
-// See https://github.com/yapstudios/YapDatabase/wiki/LongLivedReadTransactions and
-// https://github.com/yapstudios/YapDatabase/wiki/YapDatabaseModifiedNotification for
-// more information on database handling.
-final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
-    private var threads: YapDatabaseViewMappings!
-    private var threadViewModelCache: [String:ThreadViewModel] = [:] // Thread ID to ThreadViewModel
+final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
+    private let viewModel: HomeViewModel = HomeViewModel()
+    private var dataChangeObservable: DatabaseCancellable?
+    private var hasLoadedInitialData: Bool = false
+    
+    // MARK: - UI
+    
     private var tableViewTopConstraint: NSLayoutConstraint!
-    private var unreadMessageRequestCount: UInt {
-        var count: UInt = 0
-        
-        dbConnection.read { transaction in
-            let ext = transaction.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
-            ext.enumerateRows(inGroup: TSMessageRequestGroup) { _, _, object, _, _, _ in
-                if ((object as? TSThread)?.unreadMessageCount(transaction: transaction) ?? 0) > 0 {
-                    count += 1
-                }
-            }
-        }
-        
-        return count
-    }
     
-    private var threadCount: UInt {
-        threads.numberOfItems(inGroup: TSInboxGroup)
-    }
-    
-    private lazy var dbConnection: YapDatabaseConnection = {
-        let result = OWSPrimaryStorage.shared().newDatabaseConnection()
-        result.objectCacheLimit = 500
-        return result
-    }()
-    
-    private var isReloading = false
-    
-    // MARK: UI Components
     private lazy var seedReminderView: SeedReminderView = {
         let result = SeedReminderView(hasContinueButton: true)
         let title = "You're almost finished! 80%"
@@ -49,6 +25,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         result.subtitle = NSLocalizedString("view_seed_reminder_subtitle_1", comment: "")
         result.setProgress(0.8, animated: false)
         result.delegate = self
+        
         return result
     }()
         
@@ -56,11 +33,23 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let result = UITableView()
         result.backgroundColor = .clear
         result.separatorStyle = .none
+        result.contentInset = UIEdgeInsets(
+            top: 0,
+            left: 0,
+            bottom: (
+                Values.newConversationButtonBottomOffset +
+                NewConversationButtonSet.expandedButtonSize +
+                Values.largeSpacing +
+                NewConversationButtonSet.collapsedButtonSize
+            ),
+            right: 0
+        )
+        result.showsVerticalScrollIndicator = false
         result.register(MessageRequestsCell.self, forCellReuseIdentifier: MessageRequestsCell.reuseIdentifier)
         result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
-        let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
-        result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
-        result.showsVerticalScrollIndicator = false
+        result.dataSource = self
+        result.delegate = self
+        
         return result
     }()
 
@@ -75,6 +64,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         let gradient = Gradients.homeVCFade
         result.setGradient(gradient)
         result.isUserInteractionEnabled = false
+        
         return result
     }()
 
@@ -95,20 +85,20 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         result.spacing = Values.mediumSpacing
         result.alignment = .center
         result.isHidden = true
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Note: This is a hack to ensure `isRTL` is initially gets run on the main thread so the value is cached (it gets
-        // called on background threads and if it hasn't cached the value then it can cause odd performance issues since
-        // it accesses UIKit)
+        // Note: This is a hack to ensure `isRTL` is initially gets run on the main thread so the value
+        // is cached (it gets called on background threads and if it hasn't cached the value then it can
+        // cause odd performance issues since it accesses UIKit)
         _ = CurrentAppContext().isRTL
         
-        // Threads (part 1)
-        dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
         // Preparation
         SignalApp.shared().homeViewController = self
         // Gradient & nav bar
@@ -126,9 +116,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             seedReminderView.pin(.top, to: .top, of: view)
             seedReminderView.pin(.trailing, to: .trailing, of: view)
         }
+        
         // Table view
-        tableView.dataSource = self
-        tableView.delegate = self
         view.addSubview(tableView)
         tableView.pin(.leading, to: .leading, of: view)
         if !hasViewedSeed {
@@ -144,255 +133,119 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         fadeView.pin(.top, to: .top, of: view, withInset: topInset)
         fadeView.pin(.trailing, to: .trailing, of: view)
         fadeView.pin(.bottom, to: .bottom, of: view)
+        
         // Empty state view
         view.addSubview(emptyStateView)
         emptyStateView.center(.horizontal, in: view)
         let verticalCenteringConstraint = emptyStateView.center(.vertical, in: view)
         verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
+        
         // New conversation button set
         view.addSubview(newConversationButtonSet)
         newConversationButtonSet.center(.horizontal, in: view)
         newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
+        
         // Notifications
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(handleYapDatabaseModifiedNotification(_:)), name: .YapDatabaseModified, object: OWSPrimaryStorage.shared().dbNotificationObject)
-        notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: Notification.Name.otherUsersProfileDidChange, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: Notification.Name.localProfileDidChange, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(applicationDidResignActive(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        
+        notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: .otherUsersProfileDidChange, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleLocalProfileDidChangeNotification(_:)), name: .localProfileDidChange, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleSeedViewedNotification(_:)), name: .seedViewed, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleBlockedContactsUpdatedNotification(_:)), name: .blockedContactsUpdated, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
-        // Threads (part 2)
-        threads = YapDatabaseViewMappings(groups: [ TSMessageRequestGroup, TSInboxGroup ], view: TSThreadDatabaseViewExtensionName) // The extension should be registered at this point
-        threads.setIsReversed(true, forGroup: TSInboxGroup)
-        dbConnection.read { transaction in
-            self.threads.update(with: transaction) // Perform the initial update
-        }
+        
         // Start polling if needed (i.e. if the user just created or restored their Session ID)
-        if Identity.userExists() {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            appDelegate.startPollerIfNeeded()
-            appDelegate.startClosedGroupPoller()
-            appDelegate.startOpenGroupPollersIfNeeded()
+        if Identity.userExists(), let appDelegate: AppDelegate = UIApplication.shared.delegate as? AppDelegate {
+            appDelegate.startPollersIfNeeded()
+            
             // Do this only if we created a new Session ID, or if we already received the initial configuration message
             if UserDefaults.standard[.hasSyncedInitialConfiguration] {
                 appDelegate.syncConfigurationIfNeeded()
             }
         }
+        
         // Re-populate snode pool if needed
         SnodeAPI.getSnodePool().retainUntilComplete()
+        
         // Onion request path countries cache
         DispatchQueue.global(qos: .utility).sync {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
+        
         // Get default open group rooms if needed
         OpenGroupAPIV2.getDefaultRoomsIfNeeded()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        reload()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        startObservingChanges()
     }
     
-    @objc private func applicationDidBecomeActive(_ notification: Notification) {
-        reload()
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Stop observing database changes
+        dataChangeObservable?.cancel()
+    }
+    
+    @objc func applicationDidBecomeActive(_ notification: Notification) {
+        startObservingChanges()
+    }
+    
+    @objc func applicationDidResignActive(_ notification: Notification) {
+        // Stop observing database changes
+        dataChangeObservable?.cancel()
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-    
-    // MARK: - UITableViewDataSource
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-            case 0:
-                if unreadMessageRequestCount > 0 && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
-                    return 1
-                }
-                
-                return 0
-                
-            case 1: return Int(threadCount)
-            default: return 0
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-            case 0:
-                let cell = tableView.dequeueReusableCell(withIdentifier: MessageRequestsCell.reuseIdentifier) as! MessageRequestsCell
-                cell.update(with: Int(unreadMessageRequestCount))
-                return cell
-                
-            default:
-                let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
-                cell.threadViewModel = threadViewModel(at: indexPath.row)
-                return cell
-        }
-    }
         
-    // MARK: Updating
+    // MARK: - Updating
     
-    private func reload() {
-        AssertIsOnMainThread()
-        guard !isReloading else { return }
-        isReloading = true
-        dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
-        dbConnection.read { transaction in
-            self.threads.update(with: transaction)
-        }
-        threadViewModelCache.removeAll()
-        tableView.reloadData()
-        emptyStateView.isHidden = (threadCount != 0)
-        isReloading = false
+    private func startObservingChanges() {
+        // Start observing for data changes
+        dataChangeObservable = GRDBStorage.shared.start(
+            viewModel.observableViewData,
+            onError:  { error in
+                print("Update error!!!!")
+            },
+            onChange: { [weak self] viewData in
+                // The defaul scheduler emits changes on the main thread
+                self?.handleUpdates(viewData)
+            }
+        )
     }
     
-    @objc private func handleYapDatabaseModifiedNotification(_ yapDatabase: YapDatabase) {
-        // NOTE: This code is very finicky and crashes easily. Modify with care.
-        AssertIsOnMainThread()
-        // If we don't capture `threads` here, a race condition can occur where the
-        // `thread.snapshotOfLastUpdate != firstSnapshot - 1` check below evaluates to
-        // `false`, but `threads` then changes between that check and the
-        // `ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)`
-        // line. This causes `tableView.endUpdates()` to crash with an `NSInternalInconsistencyException`.
-        let threads = threads!
-        // Create a stable state for the connection and jump to the latest commit
-        let notifications = dbConnection.beginLongLivedReadTransaction()
-        guard !notifications.isEmpty else { return }
-        let ext = dbConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
-        let hasChanges = (
-            ext.hasChanges(forGroup: TSMessageRequestGroup, in: notifications) ||
-            ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
+    private func handleUpdates(_ updatedViewData: [ArraySection<HomeViewModel.Section, HomeViewModel.Item>]) {
+        // Ensure the first load runs without animations (if we don't do this the cells will animate
+        // in from a frame of CGRect.zero)
+        guard hasLoadedInitialData else {
+            hasLoadedInitialData = true
+            UIView.performWithoutAnimation { handleUpdates(updatedViewData) }
+            return
+        }
+        
+        // Show the empty state if there is no data
+        emptyStateView.isHidden = (
+            !updatedViewData.isEmpty &&
+            updatedViewData.contains(where: { !$0.elements.isEmpty })
         )
         
-        guard hasChanges else { return }
-        
-        if let firstChangeSet = notifications[0].userInfo {
-            let firstSnapshot = firstChangeSet[YapDatabaseSnapshotKey] as! UInt64
-            
-            // The 'getSectionChanges' code below will crash if we try to process multiple commits at once
-            // so just force a full reload
-            if threads.snapshotOfLastUpdate != firstSnapshot - 1 {
-                // Check if we inserted a new message request (if so then unhide the message request banner)
-                if
-                    let extensions: [String: Any] = firstChangeSet[YapDatabaseExtensionsKey] as? [String: Any],
-                    let viewExtensions: [String: Any] = extensions[TSThreadDatabaseViewExtensionName] as? [String: Any]
-                {
-                    // Note: We do a 'flatMap' here rather than explicitly grab the desired key because
-                    // the key we need is 'changeset_key_changes' in 'YapDatabaseViewPrivate.h' so could
-                    // change due to an update and silently break this - this approach is a bit safer
-                    let allChanges: [Any] = Array(viewExtensions.values).compactMap { $0 as? [Any] }.flatMap { $0 }
-                    let messageRequestInserts = allChanges
-                        .compactMap { $0 as? YapDatabaseViewRowChange }
-                        .filter { $0.finalGroup == TSMessageRequestGroup && $0.type == .insert }
-                    
-                    if !messageRequestInserts.isEmpty && CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
-                        CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = false
-                    }
-                }
-                
-                // If there are no unread message requests then hide the message request banner
-                if unreadMessageRequestCount == 0 {
-                    CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = true
-                }
-                
-                return reload()
-            }
+        // Reload the table content (animate changes after the first load)
+        tableView.reload(
+            using: StagedChangeset(source: viewModel.viewData, target: updatedViewData),
+            with: .automatic,
+            interrupt: {
+                print("Interrupt change check: \($0.changeCount)")
+                return $0.changeCount > 100
+            }    // Prevent too many changes from causing performance issues
+        ) { [weak self] updatedData in
+            self?.viewModel.updateData(updatedData)
         }
         
-        var sectionChanges = NSArray()
-        var rowChanges = NSArray()
-        ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)
-        
-        // Separate out the changes for new message requests and the inbox (so we can avoid updating for
-        // new messages within an existing message request)
-        let messageRequestChanges = rowChanges
-            .compactMap { $0 as? YapDatabaseViewRowChange }
-            .filter { $0.originalGroup == TSMessageRequestGroup || $0.finalGroup == TSMessageRequestGroup }
-        let inboxRowChanges = rowChanges
-            .compactMap { $0 as? YapDatabaseViewRowChange }
-            .filter { $0.originalGroup == TSInboxGroup || $0.finalGroup == TSInboxGroup }
-        
-        guard sectionChanges.count > 0 || inboxRowChanges.count > 0 || messageRequestChanges.count > 0 else { return }
-        
-        tableView.beginUpdates()
-        
-        // If we need to unhide the message request row and then re-insert it
-        if !messageRequestChanges.isEmpty {
-            
-            // If there are no unread message requests then hide the message request banner
-            if unreadMessageRequestCount == 0 && tableView.numberOfRows(inSection: 0) == 1 {
-                CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = true
-                tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
-            }
-            else {
-                if tableView.numberOfRows(inSection: 0) == 1 && Int(unreadMessageRequestCount) <= 0 {
-                    tableView.deleteRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
-                }
-                else if tableView.numberOfRows(inSection: 0) == 0 && Int(unreadMessageRequestCount) > 0 && !CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] {
-                    tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
-                }
-            }
-        }
-        
-        inboxRowChanges.forEach { rowChange in
-            let key = rowChange.collectionKey.key
-            threadViewModelCache[key] = nil
-            
-            switch rowChange.type {
-                case .delete:
-                    tableView.deleteRows(at: [ rowChange.indexPath! ], with: .automatic)
-                    
-                case .insert:
-                    tableView.insertRows(at: [ rowChange.newIndexPath! ], with: .automatic)
-                    
-                case .update:
-                    tableView.reloadRows(at: [ rowChange.indexPath! ], with: .automatic)
-                    
-                case .move:
-                    // Note: We need to handle the move from the message requests section to the inbox (since
-                    // we are only showing a single row for message requests we need to custom handle this as
-                    // an insert as the change won't be defined correctly)
-                    if rowChange.originalGroup == TSMessageRequestGroup && rowChange.finalGroup == TSInboxGroup {
-                        tableView.insertRows(at: [ rowChange.newIndexPath! ], with: .automatic)
-                    }
-                    else if rowChange.originalGroup == TSInboxGroup && rowChange.finalGroup == TSMessageRequestGroup {
-                        tableView.deleteRows(at: [ rowChange.indexPath! ], with: .automatic)
-                    }
-                    
-                default: break
-            }
-        }
-        tableView.endUpdates()
-        // HACK: Moves can have conflicts with the other 3 types of change.
-        // Just batch perform all the moves separately to prevent crashing.
-        // Since all the changes are from the original state to the final state,
-        // it will still be correct if we pick the moves out.
-        tableView.beginUpdates()
-        rowChanges.forEach { rowChange in
-            let rowChange = rowChange as! YapDatabaseViewRowChange
-            let key = rowChange.collectionKey.key
-            threadViewModelCache[key] = nil
-            
-            switch rowChange.type {
-                case .move:
-                    // Since we are custom handling this specific movement in the above 'updates' call we need
-                    // to avoid trying to handle it here
-                    if rowChange.originalGroup == TSMessageRequestGroup || rowChange.finalGroup == TSMessageRequestGroup {
-                        return
-                    }
-                    
-                    tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
-                    
-                default: break
-            }
-        }
-        tableView.endUpdates()
-        emptyStateView.isHidden = (threadCount != 0)
     }
     
     @objc private func handleProfileDidChangeNotification(_ notification: Notification) {
@@ -427,13 +280,16 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         profilePictureView.update()
         profilePictureView.set(.width, to: profilePictureSize)
         profilePictureView.set(.height, to: profilePictureSize)
+        
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
         profilePictureView.addGestureRecognizer(tapGestureRecognizer)
+        
         // Path status indicator
         let pathStatusView = PathStatusView()
         pathStatusView.accessibilityLabel = "Current onion routing path indicator"
         pathStatusView.set(.width, to: PathStatusView.size)
         pathStatusView.set(.height, to: PathStatusView.size)
+        
         // Container view
         let profilePictureViewContainer = UIView()
         profilePictureViewContainer.accessibilityLabel = "Settings button"
@@ -458,9 +314,34 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
 
     @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
         super.handleAppModeChangedNotification(notification)
+        
         let gradient = Gradients.homeVCFade
         fadeView.setGradient(gradient) // Re-do the gradient
         tableView.reloadData()
+    }
+    
+    // MARK: - UITableViewDataSource
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.viewData.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.viewData[section].elements.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        switch viewModel.viewData[indexPath.section].model {
+            case .messageRequests:
+                let cell = tableView.dequeueReusableCell(withIdentifier: MessageRequestsCell.reuseIdentifier) as! MessageRequestsCell
+                cell.update(with: viewModel.viewData[indexPath.section].elements[indexPath.row].unreadCount)
+                return cell
+                
+            case .threads:
+                let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
+                cell.update(with: viewModel.viewData[indexPath.section].elements[indexPath.row].threadViewModel)
+                return cell
+        }
     }
     
     // MARK: - UITableViewDelegate
@@ -485,10 +366,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        switch indexPath.section {
-            case 0:
+        switch viewModel.viewData[indexPath.section].model {
+            case .messageRequests:
                 let hide = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_HIDE_TITLE", comment: "")) { [weak self] _, _ in
-                    CurrentAppContext().appUserDefaults()[.hasHiddenMessageRequests] = true
+                    GRDBStorage.shared.write { db in db[.hasHiddenMessageRequests] = true }
 
                     // Animate the row removal
                     self?.tableView.beginUpdates()

@@ -1,9 +1,13 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
 
     @objc(SNQuote)
-    class Quote : NSObject, NSCoding {
+    class Quote: NSObject, Codable, NSCoding {
         public var timestamp: UInt64?
         public var publicKey: String?
         public var text: String?
@@ -45,14 +49,14 @@ public extension VisibleMessage {
             preconditionFailure("Use toProto(using:) instead.")
         }
 
-        public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoDataMessageQuote? {
+        public func toProto(_ db: Database) -> SNProtoDataMessageQuote? {
             guard let timestamp = timestamp, let publicKey = publicKey else {
                 SNLog("Couldn't construct quote proto from: \(self).")
                 return nil
             }
             let quoteProto = SNProtoDataMessageQuote.builder(id: timestamp, author: publicKey)
             if let text = text { quoteProto.setText(text) }
-            addAttachmentsIfNeeded(to: quoteProto, using: transaction)
+            addAttachmentsIfNeeded(db, to: quoteProto)
             do {
                 return try quoteProto.build()
             } catch {
@@ -61,9 +65,12 @@ public extension VisibleMessage {
             }
         }
 
-        private func addAttachmentsIfNeeded(to quoteProto: SNProtoDataMessageQuote.SNProtoDataMessageQuoteBuilder, using transaction: YapDatabaseReadWriteTransaction) {
+        private func addAttachmentsIfNeeded(_ db: Database, to quoteProto: SNProtoDataMessageQuote.SNProtoDataMessageQuoteBuilder) {
             guard let attachmentID = attachmentID else { return }
-            guard let stream = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction) as? TSAttachmentStream, stream.isUploaded else {
+            guard
+                let attachment: SessionMessagingKit.Attachment = try? SessionMessagingKit.Attachment.fetchOne(db, id: attachmentID),
+                attachment.state != .uploaded
+            else {
                 #if DEBUG
                 preconditionFailure("Sending a message before all associated attachments have been uploaded.")
                 #else
@@ -71,9 +78,9 @@ public extension VisibleMessage {
                 #endif
             }
             let quotedAttachmentProto = SNProtoDataMessageQuoteQuotedAttachment.builder()
-            quotedAttachmentProto.setContentType(stream.contentType)
-            if let fileName = stream.sourceFilename { quotedAttachmentProto.setFileName(fileName) }
-            guard let attachmentProto = stream.buildProto() else {
+            quotedAttachmentProto.setContentType(attachment.contentType)
+            if let fileName = attachment.sourceFilename { quotedAttachmentProto.setFileName(fileName) }
+            guard let attachmentProto = attachment.buildProto() else {
                 return SNLog("Ignoring invalid attachment for quoted message.")
             }
             quotedAttachmentProto.setThumbnail(attachmentProto)
@@ -95,5 +102,19 @@ public extension VisibleMessage {
             )
             """
         }
+    }
+}
+
+// MARK: - Database Type Conversion
+
+public extension VisibleMessage.Quote {
+    static func from(_ db: Database, quote: Quote) -> VisibleMessage.Quote {
+        let result = VisibleMessage.Quote()
+        result.timestamp = UInt64(quote.timestampMs)
+        result.publicKey = quote.authorId
+        result.text = quote.body
+        result.attachmentID = quote.attachmentId
+        
+        return result
     }
 }

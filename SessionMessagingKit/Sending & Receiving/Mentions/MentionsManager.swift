@@ -33,7 +33,7 @@ public final class MentionsManager : NSObject {
         let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadID)
         storage.dbReadConnection.read { transaction in
             candidates = cache.compactMap { publicKey in
-                guard let displayName: String = Profile.displayNameNoFallback(for: publicKey, context: (openGroupV2 != nil ? .openGroup : .regular)) else {
+                guard let displayName: String = Profile.displayNameNoFallback(id: publicKey, context: (openGroupV2 != nil ? .openGroup : .regular)) else {
                     return nil
                 }
                 guard !displayName.hasPrefix("Anonymous") else { return nil }

@@ -93,7 +93,7 @@ final class SimplifiedConversationCell : UITableViewCell {
     private func update() {
         AssertIsOnMainThread()
         
-        guard let thread = threadViewModel?.threadRecord else { return }
+        guard let thread = threadViewModel?.thread else { return }
         
         accentLineView.alpha = (thread.isBlocked() ? 1 : 0)
         profilePictureView.update(for: thread)
@@ -101,7 +101,7 @@ final class SimplifiedConversationCell : UITableViewCell {
     }
     
     private func getDisplayName() -> String {
-        if threadViewModel.isGroupThread {
+        if threadViewModel.thread.variant == .closedGroup || threadViewModel.thread.variant == .openGroup {
             if threadViewModel.name.isEmpty {
                 // TODO: Localization
                 return "Unknown Group"
@@ -114,11 +114,11 @@ final class SimplifiedConversationCell : UITableViewCell {
             return "NOTE_TO_SELF".localized()
         }
         
-        guard let hexEncodedPublicKey: String = threadViewModel.contactSessionID else {
+        guard threadViewModel.thread.variant == .contact else {
             // TODO: Localization
             return "Unknown"
         }
         
-        return Profile.displayName(for: hexEncodedPublicKey)
+        return Profile.displayName(id: threadViewModel.thread.id)
     }
 }

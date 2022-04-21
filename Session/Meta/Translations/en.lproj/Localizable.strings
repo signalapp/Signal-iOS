@@ -607,7 +607,7 @@
 "light_mode_theme" = "Light";
 "PIN_BUTTON_TEXT" = "Pin";
 "UNPIN_BUTTON_TEXT" = "Unpin";
-"meida_saved" = "Media saved by %@.";
+"media_saved" = "Media saved by %@.";
 "screenshot_taken" = "%@ took a screenshot.";
 "SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";

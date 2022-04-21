@@ -6,6 +6,7 @@ import SessionUtilitiesKit
 
 public struct Contact: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "contact" }
+    internal static let threadForeignKey = ForeignKey([Columns.id], to: [SessionThread.Columns.id])
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {

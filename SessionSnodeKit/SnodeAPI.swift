@@ -454,7 +454,17 @@ public final class SnodeAPI : NSObject {
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey)
                 .map2 { targetSnodes in
-                    let parameters = message.toJSON()
+                    // TODO: This as standard JSONEncoder (id blinding should mostly do this anyway???)
+                    let parameters: JSON = [
+                        "pubKey": (Features.useTestnet ?
+                            message.recipient.removing05PrefixIfNeeded() :
+                            message.recipient
+                        ),
+                        "data" : message.data,
+                        "ttl" : String(message.ttl),
+                        "timestamp" : String(message.timestampMs),
+                        "nonce" : ""
+                    ]
                     
                     return targetSnodes
                         .map { targetSnode in

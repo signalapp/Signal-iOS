@@ -3,14 +3,18 @@
 import Foundation
 
 public extension Set {
-    func inserting(_ value: Element) -> Set<Element> {
+    func inserting(_ value: Element?) -> Set<Element> {
+        guard let value: Element = value else { return self }
+        
         var updatedSet: Set<Element> = self
         updatedSet.insert(value)
         
         return updatedSet
     }
     
-    func removing(_ value: Element) -> Set<Element> {
+    func removing(_ value: Element?) -> Set<Element> {
+        guard let value: Element = value else { return self }
+        
         var updatedSet: Set<Element> = self
         updatedSet.remove(value)
         

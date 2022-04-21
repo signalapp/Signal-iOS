@@ -41,22 +41,26 @@ public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRe
         request(for: ClosedGroup.keyPairs)
     }
     
-    public var memberIds: QueryInterfaceRequest<GroupMember> {
+    public var allMembers: QueryInterfaceRequest<GroupMember> {
+        request(for: ClosedGroup.members)
+    }
+    
+    public var members: QueryInterfaceRequest<GroupMember> {
         request(for: ClosedGroup.members)
             .filter(GroupMember.Columns.role == GroupMember.Role.standard)
     }
     
-    public var zombieIds: QueryInterfaceRequest<GroupMember> {
+    public var zombies: QueryInterfaceRequest<GroupMember> {
         request(for: ClosedGroup.members)
             .filter(GroupMember.Columns.role == GroupMember.Role.zombie)
     }
     
-    public var moderatorIds: QueryInterfaceRequest<GroupMember> {
+    public var moderators: QueryInterfaceRequest<GroupMember> {
         request(for: ClosedGroup.members)
             .filter(GroupMember.Columns.role == GroupMember.Role.moderator)
     }
     
-    public var adminIds: QueryInterfaceRequest<GroupMember> {
+    public var admins: QueryInterfaceRequest<GroupMember> {
         request(for: ClosedGroup.members)
             .filter(GroupMember.Columns.role == GroupMember.Role.admin)
     }
@@ -69,5 +73,27 @@ public struct ClosedGroup: Codable, Identifiable, FetchableRecord, PersistableRe
         // 'OpenGroup' table as well)
         try request(for: ClosedGroup.members).deleteAll(db)
         return try performDelete(db)
+    }
+}
+
+// MARK: - Mutation
+
+public extension ClosedGroup {
+    func with(name: String) -> ClosedGroup {
+        return ClosedGroup(
+            threadId: threadId,
+            name: name,
+            formationTimestamp: formationTimestamp
+        )
+    }
+}
+
+// MARK: - GRDB Interactions
+
+public extension ClosedGroup {
+    func fetchLatestKeyPair(_ db: Database) throws -> ClosedGroupKeyPair? {
+        return try keyPairs
+            .order(ClosedGroupKeyPair.Columns.receivedTimestamp.desc)
+            .fetchOne(db)
     }
 }

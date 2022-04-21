@@ -1,9 +1,13 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
 public extension VisibleMessage {
 
     @objc(SNLinkPreview)
-    class LinkPreview : NSObject, NSCoding {
+    class LinkPreview: NSObject, Codable, NSCoding {
         public var title: String?
         public var url: String?
         public var attachmentID: String?
@@ -38,17 +42,22 @@ public extension VisibleMessage {
             preconditionFailure("Use toProto(using:) instead.")
         }
 
-        public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoDataMessagePreview? {
+        public func toProto(_ db: Database) -> SNProtoDataMessagePreview? {
             guard let url = url else {
                 SNLog("Couldn't construct link preview proto from: \(self).")
                 return nil
             }
             let linkPreviewProto = SNProtoDataMessagePreview.builder(url: url)
             if let title = title { linkPreviewProto.setTitle(title) }
-            if let attachmentID = attachmentID, let stream = TSAttachment.fetch(uniqueId: attachmentID, transaction: transaction) as? TSAttachmentStream,
-                let attachmentProto = stream.buildProto() {
+            
+            if
+                let attachmentID = attachmentID,
+                let attachment: SessionMessagingKit.Attachment = try? SessionMessagingKit.Attachment.fetchOne(db, id: attachmentID),
+                let attachmentProto = attachment.buildProto()
+            {
                 linkPreviewProto.setImage(attachmentProto)
             }
+            
             do {
                 return try linkPreviewProto.build()
             } catch {
@@ -67,5 +76,17 @@ public extension VisibleMessage {
             )
             """
         }
+    }
+}
+
+// MARK: - Database Type Conversion
+
+public extension VisibleMessage.LinkPreview {
+    static func from(_ db: Database, linkPreview: LinkPreview) -> VisibleMessage.LinkPreview {
+        return VisibleMessage.LinkPreview(
+            title: linkPreview.title,
+            url: linkPreview.url,
+            attachmentID: linkPreview.attachmentId
+        )
     }
 }
