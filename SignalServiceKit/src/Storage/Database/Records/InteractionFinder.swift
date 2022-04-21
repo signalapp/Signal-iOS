@@ -39,7 +39,7 @@ protocol InteractionFinderAdapter {
 
     static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     static func countReplies(for storyMessage: StoryMessage, transaction: ReadTransaction) -> UInt
-    static func hasReplies(for storyContext: StoryContext, transaction: ReadTransaction) -> Bool
+    static func hasReplies(for stories: [StoryMessage], transaction: ReadTransaction) -> Bool
     static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: ReadTransaction) -> [String]
 
     // MARK: - instance methods
@@ -230,10 +230,10 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public static func hasReplies(for storyContext: StoryContext, transaction: SDSAnyReadTransaction) -> Bool {
+    public static func hasReplies(for stories: [StoryMessage], transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinder.hasReplies(for: storyContext, transaction: grdbRead)
+            return GRDBInteractionFinder.hasReplies(for: stories, transaction: grdbRead)
         }
     }
 
@@ -954,16 +954,22 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
 
     static func countReplies(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> UInt {
         do {
+            guard let threadUniqueId = storyMessage.context.threadUniqueId(transaction: transaction.asAnyRead) else {
+                owsFailDebug("Unexpected context for StoryMessage")
+                return 0
+            }
+
             let sql: String = """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .storyTimestamp) = ?
                 AND \(interactionColumn: .storyAuthorUuidString) = ?
+                AND \(interactionColumn: .threadUniqueId) = ?
             """
             guard let count = try UInt.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: [storyMessage.timestamp, storyMessage.authorUuid.uuidString]
+                arguments: [storyMessage.timestamp, storyMessage.authorUuid.uuidString, threadUniqueId]
             ) else {
                 throw OWSAssertionError("count was unexpectedly nil")
             }
@@ -973,36 +979,34 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    static func hasReplies(for storyContext: StoryContext, transaction: GRDBReadTransaction) -> Bool {
-        let threadUniqueId: String
-        switch storyContext {
-        case .groupId(let data):
-            threadUniqueId = TSGroupThread.threadId(
-                forGroupId: data,
-                transaction: transaction.asAnyRead
-            )
-        case .authorUuid(let uuid):
-            guard let contactThread = TSContactThread.getWithContactAddress(
-                SignalServiceAddress(uuid: uuid),
-                transaction: transaction.asAnyRead
-            ) else { return false }
-            threadUniqueId = contactThread.uniqueId
-        case .none:
-            return false
+    static func hasReplies(for stories: [StoryMessage], transaction: GRDBReadTransaction) -> Bool {
+        var storyFilters = ""
+        for story in stories {
+            guard let threadUniqueId = story.context.threadUniqueId(transaction: transaction.asAnyRead) else {
+                owsFailDebug("Unexpected context for StoryMessage")
+                continue
+            }
+
+            if !storyFilters.isEmpty { storyFilters += " OR "}
+            storyFilters += """
+                (
+                    \(interactionColumn: .storyTimestamp) = \(story.timestamp)
+                    AND \(interactionColumn: .storyAuthorUuidString) = '\(story.authorUuid.uuidString)'
+                    AND \(interactionColumn: .threadUniqueId) = '\(threadUniqueId)'
+                )
+            """
         }
 
         let sql = """
             SELECT EXISTS(
                 SELECT 1
                 FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .storyTimestamp) IS NOT NULL
-                AND \(interactionColumn: .storyAuthorUuidString) IS NOT NULL
+                WHERE \(storyFilters)
                 LIMIT 1
             )
         """
         do {
-            return try Bool.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId]) ?? false
+            return try Bool.fetchOne(transaction.database, sql: sql) ?? false
         } catch {
             owsFail("error: \(error)")
         }

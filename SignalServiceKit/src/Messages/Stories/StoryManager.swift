@@ -89,3 +89,36 @@ public extension TSThread {
         }
     }
 }
+
+public extension StoryContext {
+    func threadUniqueId(transaction: SDSAnyReadTransaction) -> String? {
+        switch self {
+        case .groupId(let data):
+            return TSGroupThread.threadId(
+                forGroupId: data,
+                transaction: transaction
+            )
+        case .authorUuid(let uuid):
+            return TSContactThread.getWithContactAddress(
+                SignalServiceAddress(uuid: uuid),
+                transaction: transaction
+            )?.uniqueId
+        case .none:
+            return nil
+        }
+    }
+
+    func thread(transaction: SDSAnyReadTransaction) -> TSThread? {
+        switch self {
+        case .groupId(let data):
+            return TSGroupThread.fetch(groupId: data, transaction: transaction)
+        case .authorUuid(let uuid):
+            return TSContactThread.getWithContactAddress(
+                SignalServiceAddress(uuid: uuid),
+                transaction: transaction
+            )
+        case .none:
+            return nil
+        }
+    }
+}

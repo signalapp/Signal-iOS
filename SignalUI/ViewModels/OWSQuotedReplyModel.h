@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class StickerInfo;
 @class StickerMetadata;
+@class StoryMessage;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -53,6 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Used for persisted quoted replies, both incoming and outgoing.
 + (nullable instancetype)quotedReplyFromMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction;
+
++ (nullable instancetype)quotedReplyFromStoryMessage:(StoryMessage *)storyMessage
+                                         transaction:(SDSAnyReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
 + (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item
