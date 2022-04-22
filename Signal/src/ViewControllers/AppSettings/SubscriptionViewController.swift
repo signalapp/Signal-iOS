@@ -568,7 +568,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
                     if subscriptionPending {
                         stackView.addSubview(self.redemptionLoadingSpinner)
-                        self.redemptionLoadingSpinner.autoPin(toEdgesOf: imageView, withInset: UIEdgeInsets(hMargin: 14, vMargin: 14))
+                        self.redemptionLoadingSpinner.autoPin(toEdgesOf: imageView, with: UIEdgeInsets(hMargin: 14, vMargin: 14))
                         let progress = self.redemptionLoadingSpinner.currentProgress
                         self.redemptionLoadingSpinner.play(fromProgress: progress, toProgress: 1)
                     } else {
