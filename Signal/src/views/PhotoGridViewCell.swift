@@ -131,8 +131,9 @@ public class PhotoGridViewCell: UICollectionViewCell {
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        if let durationLabel = durationLabel {
-            durationLabel.font = .ows_dynamicTypeCaption1.ows_semibold
+        if let durationLabel = durationLabel,
+           previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            durationLabel.font = PhotoGridViewCell.durationLabelFont()
         }
     }
 
@@ -142,6 +143,11 @@ public class PhotoGridViewCell: UICollectionViewCell {
             imageView.image = newValue
             imageView.backgroundColor = newValue == nil ? loadingColor : .clear
         }
+    }
+
+    private static func durationLabelFont() -> UIFont {
+        let fontDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1)
+        return UIFont.ows_semiboldFont(withSize: max(12, fontDescriptor.pointSize))
     }
 
     private func setContentTypeBadge(image: UIImage?) {
@@ -171,8 +177,8 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
         if durationLabel == nil {
             let durationLabel = UILabel()
-            durationLabel.textColor = .ows_gray05
-            durationLabel.font = .ows_dynamicTypeCaption1.ows_semibold
+            durationLabel.textColor = .white
+            durationLabel.font = PhotoGridViewCell.durationLabelFont()
             durationLabel.layer.shadowColor = UIColor.ows_blackAlpha20.cgColor
             durationLabel.layer.shadowOffset = CGSize(width: -1, height: -1)
             durationLabel.layer.shadowOpacity = 1
