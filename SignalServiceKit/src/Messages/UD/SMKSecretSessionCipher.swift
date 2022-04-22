@@ -17,7 +17,7 @@ public struct SecretSessionKnownSenderError: Error {
     public let underlyingError: Error
 
     init(messageContent: UnidentifiedSenderMessageContent, underlyingError: Error) {
-        self.senderAddress = SignalServiceAddress(messageContent.senderCertificate.sender)
+        self.senderAddress = SignalServiceAddress(messageContent.senderCertificate.sender, trustLevel: .low)
         self.senderDeviceId = messageContent.senderCertificate.sender.deviceId
         self.cipherType = messageContent.messageType
         self.groupId = messageContent.groupId.map { Data($0) }
@@ -83,8 +83,8 @@ fileprivate extension ProtocolAddress {
 }
 
 fileprivate extension SignalServiceAddress {
-    convenience init(_ address: SealedSenderAddress) {
-        self.init(uuid: UUID(uuidString: address.uuidString), phoneNumber: address.e164, trustLevel: .high)
+    convenience init(_ address: SealedSenderAddress, trustLevel: SignalRecipientTrustLevel) {
+        self.init(uuid: UUID(uuidString: address.uuidString), phoneNumber: address.e164, trustLevel: trustLevel)
     }
 }
 
@@ -219,7 +219,8 @@ fileprivate extension SMKMessageType {
                                                                   context: context)
 
         let sender = messageContent.senderCertificate.sender
-        let senderAddress = SignalServiceAddress(sender)
+        // Low trust because we haven't verified the certificate yet.
+        let senderAddress = SignalServiceAddress(sender, trustLevel: .low)
 
         guard !senderAddress.isLocalAddress || sender.deviceId != TSAccountManager.shared.storedDeviceId() else {
             Logger.info("Discarding self-sent message")
@@ -242,7 +243,7 @@ fileprivate extension SMKMessageType {
             guard sender.deviceId <= Int32.max else {
                 throw SMKError.assertionError(description: "\(logTag) Invalid senderDeviceId.")
             }
-            return SMKDecryptResult(senderAddress: senderAddress,
+            return SMKDecryptResult(senderAddress: SignalServiceAddress(sender, trustLevel: .high),
                                     senderDeviceId: Int(sender.deviceId),
                                     paddedPayload: Data(paddedMessagePlaintext),
                                     messageType: SMKMessageType(messageContent.messageType))

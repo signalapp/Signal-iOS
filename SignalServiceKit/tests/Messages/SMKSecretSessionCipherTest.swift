@@ -27,11 +27,13 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let trustRoot = IdentityKeyPair.generate()
 
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-        let senderCertificate = Self.createCertificateFor(trustRoot: trustRoot,
-                                                          senderAddress: aliceMockClient.address,
-                                                          senderDeviceId: UInt32(aliceMockClient.deviceId),
-                                                          identityKey: aliceMockClient.identityKeyPair.publicKey,
-                                                          expirationTimestamp: 31337)
+        let senderCertificate = Self.createCertificateFor(
+            trustRoot: trustRoot,
+            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
+                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
+                                                    deviceId: UInt32(aliceMockClient.deviceId)),
+            identityKey: aliceMockClient.identityKeyPair.publicKey,
+            expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
@@ -60,6 +62,8 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         XCTAssertEqual(String(data: bobPlaintext.paddedPayload, encoding: .utf8), "smert za smert")
         XCTAssertEqual(bobPlaintext.senderAddress, aliceMockClient.address)
         XCTAssertEqual(bobPlaintext.senderDeviceId, Int(aliceMockClient.deviceId))
+        XCTAssertEqual(bobPlaintext.senderAddress.uuid, aliceMockClient.address.uuid)
+        XCTAssertEqual(bobPlaintext.senderAddress.phoneNumber, aliceMockClient.address.phoneNumber)
     }
 
     // public void testEncryptDecryptUntrusted() throws Exception {
@@ -78,11 +82,13 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let trustRoot = IdentityKeyPair.generate()
         let falseTrustRoot = IdentityKeyPair.generate()
         // SenderCertificate   senderCertificate = createCertificateFor(falseTrustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-        let senderCertificate = Self.createCertificateFor(trustRoot: falseTrustRoot,
-                                                          senderAddress: aliceMockClient.address,
-                                                          senderDeviceId: UInt32(aliceMockClient.deviceId),
-                                                          identityKey: aliceMockClient.identityKeyPair.publicKey,
-                                                          expirationTimestamp: 31337)
+        let senderCertificate = Self.createCertificateFor(
+            trustRoot: falseTrustRoot,
+            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
+                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
+                                                    deviceId: UInt32(aliceMockClient.deviceId)),
+            identityKey: aliceMockClient.identityKeyPair.publicKey,
+            expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
@@ -131,6 +137,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
+            XCTAssertEqual(knownSenderError.senderAddress.uuid, aliceMockClient.address.uuid)
+            // The certificate was invalid, so we don't trust the phone number.
+            XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -151,11 +160,13 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let trustRoot = IdentityKeyPair.generate()
 
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, aliceStore.getIdentityKeyPair().getPublicKey().getPublicKey(), 31337);
-        let senderCertificate = Self.createCertificateFor(trustRoot: trustRoot,
-                                                          senderAddress: aliceMockClient.address,
-                                                          senderDeviceId: UInt32(aliceMockClient.deviceId),
-                                                          identityKey: aliceMockClient.identityKeyPair.publicKey,
-                                                          expirationTimestamp: 31337)
+        let senderCertificate = Self.createCertificateFor(
+            trustRoot: trustRoot,
+            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
+                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
+                                                    deviceId: UInt32(aliceMockClient.deviceId)),
+            identityKey: aliceMockClient.identityKeyPair.publicKey,
+            expirationTimestamp: 31337)
 
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
@@ -205,6 +216,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
                     originalSenderDeviceId: knownSenderError.senderDeviceId
                 )
             )
+            XCTAssertEqual(knownSenderError.senderAddress.uuid, aliceMockClient.address.uuid)
+            // The certificate was invalid, so we don't trust the phone number.
+            XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
@@ -227,11 +241,14 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         // ECKeyPair           randomKeyPair     = Curve.generateKeyPair();
         let randomKeyPair = IdentityKeyPair.generate()
         // SenderCertificate   senderCertificate = createCertificateFor(trustRoot, "+14151111111", 1, randomKeyPair.getPublicKey(), 31337);
-        let senderCertificate = Self.createCertificateFor(trustRoot: trustRoot,
-                                                          senderAddress: aliceMockClient.address,
-                                                          senderDeviceId: UInt32(aliceMockClient.deviceId),
-                                                          identityKey: randomKeyPair.publicKey,
-                                                          expirationTimestamp: 31337)
+         let senderCertificate = Self.createCertificateFor(
+             trustRoot: trustRoot,
+             senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
+                                                     uuidString: aliceMockClient.recipientUuid!.uuidString,
+                                                     deviceId: UInt32(aliceMockClient.deviceId)),
+             identityKey: randomKeyPair.publicKey,
+             expirationTimestamp: 31337)
+
         // SecretSessionCipher aliceCipher       = new SecretSessionCipher(aliceStore);
         let aliceCipher: SMKSecretSessionCipher = try! aliceMockClient.createSecretSessionCipher()
 
@@ -277,8 +294,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let trustRoot = IdentityKeyPair.generate()
         let senderCertificate = Self.createCertificateFor(
             trustRoot: trustRoot,
-            senderAddress: aliceMockClient.address,
-            senderDeviceId: UInt32(aliceMockClient.deviceId),
+            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
+                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
+                                                    deviceId: UInt32(aliceMockClient.deviceId)),
             identityKey: aliceMockClient.identityKeyPair.publicKey,
             expirationTimestamp: 31337)
 
@@ -336,8 +354,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
         let trustRoot = IdentityKeyPair.generate()
         let senderCertificate = Self.createCertificateFor(
             trustRoot: trustRoot,
-            senderAddress: aliceMockClient.address,
-            senderDeviceId: UInt32(aliceMockClient.deviceId),
+            senderAddress: try! SealedSenderAddress(e164: aliceMockClient.recipientE164,
+                                                    uuidString: aliceMockClient.recipientUuid!.uuidString,
+                                                    deviceId: UInt32(aliceMockClient.deviceId)),
             identityKey: aliceMockClient.identityKeyPair.publicKey,
             expirationTimestamp: 31337)
 
@@ -380,6 +399,9 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
             // through decryption failures because of missing a missing sender key. This will
             // help with recovery.
             XCTAssertEqual(knownSenderError.senderAddress, aliceMockClient.address)
+            XCTAssertEqual(knownSenderError.senderAddress.uuid, aliceMockClient.address.uuid)
+            // The certificate was invalid, so we don't trust the phone number.
+            XCTAssertNil(knownSenderError.senderAddress.phoneNumber)
             XCTAssertEqual(knownSenderError.senderDeviceId, UInt32(aliceMockClient.deviceId))
             XCTAssertEqual(Data(knownSenderError.groupId!), "inyalowda".data(using: String.Encoding.utf8)!)
             XCTAssertEqual(knownSenderError.contentHint, .resendable)
@@ -407,17 +429,14 @@ class SMKSecretSessionCipherTest: SSKBaseTestSwift {
     // private SenderCertificate createCertificateFor(ECKeyPair trustRoot, String sender, int deviceId, ECPublicKey identityKey, long expires)
     //     throws InvalidKeyException, InvalidCertificateException, InvalidProtocolBufferException {
     internal static func createCertificateFor(trustRoot: IdentityKeyPair,
-                                              senderAddress: SignalServiceAddress,
-                                              senderDeviceId: UInt32,
+                                              senderAddress: SealedSenderAddress,
                                               identityKey: PublicKey,
                                               expirationTimestamp: UInt64) -> SenderCertificate {
         let serverKey = IdentityKeyPair.generate()
         let serverCertificate = try! ServerCertificate(keyId: 1,
                                                        publicKey: serverKey.publicKey,
                                                        trustRoot: trustRoot.privateKey)
-        return try! SenderCertificate(sender: SealedSenderAddress(e164: senderAddress.phoneNumber,
-                                                                  uuidString: senderAddress.uuidString!,
-                                                                  deviceId: senderDeviceId),
+        return try! SenderCertificate(sender: senderAddress,
                                       publicKey: identityKey,
                                       expiration: expirationTimestamp,
                                       signerCertificate: serverCertificate,

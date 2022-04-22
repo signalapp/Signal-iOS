@@ -80,8 +80,9 @@ class MessageDecryptionTest: SSKBaseTestSwift {
             if type == .unidentifiedSender {
                 let senderCert = SMKSecretSessionCipherTest.createCertificateFor(
                     trustRoot: sealedSenderTrustRoot.identityKeyPair,
-                    senderAddress: remoteClient.address,
-                    senderDeviceId: remoteClient.deviceId,
+                    senderAddress: try! SealedSenderAddress(e164: remoteClient.e164Identifier,
+                                                            uuidString: remoteClient.uuidIdentifier,
+                                                            deviceId: remoteClient.deviceId),
                     identityKey: remoteClient.identityKeyPair.identityKeyPair.publicKey,
                     expirationTimestamp: 13337)
                 let usmc = try! UnidentifiedSenderMessageContent(ciphertext,
