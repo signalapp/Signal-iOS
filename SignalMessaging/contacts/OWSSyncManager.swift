@@ -85,29 +85,39 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         sendSyncRequestMessage(.keys, transaction: transaction)
     }
 
+    private static let pniIdentitySyncMessagePending = AtomicBool(false)
+
     @objc
     public func sendPniIdentitySyncMessage() {
         Logger.info("")
 
-        guard tsAccountManager.isRegisteredAndReady else {
-            return owsFailDebug("Unexpectedly tried to send sync message before registration.")
+        guard Self.pniIdentitySyncMessagePending.tryToSetFlag() else {
+            // Already scheduled!
+            return
         }
 
-        guard tsAccountManager.isRegisteredPrimaryDevice else {
-            return owsFailDebug("PNI identity sync should only be initiated from the primary device")
-        }
-
-        databaseStorage.asyncWrite { transaction in
-            guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
-                return owsFailDebug("Missing thread")
+        _ = messageProcessor.fetchingAndProcessingCompletePromise().done(on: .global()) {
+            guard self.tsAccountManager.isRegisteredAndReady else {
+                return owsFailDebug("Unexpectedly tried to send sync message before registration.")
             }
 
-            guard let keyPair = self.identityManager.identityKeyPair(for: .pni) else {
-                Logger.warn("no PNI identity key yet; ignoring request")
-                return
+            guard self.tsAccountManager.isRegisteredPrimaryDevice else {
+                return owsFailDebug("PNI identity sync should only be initiated from the primary device")
             }
-            let syncMessage = OWSSyncPniIdentityMessage(thread: thread, keyPair: keyPair)
-            self.messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
+
+            self.databaseStorage.write { transaction in
+                guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+                    return owsFailDebug("Missing thread")
+                }
+
+                guard let keyPair = self.identityManager.identityKeyPair(for: .pni) else {
+                    Logger.warn("no PNI identity key yet; ignoring request")
+                    return
+                }
+                let syncMessage = OWSSyncPniIdentityMessage(thread: thread, keyPair: keyPair)
+                Self.pniIdentitySyncMessagePending.set(false)
+                self.messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
+            }
         }
     }
 
@@ -227,7 +237,22 @@ public extension OWSSyncManager {
     @objc
     fileprivate func sendSyncRequestMessage(_ requestType: SSKProtoSyncMessageRequestType,
                                             transaction: SDSAnyWriteTransaction) {
-        Logger.info("")
+        switch requestType {
+        case .unknown:
+            owsFailDebug("should not request unknown")
+        case .contacts:
+            Logger.info("contacts")
+        case .groups:
+            Logger.info("groups")
+        case .blocked:
+            Logger.info("blocked")
+        case .configuration:
+            Logger.info("configuration")
+        case .keys:
+            Logger.info("keys")
+        case .pniIdentity:
+            Logger.info("pniIdentity")
+        }
 
         guard tsAccountManager.isRegisteredAndReady else {
             return owsFailDebug("Unexpectedly tried to send sync request before registration.")
