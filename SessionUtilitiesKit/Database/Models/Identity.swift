@@ -70,89 +70,61 @@ public extension Identity {
     }
     
     static func userExists(_ db: Database? = nil) -> Bool {
-        let userExists: (Database) -> Bool = { db in
-            return (
-                (try? Identity.fetchOne(db, id: .x25519PublicKey)) != nil &&
-                (try? Identity.fetchOne(db, id: .x25519PrivateKey)) != nil
-            )
-        }
-        
-        if let db: Database = db {
-            return userExists(db)
-        }
-        
-        return GRDBStorage.shared
-            .read { db -> Bool in userExists(db) }
-            .defaulting(to: false)
+        return (fetchUserKeyPair(db) != nil)
     }
     
     static func fetchUserPublicKey(_ db: Database? = nil) -> Data? {
-        if let db: Database = db {
-            return try? Identity.fetchOne(db, id: .x25519PublicKey)?.data
+        guard let db: Database = db else {
+            return GRDBStorage.shared.read { db in fetchUserPublicKey(db) }
         }
         
-        return GRDBStorage.shared.read { db -> Data? in
-            try Identity.fetchOne(db, id: .x25519PublicKey)?.data
-        }
+        return try? Identity.fetchOne(db, id: .x25519PublicKey)?.data
     }
     
     static func fetchUserPrivateKey(_ db: Database? = nil) -> Data? {
-        if let db: Database = db {
-            return try? Identity.fetchOne(db, id: .x25519PrivateKey)?.data
+        guard let db: Database = db else {
+            return GRDBStorage.shared.read { db in fetchUserPrivateKey(db) }
         }
         
-        return GRDBStorage.shared.read { db -> Data? in
-            try Identity.fetchOne(db, id: .x25519PrivateKey)?.data
-        }
+        return try? Identity.fetchOne(db, id: .x25519PrivateKey)?.data
     }
     
     static func fetchUserKeyPair(_ db: Database? = nil) -> Box.KeyPair? {
-        let fetchKeys: (Database) -> Box.KeyPair? = { db in
-            guard
-                let publicKey: Identity = try? Identity.fetchOne(db, id: .x25519PublicKey),
-                let privateKey: Identity = try? Identity.fetchOne(db, id: .x25519PrivateKey)
-            else {
-                return nil
-            }
-            
-            return Box.KeyPair(
-                publicKey: publicKey.data.bytes,
-                secretKey: privateKey.data.bytes
-            )
+        guard let db: Database = db else {
+            return GRDBStorage.shared.read { db in fetchUserKeyPair(db) }
         }
+        guard
+            let publicKey: Data = fetchUserPublicKey(db),
+            let privateKey: Data = fetchUserPrivateKey(db)
+        else { return nil }
         
-        if let db: Database = db {
-            return fetchKeys(db)
-        }
-        
-        return GRDBStorage.shared.read { db -> Box.KeyPair? in
-            return fetchKeys(db)
-        }
+        return Box.KeyPair(
+            publicKey: publicKey.bytes,
+            secretKey: privateKey.bytes
+        )
     }
     
     static func fetchUserEd25519KeyPair() -> Box.KeyPair? {
         return GRDBStorage.shared.read { db -> Box.KeyPair? in
             guard
-                let publicKey: Identity = try? Identity.fetchOne(db, id: .ed25519PublicKey),
-                let secretKey: Identity = try? Identity.fetchOne(db, id: .ed25519SecretKey)
-            else {
-                return nil
-            }
+                let publicKey: Data = try? Identity.fetchOne(db, id: .ed25519PublicKey)?.data,
+                let secretKey: Data = try? Identity.fetchOne(db, id: .ed25519SecretKey)?.data
+            else { return nil }
             
             return Box.KeyPair(
-                publicKey: publicKey.data.bytes,
-                secretKey: secretKey.data.bytes
+                publicKey: publicKey.bytes,
+                secretKey: secretKey.bytes
             )
         }
     }
     
     static func fetchHexEncodedSeed() -> String? {
         return GRDBStorage.shared.read { db in
-            guard let value: Identity = try? Identity.fetchOne(db, id: .seed) else {
+            guard let data: Data = try? Identity.fetchOne(db, id: .seed)?.data else {
                 return nil
             }
             
-            return value.data.toHexString()
+            return data.toHexString()
         }
     }
     

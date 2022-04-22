@@ -36,9 +36,11 @@ public struct InteractionAttachment: Codable, FetchableRecord, PersistableRecord
         // If we have an Attachment then check if this is the only type that is referencing it
         // and delete the Attachment if so
         let quoteUses: Int? = try? Quote
+            .select(Quote.Columns.attachmentId)
             .filter(Quote.Columns.attachmentId == attachmentId)
             .fetchCount(db)
         let linkPreviewUses: Int? = try? LinkPreview
+            .select(LinkPreview.Columns.attachmentId)
             .filter(LinkPreview.Columns.attachmentId == attachmentId)
             .fetchCount(db)
         

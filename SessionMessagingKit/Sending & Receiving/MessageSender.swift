@@ -182,11 +182,14 @@ public final class MessageSender : NSObject {
                     ciphertext = try encryptWithSessionProtocol(plaintext, for: publicKey)
                     
                 case .closedGroup(let groupPublicKey):
-                    guard let encryptionKeyPair: ClosedGroupKeyPair = try? ClosedGroupKeyPair.fetchLatestKeyPair(db, publicKey: groupPublicKey) else {
+                    guard let encryptionKeyPair: ClosedGroupKeyPair = try? ClosedGroupKeyPair.fetchLatestKeyPair(db, threadId: groupPublicKey) else {
                         throw MessageSenderError.noKeyPair
                     }
                     
-                    ciphertext = try encryptWithSessionProtocol(plaintext, for: "05\(encryptionKeyPair.publicKey)")
+                    ciphertext = try encryptWithSessionProtocol(
+                        plaintext,
+                        for: "05\(encryptionKeyPair.publicKey.toHexString())"
+                    )
                     
                 case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
             }
@@ -357,7 +360,7 @@ public final class MessageSender : NSObject {
             #if DEBUG
             preconditionFailure()
             #else
-            handleFailure(with: Error.invalidMessage, using: transaction)
+            handleFailure(db, with: MessageSenderError.invalidMessage)
             return promise
             #endif
         }
@@ -461,10 +464,16 @@ public final class MessageSender : NSObject {
             NotificationCenter.default.post(name: .messageSentStatusDidChange, object: nil, userInfo: nil)
             
             // Start the disappearing messages timer if needed
-            DisappearingMessagesJob.updateNextRunIfNeeded(
+            JobRunner.upsert(
                 db,
-                interaction: interaction,
-                startedAtMs: (Date().timeIntervalSince1970 * 1000)
+                job: Job(
+                    variant: .disappearingMessages,
+                    details: DisappearingMessagesJob.updateNextRunIfNeeded(
+                        db,
+                        interaction: interaction,
+                        startedAtMs: (Date().timeIntervalSince1970 * 1000)
+                    )
+                )
             )
         }
         

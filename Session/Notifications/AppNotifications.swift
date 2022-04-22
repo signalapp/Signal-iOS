@@ -95,8 +95,8 @@ protocol NotificationPresenterAdaptee: AnyObject {
 
     func registerNotificationSettings() -> Promise<Void>
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?)
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?)
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?)
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?, replacingIdentifier: String?)
 
     func cancelNotifications(threadId: String)
     func cancelNotifications(identifiers: [String])
@@ -225,15 +225,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                             )
                         )
                 }
-                
-            default:
-                notificationTitle = "Session"
         }
         
         switch previewType {
             case .noNameNoPreview, .nameNoPreview: notificationBody = NotificationStrings.incomingMessageBody
             case .nameAndPreview: notificationBody = messageText
-            default: notificationBody = NotificationStrings.incomingMessageBody
         }
         
         // If it's a message request then overwrite the body to be something generic (only show a notification
@@ -257,7 +253,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 in: (notificationBody ?? ""),
                 threadId: thread.id
             )
-            let sound = self.requestSound(thread: thread)
+            let sound: Preferences.Sound? = self.requestSound(thread: thread)
             
             self.adaptee.notify(
                 category: category,
@@ -286,7 +282,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         DispatchQueue.main.async {
-            let sound = self.requestSound(thread: thread)
+            let sound: Preferences.Sound? = self.requestSound(thread: thread)
+            
             self.adaptee.notify(
                 category: .errorMessage,
                 title: notificationTitle,
@@ -318,12 +315,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
 
-    private func requestSound(thread: SessionThread) -> OWSSound? {
+    private func requestSound(thread: SessionThread) -> Preferences.Sound? {
         guard checkIfShouldPlaySound() else {
             return nil
         }
 
-        return OWSSounds.notificationSound(forThreadId: thread.id)
+        return thread.notificationSound
     }
 
     private func checkIfShouldPlaySound() -> Bool {

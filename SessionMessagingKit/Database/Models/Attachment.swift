@@ -21,6 +21,7 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
         case creationTimestamp
         case sourceFilename
         case downloadUrl
+        case localRelativeFilePath
         case width
         case height
         case encryptionKey
@@ -81,6 +82,11 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
     /// **Note:** The url is a fully constructed url but the clients just extract the id from the end of the url to perform the actual download
     public let downloadUrl: String?
     
+    /// The file path for the attachment relative to the attachments folder
+    ///
+    /// **Note:** We store this path so that file path generation changes don’t break existing attachments
+    public let localRelativeFilePath: String?
+    
     /// The width of the attachment, this will be `null` for non-visual attachment types
     public let width: UInt?
     
@@ -107,6 +113,7 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
         creationTimestamp: TimeInterval? = nil,
         sourceFilename: String? = nil,
         downloadUrl: String? = nil,
+        localRelativeFilePath: String? = nil,
         width: UInt? = nil,
         height: UInt? = nil,
         encryptionKey: Data? = nil,
@@ -121,6 +128,7 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
         self.creationTimestamp = creationTimestamp
         self.sourceFilename = sourceFilename
         self.downloadUrl = downloadUrl
+        self.localRelativeFilePath = localRelativeFilePath
         self.width = width
         self.height = height
         self.encryptionKey = encryptionKey
@@ -153,6 +161,7 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
         self.creationTimestamp = nil
         self.sourceFilename = nil
         self.downloadUrl = nil
+        self.localRelativeFilePath = nil
         self.width = imageSize.map { UInt(floor($0.width)) }
         self.height = imageSize.map { UInt(floor($0.height)) }
         self.encryptionKey = nil
@@ -164,16 +173,41 @@ public struct Attachment: Codable, Identifiable, FetchableRecord, PersistableRec
 // MARK: - CustomStringConvertible
 
 extension Attachment: CustomStringConvertible {
-    public var description: String {
+    public static func description(for variant: Variant, contentType: String, sourceFilename: String?) -> String {
         if MIMETypeUtil.isAudio(contentType) {
             // a missing filename is the legacy way to determine if an audio attachment is
             // a voice note vs. other arbitrary audio attachments.
-            if variant == .voiceMessage || self.sourceFilename == nil || (self.sourceFilename?.count ?? 0) == 0 {
+            if variant == .voiceMessage || sourceFilename == nil || (sourceFilename?.count ?? 0) == 0 {
                 return "🎙️ \("ATTACHMENT_TYPE_VOICE_MESSAGE".localized())"
             }
         }
         
-        return "\("ATTACHMENT".localized()) \(emojiForMimeType)"
+        return "\("ATTACHMENT".localized()) \(emoji(for: contentType))"
+    }
+    
+    public static func emoji(for contentType: String) -> String {
+        if MIMETypeUtil.isImage(contentType) {
+            return "📷"
+        }
+        else if MIMETypeUtil.isVideo(contentType) {
+            return "🎥"
+        }
+        else if MIMETypeUtil.isAudio(contentType) {
+            return "🎧"
+        }
+        else if MIMETypeUtil.isAnimated(contentType) {
+            return "🎡"
+        }
+        
+        return "📎"
+    }
+    
+    public var description: String {
+        return Attachment.description(
+            for: variant,
+            contentType: contentType,
+            sourceFilename: sourceFilename
+        )
     }
 }
 
@@ -183,7 +217,9 @@ public extension Attachment {
     func with(
         serverId: String? = nil,
         state: State? = nil,
+        creationTimestamp: TimeInterval? = nil,
         downloadUrl: String? = nil,
+        localRelativeFilePath: String? = nil,
         encryptionKey: Data? = nil,
         digest: Data? = nil
     ) -> Attachment {
@@ -193,9 +229,10 @@ public extension Attachment {
             state: (state ?? self.state),
             contentType: contentType,
             byteCount: byteCount,
-            creationTimestamp: creationTimestamp,
+            creationTimestamp: (creationTimestamp ?? self.creationTimestamp),
             sourceFilename: sourceFilename,
             downloadUrl: (downloadUrl ?? self.downloadUrl),
+            localRelativeFilePath: (localRelativeFilePath ?? self.localRelativeFilePath),
             width: width,
             height: height,
             encryptionKey: (encryptionKey ?? self.encryptionKey),
@@ -236,6 +273,7 @@ public extension Attachment {
         self.creationTimestamp = nil
         self.sourceFilename = proto.fileName
         self.downloadUrl = proto.url
+        self.localRelativeFilePath = nil
         self.width = (proto.hasWidth && proto.width > 0 ? UInt(proto.width) : nil)
         self.height = (proto.hasHeight && proto.height > 0 ? UInt(proto.height) : nil)
         self.encryptionKey = proto.key
@@ -343,7 +381,7 @@ public extension Attachment {
         OWSFileSystem.appSharedDataDirectoryPath().appending("/Attachments")
     }()
     
-    private static var attachmentsFolder: String = {
+    internal static var attachmentsFolder: String = {
         let attachmentsFolder: String = sharedDataAttachmentsDirPath
         OWSFileSystem.ensureDirectoryExists(attachmentsFolder)
         
@@ -357,22 +395,13 @@ public extension Attachment {
         return attachmentsFolder
     }()
     
-    private static func originalFilePath(id: String, mimeType: String, sourceFilename: String?) -> String? {
-        let maybeFilePath: String? = MIMETypeUtil.filePath(
-            forAttachment: id, // TODO: Can we avoid this???
+    internal static func originalFilePath(id: String, mimeType: String, sourceFilename: String?) -> String? {
+        return MIMETypeUtil.filePath(
+            forAttachment: id,
             ofMIMEType: mimeType,
             sourceFilename: sourceFilename,
             inFolder: Attachment.attachmentsFolder
         )
-        
-        guard let filePath: String = maybeFilePath else { return nil }
-        guard filePath.hasPrefix(Attachment.attachmentsFolder) else { return nil }
-        
-        let localRelativeFilePath: String = filePath.substring(from: Attachment.attachmentsFolder.count)
-        
-        guard !localRelativeFilePath.isEmpty else { return nil }
-
-        return localRelativeFilePath
     }
     
     static func imageSize(contentType: String, originalFilePath: String) -> CGSize? {
@@ -410,10 +439,6 @@ extension Attachment {
         )
     }
     
-    var localRelativeFilePath: String? {
-        return originalFilePath?.substring(from: Attachment.attachmentsFolder.count)
-    }
-    
     var thumbnailsDirPath: String {
         // Thumbnails are written to the caches directory, so that iOS can
         // remove them if necessary
@@ -433,23 +458,6 @@ extension Attachment {
         }
         
         return UIImage(contentsOfFile: originalFilePath)
-    }
-    
-    var emojiForMimeType: String {
-        if MIMETypeUtil.isImage(contentType) {
-            return "📷"
-        }
-        else if MIMETypeUtil.isVideo(contentType) {
-            return "🎥"
-        }
-        else if MIMETypeUtil.isAudio(contentType) {
-            return "🎧"
-        }
-        else if MIMETypeUtil.isAnimated(contentType) {
-            return "🎡"
-        }
-        
-        return "📎"
     }
     
     var isImage: Bool { MIMETypeUtil.isImage(contentType) }
@@ -529,5 +537,13 @@ extension Attachment {
     
     public func cloneAsThumbnail() -> Attachment {
         fatalError("TODO: Add this back")
+    }
+    
+    public func write(data: Data) throws -> Bool {
+        guard let originalFilePath: String = originalFilePath else { return false }
+
+        try data.write(to: URL(fileURLWithPath: originalFilePath))
+        
+        return true
     }
 }

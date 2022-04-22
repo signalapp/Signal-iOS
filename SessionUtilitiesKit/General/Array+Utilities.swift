@@ -23,6 +23,12 @@ public extension Array {
         return updatedArray
     }
     
+    func removing(index: Int) -> [Element] {
+        var updatedArray: [Element] = self
+        updatedArray.remove(at: index)
+        return updatedArray
+    }
+    
     mutating func popFirst() -> Element? {
         guard !self.isEmpty else { return nil }
         

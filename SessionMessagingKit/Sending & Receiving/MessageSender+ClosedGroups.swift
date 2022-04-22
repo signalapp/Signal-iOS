@@ -8,7 +8,7 @@ import PromiseKit
 import SessionUtilitiesKit
 
 extension MessageSender {
-    public static var distributingClosedGroupEncryptionKeyPairs: [String: [Box.KeyPair]] = [:]
+    public static var distributingKeyPairs: Atomic<[String: [ClosedGroupKeyPair]]> = Atomic([:])
     
     public static func createClosedGroup(_ db: Database, name: String, members: Set<String>) throws -> Promise<SessionThread> {
         let userPublicKey: String = getUserHexEncodedPublicKey()
@@ -18,10 +18,6 @@ extension MessageSender {
         let groupPublicKey = Curve25519.generateKeyPair().hexEncodedPublicKey // Includes the "05" prefix
         // Generate the key pair that'll be used for encryption and decryption
         let encryptionKeyPair = Curve25519.generateKeyPair()
-        let keyPair: Box.KeyPair = Box.KeyPair(
-            publicKey: encryptionKeyPair.publicKey.bytes,
-            secretKey: encryptionKeyPair.privateKey.bytes
-        )
         
         // Create the group
         members.insert(userPublicKey) // Ensure the current user is included in the member list
@@ -72,7 +68,10 @@ extension MessageSender {
                         kind: .new(
                             publicKey: Data(hex: groupPublicKey),
                             name: name,
-                            encryptionKeyPair: keyPair,
+                            encryptionKeyPair: Box.KeyPair(
+                                publicKey: encryptionKeyPair.publicKey.bytes,
+                                secretKey: encryptionKeyPair.privateKey.bytes
+                            ),
                             members: membersAsData,
                             admins: adminsAsData,
                             expirationTimer: 0
@@ -86,8 +85,9 @@ extension MessageSender {
         
         // Store the key pair
         try ClosedGroupKeyPair(
-            publicKey: keyPair.publicKey.toHexString(),
-            secretKey: Data(keyPair.secretKey),
+            threadId: groupPublicKey,
+            publicKey: encryptionKeyPair.publicKey,
+            secretKey: encryptionKeyPair.privateKey,
             receivedTimestamp: Date().timeIntervalSince1970
         ).insert(db)
         
@@ -134,20 +134,25 @@ extension MessageSender {
             return Promise(error: MessageSenderError.invalidClosedGroupUpdate)
         }
         // Generate the new encryption key pair
-        let newLegacyKeyPair = Curve25519.generateKeyPair()
-        let newKeyPair: Box.KeyPair = Box.KeyPair(
-            publicKey: newLegacyKeyPair.publicKey.bytes,
-            secretKey: newLegacyKeyPair.privateKey.bytes
+        let legacyNewKeyPair: ECKeyPair = Curve25519.generateKeyPair()
+        let newKeyPair: ClosedGroupKeyPair = ClosedGroupKeyPair(
+            threadId: closedGroup.threadId,
+            publicKey: legacyNewKeyPair.publicKey,
+            secretKey: legacyNewKeyPair.privateKey,
+            receivedTimestamp: Date().timeIntervalSince1970
         )
         
         // Distribute it
-        let proto = try SNProtoKeyPair.builder(publicKey: Data(newKeyPair.publicKey),
-            privateKey: Data(newKeyPair.secretKey)).build()
+        let proto = try SNProtoKeyPair.builder(
+            publicKey: newKeyPair.publicKey,
+            privateKey: newKeyPair.secretKey
+        ).build()
         let plaintext = try proto.serializedData()
         
-        var distributingKeyPairs = (distributingClosedGroupEncryptionKeyPairs[closedGroup.id] ?? [])
-        distributingKeyPairs.append(newKeyPair)
-        distributingClosedGroupEncryptionKeyPairs[closedGroup.id] = distributingKeyPairs
+        distributingKeyPairs.mutate {
+            $0[closedGroup.id] = ($0[closedGroup.id] ?? [])
+                .appending(newKeyPair)
+        }
         
         do {
             return try MessageSender
@@ -173,17 +178,13 @@ extension MessageSender {
                 .done {
                     /// Store it **after** having sent out the message to the group
                     GRDBStorage.shared.write { db in
-                        try ClosedGroupKeyPair(
-                            publicKey: newKeyPair.publicKey.toHexString(),
-                            secretKey: Data(newKeyPair.secretKey),
-                            receivedTimestamp: Date().timeIntervalSince1970
-                        ).insert(db)
+                        try newKeyPair.insert(db)
                         
-                        var distributingKeyPairs = (distributingClosedGroupEncryptionKeyPairs[closedGroup.id] ?? [])
-                        
-                        if let index = distributingKeyPairs.firstIndex(of: newKeyPair) {
-                            distributingKeyPairs.remove(at: index)
-                            distributingClosedGroupEncryptionKeyPairs[closedGroup.id] = distributingKeyPairs
+                        distributingKeyPairs.mutate {
+                            if let index = ($0[closedGroup.id] ?? []).firstIndex(of: newKeyPair) {
+                                $0[closedGroup.id] = ($0[closedGroup.id] ?? [])
+                                    .removing(index: index)
+                            }
                         }
                     }
                 }
@@ -607,26 +608,19 @@ extension MessageSender {
         }
         
         // Get the latest encryption key pair
-        var maybeEncryptionKeyPair: Box.KeyPair? = distributingClosedGroupEncryptionKeyPairs[groupPublicKey]?.last
+        var maybeKeyPair: ClosedGroupKeyPair? = distributingKeyPairs.wrappedValue[groupPublicKey]?.last
         
-        if maybeEncryptionKeyPair == nil {
-            guard let encryptionKeyPair: ClosedGroupKeyPair = try? closedGroup.fetchLatestKeyPair(db) else {
-                return
-            }
-            
-            maybeEncryptionKeyPair = Box.KeyPair(
-                publicKey: Data(hex: encryptionKeyPair.publicKey).bytes,
-                secretKey: encryptionKeyPair.secretKey.bytes
-            )
+        if maybeKeyPair == nil {
+            maybeKeyPair = try? closedGroup.fetchLatestKeyPair(db)
         }
         
-        guard let encryptionKeyPair: Box.KeyPair = maybeEncryptionKeyPair else { return }
+        guard let keyPair: ClosedGroupKeyPair = maybeKeyPair else { return }
         
         // Send it
         do {
             let proto = try SNProtoKeyPair.builder(
-                publicKey: Data(encryptionKeyPair.publicKey),
-                privateKey: Data(encryptionKeyPair.secretKey)
+                publicKey: keyPair.publicKey,
+                privateKey: keyPair.secretKey
             ).build()
             let plaintext = try proto.serializedData()
             let thread: SessionThread = try SessionThread

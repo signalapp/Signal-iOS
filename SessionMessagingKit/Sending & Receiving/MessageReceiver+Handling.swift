@@ -594,8 +594,9 @@ extension MessageReceiver {
                         db,
                         job: Job(
                             variant: .attachmentDownload,
+                            threadId: thread.id,
+                            interactionId: interactionId,
                             details: AttachmentDownloadJob.Details(
-                                threadId: thread.id,
                                 attachmentId: attachmentId
                             )
                         ),
@@ -818,7 +819,8 @@ extension MessageReceiver {
         Storage.shared.addClosedGroupPublicKey(groupPublicKey, using: transaction)
         // Store the key pair
         try ClosedGroupKeyPair(
-            publicKey: groupPublicKey,
+            threadId: groupPublicKey,
+            publicKey: Data(encryptionKeyPair.publicKey),
             secretKey: Data(encryptionKeyPair.secretKey),
             receivedTimestamp: Date().timeIntervalSince1970
         ).insert(db)
@@ -876,24 +878,18 @@ extension MessageReceiver {
             return SNLog("Couldn't parse closed group encryption key pair.")
         }
         
-        let keyPair: Box.KeyPair = Box.KeyPair(
-            publicKey: proto.publicKey.removing05PrefixIfNeeded().bytes,
-            secretKey: proto.privateKey.bytes
-        )
-        
-        // Store it if needed
-        let keyPairs: [ClosedGroupKeyPair] = ((try? closedGroup.keyPairs.fetchAll(db)) ?? [])
-        let secretKeyData: Data = Data(keyPair.secretKey)
-        
-        guard !keyPairs.contains(where: { $0.secretKey == secretKeyData }) else {
+        do {
+            try ClosedGroupKeyPair(
+                threadId: groupPublicKey,
+                publicKey: proto.publicKey.removing05PrefixIfNeeded(),
+                secretKey: proto.privateKey,
+                receivedTimestamp: Date().timeIntervalSince1970
+            ).insert(db)
+        }
+        catch {
             return SNLog("Ignoring duplicate closed group encryption key pair.")
         }
         
-        try ClosedGroupKeyPair(
-            publicKey: keyPair.publicKey.toHexString(), // Should match 'groupPublicKey'
-            secretKey: secretKeyData,
-            receivedTimestamp: Date().timeIntervalSince1970
-        ).insert(db)
         SNLog("Received a new closed group encryption key pair.")
     }
     
@@ -1019,8 +1015,8 @@ extension MessageReceiver {
             // • Stop polling for the group
             // • Remove the key pairs associated with the group
             // • Notify the PN server
-            let userPublicKey = getUserHexEncodedPublicKey()
-            let wasCurrentUserRemoved = !members.contains(userPublicKey)
+            let userPublicKey: String = getUserHexEncodedPublicKey(db)
+            let wasCurrentUserRemoved: Bool = !members.contains(userPublicKey)
             
             if wasCurrentUserRemoved {
                 ClosedGroupPoller.shared.stopPolling(for: id)

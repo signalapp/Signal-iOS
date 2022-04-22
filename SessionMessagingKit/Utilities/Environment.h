@@ -2,7 +2,6 @@
 
 @class OWSAudioSession;
 @class OWSPreferences;
-@class OWSSounds;
 @class OWSWindowManager;
 
 @protocol OWSProximityMonitoringManager;
@@ -21,13 +20,11 @@
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
                          preferences:(OWSPreferences *)preferences
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                              sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager;
 
 @property (nonatomic, readonly) OWSAudioSession *audioSession;
 @property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManager;
 @property (nonatomic, readonly) OWSPreferences *preferences;
-@property (nonatomic, readonly) OWSSounds *sounds;
 @property (nonatomic, readonly) OWSWindowManager *windowManager;
 // We don't want to cover the window when we request the photo library permission
 @property (nonatomic, readwrite) BOOL isRequestingPermission;

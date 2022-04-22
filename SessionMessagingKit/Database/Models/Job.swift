@@ -9,9 +9,14 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     public static var databaseTableName: String { "job" }
     internal static let threadForeignKey = ForeignKey(
         [Columns.threadId],
-        to: [Interaction.Columns.threadId]
+        to: [SessionThread.Columns.id]
+    )
+    internal static let interactionForeignKey = ForeignKey(
+        [Columns.interactionId],
+        to: [Interaction.Columns.id]
     )
     internal static let thread = hasOne(SessionThread.self, using: Job.threadForeignKey)
+    internal static let interaction = hasOne(Interaction.self, using: Job.interactionForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -21,6 +26,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         case behaviour
         case nextRunTimestamp
         case threadId
+        case interactionId
         case details
     }
     
@@ -101,10 +107,17 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     /// Seconds since epoch to indicate the next datetime that this job should run
     public let nextRunTimestamp: TimeInterval
     
-    /// The id of the thread this job is associated with
+    /// The id of the thread this job is associated with, if the associated thread is deleted this job will
+    /// also be deleted
     ///
     /// **Note:** This will only be populated for Jobs associated to threads
     public let threadId: String?
+    
+    /// The id of the interaction this job is associated with, if the associated interaction is deleted this
+    /// job will also be deleted
+    ///
+    /// **Note:** This will only be populated for Jobs associated to interactions
+    public let interactionId: Int64?
     
     /// JSON encoded data required for the job
     public let details: Data?
@@ -113,6 +126,10 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     
     public var thread: QueryInterfaceRequest<SessionThread> {
         request(for: Job.thread)
+    }
+    
+    public var interaction: QueryInterfaceRequest<Interaction> {
+        request(for: Job.interaction)
     }
     
     // MARK: - Initialization
@@ -124,6 +141,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         behaviour: Behaviour,
         nextRunTimestamp: TimeInterval,
         threadId: String?,
+        interactionId: Int64?,
         details: Data?
     ) {
         self.id = id
@@ -132,6 +150,7 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         self.behaviour = behaviour
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
+        self.interactionId = interactionId
         self.details = details
     }
     
@@ -140,13 +159,15 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         variant: Variant,
         behaviour: Behaviour = .runOnce,
         nextRunTimestamp: TimeInterval = 0,
-        threadId: String? = nil
+        threadId: String? = nil,
+        interactionId: Int64? = nil
     ) {
         self.failureCount = failureCount
         self.variant = variant
         self.behaviour = behaviour
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
+        self.interactionId = interactionId
         self.details = nil
     }
     
@@ -156,24 +177,20 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         behaviour: Behaviour = .runOnce,
         nextRunTimestamp: TimeInterval = 0,
         threadId: String? = nil,
-        details: T? = nil
+        interactionId: Int64? = nil,
+        details: T?
     ) {
-        let detailsData: Data?
-        
-        if let details: T = details {
-            guard let encodedDetails: Data = try? JSONEncoder().encode(details) else { return nil }
-            
-            detailsData = encodedDetails
-        }
-        else {
-            detailsData = nil
-        }
+        guard
+            let details: T = details,
+            let detailsData: Data = try? JSONEncoder().encode(details)
+        else { return nil }
         
         self.failureCount = failureCount
         self.variant = variant
         self.behaviour = behaviour
         self.nextRunTimestamp = nextRunTimestamp
         self.threadId = threadId
+        self.interactionId = interactionId
         self.details = detailsData
     }
     
@@ -198,6 +215,7 @@ public extension Job {
             behaviour: behaviour,
             nextRunTimestamp: (nextRunTimestamp ?? self.nextRunTimestamp),
             threadId: threadId,
+            interactionId: interactionId,
             details: details
         )
     }
@@ -212,6 +230,7 @@ public extension Job {
             behaviour: behaviour,
             nextRunTimestamp: nextRunTimestamp,
             threadId: threadId,
+            interactionId: interactionId,
             details: detailsData
         )
     }

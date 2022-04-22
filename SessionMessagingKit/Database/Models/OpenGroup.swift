@@ -93,7 +93,6 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         userCount: Int,
         infoUpdates: Int
     ) {
-        // Always force the server to lowercase
         self.threadId = OpenGroup.idFor(room: room, server: server)
         self.server = server.lowercased()
         self.room = room

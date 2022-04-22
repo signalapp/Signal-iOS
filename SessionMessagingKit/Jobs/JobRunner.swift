@@ -8,6 +8,7 @@ import SessionUtilitiesKit
 public protocol JobExecutor {
     static var maxFailureCount: UInt { get }
     static var requiresThreadId: Bool { get }
+    static var requiresInteractionId: Bool { get }
 
     /// This method contains the logic needed to complete a job
     ///
@@ -35,10 +36,11 @@ public final class JobRunner {
     private class Trigger {
         private var timer: Timer?
         
-        static func create(timestamp: TimeInterval) -> Trigger {
+        static func create(timestamp: TimeInterval) -> Trigger? {
+            // Setup the trigger (wait at least 1 second before triggering)
             let trigger: Trigger = Trigger()
             trigger.timer = Timer.scheduledTimer(
-                timeInterval: timestamp,
+                timeInterval: max(1, (timestamp - Date().timeIntervalSince1970)),
                 target: self,
                 selector: #selector(start),
                 userInfo: nil,
@@ -57,7 +59,6 @@ public final class JobRunner {
     
     // TODO: Could this be a bottleneck? (single serial queue to process all these jobs? Group by thread?)
     // TODO: Multi-thread support
-    private static let minRetryInterval: TimeInterval = 1
     private static let queueKey: DispatchSpecificKey = DispatchSpecificKey<String>()
     private static let queueContext: String = "JobRunner"
     private static let internalQueue: DispatchQueue = {
@@ -82,6 +83,11 @@ public final class JobRunner {
     
     // MARK: - Execution
     
+    /// Add a job onto the queue, if the queue isn't currently running and 'canStartJob' is true then this will start
+    /// the JobRunner
+    ///
+    /// **Note:** If the job has a `behaviour` of `runOnceNextLaunch` or the `nextRunTimestamp`
+    /// is in the future then the job won't be started
     public static func add(_ db: Database, job: Job?, canStartJob: Bool = true) {
         // Store the job into the database (getting an id for it)
         guard let updatedJob: Job = try? job?.inserted(db) else {
@@ -89,10 +95,12 @@ public final class JobRunner {
             return
         }
         
-        switch (canStartJob, updatedJob.behaviour) {
-            case (false, _), (_, .runOnceNextLaunch): return
-            default: break
-        }
+        // Check if the job should be added to the queue
+        guard
+            canStartJob,
+            updatedJob.behaviour != .runOnceNextLaunch,
+            updatedJob.nextRunTimestamp <= Date().timeIntervalSince1970
+        else { return }
         
         jobQueue.mutate { $0.append(updatedJob) }
         
@@ -104,6 +112,11 @@ public final class JobRunner {
         }
     }
     
+    /// Upsert a job onto the queue, if the queue isn't currently running and 'canStartJob' is true then this will start
+    /// the JobRunner
+    ///
+    /// **Note:** If the job has a `behaviour` of `runOnceNextLaunch` or the `nextRunTimestamp`
+    /// is in the future then the job won't be started
     public static func upsert(_ db: Database, job: Job?, canStartJob: Bool = true) {
         guard let job: Job = job else { return }    // Ignore null jobs
         guard let jobId: Int64 = job.id else {
@@ -113,6 +126,9 @@ public final class JobRunner {
         
         // Lock the queue while checking the index and inserting to ensure we don't run into
         // any multi-threading shenanigans
+        //
+        // Note: currently running jobs are removed from the queue so we don't need to check
+        // the 'jobsCurrentlyRunning' set
         var didUpdateExistingJob: Bool = false
         
         jobQueue.mutate { queue in
@@ -230,15 +246,28 @@ public final class JobRunner {
                 .fetchAll(db)
         }
         
+        // Determine the number of jobs to run
+        var jobCount: Int = 0
+        
+        jobQueue.mutate { queue in
+            // Add the jobs to the queue
+            if let jobsToRun: [Job] = maybeJobsToRun {
+                queue.append(contentsOf: jobsToRun)
+            }
+            
+            jobCount = queue.count
+        }
+        
         // If there are no pending jobs then schedule the JobRunner to start again
         // when the next scheduled job should start
-        guard let jobsToRun: [Job] = maybeJobsToRun else {
+        guard jobCount > 0 else {
+            isRunning.mutate { $0 = false }
             scheduleNextSoonestJob()
             return
         }
         
-        // Add the jobs to the queue and run the first job in the queue
-        jobQueue.mutate { $0.append(contentsOf: jobsToRun) }
+        // Run the first job in the queue
+        SNLog("[JobRunner] Starting with (\(jobCount) job\(jobCount != 1 ? "s" : ""))")
         runNextJob()
     }
     
@@ -250,9 +279,9 @@ public final class JobRunner {
             }
             return
         }
-        guard let nextJob: Job = jobQueue.mutate({ $0.popFirst() }) else {
-            scheduleNextSoonestJob()
+        guard let (nextJob, numJobsRemaining): (Job, Int) = jobQueue.mutate({ queue in queue.popFirst().map { ($0, queue.count) } }) else {
             isRunning.mutate { $0 = false }
+            scheduleNextSoonestJob()
             return
         }
         guard let jobExecutor: JobExecutor.Type = executorMap.wrappedValue[nextJob.variant] else {
@@ -265,13 +294,17 @@ public final class JobRunner {
             handleJobFailed(nextJob, error: JobRunnerError.requiredThreadIdMissing, permanentFailure: true)
             return
         }
+        guard !jobExecutor.requiresInteractionId || nextJob.interactionId != nil else {
+            SNLog("[JobRunner] Unable to run \(nextJob.variant) job due to missing required interactionId")
+            handleJobFailed(nextJob, error: JobRunnerError.requiredInteractionIdMissing, permanentFailure: true)
+            return
+        }
         
         // Update the state to indicate it's running
         //
         // Note: We need to store 'numJobsRemaining' in it's own variable because
         // the 'SNLog' seems to dispatch to it's own queue which ends up getting
         // blocked by the JobRunner's queue becuase 'jobQueue' is Atomic
-        let numJobsRemaining: Int = jobQueue.wrappedValue.count
         nextTrigger.mutate { $0 = nil }
         isRunning.mutate { $0 = true }
         jobsCurrentlyRunning.mutate { $0 = $0.inserting(nextJob.id) }
@@ -286,19 +319,38 @@ public final class JobRunner {
     }
     
     private static func scheduleNextSoonestJob() {
-        let maybeJob: Job? = GRDBStorage.shared.read { db in
-            try Job
-                .filter(
-                    [
-                        Job.Behaviour.runOnce,
-                        Job.Behaviour.recurring
-                    ].contains(Job.Columns.behaviour)
-                )
-                .order(Job.Columns.nextRunTimestamp)
-                .fetchOne(db)
+        let nextJobTimestamp: TimeInterval? = GRDBStorage.shared
+            .read { db in
+                try TimeInterval
+                    .fetchOne(
+                        db,
+                        Job
+                            .select(Job.Columns.nextRunTimestamp)
+                            .filter(
+                                [
+                                    Job.Behaviour.runOnce,
+                                    Job.Behaviour.recurring
+                                ].contains(Job.Columns.behaviour)
+                            )
+                            .order(Job.Columns.nextRunTimestamp)
+                    )
+            }
+        guard let nextJobTimestamp: TimeInterval = nextJobTimestamp else { return }
+        
+        // If the next job isn't scheduled in the future then just restart the JobRunner immediately
+        let secondsUntilNextJob: TimeInterval = (nextJobTimestamp - Date().timeIntervalSince1970)
+        guard secondsUntilNextJob > 0 else {
+            SNLog("[JobRunner] Restarting immediately for job scheduled \(Int(ceil(abs(secondsUntilNextJob)))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s")) ago")
+            
+            internalQueue.async {
+                JobRunner.start()
+            }
+            return
         }
-        let targetTimestamp: TimeInterval = (maybeJob?.nextRunTimestamp ?? (Date().timeIntervalSince1970 + minRetryInterval))
-        nextTrigger.mutate { $0 = Trigger.create(timestamp: targetTimestamp) }
+        
+        // Setup a trigger
+        SNLog("[JobRunner] Stopping until next job in \(Int(ceil(abs(secondsUntilNextJob))))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s"))")
+        nextTrigger.mutate { $0 = Trigger.create(timestamp: nextJobTimestamp) }
     }
     
     // MARK: - Handling Results
@@ -316,13 +368,14 @@ public final class JobRunner {
                     try job.delete(db)
                 }
                 
+            // For `recurring` jobs which have already run, they should automatically run again
+            // but we want at least 1 second to pass before doing so - the job itself should
+            // really update it's own 'nextRunTimestamp' (this is just a safety net)
             case .recurring where job.nextRunTimestamp <= Date().timeIntervalSince1970:
-                // For `recurring` jobs we want the job to run again but want at least 1 second to pass
                 GRDBStorage.shared.write { db in
-                    var updatedJob: Job = job.with(
-                        nextRunTimestamp: (Date().timeIntervalSince1970 + 1)
-                    )
-                    try updatedJob.save(db)
+                    _ = try job
+                        .with(nextRunTimestamp: (Date().timeIntervalSince1970 + 1))
+                        .saved(db)
                 }
                 
             default: break

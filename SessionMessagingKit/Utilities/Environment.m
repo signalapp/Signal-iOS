@@ -3,7 +3,6 @@
 #import "OWSWindowManager.h"
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import "OWSPreferences.h"
-#import "OWSSounds.h"
 
 static Environment *sharedEnvironment = nil;
 
@@ -12,7 +11,6 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) OWSAudioSession *audioSession;
 @property (nonatomic) OWSPreferences *preferences;
 @property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManager;
-@property (nonatomic) OWSSounds *sounds;
 @property (nonatomic) OWSWindowManager *windowManager;
 
 @end
@@ -44,7 +42,6 @@ static Environment *sharedEnvironment = nil;
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
                          preferences:(OWSPreferences *)preferences
           proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                              sounds:(OWSSounds *)sounds
                        windowManager:(OWSWindowManager *)windowManager
 {
     self = [super init];
@@ -56,7 +53,6 @@ static Environment *sharedEnvironment = nil;
     _audioSession = audioSession;
     _preferences = preferences;
     _proximityMonitoringManager = proximityMonitoringManager;
-    _sounds = sounds;
     _windowManager = windowManager;
     _isRequestingPermission = false;
 

@@ -5,6 +5,7 @@
 import Foundation
 import UserNotifications
 import PromiseKit
+import SessionMessagingKit
 
 class UserNotificationConfig {
 
@@ -85,12 +86,12 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?) {
         AssertIsOnMainThread()
         notify(category: category, title: title, body: body, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
 
         let content = UNMutableNotificationContent()
@@ -103,7 +104,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             isBackgroudPoll = replacingIdentifier == threadIdentifier
         }
         let isAppActive = UIApplication.shared.applicationState == .active
-        if let sound = sound, sound != OWSSound.none {
+        if let sound = sound, sound != .none {
             content.sound = sound.notificationSound(isQuiet: isAppActive)
         }
         

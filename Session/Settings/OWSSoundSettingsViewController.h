@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This property is optional.  If it is not set, we are
 // editing the global notification sound.
-@property (nonatomic, nullable) TSThread *thread;
+@property (nonatomic, nullable) NSString *threadId;
 
 @end
 

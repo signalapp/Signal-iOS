@@ -10,7 +10,6 @@
 #import <SessionMessagingKit/OWSDisappearingMessagesJob.h>
 #import <SessionMessagingKit/OWSOutgoingReceiptManager.h>
 #import <SessionMessagingKit/OWSReadReceiptManager.h>
-#import <SessionMessagingKit/OWSSounds.h>
 #import <SessionMessagingKit/OWSStorage.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
@@ -59,14 +58,12 @@ NS_ASSUME_NONNULL_BEGIN
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
-        OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
         
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
-                                                                  sounds:sounds
                                                            windowManager:windowManager]];
 
         // TODO: Add this back

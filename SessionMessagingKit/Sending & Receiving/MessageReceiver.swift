@@ -66,7 +66,7 @@ public enum MessageReceiver {
                             return try decryptWithSessionProtocol(
                                 ciphertext: ciphertext,
                                 using: Box.KeyPair(
-                                    publicKey: Data(hex: keyPair.publicKey).bytes,
+                                    publicKey: keyPair.publicKey.bytes,
                                     secretKey: keyPair.secretKey.bytes
                                 )
                             )

@@ -309,9 +309,6 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                 
             default: break
         }
-        
-    }
-    
     }
     
     public func delete(_ db: Database) throws -> Bool {
@@ -394,7 +391,7 @@ public extension Interaction {
         func scheduleJobs(interactionIds: [Int64]) {
             // Add the 'DisappearingMessagesJob' if needed - this will update any expiring
             // messages `expiresStartedAtMs` values
-            JobRunner.add(
+            JobRunner.upsert(
                 db,
                 job: Job(
                     variant: .disappearingMessages,
@@ -541,6 +538,13 @@ public extension Interaction {
             case .standardIncomingDeleted: return ""
                 
             case .standardIncoming, .standardOutgoing:
+                struct AttachmentDescriptionInfo: Decodable, FetchableRecord {
+                    let id: String
+                    let variant: Attachment.Variant
+                    let contentType: String
+                    let sourceFilename: String?
+                }
+                
                 var bodyDescription: String?
                 
                 if let body: String = self.body, !body.isEmpty {
@@ -548,14 +552,35 @@ public extension Interaction {
                 }
                 
                 if bodyDescription == nil {
-                    let maybeTextAttachment: Attachment? = try? attachments
-                        .filter(Attachment.Columns.contentType == OWSMimeTypeOversizeTextMessage)
-                        .fetchOne(db)
+                    struct AttachmentBodyInfo: Decodable, FetchableRecord {
+                        let id: String
+                        let variant: Attachment.Variant
+                        let contentType: String
+                        let sourceFilename: String?
+                    }
+                    
+                    let maybeTextInfo: AttachmentDescriptionInfo? = try? AttachmentDescriptionInfo
+                        .fetchOne(
+                            db,
+                            attachments
+                                .select(
+                                    Attachment.Columns.id,
+                                    Attachment.Columns.state,
+                                    Attachment.Columns.variant,
+                                    Attachment.Columns.contentType,
+                                    Attachment.Columns.sourceFilename
+                                )
+                                .filter(Attachment.Columns.contentType == OWSMimeTypeOversizeTextMessage)
+                                .filter(Attachment.Columns.state == Attachment.State.downloaded)
+                        )
                     
                     if
-                        let attachment: Attachment = maybeTextAttachment,
-                        attachment.state == .downloaded,
-                        let filePath: String = attachment.originalFilePath,
+                        let textInfo: AttachmentDescriptionInfo = maybeTextInfo,
+                        let filePath: String = Attachment.originalFilePath(
+                            id: textInfo.id,
+                            mimeType: textInfo.contentType,
+                            sourceFilename: textInfo.sourceFilename
+                        ),
                         let data: Data = try? Data(contentsOf: URL(fileURLWithPath: filePath)),
                         let dataString: String = String(data: data, encoding: .utf8)
                     {
@@ -563,14 +588,25 @@ public extension Interaction {
                     }
                 }
                 
-                var attachmentDescription: String?
-                let maybeMediaAttachment: Attachment? = try? attachments
-                    .filter(Attachment.Columns.contentType != OWSMimeTypeOversizeTextMessage)
-                    .fetchOne(db)
-                
-                if let attachment: Attachment = maybeMediaAttachment {
-                    attachmentDescription = attachment.description
-                }
+                let attachmentDescription: String? = try? AttachmentDescriptionInfo
+                    .fetchOne(
+                        db,
+                        attachments
+                            .select(
+                                Attachment.Columns.id,
+                                Attachment.Columns.variant,
+                                Attachment.Columns.contentType,
+                                Attachment.Columns.sourceFilename
+                            )
+                            .filter(Attachment.Columns.contentType != OWSMimeTypeOversizeTextMessage)
+                    )
+                    .map { info -> String in
+                        Attachment.description(
+                            for: info.variant,
+                            contentType: info.contentType,
+                            sourceFilename: info.sourceFilename
+                        )
+                    }
                 
                 if
                     let attachmentDescription: String = attachmentDescription,
@@ -627,9 +663,12 @@ public extension Interaction {
     }
     
     func state(_ db: Database) throws -> RecipientState.State {
-        let states: [RecipientState.State] = try recipientStates
-            .fetchAll(db)
-            .map { $0.state }
+        let states: [RecipientState.State] = try RecipientState.State
+            .fetchAll(
+                db,
+                recipientStates
+                    .select(RecipientState.Columns.state)
+            )
         var hasFailed: Bool = false
         
         for state in states {

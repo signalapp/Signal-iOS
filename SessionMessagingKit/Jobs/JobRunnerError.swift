@@ -7,6 +7,7 @@ public enum JobRunnerError: Error {
     
     case executorMissing
     case requiredThreadIdMissing
+    case requiredInteractionIdMissing
     
     case missingRequiredDetails
 }

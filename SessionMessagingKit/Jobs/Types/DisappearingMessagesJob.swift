@@ -7,6 +7,7 @@ import SessionUtilitiesKit
 public enum DisappearingMessagesJob: JobExecutor {
     public static let maxFailureCount: UInt = 0
     public static let requiresThreadId: Bool = false
+    public static let requiresInteractionId: Bool = false
     
     public static func run(
         _ job: Job,
@@ -64,7 +65,7 @@ public extension DisappearingMessagesJob {
             .saved(db)
     }
     
-    @discardableResult static func updateNextRunIfNeeded(_ db: Database, interactionIds: [Int64], startedAtMs: Double) -> Bool {
+    @discardableResult static func updateNextRunIfNeeded(_ db: Database, interactionIds: [Int64], startedAtMs: Double) -> Job? {
         // Update the expiring messages expiresStartedAtMs value
         let changeCount: Int? = try? Interaction
             .filter(interactionIds.contains(Interaction.Columns.id))
@@ -72,17 +73,17 @@ public extension DisappearingMessagesJob {
             .updateAll(db, Interaction.Columns.expiresStartedAtMs.set(to: startedAtMs))
         
         // If there were no changes then none of the provided `interactionIds` are expiring messages
-        guard (changeCount ?? 0) > 0 else { return false }
+        guard (changeCount ?? 0) > 0 else { return nil }
         
-        return (updateNextRunIfNeeded(db) != nil)
+        return updateNextRunIfNeeded(db)
     }
     
-    @discardableResult static func updateNextRunIfNeeded(_ db: Database, interaction: Interaction, startedAtMs: Double) -> Bool {
-        guard interaction.isExpiringMessage else { return false }
+    @discardableResult static func updateNextRunIfNeeded(_ db: Database, interaction: Interaction, startedAtMs: Double) -> Job? {
+        guard interaction.isExpiringMessage else { return nil }
         
         // Don't clobber if multiple actions simultaneously triggered expiration
         guard interaction.expiresStartedAtMs == nil || (interaction.expiresStartedAtMs ?? 0) > startedAtMs else {
-            return false
+            return nil
         }
         
         do {
@@ -94,7 +95,7 @@ public extension DisappearingMessagesJob {
         }
         catch {
             SNLog("Failed to update the expiring messages timer on an interaction")
-            return false
+            return nil
         }
     }
 }

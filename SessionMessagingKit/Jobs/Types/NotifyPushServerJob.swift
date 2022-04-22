@@ -8,6 +8,7 @@ import SessionUtilitiesKit
 public enum NotifyPushServerJob: JobExecutor {
     public static var maxFailureCount: UInt = 20
     public static var requiresThreadId: Bool = false
+    public static let requiresInteractionId: Bool = false
     
     public static func run(
         _ job: Job,
@@ -36,7 +37,7 @@ public enum NotifyPushServerJob: JobExecutor {
             "Content-Type": "application/json"
         ]
         
-        let promise = attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
+        attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
             OnionRequestAPI
                 .sendOnionRequest(
                     request,
@@ -49,11 +50,10 @@ public enum NotifyPushServerJob: JobExecutor {
         .done { _ in
             success(job, false)
         }
-        
-        promise.catch { error in
+        .`catch` { error in
             failure(job, error, false)
         }
-        promise.retainUntilComplete()
+        .retainUntilComplete()
     }
 }
 

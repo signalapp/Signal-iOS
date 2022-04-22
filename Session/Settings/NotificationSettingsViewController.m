@@ -9,7 +9,7 @@
 #import "OWSSoundSettingsViewController.h"
 #import <SessionMessagingKit/Environment.h>
 #import <SessionMessagingKit/OWSPreferences.h>
-#import <SessionMessagingKit/OWSSounds.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import "Session-Swift.h"
 
@@ -66,7 +66,7 @@
         addItem:[OWSTableItem disclosureItemWithText:
                                   NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                                       @"Label for settings view that allows user to change the notification sound.")
-                                          detailText:[OWSSounds displayNameForSound:[OWSSounds globalNotificationSound]]
+                                          detailText:[SMKSound displayNameFor:[SMKSound defaultNotificationSound]]
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"message_sound")
                                          actionBlock:^{
                                              OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];

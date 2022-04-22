@@ -37,6 +37,7 @@ public enum SNMessagingKit { // Just to make the external API nice
         JobRunner.add(executor: MessageReceiveJob.self, for: .messageReceive)
         JobRunner.add(executor: NotifyPushServerJob.self, for: .notifyPushServer)
         JobRunner.add(executor: SendReadReceiptsJob.self, for: .sendReadReceipts)
+        JobRunner.add(executor: AttachmentDownloadJob.self, for: .attachmentDownload)
         
         SNMessagingKitConfiguration.shared = SNMessagingKitConfiguration(storage: storage)
     }

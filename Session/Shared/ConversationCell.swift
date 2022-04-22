@@ -214,9 +214,8 @@ final class ConversationCell : UITableViewCell {
     // MARK: - Updating for search results
     
     private func updateForSearchResult(_ threadViewModel: ThreadViewModel) {
-        AssertIsOnMainThread()
-        guard let thread = threadViewModel?.threadRecord else { return }
-        profilePictureView.update(for: thread)
+        GRDBStorage.shared.read { db in profilePictureView.update(db, thread: threadViewModel.thread) }
+        
         isPinnedIcon.isHidden = true
         unreadCountView.isHidden = true
         hasMentionView.isHidden = true

@@ -47,7 +47,6 @@
 #import <SessionMessagingKit/OWSPreferences.h>
 #import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SessionMessagingKit/OWSQuotedReplyModel.h>
-#import <SessionMessagingKit/OWSSounds.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>

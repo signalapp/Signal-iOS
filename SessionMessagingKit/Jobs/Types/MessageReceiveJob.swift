@@ -7,6 +7,7 @@ import SessionUtilitiesKit
 public enum MessageReceiveJob: JobExecutor {
     public static var maxFailureCount: UInt = 10
     public static var requiresThreadId: Bool = true
+    public static let requiresInteractionId: Bool = false
     
     public static func run(
         _ job: Job,

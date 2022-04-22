@@ -18,10 +18,11 @@ enum _003_YDBToGRDBMigration: Migration {
         var contacts: Set<Legacy.Contact> = []
         var contactThreadIds: Set<String> = []
         
+        var legacyThreadIdToIdMap: [String: String] = [:]
         var threads: Set<TSThread> = []
         var disappearingMessagesConfiguration: [String: Legacy.DisappearingMessagesConfiguration] = [:]
         
-        var closedGroupKeys: [String: (timestamp: TimeInterval, keys: SessionUtilitiesKit.Legacy.KeyPair)] = [:]
+        var closedGroupKeys: [String: [TimeInterval: SessionUtilitiesKit.Legacy.KeyPair]] = [:]
         var closedGroupName: [String: String] = [:]
         var closedGroupFormation: [String: UInt64] = [:]
         var closedGroupModel: [String: TSGroupModel] = [:]
@@ -67,10 +68,11 @@ enum _003_YDBToGRDBMigration: Migration {
                     .asType(Legacy.DisappearingMessagesConfiguration.self)
                     .defaulting(to: Legacy.DisappearingMessagesConfiguration.defaultWith(threadId))
                 
-                // Process the interactions
-                
                 // Process group-specific info
-                guard let groupThread: TSGroupThread = thread as? TSGroupThread else { return }
+                guard let groupThread: TSGroupThread = thread as? TSGroupThread else {
+                    legacyThreadIdToIdMap[threadId] = threadId.substring(from: Legacy.contactThreadPrefix.count)
+                    return
+                }
                 
                 if groupThread.isClosedGroup {
                     // The old threadId for closed groups was in the below format, we don't
@@ -96,6 +98,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     
                     let keyCollection: String = "\(Legacy.closedGroupKeyPairPrefix)\(publicKey)"
                     
+                    legacyThreadIdToIdMap[threadId] = publicKey
                     closedGroupName[threadId] = groupThread.name(with: transaction)
                     closedGroupModel[threadId] = groupThread.groupModel
                     closedGroupFormation[threadId] = ((transaction.object(forKey: publicKey, inCollection: Legacy.closedGroupFormationTimestampCollection) as? UInt64) ?? 0)
@@ -109,7 +112,8 @@ enum _003_YDBToGRDBMigration: Migration {
                             return
                         }
                         
-                        closedGroupKeys[threadId] = (timestamp, keyPair)
+                        closedGroupKeys[threadId] = (closedGroupKeys[threadId] ?? [:])
+                            .setting(timestamp, keyPair)
                     }
                 }
                 else if groupThread.isOpenGroup {
@@ -119,6 +123,10 @@ enum _003_YDBToGRDBMigration: Migration {
                         return
                     }
                     
+                    legacyThreadIdToIdMap[threadId] = OpenGroup.idFor(
+                        room: openGroup.room,
+                        server: openGroup.server
+                    )
                     openGroupInfo[threadId] = openGroup
                     openGroupUserCount[threadId] = ((transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupUserCountCollection) as? Int) ?? 0)
                     openGroupImage[threadId] = transaction.object(forKey: openGroup.id, inCollection: Legacy.openGroupImageCollection) as? Data
@@ -163,101 +171,6 @@ enum _003_YDBToGRDBMigration: Migration {
                     .union(timestampsMs)
             }
             
-            /*
-             guard let view = transaction.ext(viewName) as? YapDatabaseAutoViewTransaction else {
-                 owsFailDebug("Could not load view.")
-                 return
-             }
-             guard let group = group else {
-                 owsFailDebug("No group.")
-                 return
-             }
-
-             // Deserializing interactions is expensive, so we only
-             // do that when necessary.
-             let sortIdForItemId: (String) -> UInt64? = { (itemId) in
-                 guard let interaction = TSInteraction.fetch(uniqueId: itemId, transaction: transaction) else {
-                     owsFailDebug("Could not load interaction.")
-                     return nil
-                 }
-                 return interaction.sortId
-             }
-             self.viewName = TSMessageDatabaseViewExtensionName
-             self.group = group
-             // If we have a "pivot", load all items AFTER the pivot and up to minDesiredLength items BEFORE the pivot.
-             // If we do not have a "pivot", load up to minDesiredLength BEFORE the pivot.
-             var newItemIds = [ItemId]()
-             var canLoadMore = false
-             let desiredLength = self.desiredLength
-             // Not all items "count" towards the desired length. On an initial load, all items count.  Subsequently,
-             // only items above the pivot count.
-             var afterPivotCount: UInt = 0
-             var beforePivotCount: UInt = 0
-             // (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
-             view.enumerateKeys(inGroup: group, with: NSEnumerationOptions.reverse) { (_, key, _, stop) in
-                 let itemId = key
-
-                 // Load "uncounted" items after the pivot if possible.
-                 //
-                 // As an optimization, we can skip this check (which requires
-                 // deserializing the interaction) if beforePivotCount is non-zero,
-                 // e.g. after we "pass" the pivot.
-                 if beforePivotCount == 0,
-                     let pivotSortId = self.pivotSortId {
-                     if let sortId = sortIdForItemId(itemId) {
-                         let isAfterPivot = sortId > pivotSortId
-                         if isAfterPivot {
-                             newItemIds.append(itemId)
-                             afterPivotCount += 1
-                             return
-                         }
-                     } else {
-                         owsFailDebug("Could not determine sort id for interaction: \(itemId)")
-                     }
-                 }
-
-                 // Load "counted" items unless the load window overflows.
-                 if beforePivotCount >= desiredLength {
-                     // Overflow
-                     canLoadMore = true
-                     stop.pointee = true
-                 } else {
-                     newItemIds.append(itemId)
-                     beforePivotCount += 1
-                 }
-             }
-             NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
-             [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                 NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-
-                 YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-                 OWSAssertDebug(viewTransaction);
-                 for (NSString *uniqueId in loadedUniqueIds) {
-                     TSInteraction *_Nullable interaction =
-                         [TSInteraction fetchObjectWithUniqueID:uniqueId transaction:transaction];
-                     if (!interaction) {
-                         OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
-                         hasError = YES;
-                         continue;
-                     }
-                     if (!interaction.uniqueId) {
-                         OWSFailDebug(@"invalid interaction in message mapping: %@.", interaction);
-                         hasError = YES;
-                         continue;
-                     }
-                     [interactions addObject:interaction];
-                     if ([interactionIds containsObject:interaction.uniqueId]) {
-                         OWSFailDebug(@"Duplicate interaction: %@", interaction.uniqueId);
-                         continue;
-                     }
-                     [interactionIds addObject:interaction.uniqueId];
-                 }
-
-                 for (TSInteraction *interaction in interactions) {
-                     tryToAddViewItem(interaction, transaction);
-                 }
-             }];
-             */
         }
         
         // We can't properly throw within the 'enumerateKeysAndObjects' block so have to throw here
@@ -311,11 +224,19 @@ enum _003_YDBToGRDBMigration: Migration {
         // MARK: - Insert Threads
         
         print("RAWR [\(Date().timeIntervalSince1970)] - Process thread inserts - Start")
-        var legacyThreadIdToIdMap: [String: String] = [:]
         var legacyInteractionToIdMap: [String: Int64] = [:]
         var legacyInteractionIdentifierToIdMap: [String: Int64] = [:]
+        var legacyInteractionIdentifierToIdFallbackMap: [String: Int64] = [:]
+        var legacyAttachmentToIdMap: [String: String] = [:]
         
-        func identifier(for threadId: String, sentTimestamp: UInt64, recipients: [String], destination: Message.Destination? = nil) -> String {
+        func identifier(
+            for threadId: String,
+            sentTimestamp: UInt64,
+            recipients: [String],
+            destination: Message.Destination?,
+            variant: Interaction.Variant?,
+            useFallback: Bool
+        ) -> String {
             let recipientString: String = {
                 if let destination: Message.Destination = destination {
                     switch destination {
@@ -328,41 +249,34 @@ enum _003_YDBToGRDBMigration: Migration {
             }()
             
             return [
-                "\(sentTimestamp)",
+                (useFallback ?
+                    // Fallback to seconds-based accuracy (instead of milliseconds)
+                    String("\(sentTimestamp)".prefix("\(Int(Date().timeIntervalSince1970))".count)) :
+                    "\(sentTimestamp)"
+                ),
+                (useFallback ? variant.map { "\($0)" } : nil),
                 recipientString,
                 threadId
             ]
+            .compactMap { $0 }
             .joined(separator: "-")
         }
         
         try threads.forEach { thread in
-            guard let legacyThreadId: String = thread.uniqueId else { return }
+            guard
+                let legacyThreadId: String = thread.uniqueId,
+                let threadId: String = legacyThreadIdToIdMap[legacyThreadId]
+            else {
+                SNLog("[Migration Error] Unable to migrate thread with no id mapping")
+                throw GRDBStorageError.migrationFailed
+            }
             
-            let id: String
-            let variant: SessionThread.Variant
+            let threadVariant: SessionThread.Variant
             let notificationMode: SessionThread.NotificationMode
             
             switch thread {
                 case let groupThread as TSGroupThread:
-                    if groupThread.isOpenGroup {
-                        guard let openGroup: OpenGroupV2 = openGroupInfo[legacyThreadId] else {
-                            SNLog("[Migration Error] Open group missing required data")
-                            throw GRDBStorageError.migrationFailed
-                        }
-                        
-                        id = openGroup.id
-                        variant = .openGroup
-                    }
-                    else {
-                        guard let publicKey: Data = closedGroupKeys[legacyThreadId]?.keys.publicKey else {
-                            SNLog("[Migration Error] Closed group missing public key")
-                            throw GRDBStorageError.migrationFailed
-                        }
-                        
-                        id = publicKey.toHexString()
-                        variant = .closedGroup
-                    }
-                    
+                    threadVariant = (groupThread.isOpenGroup ? .openGroup : .closedGroup)
                     notificationMode = (thread.isMuted ? .none :
                         (groupThread.isOnlyNotifyingForMentions ?
                             .mentionsOnly :
@@ -371,17 +285,14 @@ enum _003_YDBToGRDBMigration: Migration {
                     )
                     
                 default:
-                    id = legacyThreadId.substring(from: Legacy.contactThreadPrefix.count)
-                    variant = .contact
+                    threadVariant = .contact
                     notificationMode = (thread.isMuted ? .none : .all)
             }
             
             try autoreleasepool {
-                legacyThreadIdToIdMap[thread.uniqueId ?? ""] = id
-                
                 try SessionThread(
-                    id: id,
-                    variant: variant,
+                    id: threadId,
+                    variant: threadVariant,
                     creationDateTimestamp: thread.creationDate.timeIntervalSince1970,
                     shouldBeVisible: thread.shouldBeVisible,
                     isPinned: thread.isPinned,
@@ -391,9 +302,9 @@ enum _003_YDBToGRDBMigration: Migration {
                 ).insert(db)
                 
                 // Disappearing Messages Configuration
-                if let config: Legacy.DisappearingMessagesConfiguration = disappearingMessagesConfiguration[id] {
+                if let config: Legacy.DisappearingMessagesConfiguration = disappearingMessagesConfiguration[threadId] {
                     try DisappearingMessagesConfiguration(
-                        threadId: id,
+                        threadId: threadId,
                         isEnabled: config.isEnabled,
                         durationSeconds: TimeInterval(config.durationSeconds)
                     ).insert(db)
@@ -402,7 +313,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 // Closed Groups
                 if (thread as? TSGroupThread)?.isClosedGroup == true {
                     guard
-                        let keyInfo = closedGroupKeys[legacyThreadId],
+                        let legacyKeys = closedGroupKeys[legacyThreadId],
                         let name: String = closedGroupName[legacyThreadId],
                         let groupModel: TSGroupModel = closedGroupModel[legacyThreadId],
                         let formationTimestamp: UInt64 = closedGroupFormation[legacyThreadId]
@@ -412,20 +323,23 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try ClosedGroup(
-                        threadId: id,
+                        threadId: threadId,
                         name: name,
                         formationTimestamp: TimeInterval(formationTimestamp)
                     ).insert(db)
                     
-                    try ClosedGroupKeyPair(
-                        publicKey: keyInfo.keys.publicKey.toHexString(),
-                        secretKey: keyInfo.keys.privateKey,
-                        receivedTimestamp: keyInfo.timestamp
-                    ).insert(db)
+                    try legacyKeys.forEach { timestamp, legacyKeys in
+                        try ClosedGroupKeyPair(
+                            threadId: threadId,
+                            publicKey: legacyKeys.publicKey,
+                            secretKey: legacyKeys.privateKey,
+                            receivedTimestamp: timestamp
+                        ).insert(db)
+                    }
                     
                     try groupModel.groupMemberIds.forEach { memberId in
                         try GroupMember(
-                            groupId: id,
+                            groupId: threadId,
                             profileId: memberId,
                             role: .standard
                         ).insert(db)
@@ -433,7 +347,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     
                     try groupModel.groupAdminIds.forEach { adminId in
                         try GroupMember(
-                            groupId: id,
+                            groupId: threadId,
                             profileId: adminId,
                             role: .admin
                         ).insert(db)
@@ -441,7 +355,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     
                     try (closedGroupZombieMemberIds[legacyThreadId] ?? []).forEach { zombieId in
                         try GroupMember(
-                            groupId: id,
+                            groupId: threadId,
                             profileId: zombieId,
                             role: .zombie
                         ).insert(db)
@@ -601,7 +515,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         // Insert the data
                         let interaction: Interaction = try Interaction(
                             serverHash: serverHash,
-                            threadId: id,
+                            threadId: threadId,
                             authorId: authorId,
                             variant: variant,
                             body: body,
@@ -624,12 +538,25 @@ enum _003_YDBToGRDBMigration: Migration {
                         
                         // Store the interactionId in the lookup map to simplify job creation later
                         let legacyIdentifier: String = identifier(
-                            for: legacyInteraction.uniqueThreadId,
+                            for: threadId,
                             sentTimestamp: legacyInteraction.timestamp,
-                            recipients: ((legacyInteraction as? TSOutgoingMessage)?.recipientIds() ?? [])
+                            recipients: ((legacyInteraction as? TSOutgoingMessage)?.recipientIds() ?? []),
+                            destination: (threadVariant == .contact ? .contact(publicKey: threadId) : nil),
+                            variant: variant,
+                            useFallback: false
                         )
+                        let legacyIdentifierFallback: String = identifier(
+                            for: threadId,
+                            sentTimestamp: legacyInteraction.timestamp,
+                            recipients: ((legacyInteraction as? TSOutgoingMessage)?.recipientIds() ?? []),
+                            destination: (threadVariant == .contact ? .contact(publicKey: threadId) : nil),
+                            variant: variant,
+                            useFallback: true
+                        )
+                        
                         legacyInteractionToIdMap[legacyInteraction.uniqueId ?? ""] = interactionId
                         legacyInteractionIdentifierToIdMap[legacyIdentifier] = interactionId
+                        legacyInteractionIdentifierToIdFallbackMap[legacyIdentifierFallback] = interactionId
                         
                         // Handle the recipient states
                         
@@ -678,12 +605,24 @@ enum _003_YDBToGRDBMigration: Migration {
                                 throw GRDBStorageError.migrationFailed
                             }
                             
+                            // Setup the attachment and add it to the lookup (if it exists)
+                            let attachmentId: String? = try attachmentId(
+                                db,
+                                for: quoteAttachmentId,
+                                attachments: attachments
+                            )
+                            
+                            if let quoteAttachmentId: String = quoteAttachmentId, let attachmentId: String = attachmentId {
+                                legacyAttachmentToIdMap[quoteAttachmentId] = attachmentId
+                            }
+                            
+                            // Create the quote
                             try Quote(
                                 interactionId: interactionId,
                                 authorId: quotedMessage.authorId,
                                 timestampMs: Int64(quotedMessage.timestamp),
                                 body: quotedMessage.body,
-                                attachmentId: try attachmentId(db, for: quoteAttachmentId, attachments: attachments)
+                                attachmentId: attachmentId
                             ).insert(db)
                         }
                         
@@ -699,6 +638,17 @@ enum _003_YDBToGRDBMigration: Migration {
                                 throw GRDBStorageError.migrationFailed
                             }
                             
+                            // Setup the attachment and add it to the lookup (if it exists)
+                            let attachmentId: String? = try attachmentId(
+                                db,
+                                for: linkPreview.imageAttachmentId,
+                                attachments: attachments
+                            )
+                            
+                            if let legacyAttachmentId: String = linkPreview.imageAttachmentId, let attachmentId: String = attachmentId {
+                                legacyAttachmentToIdMap[legacyAttachmentId] = attachmentId
+                            }
+                            
                             // Note: It's possible for there to be duplicate values here so we use 'save'
                             // instead of insert (ie. upsert)
                             try LinkPreview(
@@ -706,13 +656,12 @@ enum _003_YDBToGRDBMigration: Migration {
                                 timestamp: timestamp,
                                 variant: linkPreviewVariant,
                                 title: linkPreview.title,
-                                attachmentId: try attachmentId(db, for: linkPreview.imageAttachmentId, attachments: attachments)
+                                attachmentId: attachmentId
                             ).save(db)
                         }
                         
                         // Handle any attachments
                         
-                        print("ASD \(attachmentIds)")
                         try attachmentIds.forEach { legacyAttachmentId in
                             guard let attachmentId: String = try attachmentId(db, for: legacyAttachmentId, interactionVariant: variant, attachments: attachments) else {
                                 // TODO: Is it possible to hit this case if an interaction hasn't been viewed?
@@ -720,10 +669,13 @@ enum _003_YDBToGRDBMigration: Migration {
                                 throw GRDBStorageError.migrationFailed
                             }
                             
+                            // Link the attachment to the interaction and add to the id lookup
                             try InteractionAttachment(
                                 interactionId: interactionId,
                                 attachmentId: attachmentId
                             ).insert(db)
+                            
+                            legacyAttachmentToIdMap[legacyAttachmentId] = attachmentId
                         }
                 }
             }
@@ -760,6 +712,31 @@ enum _003_YDBToGRDBMigration: Migration {
         var attachmentUploadJobs: Set<Legacy.AttachmentUploadJob> = []
         var attachmentDownloadJobs: Set<Legacy.AttachmentDownloadJob> = []
         
+        // Map the Legacy types for the NSKeyedUnarchiver
+        NSKeyedUnarchiver.setClass(
+            Legacy.NotifyPNServerJob.self,
+            forClassName: "SessionMessagingKit.NotifyPNServerJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.NotifyPNServerJob.SnodeMessage.self,
+            forClassName: "SessionSnodeKit.SnodeMessage"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.MessageSendJob.self,
+            forClassName: "SessionMessagingKit.SNMessageSendJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.MessageReceiveJob.self,
+            forClassName: "SessionMessagingKit.MessageReceiveJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.AttachmentUploadJob.self,
+            forClassName: "SessionMessagingKit.AttachmentUploadJob"
+        )
+        NSKeyedUnarchiver.setClass(
+            Legacy.AttachmentDownloadJob.self,
+            forClassName: "SessionMessagingKit.AttachmentDownloadJob"
+        )
         Storage.read { transaction in
             transaction.enumerateRows(inCollection: Legacy.notifyPushServerJobCollection) { _, object, _, _ in
                 guard let job = object as? Legacy.NotifyPNServerJob else { return }
@@ -798,16 +775,15 @@ enum _003_YDBToGRDBMigration: Migration {
                     variant: .notifyPushServer,
                     behaviour: .runOnce,
                     nextRunTimestamp: 0,
-                    details: String(
-                        data: try JSONEncoder().encode(
-                            SnodeMessage(
-                                recipient: legacyJob.message.recipient,
-                                data: legacyJob.message.data.description,   // TODO: Test this (looks like it should be fine)
-                                ttl: legacyJob.message.ttl,
-                                timestampMs: legacyJob.message.timestamp
-                            )
-                        ),
-                        encoding: .utf8
+                    details: NotifyPushServerJob.Details(
+                        message: SnodeMessage(
+                            recipient: legacyJob.message.recipient,
+                            // Note: The legacy type had 'LosslessStringConvertible' so we need
+                            // to use '.description' to get it as a basic string
+                            data: legacyJob.message.data.description,
+                            ttl: legacyJob.message.ttl,
+                            timestampMs: legacyJob.message.timestamp
+                        )
                     )
                 )?.inserted(db)
             }
@@ -823,20 +799,24 @@ enum _003_YDBToGRDBMigration: Migration {
                     return
                 }
                 
+                // We need to extract the `threadId` from the legacyJob data as the new
+                // MessageReceiveJob requires it for multi-threading and garbage collection purposes
+                guard let envelope: SNProtoEnvelope = try? SNProtoEnvelope.parseData(legacyJob.data) else {
+                    return
+                }
+                
+                let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
+
                 _ = try Job(
                     failureCount: legacyJob.failureCount,
                     variant: .messageReceive,
                     behaviour: .runOnce,
                     nextRunTimestamp: 0,
-                    details: String(
-                        data: try JSONEncoder().encode(
-                            MessageReceiveJob.Details(
-                                data: legacyJob.data,
-                                serverHash: legacyJob.serverHash,
-                                isBackgroundPoll: legacyJob.isBackgroundPoll
-                            )
-                        ),
-                        encoding: .utf8
+                    threadId: threadId,
+                    details: MessageReceiveJob.Details(
+                        data: legacyJob.data,
+                        serverHash: legacyJob.serverHash,
+                        isBackgroundPoll: legacyJob.isBackgroundPoll
                     )
                 )?.inserted(db)
             }
@@ -848,26 +828,68 @@ enum _003_YDBToGRDBMigration: Migration {
 
         try autoreleasepool {
             try messageSendJobs.forEach { legacyJob in
-                let legacyIdentifier: String = identifier(
-                    for: (legacyJob.message.threadID ?? ""),
-                    sentTimestamp: (legacyJob.message.sentTimestamp ?? 0),
-                    recipients: (legacyJob.message.recipient.map { [$0] } ?? []),
-                    destination: legacyJob.destination
-                )
-                
-                // Fetch the interaction this job should be associated with
+                // Fetch the threadId and interactionId this job should be associated with
+                let threadId: String = {
+                    switch legacyJob.destination {
+                        case .contact(let publicKey): return publicKey
+                        case .closedGroup(let groupPublicKey): return groupPublicKey
+                        case .openGroupV2(let room, let server):
+                            return OpenGroup.idFor(room: room, server: server)
+                            
+                        case .openGroup: return ""
+                    }
+                }()
+                let interactionId: Int64? = {
+                    // The 'Legacy.Job' 'id' value was "(timestamp)(num jobs for this timestamp)"
+                    // so we can reverse-engineer an approximate timestamp by extracting it from
+                    // the id (this value is unlikely to match exactly though)
+                    let fallbackTimestamp: UInt64 = legacyJob.id
+                        .map { UInt64($0.prefix("\(Int(Date().timeIntervalSince1970 * 1000))".count)) }
+                        .defaulting(to: 0)
+                    let legacyIdentifier: String = identifier(
+                        for: threadId,
+                        sentTimestamp: (legacyJob.message.sentTimestamp ?? fallbackTimestamp),
+                        recipients: (legacyJob.message.recipient.map { [$0] } ?? []),
+                        destination: legacyJob.destination,
+                        variant: nil,
+                        useFallback: false
+                    )
+                    
+                    if let matchingId: Int64 = legacyInteractionIdentifierToIdMap[legacyIdentifier] {
+                        return matchingId
+                    }
+
+                    // If we didn't find the correct interaction then we need to try the "fallback"
+                    // identifier which is less accurate (during testing this only happened for
+                    // 'ExpirationTimerUpdate' send jobs)
+                    let fallbackIdentifier: String = identifier(
+                        for: threadId,
+                        sentTimestamp: (legacyJob.message.sentTimestamp ?? fallbackTimestamp),
+                        recipients: (legacyJob.message.recipient.map { [$0] } ?? []),
+                        destination: legacyJob.destination,
+                        variant: {
+                            switch legacyJob.message {
+                                case is ExpirationTimerUpdate: return .infoDisappearingMessagesUpdate
+                                default: return nil
+                            }
+                        }(),
+                        useFallback: true
+                    )
+                    
+                    return legacyInteractionIdentifierToIdFallbackMap[fallbackIdentifier]
+                }()
                 
                 let job: Job? = try Job(
                     failureCount: legacyJob.failureCount,
                     variant: .messageSend,
                     behaviour: .runOnce,
                     nextRunTimestamp: 0,
-                    threadId: legacyThreadIdToIdMap[legacyJob.message.threadID ?? ""],
+                    threadId: threadId,
                     details: MessageSendJob.Details(
-                        // Note: There are some cases where there isn't actually a link between the 'MessageSendJob' and
-                        // it's associated interaction (ie. any ControlMessage), in these cases the 'interactionId' value
-                        // will be nil
-                        interactionId: legacyInteractionIdentifierToIdMap[legacyIdentifier],
+                        // Note: There are some cases where there isn't a link between a
+                        // 'MessageSendJob' and an interaction (eg. ConfigurationMessage),
+                        // in these cases the 'interactionId' value will be nil
+                        interactionId: interactionId,
                         destination: legacyJob.destination,
                         message: legacyJob.message
                     )
@@ -893,15 +915,10 @@ enum _003_YDBToGRDBMigration: Migration {
                     variant: .attachmentUpload,
                     behaviour: .runOnce,
                     nextRunTimestamp: 0,
-                    details: String(
-                        data: try JSONEncoder().encode(
-                            AttachmentUploadJob.Details(
-                                threadId: legacyJob.threadID,
-                                attachmentId: legacyJob.attachmentID,
-                                messageSendJobId: sendJobId
-                            )
-                        ),
-                        encoding: .utf8
+                    details: AttachmentUploadJob.Details(
+                        threadId: legacyJob.threadID,
+                        attachmentId: legacyJob.attachmentID,
+                        messageSendJobId: sendJobId
                     )
                 )?.inserted(db)
             }
@@ -915,20 +932,20 @@ enum _003_YDBToGRDBMigration: Migration {
                     SNLog("[Migration Error] attachmentDownload job unable to find interaction")
                     throw GRDBStorageError.migrationFailed
                 }
-
+                guard let attachmentId: String = legacyAttachmentToIdMap[legacyJob.attachmentID] else {
+                    SNLog("[Migration Error] attachmentDownload job unable to find attachment")
+                    throw GRDBStorageError.migrationFailed
+                }
+                
                 _ = try Job(
                     failureCount: legacyJob.failureCount,
                     variant: .attachmentDownload,
                     behaviour: .runOnce,
                     nextRunTimestamp: 0,
-                    details: String(
-                        data: try JSONEncoder().encode(
-                            AttachmentDownloadJob.Details(
-                                threadId: legacyJob.threadID,
-                                attachmentId: legacyJob.attachmentID
-                            )
-                        ),
-                        encoding: .utf8
+                    threadId: legacyThreadIdToIdMap[legacyJob.threadID],
+                    interactionId: interactionId,
+                    details: AttachmentDownloadJob.Details(
+                        attachmentId: attachmentId
                     )
                 )?.inserted(db)
             }

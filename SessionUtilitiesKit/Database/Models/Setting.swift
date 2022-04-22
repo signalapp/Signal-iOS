@@ -30,8 +30,14 @@ extension Setting {
         self.value = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
     }
     
-    fileprivate func value<T>(as type: T.Type) -> T {
-        return value.withUnsafeBytes { $0.load(as: T.self) }
+    fileprivate func value<T>(as type: T.Type) -> T? {
+        // Note: The 'assumingMemoryBound' is essentially going to try to convert
+        // the memory into the provided type so can result in invalid data being
+        // returned if the type is incorrect. But it does seem safer than the 'load'
+        // method which crashed under certain circumstances (an `Int` value of 0)
+        return value.withUnsafeBytes {
+            $0.baseAddress?.assumingMemoryBound(to: T.self).pointee
+        }
     }
 }
 

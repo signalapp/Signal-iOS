@@ -173,20 +173,21 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         let selectedContacts = self.selectedContacts
         let message: String? = (selectedContacts.count > 20) ? "Please wait while the group is created..." : nil
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, message: message) { [weak self] _ in
-            var promise: Promise<TSGroupThread>!
-            Storage.writeSync { transaction in
-                promise = MessageSender.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
+            let promise: Promise<SessionThread> = GRDBStorage.shared.write { db in
+                try MessageSender.createClosedGroup(db, name: name, members: selectedContacts)
             }
+            
             let _ = promise.done(on: DispatchQueue.main) { thread in
                 GRDBStorage.shared.write { db in
-                    MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                    try? MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
                 }
                 
                 self?.presentingViewController?.dismiss(animated: true, completion: nil)
                 SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
             }
-            promise.catch(on: DispatchQueue.main) { _ in
+            promise.catch(on: DispatchQueue.main) { [weak self] _ in
                 self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                
                 let title = "Couldn't Create Group"
                 let message = "Please check your internet connection and try again."
                 let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

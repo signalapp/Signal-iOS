@@ -40,14 +40,38 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         case mentionsOnly   // Only applicable to group threads
     }
 
+    /// Unique identifier for a thread (formerly known as uniqueId)
+    ///
+    /// This value will depend on the variant:
+    /// **contact:** The contact id
+    /// **closedGroup:** The closed group public key
+    /// **openGroup:** The `\(server.lowercased()).\(room)` value
     public let id: String
+    
+    /// Enum indicating what type of thread this is
     public let variant: Variant
+    
+    /// A timestamp indicating when this thread was created
     public let creationDateTimestamp: TimeInterval
+    
+    /// A flag indicating whether the thread should be visible
     public let shouldBeVisible: Bool
+    
+    /// A flag indicating whether the thread is pinned
     public let isPinned: Bool
+    
+    /// The value the user started entering into the input field before they left the conversation screen
     public let messageDraft: String?
+    
+    /// The notification mode this thread is set to
     public let notificationMode: NotificationMode
+    
+    /// The sound which should be used when receiving a notification for this thread
+    ///
+    /// **Note:** If unset this will use the `Preferences.Sound.defaultNotificationSound`
     public let notificationSound: Preferences.Sound?
+    
+    /// Timestamp (seconds since epoch) for when this thread should stop being muted
     public let mutedUntilTimestamp: TimeInterval?
     
     // MARK: - Relationships
@@ -142,14 +166,14 @@ public extension SessionThread {
             case .contact: return Profile.displayName(db, id: id)
             
             case .closedGroup:
-                guard let name: String = try? closedGroup.fetchOne(db)?.name, !name.isEmpty else {
+                guard let name: String = try? String.fetchOne(db, closedGroup.select(ClosedGroup.Columns.name)), !name.isEmpty else {
                     return "Group"
                 }
                 
                 return name
                 
             case .openGroup:
-                guard let name: String = try? openGroup.fetchOne(db)?.name, !name.isEmpty else {
+                guard let name: String = try? String.fetchOne(db, openGroup.select(OpenGroup.Columns.name)), !name.isEmpty else {
                     return "Group"
                 }
                 

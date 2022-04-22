@@ -10,6 +10,7 @@ import SessionUtilitiesKit
 public enum SyncPushTokensJob: JobExecutor {
     public static let maxFailureCount: UInt = 0
     public static let requiresThreadId: Bool = false
+    public static let requiresInteractionId: Bool = false
     
     public static func run(
         _ job: Job,

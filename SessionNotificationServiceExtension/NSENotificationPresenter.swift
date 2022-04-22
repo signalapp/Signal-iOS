@@ -74,7 +74,8 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         
         let notificationContent = UNMutableNotificationContent()
         notificationContent.userInfo = userInfo
-        notificationContent.sound = OWSSounds.notificationSound(forThreadId: thread.id)
+        notificationContent.sound = thread.notificationSound
+            .defaulting(to: db[.defaultNotificationSound] ?? Preferences.Sound.defaultNotificationSound)
             .notificationSound(isQuiet: false)
         
         // Badge Number

@@ -79,12 +79,17 @@ enum _001_InitialSetupMigration: Migration {
         }
         
         try db.create(table: ClosedGroupKeyPair.self) { t in
-            t.column(.publicKey, .text)
+            t.column(.threadId, .text)
                 .notNull()
                 .indexed()                                            // Quicker querying
                 .references(ClosedGroup.self, onDelete: .cascade)     // Delete if ClosedGroup deleted
+            t.column(.publicKey, .blob).notNull()
             t.column(.secretKey, .blob).notNull()
-            t.column(.receivedTimestamp, .double).notNull()
+            t.column(.receivedTimestamp, .double)
+                .notNull()
+                .indexed()                                            // Quicker querying
+            
+            t.uniqueKey([.publicKey, .secretKey, .receivedTimestamp])
         }
         
         try db.create(table: OpenGroup.self) { t in
@@ -217,6 +222,7 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.creationTimestamp, .double)
             t.column(.sourceFilename, .text)
             t.column(.downloadUrl, .text)
+            t.column(.localRelativeFilePath, .text)
             t.column(.width, .integer)
             t.column(.height, .integer)
             t.column(.encryptionKey, .blob)
@@ -291,6 +297,9 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.threadId, .text)
                 .indexed()                                            // Quicker querying
                 .references(SessionThread.self, onDelete: .cascade)   // Delete if thread deleted
+            t.column(.interactionId, .text)
+                .indexed()                                            // Quicker querying
+                .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
             t.column(.details, .blob)
         }
     }

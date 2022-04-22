@@ -109,11 +109,8 @@ public final class Poller : NSObject {
                         messages.forEach { message in
                             guard let envelope = SNProtoEnvelope.from(message) else { return }
                             
-                            // Extract the sender public key (used as the threadId in contact threads) and add
-                            // that to the messageReceive job for multi-threading and garbage collection purposes
-                            //
-                            // Note: This is a slightly optimised version of the message decryption which
-                            // just skips the validation (handled when the job actually runs) and doesn't throw
+                            // Extract the threadId and add that to the messageReceive job for
+                            // multi-threading and garbage collection purposes
                             let threadId: String? = MessageReceiver.extractSenderPublicKey(db, from: envelope)
                             
                             if threadId == nil {
