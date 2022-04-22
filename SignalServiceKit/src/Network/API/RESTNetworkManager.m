@@ -190,32 +190,18 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
     RESTNetworkManagerFailure failure = ^(OWSHTTPErrorWrapper *errorWrapper) {
+        OWSAssertDebug(errorWrapper);
+
         dispatch_async(NetworkManagerQueue(), ^{
             [sessionManagerPool returnToPool:sessionManager];
         });
 
-        [RESTNetworkManager
-            handleNetworkFailure:^(OWSHTTPErrorWrapper *errorWrapper) {
-                dispatch_async(completionQueue, ^{ failureParam(errorWrapper); });
-            }
-                         request:request
-                    errorWrapper:errorWrapper];
+        dispatch_async(completionQueue, ^{ failureParam(errorWrapper); });
     };
-    
+
     [sessionManager performRequest:request
                            success:success
                            failure:failure];
-}
-
-+ (void)handleNetworkFailure:(RESTNetworkManagerFailure)failureBlock
-                     request:(TSRequest *)request
-                errorWrapper:(OWSHTTPErrorWrapper *)errorWrapper
-{
-    OWSAssertDebug(failureBlock);
-    OWSAssertDebug(request);
-    OWSAssertDebug(errorWrapper);
-    
-    failureBlock(errorWrapper);
 }
 
 @end
