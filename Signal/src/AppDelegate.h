@@ -10,7 +10,7 @@ extern NSString *const kURLSchemeSGNLKey;
 extern NSString *const kURLHostTransferPrefix;
 extern NSString *const kURLHostLinkDevicePrefix;
 
-extern NSString *const kShouldFailNextLaunchForTestingPurposesKey;
+extern NSString *const kAppLaunchesAttemptedKey;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

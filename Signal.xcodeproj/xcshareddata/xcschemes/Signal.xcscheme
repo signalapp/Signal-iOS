@@ -164,7 +164,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-ShouldFailNextLaunchForTestingPurposes YES"
+            argument = "-AppLaunchesAttempted 1"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
