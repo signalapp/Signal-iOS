@@ -623,6 +623,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
         [self.groupsV2 clearTemporalCredentialsWithTransaction:transaction];
 
+        // PNI TODO: Regenerate our PNI identity key and pre-keys.
+
         [self loadAccountStateWithTransaction:transaction];
 
         self.phoneNumberAwaitingVerification = nil;

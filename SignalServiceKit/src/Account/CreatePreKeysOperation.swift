@@ -17,10 +17,13 @@ public class CreatePreKeysOperation: OWSOperation {
         Logger.debug("")
 
         let identityKeyPair: ECKeyPair
+        let isNewIdentityKey: Bool
         if let existingIdentityKeyPair = identityManager.identityKeyPair(for: identity) {
             identityKeyPair = existingIdentityKeyPair
+            isNewIdentityKey = false
         } else if tsAccountManager.isPrimaryDevice {
             identityKeyPair = identityManager.generateNewIdentityKey(for: identity)
+            isNewIdentityKey = true
         } else {
             Logger.warn("cannot create \(identity) pre-keys; missing identity key")
             owsAssertDebug(identity != .aci)
@@ -63,6 +66,13 @@ public class CreatePreKeysOperation: OWSOperation {
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in
+            if isNewIdentityKey && self.identity != .aci {
+                // Clear out the identity key we just generated if it failed to upload.
+                // (Except if it's the ACI identity key, because we're not allowed to clear that without a full reset.)
+                self.databaseStorage.write { transaction in
+                    self.identityManager.storeIdentityKeyPair(nil, for: self.identity, transaction: transaction)
+                }
+            }
             self.reportError(withUndefinedRetry: error)
         }
     }
