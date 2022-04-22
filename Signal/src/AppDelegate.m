@@ -1309,9 +1309,19 @@ static void uncaughtExceptionHandler(NSException *exception)
     }
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localAddress: %@, deviceId: %u",
-            self.tsAccountManager.localAddress,
-            [self.tsAccountManager storedDeviceId]);
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            NSUInteger deviceCount = [OWSDevice anyCountWithTransaction:transaction];
+            NSString *linkedDeviceMessage;
+            if (deviceCount > 1) {
+                linkedDeviceMessage = [NSString stringWithFormat:@"%lu devices including the primary", deviceCount];
+            } else {
+                linkedDeviceMessage = @"no linked devices";
+            }
+            OWSLogInfo(@"localAddress: %@, deviceId: %u (%@)",
+                [self.tsAccountManager localAddressWithTransaction:transaction],
+                [self.tsAccountManager storedDeviceIdWithTransaction:transaction],
+                linkedDeviceMessage);
+        }];
 
         // This should happen at any launch, background or foreground.
         [OWSSyncPushTokensJob run];
