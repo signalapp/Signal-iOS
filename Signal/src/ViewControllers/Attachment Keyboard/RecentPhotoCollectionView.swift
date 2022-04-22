@@ -298,12 +298,26 @@ class RecentPhotoCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if let durationLabel = durationLabel,
+           previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            durationLabel.font = RecentPhotoCell.durationLabelFont()
+        }
+    }
+
     var image: UIImage? {
         get { return imageView.image }
         set {
             imageView.image = newValue
             imageView.backgroundColor = newValue == nil ? Theme.washColor : .clear
         }
+    }
+
+    private static func durationLabelFont() -> UIFont {
+        let fontDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .caption1)
+        return UIFont.ows_semiboldFont(withSize: max(12, fontDescriptor.pointSize))
     }
 
     private func setContentTypeBadge(image: UIImage?) {
@@ -333,8 +347,8 @@ class RecentPhotoCell: UICollectionViewCell {
 
         if durationLabel == nil {
             let durationLabel = UILabel()
-            durationLabel.textColor = .ows_gray05
-            durationLabel.font = .ows_dynamicTypeCaption1.ows_semibold
+            durationLabel.textColor = .white
+            durationLabel.font = RecentPhotoCell.durationLabelFont()
             durationLabel.layer.shadowColor = UIColor.ows_blackAlpha20.cgColor
             durationLabel.layer.shadowOffset = CGSize(width: -1, height: -1)
             durationLabel.layer.shadowOpacity = 1
