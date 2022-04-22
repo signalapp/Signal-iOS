@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -64,16 +64,16 @@ public class InteractionReactionState: NSObject {
             return EmojiCount(emoji: emojiToRender,
                               count: reactions.count,
                               lastReceivedAtTimestamp: lastReceivedAtTimestamp)
-        }.sorted { (left: EmojiCount, right: EmojiCount) in
-            if left.count != right.count {
+        }.sorted { (lhs: EmojiCount, rhs: EmojiCount) in
+            if lhs.count != rhs.count {
                 // Sort more common reactions (higher counter) first.
-                return left.count > right.count
-            } else if left.lastReceivedAtTimestamp != right.lastReceivedAtTimestamp {
+                return lhs.count > rhs.count
+            } else if lhs.lastReceivedAtTimestamp != rhs.lastReceivedAtTimestamp {
                 // Sort reactions received in descending order of when we received them.
-                return left.lastReceivedAtTimestamp > right.lastReceivedAtTimestamp
+                return lhs.lastReceivedAtTimestamp > rhs.lastReceivedAtTimestamp
             } else {
                 // Ensure stability of sort by comparing emoji.
-                return left.emoji > right.emoji
+                return lhs.emoji > rhs.emoji
             }
         }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,8 +41,8 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             comment: "Footer for the 'media auto-download' section in the data settings."
         )
 
-        let mediaDownloadTypes = MediaDownloadType.allCases.sorted { (left, right) in
-            left.sortKey < right.sortKey
+        let mediaDownloadTypes = MediaDownloadType.allCases.sorted {
+            $0.sortKey < $1.sortKey
         }
         var hasNonDefaultValue = false
         for mediaDownloadType in mediaDownloadTypes {

@@ -308,10 +308,10 @@ class QRCodeScanViewController: OWSViewController {
                 return true
             }
         }
-        let barcodes: [VNBarcodeObservation] = filterBarcodes().sorted { (left, right) in
+        let barcodes: [VNBarcodeObservation] = filterBarcodes().sorted {
             // If multiple bardcodes found, prefer barcode with higher confidence.
             // In practice, all QR codes have confidence of 1.0.
-            left.confidence > right.confidence
+            $0.confidence > $1.confidence
         }
 
         struct QRCode {

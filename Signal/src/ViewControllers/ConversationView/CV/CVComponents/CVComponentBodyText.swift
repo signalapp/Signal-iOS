@@ -658,8 +658,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                     items: [CVBodyTextLabel.Item]) {
 
         // Sort so that we can detect overlap.
-        let items = items.sorted { (left, right) in
-            left.range.location < right.range.location
+        let items = items.sorted {
+            $0.range.location < $1.range.location
         }
 
         var lastIndex: Int = 0

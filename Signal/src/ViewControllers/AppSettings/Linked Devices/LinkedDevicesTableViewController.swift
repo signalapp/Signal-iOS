@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -64,9 +64,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
             devices.append(.init(uniqueId: "test2", createdAt: .distantPast, deviceId: 4, lastSeenAt: Date(), name: "Fake Device 2"))
         }
 
-        devices.sort { (left, right) -> Bool in
-            left.createdAt.compare(right.createdAt) == .orderedAscending
-        }
+        devices.sort { $0.createdAt < $1.createdAt }
         self.devices = devices
         if devices.isEmpty {
             self.isEditing = false

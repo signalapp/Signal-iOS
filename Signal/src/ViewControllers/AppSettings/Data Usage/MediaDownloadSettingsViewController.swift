@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -32,8 +32,8 @@ class MediaDownloadSettingsViewController: OWSTableViewController2 {
             OWSAttachmentDownloads.mediaBandwidthPreference(forMediaDownloadType: mediaDownloadType,
                                                           transaction: transaction)
         }
-        let mediaBandwidthPreferences = MediaBandwidthPreference.allCases.sorted { (left, right) in
-            left.sortKey < right.sortKey
+        let mediaBandwidthPreferences = MediaBandwidthPreference.allCases.sorted {
+            $0.sortKey < $1.sortKey
         }
         for preference in mediaBandwidthPreferences {
             let preferenceName = Self.name(forMediaBandwidthPreference: preference)
