@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,12 +37,11 @@ public class AttachmentPrepViewController: OWSViewController {
     private(set) var contentContainer: UIView!
 
     private var imageEditorView: ImageEditorView?
-    private var imageEditorViewConstraintsPortrait: [NSLayoutConstraint]?
-    private var imageEditorViewConstraintsLandscape: [NSLayoutConstraint]?
-
     private var videoEditorView: VideoEditorView?
-    private var videoEditorViewConstraintsPortrait: [NSLayoutConstraint]?
-    private var videoEditorViewConstraintsLandscape: [NSLayoutConstraint]?
+
+    private var isUsingPortraitConstraints: Bool?
+    private var viewConstraintsPortrait: [NSLayoutConstraint]?
+    private var viewConstraintsLandscape: [NSLayoutConstraint]?
 
     private var mediaMessageView: MediaMessageView?
 
@@ -108,18 +107,14 @@ public class AttachmentPrepViewController: OWSViewController {
             let imageEditorView = ImageEditorView(model: imageEditorModel, delegate: self)
             imageEditorView.frame = view.bounds
             imageEditorView.configureSubviews()
-            imageEditorView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(imageEditorView)
+            imageEditorView.autoPinWidthToSuperview()
 
-            imageEditorViewConstraintsPortrait = [
+            viewConstraintsPortrait = [
                 imageEditorView.heightAnchor.constraint(equalTo: imageEditorView.widthAnchor, multiplier: 16/9),
-                imageEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                imageEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 imageEditorView.topAnchor.constraint(equalTo: view.topAnchor, constant: contentMarginTop) ]
-            imageEditorViewConstraintsLandscape = [
-                imageEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            viewConstraintsLandscape = [
                 imageEditorView.topAnchor.constraint(equalTo: view.topAnchor),
-                imageEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 imageEditorView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]
 
             self.imageEditorView = imageEditorView
@@ -132,18 +127,14 @@ public class AttachmentPrepViewController: OWSViewController {
                                                   delegate: self)
             videoEditorView.frame = view.bounds
             videoEditorView.configureSubviews()
-            videoEditorView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(videoEditorView)
+            videoEditorView.autoPinWidthToSuperview()
 
-            videoEditorViewConstraintsPortrait = [
+            viewConstraintsPortrait = [
                 videoEditorView.heightAnchor.constraint(equalTo: videoEditorView.widthAnchor, multiplier: 16/9),
-                videoEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                videoEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 videoEditorView.topAnchor.constraint(equalTo: view.topAnchor, constant: contentMarginTop) ]
-            videoEditorViewConstraintsLandscape = [
-                videoEditorView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            viewConstraintsLandscape = [
                 videoEditorView.topAnchor.constraint(equalTo: view.topAnchor),
-                videoEditorView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 videoEditorView.bottomAnchor.constraint(equalTo: view.bottomAnchor) ]
 
             self.videoEditorView = videoEditorView
@@ -160,7 +151,7 @@ public class AttachmentPrepViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        updateLayoutConstraints()
+        updateViewConstraintsForCurrentInterfaceOrientation()
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -198,9 +189,18 @@ public class AttachmentPrepViewController: OWSViewController {
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
-            updateLayoutConstraints()
+        // Handle:
+        // • iPhone rotation to/from landscape: `verticalSizeClass` changes.
+        // • Resizing of app window on iPad: `horizontalSizeClass` might change.
+        if traitCollection.verticalSizeClass != previousTraitCollection?.verticalSizeClass ||
+            traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
+            view.setNeedsUpdateConstraints()
         }
+    }
+
+    public override func updateViewConstraints() {
+        updateViewConstraintsForCurrentInterfaceOrientation()
+        super.updateViewConstraints()
     }
 
     // MARK: - Navigation Bar
@@ -280,34 +280,24 @@ public class AttachmentPrepViewController: OWSViewController {
         }
     }
 
-    private func updateLayoutConstraints() {
-        let isPortraitLayout = traitCollection.horizontalSizeClass == .compact
+    private func updateViewConstraintsForCurrentInterfaceOrientation() {
+        let isPortraitLayout = traitCollection.verticalSizeClass == .regular && traitCollection.horizontalSizeClass == .compact
 
-        var constraintsToRemove: [NSLayoutConstraint]?
-        var constraintsToAdd: [NSLayoutConstraint]?
+        guard isPortraitLayout != isUsingPortraitConstraints else { return }
 
-        if imageEditorView != nil {
-            if isPortraitLayout {
-                constraintsToRemove = imageEditorViewConstraintsLandscape
-                constraintsToAdd = imageEditorViewConstraintsPortrait
-            } else {
-                constraintsToRemove = imageEditorViewConstraintsPortrait
-                constraintsToAdd = imageEditorViewConstraintsLandscape
-            }
-        } else if videoEditorView != nil {
-            if isPortraitLayout {
-                constraintsToRemove = videoEditorViewConstraintsLandscape
-                constraintsToAdd = videoEditorViewConstraintsPortrait
-            } else {
-                constraintsToRemove = videoEditorViewConstraintsPortrait
-                constraintsToAdd = videoEditorViewConstraintsLandscape
-            }
+        guard let viewConstraintsPortrait = viewConstraintsPortrait,
+              let viewConstraintsLandscape = viewConstraintsLandscape else {
+            return
         }
-        if let constraintsToRemove = constraintsToRemove {
-            view.removeConstraints(constraintsToRemove)
-        }
-        if let constraintsToAdd = constraintsToAdd {
-            view.addConstraints(constraintsToAdd)
+
+        isUsingPortraitConstraints = isPortraitLayout
+
+        if isPortraitLayout {
+            view.removeConstraints(viewConstraintsLandscape)
+            view.addConstraints(viewConstraintsPortrait)
+        } else {
+            view.removeConstraints(viewConstraintsPortrait)
+            view.addConstraints(viewConstraintsLandscape)
         }
     }
 
