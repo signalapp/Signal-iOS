@@ -217,7 +217,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access the database, files on disk, or NSUserDefaults.
     LaunchFailure launchFailure = LaunchFailure_None;
-    NSInteger launchAttemptFailureThreshold = SSKDebugFlags.betaLogging ? 1 : 3;
+    NSInteger launchAttemptFailureThreshold = SSKDebugFlags.betaLogging ? 2 : 3;
 
     if (deviceTransferRestoreFailed) {
         launchFailure = LaunchFailure_CouldNotRestoreTransferredData;
@@ -254,7 +254,7 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     NSInteger appLaunchesAttempted = [[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey];
     [[CurrentAppContext() appUserDefaults] setInteger:appLaunchesAttempted + 1 forKey:kAppLaunchesAttemptedKey];
-    AppReadinessRunNowOrWhenUIDidBecomeReadySync(
+    AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(
         ^{ [[CurrentAppContext() appUserDefaults] removeObjectForKey:kAppLaunchesAttemptedKey]; });
 
     [AppSetup setupEnvironmentWithPaymentsEvents:[PaymentsEventsMainApp new]
