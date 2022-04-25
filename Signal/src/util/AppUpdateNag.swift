@@ -39,6 +39,7 @@ class AppUpdateNag: NSObject {
         }.then(on: .global()) { (appStoreRecord) -> Promise<Void> in
             guard appStoreRecord.version.compare(currentVersion, options: .numeric) == ComparisonResult.orderedDescending else {
                 Logger.debug("remote version: \(appStoreRecord) is not newer than currentVersion: \(currentVersion)")
+                self.clearFirstHeardOfNewVersionDate()
                 return Promise.value(())
             }
             return firstly(on: .main) {
