@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -171,7 +171,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                                         comment: "Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}."))
                 downloadStack.addArrangedSubview(downloadLabel)
                 let downloadLabelConfig = CVLabelConfig(text: String(format: downloadFormat,
-                                                                     OWSFormat.formatInt(albumView.itemViews.count)),
+                                                                     OWSFormat.formatInt(items.count)),
                                                         font: .ows_dynamicTypeSubheadline,
                                                         textColor: UIColor.ows_white)
                 downloadLabelConfig.applyForRendering(label: downloadLabel)
