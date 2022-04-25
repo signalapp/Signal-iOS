@@ -36,2088 +36,2692 @@ extension Emoji {
     }
 
     var emojiPerSkinTonePermutation: [[SkinTone]: String]? {
-        var result = [[SkinTone]: String]()
         switch self {
         case .wave:
-            result[[SkinTone.light]] = "👋🏻"
-            result[[SkinTone.mediumLight]] = "👋🏼"
-            result[[SkinTone.medium]] = "👋🏽"
-            result[[SkinTone.mediumDark]] = "👋🏾"
-            result[[SkinTone.dark]] = "👋🏿"
+            return [
+                [.light]: "👋🏻",
+                [.mediumLight]: "👋🏼",
+                [.medium]: "👋🏽",
+                [.mediumDark]: "👋🏾",
+                [.dark]: "👋🏿"
+            ]
         case .raisedBackOfHand:
-            result[[SkinTone.light]] = "🤚🏻"
-            result[[SkinTone.mediumLight]] = "🤚🏼"
-            result[[SkinTone.medium]] = "🤚🏽"
-            result[[SkinTone.mediumDark]] = "🤚🏾"
-            result[[SkinTone.dark]] = "🤚🏿"
+            return [
+                [.light]: "🤚🏻",
+                [.mediumLight]: "🤚🏼",
+                [.medium]: "🤚🏽",
+                [.mediumDark]: "🤚🏾",
+                [.dark]: "🤚🏿"
+            ]
         case .raisedHandWithFingersSplayed:
-            result[[SkinTone.light]] = "🖐🏻"
-            result[[SkinTone.mediumLight]] = "🖐🏼"
-            result[[SkinTone.medium]] = "🖐🏽"
-            result[[SkinTone.mediumDark]] = "🖐🏾"
-            result[[SkinTone.dark]] = "🖐🏿"
+            return [
+                [.light]: "🖐🏻",
+                [.mediumLight]: "🖐🏼",
+                [.medium]: "🖐🏽",
+                [.mediumDark]: "🖐🏾",
+                [.dark]: "🖐🏿"
+            ]
         case .hand:
-            result[[SkinTone.light]] = "✋🏻"
-            result[[SkinTone.mediumLight]] = "✋🏼"
-            result[[SkinTone.medium]] = "✋🏽"
-            result[[SkinTone.mediumDark]] = "✋🏾"
-            result[[SkinTone.dark]] = "✋🏿"
+            return [
+                [.light]: "✋🏻",
+                [.mediumLight]: "✋🏼",
+                [.medium]: "✋🏽",
+                [.mediumDark]: "✋🏾",
+                [.dark]: "✋🏿"
+            ]
         case .spockHand:
-            result[[SkinTone.light]] = "🖖🏻"
-            result[[SkinTone.mediumLight]] = "🖖🏼"
-            result[[SkinTone.medium]] = "🖖🏽"
-            result[[SkinTone.mediumDark]] = "🖖🏾"
-            result[[SkinTone.dark]] = "🖖🏿"
+            return [
+                [.light]: "🖖🏻",
+                [.mediumLight]: "🖖🏼",
+                [.medium]: "🖖🏽",
+                [.mediumDark]: "🖖🏾",
+                [.dark]: "🖖🏿"
+            ]
         case .rightwardsHand:
-            result[[SkinTone.light]] = "🫱🏻"
-            result[[SkinTone.mediumLight]] = "🫱🏼"
-            result[[SkinTone.medium]] = "🫱🏽"
-            result[[SkinTone.mediumDark]] = "🫱🏾"
-            result[[SkinTone.dark]] = "🫱🏿"
+            return [
+                [.light]: "🫱🏻",
+                [.mediumLight]: "🫱🏼",
+                [.medium]: "🫱🏽",
+                [.mediumDark]: "🫱🏾",
+                [.dark]: "🫱🏿"
+            ]
         case .leftwardsHand:
-            result[[SkinTone.light]] = "🫲🏻"
-            result[[SkinTone.mediumLight]] = "🫲🏼"
-            result[[SkinTone.medium]] = "🫲🏽"
-            result[[SkinTone.mediumDark]] = "🫲🏾"
-            result[[SkinTone.dark]] = "🫲🏿"
+            return [
+                [.light]: "🫲🏻",
+                [.mediumLight]: "🫲🏼",
+                [.medium]: "🫲🏽",
+                [.mediumDark]: "🫲🏾",
+                [.dark]: "🫲🏿"
+            ]
         case .palmDownHand:
-            result[[SkinTone.light]] = "🫳🏻"
-            result[[SkinTone.mediumLight]] = "🫳🏼"
-            result[[SkinTone.medium]] = "🫳🏽"
-            result[[SkinTone.mediumDark]] = "🫳🏾"
-            result[[SkinTone.dark]] = "🫳🏿"
+            return [
+                [.light]: "🫳🏻",
+                [.mediumLight]: "🫳🏼",
+                [.medium]: "🫳🏽",
+                [.mediumDark]: "🫳🏾",
+                [.dark]: "🫳🏿"
+            ]
         case .palmUpHand:
-            result[[SkinTone.light]] = "🫴🏻"
-            result[[SkinTone.mediumLight]] = "🫴🏼"
-            result[[SkinTone.medium]] = "🫴🏽"
-            result[[SkinTone.mediumDark]] = "🫴🏾"
-            result[[SkinTone.dark]] = "🫴🏿"
+            return [
+                [.light]: "🫴🏻",
+                [.mediumLight]: "🫴🏼",
+                [.medium]: "🫴🏽",
+                [.mediumDark]: "🫴🏾",
+                [.dark]: "🫴🏿"
+            ]
         case .okHand:
-            result[[SkinTone.light]] = "👌🏻"
-            result[[SkinTone.mediumLight]] = "👌🏼"
-            result[[SkinTone.medium]] = "👌🏽"
-            result[[SkinTone.mediumDark]] = "👌🏾"
-            result[[SkinTone.dark]] = "👌🏿"
+            return [
+                [.light]: "👌🏻",
+                [.mediumLight]: "👌🏼",
+                [.medium]: "👌🏽",
+                [.mediumDark]: "👌🏾",
+                [.dark]: "👌🏿"
+            ]
         case .pinchedFingers:
-            result[[SkinTone.light]] = "🤌🏻"
-            result[[SkinTone.mediumLight]] = "🤌🏼"
-            result[[SkinTone.medium]] = "🤌🏽"
-            result[[SkinTone.mediumDark]] = "🤌🏾"
-            result[[SkinTone.dark]] = "🤌🏿"
+            return [
+                [.light]: "🤌🏻",
+                [.mediumLight]: "🤌🏼",
+                [.medium]: "🤌🏽",
+                [.mediumDark]: "🤌🏾",
+                [.dark]: "🤌🏿"
+            ]
         case .pinchingHand:
-            result[[SkinTone.light]] = "🤏🏻"
-            result[[SkinTone.mediumLight]] = "🤏🏼"
-            result[[SkinTone.medium]] = "🤏🏽"
-            result[[SkinTone.mediumDark]] = "🤏🏾"
-            result[[SkinTone.dark]] = "🤏🏿"
+            return [
+                [.light]: "🤏🏻",
+                [.mediumLight]: "🤏🏼",
+                [.medium]: "🤏🏽",
+                [.mediumDark]: "🤏🏾",
+                [.dark]: "🤏🏿"
+            ]
         case .v:
-            result[[SkinTone.light]] = "✌🏻"
-            result[[SkinTone.mediumLight]] = "✌🏼"
-            result[[SkinTone.medium]] = "✌🏽"
-            result[[SkinTone.mediumDark]] = "✌🏾"
-            result[[SkinTone.dark]] = "✌🏿"
+            return [
+                [.light]: "✌🏻",
+                [.mediumLight]: "✌🏼",
+                [.medium]: "✌🏽",
+                [.mediumDark]: "✌🏾",
+                [.dark]: "✌🏿"
+            ]
         case .crossedFingers:
-            result[[SkinTone.light]] = "🤞🏻"
-            result[[SkinTone.mediumLight]] = "🤞🏼"
-            result[[SkinTone.medium]] = "🤞🏽"
-            result[[SkinTone.mediumDark]] = "🤞🏾"
-            result[[SkinTone.dark]] = "🤞🏿"
+            return [
+                [.light]: "🤞🏻",
+                [.mediumLight]: "🤞🏼",
+                [.medium]: "🤞🏽",
+                [.mediumDark]: "🤞🏾",
+                [.dark]: "🤞🏿"
+            ]
         case .handWithIndexFingerAndThumbCrossed:
-            result[[SkinTone.light]] = "🫰🏻"
-            result[[SkinTone.mediumLight]] = "🫰🏼"
-            result[[SkinTone.medium]] = "🫰🏽"
-            result[[SkinTone.mediumDark]] = "🫰🏾"
-            result[[SkinTone.dark]] = "🫰🏿"
+            return [
+                [.light]: "🫰🏻",
+                [.mediumLight]: "🫰🏼",
+                [.medium]: "🫰🏽",
+                [.mediumDark]: "🫰🏾",
+                [.dark]: "🫰🏿"
+            ]
         case .iLoveYouHandSign:
-            result[[SkinTone.light]] = "🤟🏻"
-            result[[SkinTone.mediumLight]] = "🤟🏼"
-            result[[SkinTone.medium]] = "🤟🏽"
-            result[[SkinTone.mediumDark]] = "🤟🏾"
-            result[[SkinTone.dark]] = "🤟🏿"
+            return [
+                [.light]: "🤟🏻",
+                [.mediumLight]: "🤟🏼",
+                [.medium]: "🤟🏽",
+                [.mediumDark]: "🤟🏾",
+                [.dark]: "🤟🏿"
+            ]
         case .theHorns:
-            result[[SkinTone.light]] = "🤘🏻"
-            result[[SkinTone.mediumLight]] = "🤘🏼"
-            result[[SkinTone.medium]] = "🤘🏽"
-            result[[SkinTone.mediumDark]] = "🤘🏾"
-            result[[SkinTone.dark]] = "🤘🏿"
+            return [
+                [.light]: "🤘🏻",
+                [.mediumLight]: "🤘🏼",
+                [.medium]: "🤘🏽",
+                [.mediumDark]: "🤘🏾",
+                [.dark]: "🤘🏿"
+            ]
         case .callMeHand:
-            result[[SkinTone.light]] = "🤙🏻"
-            result[[SkinTone.mediumLight]] = "🤙🏼"
-            result[[SkinTone.medium]] = "🤙🏽"
-            result[[SkinTone.mediumDark]] = "🤙🏾"
-            result[[SkinTone.dark]] = "🤙🏿"
+            return [
+                [.light]: "🤙🏻",
+                [.mediumLight]: "🤙🏼",
+                [.medium]: "🤙🏽",
+                [.mediumDark]: "🤙🏾",
+                [.dark]: "🤙🏿"
+            ]
         case .pointLeft:
-            result[[SkinTone.light]] = "👈🏻"
-            result[[SkinTone.mediumLight]] = "👈🏼"
-            result[[SkinTone.medium]] = "👈🏽"
-            result[[SkinTone.mediumDark]] = "👈🏾"
-            result[[SkinTone.dark]] = "👈🏿"
+            return [
+                [.light]: "👈🏻",
+                [.mediumLight]: "👈🏼",
+                [.medium]: "👈🏽",
+                [.mediumDark]: "👈🏾",
+                [.dark]: "👈🏿"
+            ]
         case .pointRight:
-            result[[SkinTone.light]] = "👉🏻"
-            result[[SkinTone.mediumLight]] = "👉🏼"
-            result[[SkinTone.medium]] = "👉🏽"
-            result[[SkinTone.mediumDark]] = "👉🏾"
-            result[[SkinTone.dark]] = "👉🏿"
+            return [
+                [.light]: "👉🏻",
+                [.mediumLight]: "👉🏼",
+                [.medium]: "👉🏽",
+                [.mediumDark]: "👉🏾",
+                [.dark]: "👉🏿"
+            ]
         case .pointUp2:
-            result[[SkinTone.light]] = "👆🏻"
-            result[[SkinTone.mediumLight]] = "👆🏼"
-            result[[SkinTone.medium]] = "👆🏽"
-            result[[SkinTone.mediumDark]] = "👆🏾"
-            result[[SkinTone.dark]] = "👆🏿"
+            return [
+                [.light]: "👆🏻",
+                [.mediumLight]: "👆🏼",
+                [.medium]: "👆🏽",
+                [.mediumDark]: "👆🏾",
+                [.dark]: "👆🏿"
+            ]
         case .middleFinger:
-            result[[SkinTone.light]] = "🖕🏻"
-            result[[SkinTone.mediumLight]] = "🖕🏼"
-            result[[SkinTone.medium]] = "🖕🏽"
-            result[[SkinTone.mediumDark]] = "🖕🏾"
-            result[[SkinTone.dark]] = "🖕🏿"
+            return [
+                [.light]: "🖕🏻",
+                [.mediumLight]: "🖕🏼",
+                [.medium]: "🖕🏽",
+                [.mediumDark]: "🖕🏾",
+                [.dark]: "🖕🏿"
+            ]
         case .pointDown:
-            result[[SkinTone.light]] = "👇🏻"
-            result[[SkinTone.mediumLight]] = "👇🏼"
-            result[[SkinTone.medium]] = "👇🏽"
-            result[[SkinTone.mediumDark]] = "👇🏾"
-            result[[SkinTone.dark]] = "👇🏿"
+            return [
+                [.light]: "👇🏻",
+                [.mediumLight]: "👇🏼",
+                [.medium]: "👇🏽",
+                [.mediumDark]: "👇🏾",
+                [.dark]: "👇🏿"
+            ]
         case .pointUp:
-            result[[SkinTone.light]] = "☝🏻"
-            result[[SkinTone.mediumLight]] = "☝🏼"
-            result[[SkinTone.medium]] = "☝🏽"
-            result[[SkinTone.mediumDark]] = "☝🏾"
-            result[[SkinTone.dark]] = "☝🏿"
+            return [
+                [.light]: "☝🏻",
+                [.mediumLight]: "☝🏼",
+                [.medium]: "☝🏽",
+                [.mediumDark]: "☝🏾",
+                [.dark]: "☝🏿"
+            ]
         case .indexPointingAtTheViewer:
-            result[[SkinTone.light]] = "🫵🏻"
-            result[[SkinTone.mediumLight]] = "🫵🏼"
-            result[[SkinTone.medium]] = "🫵🏽"
-            result[[SkinTone.mediumDark]] = "🫵🏾"
-            result[[SkinTone.dark]] = "🫵🏿"
+            return [
+                [.light]: "🫵🏻",
+                [.mediumLight]: "🫵🏼",
+                [.medium]: "🫵🏽",
+                [.mediumDark]: "🫵🏾",
+                [.dark]: "🫵🏿"
+            ]
         case .plusOne:
-            result[[SkinTone.light]] = "👍🏻"
-            result[[SkinTone.mediumLight]] = "👍🏼"
-            result[[SkinTone.medium]] = "👍🏽"
-            result[[SkinTone.mediumDark]] = "👍🏾"
-            result[[SkinTone.dark]] = "👍🏿"
+            return [
+                [.light]: "👍🏻",
+                [.mediumLight]: "👍🏼",
+                [.medium]: "👍🏽",
+                [.mediumDark]: "👍🏾",
+                [.dark]: "👍🏿"
+            ]
         case .negativeOne:
-            result[[SkinTone.light]] = "👎🏻"
-            result[[SkinTone.mediumLight]] = "👎🏼"
-            result[[SkinTone.medium]] = "👎🏽"
-            result[[SkinTone.mediumDark]] = "👎🏾"
-            result[[SkinTone.dark]] = "👎🏿"
+            return [
+                [.light]: "👎🏻",
+                [.mediumLight]: "👎🏼",
+                [.medium]: "👎🏽",
+                [.mediumDark]: "👎🏾",
+                [.dark]: "👎🏿"
+            ]
         case .fist:
-            result[[SkinTone.light]] = "✊🏻"
-            result[[SkinTone.mediumLight]] = "✊🏼"
-            result[[SkinTone.medium]] = "✊🏽"
-            result[[SkinTone.mediumDark]] = "✊🏾"
-            result[[SkinTone.dark]] = "✊🏿"
+            return [
+                [.light]: "✊🏻",
+                [.mediumLight]: "✊🏼",
+                [.medium]: "✊🏽",
+                [.mediumDark]: "✊🏾",
+                [.dark]: "✊🏿"
+            ]
         case .facepunch:
-            result[[SkinTone.light]] = "👊🏻"
-            result[[SkinTone.mediumLight]] = "👊🏼"
-            result[[SkinTone.medium]] = "👊🏽"
-            result[[SkinTone.mediumDark]] = "👊🏾"
-            result[[SkinTone.dark]] = "👊🏿"
+            return [
+                [.light]: "👊🏻",
+                [.mediumLight]: "👊🏼",
+                [.medium]: "👊🏽",
+                [.mediumDark]: "👊🏾",
+                [.dark]: "👊🏿"
+            ]
         case .leftFacingFist:
-            result[[SkinTone.light]] = "🤛🏻"
-            result[[SkinTone.mediumLight]] = "🤛🏼"
-            result[[SkinTone.medium]] = "🤛🏽"
-            result[[SkinTone.mediumDark]] = "🤛🏾"
-            result[[SkinTone.dark]] = "🤛🏿"
+            return [
+                [.light]: "🤛🏻",
+                [.mediumLight]: "🤛🏼",
+                [.medium]: "🤛🏽",
+                [.mediumDark]: "🤛🏾",
+                [.dark]: "🤛🏿"
+            ]
         case .rightFacingFist:
-            result[[SkinTone.light]] = "🤜🏻"
-            result[[SkinTone.mediumLight]] = "🤜🏼"
-            result[[SkinTone.medium]] = "🤜🏽"
-            result[[SkinTone.mediumDark]] = "🤜🏾"
-            result[[SkinTone.dark]] = "🤜🏿"
+            return [
+                [.light]: "🤜🏻",
+                [.mediumLight]: "🤜🏼",
+                [.medium]: "🤜🏽",
+                [.mediumDark]: "🤜🏾",
+                [.dark]: "🤜🏿"
+            ]
         case .clap:
-            result[[SkinTone.light]] = "👏🏻"
-            result[[SkinTone.mediumLight]] = "👏🏼"
-            result[[SkinTone.medium]] = "👏🏽"
-            result[[SkinTone.mediumDark]] = "👏🏾"
-            result[[SkinTone.dark]] = "👏🏿"
+            return [
+                [.light]: "👏🏻",
+                [.mediumLight]: "👏🏼",
+                [.medium]: "👏🏽",
+                [.mediumDark]: "👏🏾",
+                [.dark]: "👏🏿"
+            ]
         case .raisedHands:
-            result[[SkinTone.light]] = "🙌🏻"
-            result[[SkinTone.mediumLight]] = "🙌🏼"
-            result[[SkinTone.medium]] = "🙌🏽"
-            result[[SkinTone.mediumDark]] = "🙌🏾"
-            result[[SkinTone.dark]] = "🙌🏿"
+            return [
+                [.light]: "🙌🏻",
+                [.mediumLight]: "🙌🏼",
+                [.medium]: "🙌🏽",
+                [.mediumDark]: "🙌🏾",
+                [.dark]: "🙌🏿"
+            ]
         case .heartHands:
-            result[[SkinTone.light]] = "🫶🏻"
-            result[[SkinTone.mediumLight]] = "🫶🏼"
-            result[[SkinTone.medium]] = "🫶🏽"
-            result[[SkinTone.mediumDark]] = "🫶🏾"
-            result[[SkinTone.dark]] = "🫶🏿"
+            return [
+                [.light]: "🫶🏻",
+                [.mediumLight]: "🫶🏼",
+                [.medium]: "🫶🏽",
+                [.mediumDark]: "🫶🏾",
+                [.dark]: "🫶🏿"
+            ]
         case .openHands:
-            result[[SkinTone.light]] = "👐🏻"
-            result[[SkinTone.mediumLight]] = "👐🏼"
-            result[[SkinTone.medium]] = "👐🏽"
-            result[[SkinTone.mediumDark]] = "👐🏾"
-            result[[SkinTone.dark]] = "👐🏿"
+            return [
+                [.light]: "👐🏻",
+                [.mediumLight]: "👐🏼",
+                [.medium]: "👐🏽",
+                [.mediumDark]: "👐🏾",
+                [.dark]: "👐🏿"
+            ]
         case .palmsUpTogether:
-            result[[SkinTone.light]] = "🤲🏻"
-            result[[SkinTone.mediumLight]] = "🤲🏼"
-            result[[SkinTone.medium]] = "🤲🏽"
-            result[[SkinTone.mediumDark]] = "🤲🏾"
-            result[[SkinTone.dark]] = "🤲🏿"
+            return [
+                [.light]: "🤲🏻",
+                [.mediumLight]: "🤲🏼",
+                [.medium]: "🤲🏽",
+                [.mediumDark]: "🤲🏾",
+                [.dark]: "🤲🏿"
+            ]
         case .handshake:
-            result[[SkinTone.light]] = "🤝🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "🫱🏻‍🫲🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "🫱🏻‍🫲🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "🫱🏻‍🫲🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "🫱🏻‍🫲🏿"
-            result[[SkinTone.mediumLight]] = "🤝🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "🫱🏼‍🫲🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "🫱🏼‍🫲🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "🫱🏼‍🫲🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "🫱🏼‍🫲🏿"
-            result[[SkinTone.medium]] = "🤝🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "🫱🏽‍🫲🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "🫱🏽‍🫲🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "🫱🏽‍🫲🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "🫱🏽‍🫲🏿"
-            result[[SkinTone.mediumDark]] = "🤝🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "🫱🏾‍🫲🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "🫱🏾‍🫲🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "🫱🏾‍🫲🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "🫱🏾‍🫲🏿"
-            result[[SkinTone.dark]] = "🤝🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "🫱🏿‍🫲🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "🫱🏿‍🫲🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "🫱🏿‍🫲🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "🫱🏿‍🫲🏾"
+            return [
+                [.light]: "🤝🏻",
+                [.light, .mediumLight]: "🫱🏻‍🫲🏼",
+                [.light, .medium]: "🫱🏻‍🫲🏽",
+                [.light, .mediumDark]: "🫱🏻‍🫲🏾",
+                [.light, .dark]: "🫱🏻‍🫲🏿",
+                [.mediumLight]: "🤝🏼",
+                [.mediumLight, .light]: "🫱🏼‍🫲🏻",
+                [.mediumLight, .medium]: "🫱🏼‍🫲🏽",
+                [.mediumLight, .mediumDark]: "🫱🏼‍🫲🏾",
+                [.mediumLight, .dark]: "🫱🏼‍🫲🏿",
+                [.medium]: "🤝🏽",
+                [.medium, .light]: "🫱🏽‍🫲🏻",
+                [.medium, .mediumLight]: "🫱🏽‍🫲🏼",
+                [.medium, .mediumDark]: "🫱🏽‍🫲🏾",
+                [.medium, .dark]: "🫱🏽‍🫲🏿",
+                [.mediumDark]: "🤝🏾",
+                [.mediumDark, .light]: "🫱🏾‍🫲🏻",
+                [.mediumDark, .mediumLight]: "🫱🏾‍🫲🏼",
+                [.mediumDark, .medium]: "🫱🏾‍🫲🏽",
+                [.mediumDark, .dark]: "🫱🏾‍🫲🏿",
+                [.dark]: "🤝🏿",
+                [.dark, .light]: "🫱🏿‍🫲🏻",
+                [.dark, .mediumLight]: "🫱🏿‍🫲🏼",
+                [.dark, .medium]: "🫱🏿‍🫲🏽",
+                [.dark, .mediumDark]: "🫱🏿‍🫲🏾"
+            ]
         case .pray:
-            result[[SkinTone.light]] = "🙏🏻"
-            result[[SkinTone.mediumLight]] = "🙏🏼"
-            result[[SkinTone.medium]] = "🙏🏽"
-            result[[SkinTone.mediumDark]] = "🙏🏾"
-            result[[SkinTone.dark]] = "🙏🏿"
+            return [
+                [.light]: "🙏🏻",
+                [.mediumLight]: "🙏🏼",
+                [.medium]: "🙏🏽",
+                [.mediumDark]: "🙏🏾",
+                [.dark]: "🙏🏿"
+            ]
         case .writingHand:
-            result[[SkinTone.light]] = "✍🏻"
-            result[[SkinTone.mediumLight]] = "✍🏼"
-            result[[SkinTone.medium]] = "✍🏽"
-            result[[SkinTone.mediumDark]] = "✍🏾"
-            result[[SkinTone.dark]] = "✍🏿"
+            return [
+                [.light]: "✍🏻",
+                [.mediumLight]: "✍🏼",
+                [.medium]: "✍🏽",
+                [.mediumDark]: "✍🏾",
+                [.dark]: "✍🏿"
+            ]
         case .nailCare:
-            result[[SkinTone.light]] = "💅🏻"
-            result[[SkinTone.mediumLight]] = "💅🏼"
-            result[[SkinTone.medium]] = "💅🏽"
-            result[[SkinTone.mediumDark]] = "💅🏾"
-            result[[SkinTone.dark]] = "💅🏿"
+            return [
+                [.light]: "💅🏻",
+                [.mediumLight]: "💅🏼",
+                [.medium]: "💅🏽",
+                [.mediumDark]: "💅🏾",
+                [.dark]: "💅🏿"
+            ]
         case .selfie:
-            result[[SkinTone.light]] = "🤳🏻"
-            result[[SkinTone.mediumLight]] = "🤳🏼"
-            result[[SkinTone.medium]] = "🤳🏽"
-            result[[SkinTone.mediumDark]] = "🤳🏾"
-            result[[SkinTone.dark]] = "🤳🏿"
+            return [
+                [.light]: "🤳🏻",
+                [.mediumLight]: "🤳🏼",
+                [.medium]: "🤳🏽",
+                [.mediumDark]: "🤳🏾",
+                [.dark]: "🤳🏿"
+            ]
         case .muscle:
-            result[[SkinTone.light]] = "💪🏻"
-            result[[SkinTone.mediumLight]] = "💪🏼"
-            result[[SkinTone.medium]] = "💪🏽"
-            result[[SkinTone.mediumDark]] = "💪🏾"
-            result[[SkinTone.dark]] = "💪🏿"
+            return [
+                [.light]: "💪🏻",
+                [.mediumLight]: "💪🏼",
+                [.medium]: "💪🏽",
+                [.mediumDark]: "💪🏾",
+                [.dark]: "💪🏿"
+            ]
         case .leg:
-            result[[SkinTone.light]] = "🦵🏻"
-            result[[SkinTone.mediumLight]] = "🦵🏼"
-            result[[SkinTone.medium]] = "🦵🏽"
-            result[[SkinTone.mediumDark]] = "🦵🏾"
-            result[[SkinTone.dark]] = "🦵🏿"
+            return [
+                [.light]: "🦵🏻",
+                [.mediumLight]: "🦵🏼",
+                [.medium]: "🦵🏽",
+                [.mediumDark]: "🦵🏾",
+                [.dark]: "🦵🏿"
+            ]
         case .foot:
-            result[[SkinTone.light]] = "🦶🏻"
-            result[[SkinTone.mediumLight]] = "🦶🏼"
-            result[[SkinTone.medium]] = "🦶🏽"
-            result[[SkinTone.mediumDark]] = "🦶🏾"
-            result[[SkinTone.dark]] = "🦶🏿"
+            return [
+                [.light]: "🦶🏻",
+                [.mediumLight]: "🦶🏼",
+                [.medium]: "🦶🏽",
+                [.mediumDark]: "🦶🏾",
+                [.dark]: "🦶🏿"
+            ]
         case .ear:
-            result[[SkinTone.light]] = "👂🏻"
-            result[[SkinTone.mediumLight]] = "👂🏼"
-            result[[SkinTone.medium]] = "👂🏽"
-            result[[SkinTone.mediumDark]] = "👂🏾"
-            result[[SkinTone.dark]] = "👂🏿"
+            return [
+                [.light]: "👂🏻",
+                [.mediumLight]: "👂🏼",
+                [.medium]: "👂🏽",
+                [.mediumDark]: "👂🏾",
+                [.dark]: "👂🏿"
+            ]
         case .earWithHearingAid:
-            result[[SkinTone.light]] = "🦻🏻"
-            result[[SkinTone.mediumLight]] = "🦻🏼"
-            result[[SkinTone.medium]] = "🦻🏽"
-            result[[SkinTone.mediumDark]] = "🦻🏾"
-            result[[SkinTone.dark]] = "🦻🏿"
+            return [
+                [.light]: "🦻🏻",
+                [.mediumLight]: "🦻🏼",
+                [.medium]: "🦻🏽",
+                [.mediumDark]: "🦻🏾",
+                [.dark]: "🦻🏿"
+            ]
         case .nose:
-            result[[SkinTone.light]] = "👃🏻"
-            result[[SkinTone.mediumLight]] = "👃🏼"
-            result[[SkinTone.medium]] = "👃🏽"
-            result[[SkinTone.mediumDark]] = "👃🏾"
-            result[[SkinTone.dark]] = "👃🏿"
+            return [
+                [.light]: "👃🏻",
+                [.mediumLight]: "👃🏼",
+                [.medium]: "👃🏽",
+                [.mediumDark]: "👃🏾",
+                [.dark]: "👃🏿"
+            ]
         case .baby:
-            result[[SkinTone.light]] = "👶🏻"
-            result[[SkinTone.mediumLight]] = "👶🏼"
-            result[[SkinTone.medium]] = "👶🏽"
-            result[[SkinTone.mediumDark]] = "👶🏾"
-            result[[SkinTone.dark]] = "👶🏿"
+            return [
+                [.light]: "👶🏻",
+                [.mediumLight]: "👶🏼",
+                [.medium]: "👶🏽",
+                [.mediumDark]: "👶🏾",
+                [.dark]: "👶🏿"
+            ]
         case .child:
-            result[[SkinTone.light]] = "🧒🏻"
-            result[[SkinTone.mediumLight]] = "🧒🏼"
-            result[[SkinTone.medium]] = "🧒🏽"
-            result[[SkinTone.mediumDark]] = "🧒🏾"
-            result[[SkinTone.dark]] = "🧒🏿"
+            return [
+                [.light]: "🧒🏻",
+                [.mediumLight]: "🧒🏼",
+                [.medium]: "🧒🏽",
+                [.mediumDark]: "🧒🏾",
+                [.dark]: "🧒🏿"
+            ]
         case .boy:
-            result[[SkinTone.light]] = "👦🏻"
-            result[[SkinTone.mediumLight]] = "👦🏼"
-            result[[SkinTone.medium]] = "👦🏽"
-            result[[SkinTone.mediumDark]] = "👦🏾"
-            result[[SkinTone.dark]] = "👦🏿"
+            return [
+                [.light]: "👦🏻",
+                [.mediumLight]: "👦🏼",
+                [.medium]: "👦🏽",
+                [.mediumDark]: "👦🏾",
+                [.dark]: "👦🏿"
+            ]
         case .girl:
-            result[[SkinTone.light]] = "👧🏻"
-            result[[SkinTone.mediumLight]] = "👧🏼"
-            result[[SkinTone.medium]] = "👧🏽"
-            result[[SkinTone.mediumDark]] = "👧🏾"
-            result[[SkinTone.dark]] = "👧🏿"
+            return [
+                [.light]: "👧🏻",
+                [.mediumLight]: "👧🏼",
+                [.medium]: "👧🏽",
+                [.mediumDark]: "👧🏾",
+                [.dark]: "👧🏿"
+            ]
         case .adult:
-            result[[SkinTone.light]] = "🧑🏻"
-            result[[SkinTone.mediumLight]] = "🧑🏼"
-            result[[SkinTone.medium]] = "🧑🏽"
-            result[[SkinTone.mediumDark]] = "🧑🏾"
-            result[[SkinTone.dark]] = "🧑🏿"
+            return [
+                [.light]: "🧑🏻",
+                [.mediumLight]: "🧑🏼",
+                [.medium]: "🧑🏽",
+                [.mediumDark]: "🧑🏾",
+                [.dark]: "🧑🏿"
+            ]
         case .personWithBlondHair:
-            result[[SkinTone.light]] = "👱🏻"
-            result[[SkinTone.mediumLight]] = "👱🏼"
-            result[[SkinTone.medium]] = "👱🏽"
-            result[[SkinTone.mediumDark]] = "👱🏾"
-            result[[SkinTone.dark]] = "👱🏿"
+            return [
+                [.light]: "👱🏻",
+                [.mediumLight]: "👱🏼",
+                [.medium]: "👱🏽",
+                [.mediumDark]: "👱🏾",
+                [.dark]: "👱🏿"
+            ]
         case .man:
-            result[[SkinTone.light]] = "👨🏻"
-            result[[SkinTone.mediumLight]] = "👨🏼"
-            result[[SkinTone.medium]] = "👨🏽"
-            result[[SkinTone.mediumDark]] = "👨🏾"
-            result[[SkinTone.dark]] = "👨🏿"
+            return [
+                [.light]: "👨🏻",
+                [.mediumLight]: "👨🏼",
+                [.medium]: "👨🏽",
+                [.mediumDark]: "👨🏾",
+                [.dark]: "👨🏿"
+            ]
         case .beardedPerson:
-            result[[SkinTone.light]] = "🧔🏻"
-            result[[SkinTone.mediumLight]] = "🧔🏼"
-            result[[SkinTone.medium]] = "🧔🏽"
-            result[[SkinTone.mediumDark]] = "🧔🏾"
-            result[[SkinTone.dark]] = "🧔🏿"
+            return [
+                [.light]: "🧔🏻",
+                [.mediumLight]: "🧔🏼",
+                [.medium]: "🧔🏽",
+                [.mediumDark]: "🧔🏾",
+                [.dark]: "🧔🏿"
+            ]
         case .manWithBeard:
-            result[[SkinTone.light]] = "🧔🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧔🏼‍♂️"
-            result[[SkinTone.medium]] = "🧔🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧔🏾‍♂️"
-            result[[SkinTone.dark]] = "🧔🏿‍♂️"
+            return [
+                [.light]: "🧔🏻‍♂️",
+                [.mediumLight]: "🧔🏼‍♂️",
+                [.medium]: "🧔🏽‍♂️",
+                [.mediumDark]: "🧔🏾‍♂️",
+                [.dark]: "🧔🏿‍♂️"
+            ]
         case .womanWithBeard:
-            result[[SkinTone.light]] = "🧔🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧔🏼‍♀️"
-            result[[SkinTone.medium]] = "🧔🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧔🏾‍♀️"
-            result[[SkinTone.dark]] = "🧔🏿‍♀️"
+            return [
+                [.light]: "🧔🏻‍♀️",
+                [.mediumLight]: "🧔🏼‍♀️",
+                [.medium]: "🧔🏽‍♀️",
+                [.mediumDark]: "🧔🏾‍♀️",
+                [.dark]: "🧔🏿‍♀️"
+            ]
         case .redHairedMan:
-            result[[SkinTone.light]] = "👨🏻‍🦰"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🦰"
-            result[[SkinTone.medium]] = "👨🏽‍🦰"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🦰"
-            result[[SkinTone.dark]] = "👨🏿‍🦰"
+            return [
+                [.light]: "👨🏻‍🦰",
+                [.mediumLight]: "👨🏼‍🦰",
+                [.medium]: "👨🏽‍🦰",
+                [.mediumDark]: "👨🏾‍🦰",
+                [.dark]: "👨🏿‍🦰"
+            ]
         case .curlyHairedMan:
-            result[[SkinTone.light]] = "👨🏻‍🦱"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🦱"
-            result[[SkinTone.medium]] = "👨🏽‍🦱"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🦱"
-            result[[SkinTone.dark]] = "👨🏿‍🦱"
+            return [
+                [.light]: "👨🏻‍🦱",
+                [.mediumLight]: "👨🏼‍🦱",
+                [.medium]: "👨🏽‍🦱",
+                [.mediumDark]: "👨🏾‍🦱",
+                [.dark]: "👨🏿‍🦱"
+            ]
         case .whiteHairedMan:
-            result[[SkinTone.light]] = "👨🏻‍🦳"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🦳"
-            result[[SkinTone.medium]] = "👨🏽‍🦳"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🦳"
-            result[[SkinTone.dark]] = "👨🏿‍🦳"
+            return [
+                [.light]: "👨🏻‍🦳",
+                [.mediumLight]: "👨🏼‍🦳",
+                [.medium]: "👨🏽‍🦳",
+                [.mediumDark]: "👨🏾‍🦳",
+                [.dark]: "👨🏿‍🦳"
+            ]
         case .baldMan:
-            result[[SkinTone.light]] = "👨🏻‍🦲"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🦲"
-            result[[SkinTone.medium]] = "👨🏽‍🦲"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🦲"
-            result[[SkinTone.dark]] = "👨🏿‍🦲"
+            return [
+                [.light]: "👨🏻‍🦲",
+                [.mediumLight]: "👨🏼‍🦲",
+                [.medium]: "👨🏽‍🦲",
+                [.mediumDark]: "👨🏾‍🦲",
+                [.dark]: "👨🏿‍🦲"
+            ]
         case .woman:
-            result[[SkinTone.light]] = "👩🏻"
-            result[[SkinTone.mediumLight]] = "👩🏼"
-            result[[SkinTone.medium]] = "👩🏽"
-            result[[SkinTone.mediumDark]] = "👩🏾"
-            result[[SkinTone.dark]] = "👩🏿"
+            return [
+                [.light]: "👩🏻",
+                [.mediumLight]: "👩🏼",
+                [.medium]: "👩🏽",
+                [.mediumDark]: "👩🏾",
+                [.dark]: "👩🏿"
+            ]
         case .redHairedWoman:
-            result[[SkinTone.light]] = "👩🏻‍🦰"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🦰"
-            result[[SkinTone.medium]] = "👩🏽‍🦰"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🦰"
-            result[[SkinTone.dark]] = "👩🏿‍🦰"
+            return [
+                [.light]: "👩🏻‍🦰",
+                [.mediumLight]: "👩🏼‍🦰",
+                [.medium]: "👩🏽‍🦰",
+                [.mediumDark]: "👩🏾‍🦰",
+                [.dark]: "👩🏿‍🦰"
+            ]
         case .redHairedPerson:
-            result[[SkinTone.light]] = "🧑🏻‍🦰"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🦰"
-            result[[SkinTone.medium]] = "🧑🏽‍🦰"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🦰"
-            result[[SkinTone.dark]] = "🧑🏿‍🦰"
+            return [
+                [.light]: "🧑🏻‍🦰",
+                [.mediumLight]: "🧑🏼‍🦰",
+                [.medium]: "🧑🏽‍🦰",
+                [.mediumDark]: "🧑🏾‍🦰",
+                [.dark]: "🧑🏿‍🦰"
+            ]
         case .curlyHairedWoman:
-            result[[SkinTone.light]] = "👩🏻‍🦱"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🦱"
-            result[[SkinTone.medium]] = "👩🏽‍🦱"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🦱"
-            result[[SkinTone.dark]] = "👩🏿‍🦱"
+            return [
+                [.light]: "👩🏻‍🦱",
+                [.mediumLight]: "👩🏼‍🦱",
+                [.medium]: "👩🏽‍🦱",
+                [.mediumDark]: "👩🏾‍🦱",
+                [.dark]: "👩🏿‍🦱"
+            ]
         case .curlyHairedPerson:
-            result[[SkinTone.light]] = "🧑🏻‍🦱"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🦱"
-            result[[SkinTone.medium]] = "🧑🏽‍🦱"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🦱"
-            result[[SkinTone.dark]] = "🧑🏿‍🦱"
+            return [
+                [.light]: "🧑🏻‍🦱",
+                [.mediumLight]: "🧑🏼‍🦱",
+                [.medium]: "🧑🏽‍🦱",
+                [.mediumDark]: "🧑🏾‍🦱",
+                [.dark]: "🧑🏿‍🦱"
+            ]
         case .whiteHairedWoman:
-            result[[SkinTone.light]] = "👩🏻‍🦳"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🦳"
-            result[[SkinTone.medium]] = "👩🏽‍🦳"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🦳"
-            result[[SkinTone.dark]] = "👩🏿‍🦳"
+            return [
+                [.light]: "👩🏻‍🦳",
+                [.mediumLight]: "👩🏼‍🦳",
+                [.medium]: "👩🏽‍🦳",
+                [.mediumDark]: "👩🏾‍🦳",
+                [.dark]: "👩🏿‍🦳"
+            ]
         case .whiteHairedPerson:
-            result[[SkinTone.light]] = "🧑🏻‍🦳"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🦳"
-            result[[SkinTone.medium]] = "🧑🏽‍🦳"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🦳"
-            result[[SkinTone.dark]] = "🧑🏿‍🦳"
+            return [
+                [.light]: "🧑🏻‍🦳",
+                [.mediumLight]: "🧑🏼‍🦳",
+                [.medium]: "🧑🏽‍🦳",
+                [.mediumDark]: "🧑🏾‍🦳",
+                [.dark]: "🧑🏿‍🦳"
+            ]
         case .baldWoman:
-            result[[SkinTone.light]] = "👩🏻‍🦲"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🦲"
-            result[[SkinTone.medium]] = "👩🏽‍🦲"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🦲"
-            result[[SkinTone.dark]] = "👩🏿‍🦲"
+            return [
+                [.light]: "👩🏻‍🦲",
+                [.mediumLight]: "👩🏼‍🦲",
+                [.medium]: "👩🏽‍🦲",
+                [.mediumDark]: "👩🏾‍🦲",
+                [.dark]: "👩🏿‍🦲"
+            ]
         case .baldPerson:
-            result[[SkinTone.light]] = "🧑🏻‍🦲"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🦲"
-            result[[SkinTone.medium]] = "🧑🏽‍🦲"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🦲"
-            result[[SkinTone.dark]] = "🧑🏿‍🦲"
+            return [
+                [.light]: "🧑🏻‍🦲",
+                [.mediumLight]: "🧑🏼‍🦲",
+                [.medium]: "🧑🏽‍🦲",
+                [.mediumDark]: "🧑🏾‍🦲",
+                [.dark]: "🧑🏿‍🦲"
+            ]
         case .blondHairedWoman:
-            result[[SkinTone.light]] = "👱🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "👱🏼‍♀️"
-            result[[SkinTone.medium]] = "👱🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "👱🏾‍♀️"
-            result[[SkinTone.dark]] = "👱🏿‍♀️"
+            return [
+                [.light]: "👱🏻‍♀️",
+                [.mediumLight]: "👱🏼‍♀️",
+                [.medium]: "👱🏽‍♀️",
+                [.mediumDark]: "👱🏾‍♀️",
+                [.dark]: "👱🏿‍♀️"
+            ]
         case .blondHairedMan:
-            result[[SkinTone.light]] = "👱🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "👱🏼‍♂️"
-            result[[SkinTone.medium]] = "👱🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "👱🏾‍♂️"
-            result[[SkinTone.dark]] = "👱🏿‍♂️"
+            return [
+                [.light]: "👱🏻‍♂️",
+                [.mediumLight]: "👱🏼‍♂️",
+                [.medium]: "👱🏽‍♂️",
+                [.mediumDark]: "👱🏾‍♂️",
+                [.dark]: "👱🏿‍♂️"
+            ]
         case .olderAdult:
-            result[[SkinTone.light]] = "🧓🏻"
-            result[[SkinTone.mediumLight]] = "🧓🏼"
-            result[[SkinTone.medium]] = "🧓🏽"
-            result[[SkinTone.mediumDark]] = "🧓🏾"
-            result[[SkinTone.dark]] = "🧓🏿"
+            return [
+                [.light]: "🧓🏻",
+                [.mediumLight]: "🧓🏼",
+                [.medium]: "🧓🏽",
+                [.mediumDark]: "🧓🏾",
+                [.dark]: "🧓🏿"
+            ]
         case .olderMan:
-            result[[SkinTone.light]] = "👴🏻"
-            result[[SkinTone.mediumLight]] = "👴🏼"
-            result[[SkinTone.medium]] = "👴🏽"
-            result[[SkinTone.mediumDark]] = "👴🏾"
-            result[[SkinTone.dark]] = "👴🏿"
+            return [
+                [.light]: "👴🏻",
+                [.mediumLight]: "👴🏼",
+                [.medium]: "👴🏽",
+                [.mediumDark]: "👴🏾",
+                [.dark]: "👴🏿"
+            ]
         case .olderWoman:
-            result[[SkinTone.light]] = "👵🏻"
-            result[[SkinTone.mediumLight]] = "👵🏼"
-            result[[SkinTone.medium]] = "👵🏽"
-            result[[SkinTone.mediumDark]] = "👵🏾"
-            result[[SkinTone.dark]] = "👵🏿"
+            return [
+                [.light]: "👵🏻",
+                [.mediumLight]: "👵🏼",
+                [.medium]: "👵🏽",
+                [.mediumDark]: "👵🏾",
+                [.dark]: "👵🏿"
+            ]
         case .personFrowning:
-            result[[SkinTone.light]] = "🙍🏻"
-            result[[SkinTone.mediumLight]] = "🙍🏼"
-            result[[SkinTone.medium]] = "🙍🏽"
-            result[[SkinTone.mediumDark]] = "🙍🏾"
-            result[[SkinTone.dark]] = "🙍🏿"
+            return [
+                [.light]: "🙍🏻",
+                [.mediumLight]: "🙍🏼",
+                [.medium]: "🙍🏽",
+                [.mediumDark]: "🙍🏾",
+                [.dark]: "🙍🏿"
+            ]
         case .manFrowning:
-            result[[SkinTone.light]] = "🙍🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🙍🏼‍♂️"
-            result[[SkinTone.medium]] = "🙍🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🙍🏾‍♂️"
-            result[[SkinTone.dark]] = "🙍🏿‍♂️"
+            return [
+                [.light]: "🙍🏻‍♂️",
+                [.mediumLight]: "🙍🏼‍♂️",
+                [.medium]: "🙍🏽‍♂️",
+                [.mediumDark]: "🙍🏾‍♂️",
+                [.dark]: "🙍🏿‍♂️"
+            ]
         case .womanFrowning:
-            result[[SkinTone.light]] = "🙍🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🙍🏼‍♀️"
-            result[[SkinTone.medium]] = "🙍🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🙍🏾‍♀️"
-            result[[SkinTone.dark]] = "🙍🏿‍♀️"
+            return [
+                [.light]: "🙍🏻‍♀️",
+                [.mediumLight]: "🙍🏼‍♀️",
+                [.medium]: "🙍🏽‍♀️",
+                [.mediumDark]: "🙍🏾‍♀️",
+                [.dark]: "🙍🏿‍♀️"
+            ]
         case .personWithPoutingFace:
-            result[[SkinTone.light]] = "🙎🏻"
-            result[[SkinTone.mediumLight]] = "🙎🏼"
-            result[[SkinTone.medium]] = "🙎🏽"
-            result[[SkinTone.mediumDark]] = "🙎🏾"
-            result[[SkinTone.dark]] = "🙎🏿"
+            return [
+                [.light]: "🙎🏻",
+                [.mediumLight]: "🙎🏼",
+                [.medium]: "🙎🏽",
+                [.mediumDark]: "🙎🏾",
+                [.dark]: "🙎🏿"
+            ]
         case .manPouting:
-            result[[SkinTone.light]] = "🙎🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🙎🏼‍♂️"
-            result[[SkinTone.medium]] = "🙎🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🙎🏾‍♂️"
-            result[[SkinTone.dark]] = "🙎🏿‍♂️"
+            return [
+                [.light]: "🙎🏻‍♂️",
+                [.mediumLight]: "🙎🏼‍♂️",
+                [.medium]: "🙎🏽‍♂️",
+                [.mediumDark]: "🙎🏾‍♂️",
+                [.dark]: "🙎🏿‍♂️"
+            ]
         case .womanPouting:
-            result[[SkinTone.light]] = "🙎🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🙎🏼‍♀️"
-            result[[SkinTone.medium]] = "🙎🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🙎🏾‍♀️"
-            result[[SkinTone.dark]] = "🙎🏿‍♀️"
+            return [
+                [.light]: "🙎🏻‍♀️",
+                [.mediumLight]: "🙎🏼‍♀️",
+                [.medium]: "🙎🏽‍♀️",
+                [.mediumDark]: "🙎🏾‍♀️",
+                [.dark]: "🙎🏿‍♀️"
+            ]
         case .noGood:
-            result[[SkinTone.light]] = "🙅🏻"
-            result[[SkinTone.mediumLight]] = "🙅🏼"
-            result[[SkinTone.medium]] = "🙅🏽"
-            result[[SkinTone.mediumDark]] = "🙅🏾"
-            result[[SkinTone.dark]] = "🙅🏿"
+            return [
+                [.light]: "🙅🏻",
+                [.mediumLight]: "🙅🏼",
+                [.medium]: "🙅🏽",
+                [.mediumDark]: "🙅🏾",
+                [.dark]: "🙅🏿"
+            ]
         case .manGesturingNo:
-            result[[SkinTone.light]] = "🙅🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🙅🏼‍♂️"
-            result[[SkinTone.medium]] = "🙅🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🙅🏾‍♂️"
-            result[[SkinTone.dark]] = "🙅🏿‍♂️"
+            return [
+                [.light]: "🙅🏻‍♂️",
+                [.mediumLight]: "🙅🏼‍♂️",
+                [.medium]: "🙅🏽‍♂️",
+                [.mediumDark]: "🙅🏾‍♂️",
+                [.dark]: "🙅🏿‍♂️"
+            ]
         case .womanGesturingNo:
-            result[[SkinTone.light]] = "🙅🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🙅🏼‍♀️"
-            result[[SkinTone.medium]] = "🙅🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🙅🏾‍♀️"
-            result[[SkinTone.dark]] = "🙅🏿‍♀️"
+            return [
+                [.light]: "🙅🏻‍♀️",
+                [.mediumLight]: "🙅🏼‍♀️",
+                [.medium]: "🙅🏽‍♀️",
+                [.mediumDark]: "🙅🏾‍♀️",
+                [.dark]: "🙅🏿‍♀️"
+            ]
         case .okWoman:
-            result[[SkinTone.light]] = "🙆🏻"
-            result[[SkinTone.mediumLight]] = "🙆🏼"
-            result[[SkinTone.medium]] = "🙆🏽"
-            result[[SkinTone.mediumDark]] = "🙆🏾"
-            result[[SkinTone.dark]] = "🙆🏿"
+            return [
+                [.light]: "🙆🏻",
+                [.mediumLight]: "🙆🏼",
+                [.medium]: "🙆🏽",
+                [.mediumDark]: "🙆🏾",
+                [.dark]: "🙆🏿"
+            ]
         case .manGesturingOk:
-            result[[SkinTone.light]] = "🙆🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🙆🏼‍♂️"
-            result[[SkinTone.medium]] = "🙆🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🙆🏾‍♂️"
-            result[[SkinTone.dark]] = "🙆🏿‍♂️"
+            return [
+                [.light]: "🙆🏻‍♂️",
+                [.mediumLight]: "🙆🏼‍♂️",
+                [.medium]: "🙆🏽‍♂️",
+                [.mediumDark]: "🙆🏾‍♂️",
+                [.dark]: "🙆🏿‍♂️"
+            ]
         case .womanGesturingOk:
-            result[[SkinTone.light]] = "🙆🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🙆🏼‍♀️"
-            result[[SkinTone.medium]] = "🙆🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🙆🏾‍♀️"
-            result[[SkinTone.dark]] = "🙆🏿‍♀️"
+            return [
+                [.light]: "🙆🏻‍♀️",
+                [.mediumLight]: "🙆🏼‍♀️",
+                [.medium]: "🙆🏽‍♀️",
+                [.mediumDark]: "🙆🏾‍♀️",
+                [.dark]: "🙆🏿‍♀️"
+            ]
         case .informationDeskPerson:
-            result[[SkinTone.light]] = "💁🏻"
-            result[[SkinTone.mediumLight]] = "💁🏼"
-            result[[SkinTone.medium]] = "💁🏽"
-            result[[SkinTone.mediumDark]] = "💁🏾"
-            result[[SkinTone.dark]] = "💁🏿"
+            return [
+                [.light]: "💁🏻",
+                [.mediumLight]: "💁🏼",
+                [.medium]: "💁🏽",
+                [.mediumDark]: "💁🏾",
+                [.dark]: "💁🏿"
+            ]
         case .manTippingHand:
-            result[[SkinTone.light]] = "💁🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "💁🏼‍♂️"
-            result[[SkinTone.medium]] = "💁🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "💁🏾‍♂️"
-            result[[SkinTone.dark]] = "💁🏿‍♂️"
+            return [
+                [.light]: "💁🏻‍♂️",
+                [.mediumLight]: "💁🏼‍♂️",
+                [.medium]: "💁🏽‍♂️",
+                [.mediumDark]: "💁🏾‍♂️",
+                [.dark]: "💁🏿‍♂️"
+            ]
         case .womanTippingHand:
-            result[[SkinTone.light]] = "💁🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "💁🏼‍♀️"
-            result[[SkinTone.medium]] = "💁🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "💁🏾‍♀️"
-            result[[SkinTone.dark]] = "💁🏿‍♀️"
+            return [
+                [.light]: "💁🏻‍♀️",
+                [.mediumLight]: "💁🏼‍♀️",
+                [.medium]: "💁🏽‍♀️",
+                [.mediumDark]: "💁🏾‍♀️",
+                [.dark]: "💁🏿‍♀️"
+            ]
         case .raisingHand:
-            result[[SkinTone.light]] = "🙋🏻"
-            result[[SkinTone.mediumLight]] = "🙋🏼"
-            result[[SkinTone.medium]] = "🙋🏽"
-            result[[SkinTone.mediumDark]] = "🙋🏾"
-            result[[SkinTone.dark]] = "🙋🏿"
+            return [
+                [.light]: "🙋🏻",
+                [.mediumLight]: "🙋🏼",
+                [.medium]: "🙋🏽",
+                [.mediumDark]: "🙋🏾",
+                [.dark]: "🙋🏿"
+            ]
         case .manRaisingHand:
-            result[[SkinTone.light]] = "🙋🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🙋🏼‍♂️"
-            result[[SkinTone.medium]] = "🙋🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🙋🏾‍♂️"
-            result[[SkinTone.dark]] = "🙋🏿‍♂️"
+            return [
+                [.light]: "🙋🏻‍♂️",
+                [.mediumLight]: "🙋🏼‍♂️",
+                [.medium]: "🙋🏽‍♂️",
+                [.mediumDark]: "🙋🏾‍♂️",
+                [.dark]: "🙋🏿‍♂️"
+            ]
         case .womanRaisingHand:
-            result[[SkinTone.light]] = "🙋🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🙋🏼‍♀️"
-            result[[SkinTone.medium]] = "🙋🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🙋🏾‍♀️"
-            result[[SkinTone.dark]] = "🙋🏿‍♀️"
+            return [
+                [.light]: "🙋🏻‍♀️",
+                [.mediumLight]: "🙋🏼‍♀️",
+                [.medium]: "🙋🏽‍♀️",
+                [.mediumDark]: "🙋🏾‍♀️",
+                [.dark]: "🙋🏿‍♀️"
+            ]
         case .deafPerson:
-            result[[SkinTone.light]] = "🧏🏻"
-            result[[SkinTone.mediumLight]] = "🧏🏼"
-            result[[SkinTone.medium]] = "🧏🏽"
-            result[[SkinTone.mediumDark]] = "🧏🏾"
-            result[[SkinTone.dark]] = "🧏🏿"
+            return [
+                [.light]: "🧏🏻",
+                [.mediumLight]: "🧏🏼",
+                [.medium]: "🧏🏽",
+                [.mediumDark]: "🧏🏾",
+                [.dark]: "🧏🏿"
+            ]
         case .deafMan:
-            result[[SkinTone.light]] = "🧏🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧏🏼‍♂️"
-            result[[SkinTone.medium]] = "🧏🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧏🏾‍♂️"
-            result[[SkinTone.dark]] = "🧏🏿‍♂️"
+            return [
+                [.light]: "🧏🏻‍♂️",
+                [.mediumLight]: "🧏🏼‍♂️",
+                [.medium]: "🧏🏽‍♂️",
+                [.mediumDark]: "🧏🏾‍♂️",
+                [.dark]: "🧏🏿‍♂️"
+            ]
         case .deafWoman:
-            result[[SkinTone.light]] = "🧏🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧏🏼‍♀️"
-            result[[SkinTone.medium]] = "🧏🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧏🏾‍♀️"
-            result[[SkinTone.dark]] = "🧏🏿‍♀️"
+            return [
+                [.light]: "🧏🏻‍♀️",
+                [.mediumLight]: "🧏🏼‍♀️",
+                [.medium]: "🧏🏽‍♀️",
+                [.mediumDark]: "🧏🏾‍♀️",
+                [.dark]: "🧏🏿‍♀️"
+            ]
         case .bow:
-            result[[SkinTone.light]] = "🙇🏻"
-            result[[SkinTone.mediumLight]] = "🙇🏼"
-            result[[SkinTone.medium]] = "🙇🏽"
-            result[[SkinTone.mediumDark]] = "🙇🏾"
-            result[[SkinTone.dark]] = "🙇🏿"
+            return [
+                [.light]: "🙇🏻",
+                [.mediumLight]: "🙇🏼",
+                [.medium]: "🙇🏽",
+                [.mediumDark]: "🙇🏾",
+                [.dark]: "🙇🏿"
+            ]
         case .manBowing:
-            result[[SkinTone.light]] = "🙇🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🙇🏼‍♂️"
-            result[[SkinTone.medium]] = "🙇🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🙇🏾‍♂️"
-            result[[SkinTone.dark]] = "🙇🏿‍♂️"
+            return [
+                [.light]: "🙇🏻‍♂️",
+                [.mediumLight]: "🙇🏼‍♂️",
+                [.medium]: "🙇🏽‍♂️",
+                [.mediumDark]: "🙇🏾‍♂️",
+                [.dark]: "🙇🏿‍♂️"
+            ]
         case .womanBowing:
-            result[[SkinTone.light]] = "🙇🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🙇🏼‍♀️"
-            result[[SkinTone.medium]] = "🙇🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🙇🏾‍♀️"
-            result[[SkinTone.dark]] = "🙇🏿‍♀️"
+            return [
+                [.light]: "🙇🏻‍♀️",
+                [.mediumLight]: "🙇🏼‍♀️",
+                [.medium]: "🙇🏽‍♀️",
+                [.mediumDark]: "🙇🏾‍♀️",
+                [.dark]: "🙇🏿‍♀️"
+            ]
         case .facePalm:
-            result[[SkinTone.light]] = "🤦🏻"
-            result[[SkinTone.mediumLight]] = "🤦🏼"
-            result[[SkinTone.medium]] = "🤦🏽"
-            result[[SkinTone.mediumDark]] = "🤦🏾"
-            result[[SkinTone.dark]] = "🤦🏿"
+            return [
+                [.light]: "🤦🏻",
+                [.mediumLight]: "🤦🏼",
+                [.medium]: "🤦🏽",
+                [.mediumDark]: "🤦🏾",
+                [.dark]: "🤦🏿"
+            ]
         case .manFacepalming:
-            result[[SkinTone.light]] = "🤦🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🤦🏼‍♂️"
-            result[[SkinTone.medium]] = "🤦🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🤦🏾‍♂️"
-            result[[SkinTone.dark]] = "🤦🏿‍♂️"
+            return [
+                [.light]: "🤦🏻‍♂️",
+                [.mediumLight]: "🤦🏼‍♂️",
+                [.medium]: "🤦🏽‍♂️",
+                [.mediumDark]: "🤦🏾‍♂️",
+                [.dark]: "🤦🏿‍♂️"
+            ]
         case .womanFacepalming:
-            result[[SkinTone.light]] = "🤦🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🤦🏼‍♀️"
-            result[[SkinTone.medium]] = "🤦🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🤦🏾‍♀️"
-            result[[SkinTone.dark]] = "🤦🏿‍♀️"
+            return [
+                [.light]: "🤦🏻‍♀️",
+                [.mediumLight]: "🤦🏼‍♀️",
+                [.medium]: "🤦🏽‍♀️",
+                [.mediumDark]: "🤦🏾‍♀️",
+                [.dark]: "🤦🏿‍♀️"
+            ]
         case .shrug:
-            result[[SkinTone.light]] = "🤷🏻"
-            result[[SkinTone.mediumLight]] = "🤷🏼"
-            result[[SkinTone.medium]] = "🤷🏽"
-            result[[SkinTone.mediumDark]] = "🤷🏾"
-            result[[SkinTone.dark]] = "🤷🏿"
+            return [
+                [.light]: "🤷🏻",
+                [.mediumLight]: "🤷🏼",
+                [.medium]: "🤷🏽",
+                [.mediumDark]: "🤷🏾",
+                [.dark]: "🤷🏿"
+            ]
         case .manShrugging:
-            result[[SkinTone.light]] = "🤷🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🤷🏼‍♂️"
-            result[[SkinTone.medium]] = "🤷🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🤷🏾‍♂️"
-            result[[SkinTone.dark]] = "🤷🏿‍♂️"
+            return [
+                [.light]: "🤷🏻‍♂️",
+                [.mediumLight]: "🤷🏼‍♂️",
+                [.medium]: "🤷🏽‍♂️",
+                [.mediumDark]: "🤷🏾‍♂️",
+                [.dark]: "🤷🏿‍♂️"
+            ]
         case .womanShrugging:
-            result[[SkinTone.light]] = "🤷🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🤷🏼‍♀️"
-            result[[SkinTone.medium]] = "🤷🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🤷🏾‍♀️"
-            result[[SkinTone.dark]] = "🤷🏿‍♀️"
+            return [
+                [.light]: "🤷🏻‍♀️",
+                [.mediumLight]: "🤷🏼‍♀️",
+                [.medium]: "🤷🏽‍♀️",
+                [.mediumDark]: "🤷🏾‍♀️",
+                [.dark]: "🤷🏿‍♀️"
+            ]
         case .healthWorker:
-            result[[SkinTone.light]] = "🧑🏻‍⚕️"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍⚕️"
-            result[[SkinTone.medium]] = "🧑🏽‍⚕️"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍⚕️"
-            result[[SkinTone.dark]] = "🧑🏿‍⚕️"
+            return [
+                [.light]: "🧑🏻‍⚕️",
+                [.mediumLight]: "🧑🏼‍⚕️",
+                [.medium]: "🧑🏽‍⚕️",
+                [.mediumDark]: "🧑🏾‍⚕️",
+                [.dark]: "🧑🏿‍⚕️"
+            ]
         case .maleDoctor:
-            result[[SkinTone.light]] = "👨🏻‍⚕️"
-            result[[SkinTone.mediumLight]] = "👨🏼‍⚕️"
-            result[[SkinTone.medium]] = "👨🏽‍⚕️"
-            result[[SkinTone.mediumDark]] = "👨🏾‍⚕️"
-            result[[SkinTone.dark]] = "👨🏿‍⚕️"
+            return [
+                [.light]: "👨🏻‍⚕️",
+                [.mediumLight]: "👨🏼‍⚕️",
+                [.medium]: "👨🏽‍⚕️",
+                [.mediumDark]: "👨🏾‍⚕️",
+                [.dark]: "👨🏿‍⚕️"
+            ]
         case .femaleDoctor:
-            result[[SkinTone.light]] = "👩🏻‍⚕️"
-            result[[SkinTone.mediumLight]] = "👩🏼‍⚕️"
-            result[[SkinTone.medium]] = "👩🏽‍⚕️"
-            result[[SkinTone.mediumDark]] = "👩🏾‍⚕️"
-            result[[SkinTone.dark]] = "👩🏿‍⚕️"
+            return [
+                [.light]: "👩🏻‍⚕️",
+                [.mediumLight]: "👩🏼‍⚕️",
+                [.medium]: "👩🏽‍⚕️",
+                [.mediumDark]: "👩🏾‍⚕️",
+                [.dark]: "👩🏿‍⚕️"
+            ]
         case .student:
-            result[[SkinTone.light]] = "🧑🏻‍🎓"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🎓"
-            result[[SkinTone.medium]] = "🧑🏽‍🎓"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🎓"
-            result[[SkinTone.dark]] = "🧑🏿‍🎓"
+            return [
+                [.light]: "🧑🏻‍🎓",
+                [.mediumLight]: "🧑🏼‍🎓",
+                [.medium]: "🧑🏽‍🎓",
+                [.mediumDark]: "🧑🏾‍🎓",
+                [.dark]: "🧑🏿‍🎓"
+            ]
         case .maleStudent:
-            result[[SkinTone.light]] = "👨🏻‍🎓"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🎓"
-            result[[SkinTone.medium]] = "👨🏽‍🎓"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🎓"
-            result[[SkinTone.dark]] = "👨🏿‍🎓"
+            return [
+                [.light]: "👨🏻‍🎓",
+                [.mediumLight]: "👨🏼‍🎓",
+                [.medium]: "👨🏽‍🎓",
+                [.mediumDark]: "👨🏾‍🎓",
+                [.dark]: "👨🏿‍🎓"
+            ]
         case .femaleStudent:
-            result[[SkinTone.light]] = "👩🏻‍🎓"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🎓"
-            result[[SkinTone.medium]] = "👩🏽‍🎓"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🎓"
-            result[[SkinTone.dark]] = "👩🏿‍🎓"
+            return [
+                [.light]: "👩🏻‍🎓",
+                [.mediumLight]: "👩🏼‍🎓",
+                [.medium]: "👩🏽‍🎓",
+                [.mediumDark]: "👩🏾‍🎓",
+                [.dark]: "👩🏿‍🎓"
+            ]
         case .teacher:
-            result[[SkinTone.light]] = "🧑🏻‍🏫"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🏫"
-            result[[SkinTone.medium]] = "🧑🏽‍🏫"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🏫"
-            result[[SkinTone.dark]] = "🧑🏿‍🏫"
+            return [
+                [.light]: "🧑🏻‍🏫",
+                [.mediumLight]: "🧑🏼‍🏫",
+                [.medium]: "🧑🏽‍🏫",
+                [.mediumDark]: "🧑🏾‍🏫",
+                [.dark]: "🧑🏿‍🏫"
+            ]
         case .maleTeacher:
-            result[[SkinTone.light]] = "👨🏻‍🏫"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🏫"
-            result[[SkinTone.medium]] = "👨🏽‍🏫"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🏫"
-            result[[SkinTone.dark]] = "👨🏿‍🏫"
+            return [
+                [.light]: "👨🏻‍🏫",
+                [.mediumLight]: "👨🏼‍🏫",
+                [.medium]: "👨🏽‍🏫",
+                [.mediumDark]: "👨🏾‍🏫",
+                [.dark]: "👨🏿‍🏫"
+            ]
         case .femaleTeacher:
-            result[[SkinTone.light]] = "👩🏻‍🏫"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🏫"
-            result[[SkinTone.medium]] = "👩🏽‍🏫"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🏫"
-            result[[SkinTone.dark]] = "👩🏿‍🏫"
+            return [
+                [.light]: "👩🏻‍🏫",
+                [.mediumLight]: "👩🏼‍🏫",
+                [.medium]: "👩🏽‍🏫",
+                [.mediumDark]: "👩🏾‍🏫",
+                [.dark]: "👩🏿‍🏫"
+            ]
         case .judge:
-            result[[SkinTone.light]] = "🧑🏻‍⚖️"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍⚖️"
-            result[[SkinTone.medium]] = "🧑🏽‍⚖️"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍⚖️"
-            result[[SkinTone.dark]] = "🧑🏿‍⚖️"
+            return [
+                [.light]: "🧑🏻‍⚖️",
+                [.mediumLight]: "🧑🏼‍⚖️",
+                [.medium]: "🧑🏽‍⚖️",
+                [.mediumDark]: "🧑🏾‍⚖️",
+                [.dark]: "🧑🏿‍⚖️"
+            ]
         case .maleJudge:
-            result[[SkinTone.light]] = "👨🏻‍⚖️"
-            result[[SkinTone.mediumLight]] = "👨🏼‍⚖️"
-            result[[SkinTone.medium]] = "👨🏽‍⚖️"
-            result[[SkinTone.mediumDark]] = "👨🏾‍⚖️"
-            result[[SkinTone.dark]] = "👨🏿‍⚖️"
+            return [
+                [.light]: "👨🏻‍⚖️",
+                [.mediumLight]: "👨🏼‍⚖️",
+                [.medium]: "👨🏽‍⚖️",
+                [.mediumDark]: "👨🏾‍⚖️",
+                [.dark]: "👨🏿‍⚖️"
+            ]
         case .femaleJudge:
-            result[[SkinTone.light]] = "👩🏻‍⚖️"
-            result[[SkinTone.mediumLight]] = "👩🏼‍⚖️"
-            result[[SkinTone.medium]] = "👩🏽‍⚖️"
-            result[[SkinTone.mediumDark]] = "👩🏾‍⚖️"
-            result[[SkinTone.dark]] = "👩🏿‍⚖️"
+            return [
+                [.light]: "👩🏻‍⚖️",
+                [.mediumLight]: "👩🏼‍⚖️",
+                [.medium]: "👩🏽‍⚖️",
+                [.mediumDark]: "👩🏾‍⚖️",
+                [.dark]: "👩🏿‍⚖️"
+            ]
         case .farmer:
-            result[[SkinTone.light]] = "🧑🏻‍🌾"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🌾"
-            result[[SkinTone.medium]] = "🧑🏽‍🌾"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🌾"
-            result[[SkinTone.dark]] = "🧑🏿‍🌾"
+            return [
+                [.light]: "🧑🏻‍🌾",
+                [.mediumLight]: "🧑🏼‍🌾",
+                [.medium]: "🧑🏽‍🌾",
+                [.mediumDark]: "🧑🏾‍🌾",
+                [.dark]: "🧑🏿‍🌾"
+            ]
         case .maleFarmer:
-            result[[SkinTone.light]] = "👨🏻‍🌾"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🌾"
-            result[[SkinTone.medium]] = "👨🏽‍🌾"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🌾"
-            result[[SkinTone.dark]] = "👨🏿‍🌾"
+            return [
+                [.light]: "👨🏻‍🌾",
+                [.mediumLight]: "👨🏼‍🌾",
+                [.medium]: "👨🏽‍🌾",
+                [.mediumDark]: "👨🏾‍🌾",
+                [.dark]: "👨🏿‍🌾"
+            ]
         case .femaleFarmer:
-            result[[SkinTone.light]] = "👩🏻‍🌾"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🌾"
-            result[[SkinTone.medium]] = "👩🏽‍🌾"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🌾"
-            result[[SkinTone.dark]] = "👩🏿‍🌾"
+            return [
+                [.light]: "👩🏻‍🌾",
+                [.mediumLight]: "👩🏼‍🌾",
+                [.medium]: "👩🏽‍🌾",
+                [.mediumDark]: "👩🏾‍🌾",
+                [.dark]: "👩🏿‍🌾"
+            ]
         case .cook:
-            result[[SkinTone.light]] = "🧑🏻‍🍳"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🍳"
-            result[[SkinTone.medium]] = "🧑🏽‍🍳"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🍳"
-            result[[SkinTone.dark]] = "🧑🏿‍🍳"
+            return [
+                [.light]: "🧑🏻‍🍳",
+                [.mediumLight]: "🧑🏼‍🍳",
+                [.medium]: "🧑🏽‍🍳",
+                [.mediumDark]: "🧑🏾‍🍳",
+                [.dark]: "🧑🏿‍🍳"
+            ]
         case .maleCook:
-            result[[SkinTone.light]] = "👨🏻‍🍳"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🍳"
-            result[[SkinTone.medium]] = "👨🏽‍🍳"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🍳"
-            result[[SkinTone.dark]] = "👨🏿‍🍳"
+            return [
+                [.light]: "👨🏻‍🍳",
+                [.mediumLight]: "👨🏼‍🍳",
+                [.medium]: "👨🏽‍🍳",
+                [.mediumDark]: "👨🏾‍🍳",
+                [.dark]: "👨🏿‍🍳"
+            ]
         case .femaleCook:
-            result[[SkinTone.light]] = "👩🏻‍🍳"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🍳"
-            result[[SkinTone.medium]] = "👩🏽‍🍳"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🍳"
-            result[[SkinTone.dark]] = "👩🏿‍🍳"
+            return [
+                [.light]: "👩🏻‍🍳",
+                [.mediumLight]: "👩🏼‍🍳",
+                [.medium]: "👩🏽‍🍳",
+                [.mediumDark]: "👩🏾‍🍳",
+                [.dark]: "👩🏿‍🍳"
+            ]
         case .mechanic:
-            result[[SkinTone.light]] = "🧑🏻‍🔧"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🔧"
-            result[[SkinTone.medium]] = "🧑🏽‍🔧"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🔧"
-            result[[SkinTone.dark]] = "🧑🏿‍🔧"
+            return [
+                [.light]: "🧑🏻‍🔧",
+                [.mediumLight]: "🧑🏼‍🔧",
+                [.medium]: "🧑🏽‍🔧",
+                [.mediumDark]: "🧑🏾‍🔧",
+                [.dark]: "🧑🏿‍🔧"
+            ]
         case .maleMechanic:
-            result[[SkinTone.light]] = "👨🏻‍🔧"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🔧"
-            result[[SkinTone.medium]] = "👨🏽‍🔧"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🔧"
-            result[[SkinTone.dark]] = "👨🏿‍🔧"
+            return [
+                [.light]: "👨🏻‍🔧",
+                [.mediumLight]: "👨🏼‍🔧",
+                [.medium]: "👨🏽‍🔧",
+                [.mediumDark]: "👨🏾‍🔧",
+                [.dark]: "👨🏿‍🔧"
+            ]
         case .femaleMechanic:
-            result[[SkinTone.light]] = "👩🏻‍🔧"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🔧"
-            result[[SkinTone.medium]] = "👩🏽‍🔧"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🔧"
-            result[[SkinTone.dark]] = "👩🏿‍🔧"
+            return [
+                [.light]: "👩🏻‍🔧",
+                [.mediumLight]: "👩🏼‍🔧",
+                [.medium]: "👩🏽‍🔧",
+                [.mediumDark]: "👩🏾‍🔧",
+                [.dark]: "👩🏿‍🔧"
+            ]
         case .factoryWorker:
-            result[[SkinTone.light]] = "🧑🏻‍🏭"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🏭"
-            result[[SkinTone.medium]] = "🧑🏽‍🏭"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🏭"
-            result[[SkinTone.dark]] = "🧑🏿‍🏭"
+            return [
+                [.light]: "🧑🏻‍🏭",
+                [.mediumLight]: "🧑🏼‍🏭",
+                [.medium]: "🧑🏽‍🏭",
+                [.mediumDark]: "🧑🏾‍🏭",
+                [.dark]: "🧑🏿‍🏭"
+            ]
         case .maleFactoryWorker:
-            result[[SkinTone.light]] = "👨🏻‍🏭"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🏭"
-            result[[SkinTone.medium]] = "👨🏽‍🏭"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🏭"
-            result[[SkinTone.dark]] = "👨🏿‍🏭"
+            return [
+                [.light]: "👨🏻‍🏭",
+                [.mediumLight]: "👨🏼‍🏭",
+                [.medium]: "👨🏽‍🏭",
+                [.mediumDark]: "👨🏾‍🏭",
+                [.dark]: "👨🏿‍🏭"
+            ]
         case .femaleFactoryWorker:
-            result[[SkinTone.light]] = "👩🏻‍🏭"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🏭"
-            result[[SkinTone.medium]] = "👩🏽‍🏭"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🏭"
-            result[[SkinTone.dark]] = "👩🏿‍🏭"
+            return [
+                [.light]: "👩🏻‍🏭",
+                [.mediumLight]: "👩🏼‍🏭",
+                [.medium]: "👩🏽‍🏭",
+                [.mediumDark]: "👩🏾‍🏭",
+                [.dark]: "👩🏿‍🏭"
+            ]
         case .officeWorker:
-            result[[SkinTone.light]] = "🧑🏻‍💼"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍💼"
-            result[[SkinTone.medium]] = "🧑🏽‍💼"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍💼"
-            result[[SkinTone.dark]] = "🧑🏿‍💼"
+            return [
+                [.light]: "🧑🏻‍💼",
+                [.mediumLight]: "🧑🏼‍💼",
+                [.medium]: "🧑🏽‍💼",
+                [.mediumDark]: "🧑🏾‍💼",
+                [.dark]: "🧑🏿‍💼"
+            ]
         case .maleOfficeWorker:
-            result[[SkinTone.light]] = "👨🏻‍💼"
-            result[[SkinTone.mediumLight]] = "👨🏼‍💼"
-            result[[SkinTone.medium]] = "👨🏽‍💼"
-            result[[SkinTone.mediumDark]] = "👨🏾‍💼"
-            result[[SkinTone.dark]] = "👨🏿‍💼"
+            return [
+                [.light]: "👨🏻‍💼",
+                [.mediumLight]: "👨🏼‍💼",
+                [.medium]: "👨🏽‍💼",
+                [.mediumDark]: "👨🏾‍💼",
+                [.dark]: "👨🏿‍💼"
+            ]
         case .femaleOfficeWorker:
-            result[[SkinTone.light]] = "👩🏻‍💼"
-            result[[SkinTone.mediumLight]] = "👩🏼‍💼"
-            result[[SkinTone.medium]] = "👩🏽‍💼"
-            result[[SkinTone.mediumDark]] = "👩🏾‍💼"
-            result[[SkinTone.dark]] = "👩🏿‍💼"
+            return [
+                [.light]: "👩🏻‍💼",
+                [.mediumLight]: "👩🏼‍💼",
+                [.medium]: "👩🏽‍💼",
+                [.mediumDark]: "👩🏾‍💼",
+                [.dark]: "👩🏿‍💼"
+            ]
         case .scientist:
-            result[[SkinTone.light]] = "🧑🏻‍🔬"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🔬"
-            result[[SkinTone.medium]] = "🧑🏽‍🔬"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🔬"
-            result[[SkinTone.dark]] = "🧑🏿‍🔬"
+            return [
+                [.light]: "🧑🏻‍🔬",
+                [.mediumLight]: "🧑🏼‍🔬",
+                [.medium]: "🧑🏽‍🔬",
+                [.mediumDark]: "🧑🏾‍🔬",
+                [.dark]: "🧑🏿‍🔬"
+            ]
         case .maleScientist:
-            result[[SkinTone.light]] = "👨🏻‍🔬"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🔬"
-            result[[SkinTone.medium]] = "👨🏽‍🔬"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🔬"
-            result[[SkinTone.dark]] = "👨🏿‍🔬"
+            return [
+                [.light]: "👨🏻‍🔬",
+                [.mediumLight]: "👨🏼‍🔬",
+                [.medium]: "👨🏽‍🔬",
+                [.mediumDark]: "👨🏾‍🔬",
+                [.dark]: "👨🏿‍🔬"
+            ]
         case .femaleScientist:
-            result[[SkinTone.light]] = "👩🏻‍🔬"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🔬"
-            result[[SkinTone.medium]] = "👩🏽‍🔬"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🔬"
-            result[[SkinTone.dark]] = "👩🏿‍🔬"
+            return [
+                [.light]: "👩🏻‍🔬",
+                [.mediumLight]: "👩🏼‍🔬",
+                [.medium]: "👩🏽‍🔬",
+                [.mediumDark]: "👩🏾‍🔬",
+                [.dark]: "👩🏿‍🔬"
+            ]
         case .technologist:
-            result[[SkinTone.light]] = "🧑🏻‍💻"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍💻"
-            result[[SkinTone.medium]] = "🧑🏽‍💻"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍💻"
-            result[[SkinTone.dark]] = "🧑🏿‍💻"
+            return [
+                [.light]: "🧑🏻‍💻",
+                [.mediumLight]: "🧑🏼‍💻",
+                [.medium]: "🧑🏽‍💻",
+                [.mediumDark]: "🧑🏾‍💻",
+                [.dark]: "🧑🏿‍💻"
+            ]
         case .maleTechnologist:
-            result[[SkinTone.light]] = "👨🏻‍💻"
-            result[[SkinTone.mediumLight]] = "👨🏼‍💻"
-            result[[SkinTone.medium]] = "👨🏽‍💻"
-            result[[SkinTone.mediumDark]] = "👨🏾‍💻"
-            result[[SkinTone.dark]] = "👨🏿‍💻"
+            return [
+                [.light]: "👨🏻‍💻",
+                [.mediumLight]: "👨🏼‍💻",
+                [.medium]: "👨🏽‍💻",
+                [.mediumDark]: "👨🏾‍💻",
+                [.dark]: "👨🏿‍💻"
+            ]
         case .femaleTechnologist:
-            result[[SkinTone.light]] = "👩🏻‍💻"
-            result[[SkinTone.mediumLight]] = "👩🏼‍💻"
-            result[[SkinTone.medium]] = "👩🏽‍💻"
-            result[[SkinTone.mediumDark]] = "👩🏾‍💻"
-            result[[SkinTone.dark]] = "👩🏿‍💻"
+            return [
+                [.light]: "👩🏻‍💻",
+                [.mediumLight]: "👩🏼‍💻",
+                [.medium]: "👩🏽‍💻",
+                [.mediumDark]: "👩🏾‍💻",
+                [.dark]: "👩🏿‍💻"
+            ]
         case .singer:
-            result[[SkinTone.light]] = "🧑🏻‍🎤"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🎤"
-            result[[SkinTone.medium]] = "🧑🏽‍🎤"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🎤"
-            result[[SkinTone.dark]] = "🧑🏿‍🎤"
+            return [
+                [.light]: "🧑🏻‍🎤",
+                [.mediumLight]: "🧑🏼‍🎤",
+                [.medium]: "🧑🏽‍🎤",
+                [.mediumDark]: "🧑🏾‍🎤",
+                [.dark]: "🧑🏿‍🎤"
+            ]
         case .maleSinger:
-            result[[SkinTone.light]] = "👨🏻‍🎤"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🎤"
-            result[[SkinTone.medium]] = "👨🏽‍🎤"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🎤"
-            result[[SkinTone.dark]] = "👨🏿‍🎤"
+            return [
+                [.light]: "👨🏻‍🎤",
+                [.mediumLight]: "👨🏼‍🎤",
+                [.medium]: "👨🏽‍🎤",
+                [.mediumDark]: "👨🏾‍🎤",
+                [.dark]: "👨🏿‍🎤"
+            ]
         case .femaleSinger:
-            result[[SkinTone.light]] = "👩🏻‍🎤"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🎤"
-            result[[SkinTone.medium]] = "👩🏽‍🎤"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🎤"
-            result[[SkinTone.dark]] = "👩🏿‍🎤"
+            return [
+                [.light]: "👩🏻‍🎤",
+                [.mediumLight]: "👩🏼‍🎤",
+                [.medium]: "👩🏽‍🎤",
+                [.mediumDark]: "👩🏾‍🎤",
+                [.dark]: "👩🏿‍🎤"
+            ]
         case .artist:
-            result[[SkinTone.light]] = "🧑🏻‍🎨"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🎨"
-            result[[SkinTone.medium]] = "🧑🏽‍🎨"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🎨"
-            result[[SkinTone.dark]] = "🧑🏿‍🎨"
+            return [
+                [.light]: "🧑🏻‍🎨",
+                [.mediumLight]: "🧑🏼‍🎨",
+                [.medium]: "🧑🏽‍🎨",
+                [.mediumDark]: "🧑🏾‍🎨",
+                [.dark]: "🧑🏿‍🎨"
+            ]
         case .maleArtist:
-            result[[SkinTone.light]] = "👨🏻‍🎨"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🎨"
-            result[[SkinTone.medium]] = "👨🏽‍🎨"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🎨"
-            result[[SkinTone.dark]] = "👨🏿‍🎨"
+            return [
+                [.light]: "👨🏻‍🎨",
+                [.mediumLight]: "👨🏼‍🎨",
+                [.medium]: "👨🏽‍🎨",
+                [.mediumDark]: "👨🏾‍🎨",
+                [.dark]: "👨🏿‍🎨"
+            ]
         case .femaleArtist:
-            result[[SkinTone.light]] = "👩🏻‍🎨"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🎨"
-            result[[SkinTone.medium]] = "👩🏽‍🎨"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🎨"
-            result[[SkinTone.dark]] = "👩🏿‍🎨"
+            return [
+                [.light]: "👩🏻‍🎨",
+                [.mediumLight]: "👩🏼‍🎨",
+                [.medium]: "👩🏽‍🎨",
+                [.mediumDark]: "👩🏾‍🎨",
+                [.dark]: "👩🏿‍🎨"
+            ]
         case .pilot:
-            result[[SkinTone.light]] = "🧑🏻‍✈️"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍✈️"
-            result[[SkinTone.medium]] = "🧑🏽‍✈️"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍✈️"
-            result[[SkinTone.dark]] = "🧑🏿‍✈️"
+            return [
+                [.light]: "🧑🏻‍✈️",
+                [.mediumLight]: "🧑🏼‍✈️",
+                [.medium]: "🧑🏽‍✈️",
+                [.mediumDark]: "🧑🏾‍✈️",
+                [.dark]: "🧑🏿‍✈️"
+            ]
         case .malePilot:
-            result[[SkinTone.light]] = "👨🏻‍✈️"
-            result[[SkinTone.mediumLight]] = "👨🏼‍✈️"
-            result[[SkinTone.medium]] = "👨🏽‍✈️"
-            result[[SkinTone.mediumDark]] = "👨🏾‍✈️"
-            result[[SkinTone.dark]] = "👨🏿‍✈️"
+            return [
+                [.light]: "👨🏻‍✈️",
+                [.mediumLight]: "👨🏼‍✈️",
+                [.medium]: "👨🏽‍✈️",
+                [.mediumDark]: "👨🏾‍✈️",
+                [.dark]: "👨🏿‍✈️"
+            ]
         case .femalePilot:
-            result[[SkinTone.light]] = "👩🏻‍✈️"
-            result[[SkinTone.mediumLight]] = "👩🏼‍✈️"
-            result[[SkinTone.medium]] = "👩🏽‍✈️"
-            result[[SkinTone.mediumDark]] = "👩🏾‍✈️"
-            result[[SkinTone.dark]] = "👩🏿‍✈️"
+            return [
+                [.light]: "👩🏻‍✈️",
+                [.mediumLight]: "👩🏼‍✈️",
+                [.medium]: "👩🏽‍✈️",
+                [.mediumDark]: "👩🏾‍✈️",
+                [.dark]: "👩🏿‍✈️"
+            ]
         case .astronaut:
-            result[[SkinTone.light]] = "🧑🏻‍🚀"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🚀"
-            result[[SkinTone.medium]] = "🧑🏽‍🚀"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🚀"
-            result[[SkinTone.dark]] = "🧑🏿‍🚀"
+            return [
+                [.light]: "🧑🏻‍🚀",
+                [.mediumLight]: "🧑🏼‍🚀",
+                [.medium]: "🧑🏽‍🚀",
+                [.mediumDark]: "🧑🏾‍🚀",
+                [.dark]: "🧑🏿‍🚀"
+            ]
         case .maleAstronaut:
-            result[[SkinTone.light]] = "👨🏻‍🚀"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🚀"
-            result[[SkinTone.medium]] = "👨🏽‍🚀"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🚀"
-            result[[SkinTone.dark]] = "👨🏿‍🚀"
+            return [
+                [.light]: "👨🏻‍🚀",
+                [.mediumLight]: "👨🏼‍🚀",
+                [.medium]: "👨🏽‍🚀",
+                [.mediumDark]: "👨🏾‍🚀",
+                [.dark]: "👨🏿‍🚀"
+            ]
         case .femaleAstronaut:
-            result[[SkinTone.light]] = "👩🏻‍🚀"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🚀"
-            result[[SkinTone.medium]] = "👩🏽‍🚀"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🚀"
-            result[[SkinTone.dark]] = "👩🏿‍🚀"
+            return [
+                [.light]: "👩🏻‍🚀",
+                [.mediumLight]: "👩🏼‍🚀",
+                [.medium]: "👩🏽‍🚀",
+                [.mediumDark]: "👩🏾‍🚀",
+                [.dark]: "👩🏿‍🚀"
+            ]
         case .firefighter:
-            result[[SkinTone.light]] = "🧑🏻‍🚒"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🚒"
-            result[[SkinTone.medium]] = "🧑🏽‍🚒"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🚒"
-            result[[SkinTone.dark]] = "🧑🏿‍🚒"
+            return [
+                [.light]: "🧑🏻‍🚒",
+                [.mediumLight]: "🧑🏼‍🚒",
+                [.medium]: "🧑🏽‍🚒",
+                [.mediumDark]: "🧑🏾‍🚒",
+                [.dark]: "🧑🏿‍🚒"
+            ]
         case .maleFirefighter:
-            result[[SkinTone.light]] = "👨🏻‍🚒"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🚒"
-            result[[SkinTone.medium]] = "👨🏽‍🚒"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🚒"
-            result[[SkinTone.dark]] = "👨🏿‍🚒"
+            return [
+                [.light]: "👨🏻‍🚒",
+                [.mediumLight]: "👨🏼‍🚒",
+                [.medium]: "👨🏽‍🚒",
+                [.mediumDark]: "👨🏾‍🚒",
+                [.dark]: "👨🏿‍🚒"
+            ]
         case .femaleFirefighter:
-            result[[SkinTone.light]] = "👩🏻‍🚒"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🚒"
-            result[[SkinTone.medium]] = "👩🏽‍🚒"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🚒"
-            result[[SkinTone.dark]] = "👩🏿‍🚒"
+            return [
+                [.light]: "👩🏻‍🚒",
+                [.mediumLight]: "👩🏼‍🚒",
+                [.medium]: "👩🏽‍🚒",
+                [.mediumDark]: "👩🏾‍🚒",
+                [.dark]: "👩🏿‍🚒"
+            ]
         case .cop:
-            result[[SkinTone.light]] = "👮🏻"
-            result[[SkinTone.mediumLight]] = "👮🏼"
-            result[[SkinTone.medium]] = "👮🏽"
-            result[[SkinTone.mediumDark]] = "👮🏾"
-            result[[SkinTone.dark]] = "👮🏿"
+            return [
+                [.light]: "👮🏻",
+                [.mediumLight]: "👮🏼",
+                [.medium]: "👮🏽",
+                [.mediumDark]: "👮🏾",
+                [.dark]: "👮🏿"
+            ]
         case .malePoliceOfficer:
-            result[[SkinTone.light]] = "👮🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "👮🏼‍♂️"
-            result[[SkinTone.medium]] = "👮🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "👮🏾‍♂️"
-            result[[SkinTone.dark]] = "👮🏿‍♂️"
+            return [
+                [.light]: "👮🏻‍♂️",
+                [.mediumLight]: "👮🏼‍♂️",
+                [.medium]: "👮🏽‍♂️",
+                [.mediumDark]: "👮🏾‍♂️",
+                [.dark]: "👮🏿‍♂️"
+            ]
         case .femalePoliceOfficer:
-            result[[SkinTone.light]] = "👮🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "👮🏼‍♀️"
-            result[[SkinTone.medium]] = "👮🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "👮🏾‍♀️"
-            result[[SkinTone.dark]] = "👮🏿‍♀️"
+            return [
+                [.light]: "👮🏻‍♀️",
+                [.mediumLight]: "👮🏼‍♀️",
+                [.medium]: "👮🏽‍♀️",
+                [.mediumDark]: "👮🏾‍♀️",
+                [.dark]: "👮🏿‍♀️"
+            ]
         case .sleuthOrSpy:
-            result[[SkinTone.light]] = "🕵🏻"
-            result[[SkinTone.mediumLight]] = "🕵🏼"
-            result[[SkinTone.medium]] = "🕵🏽"
-            result[[SkinTone.mediumDark]] = "🕵🏾"
-            result[[SkinTone.dark]] = "🕵🏿"
+            return [
+                [.light]: "🕵🏻",
+                [.mediumLight]: "🕵🏼",
+                [.medium]: "🕵🏽",
+                [.mediumDark]: "🕵🏾",
+                [.dark]: "🕵🏿"
+            ]
         case .maleDetective:
-            result[[SkinTone.light]] = "🕵🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🕵🏼‍♂️"
-            result[[SkinTone.medium]] = "🕵🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🕵🏾‍♂️"
-            result[[SkinTone.dark]] = "🕵🏿‍♂️"
+            return [
+                [.light]: "🕵🏻‍♂️",
+                [.mediumLight]: "🕵🏼‍♂️",
+                [.medium]: "🕵🏽‍♂️",
+                [.mediumDark]: "🕵🏾‍♂️",
+                [.dark]: "🕵🏿‍♂️"
+            ]
         case .femaleDetective:
-            result[[SkinTone.light]] = "🕵🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🕵🏼‍♀️"
-            result[[SkinTone.medium]] = "🕵🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🕵🏾‍♀️"
-            result[[SkinTone.dark]] = "🕵🏿‍♀️"
+            return [
+                [.light]: "🕵🏻‍♀️",
+                [.mediumLight]: "🕵🏼‍♀️",
+                [.medium]: "🕵🏽‍♀️",
+                [.mediumDark]: "🕵🏾‍♀️",
+                [.dark]: "🕵🏿‍♀️"
+            ]
         case .guardsman:
-            result[[SkinTone.light]] = "💂🏻"
-            result[[SkinTone.mediumLight]] = "💂🏼"
-            result[[SkinTone.medium]] = "💂🏽"
-            result[[SkinTone.mediumDark]] = "💂🏾"
-            result[[SkinTone.dark]] = "💂🏿"
+            return [
+                [.light]: "💂🏻",
+                [.mediumLight]: "💂🏼",
+                [.medium]: "💂🏽",
+                [.mediumDark]: "💂🏾",
+                [.dark]: "💂🏿"
+            ]
         case .maleGuard:
-            result[[SkinTone.light]] = "💂🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "💂🏼‍♂️"
-            result[[SkinTone.medium]] = "💂🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "💂🏾‍♂️"
-            result[[SkinTone.dark]] = "💂🏿‍♂️"
+            return [
+                [.light]: "💂🏻‍♂️",
+                [.mediumLight]: "💂🏼‍♂️",
+                [.medium]: "💂🏽‍♂️",
+                [.mediumDark]: "💂🏾‍♂️",
+                [.dark]: "💂🏿‍♂️"
+            ]
         case .femaleGuard:
-            result[[SkinTone.light]] = "💂🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "💂🏼‍♀️"
-            result[[SkinTone.medium]] = "💂🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "💂🏾‍♀️"
-            result[[SkinTone.dark]] = "💂🏿‍♀️"
+            return [
+                [.light]: "💂🏻‍♀️",
+                [.mediumLight]: "💂🏼‍♀️",
+                [.medium]: "💂🏽‍♀️",
+                [.mediumDark]: "💂🏾‍♀️",
+                [.dark]: "💂🏿‍♀️"
+            ]
         case .ninja:
-            result[[SkinTone.light]] = "🥷🏻"
-            result[[SkinTone.mediumLight]] = "🥷🏼"
-            result[[SkinTone.medium]] = "🥷🏽"
-            result[[SkinTone.mediumDark]] = "🥷🏾"
-            result[[SkinTone.dark]] = "🥷🏿"
+            return [
+                [.light]: "🥷🏻",
+                [.mediumLight]: "🥷🏼",
+                [.medium]: "🥷🏽",
+                [.mediumDark]: "🥷🏾",
+                [.dark]: "🥷🏿"
+            ]
         case .constructionWorker:
-            result[[SkinTone.light]] = "👷🏻"
-            result[[SkinTone.mediumLight]] = "👷🏼"
-            result[[SkinTone.medium]] = "👷🏽"
-            result[[SkinTone.mediumDark]] = "👷🏾"
-            result[[SkinTone.dark]] = "👷🏿"
+            return [
+                [.light]: "👷🏻",
+                [.mediumLight]: "👷🏼",
+                [.medium]: "👷🏽",
+                [.mediumDark]: "👷🏾",
+                [.dark]: "👷🏿"
+            ]
         case .maleConstructionWorker:
-            result[[SkinTone.light]] = "👷🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "👷🏼‍♂️"
-            result[[SkinTone.medium]] = "👷🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "👷🏾‍♂️"
-            result[[SkinTone.dark]] = "👷🏿‍♂️"
+            return [
+                [.light]: "👷🏻‍♂️",
+                [.mediumLight]: "👷🏼‍♂️",
+                [.medium]: "👷🏽‍♂️",
+                [.mediumDark]: "👷🏾‍♂️",
+                [.dark]: "👷🏿‍♂️"
+            ]
         case .femaleConstructionWorker:
-            result[[SkinTone.light]] = "👷🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "👷🏼‍♀️"
-            result[[SkinTone.medium]] = "👷🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "👷🏾‍♀️"
-            result[[SkinTone.dark]] = "👷🏿‍♀️"
+            return [
+                [.light]: "👷🏻‍♀️",
+                [.mediumLight]: "👷🏼‍♀️",
+                [.medium]: "👷🏽‍♀️",
+                [.mediumDark]: "👷🏾‍♀️",
+                [.dark]: "👷🏿‍♀️"
+            ]
         case .personWithCrown:
-            result[[SkinTone.light]] = "🫅🏻"
-            result[[SkinTone.mediumLight]] = "🫅🏼"
-            result[[SkinTone.medium]] = "🫅🏽"
-            result[[SkinTone.mediumDark]] = "🫅🏾"
-            result[[SkinTone.dark]] = "🫅🏿"
+            return [
+                [.light]: "🫅🏻",
+                [.mediumLight]: "🫅🏼",
+                [.medium]: "🫅🏽",
+                [.mediumDark]: "🫅🏾",
+                [.dark]: "🫅🏿"
+            ]
         case .prince:
-            result[[SkinTone.light]] = "🤴🏻"
-            result[[SkinTone.mediumLight]] = "🤴🏼"
-            result[[SkinTone.medium]] = "🤴🏽"
-            result[[SkinTone.mediumDark]] = "🤴🏾"
-            result[[SkinTone.dark]] = "🤴🏿"
+            return [
+                [.light]: "🤴🏻",
+                [.mediumLight]: "🤴🏼",
+                [.medium]: "🤴🏽",
+                [.mediumDark]: "🤴🏾",
+                [.dark]: "🤴🏿"
+            ]
         case .princess:
-            result[[SkinTone.light]] = "👸🏻"
-            result[[SkinTone.mediumLight]] = "👸🏼"
-            result[[SkinTone.medium]] = "👸🏽"
-            result[[SkinTone.mediumDark]] = "👸🏾"
-            result[[SkinTone.dark]] = "👸🏿"
+            return [
+                [.light]: "👸🏻",
+                [.mediumLight]: "👸🏼",
+                [.medium]: "👸🏽",
+                [.mediumDark]: "👸🏾",
+                [.dark]: "👸🏿"
+            ]
         case .manWithTurban:
-            result[[SkinTone.light]] = "👳🏻"
-            result[[SkinTone.mediumLight]] = "👳🏼"
-            result[[SkinTone.medium]] = "👳🏽"
-            result[[SkinTone.mediumDark]] = "👳🏾"
-            result[[SkinTone.dark]] = "👳🏿"
+            return [
+                [.light]: "👳🏻",
+                [.mediumLight]: "👳🏼",
+                [.medium]: "👳🏽",
+                [.mediumDark]: "👳🏾",
+                [.dark]: "👳🏿"
+            ]
         case .manWearingTurban:
-            result[[SkinTone.light]] = "👳🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "👳🏼‍♂️"
-            result[[SkinTone.medium]] = "👳🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "👳🏾‍♂️"
-            result[[SkinTone.dark]] = "👳🏿‍♂️"
+            return [
+                [.light]: "👳🏻‍♂️",
+                [.mediumLight]: "👳🏼‍♂️",
+                [.medium]: "👳🏽‍♂️",
+                [.mediumDark]: "👳🏾‍♂️",
+                [.dark]: "👳🏿‍♂️"
+            ]
         case .womanWearingTurban:
-            result[[SkinTone.light]] = "👳🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "👳🏼‍♀️"
-            result[[SkinTone.medium]] = "👳🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "👳🏾‍♀️"
-            result[[SkinTone.dark]] = "👳🏿‍♀️"
+            return [
+                [.light]: "👳🏻‍♀️",
+                [.mediumLight]: "👳🏼‍♀️",
+                [.medium]: "👳🏽‍♀️",
+                [.mediumDark]: "👳🏾‍♀️",
+                [.dark]: "👳🏿‍♀️"
+            ]
         case .manWithGuaPiMao:
-            result[[SkinTone.light]] = "👲🏻"
-            result[[SkinTone.mediumLight]] = "👲🏼"
-            result[[SkinTone.medium]] = "👲🏽"
-            result[[SkinTone.mediumDark]] = "👲🏾"
-            result[[SkinTone.dark]] = "👲🏿"
+            return [
+                [.light]: "👲🏻",
+                [.mediumLight]: "👲🏼",
+                [.medium]: "👲🏽",
+                [.mediumDark]: "👲🏾",
+                [.dark]: "👲🏿"
+            ]
         case .personWithHeadscarf:
-            result[[SkinTone.light]] = "🧕🏻"
-            result[[SkinTone.mediumLight]] = "🧕🏼"
-            result[[SkinTone.medium]] = "🧕🏽"
-            result[[SkinTone.mediumDark]] = "🧕🏾"
-            result[[SkinTone.dark]] = "🧕🏿"
+            return [
+                [.light]: "🧕🏻",
+                [.mediumLight]: "🧕🏼",
+                [.medium]: "🧕🏽",
+                [.mediumDark]: "🧕🏾",
+                [.dark]: "🧕🏿"
+            ]
         case .personInTuxedo:
-            result[[SkinTone.light]] = "🤵🏻"
-            result[[SkinTone.mediumLight]] = "🤵🏼"
-            result[[SkinTone.medium]] = "🤵🏽"
-            result[[SkinTone.mediumDark]] = "🤵🏾"
-            result[[SkinTone.dark]] = "🤵🏿"
+            return [
+                [.light]: "🤵🏻",
+                [.mediumLight]: "🤵🏼",
+                [.medium]: "🤵🏽",
+                [.mediumDark]: "🤵🏾",
+                [.dark]: "🤵🏿"
+            ]
         case .manInTuxedo:
-            result[[SkinTone.light]] = "🤵🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🤵🏼‍♂️"
-            result[[SkinTone.medium]] = "🤵🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🤵🏾‍♂️"
-            result[[SkinTone.dark]] = "🤵🏿‍♂️"
+            return [
+                [.light]: "🤵🏻‍♂️",
+                [.mediumLight]: "🤵🏼‍♂️",
+                [.medium]: "🤵🏽‍♂️",
+                [.mediumDark]: "🤵🏾‍♂️",
+                [.dark]: "🤵🏿‍♂️"
+            ]
         case .womanInTuxedo:
-            result[[SkinTone.light]] = "🤵🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🤵🏼‍♀️"
-            result[[SkinTone.medium]] = "🤵🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🤵🏾‍♀️"
-            result[[SkinTone.dark]] = "🤵🏿‍♀️"
+            return [
+                [.light]: "🤵🏻‍♀️",
+                [.mediumLight]: "🤵🏼‍♀️",
+                [.medium]: "🤵🏽‍♀️",
+                [.mediumDark]: "🤵🏾‍♀️",
+                [.dark]: "🤵🏿‍♀️"
+            ]
         case .brideWithVeil:
-            result[[SkinTone.light]] = "👰🏻"
-            result[[SkinTone.mediumLight]] = "👰🏼"
-            result[[SkinTone.medium]] = "👰🏽"
-            result[[SkinTone.mediumDark]] = "👰🏾"
-            result[[SkinTone.dark]] = "👰🏿"
+            return [
+                [.light]: "👰🏻",
+                [.mediumLight]: "👰🏼",
+                [.medium]: "👰🏽",
+                [.mediumDark]: "👰🏾",
+                [.dark]: "👰🏿"
+            ]
         case .manWithVeil:
-            result[[SkinTone.light]] = "👰🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "👰🏼‍♂️"
-            result[[SkinTone.medium]] = "👰🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "👰🏾‍♂️"
-            result[[SkinTone.dark]] = "👰🏿‍♂️"
+            return [
+                [.light]: "👰🏻‍♂️",
+                [.mediumLight]: "👰🏼‍♂️",
+                [.medium]: "👰🏽‍♂️",
+                [.mediumDark]: "👰🏾‍♂️",
+                [.dark]: "👰🏿‍♂️"
+            ]
         case .womanWithVeil:
-            result[[SkinTone.light]] = "👰🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "👰🏼‍♀️"
-            result[[SkinTone.medium]] = "👰🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "👰🏾‍♀️"
-            result[[SkinTone.dark]] = "👰🏿‍♀️"
+            return [
+                [.light]: "👰🏻‍♀️",
+                [.mediumLight]: "👰🏼‍♀️",
+                [.medium]: "👰🏽‍♀️",
+                [.mediumDark]: "👰🏾‍♀️",
+                [.dark]: "👰🏿‍♀️"
+            ]
         case .pregnantWoman:
-            result[[SkinTone.light]] = "🤰🏻"
-            result[[SkinTone.mediumLight]] = "🤰🏼"
-            result[[SkinTone.medium]] = "🤰🏽"
-            result[[SkinTone.mediumDark]] = "🤰🏾"
-            result[[SkinTone.dark]] = "🤰🏿"
+            return [
+                [.light]: "🤰🏻",
+                [.mediumLight]: "🤰🏼",
+                [.medium]: "🤰🏽",
+                [.mediumDark]: "🤰🏾",
+                [.dark]: "🤰🏿"
+            ]
         case .pregnantMan:
-            result[[SkinTone.light]] = "🫃🏻"
-            result[[SkinTone.mediumLight]] = "🫃🏼"
-            result[[SkinTone.medium]] = "🫃🏽"
-            result[[SkinTone.mediumDark]] = "🫃🏾"
-            result[[SkinTone.dark]] = "🫃🏿"
+            return [
+                [.light]: "🫃🏻",
+                [.mediumLight]: "🫃🏼",
+                [.medium]: "🫃🏽",
+                [.mediumDark]: "🫃🏾",
+                [.dark]: "🫃🏿"
+            ]
         case .pregnantPerson:
-            result[[SkinTone.light]] = "🫄🏻"
-            result[[SkinTone.mediumLight]] = "🫄🏼"
-            result[[SkinTone.medium]] = "🫄🏽"
-            result[[SkinTone.mediumDark]] = "🫄🏾"
-            result[[SkinTone.dark]] = "🫄🏿"
+            return [
+                [.light]: "🫄🏻",
+                [.mediumLight]: "🫄🏼",
+                [.medium]: "🫄🏽",
+                [.mediumDark]: "🫄🏾",
+                [.dark]: "🫄🏿"
+            ]
         case .breastFeeding:
-            result[[SkinTone.light]] = "🤱🏻"
-            result[[SkinTone.mediumLight]] = "🤱🏼"
-            result[[SkinTone.medium]] = "🤱🏽"
-            result[[SkinTone.mediumDark]] = "🤱🏾"
-            result[[SkinTone.dark]] = "🤱🏿"
+            return [
+                [.light]: "🤱🏻",
+                [.mediumLight]: "🤱🏼",
+                [.medium]: "🤱🏽",
+                [.mediumDark]: "🤱🏾",
+                [.dark]: "🤱🏿"
+            ]
         case .womanFeedingBaby:
-            result[[SkinTone.light]] = "👩🏻‍🍼"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🍼"
-            result[[SkinTone.medium]] = "👩🏽‍🍼"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🍼"
-            result[[SkinTone.dark]] = "👩🏿‍🍼"
+            return [
+                [.light]: "👩🏻‍🍼",
+                [.mediumLight]: "👩🏼‍🍼",
+                [.medium]: "👩🏽‍🍼",
+                [.mediumDark]: "👩🏾‍🍼",
+                [.dark]: "👩🏿‍🍼"
+            ]
         case .manFeedingBaby:
-            result[[SkinTone.light]] = "👨🏻‍🍼"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🍼"
-            result[[SkinTone.medium]] = "👨🏽‍🍼"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🍼"
-            result[[SkinTone.dark]] = "👨🏿‍🍼"
+            return [
+                [.light]: "👨🏻‍🍼",
+                [.mediumLight]: "👨🏼‍🍼",
+                [.medium]: "👨🏽‍🍼",
+                [.mediumDark]: "👨🏾‍🍼",
+                [.dark]: "👨🏿‍🍼"
+            ]
         case .personFeedingBaby:
-            result[[SkinTone.light]] = "🧑🏻‍🍼"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🍼"
-            result[[SkinTone.medium]] = "🧑🏽‍🍼"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🍼"
-            result[[SkinTone.dark]] = "🧑🏿‍🍼"
+            return [
+                [.light]: "🧑🏻‍🍼",
+                [.mediumLight]: "🧑🏼‍🍼",
+                [.medium]: "🧑🏽‍🍼",
+                [.mediumDark]: "🧑🏾‍🍼",
+                [.dark]: "🧑🏿‍🍼"
+            ]
         case .angel:
-            result[[SkinTone.light]] = "👼🏻"
-            result[[SkinTone.mediumLight]] = "👼🏼"
-            result[[SkinTone.medium]] = "👼🏽"
-            result[[SkinTone.mediumDark]] = "👼🏾"
-            result[[SkinTone.dark]] = "👼🏿"
+            return [
+                [.light]: "👼🏻",
+                [.mediumLight]: "👼🏼",
+                [.medium]: "👼🏽",
+                [.mediumDark]: "👼🏾",
+                [.dark]: "👼🏿"
+            ]
         case .santa:
-            result[[SkinTone.light]] = "🎅🏻"
-            result[[SkinTone.mediumLight]] = "🎅🏼"
-            result[[SkinTone.medium]] = "🎅🏽"
-            result[[SkinTone.mediumDark]] = "🎅🏾"
-            result[[SkinTone.dark]] = "🎅🏿"
+            return [
+                [.light]: "🎅🏻",
+                [.mediumLight]: "🎅🏼",
+                [.medium]: "🎅🏽",
+                [.mediumDark]: "🎅🏾",
+                [.dark]: "🎅🏿"
+            ]
         case .mrsClaus:
-            result[[SkinTone.light]] = "🤶🏻"
-            result[[SkinTone.mediumLight]] = "🤶🏼"
-            result[[SkinTone.medium]] = "🤶🏽"
-            result[[SkinTone.mediumDark]] = "🤶🏾"
-            result[[SkinTone.dark]] = "🤶🏿"
+            return [
+                [.light]: "🤶🏻",
+                [.mediumLight]: "🤶🏼",
+                [.medium]: "🤶🏽",
+                [.mediumDark]: "🤶🏾",
+                [.dark]: "🤶🏿"
+            ]
         case .mxClaus:
-            result[[SkinTone.light]] = "🧑🏻‍🎄"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🎄"
-            result[[SkinTone.medium]] = "🧑🏽‍🎄"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🎄"
-            result[[SkinTone.dark]] = "🧑🏿‍🎄"
+            return [
+                [.light]: "🧑🏻‍🎄",
+                [.mediumLight]: "🧑🏼‍🎄",
+                [.medium]: "🧑🏽‍🎄",
+                [.mediumDark]: "🧑🏾‍🎄",
+                [.dark]: "🧑🏿‍🎄"
+            ]
         case .superhero:
-            result[[SkinTone.light]] = "🦸🏻"
-            result[[SkinTone.mediumLight]] = "🦸🏼"
-            result[[SkinTone.medium]] = "🦸🏽"
-            result[[SkinTone.mediumDark]] = "🦸🏾"
-            result[[SkinTone.dark]] = "🦸🏿"
+            return [
+                [.light]: "🦸🏻",
+                [.mediumLight]: "🦸🏼",
+                [.medium]: "🦸🏽",
+                [.mediumDark]: "🦸🏾",
+                [.dark]: "🦸🏿"
+            ]
         case .maleSuperhero:
-            result[[SkinTone.light]] = "🦸🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🦸🏼‍♂️"
-            result[[SkinTone.medium]] = "🦸🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🦸🏾‍♂️"
-            result[[SkinTone.dark]] = "🦸🏿‍♂️"
+            return [
+                [.light]: "🦸🏻‍♂️",
+                [.mediumLight]: "🦸🏼‍♂️",
+                [.medium]: "🦸🏽‍♂️",
+                [.mediumDark]: "🦸🏾‍♂️",
+                [.dark]: "🦸🏿‍♂️"
+            ]
         case .femaleSuperhero:
-            result[[SkinTone.light]] = "🦸🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🦸🏼‍♀️"
-            result[[SkinTone.medium]] = "🦸🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🦸🏾‍♀️"
-            result[[SkinTone.dark]] = "🦸🏿‍♀️"
+            return [
+                [.light]: "🦸🏻‍♀️",
+                [.mediumLight]: "🦸🏼‍♀️",
+                [.medium]: "🦸🏽‍♀️",
+                [.mediumDark]: "🦸🏾‍♀️",
+                [.dark]: "🦸🏿‍♀️"
+            ]
         case .supervillain:
-            result[[SkinTone.light]] = "🦹🏻"
-            result[[SkinTone.mediumLight]] = "🦹🏼"
-            result[[SkinTone.medium]] = "🦹🏽"
-            result[[SkinTone.mediumDark]] = "🦹🏾"
-            result[[SkinTone.dark]] = "🦹🏿"
+            return [
+                [.light]: "🦹🏻",
+                [.mediumLight]: "🦹🏼",
+                [.medium]: "🦹🏽",
+                [.mediumDark]: "🦹🏾",
+                [.dark]: "🦹🏿"
+            ]
         case .maleSupervillain:
-            result[[SkinTone.light]] = "🦹🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🦹🏼‍♂️"
-            result[[SkinTone.medium]] = "🦹🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🦹🏾‍♂️"
-            result[[SkinTone.dark]] = "🦹🏿‍♂️"
+            return [
+                [.light]: "🦹🏻‍♂️",
+                [.mediumLight]: "🦹🏼‍♂️",
+                [.medium]: "🦹🏽‍♂️",
+                [.mediumDark]: "🦹🏾‍♂️",
+                [.dark]: "🦹🏿‍♂️"
+            ]
         case .femaleSupervillain:
-            result[[SkinTone.light]] = "🦹🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🦹🏼‍♀️"
-            result[[SkinTone.medium]] = "🦹🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🦹🏾‍♀️"
-            result[[SkinTone.dark]] = "🦹🏿‍♀️"
+            return [
+                [.light]: "🦹🏻‍♀️",
+                [.mediumLight]: "🦹🏼‍♀️",
+                [.medium]: "🦹🏽‍♀️",
+                [.mediumDark]: "🦹🏾‍♀️",
+                [.dark]: "🦹🏿‍♀️"
+            ]
         case .mage:
-            result[[SkinTone.light]] = "🧙🏻"
-            result[[SkinTone.mediumLight]] = "🧙🏼"
-            result[[SkinTone.medium]] = "🧙🏽"
-            result[[SkinTone.mediumDark]] = "🧙🏾"
-            result[[SkinTone.dark]] = "🧙🏿"
+            return [
+                [.light]: "🧙🏻",
+                [.mediumLight]: "🧙🏼",
+                [.medium]: "🧙🏽",
+                [.mediumDark]: "🧙🏾",
+                [.dark]: "🧙🏿"
+            ]
         case .maleMage:
-            result[[SkinTone.light]] = "🧙🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧙🏼‍♂️"
-            result[[SkinTone.medium]] = "🧙🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧙🏾‍♂️"
-            result[[SkinTone.dark]] = "🧙🏿‍♂️"
+            return [
+                [.light]: "🧙🏻‍♂️",
+                [.mediumLight]: "🧙🏼‍♂️",
+                [.medium]: "🧙🏽‍♂️",
+                [.mediumDark]: "🧙🏾‍♂️",
+                [.dark]: "🧙🏿‍♂️"
+            ]
         case .femaleMage:
-            result[[SkinTone.light]] = "🧙🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧙🏼‍♀️"
-            result[[SkinTone.medium]] = "🧙🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧙🏾‍♀️"
-            result[[SkinTone.dark]] = "🧙🏿‍♀️"
+            return [
+                [.light]: "🧙🏻‍♀️",
+                [.mediumLight]: "🧙🏼‍♀️",
+                [.medium]: "🧙🏽‍♀️",
+                [.mediumDark]: "🧙🏾‍♀️",
+                [.dark]: "🧙🏿‍♀️"
+            ]
         case .fairy:
-            result[[SkinTone.light]] = "🧚🏻"
-            result[[SkinTone.mediumLight]] = "🧚🏼"
-            result[[SkinTone.medium]] = "🧚🏽"
-            result[[SkinTone.mediumDark]] = "🧚🏾"
-            result[[SkinTone.dark]] = "🧚🏿"
+            return [
+                [.light]: "🧚🏻",
+                [.mediumLight]: "🧚🏼",
+                [.medium]: "🧚🏽",
+                [.mediumDark]: "🧚🏾",
+                [.dark]: "🧚🏿"
+            ]
         case .maleFairy:
-            result[[SkinTone.light]] = "🧚🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧚🏼‍♂️"
-            result[[SkinTone.medium]] = "🧚🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧚🏾‍♂️"
-            result[[SkinTone.dark]] = "🧚🏿‍♂️"
+            return [
+                [.light]: "🧚🏻‍♂️",
+                [.mediumLight]: "🧚🏼‍♂️",
+                [.medium]: "🧚🏽‍♂️",
+                [.mediumDark]: "🧚🏾‍♂️",
+                [.dark]: "🧚🏿‍♂️"
+            ]
         case .femaleFairy:
-            result[[SkinTone.light]] = "🧚🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧚🏼‍♀️"
-            result[[SkinTone.medium]] = "🧚🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧚🏾‍♀️"
-            result[[SkinTone.dark]] = "🧚🏿‍♀️"
+            return [
+                [.light]: "🧚🏻‍♀️",
+                [.mediumLight]: "🧚🏼‍♀️",
+                [.medium]: "🧚🏽‍♀️",
+                [.mediumDark]: "🧚🏾‍♀️",
+                [.dark]: "🧚🏿‍♀️"
+            ]
         case .vampire:
-            result[[SkinTone.light]] = "🧛🏻"
-            result[[SkinTone.mediumLight]] = "🧛🏼"
-            result[[SkinTone.medium]] = "🧛🏽"
-            result[[SkinTone.mediumDark]] = "🧛🏾"
-            result[[SkinTone.dark]] = "🧛🏿"
+            return [
+                [.light]: "🧛🏻",
+                [.mediumLight]: "🧛🏼",
+                [.medium]: "🧛🏽",
+                [.mediumDark]: "🧛🏾",
+                [.dark]: "🧛🏿"
+            ]
         case .maleVampire:
-            result[[SkinTone.light]] = "🧛🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧛🏼‍♂️"
-            result[[SkinTone.medium]] = "🧛🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧛🏾‍♂️"
-            result[[SkinTone.dark]] = "🧛🏿‍♂️"
+            return [
+                [.light]: "🧛🏻‍♂️",
+                [.mediumLight]: "🧛🏼‍♂️",
+                [.medium]: "🧛🏽‍♂️",
+                [.mediumDark]: "🧛🏾‍♂️",
+                [.dark]: "🧛🏿‍♂️"
+            ]
         case .femaleVampire:
-            result[[SkinTone.light]] = "🧛🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧛🏼‍♀️"
-            result[[SkinTone.medium]] = "🧛🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧛🏾‍♀️"
-            result[[SkinTone.dark]] = "🧛🏿‍♀️"
+            return [
+                [.light]: "🧛🏻‍♀️",
+                [.mediumLight]: "🧛🏼‍♀️",
+                [.medium]: "🧛🏽‍♀️",
+                [.mediumDark]: "🧛🏾‍♀️",
+                [.dark]: "🧛🏿‍♀️"
+            ]
         case .merperson:
-            result[[SkinTone.light]] = "🧜🏻"
-            result[[SkinTone.mediumLight]] = "🧜🏼"
-            result[[SkinTone.medium]] = "🧜🏽"
-            result[[SkinTone.mediumDark]] = "🧜🏾"
-            result[[SkinTone.dark]] = "🧜🏿"
+            return [
+                [.light]: "🧜🏻",
+                [.mediumLight]: "🧜🏼",
+                [.medium]: "🧜🏽",
+                [.mediumDark]: "🧜🏾",
+                [.dark]: "🧜🏿"
+            ]
         case .merman:
-            result[[SkinTone.light]] = "🧜🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧜🏼‍♂️"
-            result[[SkinTone.medium]] = "🧜🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧜🏾‍♂️"
-            result[[SkinTone.dark]] = "🧜🏿‍♂️"
+            return [
+                [.light]: "🧜🏻‍♂️",
+                [.mediumLight]: "🧜🏼‍♂️",
+                [.medium]: "🧜🏽‍♂️",
+                [.mediumDark]: "🧜🏾‍♂️",
+                [.dark]: "🧜🏿‍♂️"
+            ]
         case .mermaid:
-            result[[SkinTone.light]] = "🧜🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧜🏼‍♀️"
-            result[[SkinTone.medium]] = "🧜🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧜🏾‍♀️"
-            result[[SkinTone.dark]] = "🧜🏿‍♀️"
+            return [
+                [.light]: "🧜🏻‍♀️",
+                [.mediumLight]: "🧜🏼‍♀️",
+                [.medium]: "🧜🏽‍♀️",
+                [.mediumDark]: "🧜🏾‍♀️",
+                [.dark]: "🧜🏿‍♀️"
+            ]
         case .elf:
-            result[[SkinTone.light]] = "🧝🏻"
-            result[[SkinTone.mediumLight]] = "🧝🏼"
-            result[[SkinTone.medium]] = "🧝🏽"
-            result[[SkinTone.mediumDark]] = "🧝🏾"
-            result[[SkinTone.dark]] = "🧝🏿"
+            return [
+                [.light]: "🧝🏻",
+                [.mediumLight]: "🧝🏼",
+                [.medium]: "🧝🏽",
+                [.mediumDark]: "🧝🏾",
+                [.dark]: "🧝🏿"
+            ]
         case .maleElf:
-            result[[SkinTone.light]] = "🧝🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧝🏼‍♂️"
-            result[[SkinTone.medium]] = "🧝🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧝🏾‍♂️"
-            result[[SkinTone.dark]] = "🧝🏿‍♂️"
+            return [
+                [.light]: "🧝🏻‍♂️",
+                [.mediumLight]: "🧝🏼‍♂️",
+                [.medium]: "🧝🏽‍♂️",
+                [.mediumDark]: "🧝🏾‍♂️",
+                [.dark]: "🧝🏿‍♂️"
+            ]
         case .femaleElf:
-            result[[SkinTone.light]] = "🧝🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧝🏼‍♀️"
-            result[[SkinTone.medium]] = "🧝🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧝🏾‍♀️"
-            result[[SkinTone.dark]] = "🧝🏿‍♀️"
+            return [
+                [.light]: "🧝🏻‍♀️",
+                [.mediumLight]: "🧝🏼‍♀️",
+                [.medium]: "🧝🏽‍♀️",
+                [.mediumDark]: "🧝🏾‍♀️",
+                [.dark]: "🧝🏿‍♀️"
+            ]
         case .massage:
-            result[[SkinTone.light]] = "💆🏻"
-            result[[SkinTone.mediumLight]] = "💆🏼"
-            result[[SkinTone.medium]] = "💆🏽"
-            result[[SkinTone.mediumDark]] = "💆🏾"
-            result[[SkinTone.dark]] = "💆🏿"
+            return [
+                [.light]: "💆🏻",
+                [.mediumLight]: "💆🏼",
+                [.medium]: "💆🏽",
+                [.mediumDark]: "💆🏾",
+                [.dark]: "💆🏿"
+            ]
         case .manGettingMassage:
-            result[[SkinTone.light]] = "💆🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "💆🏼‍♂️"
-            result[[SkinTone.medium]] = "💆🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "💆🏾‍♂️"
-            result[[SkinTone.dark]] = "💆🏿‍♂️"
+            return [
+                [.light]: "💆🏻‍♂️",
+                [.mediumLight]: "💆🏼‍♂️",
+                [.medium]: "💆🏽‍♂️",
+                [.mediumDark]: "💆🏾‍♂️",
+                [.dark]: "💆🏿‍♂️"
+            ]
         case .womanGettingMassage:
-            result[[SkinTone.light]] = "💆🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "💆🏼‍♀️"
-            result[[SkinTone.medium]] = "💆🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "💆🏾‍♀️"
-            result[[SkinTone.dark]] = "💆🏿‍♀️"
+            return [
+                [.light]: "💆🏻‍♀️",
+                [.mediumLight]: "💆🏼‍♀️",
+                [.medium]: "💆🏽‍♀️",
+                [.mediumDark]: "💆🏾‍♀️",
+                [.dark]: "💆🏿‍♀️"
+            ]
         case .haircut:
-            result[[SkinTone.light]] = "💇🏻"
-            result[[SkinTone.mediumLight]] = "💇🏼"
-            result[[SkinTone.medium]] = "💇🏽"
-            result[[SkinTone.mediumDark]] = "💇🏾"
-            result[[SkinTone.dark]] = "💇🏿"
+            return [
+                [.light]: "💇🏻",
+                [.mediumLight]: "💇🏼",
+                [.medium]: "💇🏽",
+                [.mediumDark]: "💇🏾",
+                [.dark]: "💇🏿"
+            ]
         case .manGettingHaircut:
-            result[[SkinTone.light]] = "💇🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "💇🏼‍♂️"
-            result[[SkinTone.medium]] = "💇🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "💇🏾‍♂️"
-            result[[SkinTone.dark]] = "💇🏿‍♂️"
+            return [
+                [.light]: "💇🏻‍♂️",
+                [.mediumLight]: "💇🏼‍♂️",
+                [.medium]: "💇🏽‍♂️",
+                [.mediumDark]: "💇🏾‍♂️",
+                [.dark]: "💇🏿‍♂️"
+            ]
         case .womanGettingHaircut:
-            result[[SkinTone.light]] = "💇🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "💇🏼‍♀️"
-            result[[SkinTone.medium]] = "💇🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "💇🏾‍♀️"
-            result[[SkinTone.dark]] = "💇🏿‍♀️"
+            return [
+                [.light]: "💇🏻‍♀️",
+                [.mediumLight]: "💇🏼‍♀️",
+                [.medium]: "💇🏽‍♀️",
+                [.mediumDark]: "💇🏾‍♀️",
+                [.dark]: "💇🏿‍♀️"
+            ]
         case .walking:
-            result[[SkinTone.light]] = "🚶🏻"
-            result[[SkinTone.mediumLight]] = "🚶🏼"
-            result[[SkinTone.medium]] = "🚶🏽"
-            result[[SkinTone.mediumDark]] = "🚶🏾"
-            result[[SkinTone.dark]] = "🚶🏿"
+            return [
+                [.light]: "🚶🏻",
+                [.mediumLight]: "🚶🏼",
+                [.medium]: "🚶🏽",
+                [.mediumDark]: "🚶🏾",
+                [.dark]: "🚶🏿"
+            ]
         case .manWalking:
-            result[[SkinTone.light]] = "🚶🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🚶🏼‍♂️"
-            result[[SkinTone.medium]] = "🚶🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🚶🏾‍♂️"
-            result[[SkinTone.dark]] = "🚶🏿‍♂️"
+            return [
+                [.light]: "🚶🏻‍♂️",
+                [.mediumLight]: "🚶🏼‍♂️",
+                [.medium]: "🚶🏽‍♂️",
+                [.mediumDark]: "🚶🏾‍♂️",
+                [.dark]: "🚶🏿‍♂️"
+            ]
         case .womanWalking:
-            result[[SkinTone.light]] = "🚶🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🚶🏼‍♀️"
-            result[[SkinTone.medium]] = "🚶🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🚶🏾‍♀️"
-            result[[SkinTone.dark]] = "🚶🏿‍♀️"
+            return [
+                [.light]: "🚶🏻‍♀️",
+                [.mediumLight]: "🚶🏼‍♀️",
+                [.medium]: "🚶🏽‍♀️",
+                [.mediumDark]: "🚶🏾‍♀️",
+                [.dark]: "🚶🏿‍♀️"
+            ]
         case .standingPerson:
-            result[[SkinTone.light]] = "🧍🏻"
-            result[[SkinTone.mediumLight]] = "🧍🏼"
-            result[[SkinTone.medium]] = "🧍🏽"
-            result[[SkinTone.mediumDark]] = "🧍🏾"
-            result[[SkinTone.dark]] = "🧍🏿"
+            return [
+                [.light]: "🧍🏻",
+                [.mediumLight]: "🧍🏼",
+                [.medium]: "🧍🏽",
+                [.mediumDark]: "🧍🏾",
+                [.dark]: "🧍🏿"
+            ]
         case .manStanding:
-            result[[SkinTone.light]] = "🧍🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧍🏼‍♂️"
-            result[[SkinTone.medium]] = "🧍🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧍🏾‍♂️"
-            result[[SkinTone.dark]] = "🧍🏿‍♂️"
+            return [
+                [.light]: "🧍🏻‍♂️",
+                [.mediumLight]: "🧍🏼‍♂️",
+                [.medium]: "🧍🏽‍♂️",
+                [.mediumDark]: "🧍🏾‍♂️",
+                [.dark]: "🧍🏿‍♂️"
+            ]
         case .womanStanding:
-            result[[SkinTone.light]] = "🧍🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧍🏼‍♀️"
-            result[[SkinTone.medium]] = "🧍🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧍🏾‍♀️"
-            result[[SkinTone.dark]] = "🧍🏿‍♀️"
+            return [
+                [.light]: "🧍🏻‍♀️",
+                [.mediumLight]: "🧍🏼‍♀️",
+                [.medium]: "🧍🏽‍♀️",
+                [.mediumDark]: "🧍🏾‍♀️",
+                [.dark]: "🧍🏿‍♀️"
+            ]
         case .kneelingPerson:
-            result[[SkinTone.light]] = "🧎🏻"
-            result[[SkinTone.mediumLight]] = "🧎🏼"
-            result[[SkinTone.medium]] = "🧎🏽"
-            result[[SkinTone.mediumDark]] = "🧎🏾"
-            result[[SkinTone.dark]] = "🧎🏿"
+            return [
+                [.light]: "🧎🏻",
+                [.mediumLight]: "🧎🏼",
+                [.medium]: "🧎🏽",
+                [.mediumDark]: "🧎🏾",
+                [.dark]: "🧎🏿"
+            ]
         case .manKneeling:
-            result[[SkinTone.light]] = "🧎🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧎🏼‍♂️"
-            result[[SkinTone.medium]] = "🧎🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧎🏾‍♂️"
-            result[[SkinTone.dark]] = "🧎🏿‍♂️"
+            return [
+                [.light]: "🧎🏻‍♂️",
+                [.mediumLight]: "🧎🏼‍♂️",
+                [.medium]: "🧎🏽‍♂️",
+                [.mediumDark]: "🧎🏾‍♂️",
+                [.dark]: "🧎🏿‍♂️"
+            ]
         case .womanKneeling:
-            result[[SkinTone.light]] = "🧎🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧎🏼‍♀️"
-            result[[SkinTone.medium]] = "🧎🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧎🏾‍♀️"
-            result[[SkinTone.dark]] = "🧎🏿‍♀️"
+            return [
+                [.light]: "🧎🏻‍♀️",
+                [.mediumLight]: "🧎🏼‍♀️",
+                [.medium]: "🧎🏽‍♀️",
+                [.mediumDark]: "🧎🏾‍♀️",
+                [.dark]: "🧎🏿‍♀️"
+            ]
         case .personWithProbingCane:
-            result[[SkinTone.light]] = "🧑🏻‍🦯"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🦯"
-            result[[SkinTone.medium]] = "🧑🏽‍🦯"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🦯"
-            result[[SkinTone.dark]] = "🧑🏿‍🦯"
+            return [
+                [.light]: "🧑🏻‍🦯",
+                [.mediumLight]: "🧑🏼‍🦯",
+                [.medium]: "🧑🏽‍🦯",
+                [.mediumDark]: "🧑🏾‍🦯",
+                [.dark]: "🧑🏿‍🦯"
+            ]
         case .manWithProbingCane:
-            result[[SkinTone.light]] = "👨🏻‍🦯"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🦯"
-            result[[SkinTone.medium]] = "👨🏽‍🦯"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🦯"
-            result[[SkinTone.dark]] = "👨🏿‍🦯"
+            return [
+                [.light]: "👨🏻‍🦯",
+                [.mediumLight]: "👨🏼‍🦯",
+                [.medium]: "👨🏽‍🦯",
+                [.mediumDark]: "👨🏾‍🦯",
+                [.dark]: "👨🏿‍🦯"
+            ]
         case .womanWithProbingCane:
-            result[[SkinTone.light]] = "👩🏻‍🦯"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🦯"
-            result[[SkinTone.medium]] = "👩🏽‍🦯"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🦯"
-            result[[SkinTone.dark]] = "👩🏿‍🦯"
+            return [
+                [.light]: "👩🏻‍🦯",
+                [.mediumLight]: "👩🏼‍🦯",
+                [.medium]: "👩🏽‍🦯",
+                [.mediumDark]: "👩🏾‍🦯",
+                [.dark]: "👩🏿‍🦯"
+            ]
         case .personInMotorizedWheelchair:
-            result[[SkinTone.light]] = "🧑🏻‍🦼"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🦼"
-            result[[SkinTone.medium]] = "🧑🏽‍🦼"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🦼"
-            result[[SkinTone.dark]] = "🧑🏿‍🦼"
+            return [
+                [.light]: "🧑🏻‍🦼",
+                [.mediumLight]: "🧑🏼‍🦼",
+                [.medium]: "🧑🏽‍🦼",
+                [.mediumDark]: "🧑🏾‍🦼",
+                [.dark]: "🧑🏿‍🦼"
+            ]
         case .manInMotorizedWheelchair:
-            result[[SkinTone.light]] = "👨🏻‍🦼"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🦼"
-            result[[SkinTone.medium]] = "👨🏽‍🦼"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🦼"
-            result[[SkinTone.dark]] = "👨🏿‍🦼"
+            return [
+                [.light]: "👨🏻‍🦼",
+                [.mediumLight]: "👨🏼‍🦼",
+                [.medium]: "👨🏽‍🦼",
+                [.mediumDark]: "👨🏾‍🦼",
+                [.dark]: "👨🏿‍🦼"
+            ]
         case .womanInMotorizedWheelchair:
-            result[[SkinTone.light]] = "👩🏻‍🦼"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🦼"
-            result[[SkinTone.medium]] = "👩🏽‍🦼"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🦼"
-            result[[SkinTone.dark]] = "👩🏿‍🦼"
+            return [
+                [.light]: "👩🏻‍🦼",
+                [.mediumLight]: "👩🏼‍🦼",
+                [.medium]: "👩🏽‍🦼",
+                [.mediumDark]: "👩🏾‍🦼",
+                [.dark]: "👩🏿‍🦼"
+            ]
         case .personInManualWheelchair:
-            result[[SkinTone.light]] = "🧑🏻‍🦽"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🦽"
-            result[[SkinTone.medium]] = "🧑🏽‍🦽"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🦽"
-            result[[SkinTone.dark]] = "🧑🏿‍🦽"
+            return [
+                [.light]: "🧑🏻‍🦽",
+                [.mediumLight]: "🧑🏼‍🦽",
+                [.medium]: "🧑🏽‍🦽",
+                [.mediumDark]: "🧑🏾‍🦽",
+                [.dark]: "🧑🏿‍🦽"
+            ]
         case .manInManualWheelchair:
-            result[[SkinTone.light]] = "👨🏻‍🦽"
-            result[[SkinTone.mediumLight]] = "👨🏼‍🦽"
-            result[[SkinTone.medium]] = "👨🏽‍🦽"
-            result[[SkinTone.mediumDark]] = "👨🏾‍🦽"
-            result[[SkinTone.dark]] = "👨🏿‍🦽"
+            return [
+                [.light]: "👨🏻‍🦽",
+                [.mediumLight]: "👨🏼‍🦽",
+                [.medium]: "👨🏽‍🦽",
+                [.mediumDark]: "👨🏾‍🦽",
+                [.dark]: "👨🏿‍🦽"
+            ]
         case .womanInManualWheelchair:
-            result[[SkinTone.light]] = "👩🏻‍🦽"
-            result[[SkinTone.mediumLight]] = "👩🏼‍🦽"
-            result[[SkinTone.medium]] = "👩🏽‍🦽"
-            result[[SkinTone.mediumDark]] = "👩🏾‍🦽"
-            result[[SkinTone.dark]] = "👩🏿‍🦽"
+            return [
+                [.light]: "👩🏻‍🦽",
+                [.mediumLight]: "👩🏼‍🦽",
+                [.medium]: "👩🏽‍🦽",
+                [.mediumDark]: "👩🏾‍🦽",
+                [.dark]: "👩🏿‍🦽"
+            ]
         case .runner:
-            result[[SkinTone.light]] = "🏃🏻"
-            result[[SkinTone.mediumLight]] = "🏃🏼"
-            result[[SkinTone.medium]] = "🏃🏽"
-            result[[SkinTone.mediumDark]] = "🏃🏾"
-            result[[SkinTone.dark]] = "🏃🏿"
+            return [
+                [.light]: "🏃🏻",
+                [.mediumLight]: "🏃🏼",
+                [.medium]: "🏃🏽",
+                [.mediumDark]: "🏃🏾",
+                [.dark]: "🏃🏿"
+            ]
         case .manRunning:
-            result[[SkinTone.light]] = "🏃🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🏃🏼‍♂️"
-            result[[SkinTone.medium]] = "🏃🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🏃🏾‍♂️"
-            result[[SkinTone.dark]] = "🏃🏿‍♂️"
+            return [
+                [.light]: "🏃🏻‍♂️",
+                [.mediumLight]: "🏃🏼‍♂️",
+                [.medium]: "🏃🏽‍♂️",
+                [.mediumDark]: "🏃🏾‍♂️",
+                [.dark]: "🏃🏿‍♂️"
+            ]
         case .womanRunning:
-            result[[SkinTone.light]] = "🏃🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🏃🏼‍♀️"
-            result[[SkinTone.medium]] = "🏃🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🏃🏾‍♀️"
-            result[[SkinTone.dark]] = "🏃🏿‍♀️"
+            return [
+                [.light]: "🏃🏻‍♀️",
+                [.mediumLight]: "🏃🏼‍♀️",
+                [.medium]: "🏃🏽‍♀️",
+                [.mediumDark]: "🏃🏾‍♀️",
+                [.dark]: "🏃🏿‍♀️"
+            ]
         case .dancer:
-            result[[SkinTone.light]] = "💃🏻"
-            result[[SkinTone.mediumLight]] = "💃🏼"
-            result[[SkinTone.medium]] = "💃🏽"
-            result[[SkinTone.mediumDark]] = "💃🏾"
-            result[[SkinTone.dark]] = "💃🏿"
+            return [
+                [.light]: "💃🏻",
+                [.mediumLight]: "💃🏼",
+                [.medium]: "💃🏽",
+                [.mediumDark]: "💃🏾",
+                [.dark]: "💃🏿"
+            ]
         case .manDancing:
-            result[[SkinTone.light]] = "🕺🏻"
-            result[[SkinTone.mediumLight]] = "🕺🏼"
-            result[[SkinTone.medium]] = "🕺🏽"
-            result[[SkinTone.mediumDark]] = "🕺🏾"
-            result[[SkinTone.dark]] = "🕺🏿"
+            return [
+                [.light]: "🕺🏻",
+                [.mediumLight]: "🕺🏼",
+                [.medium]: "🕺🏽",
+                [.mediumDark]: "🕺🏾",
+                [.dark]: "🕺🏿"
+            ]
         case .manInBusinessSuitLevitating:
-            result[[SkinTone.light]] = "🕴🏻"
-            result[[SkinTone.mediumLight]] = "🕴🏼"
-            result[[SkinTone.medium]] = "🕴🏽"
-            result[[SkinTone.mediumDark]] = "🕴🏾"
-            result[[SkinTone.dark]] = "🕴🏿"
+            return [
+                [.light]: "🕴🏻",
+                [.mediumLight]: "🕴🏼",
+                [.medium]: "🕴🏽",
+                [.mediumDark]: "🕴🏾",
+                [.dark]: "🕴🏿"
+            ]
         case .personInSteamyRoom:
-            result[[SkinTone.light]] = "🧖🏻"
-            result[[SkinTone.mediumLight]] = "🧖🏼"
-            result[[SkinTone.medium]] = "🧖🏽"
-            result[[SkinTone.mediumDark]] = "🧖🏾"
-            result[[SkinTone.dark]] = "🧖🏿"
+            return [
+                [.light]: "🧖🏻",
+                [.mediumLight]: "🧖🏼",
+                [.medium]: "🧖🏽",
+                [.mediumDark]: "🧖🏾",
+                [.dark]: "🧖🏿"
+            ]
         case .manInSteamyRoom:
-            result[[SkinTone.light]] = "🧖🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧖🏼‍♂️"
-            result[[SkinTone.medium]] = "🧖🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧖🏾‍♂️"
-            result[[SkinTone.dark]] = "🧖🏿‍♂️"
+            return [
+                [.light]: "🧖🏻‍♂️",
+                [.mediumLight]: "🧖🏼‍♂️",
+                [.medium]: "🧖🏽‍♂️",
+                [.mediumDark]: "🧖🏾‍♂️",
+                [.dark]: "🧖🏿‍♂️"
+            ]
         case .womanInSteamyRoom:
-            result[[SkinTone.light]] = "🧖🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧖🏼‍♀️"
-            result[[SkinTone.medium]] = "🧖🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧖🏾‍♀️"
-            result[[SkinTone.dark]] = "🧖🏿‍♀️"
+            return [
+                [.light]: "🧖🏻‍♀️",
+                [.mediumLight]: "🧖🏼‍♀️",
+                [.medium]: "🧖🏽‍♀️",
+                [.mediumDark]: "🧖🏾‍♀️",
+                [.dark]: "🧖🏿‍♀️"
+            ]
         case .personClimbing:
-            result[[SkinTone.light]] = "🧗🏻"
-            result[[SkinTone.mediumLight]] = "🧗🏼"
-            result[[SkinTone.medium]] = "🧗🏽"
-            result[[SkinTone.mediumDark]] = "🧗🏾"
-            result[[SkinTone.dark]] = "🧗🏿"
+            return [
+                [.light]: "🧗🏻",
+                [.mediumLight]: "🧗🏼",
+                [.medium]: "🧗🏽",
+                [.mediumDark]: "🧗🏾",
+                [.dark]: "🧗🏿"
+            ]
         case .manClimbing:
-            result[[SkinTone.light]] = "🧗🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧗🏼‍♂️"
-            result[[SkinTone.medium]] = "🧗🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧗🏾‍♂️"
-            result[[SkinTone.dark]] = "🧗🏿‍♂️"
+            return [
+                [.light]: "🧗🏻‍♂️",
+                [.mediumLight]: "🧗🏼‍♂️",
+                [.medium]: "🧗🏽‍♂️",
+                [.mediumDark]: "🧗🏾‍♂️",
+                [.dark]: "🧗🏿‍♂️"
+            ]
         case .womanClimbing:
-            result[[SkinTone.light]] = "🧗🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧗🏼‍♀️"
-            result[[SkinTone.medium]] = "🧗🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧗🏾‍♀️"
-            result[[SkinTone.dark]] = "🧗🏿‍♀️"
+            return [
+                [.light]: "🧗🏻‍♀️",
+                [.mediumLight]: "🧗🏼‍♀️",
+                [.medium]: "🧗🏽‍♀️",
+                [.mediumDark]: "🧗🏾‍♀️",
+                [.dark]: "🧗🏿‍♀️"
+            ]
         case .horseRacing:
-            result[[SkinTone.light]] = "🏇🏻"
-            result[[SkinTone.mediumLight]] = "🏇🏼"
-            result[[SkinTone.medium]] = "🏇🏽"
-            result[[SkinTone.mediumDark]] = "🏇🏾"
-            result[[SkinTone.dark]] = "🏇🏿"
+            return [
+                [.light]: "🏇🏻",
+                [.mediumLight]: "🏇🏼",
+                [.medium]: "🏇🏽",
+                [.mediumDark]: "🏇🏾",
+                [.dark]: "🏇🏿"
+            ]
         case .snowboarder:
-            result[[SkinTone.light]] = "🏂🏻"
-            result[[SkinTone.mediumLight]] = "🏂🏼"
-            result[[SkinTone.medium]] = "🏂🏽"
-            result[[SkinTone.mediumDark]] = "🏂🏾"
-            result[[SkinTone.dark]] = "🏂🏿"
+            return [
+                [.light]: "🏂🏻",
+                [.mediumLight]: "🏂🏼",
+                [.medium]: "🏂🏽",
+                [.mediumDark]: "🏂🏾",
+                [.dark]: "🏂🏿"
+            ]
         case .golfer:
-            result[[SkinTone.light]] = "🏌🏻"
-            result[[SkinTone.mediumLight]] = "🏌🏼"
-            result[[SkinTone.medium]] = "🏌🏽"
-            result[[SkinTone.mediumDark]] = "🏌🏾"
-            result[[SkinTone.dark]] = "🏌🏿"
+            return [
+                [.light]: "🏌🏻",
+                [.mediumLight]: "🏌🏼",
+                [.medium]: "🏌🏽",
+                [.mediumDark]: "🏌🏾",
+                [.dark]: "🏌🏿"
+            ]
         case .manGolfing:
-            result[[SkinTone.light]] = "🏌🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🏌🏼‍♂️"
-            result[[SkinTone.medium]] = "🏌🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🏌🏾‍♂️"
-            result[[SkinTone.dark]] = "🏌🏿‍♂️"
+            return [
+                [.light]: "🏌🏻‍♂️",
+                [.mediumLight]: "🏌🏼‍♂️",
+                [.medium]: "🏌🏽‍♂️",
+                [.mediumDark]: "🏌🏾‍♂️",
+                [.dark]: "🏌🏿‍♂️"
+            ]
         case .womanGolfing:
-            result[[SkinTone.light]] = "🏌🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🏌🏼‍♀️"
-            result[[SkinTone.medium]] = "🏌🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🏌🏾‍♀️"
-            result[[SkinTone.dark]] = "🏌🏿‍♀️"
+            return [
+                [.light]: "🏌🏻‍♀️",
+                [.mediumLight]: "🏌🏼‍♀️",
+                [.medium]: "🏌🏽‍♀️",
+                [.mediumDark]: "🏌🏾‍♀️",
+                [.dark]: "🏌🏿‍♀️"
+            ]
         case .surfer:
-            result[[SkinTone.light]] = "🏄🏻"
-            result[[SkinTone.mediumLight]] = "🏄🏼"
-            result[[SkinTone.medium]] = "🏄🏽"
-            result[[SkinTone.mediumDark]] = "🏄🏾"
-            result[[SkinTone.dark]] = "🏄🏿"
+            return [
+                [.light]: "🏄🏻",
+                [.mediumLight]: "🏄🏼",
+                [.medium]: "🏄🏽",
+                [.mediumDark]: "🏄🏾",
+                [.dark]: "🏄🏿"
+            ]
         case .manSurfing:
-            result[[SkinTone.light]] = "🏄🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🏄🏼‍♂️"
-            result[[SkinTone.medium]] = "🏄🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🏄🏾‍♂️"
-            result[[SkinTone.dark]] = "🏄🏿‍♂️"
+            return [
+                [.light]: "🏄🏻‍♂️",
+                [.mediumLight]: "🏄🏼‍♂️",
+                [.medium]: "🏄🏽‍♂️",
+                [.mediumDark]: "🏄🏾‍♂️",
+                [.dark]: "🏄🏿‍♂️"
+            ]
         case .womanSurfing:
-            result[[SkinTone.light]] = "🏄🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🏄🏼‍♀️"
-            result[[SkinTone.medium]] = "🏄🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🏄🏾‍♀️"
-            result[[SkinTone.dark]] = "🏄🏿‍♀️"
+            return [
+                [.light]: "🏄🏻‍♀️",
+                [.mediumLight]: "🏄🏼‍♀️",
+                [.medium]: "🏄🏽‍♀️",
+                [.mediumDark]: "🏄🏾‍♀️",
+                [.dark]: "🏄🏿‍♀️"
+            ]
         case .rowboat:
-            result[[SkinTone.light]] = "🚣🏻"
-            result[[SkinTone.mediumLight]] = "🚣🏼"
-            result[[SkinTone.medium]] = "🚣🏽"
-            result[[SkinTone.mediumDark]] = "🚣🏾"
-            result[[SkinTone.dark]] = "🚣🏿"
+            return [
+                [.light]: "🚣🏻",
+                [.mediumLight]: "🚣🏼",
+                [.medium]: "🚣🏽",
+                [.mediumDark]: "🚣🏾",
+                [.dark]: "🚣🏿"
+            ]
         case .manRowingBoat:
-            result[[SkinTone.light]] = "🚣🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🚣🏼‍♂️"
-            result[[SkinTone.medium]] = "🚣🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🚣🏾‍♂️"
-            result[[SkinTone.dark]] = "🚣🏿‍♂️"
+            return [
+                [.light]: "🚣🏻‍♂️",
+                [.mediumLight]: "🚣🏼‍♂️",
+                [.medium]: "🚣🏽‍♂️",
+                [.mediumDark]: "🚣🏾‍♂️",
+                [.dark]: "🚣🏿‍♂️"
+            ]
         case .womanRowingBoat:
-            result[[SkinTone.light]] = "🚣🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🚣🏼‍♀️"
-            result[[SkinTone.medium]] = "🚣🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🚣🏾‍♀️"
-            result[[SkinTone.dark]] = "🚣🏿‍♀️"
+            return [
+                [.light]: "🚣🏻‍♀️",
+                [.mediumLight]: "🚣🏼‍♀️",
+                [.medium]: "🚣🏽‍♀️",
+                [.mediumDark]: "🚣🏾‍♀️",
+                [.dark]: "🚣🏿‍♀️"
+            ]
         case .swimmer:
-            result[[SkinTone.light]] = "🏊🏻"
-            result[[SkinTone.mediumLight]] = "🏊🏼"
-            result[[SkinTone.medium]] = "🏊🏽"
-            result[[SkinTone.mediumDark]] = "🏊🏾"
-            result[[SkinTone.dark]] = "🏊🏿"
+            return [
+                [.light]: "🏊🏻",
+                [.mediumLight]: "🏊🏼",
+                [.medium]: "🏊🏽",
+                [.mediumDark]: "🏊🏾",
+                [.dark]: "🏊🏿"
+            ]
         case .manSwimming:
-            result[[SkinTone.light]] = "🏊🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🏊🏼‍♂️"
-            result[[SkinTone.medium]] = "🏊🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🏊🏾‍♂️"
-            result[[SkinTone.dark]] = "🏊🏿‍♂️"
+            return [
+                [.light]: "🏊🏻‍♂️",
+                [.mediumLight]: "🏊🏼‍♂️",
+                [.medium]: "🏊🏽‍♂️",
+                [.mediumDark]: "🏊🏾‍♂️",
+                [.dark]: "🏊🏿‍♂️"
+            ]
         case .womanSwimming:
-            result[[SkinTone.light]] = "🏊🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🏊🏼‍♀️"
-            result[[SkinTone.medium]] = "🏊🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🏊🏾‍♀️"
-            result[[SkinTone.dark]] = "🏊🏿‍♀️"
+            return [
+                [.light]: "🏊🏻‍♀️",
+                [.mediumLight]: "🏊🏼‍♀️",
+                [.medium]: "🏊🏽‍♀️",
+                [.mediumDark]: "🏊🏾‍♀️",
+                [.dark]: "🏊🏿‍♀️"
+            ]
         case .personWithBall:
-            result[[SkinTone.light]] = "⛹🏻"
-            result[[SkinTone.mediumLight]] = "⛹🏼"
-            result[[SkinTone.medium]] = "⛹🏽"
-            result[[SkinTone.mediumDark]] = "⛹🏾"
-            result[[SkinTone.dark]] = "⛹🏿"
+            return [
+                [.light]: "⛹🏻",
+                [.mediumLight]: "⛹🏼",
+                [.medium]: "⛹🏽",
+                [.mediumDark]: "⛹🏾",
+                [.dark]: "⛹🏿"
+            ]
         case .manBouncingBall:
-            result[[SkinTone.light]] = "⛹🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "⛹🏼‍♂️"
-            result[[SkinTone.medium]] = "⛹🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "⛹🏾‍♂️"
-            result[[SkinTone.dark]] = "⛹🏿‍♂️"
+            return [
+                [.light]: "⛹🏻‍♂️",
+                [.mediumLight]: "⛹🏼‍♂️",
+                [.medium]: "⛹🏽‍♂️",
+                [.mediumDark]: "⛹🏾‍♂️",
+                [.dark]: "⛹🏿‍♂️"
+            ]
         case .womanBouncingBall:
-            result[[SkinTone.light]] = "⛹🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "⛹🏼‍♀️"
-            result[[SkinTone.medium]] = "⛹🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "⛹🏾‍♀️"
-            result[[SkinTone.dark]] = "⛹🏿‍♀️"
+            return [
+                [.light]: "⛹🏻‍♀️",
+                [.mediumLight]: "⛹🏼‍♀️",
+                [.medium]: "⛹🏽‍♀️",
+                [.mediumDark]: "⛹🏾‍♀️",
+                [.dark]: "⛹🏿‍♀️"
+            ]
         case .weightLifter:
-            result[[SkinTone.light]] = "🏋🏻"
-            result[[SkinTone.mediumLight]] = "🏋🏼"
-            result[[SkinTone.medium]] = "🏋🏽"
-            result[[SkinTone.mediumDark]] = "🏋🏾"
-            result[[SkinTone.dark]] = "🏋🏿"
+            return [
+                [.light]: "🏋🏻",
+                [.mediumLight]: "🏋🏼",
+                [.medium]: "🏋🏽",
+                [.mediumDark]: "🏋🏾",
+                [.dark]: "🏋🏿"
+            ]
         case .manLiftingWeights:
-            result[[SkinTone.light]] = "🏋🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🏋🏼‍♂️"
-            result[[SkinTone.medium]] = "🏋🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🏋🏾‍♂️"
-            result[[SkinTone.dark]] = "🏋🏿‍♂️"
+            return [
+                [.light]: "🏋🏻‍♂️",
+                [.mediumLight]: "🏋🏼‍♂️",
+                [.medium]: "🏋🏽‍♂️",
+                [.mediumDark]: "🏋🏾‍♂️",
+                [.dark]: "🏋🏿‍♂️"
+            ]
         case .womanLiftingWeights:
-            result[[SkinTone.light]] = "🏋🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🏋🏼‍♀️"
-            result[[SkinTone.medium]] = "🏋🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🏋🏾‍♀️"
-            result[[SkinTone.dark]] = "🏋🏿‍♀️"
+            return [
+                [.light]: "🏋🏻‍♀️",
+                [.mediumLight]: "🏋🏼‍♀️",
+                [.medium]: "🏋🏽‍♀️",
+                [.mediumDark]: "🏋🏾‍♀️",
+                [.dark]: "🏋🏿‍♀️"
+            ]
         case .bicyclist:
-            result[[SkinTone.light]] = "🚴🏻"
-            result[[SkinTone.mediumLight]] = "🚴🏼"
-            result[[SkinTone.medium]] = "🚴🏽"
-            result[[SkinTone.mediumDark]] = "🚴🏾"
-            result[[SkinTone.dark]] = "🚴🏿"
+            return [
+                [.light]: "🚴🏻",
+                [.mediumLight]: "🚴🏼",
+                [.medium]: "🚴🏽",
+                [.mediumDark]: "🚴🏾",
+                [.dark]: "🚴🏿"
+            ]
         case .manBiking:
-            result[[SkinTone.light]] = "🚴🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🚴🏼‍♂️"
-            result[[SkinTone.medium]] = "🚴🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🚴🏾‍♂️"
-            result[[SkinTone.dark]] = "🚴🏿‍♂️"
+            return [
+                [.light]: "🚴🏻‍♂️",
+                [.mediumLight]: "🚴🏼‍♂️",
+                [.medium]: "🚴🏽‍♂️",
+                [.mediumDark]: "🚴🏾‍♂️",
+                [.dark]: "🚴🏿‍♂️"
+            ]
         case .womanBiking:
-            result[[SkinTone.light]] = "🚴🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🚴🏼‍♀️"
-            result[[SkinTone.medium]] = "🚴🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🚴🏾‍♀️"
-            result[[SkinTone.dark]] = "🚴🏿‍♀️"
+            return [
+                [.light]: "🚴🏻‍♀️",
+                [.mediumLight]: "🚴🏼‍♀️",
+                [.medium]: "🚴🏽‍♀️",
+                [.mediumDark]: "🚴🏾‍♀️",
+                [.dark]: "🚴🏿‍♀️"
+            ]
         case .mountainBicyclist:
-            result[[SkinTone.light]] = "🚵🏻"
-            result[[SkinTone.mediumLight]] = "🚵🏼"
-            result[[SkinTone.medium]] = "🚵🏽"
-            result[[SkinTone.mediumDark]] = "🚵🏾"
-            result[[SkinTone.dark]] = "🚵🏿"
+            return [
+                [.light]: "🚵🏻",
+                [.mediumLight]: "🚵🏼",
+                [.medium]: "🚵🏽",
+                [.mediumDark]: "🚵🏾",
+                [.dark]: "🚵🏿"
+            ]
         case .manMountainBiking:
-            result[[SkinTone.light]] = "🚵🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🚵🏼‍♂️"
-            result[[SkinTone.medium]] = "🚵🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🚵🏾‍♂️"
-            result[[SkinTone.dark]] = "🚵🏿‍♂️"
+            return [
+                [.light]: "🚵🏻‍♂️",
+                [.mediumLight]: "🚵🏼‍♂️",
+                [.medium]: "🚵🏽‍♂️",
+                [.mediumDark]: "🚵🏾‍♂️",
+                [.dark]: "🚵🏿‍♂️"
+            ]
         case .womanMountainBiking:
-            result[[SkinTone.light]] = "🚵🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🚵🏼‍♀️"
-            result[[SkinTone.medium]] = "🚵🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🚵🏾‍♀️"
-            result[[SkinTone.dark]] = "🚵🏿‍♀️"
+            return [
+                [.light]: "🚵🏻‍♀️",
+                [.mediumLight]: "🚵🏼‍♀️",
+                [.medium]: "🚵🏽‍♀️",
+                [.mediumDark]: "🚵🏾‍♀️",
+                [.dark]: "🚵🏿‍♀️"
+            ]
         case .personDoingCartwheel:
-            result[[SkinTone.light]] = "🤸🏻"
-            result[[SkinTone.mediumLight]] = "🤸🏼"
-            result[[SkinTone.medium]] = "🤸🏽"
-            result[[SkinTone.mediumDark]] = "🤸🏾"
-            result[[SkinTone.dark]] = "🤸🏿"
+            return [
+                [.light]: "🤸🏻",
+                [.mediumLight]: "🤸🏼",
+                [.medium]: "🤸🏽",
+                [.mediumDark]: "🤸🏾",
+                [.dark]: "🤸🏿"
+            ]
         case .manCartwheeling:
-            result[[SkinTone.light]] = "🤸🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🤸🏼‍♂️"
-            result[[SkinTone.medium]] = "🤸🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🤸🏾‍♂️"
-            result[[SkinTone.dark]] = "🤸🏿‍♂️"
+            return [
+                [.light]: "🤸🏻‍♂️",
+                [.mediumLight]: "🤸🏼‍♂️",
+                [.medium]: "🤸🏽‍♂️",
+                [.mediumDark]: "🤸🏾‍♂️",
+                [.dark]: "🤸🏿‍♂️"
+            ]
         case .womanCartwheeling:
-            result[[SkinTone.light]] = "🤸🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🤸🏼‍♀️"
-            result[[SkinTone.medium]] = "🤸🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🤸🏾‍♀️"
-            result[[SkinTone.dark]] = "🤸🏿‍♀️"
+            return [
+                [.light]: "🤸🏻‍♀️",
+                [.mediumLight]: "🤸🏼‍♀️",
+                [.medium]: "🤸🏽‍♀️",
+                [.mediumDark]: "🤸🏾‍♀️",
+                [.dark]: "🤸🏿‍♀️"
+            ]
         case .waterPolo:
-            result[[SkinTone.light]] = "🤽🏻"
-            result[[SkinTone.mediumLight]] = "🤽🏼"
-            result[[SkinTone.medium]] = "🤽🏽"
-            result[[SkinTone.mediumDark]] = "🤽🏾"
-            result[[SkinTone.dark]] = "🤽🏿"
+            return [
+                [.light]: "🤽🏻",
+                [.mediumLight]: "🤽🏼",
+                [.medium]: "🤽🏽",
+                [.mediumDark]: "🤽🏾",
+                [.dark]: "🤽🏿"
+            ]
         case .manPlayingWaterPolo:
-            result[[SkinTone.light]] = "🤽🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🤽🏼‍♂️"
-            result[[SkinTone.medium]] = "🤽🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🤽🏾‍♂️"
-            result[[SkinTone.dark]] = "🤽🏿‍♂️"
+            return [
+                [.light]: "🤽🏻‍♂️",
+                [.mediumLight]: "🤽🏼‍♂️",
+                [.medium]: "🤽🏽‍♂️",
+                [.mediumDark]: "🤽🏾‍♂️",
+                [.dark]: "🤽🏿‍♂️"
+            ]
         case .womanPlayingWaterPolo:
-            result[[SkinTone.light]] = "🤽🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🤽🏼‍♀️"
-            result[[SkinTone.medium]] = "🤽🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🤽🏾‍♀️"
-            result[[SkinTone.dark]] = "🤽🏿‍♀️"
+            return [
+                [.light]: "🤽🏻‍♀️",
+                [.mediumLight]: "🤽🏼‍♀️",
+                [.medium]: "🤽🏽‍♀️",
+                [.mediumDark]: "🤽🏾‍♀️",
+                [.dark]: "🤽🏿‍♀️"
+            ]
         case .handball:
-            result[[SkinTone.light]] = "🤾🏻"
-            result[[SkinTone.mediumLight]] = "🤾🏼"
-            result[[SkinTone.medium]] = "🤾🏽"
-            result[[SkinTone.mediumDark]] = "🤾🏾"
-            result[[SkinTone.dark]] = "🤾🏿"
+            return [
+                [.light]: "🤾🏻",
+                [.mediumLight]: "🤾🏼",
+                [.medium]: "🤾🏽",
+                [.mediumDark]: "🤾🏾",
+                [.dark]: "🤾🏿"
+            ]
         case .manPlayingHandball:
-            result[[SkinTone.light]] = "🤾🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🤾🏼‍♂️"
-            result[[SkinTone.medium]] = "🤾🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🤾🏾‍♂️"
-            result[[SkinTone.dark]] = "🤾🏿‍♂️"
+            return [
+                [.light]: "🤾🏻‍♂️",
+                [.mediumLight]: "🤾🏼‍♂️",
+                [.medium]: "🤾🏽‍♂️",
+                [.mediumDark]: "🤾🏾‍♂️",
+                [.dark]: "🤾🏿‍♂️"
+            ]
         case .womanPlayingHandball:
-            result[[SkinTone.light]] = "🤾🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🤾🏼‍♀️"
-            result[[SkinTone.medium]] = "🤾🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🤾🏾‍♀️"
-            result[[SkinTone.dark]] = "🤾🏿‍♀️"
+            return [
+                [.light]: "🤾🏻‍♀️",
+                [.mediumLight]: "🤾🏼‍♀️",
+                [.medium]: "🤾🏽‍♀️",
+                [.mediumDark]: "🤾🏾‍♀️",
+                [.dark]: "🤾🏿‍♀️"
+            ]
         case .juggling:
-            result[[SkinTone.light]] = "🤹🏻"
-            result[[SkinTone.mediumLight]] = "🤹🏼"
-            result[[SkinTone.medium]] = "🤹🏽"
-            result[[SkinTone.mediumDark]] = "🤹🏾"
-            result[[SkinTone.dark]] = "🤹🏿"
+            return [
+                [.light]: "🤹🏻",
+                [.mediumLight]: "🤹🏼",
+                [.medium]: "🤹🏽",
+                [.mediumDark]: "🤹🏾",
+                [.dark]: "🤹🏿"
+            ]
         case .manJuggling:
-            result[[SkinTone.light]] = "🤹🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🤹🏼‍♂️"
-            result[[SkinTone.medium]] = "🤹🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🤹🏾‍♂️"
-            result[[SkinTone.dark]] = "🤹🏿‍♂️"
+            return [
+                [.light]: "🤹🏻‍♂️",
+                [.mediumLight]: "🤹🏼‍♂️",
+                [.medium]: "🤹🏽‍♂️",
+                [.mediumDark]: "🤹🏾‍♂️",
+                [.dark]: "🤹🏿‍♂️"
+            ]
         case .womanJuggling:
-            result[[SkinTone.light]] = "🤹🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🤹🏼‍♀️"
-            result[[SkinTone.medium]] = "🤹🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🤹🏾‍♀️"
-            result[[SkinTone.dark]] = "🤹🏿‍♀️"
+            return [
+                [.light]: "🤹🏻‍♀️",
+                [.mediumLight]: "🤹🏼‍♀️",
+                [.medium]: "🤹🏽‍♀️",
+                [.mediumDark]: "🤹🏾‍♀️",
+                [.dark]: "🤹🏿‍♀️"
+            ]
         case .personInLotusPosition:
-            result[[SkinTone.light]] = "🧘🏻"
-            result[[SkinTone.mediumLight]] = "🧘🏼"
-            result[[SkinTone.medium]] = "🧘🏽"
-            result[[SkinTone.mediumDark]] = "🧘🏾"
-            result[[SkinTone.dark]] = "🧘🏿"
+            return [
+                [.light]: "🧘🏻",
+                [.mediumLight]: "🧘🏼",
+                [.medium]: "🧘🏽",
+                [.mediumDark]: "🧘🏾",
+                [.dark]: "🧘🏿"
+            ]
         case .manInLotusPosition:
-            result[[SkinTone.light]] = "🧘🏻‍♂️"
-            result[[SkinTone.mediumLight]] = "🧘🏼‍♂️"
-            result[[SkinTone.medium]] = "🧘🏽‍♂️"
-            result[[SkinTone.mediumDark]] = "🧘🏾‍♂️"
-            result[[SkinTone.dark]] = "🧘🏿‍♂️"
+            return [
+                [.light]: "🧘🏻‍♂️",
+                [.mediumLight]: "🧘🏼‍♂️",
+                [.medium]: "🧘🏽‍♂️",
+                [.mediumDark]: "🧘🏾‍♂️",
+                [.dark]: "🧘🏿‍♂️"
+            ]
         case .womanInLotusPosition:
-            result[[SkinTone.light]] = "🧘🏻‍♀️"
-            result[[SkinTone.mediumLight]] = "🧘🏼‍♀️"
-            result[[SkinTone.medium]] = "🧘🏽‍♀️"
-            result[[SkinTone.mediumDark]] = "🧘🏾‍♀️"
-            result[[SkinTone.dark]] = "🧘🏿‍♀️"
+            return [
+                [.light]: "🧘🏻‍♀️",
+                [.mediumLight]: "🧘🏼‍♀️",
+                [.medium]: "🧘🏽‍♀️",
+                [.mediumDark]: "🧘🏾‍♀️",
+                [.dark]: "🧘🏿‍♀️"
+            ]
         case .bath:
-            result[[SkinTone.light]] = "🛀🏻"
-            result[[SkinTone.mediumLight]] = "🛀🏼"
-            result[[SkinTone.medium]] = "🛀🏽"
-            result[[SkinTone.mediumDark]] = "🛀🏾"
-            result[[SkinTone.dark]] = "🛀🏿"
+            return [
+                [.light]: "🛀🏻",
+                [.mediumLight]: "🛀🏼",
+                [.medium]: "🛀🏽",
+                [.mediumDark]: "🛀🏾",
+                [.dark]: "🛀🏿"
+            ]
         case .sleepingAccommodation:
-            result[[SkinTone.light]] = "🛌🏻"
-            result[[SkinTone.mediumLight]] = "🛌🏼"
-            result[[SkinTone.medium]] = "🛌🏽"
-            result[[SkinTone.mediumDark]] = "🛌🏾"
-            result[[SkinTone.dark]] = "🛌🏿"
+            return [
+                [.light]: "🛌🏻",
+                [.mediumLight]: "🛌🏼",
+                [.medium]: "🛌🏽",
+                [.mediumDark]: "🛌🏾",
+                [.dark]: "🛌🏿"
+            ]
         case .peopleHoldingHands:
-            result[[SkinTone.light]] = "🧑🏻‍🤝‍🧑🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "🧑🏻‍🤝‍🧑🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "🧑🏻‍🤝‍🧑🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "🧑🏻‍🤝‍🧑🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "🧑🏻‍🤝‍🧑🏿"
-            result[[SkinTone.mediumLight]] = "🧑🏼‍🤝‍🧑🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "🧑🏼‍🤝‍🧑🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "🧑🏼‍🤝‍🧑🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "🧑🏼‍🤝‍🧑🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "🧑🏼‍🤝‍🧑🏿"
-            result[[SkinTone.medium]] = "🧑🏽‍🤝‍🧑🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "🧑🏽‍🤝‍🧑🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "🧑🏽‍🤝‍🧑🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "🧑🏽‍🤝‍🧑🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "🧑🏽‍🤝‍🧑🏿"
-            result[[SkinTone.mediumDark]] = "🧑🏾‍🤝‍🧑🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "🧑🏾‍🤝‍🧑🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "🧑🏾‍🤝‍🧑🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "🧑🏾‍🤝‍🧑🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "🧑🏾‍🤝‍🧑🏿"
-            result[[SkinTone.dark]] = "🧑🏿‍🤝‍🧑🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "🧑🏿‍🤝‍🧑🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "🧑🏿‍🤝‍🧑🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "🧑🏿‍🤝‍🧑🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "🧑🏿‍🤝‍🧑🏾"
+            return [
+                [.light]: "🧑🏻‍🤝‍🧑🏻",
+                [.light, .mediumLight]: "🧑🏻‍🤝‍🧑🏼",
+                [.light, .medium]: "🧑🏻‍🤝‍🧑🏽",
+                [.light, .mediumDark]: "🧑🏻‍🤝‍🧑🏾",
+                [.light, .dark]: "🧑🏻‍🤝‍🧑🏿",
+                [.mediumLight]: "🧑🏼‍🤝‍🧑🏼",
+                [.mediumLight, .light]: "🧑🏼‍🤝‍🧑🏻",
+                [.mediumLight, .medium]: "🧑🏼‍🤝‍🧑🏽",
+                [.mediumLight, .mediumDark]: "🧑🏼‍🤝‍🧑🏾",
+                [.mediumLight, .dark]: "🧑🏼‍🤝‍🧑🏿",
+                [.medium]: "🧑🏽‍🤝‍🧑🏽",
+                [.medium, .light]: "🧑🏽‍🤝‍🧑🏻",
+                [.medium, .mediumLight]: "🧑🏽‍🤝‍🧑🏼",
+                [.medium, .mediumDark]: "🧑🏽‍🤝‍🧑🏾",
+                [.medium, .dark]: "🧑🏽‍🤝‍🧑🏿",
+                [.mediumDark]: "🧑🏾‍🤝‍🧑🏾",
+                [.mediumDark, .light]: "🧑🏾‍🤝‍🧑🏻",
+                [.mediumDark, .mediumLight]: "🧑🏾‍🤝‍🧑🏼",
+                [.mediumDark, .medium]: "🧑🏾‍🤝‍🧑🏽",
+                [.mediumDark, .dark]: "🧑🏾‍🤝‍🧑🏿",
+                [.dark]: "🧑🏿‍🤝‍🧑🏿",
+                [.dark, .light]: "🧑🏿‍🤝‍🧑🏻",
+                [.dark, .mediumLight]: "🧑🏿‍🤝‍🧑🏼",
+                [.dark, .medium]: "🧑🏿‍🤝‍🧑🏽",
+                [.dark, .mediumDark]: "🧑🏿‍🤝‍🧑🏾"
+            ]
         case .twoWomenHoldingHands:
-            result[[SkinTone.light]] = "👭🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👩🏻‍🤝‍👩🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👩🏻‍🤝‍👩🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👩🏻‍🤝‍👩🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👩🏻‍🤝‍👩🏿"
-            result[[SkinTone.mediumLight]] = "👭🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👩🏼‍🤝‍👩🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👩🏼‍🤝‍👩🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👩🏼‍🤝‍👩🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👩🏼‍🤝‍👩🏿"
-            result[[SkinTone.medium]] = "👭🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👩🏽‍🤝‍👩🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👩🏽‍🤝‍👩🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👩🏽‍🤝‍👩🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👩🏽‍🤝‍👩🏿"
-            result[[SkinTone.mediumDark]] = "👭🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👩🏾‍🤝‍👩🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👩🏾‍🤝‍👩🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👩🏾‍🤝‍👩🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👩🏾‍🤝‍👩🏿"
-            result[[SkinTone.dark]] = "👭🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👩🏿‍🤝‍👩🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👩🏿‍🤝‍👩🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👩🏿‍🤝‍👩🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👩🏿‍🤝‍👩🏾"
+            return [
+                [.light]: "👭🏻",
+                [.light, .mediumLight]: "👩🏻‍🤝‍👩🏼",
+                [.light, .medium]: "👩🏻‍🤝‍👩🏽",
+                [.light, .mediumDark]: "👩🏻‍🤝‍👩🏾",
+                [.light, .dark]: "👩🏻‍🤝‍👩🏿",
+                [.mediumLight]: "👭🏼",
+                [.mediumLight, .light]: "👩🏼‍🤝‍👩🏻",
+                [.mediumLight, .medium]: "👩🏼‍🤝‍👩🏽",
+                [.mediumLight, .mediumDark]: "👩🏼‍🤝‍👩🏾",
+                [.mediumLight, .dark]: "👩🏼‍🤝‍👩🏿",
+                [.medium]: "👭🏽",
+                [.medium, .light]: "👩🏽‍🤝‍👩🏻",
+                [.medium, .mediumLight]: "👩🏽‍🤝‍👩🏼",
+                [.medium, .mediumDark]: "👩🏽‍🤝‍👩🏾",
+                [.medium, .dark]: "👩🏽‍🤝‍👩🏿",
+                [.mediumDark]: "👭🏾",
+                [.mediumDark, .light]: "👩🏾‍🤝‍👩🏻",
+                [.mediumDark, .mediumLight]: "👩🏾‍🤝‍👩🏼",
+                [.mediumDark, .medium]: "👩🏾‍🤝‍👩🏽",
+                [.mediumDark, .dark]: "👩🏾‍🤝‍👩🏿",
+                [.dark]: "👭🏿",
+                [.dark, .light]: "👩🏿‍🤝‍👩🏻",
+                [.dark, .mediumLight]: "👩🏿‍🤝‍👩🏼",
+                [.dark, .medium]: "👩🏿‍🤝‍👩🏽",
+                [.dark, .mediumDark]: "👩🏿‍🤝‍👩🏾"
+            ]
         case .manAndWomanHoldingHands:
-            result[[SkinTone.light]] = "👫🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👩🏻‍🤝‍👨🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👩🏻‍🤝‍👨🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👩🏻‍🤝‍👨🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👩🏻‍🤝‍👨🏿"
-            result[[SkinTone.mediumLight]] = "👫🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👩🏼‍🤝‍👨🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👩🏼‍🤝‍👨🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👩🏼‍🤝‍👨🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👩🏼‍🤝‍👨🏿"
-            result[[SkinTone.medium]] = "👫🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👩🏽‍🤝‍👨🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👩🏽‍🤝‍👨🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👩🏽‍🤝‍👨🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👩🏽‍🤝‍👨🏿"
-            result[[SkinTone.mediumDark]] = "👫🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👩🏾‍🤝‍👨🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👩🏾‍🤝‍👨🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👩🏾‍🤝‍👨🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👩🏾‍🤝‍👨🏿"
-            result[[SkinTone.dark]] = "👫🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👩🏿‍🤝‍👨🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👩🏿‍🤝‍👨🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👩🏿‍🤝‍👨🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👩🏿‍🤝‍👨🏾"
+            return [
+                [.light]: "👫🏻",
+                [.light, .mediumLight]: "👩🏻‍🤝‍👨🏼",
+                [.light, .medium]: "👩🏻‍🤝‍👨🏽",
+                [.light, .mediumDark]: "👩🏻‍🤝‍👨🏾",
+                [.light, .dark]: "👩🏻‍🤝‍👨🏿",
+                [.mediumLight]: "👫🏼",
+                [.mediumLight, .light]: "👩🏼‍🤝‍👨🏻",
+                [.mediumLight, .medium]: "👩🏼‍🤝‍👨🏽",
+                [.mediumLight, .mediumDark]: "👩🏼‍🤝‍👨🏾",
+                [.mediumLight, .dark]: "👩🏼‍🤝‍👨🏿",
+                [.medium]: "👫🏽",
+                [.medium, .light]: "👩🏽‍🤝‍👨🏻",
+                [.medium, .mediumLight]: "👩🏽‍🤝‍👨🏼",
+                [.medium, .mediumDark]: "👩🏽‍🤝‍👨🏾",
+                [.medium, .dark]: "👩🏽‍🤝‍👨🏿",
+                [.mediumDark]: "👫🏾",
+                [.mediumDark, .light]: "👩🏾‍🤝‍👨🏻",
+                [.mediumDark, .mediumLight]: "👩🏾‍🤝‍👨🏼",
+                [.mediumDark, .medium]: "👩🏾‍🤝‍👨🏽",
+                [.mediumDark, .dark]: "👩🏾‍🤝‍👨🏿",
+                [.dark]: "👫🏿",
+                [.dark, .light]: "👩🏿‍🤝‍👨🏻",
+                [.dark, .mediumLight]: "👩🏿‍🤝‍👨🏼",
+                [.dark, .medium]: "👩🏿‍🤝‍👨🏽",
+                [.dark, .mediumDark]: "👩🏿‍🤝‍👨🏾"
+            ]
         case .twoMenHoldingHands:
-            result[[SkinTone.light]] = "👬🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👨🏻‍🤝‍👨🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👨🏻‍🤝‍👨🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👨🏻‍🤝‍👨🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👨🏻‍🤝‍👨🏿"
-            result[[SkinTone.mediumLight]] = "👬🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👨🏼‍🤝‍👨🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👨🏼‍🤝‍👨🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👨🏼‍🤝‍👨🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👨🏼‍🤝‍👨🏿"
-            result[[SkinTone.medium]] = "👬🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👨🏽‍🤝‍👨🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👨🏽‍🤝‍👨🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👨🏽‍🤝‍👨🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👨🏽‍🤝‍👨🏿"
-            result[[SkinTone.mediumDark]] = "👬🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👨🏾‍🤝‍👨🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👨🏾‍🤝‍👨🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👨🏾‍🤝‍👨🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👨🏾‍🤝‍👨🏿"
-            result[[SkinTone.dark]] = "👬🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👨🏿‍🤝‍👨🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👨🏿‍🤝‍👨🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👨🏿‍🤝‍👨🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👨🏿‍🤝‍👨🏾"
+            return [
+                [.light]: "👬🏻",
+                [.light, .mediumLight]: "👨🏻‍🤝‍👨🏼",
+                [.light, .medium]: "👨🏻‍🤝‍👨🏽",
+                [.light, .mediumDark]: "👨🏻‍🤝‍👨🏾",
+                [.light, .dark]: "👨🏻‍🤝‍👨🏿",
+                [.mediumLight]: "👬🏼",
+                [.mediumLight, .light]: "👨🏼‍🤝‍👨🏻",
+                [.mediumLight, .medium]: "👨🏼‍🤝‍👨🏽",
+                [.mediumLight, .mediumDark]: "👨🏼‍🤝‍👨🏾",
+                [.mediumLight, .dark]: "👨🏼‍🤝‍👨🏿",
+                [.medium]: "👬🏽",
+                [.medium, .light]: "👨🏽‍🤝‍👨🏻",
+                [.medium, .mediumLight]: "👨🏽‍🤝‍👨🏼",
+                [.medium, .mediumDark]: "👨🏽‍🤝‍👨🏾",
+                [.medium, .dark]: "👨🏽‍🤝‍👨🏿",
+                [.mediumDark]: "👬🏾",
+                [.mediumDark, .light]: "👨🏾‍🤝‍👨🏻",
+                [.mediumDark, .mediumLight]: "👨🏾‍🤝‍👨🏼",
+                [.mediumDark, .medium]: "👨🏾‍🤝‍👨🏽",
+                [.mediumDark, .dark]: "👨🏾‍🤝‍👨🏿",
+                [.dark]: "👬🏿",
+                [.dark, .light]: "👨🏿‍🤝‍👨🏻",
+                [.dark, .mediumLight]: "👨🏿‍🤝‍👨🏼",
+                [.dark, .medium]: "👨🏿‍🤝‍👨🏽",
+                [.dark, .mediumDark]: "👨🏿‍🤝‍👨🏾"
+            ]
         case .personKissPerson:
-            result[[SkinTone.light]] = "💏🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "🧑🏻‍❤️‍💋‍🧑🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "🧑🏻‍❤️‍💋‍🧑🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "🧑🏻‍❤️‍💋‍🧑🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "🧑🏻‍❤️‍💋‍🧑🏿"
-            result[[SkinTone.mediumLight]] = "💏🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "🧑🏼‍❤️‍💋‍🧑🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "🧑🏼‍❤️‍💋‍🧑🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "🧑🏼‍❤️‍💋‍🧑🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "🧑🏼‍❤️‍💋‍🧑🏿"
-            result[[SkinTone.medium]] = "💏🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "🧑🏽‍❤️‍💋‍🧑🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "🧑🏽‍❤️‍💋‍🧑🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "🧑🏽‍❤️‍💋‍🧑🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "🧑🏽‍❤️‍💋‍🧑🏿"
-            result[[SkinTone.mediumDark]] = "💏🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "🧑🏾‍❤️‍💋‍🧑🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "🧑🏾‍❤️‍💋‍🧑🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "🧑🏾‍❤️‍💋‍🧑🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "🧑🏾‍❤️‍💋‍🧑🏿"
-            result[[SkinTone.dark]] = "💏🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "🧑🏿‍❤️‍💋‍🧑🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "🧑🏿‍❤️‍💋‍🧑🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "🧑🏿‍❤️‍💋‍🧑🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "🧑🏿‍❤️‍💋‍🧑🏾"
+            return [
+                [.light]: "💏🏻",
+                [.light, .mediumLight]: "🧑🏻‍❤️‍💋‍🧑🏼",
+                [.light, .medium]: "🧑🏻‍❤️‍💋‍🧑🏽",
+                [.light, .mediumDark]: "🧑🏻‍❤️‍💋‍🧑🏾",
+                [.light, .dark]: "🧑🏻‍❤️‍💋‍🧑🏿",
+                [.mediumLight]: "💏🏼",
+                [.mediumLight, .light]: "🧑🏼‍❤️‍💋‍🧑🏻",
+                [.mediumLight, .medium]: "🧑🏼‍❤️‍💋‍🧑🏽",
+                [.mediumLight, .mediumDark]: "🧑🏼‍❤️‍💋‍🧑🏾",
+                [.mediumLight, .dark]: "🧑🏼‍❤️‍💋‍🧑🏿",
+                [.medium]: "💏🏽",
+                [.medium, .light]: "🧑🏽‍❤️‍💋‍🧑🏻",
+                [.medium, .mediumLight]: "🧑🏽‍❤️‍💋‍🧑🏼",
+                [.medium, .mediumDark]: "🧑🏽‍❤️‍💋‍🧑🏾",
+                [.medium, .dark]: "🧑🏽‍❤️‍💋‍🧑🏿",
+                [.mediumDark]: "💏🏾",
+                [.mediumDark, .light]: "🧑🏾‍❤️‍💋‍🧑🏻",
+                [.mediumDark, .mediumLight]: "🧑🏾‍❤️‍💋‍🧑🏼",
+                [.mediumDark, .medium]: "🧑🏾‍❤️‍💋‍🧑🏽",
+                [.mediumDark, .dark]: "🧑🏾‍❤️‍💋‍🧑🏿",
+                [.dark]: "💏🏿",
+                [.dark, .light]: "🧑🏿‍❤️‍💋‍🧑🏻",
+                [.dark, .mediumLight]: "🧑🏿‍❤️‍💋‍🧑🏼",
+                [.dark, .medium]: "🧑🏿‍❤️‍💋‍🧑🏽",
+                [.dark, .mediumDark]: "🧑🏿‍❤️‍💋‍🧑🏾"
+            ]
         case .womanKissMan:
-            result[[SkinTone.light]] = "👩🏻‍❤️‍💋‍👨🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👩🏻‍❤️‍💋‍👨🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👩🏻‍❤️‍💋‍👨🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👩🏻‍❤️‍💋‍👨🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👩🏻‍❤️‍💋‍👨🏿"
-            result[[SkinTone.mediumLight]] = "👩🏼‍❤️‍💋‍👨🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👩🏼‍❤️‍💋‍👨🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👩🏼‍❤️‍💋‍👨🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👩🏼‍❤️‍💋‍👨🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👩🏼‍❤️‍💋‍👨🏿"
-            result[[SkinTone.medium]] = "👩🏽‍❤️‍💋‍👨🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👩🏽‍❤️‍💋‍👨🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👩🏽‍❤️‍💋‍👨🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👩🏽‍❤️‍💋‍👨🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👩🏽‍❤️‍💋‍👨🏿"
-            result[[SkinTone.mediumDark]] = "👩🏾‍❤️‍💋‍👨🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👩🏾‍❤️‍💋‍👨🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👩🏾‍❤️‍💋‍👨🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👩🏾‍❤️‍💋‍👨🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👩🏾‍❤️‍💋‍👨🏿"
-            result[[SkinTone.dark]] = "👩🏿‍❤️‍💋‍👨🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👩🏿‍❤️‍💋‍👨🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👩🏿‍❤️‍💋‍👨🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👩🏿‍❤️‍💋‍👨🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👩🏿‍❤️‍💋‍👨🏾"
+            return [
+                [.light]: "👩🏻‍❤️‍💋‍👨🏻",
+                [.light, .mediumLight]: "👩🏻‍❤️‍💋‍👨🏼",
+                [.light, .medium]: "👩🏻‍❤️‍💋‍👨🏽",
+                [.light, .mediumDark]: "👩🏻‍❤️‍💋‍👨🏾",
+                [.light, .dark]: "👩🏻‍❤️‍💋‍👨🏿",
+                [.mediumLight]: "👩🏼‍❤️‍💋‍👨🏼",
+                [.mediumLight, .light]: "👩🏼‍❤️‍💋‍👨🏻",
+                [.mediumLight, .medium]: "👩🏼‍❤️‍💋‍👨🏽",
+                [.mediumLight, .mediumDark]: "👩🏼‍❤️‍💋‍👨🏾",
+                [.mediumLight, .dark]: "👩🏼‍❤️‍💋‍👨🏿",
+                [.medium]: "👩🏽‍❤️‍💋‍👨🏽",
+                [.medium, .light]: "👩🏽‍❤️‍💋‍👨🏻",
+                [.medium, .mediumLight]: "👩🏽‍❤️‍💋‍👨🏼",
+                [.medium, .mediumDark]: "👩🏽‍❤️‍💋‍👨🏾",
+                [.medium, .dark]: "👩🏽‍❤️‍💋‍👨🏿",
+                [.mediumDark]: "👩🏾‍❤️‍💋‍👨🏾",
+                [.mediumDark, .light]: "👩🏾‍❤️‍💋‍👨🏻",
+                [.mediumDark, .mediumLight]: "👩🏾‍❤️‍💋‍👨🏼",
+                [.mediumDark, .medium]: "👩🏾‍❤️‍💋‍👨🏽",
+                [.mediumDark, .dark]: "👩🏾‍❤️‍💋‍👨🏿",
+                [.dark]: "👩🏿‍❤️‍💋‍👨🏿",
+                [.dark, .light]: "👩🏿‍❤️‍💋‍👨🏻",
+                [.dark, .mediumLight]: "👩🏿‍❤️‍💋‍👨🏼",
+                [.dark, .medium]: "👩🏿‍❤️‍💋‍👨🏽",
+                [.dark, .mediumDark]: "👩🏿‍❤️‍💋‍👨🏾"
+            ]
         case .manKissMan:
-            result[[SkinTone.light]] = "👨🏻‍❤️‍💋‍👨🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👨🏻‍❤️‍💋‍👨🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👨🏻‍❤️‍💋‍👨🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👨🏻‍❤️‍💋‍👨🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👨🏻‍❤️‍💋‍👨🏿"
-            result[[SkinTone.mediumLight]] = "👨🏼‍❤️‍💋‍👨🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👨🏼‍❤️‍💋‍👨🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👨🏼‍❤️‍💋‍👨🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👨🏼‍❤️‍💋‍👨🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👨🏼‍❤️‍💋‍👨🏿"
-            result[[SkinTone.medium]] = "👨🏽‍❤️‍💋‍👨🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👨🏽‍❤️‍💋‍👨🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👨🏽‍❤️‍💋‍👨🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👨🏽‍❤️‍💋‍👨🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👨🏽‍❤️‍💋‍👨🏿"
-            result[[SkinTone.mediumDark]] = "👨🏾‍❤️‍💋‍👨🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👨🏾‍❤️‍💋‍👨🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👨🏾‍❤️‍💋‍👨🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👨🏾‍❤️‍💋‍👨🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👨🏾‍❤️‍💋‍👨🏿"
-            result[[SkinTone.dark]] = "👨🏿‍❤️‍💋‍👨🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👨🏿‍❤️‍💋‍👨🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👨🏿‍❤️‍💋‍👨🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👨🏿‍❤️‍💋‍👨🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👨🏿‍❤️‍💋‍👨🏾"
+            return [
+                [.light]: "👨🏻‍❤️‍💋‍👨🏻",
+                [.light, .mediumLight]: "👨🏻‍❤️‍💋‍👨🏼",
+                [.light, .medium]: "👨🏻‍❤️‍💋‍👨🏽",
+                [.light, .mediumDark]: "👨🏻‍❤️‍💋‍👨🏾",
+                [.light, .dark]: "👨🏻‍❤️‍💋‍👨🏿",
+                [.mediumLight]: "👨🏼‍❤️‍💋‍👨🏼",
+                [.mediumLight, .light]: "👨🏼‍❤️‍💋‍👨🏻",
+                [.mediumLight, .medium]: "👨🏼‍❤️‍💋‍👨🏽",
+                [.mediumLight, .mediumDark]: "👨🏼‍❤️‍💋‍👨🏾",
+                [.mediumLight, .dark]: "👨🏼‍❤️‍💋‍👨🏿",
+                [.medium]: "👨🏽‍❤️‍💋‍👨🏽",
+                [.medium, .light]: "👨🏽‍❤️‍💋‍👨🏻",
+                [.medium, .mediumLight]: "👨🏽‍❤️‍💋‍👨🏼",
+                [.medium, .mediumDark]: "👨🏽‍❤️‍💋‍👨🏾",
+                [.medium, .dark]: "👨🏽‍❤️‍💋‍👨🏿",
+                [.mediumDark]: "👨🏾‍❤️‍💋‍👨🏾",
+                [.mediumDark, .light]: "👨🏾‍❤️‍💋‍👨🏻",
+                [.mediumDark, .mediumLight]: "👨🏾‍❤️‍💋‍👨🏼",
+                [.mediumDark, .medium]: "👨🏾‍❤️‍💋‍👨🏽",
+                [.mediumDark, .dark]: "👨🏾‍❤️‍💋‍👨🏿",
+                [.dark]: "👨🏿‍❤️‍💋‍👨🏿",
+                [.dark, .light]: "👨🏿‍❤️‍💋‍👨🏻",
+                [.dark, .mediumLight]: "👨🏿‍❤️‍💋‍👨🏼",
+                [.dark, .medium]: "👨🏿‍❤️‍💋‍👨🏽",
+                [.dark, .mediumDark]: "👨🏿‍❤️‍💋‍👨🏾"
+            ]
         case .womanKissWoman:
-            result[[SkinTone.light]] = "👩🏻‍❤️‍💋‍👩🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👩🏻‍❤️‍💋‍👩🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👩🏻‍❤️‍💋‍👩🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👩🏻‍❤️‍💋‍👩🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👩🏻‍❤️‍💋‍👩🏿"
-            result[[SkinTone.mediumLight]] = "👩🏼‍❤️‍💋‍👩🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👩🏼‍❤️‍💋‍👩🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👩🏼‍❤️‍💋‍👩🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👩🏼‍❤️‍💋‍👩🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👩🏼‍❤️‍💋‍👩🏿"
-            result[[SkinTone.medium]] = "👩🏽‍❤️‍💋‍👩🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👩🏽‍❤️‍💋‍👩🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👩🏽‍❤️‍💋‍👩🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👩🏽‍❤️‍💋‍👩🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👩🏽‍❤️‍💋‍👩🏿"
-            result[[SkinTone.mediumDark]] = "👩🏾‍❤️‍💋‍👩🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👩🏾‍❤️‍💋‍👩🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👩🏾‍❤️‍💋‍👩🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👩🏾‍❤️‍💋‍👩🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👩🏾‍❤️‍💋‍👩🏿"
-            result[[SkinTone.dark]] = "👩🏿‍❤️‍💋‍👩🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👩🏿‍❤️‍💋‍👩🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👩🏿‍❤️‍💋‍👩🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👩🏿‍❤️‍💋‍👩🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👩🏿‍❤️‍💋‍👩🏾"
+            return [
+                [.light]: "👩🏻‍❤️‍💋‍👩🏻",
+                [.light, .mediumLight]: "👩🏻‍❤️‍💋‍👩🏼",
+                [.light, .medium]: "👩🏻‍❤️‍💋‍👩🏽",
+                [.light, .mediumDark]: "👩🏻‍❤️‍💋‍👩🏾",
+                [.light, .dark]: "👩🏻‍❤️‍💋‍👩🏿",
+                [.mediumLight]: "👩🏼‍❤️‍💋‍👩🏼",
+                [.mediumLight, .light]: "👩🏼‍❤️‍💋‍👩🏻",
+                [.mediumLight, .medium]: "👩🏼‍❤️‍💋‍👩🏽",
+                [.mediumLight, .mediumDark]: "👩🏼‍❤️‍💋‍👩🏾",
+                [.mediumLight, .dark]: "👩🏼‍❤️‍💋‍👩🏿",
+                [.medium]: "👩🏽‍❤️‍💋‍👩🏽",
+                [.medium, .light]: "👩🏽‍❤️‍💋‍👩🏻",
+                [.medium, .mediumLight]: "👩🏽‍❤️‍💋‍👩🏼",
+                [.medium, .mediumDark]: "👩🏽‍❤️‍💋‍👩🏾",
+                [.medium, .dark]: "👩🏽‍❤️‍💋‍👩🏿",
+                [.mediumDark]: "👩🏾‍❤️‍💋‍👩🏾",
+                [.mediumDark, .light]: "👩🏾‍❤️‍💋‍👩🏻",
+                [.mediumDark, .mediumLight]: "👩🏾‍❤️‍💋‍👩🏼",
+                [.mediumDark, .medium]: "👩🏾‍❤️‍💋‍👩🏽",
+                [.mediumDark, .dark]: "👩🏾‍❤️‍💋‍👩🏿",
+                [.dark]: "👩🏿‍❤️‍💋‍👩🏿",
+                [.dark, .light]: "👩🏿‍❤️‍💋‍👩🏻",
+                [.dark, .mediumLight]: "👩🏿‍❤️‍💋‍👩🏼",
+                [.dark, .medium]: "👩🏿‍❤️‍💋‍👩🏽",
+                [.dark, .mediumDark]: "👩🏿‍❤️‍💋‍👩🏾"
+            ]
         case .personHeartPerson:
-            result[[SkinTone.light]] = "💑🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "🧑🏻‍❤️‍🧑🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "🧑🏻‍❤️‍🧑🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "🧑🏻‍❤️‍🧑🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "🧑🏻‍❤️‍🧑🏿"
-            result[[SkinTone.mediumLight]] = "💑🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "🧑🏼‍❤️‍🧑🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "🧑🏼‍❤️‍🧑🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "🧑🏼‍❤️‍🧑🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "🧑🏼‍❤️‍🧑🏿"
-            result[[SkinTone.medium]] = "💑🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "🧑🏽‍❤️‍🧑🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "🧑🏽‍❤️‍🧑🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "🧑🏽‍❤️‍🧑🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "🧑🏽‍❤️‍🧑🏿"
-            result[[SkinTone.mediumDark]] = "💑🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "🧑🏾‍❤️‍🧑🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "🧑🏾‍❤️‍🧑🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "🧑🏾‍❤️‍🧑🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "🧑🏾‍❤️‍🧑🏿"
-            result[[SkinTone.dark]] = "💑🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "🧑🏿‍❤️‍🧑🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "🧑🏿‍❤️‍🧑🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "🧑🏿‍❤️‍🧑🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "🧑🏿‍❤️‍🧑🏾"
+            return [
+                [.light]: "💑🏻",
+                [.light, .mediumLight]: "🧑🏻‍❤️‍🧑🏼",
+                [.light, .medium]: "🧑🏻‍❤️‍🧑🏽",
+                [.light, .mediumDark]: "🧑🏻‍❤️‍🧑🏾",
+                [.light, .dark]: "🧑🏻‍❤️‍🧑🏿",
+                [.mediumLight]: "💑🏼",
+                [.mediumLight, .light]: "🧑🏼‍❤️‍🧑🏻",
+                [.mediumLight, .medium]: "🧑🏼‍❤️‍🧑🏽",
+                [.mediumLight, .mediumDark]: "🧑🏼‍❤️‍🧑🏾",
+                [.mediumLight, .dark]: "🧑🏼‍❤️‍🧑🏿",
+                [.medium]: "💑🏽",
+                [.medium, .light]: "🧑🏽‍❤️‍🧑🏻",
+                [.medium, .mediumLight]: "🧑🏽‍❤️‍🧑🏼",
+                [.medium, .mediumDark]: "🧑🏽‍❤️‍🧑🏾",
+                [.medium, .dark]: "🧑🏽‍❤️‍🧑🏿",
+                [.mediumDark]: "💑🏾",
+                [.mediumDark, .light]: "🧑🏾‍❤️‍🧑🏻",
+                [.mediumDark, .mediumLight]: "🧑🏾‍❤️‍🧑🏼",
+                [.mediumDark, .medium]: "🧑🏾‍❤️‍🧑🏽",
+                [.mediumDark, .dark]: "🧑🏾‍❤️‍🧑🏿",
+                [.dark]: "💑🏿",
+                [.dark, .light]: "🧑🏿‍❤️‍🧑🏻",
+                [.dark, .mediumLight]: "🧑🏿‍❤️‍🧑🏼",
+                [.dark, .medium]: "🧑🏿‍❤️‍🧑🏽",
+                [.dark, .mediumDark]: "🧑🏿‍❤️‍🧑🏾"
+            ]
         case .womanHeartMan:
-            result[[SkinTone.light]] = "👩🏻‍❤️‍👨🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👩🏻‍❤️‍👨🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👩🏻‍❤️‍👨🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👩🏻‍❤️‍👨🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👩🏻‍❤️‍👨🏿"
-            result[[SkinTone.mediumLight]] = "👩🏼‍❤️‍👨🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👩🏼‍❤️‍👨🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👩🏼‍❤️‍👨🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👩🏼‍❤️‍👨🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👩🏼‍❤️‍👨🏿"
-            result[[SkinTone.medium]] = "👩🏽‍❤️‍👨🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👩🏽‍❤️‍👨🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👩🏽‍❤️‍👨🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👩🏽‍❤️‍👨🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👩🏽‍❤️‍👨🏿"
-            result[[SkinTone.mediumDark]] = "👩🏾‍❤️‍👨🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👩🏾‍❤️‍👨🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👩🏾‍❤️‍👨🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👩🏾‍❤️‍👨🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👩🏾‍❤️‍👨🏿"
-            result[[SkinTone.dark]] = "👩🏿‍❤️‍👨🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👩🏿‍❤️‍👨🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👩🏿‍❤️‍👨🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👩🏿‍❤️‍👨🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👩🏿‍❤️‍👨🏾"
+            return [
+                [.light]: "👩🏻‍❤️‍👨🏻",
+                [.light, .mediumLight]: "👩🏻‍❤️‍👨🏼",
+                [.light, .medium]: "👩🏻‍❤️‍👨🏽",
+                [.light, .mediumDark]: "👩🏻‍❤️‍👨🏾",
+                [.light, .dark]: "👩🏻‍❤️‍👨🏿",
+                [.mediumLight]: "👩🏼‍❤️‍👨🏼",
+                [.mediumLight, .light]: "👩🏼‍❤️‍👨🏻",
+                [.mediumLight, .medium]: "👩🏼‍❤️‍👨🏽",
+                [.mediumLight, .mediumDark]: "👩🏼‍❤️‍👨🏾",
+                [.mediumLight, .dark]: "👩🏼‍❤️‍👨🏿",
+                [.medium]: "👩🏽‍❤️‍👨🏽",
+                [.medium, .light]: "👩🏽‍❤️‍👨🏻",
+                [.medium, .mediumLight]: "👩🏽‍❤️‍👨🏼",
+                [.medium, .mediumDark]: "👩🏽‍❤️‍👨🏾",
+                [.medium, .dark]: "👩🏽‍❤️‍👨🏿",
+                [.mediumDark]: "👩🏾‍❤️‍👨🏾",
+                [.mediumDark, .light]: "👩🏾‍❤️‍👨🏻",
+                [.mediumDark, .mediumLight]: "👩🏾‍❤️‍👨🏼",
+                [.mediumDark, .medium]: "👩🏾‍❤️‍👨🏽",
+                [.mediumDark, .dark]: "👩🏾‍❤️‍👨🏿",
+                [.dark]: "👩🏿‍❤️‍👨🏿",
+                [.dark, .light]: "👩🏿‍❤️‍👨🏻",
+                [.dark, .mediumLight]: "👩🏿‍❤️‍👨🏼",
+                [.dark, .medium]: "👩🏿‍❤️‍👨🏽",
+                [.dark, .mediumDark]: "👩🏿‍❤️‍👨🏾"
+            ]
         case .manHeartMan:
-            result[[SkinTone.light]] = "👨🏻‍❤️‍👨🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👨🏻‍❤️‍👨🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👨🏻‍❤️‍👨🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👨🏻‍❤️‍👨🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👨🏻‍❤️‍👨🏿"
-            result[[SkinTone.mediumLight]] = "👨🏼‍❤️‍👨🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👨🏼‍❤️‍👨🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👨🏼‍❤️‍👨🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👨🏼‍❤️‍👨🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👨🏼‍❤️‍👨🏿"
-            result[[SkinTone.medium]] = "👨🏽‍❤️‍👨🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👨🏽‍❤️‍👨🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👨🏽‍❤️‍👨🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👨🏽‍❤️‍👨🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👨🏽‍❤️‍👨🏿"
-            result[[SkinTone.mediumDark]] = "👨🏾‍❤️‍👨🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👨🏾‍❤️‍👨🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👨🏾‍❤️‍👨🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👨🏾‍❤️‍👨🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👨🏾‍❤️‍👨🏿"
-            result[[SkinTone.dark]] = "👨🏿‍❤️‍👨🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👨🏿‍❤️‍👨🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👨🏿‍❤️‍👨🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👨🏿‍❤️‍👨🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👨🏿‍❤️‍👨🏾"
+            return [
+                [.light]: "👨🏻‍❤️‍👨🏻",
+                [.light, .mediumLight]: "👨🏻‍❤️‍👨🏼",
+                [.light, .medium]: "👨🏻‍❤️‍👨🏽",
+                [.light, .mediumDark]: "👨🏻‍❤️‍👨🏾",
+                [.light, .dark]: "👨🏻‍❤️‍👨🏿",
+                [.mediumLight]: "👨🏼‍❤️‍👨🏼",
+                [.mediumLight, .light]: "👨🏼‍❤️‍👨🏻",
+                [.mediumLight, .medium]: "👨🏼‍❤️‍👨🏽",
+                [.mediumLight, .mediumDark]: "👨🏼‍❤️‍👨🏾",
+                [.mediumLight, .dark]: "👨🏼‍❤️‍👨🏿",
+                [.medium]: "👨🏽‍❤️‍👨🏽",
+                [.medium, .light]: "👨🏽‍❤️‍👨🏻",
+                [.medium, .mediumLight]: "👨🏽‍❤️‍👨🏼",
+                [.medium, .mediumDark]: "👨🏽‍❤️‍👨🏾",
+                [.medium, .dark]: "👨🏽‍❤️‍👨🏿",
+                [.mediumDark]: "👨🏾‍❤️‍👨🏾",
+                [.mediumDark, .light]: "👨🏾‍❤️‍👨🏻",
+                [.mediumDark, .mediumLight]: "👨🏾‍❤️‍👨🏼",
+                [.mediumDark, .medium]: "👨🏾‍❤️‍👨🏽",
+                [.mediumDark, .dark]: "👨🏾‍❤️‍👨🏿",
+                [.dark]: "👨🏿‍❤️‍👨🏿",
+                [.dark, .light]: "👨🏿‍❤️‍👨🏻",
+                [.dark, .mediumLight]: "👨🏿‍❤️‍👨🏼",
+                [.dark, .medium]: "👨🏿‍❤️‍👨🏽",
+                [.dark, .mediumDark]: "👨🏿‍❤️‍👨🏾"
+            ]
         case .womanHeartWoman:
-            result[[SkinTone.light]] = "👩🏻‍❤️‍👩🏻"
-            result[[SkinTone.light, SkinTone.mediumLight]] = "👩🏻‍❤️‍👩🏼"
-            result[[SkinTone.light, SkinTone.medium]] = "👩🏻‍❤️‍👩🏽"
-            result[[SkinTone.light, SkinTone.mediumDark]] = "👩🏻‍❤️‍👩🏾"
-            result[[SkinTone.light, SkinTone.dark]] = "👩🏻‍❤️‍👩🏿"
-            result[[SkinTone.mediumLight]] = "👩🏼‍❤️‍👩🏼"
-            result[[SkinTone.mediumLight, SkinTone.light]] = "👩🏼‍❤️‍👩🏻"
-            result[[SkinTone.mediumLight, SkinTone.medium]] = "👩🏼‍❤️‍👩🏽"
-            result[[SkinTone.mediumLight, SkinTone.mediumDark]] = "👩🏼‍❤️‍👩🏾"
-            result[[SkinTone.mediumLight, SkinTone.dark]] = "👩🏼‍❤️‍👩🏿"
-            result[[SkinTone.medium]] = "👩🏽‍❤️‍👩🏽"
-            result[[SkinTone.medium, SkinTone.light]] = "👩🏽‍❤️‍👩🏻"
-            result[[SkinTone.medium, SkinTone.mediumLight]] = "👩🏽‍❤️‍👩🏼"
-            result[[SkinTone.medium, SkinTone.mediumDark]] = "👩🏽‍❤️‍👩🏾"
-            result[[SkinTone.medium, SkinTone.dark]] = "👩🏽‍❤️‍👩🏿"
-            result[[SkinTone.mediumDark]] = "👩🏾‍❤️‍👩🏾"
-            result[[SkinTone.mediumDark, SkinTone.light]] = "👩🏾‍❤️‍👩🏻"
-            result[[SkinTone.mediumDark, SkinTone.mediumLight]] = "👩🏾‍❤️‍👩🏼"
-            result[[SkinTone.mediumDark, SkinTone.medium]] = "👩🏾‍❤️‍👩🏽"
-            result[[SkinTone.mediumDark, SkinTone.dark]] = "👩🏾‍❤️‍👩🏿"
-            result[[SkinTone.dark]] = "👩🏿‍❤️‍👩🏿"
-            result[[SkinTone.dark, SkinTone.light]] = "👩🏿‍❤️‍👩🏻"
-            result[[SkinTone.dark, SkinTone.mediumLight]] = "👩🏿‍❤️‍👩🏼"
-            result[[SkinTone.dark, SkinTone.medium]] = "👩🏿‍❤️‍👩🏽"
-            result[[SkinTone.dark, SkinTone.mediumDark]] = "👩🏿‍❤️‍👩🏾"
+            return [
+                [.light]: "👩🏻‍❤️‍👩🏻",
+                [.light, .mediumLight]: "👩🏻‍❤️‍👩🏼",
+                [.light, .medium]: "👩🏻‍❤️‍👩🏽",
+                [.light, .mediumDark]: "👩🏻‍❤️‍👩🏾",
+                [.light, .dark]: "👩🏻‍❤️‍👩🏿",
+                [.mediumLight]: "👩🏼‍❤️‍👩🏼",
+                [.mediumLight, .light]: "👩🏼‍❤️‍👩🏻",
+                [.mediumLight, .medium]: "👩🏼‍❤️‍👩🏽",
+                [.mediumLight, .mediumDark]: "👩🏼‍❤️‍👩🏾",
+                [.mediumLight, .dark]: "👩🏼‍❤️‍👩🏿",
+                [.medium]: "👩🏽‍❤️‍👩🏽",
+                [.medium, .light]: "👩🏽‍❤️‍👩🏻",
+                [.medium, .mediumLight]: "👩🏽‍❤️‍👩🏼",
+                [.medium, .mediumDark]: "👩🏽‍❤️‍👩🏾",
+                [.medium, .dark]: "👩🏽‍❤️‍👩🏿",
+                [.mediumDark]: "👩🏾‍❤️‍👩🏾",
+                [.mediumDark, .light]: "👩🏾‍❤️‍👩🏻",
+                [.mediumDark, .mediumLight]: "👩🏾‍❤️‍👩🏼",
+                [.mediumDark, .medium]: "👩🏾‍❤️‍👩🏽",
+                [.mediumDark, .dark]: "👩🏾‍❤️‍👩🏿",
+                [.dark]: "👩🏿‍❤️‍👩🏿",
+                [.dark, .light]: "👩🏿‍❤️‍👩🏻",
+                [.dark, .mediumLight]: "👩🏿‍❤️‍👩🏼",
+                [.dark, .medium]: "👩🏿‍❤️‍👩🏽",
+                [.dark, .mediumDark]: "👩🏿‍❤️‍👩🏾"
+            ]
         default: return nil
         }
-        return result
     }
 }
