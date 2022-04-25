@@ -98,7 +98,7 @@ public class FeatureFlags: BaseFlags {
     public static let storiesMigration4 = build.includes(.qa)
 
     @objc
-    public static let canUseNativeWebsocket = build.includes(.beta)
+    public static let canUseNativeWebsocket = true
 
     @objc
     public static let groupAbuse = false
