@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -63,8 +63,6 @@ open class CDNDownloadOperation: OWSOperation {
                                             maxDownloadSize: maxDownloadSize,
                                             hasCheckedContentLength: hasCheckedContentLength)
             }
-        }.recover(on: .global()) { (error: Error) -> Promise<OWSUrlDownloadResponse> in
-            throw error
         }.map(on: .global()) { [weak self] (response: OWSUrlDownloadResponse) -> Void in
             guard let _ = self else {
                 throw OWSAssertionError("Operation has been deallocated.")
