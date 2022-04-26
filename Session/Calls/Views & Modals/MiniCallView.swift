@@ -16,6 +16,9 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
     private var top: NSLayoutConstraint?
     private var bottom: NSLayoutConstraint?
     
+#if arch(arm64)
+    // Note: 'RTCMTLVideoView' requires arm64 (so won't work on the simulator which
+    // we need to build for x86_64 due to WebRTC not supporting arm64 simulator builds)
     private lazy var remoteVideoView: RTCMTLVideoView = {
         let result = RTCMTLVideoView()
         result.delegate = self
@@ -24,6 +27,15 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
         result.backgroundColor = .black
         return result
     }()
+#else
+    private lazy var remoteVideoView: RTCEAGLVideoView = {
+        let result = RTCEAGLVideoView()
+        result.delegate = self
+        result.alpha = self.callVC.call.isRemoteVideoEnabled ? 1 : 0
+        result.backgroundColor = .black
+        return result
+    }()
+#endif
    
     // MARK: Initialization
     public static var current: MiniCallView?
