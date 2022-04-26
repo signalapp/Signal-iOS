@@ -9,7 +9,6 @@ public enum GalleryDirection {
 }
 
 class MediaGalleryAlbum {
-
     private var originalItems: [MediaGalleryItem]
     var items: [MediaGalleryItem] {
         get {
@@ -24,19 +23,9 @@ class MediaGalleryAlbum {
 
     weak var mediaGallery: MediaGallery?
 
-    init(items: [MediaGalleryItem]) {
+    fileprivate init(items: [MediaGalleryItem], mediaGallery: MediaGallery) {
         self.originalItems = items
-    }
-
-    func add(item: MediaGalleryItem) {
-        guard !originalItems.contains(item) else {
-            return
-        }
-
-        originalItems.append(item)
-        originalItems.sort { (lhs, rhs) -> Bool in
-            return lhs.albumIndex < rhs.albumIndex
-        }
+        self.mediaGallery = mediaGallery
     }
 }
 
@@ -46,7 +35,6 @@ public class MediaGalleryItem: Equatable, Hashable {
     let galleryDate: GalleryDate
     let captionForDisplay: String?
     let albumIndex: Int
-    var album: MediaGalleryAlbum?
     let orderingKey: MediaGalleryItemOrderingKey
 
     init(message: TSMessage, attachmentStream: TSAttachmentStream) {
@@ -319,27 +307,27 @@ class MediaGallery: Dependencies {
             return nil
         }
 
-        let galleryItem = MediaGalleryItem(message: message, attachmentStream: attachmentStream)
-        galleryItem.album = getAlbum(item: galleryItem)
-
-        return galleryItem
+        return MediaGalleryItem(message: message, attachmentStream: attachmentStream)
     }
 
-    var galleryAlbums: [String: MediaGalleryAlbum] = [:]
-    func getAlbum(item: MediaGalleryItem) -> MediaGalleryAlbum? {
-        guard let albumMessageId = item.attachmentStream.albumMessageId else {
-            return nil
+    internal func album(for item: MediaGalleryItem) -> MediaGalleryAlbum {
+        ensureGalleryItemsLoaded(.around,
+                                 item: item,
+                                 amount: kGallerySwipeLoadBatchSize,
+                                 shouldLoadAlbumRemainder: true)
+
+        // We get the path after loading items because loading can result in a shift of section indexes.
+        guard let itemPath = indexPath(for: item) else {
+            owsFailDebug("asking for album for an item that hasn't been loaded")
+            return MediaGalleryAlbum(items: [item], mediaGallery: self)
         }
 
-        guard let existingAlbum = galleryAlbums[albumMessageId] else {
-            let newAlbum = MediaGalleryAlbum(items: [item])
-            galleryAlbums[albumMessageId] = newAlbum
-            newAlbum.mediaGallery = self
-            return newAlbum
-        }
+        let section = sections[itemPath.section].value
+        let startOfAlbum = section[..<itemPath.item].suffix { $0?.message.uniqueId == item.message.uniqueId }.startIndex
+        let endOfAlbum = section[itemPath.item...].prefix { $0?.message.uniqueId == item.message.uniqueId }.endIndex
+        let items = section[startOfAlbum..<endOfAlbum].map { $0! }
 
-        existingAlbum.add(item: item)
-        return existingAlbum
+        return MediaGalleryAlbum(items: items, mediaGallery: self)
     }
 
     // MARK: - Loading
@@ -577,7 +565,8 @@ class MediaGallery: Dependencies {
                                           amount: Int,
                                           shouldLoadAlbumRemainder: Bool) {
         guard let path = indexPath(for: item) else {
-            owsFail("showing detail view for an item that hasn't been loaded: \(item.attachmentStream)")
+            owsFailDebug("showing detail view for an item that hasn't been loaded: \(item.attachmentStream)")
+            return
         }
 
         ensureGalleryItemsLoaded(direction,

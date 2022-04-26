@@ -53,6 +53,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         updateMediaRail()
     }
 
+    private var mostRecentAlbum: MediaGalleryAlbum?
+
     private let showingSingleMessage: Bool
     let mediaGallery: MediaGallery
 
@@ -364,7 +366,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        galleryRailView.configureCellViews(itemProvider: currentItem.album,
+        if mostRecentAlbum?.items.contains(currentItem) != true {
+            mostRecentAlbum = mediaGallery.album(for: currentItem)
+        }
+
+        galleryRailView.configureCellViews(itemProvider: mostRecentAlbum!,
                                            focusedItem: currentItem,
                                            cellViewBuilder: { _ in return GalleryRailCellView() })
     }

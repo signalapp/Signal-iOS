@@ -5,8 +5,19 @@
 public extension Collection {
 
     /// Returns the element at the specified index iff it is within bounds, otherwise nil.
+    @inlinable
     subscript (safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
+    }
+}
+
+public extension BidirectionalCollection {
+    @inlinable
+    func suffix(while predicate: (Element) throws -> Bool) rethrows -> Self.SubSequence {
+        guard let startIndex = try self.lastIndex(where: { try !predicate($0) }) else {
+            return self[...]
+        }
+        return self[startIndex...].dropFirst()
     }
 }
 
@@ -17,6 +28,7 @@ public extension RandomAccessCollection {
         }
     }
 
+    @inlinable
     var nilIfEmpty: Self? {
         isEmpty ? nil : self
     }
