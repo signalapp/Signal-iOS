@@ -1,11 +1,8 @@
 import SignalCoreKit
 import SessionSnodeKit
+import WebRTC
 
 extension MessageReceiver {
-
-    internal static func isBlocked(_ publicKey: String) -> Bool {
-        return SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(publicKey)
-    }
 
     public static func handle(_ message: Message, associatedWithProto proto: SNProtoContent, openGroupID: String?, isBackgroundPoll: Bool, using transaction: Any) throws {
         switch message {
@@ -16,6 +13,7 @@ extension MessageReceiver {
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
         case let message as UnsendRequest: handleUnsendRequest(message, using: transaction)
+        case let message as CallMessage: handleCallMessage(message, using: transaction)
         case let message as MessageRequestResponse: handleMessageRequestResponse(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
@@ -54,7 +52,7 @@ extension MessageReceiver {
     public static func showTypingIndicatorIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         func showTypingIndicatorsIfNeeded() {
@@ -72,7 +70,7 @@ extension MessageReceiver {
     public static func hideTypingIndicatorIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         func hideTypingIndicatorsIfNeeded() {
@@ -90,7 +88,7 @@ extension MessageReceiver {
     public static func cancelTypingIndicatorsIfNeeded(for senderPublicKey: String) {
         var threadOrNil: TSContactThread?
         Storage.read { transaction in
-            threadOrNil = TSContactThread.getWithContactSessionID(senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         func cancelTypingIndicatorsIfNeeded() {
@@ -112,7 +110,7 @@ extension MessageReceiver {
     private static func handleDataExtractionNotification(_ message: DataExtractionNotification, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         guard message.groupPublicKey == nil,
-            let thread = TSContactThread.getWithContactSessionID(message.sender!, transaction: transaction) else { return }
+            let thread = TSContactThread.fetch(for: message.sender!, using: transaction) else { return }
         let type: TSInfoMessageType
         switch message.kind! {
         case .screenshot: type = .screenshotNotification
@@ -142,7 +140,7 @@ extension MessageReceiver {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getWithContactSessionID(syncTarget ?? senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: syncTarget ?? senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
@@ -165,7 +163,7 @@ extension MessageReceiver {
             let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
             threadOrNil = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction)
         } else {
-            threadOrNil = TSContactThread.getWithContactSessionID(syncTarget ?? senderPublicKey, transaction: transaction)
+            threadOrNil = TSContactThread.fetch(for: syncTarget ?? senderPublicKey, using: transaction)
         }
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
@@ -212,6 +210,7 @@ extension MessageReceiver {
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
                 let contact = (Storage.shared.getContact(with: sessionID, using: transaction) ?? Contact(sessionID: sessionID))
+                let contactWasBlocked: Bool = contact.isBlocked
                 if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
@@ -237,28 +236,12 @@ extension MessageReceiver {
                     // associated with them that is a message request thread then delete it (assume
                     // that the current user had deleted that message request)
                     if
-                        contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID),
-                        let thread: TSContactThread = TSContactThread.getWithContactSessionID(sessionID, transaction: transaction),
+                        contactInfo.isBlocked != contactWasBlocked,
+                        let thread: TSContactThread = TSContactThread.fetch(for: sessionID, using: transaction),
                         thread.isMessageRequest(using: transaction)
                     {
                         thread.removeAllThreadInteractions(with: transaction)
                         thread.remove(with: transaction)
-                    }
-                }
-            }
-            
-            // FIXME: 'OWSBlockingManager' manages it's own dbConnection and transactions so we have to dispatch this to prevent deadlocks
-            DispatchQueue.global().async {
-                for contactInfo in message.contacts {
-                    let sessionID = contactInfo.publicKey!
-                    
-                    if contactInfo.hasIsBlocked && contactInfo.isBlocked != OWSBlockingManager.shared().isRecipientIdBlocked(sessionID) {
-                        if contactInfo.isBlocked {
-                            OWSBlockingManager.shared().addBlockedPhoneNumber(sessionID)
-                        }
-                        else {
-                            OWSBlockingManager.shared().removeBlockedPhoneNumber(sessionID)
-                        }
                     }
                 }
             }
@@ -320,6 +303,46 @@ extension MessageReceiver {
                     messageToDelete.remove(with: transaction)
                 }
             }
+        }
+    }
+    
+    
+    
+    // MARK: - Call Messages
+    
+    public static func handleCallMessage(_ message: CallMessage, using transaction: Any) {
+        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        switch message.kind! {
+        case .preOffer:
+            SNLog("[Calls] Received pre-offer message.")
+            // It is enough just ignoring the pre offers, other call messages
+            // for this call would be dropped because of no Session call instance
+            guard let sender = message.sender, let contact = Storage.shared.getContact(with: sender), contact.isApproved else { return }
+            handleNewCallOfferMessageIfNeeded?(message, transaction)
+        case .offer:
+            SNLog("[Calls] Received offer message.")
+            handleOfferCallMessage?(message)
+        case .answer:
+            SNLog("[Calls] Received answer message.")
+            guard let currentWebRTCSession = WebRTCSession.current, currentWebRTCSession.uuid == message.uuid! else { return }
+            handleAnswerCallMessage?(message)
+        case .provisionalAnswer: break // TODO: Implement
+        case let .iceCandidates(sdpMLineIndexes, sdpMids):
+            guard let currentWebRTCSession = WebRTCSession.current, currentWebRTCSession.uuid == message.uuid! else { return }
+            var candidates: [RTCIceCandidate] = []
+            let sdps = message.sdps!
+            for i in 0..<sdps.count {
+                let sdp = sdps[i]
+                let sdpMLineIndex = sdpMLineIndexes[i]
+                let sdpMid = sdpMids[i]
+                let candidate = RTCIceCandidate(sdp: sdp, sdpMLineIndex: Int32(sdpMLineIndex), sdpMid: sdpMid)
+                candidates.append(candidate)
+            }
+            currentWebRTCSession.handleICECandidates(candidates)
+        case .endCall:
+            SNLog("[Calls] Received end call message.")
+            guard WebRTCSession.current?.uuid == message.uuid! else { return }
+            handleEndCallMessage?(message)
         }
     }
     
@@ -833,23 +856,10 @@ extension MessageReceiver {
             Storage.shared.setContact(contact, using: transaction)
         }
         
-        // Force a config sync to ensure all devices know the contact approval state if desired (Note: This logic
-        // should match the behaviour in AppDelegate.forceSyncConfigurationNowIfNeeded())
+        // Force a config sync to ensure all devices know the contact approval state if desired
         guard forceConfigSync else { return }
         
-        // Note: We MUST run this async as we need to ensure the database `transaction` has finished before we generate
-        // a new configuration message (otherwise the `contact` will be loaded direct from the database and the
-        // `didApproveMe` value won't have been updated)
-        DispatchQueue.global(qos: .background).async {
-            Storage.write { transaction in
-                guard Storage.shared.getUser()?.name != nil, let configurationMessage = ConfigurationMessage.getCurrent(with: transaction) else {
-                    return
-                }
-                
-                let destination: Message.Destination = Message.Destination.contact(publicKey: userPublicKey)
-                MessageSender.send(configurationMessage, to: destination, using: transaction).retainUntilComplete()
-            }
-        }
+        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
     }
     
     public static func handleMessageRequestResponse(_ message: MessageRequestResponse, using transaction: Any) {
@@ -860,7 +870,7 @@ extension MessageReceiver {
         guard let senderId: String = message.sender else { return }
         
         // Get the existing thead and notify the user
-        if let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction, let thread: TSContactThread = TSContactThread.getWithContactSessionID(senderId, transaction: transaction) {
+        if let transaction: YapDatabaseReadWriteTransaction = transaction as? YapDatabaseReadWriteTransaction, let thread: TSContactThread = TSContactThread.fetch(for: senderId, using: transaction) {
             let infoMessage = TSInfoMessage(
                 timestamp: (message.sentTimestamp ?? NSDate.ows_millisecondTimeStamp()),
                 in: thread,

@@ -27,7 +27,7 @@ public class ContactsMigration : OWSDatabaseMigration {
             }
             self.save(with: transaction) // Intentionally capture self
         }, completion: {
-            completion()
+            completion(true, false)
         })
     }
 }

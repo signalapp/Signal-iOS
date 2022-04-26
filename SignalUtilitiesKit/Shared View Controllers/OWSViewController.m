@@ -4,7 +4,7 @@
 
 #import "OWSViewController.h"
 #import "UIView+OWS.h"
-#import <SignalUtilitiesKit/Theme.h>
+#import <SessionUIKit/SessionUIKit.h>
 #import "AppContext.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -87,7 +87,7 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     [super viewDidLoad];
 
     if (self.shouldUseTheme) {
-        self.view.backgroundColor = Theme.backgroundColor;
+        self.view.backgroundColor = [LKColors navigationBarBackground];
     }
 }
 

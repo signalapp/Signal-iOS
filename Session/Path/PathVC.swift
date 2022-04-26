@@ -1,4 +1,5 @@
 import NVActivityIndicatorView
+import UIKit
 
 final class PathVC : BaseVC {
 
@@ -65,12 +66,8 @@ final class PathVC : BaseVC {
         pathStackViewContainer.bottomAnchor.constraint(greaterThanOrEqualTo: spinner.bottomAnchor).isActive = true
         spinner.center(in: pathStackViewContainer)
         // Set up rebuild path button
-        let learnMoreButtonContainer = UIView()
-        learnMoreButtonContainer.addSubview(learnMoreButton)
-        learnMoreButton.pin(.leading, to: .leading, of: learnMoreButtonContainer, withInset: isIPhone5OrSmaller ? 64 : 80)
-        learnMoreButton.pin(.top, to: .top, of: learnMoreButtonContainer)
-        learnMoreButtonContainer.pin(.trailing, to: .trailing, of: learnMoreButton, withInset: isIPhone5OrSmaller ? 64 : 80)
-        learnMoreButtonContainer.pin(.bottom, to: .bottom, of: learnMoreButton)
+        let inset: CGFloat = isIPhone5OrSmaller ? 64 : 80
+        let learnMoreButtonContainer = UIView(wrapping: learnMoreButton, withInsets: UIEdgeInsets(top: 0, leading: inset, bottom: 0, trailing: inset), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()

@@ -81,6 +81,12 @@ extension String {
     public var completeNSRange: NSRange {
         NSRange(completeRange, in: self)
     }
+    
+    public func replace(regex: String, with template: String) -> String {
+        let regex = try! NSRegularExpression(pattern: regex, options: .caseInsensitive)
+        let range = self.completeNSRange
+        return regex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: template)
+    }
 }
 
 extension NSTextCheckingResult {

@@ -73,7 +73,7 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         tabBar.pin(.leading, to: .leading, of: view)
         let tabBarInset: CGFloat
         if #available(iOS 13, *) {
-            tabBarInset = navigationBar.height()
+            tabBarInset = UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height()
         } else {
             tabBarInset = 0
         }
@@ -177,6 +177,7 @@ private final class EnterPublicKeyVC : UIViewController {
     weak var NewDMVC: NewDMVC!
     private var isKeyboardShowing = false
     private var bottomConstraint: NSLayoutConstraint!
+    private let bottomMargin: CGFloat = UIDevice.current.isIPad ? Values.largeSpacing : 0
     
     // MARK: Components
     private lazy var publicKeyTextView: TextView = {
@@ -212,8 +213,12 @@ private final class EnterPublicKeyVC : UIViewController {
     private lazy var buttonContainer: UIStackView = {
         let result = UIStackView()
         result.axis = .horizontal
-        result.spacing = Values.mediumSpacing
+        result.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         result.distribution = .fillEqually
+        if (UIDevice.current.isIPad) {
+            result.layoutMargins = UIEdgeInsets(top: 0, left: Values.iPadButtonContainerMargin, bottom: 0, right: Values.iPadButtonContainerMargin)
+            result.isLayoutMarginsRelativeArrangement = true
+        }
         return result
     }()
     
@@ -221,6 +226,8 @@ private final class EnterPublicKeyVC : UIViewController {
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
+        // User session id container
+        let userPublicKeyContainer = UIView(wrapping: userPublicKeyLabel, withInsets: .zero, shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth)
         // Explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
@@ -240,14 +247,9 @@ private final class EnterPublicKeyVC : UIViewController {
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(startNewDMIfPossible), for: UIControl.Event.touchUpInside)
-        let nextButtonContainer = UIView()
-        nextButtonContainer.addSubview(nextButton)
-        nextButton.pin(.leading, to: .leading, of: nextButtonContainer, withInset: 80)
-        nextButton.pin(.top, to: .top, of: nextButtonContainer)
-        nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
-        nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
+        let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyLabel, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyContainer, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
         mainStackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
@@ -256,7 +258,7 @@ private final class EnterPublicKeyVC : UIViewController {
         mainStackView.pin(.leading, to: .leading, of: view)
         mainStackView.pin(.top, to: .top, of: view)
         view.pin(.trailing, to: .trailing, of: mainStackView)
-        bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView)
+        bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView, withInset: bottomMargin)
         // Width constraint
         view.set(.width, to: UIScreen.main.bounds.width)
         // Dismiss keyboard on tap
@@ -297,7 +299,7 @@ private final class EnterPublicKeyVC : UIViewController {
         guard !isKeyboardShowing else { return }
         isKeyboardShowing = true
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
-        bottomConstraint.constant = newHeight
+        bottomConstraint.constant = newHeight + bottomMargin
         UIView.animate(withDuration: 0.25) {
             [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
                 $0.alpha = 0
@@ -310,7 +312,7 @@ private final class EnterPublicKeyVC : UIViewController {
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         guard isKeyboardShowing else { return }
         isKeyboardShowing = false
-        bottomConstraint.constant = 0
+        bottomConstraint.constant = bottomMargin
         UIView.animate(withDuration: 0.25) {
             [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
                 $0.alpha = 1
@@ -332,6 +334,12 @@ private final class EnterPublicKeyVC : UIViewController {
     
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         NewDMVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
     

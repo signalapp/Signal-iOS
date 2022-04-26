@@ -3,7 +3,6 @@
 //
 
 #import "OWSTextField.h"
-#import "Theme.h"
 
 #import <SessionUIKit/SessionUIKit.h>
 

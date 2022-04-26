@@ -3,7 +3,6 @@
 //
 
 #import "MediaDetailViewController.h"
-#import "AttachmentSharing.h"
 #import "ConversationViewItem.h"
 #import "Session-Swift.h"
 #import "TSAttachmentStream.h"
@@ -16,6 +15,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionUtilitiesKit/NSData+Image.h>
+#import <SessionUIKit/SessionUIKit.h>
 #import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -201,18 +201,18 @@ NS_ASSUME_NONNULL_BEGIN
             self.mediaView = animatedView;
         } else {
             self.mediaView = [UIView new];
-            self.mediaView.backgroundColor = Theme.offBackgroundColor;
+            self.mediaView.backgroundColor = LKColors.unimportant;
         }
     } else if (!self.image) {
         // Still loading thumbnail.
         self.mediaView = [UIView new];
-        self.mediaView.backgroundColor = Theme.offBackgroundColor;
+        self.mediaView.backgroundColor = LKColors.unimportant;
     } else if (self.isVideo) {
         if (self.attachmentStream.isValidVideo) {
             self.mediaView = [self buildVideoPlayerView];
         } else {
             self.mediaView = [UIView new];
-            self.mediaView.backgroundColor = Theme.offBackgroundColor;
+            self.mediaView.backgroundColor = LKColors.unimportant;
         }
     } else {
         // Present the static image using standard UIImageView

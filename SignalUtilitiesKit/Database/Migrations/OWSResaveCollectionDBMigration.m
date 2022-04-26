@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogVerbose(@"%lu", (unsigned long)recordIds.count);
 
     if (recordIds.count < 1) {
-        completion();
+        completion(true, false);
         return;
     }
 

@@ -153,8 +153,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
                 constant: -Values.largeSpacing
             ),
-            // Note: The '182' is to match the 'Next' button on the New DM page (which doesn't have a fixed width)
-            clearAllButton.widthAnchor.constraint(equalToConstant: 182),
+            clearAllButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth),
             clearAllButton.heightAnchor.constraint(equalToConstant: NewConversationButtonSet.collapsedButtonSize)
         ])
     }
@@ -348,23 +347,23 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                                 needsSync = true
                             }
                         }
+                        
+                        // Block the contact
+                        if
+                            let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
+                            !thread.isBlocked(),
+                            let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
+                        {
+                            contact.isBlocked = true
+                            Storage.shared.setContact(contact, using: transaction)
+                            needsSync = true
+                        }
                     }
                 },
                 completion: {
-                    // Block all the contacts
-                    threads.forEach { thread in
-                        if let sessionId: String = (thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                            OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                        }
-                    }
-                    
-                    // Force a config sync (must run on the main thread)
+                    // Force a config sync
                     if needsSync {
-                        DispatchQueue.main.async {
-                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                                appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                            }
-                        }
+                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                     }
                 }
             )
@@ -382,19 +381,20 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 with: { [weak self] transaction in
                     Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
                     self?.updateContactAndThread(thread: thread, with: transaction)
+                    
+                    // Block the contact
+                    if
+                        let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
+                        !thread.isBlocked(),
+                        let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
+                    {
+                        contact.isBlocked = true
+                        Storage.shared.setContact(contact, using: transaction)
+                    }
                 },
                 completion: {
-                    // Block the contact
-                    if let sessionId: String = (thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                        OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                    }
-                    
-                    // Force a config sync (must run on the main thread)
-                    DispatchQueue.main.async {
-                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                            appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                        }
-                    }
+                    // Force a config sync
+                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                 }
             )
         })

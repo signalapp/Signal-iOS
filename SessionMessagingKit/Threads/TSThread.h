@@ -55,6 +55,9 @@ BOOL IsNoteToSelfEnabled(void);
 - (BOOL)isMessageRequest;
 - (BOOL)isMessageRequestUsingTransaction:(YapDatabaseReadTransaction *)transaction;
 
+- (BOOL)isBlocked;
+- (BOOL)isBlockedUsingTransaction:(YapDatabaseReadTransaction *)transaction;
+
 #pragma mark Interactions
 
 - (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction usingBlock:(void (^)(TSInteraction *interaction, BOOL *stop))block;

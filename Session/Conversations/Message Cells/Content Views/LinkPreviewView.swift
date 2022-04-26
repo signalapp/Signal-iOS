@@ -11,7 +11,7 @@ final class LinkPreviewView : UIView {
     private lazy var sentLinkPreviewTextColor: UIColor = {
         let isOutgoing = (viewItem?.interaction.interactionType() == .outgoingMessage)
         switch (isOutgoing, AppModeManager.shared.currentAppMode) {
-        case (true, .dark), (false, .light): return .black
+        case (false, .light): return .black
         case (true, .light): return Colors.grey
         default: return .white
         }

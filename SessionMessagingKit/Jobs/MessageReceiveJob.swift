@@ -59,7 +59,7 @@ public final class MessageReceiveJob : NSObject, Job, NSCoding { // NSObject/NSC
     
     public func execute() -> Promise<Void> {
         if let id = id { // Can be nil (e.g. when background polling)
-            JobQueue.currentlyExecutingJobs.insert(id)
+            JobQueue.currentlyExecutingJobs.mutate { $0.insert(id) }
         }
         let (promise, seal) = Promise<Void>.pending()
         SNMessagingKitConfiguration.shared.storage.write(with: { transaction in // Intentionally capture self

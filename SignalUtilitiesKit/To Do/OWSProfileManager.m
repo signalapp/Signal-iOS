@@ -14,9 +14,7 @@
 #import <SessionUtilitiesKit/NSData+Image.h>
 #import <SessionUtilitiesKit/NSNotificationCenter+OWS.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
-#import <SessionMessagingKit/OWSBlockingManager.h>
 #import <SessionUtilitiesKit/OWSFileSystem.h>
-#import <SignalUtilitiesKit/OWSPrimaryStorage+Loki.h>
 #import <SessionMessagingKit/SSKEnvironment.h>
 #import <SessionMessagingKit/TSAccountManager.h>
 #import <SessionMessagingKit/TSGroupThread.h>
@@ -26,13 +24,6 @@
 #import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificationName_ProfileWhitelistDidChange";
-
-NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
-NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
-
-NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_ProfileKeyDidChange";
 
 // The max bytes for a user's profile name, encoded in UTF8.
 // Before encrypting and submitting we NULL pad the name data to this length.
@@ -100,11 +91,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (OWSIdentityManager *)identityManager
 {
     return SSKEnvironment.shared.identityManager;
-}
-
-- (OWSBlockingManager *)blockingManager
-{
-    return SSKEnvironment.shared.blockingManager;
 }
 
 - (void)updateLocalProfileName:(nullable NSString *)profileName

@@ -27,6 +27,9 @@ import SignalUtilitiesKit
 
     @objc
     public var accountManager: AccountManager
+    
+    @objc
+    public var callManager: SessionCallManager
 
     @objc
     public var notificationPresenter: NotificationPresenter
@@ -34,9 +37,6 @@ import SignalUtilitiesKit
     @objc
     public var pushRegistrationManager: PushRegistrationManager
 
-    @objc
-    public var backup: OWSBackup
-    
     @objc
     public var fileLogger: DDFileLogger
 
@@ -49,15 +49,11 @@ import SignalUtilitiesKit
         return _userNotificationActionHandler as! UserNotificationActionHandler
     }
 
-    @objc
-    public var backupLazyRestore: BackupLazyRestore
-
     private override init() {
         self.accountManager = AccountManager()
+        self.callManager = SessionCallManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
-        self.backup = OWSBackup()
-        self.backupLazyRestore = BackupLazyRestore()
         self._userNotificationActionHandler = UserNotificationActionHandler()
         self.fileLogger = DDFileLogger()
 

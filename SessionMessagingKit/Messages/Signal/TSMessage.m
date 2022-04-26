@@ -87,6 +87,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     _openGroupInvitationURL = openGroupInvitationURL;
     _serverHash = serverHash;
     _isDeleted = false;
+    _isCallMessage = false;
 
     return self;
 }
@@ -438,6 +439,15 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                                     }
                                 }
                                 [message setIsDeleted:true];
+                             }];
+}
+
+- (void)updateCallMessageWithNewBody:(NSString *)newBody transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (!_isCallMessage) { return; }
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSMessage *message) {
+                                [message setBody:newBody];
                              }];
 }
 

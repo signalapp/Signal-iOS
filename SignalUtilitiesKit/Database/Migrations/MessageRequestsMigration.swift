@@ -57,7 +57,7 @@ public class MessageRequestsMigration : OWSDatabaseMigration {
             }
             self.save(with: transaction) // Intentionally capture self
         }, completion: {
-            completion()
+            completion(true, true)
         })
     }
 }

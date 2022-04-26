@@ -19,8 +19,6 @@
 #import "NotificationSettingsViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioPlayer.h"
-#import "OWSBackup.h"
-#import "OWSBackupIO.h"
 #import "OWSBezierPathView.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSDatabaseMigration.h"
@@ -40,7 +38,6 @@
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalUtilitiesKit/AttachmentSharing.h>
 #import <SignalUtilitiesKit/ContactTableViewCell.h>
 #import <SessionMessagingKit/Environment.h>
 #import <SessionMessagingKit/OWSAudioPlayer.h>

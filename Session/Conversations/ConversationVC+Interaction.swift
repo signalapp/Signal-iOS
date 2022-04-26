@@ -39,6 +39,26 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         unreadViewItems.removeAll()
         messagesTableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }
+    
+    // MARK: Call
+    @objc func startCall(_ sender: Any?) {
+        guard SessionCall.isEnabled else { return }
+        if SSKPreferences.areCallsEnabled {
+            requestMicrophonePermissionIfNeeded { }
+            guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
+            guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
+            guard AppEnvironment.shared.callManager.currentCall == nil else { return }
+            let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString.lowercased(), mode: .offer, outgoing: true)
+            let callVC = CallVC(for: call)
+            callVC.conversationVC = self
+            self.inputAccessoryView?.isHidden = true
+            self.inputAccessoryView?.alpha = 0
+            present(callVC, animated: true, completion: nil)
+        } else {
+            let callPermissionRequestModal = CallPermissionRequestModal()
+            self.navigationController?.present(callPermissionRequestModal, animated: true, completion: nil)
+        }
+    }
 
     // MARK: Blocking
     @objc func unblock() {
@@ -48,21 +68,25 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             self.blockedBanner.alpha = 0
         }, completion: { _ in
             if let contact: Contact = Storage.shared.getContact(with: publicKey) {
-                Storage.shared.write { transaction in
-                    contact.isBlocked = false
-                    Storage.shared.setContact(contact, using: transaction)
-                }
+                Storage.shared.write(
+                    with: { transaction in
+                        guard let transaction = transaction as? YapDatabaseReadWriteTransaction else { return }
+                        
+                        contact.isBlocked = false
+                        Storage.shared.setContact(contact, using: transaction)
+                    },
+                    completion: {
+                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                    }
+                )
             }
-            
-            OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
         })
     }
 
     func showBlockedModalIfNeeded() -> Bool {
-        guard let thread = thread as? TSContactThread else { return false }
-        let publicKey = thread.contactSessionID()
-        guard OWSBlockingManager.shared().isRecipientIdBlocked(publicKey) else { return false }
-        let blockedModal = BlockedModal(publicKey: publicKey)
+        guard let thread = thread as? TSContactThread, thread.isBlocked() else { return false }
+        
+        let blockedModal = BlockedModal(publicKey: thread.contactSessionID())
         blockedModal.modalPresentationStyle = .overFullScreen
         blockedModal.modalTransitionStyle = .crossDissolve
         present(blockedModal, animated: true, completion: nil)
@@ -175,7 +199,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         } catch {
             let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            return present(alert, animated: true, completion: nil)
+            return presentAlert(alert)
         }
         let type = urlResourceValues.typeIdentifier ?? (kUTTypeData as String)
         guard urlResourceValues.isDirectory != true else {
@@ -515,7 +539,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             modal.modalTransitionStyle = .crossDissolve
             present(modal, animated: true, completion: nil)
         }
-        if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
+        if let message = viewItem.interaction as? TSInfoMessage, message.messageType == .call {
+            let caller = (thread as! TSContactThread).name()
+            let callMissedTipsModal = CallMissedTipsModal(caller: caller)
+            present(callMissedTipsModal, animated: true, completion: nil)
+        } else if let message = viewItem.interaction as? TSOutgoingMessage, message.messageState == .failed {
             // Show the failed message sheet
             showFailedMessageSheet(for: message)
         } else {
@@ -574,6 +602,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                     // Open the document if possible
                     guard let url = viewItem.attachmentStream?.originalMediaURL else { return }
                     let shareVC = UIActivityViewController(activityItems: [ url ], applicationActivities: nil)
+                    if UIDevice.current.isIPad {
+                        shareVC.excludedActivityTypes = []
+                        shareVC.popoverPresentationController?.permittedArrowDirections = []
+                        shareVC.popoverPresentationController?.sourceView = self.view
+                        shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+                    }
                     navigationController!.present(shareVC, animated: true, completion: nil)
                 }
             case .textOnlyMessage:
@@ -635,7 +669,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
                 }))
             }
         }
-        present(sheet, animated: true, completion: nil)
+        presentAlert(sheet)
     }
 
     func handleViewItemDoubleTapped(_ viewItem: ConversationViewItem) {
@@ -765,7 +799,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             OpenGroupAPIV2.ban(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+        presentAlert(alert)
     }
     
     func banAndDeleteAllMessages(_ viewItem: ConversationViewItem) {
@@ -779,7 +813,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             OpenGroupAPIV2.banAndDeleteAllMessages(publicKey, from: openGroupV2.room, on: openGroupV2.server).retainUntilComplete()
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+        presentAlert(alert)
     }
 
     func handleQuoteViewCancelButtonTapped() {
@@ -987,94 +1021,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         }
     }
 
-    // MARK: Requesting Permission
-    func requestCameraPermissionIfNeeded() -> Bool {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized: return true
-        case .denied, .restricted:
-            let modal = PermissionMissingModal(permission: "camera") { }
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            present(modal, animated: true, completion: nil)
-            return false
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
-            return false
-        default: return false
-        }
-    }
-
-    func requestMicrophonePermissionIfNeeded(onNotGranted: @escaping () -> Void) {
-        switch AVAudioSession.sharedInstance().recordPermission {
-        case .granted: break
-        case .denied:
-            onNotGranted()
-            let modal = PermissionMissingModal(permission: "microphone") {
-                onNotGranted()
-            }
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            present(modal, animated: true, completion: nil)
-        case .undetermined:
-            onNotGranted()
-            AVAudioSession.sharedInstance().requestRecordPermission { _ in }
-        default: break
-        }
-    }
-
-    func requestLibraryPermissionIfNeeded(onAuthorized: @escaping () -> Void) {
-        let authorizationStatus: PHAuthorizationStatus
-        if #available(iOS 14, *) {
-            authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-            if authorizationStatus == .notDetermined {
-                // When the user chooses to select photos (which is the .limit status),
-                // the PHPhotoUI will present the picker view on the top of the front view.
-                // Since we have the ScreenLockUI showing when we request premissions,
-                // the picker view will be presented on the top of the ScreenLockUI.
-                // However, the ScreenLockUI will dismiss with the permission request alert view, so
-                // the picker view then will dismiss, too. The selection process cannot be finished
-                // this way. So we add a flag (isRequestingPermission) to prevent the ScreenLockUI
-                // from showing when we request the photo library permission.
-                Environment.shared.isRequestingPermission = true
-                let appMode = AppModeManager.shared.currentAppMode
-                // FIXME: Rather than setting the app mode to light and then to dark again once we're done,
-                // it'd be better to just customize the appearance of the image picker. There doesn't currently
-                // appear to be a good way to do so though...
-                AppModeManager.shared.setCurrentAppMode(to: .light)
-                PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
-                    DispatchQueue.main.async {
-                        AppModeManager.shared.setCurrentAppMode(to: appMode)
-                    }
-                    Environment.shared.isRequestingPermission = false
-                    if [ PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited ].contains(status) {
-                        onAuthorized()
-                    }
-                }
-            }
-        } else {
-            authorizationStatus = PHPhotoLibrary.authorizationStatus()
-            if authorizationStatus == .notDetermined {
-                PHPhotoLibrary.requestAuthorization { status in
-                    if status == .authorized {
-                        onAuthorized()
-                    }
-                }
-            }
-        }
-        switch authorizationStatus {
-        case .authorized, .limited:
-            onAuthorized()
-        case .denied, .restricted:
-            let modal = PermissionMissingModal(permission: "library") { }
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            present(modal, animated: true, completion: nil)
-        default: return
-        }
-    }
-
     // MARK: - Convenience
-    
     func showErrorAlert(for attachment: SignalAttachment, onDismiss: (() -> ())?) {
         let title = NSLocalizedString("ATTACHMENT_ERROR_ALERT_TITLE", comment: "")
         let message = attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage
@@ -1153,6 +1100,9 @@ extension ConversationVC {
                     Storage.shared.setContact(contact, using: transaction)
                 }
                 
+                // Send a sync message with the details of the contact
+                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+                
                 // Hide the 'messageRequestView' since the request has been approved and force a config
                 // sync to propagate the contact approval state (both must run on the main thread)
                 DispatchQueue.main.async { [weak self] in
@@ -1185,11 +1135,6 @@ extension ConversationVC {
                         var newViewControllers = viewControllers
                         newViewControllers.remove(at: messageRequestsIndex)
                         self?.navigationController?.setViewControllers(newViewControllers, animated: false)
-                    }
-                
-                    // Send a sync message with the details of the contact
-                    if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                        appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
                     }
                 }
             }
@@ -1227,6 +1172,12 @@ extension ConversationVC {
                         let sessionId: String = contactThread.contactSessionID()
                         
                         if let contact: Contact = Storage.shared.getContact(with: sessionId) {
+                            // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
+                            // so showing the banner just looks buggy)
+                            if let strongSelf = self {
+                                NotificationCenter.default.removeObserver(strongSelf, name: .contactBlockedStateChanged, object: nil)
+                            }
+                            
                             contact.isApproved = false
                             contact.isBlocked = true
                             
@@ -1244,24 +1195,10 @@ extension ConversationVC {
                     self?.thread.remove(with: transaction)
                 },
                 completion: { [weak self] in
-                    // Block the contact
-                    if let sessionId: String = (self?.thread as? TSContactThread)?.contactSessionID(), !OWSBlockingManager.shared().isRecipientIdBlocked(sessionId) {
-                        
-                        // Stop observing the `BlockListDidChange` notification (we are about to pop the screen
-                        // so showing the banner just looks buggy)
-                        if let strongSelf = self {
-                            NotificationCenter.default.removeObserver(strongSelf, name: NSNotification.Name(rawValue: kNSNotificationName_BlockListDidChange), object: nil)
-                        }
-                        
-                        OWSBlockingManager.shared().addBlockedPhoneNumber(sessionId)
-                    }
+                    // Force a config sync and pop to the previous screen
+                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
                     
-                    // Force a config sync and pop to the previous screen (both must run on the main thread)
                     DispatchQueue.main.async {
-                        if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                            appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete()
-                        }
-                        
                         self?.navigationController?.popViewController(animated: true)
                     }
                 }

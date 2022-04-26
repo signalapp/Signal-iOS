@@ -33,12 +33,6 @@ NSString *const LKED25519SecretKey = @"LKED25519SecretKey";
 NSString *const LKED25519PublicKey = @"LKED25519PublicKey";
 NSString *const OWSPrimaryStorageIdentityKeyStoreCollection = @"TSStorageManagerIdentityKeyStoreCollection";
 
-// Storing recipients identity keys
-NSString *const OWSPrimaryStorageTrustedKeysCollection = @"TSStorageManagerTrustedKeysCollection";
-
-NSString *const OWSIdentityManager_QueuedVerificationStateSyncMessages =
-    @"OWSIdentityManager_QueuedVerificationStateSyncMessages";
-
 // Don't trust an identity for sending to unless they've been around for at least this long
 const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
 
@@ -79,8 +73,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     _dbConnection = primaryStorage.newDatabaseConnection;
     self.dbConnection.objectCacheEnabled = NO;
 
-    [self observeNotifications];
-
     return self;
 }
 
@@ -90,14 +82,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 }
 
 #pragma mark -
-
-- (void)observeNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationDidBecomeActive:)
-                                                 name:UIApplicationDidBecomeActiveNotification
-                                               object:nil];
-}
 
 - (void)generateNewIdentityKeyPair
 {
@@ -163,70 +147,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     return (int)[TSAccountManager getOrGenerateRegistrationId:transaction];
-}
-
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId
-{
-    __block BOOL result;
-    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        result = [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
-    }];
-
-    return result;
-}
-
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey
-               recipientId:(NSString *)recipientId
-           protocolContext:(nullable id)protocolContext
-{
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    // Deprecated. We actually no longer use the OWSPrimaryStorageTrustedKeysCollection for trust
-    // decisions, but it's desirable to try to keep it up to date with our trusted identitys
-    // while we're switching between versions, e.g. so we don't get into a state where we have a
-    // session for an identity not in our key store.
-    [transaction setObject:identityKey forKey:recipientId inCollection:OWSPrimaryStorageTrustedKeysCollection];
-
-    OWSRecipientIdentity *existingIdentity =
-        [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
-
-    if (existingIdentity == nil) {
-        [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
-                                               identityKey:identityKey
-                                           isFirstKnownKey:YES
-                                                 createdAt:[NSDate new]
-                                         verificationState:OWSVerificationStateDefault]
-            saveWithTransaction:transaction];
-
-        [self fireIdentityStateChangeNotification];
-
-        return NO;
-    }
-
-    if (![existingIdentity.identityKey isEqual:identityKey]) {
-        OWSVerificationState verificationState;
-        switch (existingIdentity.verificationState) {
-            case OWSVerificationStateDefault:
-                verificationState = OWSVerificationStateDefault;
-                break;
-            case OWSVerificationStateVerified:
-            case OWSVerificationStateNoLongerVerified:
-                verificationState = OWSVerificationStateNoLongerVerified;
-                break;
-        }
-
-        [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
-                                               identityKey:identityKey
-                                           isFirstKnownKey:NO
-                                                 createdAt:[NSDate new]
-                                         verificationState:verificationState] saveWithTransaction:transaction];
-
-        [self fireIdentityStateChangeNotification];
-
-        return YES;
-    }
-
-    return NO;
 }
 
 - (nullable OWSRecipientIdentity *)recipientIdentityForRecipientId:(NSString *)recipientId
@@ -339,65 +259,6 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         case OWSVerificationStateNoLongerVerified:
             return NO;
     }
-}
-
-#pragma mark - Debug
-
-#if DEBUG
-- (void)clearIdentityState:(YapDatabaseReadWriteTransaction *)transaction
-{
-    NSMutableArray<NSString *> *identityKeysToRemove = [NSMutableArray new];
-    [transaction enumerateKeysInCollection:OWSPrimaryStorageIdentityKeyStoreCollection
-                                usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
-                                    if ([key isEqualToString:OWSPrimaryStorageIdentityKeyStoreIdentityKey]) {
-                                        // Don't delete our own key.
-                                        return;
-                                    }
-                                    [identityKeysToRemove addObject:key];
-                                }];
-    for (NSString *key in identityKeysToRemove) {
-        [transaction removeObjectForKey:key inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
-    }
-    [transaction removeAllObjectsInCollection:OWSPrimaryStorageTrustedKeysCollection];
-}
-
-- (NSString *)identityKeySnapshotFilePath
-{
-    // Prefix name with period "." so that backups will ignore these snapshots.
-    NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
-    return [dirPath stringByAppendingPathComponent:@".identity-key-snapshot"];
-}
-
-- (NSString *)trustedKeySnapshotFilePath
-{
-    // Prefix name with period "." so that backups will ignore these snapshots.
-    NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
-    return [dirPath stringByAppendingPathComponent:@".trusted-key-snapshot"];
-}
-
-- (void)snapshotIdentityState:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [transaction snapshotCollection:OWSPrimaryStorageIdentityKeyStoreCollection
-                   snapshotFilePath:self.identityKeySnapshotFilePath];
-    [transaction snapshotCollection:OWSPrimaryStorageTrustedKeysCollection
-                   snapshotFilePath:self.trustedKeySnapshotFilePath];
-}
-
-- (void)restoreIdentityState:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [transaction restoreSnapshotOfCollection:OWSPrimaryStorageIdentityKeyStoreCollection
-                            snapshotFilePath:self.identityKeySnapshotFilePath];
-    [transaction restoreSnapshotOfCollection:OWSPrimaryStorageTrustedKeysCollection
-                            snapshotFilePath:self.trustedKeySnapshotFilePath];
-}
-
-#endif
-
-#pragma mark - Notifications
-
-- (void)applicationDidBecomeActive:(NSNotification *)notification
-{
-    
 }
 
 @end

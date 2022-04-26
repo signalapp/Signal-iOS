@@ -14,7 +14,7 @@ public final class SearchBar : UISearchBar {
 }
 
 public extension UISearchBar {
-
+    
     func setUpSessionStyle() {
         searchBarStyle = .minimal // Hide the border around the search bar
         barStyle = .black // Use Apple's black design as a base

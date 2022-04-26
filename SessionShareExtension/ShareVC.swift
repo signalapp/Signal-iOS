@@ -46,14 +46,12 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
             appSpecificSingletonBlock: {
                 SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
             },
-            migrationCompletion: { [weak self] in
+            migrationCompletion: { [weak self] _, needsConfigSync in
                 AssertIsOnMainThread()
                 
-                self?.versionMigrationsDidComplete()
-
                 // performUpdateCheck must be invoked after Environment has been initialized because
                 // upgrade process may depend on Environment.
-                self?.versionMigrationsDidComplete()
+                self?.versionMigrationsDidComplete(needsConfigSync: needsConfigSync)
             }
         )
 
@@ -74,12 +72,17 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     }
 
     @objc
-    func versionMigrationsDidComplete() {
+    func versionMigrationsDidComplete(needsConfigSync: Bool) {
         AssertIsOnMainThread()
 
         Logger.debug("")
 
         areVersionMigrationsComplete = true
+        
+        // If we need a config sync then trigger it now
+        if needsConfigSync {
+            MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+        }
 
         checkIsAppReady()
     }
@@ -123,7 +126,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         // We don't need to use OWSMessageReceiver in the SAE.
         // We don't need to use OWSBatchMessageProcessor in the SAE.
-        // We don't need to use OWSOrphanDataCleaner in the SAE.
         // We don't need to fetch the local profile in the SAE
 
         OWSReadReceiptManager.shared().prepareCachedValues()
@@ -225,7 +227,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: { _ in
             self.extensionContext!.cancelRequest(withError: error)
         }))
-        present(alert, animated: true, completion: nil)
+        presentAlert(alert)
     }
     
     // MARK: Attachment Prep

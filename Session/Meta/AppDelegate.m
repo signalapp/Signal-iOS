@@ -4,8 +4,6 @@
 
 #import "AppDelegate.h"
 #import "MainAppContext.h"
-#import "OWSBackup.h"
-#import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
 #import "Session-Swift.h"
 #import "SignalApp.h"
@@ -101,11 +99,6 @@ static NSTimeInterval launchStartedAt;
     return Environment.shared.windowManager;
 }
 
-- (OWSBackup *)backup
-{
-    return AppEnvironment.shared.backup;
-}
-
 - (OWSNotificationPresenter *)notificationPresenter
 {
     return AppEnvironment.shared.notificationPresenter;
@@ -121,8 +114,13 @@ static NSTimeInterval launchStartedAt;
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [DDLog flushLog];
-
-    [self stopPoller];
+    
+    // NOTE: Fix an edge case where user taps on the callkit notification
+    // but answers the call on another device
+    if (![self hasIncomingCallWaiting]) {
+        [self stopPoller];
+    }
+    
     [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
 }
@@ -173,16 +171,16 @@ static NSTimeInterval launchStartedAt;
             [AppEnvironment.shared setup];
             [SignalApp.sharedApp setup];
         }
-        migrationCompletion:^{
+        migrationCompletion:^(BOOL successful, BOOL needsConfigSync){
             OWSAssertIsOnMainThread();
 
-            [self versionMigrationsDidComplete];
+            [self versionMigrationsDidCompleteNeedingConfigSync:needsConfigSync];
         }];
 
     [SNConfiguration performMainSetup];
 
     [SNAppearance switchToSessionAppearance];
-
+    
     if (CurrentAppContext().isRunningTests) {
         return YES;
     }
@@ -197,13 +195,11 @@ static NSTimeInterval launchStartedAt;
     LKAppMode appMode = [LKAppModeManager getAppModeOrSystemDefault];
     [self adaptAppMode:appMode];
 
-    if (@available(iOS 11, *)) {
-        // This must happen in appDidFinishLaunching or earlier to ensure we don't
-        // miss notifications.
-        // Setting the delegate also seems to prevent us from getting the legacy notification
-        // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
-        UNUserNotificationCenter.currentNotificationCenter.delegate = self;
-    }
+    // This must happen in appDidFinishLaunching or earlier to ensure we don't
+    // miss notifications.
+    // Setting the delegate also seems to prevent us from getting the legacy notification
+    // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
+    UNUserNotificationCenter.currentNotificationCenter.delegate = self;
 
     [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
     [[OWSWindowManager sharedManager] setupWithRootWindow:self.window
@@ -219,11 +215,12 @@ static NSTimeInterval launchStartedAt;
                                                  name:RegistrationStateDidChangeNotification
                                                object:nil];
 
-    // Loki - Observe data nuke request notifications
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleDataNukeRequested:) name:NSNotification.dataNukeRequested object:nil];
     
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
-
+    
+    [self setUpCallHandling];
+    
     return YES;
 }
 
@@ -406,16 +403,22 @@ static NSTimeInterval launchStartedAt;
             if (CurrentAppContext().isMainApp) {
                 [SNJobQueue.shared resumePendingJobs];
                 [self syncConfigurationIfNeeded];
+                [self handleAppActivatedWithOngoingCallIfNeeded];
             }
         });
     }
 }
 
-- (void)versionMigrationsDidComplete
+- (void)versionMigrationsDidCompleteNeedingConfigSync:(BOOL)needsConfigSync
 {
     OWSAssertIsOnMainThread();
 
     self.areVersionMigrationsComplete = YES;
+    
+    // If we need a config sync then trigger it now
+    if (needsConfigSync) {
+        [SNMessageSender forceSyncConfigurationNow];
+    }
 
     [self checkIfAppIsReady];
 }
@@ -552,11 +555,7 @@ static NSTimeInterval launchStartedAt;
     UIViewController *rootViewController;
     BOOL navigationBarHidden = NO;
     if ([self.tsAccountManager isRegistered]) {
-        if (self.backup.hasPendingRestoreDecision) {
-            rootViewController = [BackupRestoreViewController new];
-        } else {
-            rootViewController = [HomeVC new];
-        }
+        rootViewController = [HomeVC new];
     } else {
         rootViewController = [LandingVC new];
         navigationBarHidden = NO;

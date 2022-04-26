@@ -113,7 +113,7 @@ public class LongTextViewController: OWSViewController {
     // MARK: - Create Views
 
     private func createViews() {
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = Colors.navigationBarBackground
 
         let messageTextView = OWSTextView()
         self.messageTextView = messageTextView
@@ -165,6 +165,13 @@ public class LongTextViewController: OWSViewController {
     // MARK: - Actions
 
     @objc func shareButtonPressed() {
-        AttachmentSharing.showShareUI(forText: fullText)
+        let shareVC = UIActivityViewController(activityItems: [ fullText ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
+        self.present(shareVC, animated: true, completion: nil)
     }
 }

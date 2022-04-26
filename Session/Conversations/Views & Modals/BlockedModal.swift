@@ -1,5 +1,6 @@
+import SessionMessagingKit
 
-final class BlockedModal : Modal {
+final class BlockedModal: Modal {
     private let publicKey: String
     
     // MARK: Lifecycle
@@ -22,7 +23,7 @@ final class BlockedModal : Modal {
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = String(format: NSLocalizedString("modal_blocked_title", comment: ""), name)
         titleLabel.textAlignment = .center
         // Message
@@ -50,20 +51,40 @@ final class BlockedModal : Modal {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        // Content stack view
+        let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel ])
+        contentStackView.axis = .vertical
+        contentStackView.spacing = Values.largeSpacing
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel, buttonStackView ])
+        let spacing = Values.largeSpacing - Values.smallFontSize / 2
+        let mainStackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = Values.largeSpacing
+        mainStackView.spacing = spacing
         contentView.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: spacing)
     }
     
     // MARK: Interaction
     @objc private func unblock() {
-        OWSBlockingManager.shared().removeBlockedPhoneNumber(publicKey)
+        let publicKey: String = self.publicKey
+        
+        Storage.shared.write(
+            with: { transaction in
+                guard let transaction = transaction as? YapDatabaseReadWriteTransaction, let contact: Contact = Storage.shared.getContact(with: publicKey, using: transaction) else {
+                    return
+                }
+                
+                contact.isBlocked = false
+                Storage.shared.setContact(contact, using: transaction as Any)
+            },
+            completion: {
+                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+            }
+        )
+        
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }
