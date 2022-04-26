@@ -496,7 +496,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 else {
                     // Note: Adding an empty button because without it the title alignment is busted (Note: The size was
                     // taken from the layout inspector for the back button in Xcode
-                    navigationItem.rightBarButtonItem = UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 37, height: 44)))
+                    navigationItem.rightBarButtonItem = UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: Values.verySmallProfilePictureSize, height: 44)))
                 }
             }
             else {
