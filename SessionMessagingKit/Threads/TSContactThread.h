@@ -18,7 +18,7 @@ extern NSString *const TSContactThreadPrefix;
                                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // Unlike getOrCreateThreadWithContactSessionID, this will _NOT_ create a thread if one does not already exist.
-+ (nullable instancetype)getThreadWithContactSessionID:(NSString *)contactSessionID transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)getThreadWithContactSessionID:(NSString *)contactSessionID transaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(fetch(for:using:));
 
 - (NSString *)contactSessionID;
 

@@ -67,7 +67,7 @@ public class HomeScreenSearchResultSet: NSObject {
     public class var noteToSelfOnly: HomeScreenSearchResultSet {
         var conversations: [ConversationSearchResult<ConversationSortKey>] = []
         Storage.read { transaction in
-            if let thread = TSContactThread.getWithContactSessionID(getUserHexEncodedPublicKey(), transaction: transaction) {
+            if let thread = TSContactThread.fetch(for: getUserHexEncodedPublicKey(), using: transaction) {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
                 let sortKey = ConversationSortKey(creationDate: thread.creationDate,
                                                   lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())

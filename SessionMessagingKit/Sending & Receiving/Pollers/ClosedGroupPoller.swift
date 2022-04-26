@@ -3,9 +3,8 @@ import PromiseKit
 
 @objc(LKClosedGroupPoller)
 public final class ClosedGroupPoller : NSObject {
-    private var isPolling: [String:Bool] = [:]
+    private var isPolling: Atomic<[String:Bool]> = Atomic([:])
     private var timers: [String:Timer] = [:]
-    private let internalQueue: DispatchQueue = DispatchQueue(label:"isPollingQueue")
 
     // MARK: Settings
     private static let minPollInterval: Double = 2
@@ -44,7 +43,7 @@ public final class ClosedGroupPoller : NSObject {
         // Might be a race condition that the setUpPolling finishes too soon,
         // and the timer is not created, if we mark the group as is polling
         // after setUpPolling. So the poller may not work, thus misses messages.
-        internalQueue.sync{ isPolling[groupPublicKey] = true }
+        isPolling.mutate{ $0[groupPublicKey] = true }
         setUpPolling(for: groupPublicKey)
     }
 
@@ -55,7 +54,7 @@ public final class ClosedGroupPoller : NSObject {
     }
 
     public func stopPolling(for groupPublicKey: String) {
-        internalQueue.sync{ isPolling[groupPublicKey] = false }
+        isPolling.mutate{ $0[groupPublicKey] = false }
         timers[groupPublicKey]?.invalidate()
     }
 
@@ -139,6 +138,6 @@ public final class ClosedGroupPoller : NSObject {
 
     // MARK: Convenience
     private func isPolling(for groupPublicKey: String) -> Bool {
-        return internalQueue.sync{ isPolling[groupPublicKey] ?? false }
+        return isPolling.wrappedValue[groupPublicKey] ?? false
     }
 }

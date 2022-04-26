@@ -95,10 +95,17 @@ final class NukeDataModal : Modal {
         return result
     }()
     
-    private lazy var mainStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, buttonStackViewContainer ])
+    private lazy var contentStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel ])
         result.axis = .vertical
         result.spacing = Values.largeSpacing
+        return result
+    }()
+    
+    private lazy var mainStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ contentStackView, buttonStackViewContainer ])
+        result.axis = .vertical
+        result.spacing = Values.largeSpacing - Values.smallFontSize / 2
         return result
     }()
     
@@ -108,7 +115,7 @@ final class NukeDataModal : Modal {
         mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: mainStackView.spacing)
     }
     
     // MARK: Interaction

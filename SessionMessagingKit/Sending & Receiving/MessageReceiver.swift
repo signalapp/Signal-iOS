@@ -1,7 +1,11 @@
 import SessionUtilitiesKit
 
 public enum MessageReceiver {
-    private static var lastEncryptionKeyPairRequest: [String:Date] = [:] 
+    private static var lastEncryptionKeyPairRequest: [String:Date] = [:]
+    public static var handleNewCallOfferMessageIfNeeded: ((CallMessage, YapDatabaseReadWriteTransaction) -> Void)?
+    public static var handleOfferCallMessage: ((CallMessage) -> Void)?
+    public static var handleAnswerCallMessage: ((CallMessage) -> Void)?
+    public static var handleEndCallMessage: ((CallMessage) -> Void)?
 
     public enum Error : LocalizedError {
         case duplicateMessage
@@ -131,6 +135,7 @@ public enum MessageReceiver {
             if let unsendRequest = UnsendRequest.fromProto(proto) { return unsendRequest }
             if let messageRequestResponse = MessageRequestResponse.fromProto(proto) { return messageRequestResponse }
             if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
+            if let callMessage = CallMessage.fromProto(proto) { return callMessage }
             return nil
         }()
         if let message = message {
@@ -169,6 +174,9 @@ public enum MessageReceiver {
                 // • This method was invoked and the received message timestamps table was updated
                 // • Processing wasn't finished
                 // • The user doesn't see the new closed group
+            } else if message.isKind(of: CallMessage.self) {
+                // Allow duplicates for all call messages
+                // The double checking will be done on message handling to make sure the messages are for the same ongoing call
             } else {
                 guard !Set(storage.getReceivedMessageTimestamps(using: transaction)).contains(envelope.timestamp) || isRetry else { throw Error.duplicateMessage }
                 storage.addReceivedMessageTimestamp(envelope.timestamp, using: transaction)
