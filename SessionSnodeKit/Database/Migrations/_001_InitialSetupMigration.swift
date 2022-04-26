@@ -33,6 +33,9 @@ enum _001_InitialSetupMigration: Migration {
         }
         
         try db.create(table: SnodeReceivedMessageInfo.self) { t in
+            t.column(.id, .integer)
+                .notNull()
+                .primaryKey(autoincrement: true)
             t.column(.key, .text)
                 .notNull()
                 .indexed()
@@ -41,7 +44,7 @@ enum _001_InitialSetupMigration: Migration {
                 .notNull()
                 .indexed()
             
-            t.primaryKey([.key, .hash])
+            t.uniqueKey([.key, .hash])
         }
     }
 }

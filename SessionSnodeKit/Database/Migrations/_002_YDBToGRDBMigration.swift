@@ -7,7 +7,6 @@ import SessionUtilitiesKit
 enum _002_YDBToGRDBMigration: Migration {
     static let identifier: String = "YDBToGRDBMigration"
     
-    // TODO: Autorelease pool???
     static func migrate(_ db: Database) throws {
         // MARK: - OnionRequestPath, Snode Pool & Swarm
         
@@ -126,20 +125,20 @@ enum _002_YDBToGRDBMigration: Migration {
         try autoreleasepool {
             try receivedMessageResults.forEach { key, hashes in
                 try hashes.forEach { hash in
-                    try SnodeReceivedMessageInfo(
+                    _ = try SnodeReceivedMessageInfo(
                         key: key,
                         hash: hash,
                         expirationDateMs: 0
-                    ).insert(db)
+                    ).inserted(db)
                 }
             }
             
             try lastMessageResults.forEach { key, data in
-                try SnodeReceivedMessageInfo(
+                _ = try SnodeReceivedMessageInfo(
                     key: key,
                     hash: data.hash,
                     expirationDateMs: ((data.json["expirationDate"] as? Int64) ?? 0)
-                ).insert(db)
+                ).inserted(db)
             }
         }
     }

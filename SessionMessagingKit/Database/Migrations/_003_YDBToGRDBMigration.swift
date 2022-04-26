@@ -814,8 +814,12 @@ enum _003_YDBToGRDBMigration: Migration {
                     nextRunTimestamp: 0,
                     threadId: threadId,
                     details: MessageReceiveJob.Details(
-                        data: legacyJob.data,
-                        serverHash: legacyJob.serverHash,
+                        messages: [
+                            MessageReceiveJob.Details.MessageInfo(
+                                data: legacyJob.data,
+                                serverHash: legacyJob.serverHash
+                            )
+                        ],
                         isBackgroundPoll: legacyJob.isBackgroundPoll
                     )
                 )?.inserted(db)
