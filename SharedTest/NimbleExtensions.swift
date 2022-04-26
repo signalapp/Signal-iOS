@@ -2,6 +2,7 @@
 
 import Foundation
 import Nimble
+import SessionUtilitiesKit
 
 public enum CallAmount {
     case atLeast(times: Int)
@@ -192,11 +193,21 @@ fileprivate func generateCallInfo<M, T, R>(_ actualExpression: Expression<M>, _ 
             
             allFunctionsCalled = Array(validInstance.functionConsumer.calls.wrappedValue.keys)
             
-            let builder: MockFunctionBuilder<T, R> = builderCreator(validInstance)
-            validInstance.functionConsumer.trackCalls = false
-            maybeFunction = try? builder.build()
-            desiredFunctionCalls = (validInstance.functionConsumer.calls.wrappedValue[maybeFunction?.name ?? ""] ?? [])
-            validInstance.functionConsumer.trackCalls = true
+            // Only check for the specific function calls if there was at least a single
+            // call (if there weren't any this will likely throw errors when attempting
+            // to build)
+            if !allFunctionsCalled.isEmpty {
+                let builder: MockFunctionBuilder<T, R> = builderCreator(validInstance)
+                validInstance.functionConsumer.trackCalls = false
+                maybeFunction = try? builder.build()
+                desiredFunctionCalls = validInstance.functionConsumer.calls
+                    .wrappedValue[maybeFunction?.name ?? ""]
+                    .defaulting(to: [])
+                validInstance.functionConsumer.trackCalls = true
+            }
+            else {
+                desiredFunctionCalls = []
+            }
         }
         catch {
             didError = true
@@ -216,11 +227,21 @@ fileprivate func generateCallInfo<M, T, R>(_ actualExpression: Expression<M>, _ 
     
     allFunctionsCalled = Array(validInstance.functionConsumer.calls.wrappedValue.keys)
     
-    let builder: MockExpectationBuilder<T, R> = builderCreator(validInstance)
-    validInstance.functionConsumer.trackCalls = false
-    maybeFunction = try? builder.build()
-    desiredFunctionCalls = (validInstance.functionConsumer.calls.wrappedValue[maybeFunction?.name ?? ""] ?? [])
-    validInstance.functionConsumer.trackCalls = true
+    // Only check for the specific function calls if there was at least a single
+    // call (if there weren't any this will likely throw errors when attempting
+    // to build)
+    if !allFunctionsCalled.isEmpty {
+        let builder: MockExpectationBuilder<T, R> = builderCreator(validInstance)
+        validInstance.functionConsumer.trackCalls = false
+        maybeFunction = try? builder.build()
+        desiredFunctionCalls = validInstance.functionConsumer.calls
+            .wrappedValue[maybeFunction?.name ?? ""]
+            .defaulting(to: [])
+        validInstance.functionConsumer.trackCalls = true
+    }
+    else {
+        desiredFunctionCalls = []
+    }
     #endif
     
     return CallInfo(

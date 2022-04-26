@@ -241,6 +241,7 @@ public final class OpenGroupManager: NSObject {
         publicKey maybePublicKey: String?,
         for roomToken: String,
         on server: String,
+        waitForImageToComplete: Bool = false,
         using transaction: YapDatabaseReadWriteTransaction,
         dependencies: OGMDependencies = OGMDependencies(),
         completion: (() -> ())? = nil
@@ -336,10 +337,25 @@ public final class OpenGroupManager: NSObject {
                             let thread = TSGroupThread.getOrCreateThread(with: initialModel, transaction: transaction)
                             thread.groupModel.groupImage = UIImage(data: data)
                             thread.save(with: transaction)
+                            
+                            if waitForImageToComplete {
+                                completion?()
+                            }
+                        }
+                    }
+                    .catch { _ in
+                        if waitForImageToComplete {
+                            completion?()
                         }
                     }
                     .retainUntilComplete()
             }
+            else if waitForImageToComplete {
+                completion?()
+            }
+            
+            // If we want to wait for the image to complete then don't call the completion here
+            guard !waitForImageToComplete else { return }
 
             // Finish
             completion?()

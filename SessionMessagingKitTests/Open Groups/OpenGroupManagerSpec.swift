@@ -1060,7 +1060,8 @@ class OpenGroupManagerSpec: QuickSpec {
                     }
                     
                     it("does not stop the poller") {
-                        mockOGMCache.when { $0.pollers }.thenReturn(["testserver": OpenGroupAPI.Poller(for: "testserver")])
+                        mockOGMCache.when { $0.pollers }
+                            .thenReturn(["testserver": OpenGroupAPI.Poller(for: "testserver")])
                         
                         openGroupManager
                             .delete(
@@ -1082,7 +1083,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                 dependencies: dependencies
                             )
                         
-                        expect(mockStorage).toNot(call { $0.removeOpenGroupServer(name: any(), using: anyAny()) })
+                        expect(mockStorage)
+                            .toNot(call { $0.removeOpenGroupServer(name: any(), using: anyAny()) })
                     }
                     
                     it("does not remove the open group public key") {
@@ -1234,9 +1236,64 @@ class OpenGroupManagerSpec: QuickSpec {
                         on: "testServer",
                         using: testTransaction,
                         dependencies: dependencies
-                    ) {
-                        didCallComplete = true
-                    }
+                    ) { didCallComplete = true }
+                    
+                    expect(didCallComplete)
+                        .toEventually(
+                            beTrue(),
+                            timeout: .milliseconds(50)
+                        )
+                }
+                
+                it("calls the room image completion block when waiting but there is no image") {
+                    var didCallComplete: Bool = false
+                    
+                    OpenGroupManager.handlePollInfo(
+                        testPollInfo,
+                        publicKey: TestConstants.publicKey,
+                        for: "testRoom",
+                        on: "testServer",
+                        waitForImageToComplete: true,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    ) { didCallComplete = true }
+                    
+                    expect(didCallComplete)
+                        .toEventually(
+                            beTrue(),
+                            timeout: .milliseconds(50)
+                        )
+                }
+                
+                it("calls the room image completion block when waiting and there is an image") {
+                    var didCallComplete: Bool = false
+                    
+                    mockStorage.when { $0.getOpenGroupImage(for: any(), on: any()) }.thenReturn(nil)
+                    mockOGMCache.when { $0.groupImagePromises }
+                        .thenReturn(["testServer.testRoom": Promise.value(Data())])
+                    mockStorage
+                        .when { $0.getOpenGroup(for: any()) }
+                        .thenReturn(
+                            OpenGroup(
+                                server: "testServer",
+                                room: "testRoom",
+                                publicKey: TestConstants.publicKey,
+                                name: "Test",
+                                groupDescription: nil,
+                                imageID: "12",
+                                infoUpdates: 10
+                            )
+                        )
+                    
+                    OpenGroupManager.handlePollInfo(
+                        testPollInfo,
+                        publicKey: TestConstants.publicKey,
+                        for: "testRoom",
+                        on: "testServer",
+                        waitForImageToComplete: true,
+                        using: testTransaction,
+                        dependencies: dependencies
+                    ) { didCallComplete = true }
                     
                     expect(didCallComplete)
                         .toEventually(
@@ -1629,6 +1686,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             publicKey: TestConstants.publicKey,
                             for: "testRoom",
                             on: "testServer",
+                            waitForImageToComplete: true,
                             using: testTransaction,
                             dependencies: dependencies
                         ) { didComplete = true }
@@ -1700,6 +1758,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             publicKey: TestConstants.publicKey,
                             for: "testRoom",
                             on: "testServer",
+                            waitForImageToComplete: true,
                             using: testTransaction,
                             dependencies: dependencies
                         ) { didComplete = true }
@@ -1806,6 +1865,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             publicKey: TestConstants.publicKey,
                             for: "testRoom",
                             on: "testServer",
+                            waitForImageToComplete: true,
                             using: testTransaction,
                             dependencies: dependencies
                         ) { didComplete = true }
@@ -1852,6 +1912,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             publicKey: TestConstants.publicKey,
                             for: "testRoom",
                             on: "testServer",
+                            waitForImageToComplete: true,
                             using: testTransaction,
                             dependencies: dependencies
                         ) { didComplete = true }
@@ -1923,6 +1984,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             publicKey: TestConstants.publicKey,
                             for: "testRoom",
                             on: "testServer",
+                            waitForImageToComplete: true,
                             using: testTransaction,
                             dependencies: dependencies
                         ) { didComplete = true }
@@ -1991,6 +2053,7 @@ class OpenGroupManagerSpec: QuickSpec {
                             publicKey: TestConstants.publicKey,
                             for: "testRoom",
                             on: "testServer",
+                            waitForImageToComplete: true,
                             using: testTransaction,
                             dependencies: dependencies
                         ) { didComplete = true }
