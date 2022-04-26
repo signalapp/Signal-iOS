@@ -50,9 +50,14 @@ final class DisplayNameVC : BaseVC {
         // Set up register button container
         let registerButtonContainer = UIView()
         registerButtonContainer.addSubview(registerButton)
-        registerButton.pin(.leading, to: .leading, of: registerButtonContainer, withInset: Values.massiveSpacing)
+        if UIDevice.current.isIPad {
+            registerButton.set(.width, to: Values.iPadButtonWidth)
+            registerButton.center(in: registerButtonContainer)
+        } else {
+            registerButton.pin(.leading, to: .leading, of: registerButtonContainer, withInset: Values.massiveSpacing)
+            registerButtonContainer.pin(.trailing, to: .trailing, of: registerButton, withInset: Values.massiveSpacing)
+        }
         registerButton.pin(.top, to: .top, of: registerButtonContainer)
-        registerButtonContainer.pin(.trailing, to: .trailing, of: registerButton, withInset: Values.massiveSpacing)
         registerButtonContainer.pin(.bottom, to: .bottom, of: registerButton)
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, displayNameTextField ])

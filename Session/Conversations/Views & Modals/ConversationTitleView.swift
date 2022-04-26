@@ -23,6 +23,14 @@ final class ConversationTitleView : UIView {
         result.lineBreakMode = .byTruncatingTail
         return result
     }()
+    
+    private lazy var stackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        result.axis = .vertical
+        result.alignment = .center
+        result.isLayoutMarginsRelativeArrangement = true
+        return result
+    }()
 
     // MARK: Lifecycle
     init(thread: TSThread) {
@@ -40,11 +48,6 @@ final class ConversationTitleView : UIView {
     }
 
     private func initialize() {
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
         addSubview(stackView)
         stackView.pin(to: self)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
@@ -67,6 +70,11 @@ final class ConversationTitleView : UIView {
         subtitleLabel.attributedText = subtitle
         let titleFontSize = (subtitle != nil) ? Values.mediumFontSize : Values.veryLargeFontSize
         titleLabel.font = .boldSystemFont(ofSize: titleFontSize)
+        
+        // Update title left margin
+        let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isGroupThread() && !thread.isMessageRequest()
+        let leftMargin: CGFloat = shouldShowCallButton ? 54 : 8 // Contact threads also have the call button to compensate for
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: leftMargin, bottom: 0, right: 0)
     }
 
     // MARK: General

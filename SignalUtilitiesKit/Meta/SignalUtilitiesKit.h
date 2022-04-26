@@ -9,7 +9,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 
 #import <SignalUtilitiesKit/AppSetup.h>
 #import <SignalUtilitiesKit/AppVersion.h>
-#import <SignalUtilitiesKit/AttachmentSharing.h>
 #import <SignalUtilitiesKit/ByteParser.h>
 #import <SignalUtilitiesKit/ContactCellView.h>
 #import <SignalUtilitiesKit/ContactTableViewCell.h>

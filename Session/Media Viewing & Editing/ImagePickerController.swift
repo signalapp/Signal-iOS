@@ -379,7 +379,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         collectionView.allowsMultipleSelection = delegate.isInBatchSelectMode
-        collectionView.reloadData()
+        reloadDataAndRestoreSelection()
     }
 
     func clearCollectionViewSelection() {
@@ -551,12 +551,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
 
-        let isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
-        if isSelected {
-            cell.isSelected = isSelected
-        } else {
-            cell.isSelected = isSelected
-        }
+        cell.isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
 
         return cell
     }

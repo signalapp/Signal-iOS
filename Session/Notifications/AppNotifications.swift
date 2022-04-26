@@ -269,6 +269,39 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             )
         }
     }
+    
+    public func notifyUser(forIncomingCall callInfoMessage: TSInfoMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+        guard !thread.isMuted else { return }
+        guard !thread.isGroupThread() else { return } // Calls shouldn't happen in groups
+        guard let threadId = thread.uniqueId else { return }
+        guard [ .missed, .permissionDenied ].contains(callInfoMessage.callState) else { return } // Only notify missed call
+        
+        let category = AppNotificationCategory.errorMessage
+
+        let userInfo = [
+            AppNotificationUserInfoKey.threadId: threadId
+        ]
+        
+        let notificationTitle = callInfoMessage.previewText(with: transaction)
+        var notificationBody: String?
+        
+        if callInfoMessage.callState == .permissionDenied {
+            notificationBody = String(format: "modal_call_missed_tips_explanation".localized(), thread.name(with: transaction))
+        }
+        
+        DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
+            
+            self.adaptee.notify(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody ?? "",
+                userInfo: userInfo,
+                sound: sound,
+                replacingIdentifier: UUID().uuidString
+            )
+        }
+    }
 
     public func notifyForFailedSend(inThread thread: TSThread) {
         let notificationTitle: String?

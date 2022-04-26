@@ -5,9 +5,7 @@ public final class JobQueue : NSObject, JobDelegate {
 
     private static var jobIDs: [UInt64:UInt64] = [:]
 
-    internal static var currentlyExecutingJobs: Set<String> = []
-    
-    private let internalQueue: DispatchQueue = DispatchQueue(label:"executingJobQueue")
+    internal static var currentlyExecutingJobs: Atomic<Set<String>> = Atomic([])
     
     @objc public static let shared = JobQueue()
 
@@ -38,7 +36,7 @@ public final class JobQueue : NSObject, JobDelegate {
         allJobTypes.forEach { type in
             let allPendingJobs = SNMessagingKitConfiguration.shared.storage.getAllPendingJobs(of: type)
             allPendingJobs.sorted(by: { $0.id! < $1.id! }).forEach { job in // Retry the oldest jobs first
-                guard !JobQueue.currentlyExecutingJobs.contains(job.id!) else {
+                guard !JobQueue.currentlyExecutingJobs.wrappedValue.contains(job.id!) else {
                     return SNLog("Not resuming already executing job.")
                 }
                 SNLog("Resuming pending job of type: \(type).")
@@ -95,7 +93,7 @@ public final class JobQueue : NSObject, JobDelegate {
     }
     
     private func removeExecutingJob(_ jobID: String) {
-        let _ = internalQueue.sync { JobQueue.currentlyExecutingJobs.remove(jobID) }
+        JobQueue.currentlyExecutingJobs.mutate { $0.remove(jobID) }
     }
 
     private func getRetryInterval(for job: Job) -> TimeInterval {

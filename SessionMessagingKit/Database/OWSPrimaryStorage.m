@@ -65,7 +65,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
     if (self) {
         [self loadDatabase];
-
+        
+        self.database.maxConnectionPoolCount = 5; // Increase max connection pool count, default is 3.
         _dbReadPool = [[YapDatabaseConnectionPool alloc] initWithDatabase:self.database];
         _dbReadPool.connectionLimit = 10; // Increase max read connection limit. Default is 3.
         _dbReadWriteConnection = [self newDatabaseConnection];

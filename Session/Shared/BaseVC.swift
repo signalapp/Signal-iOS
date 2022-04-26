@@ -25,6 +25,7 @@ class BaseVC : UIViewController {
     override func viewDidLoad() {
         setNeedsStatusBarAppearanceUpdate()
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
     }
     
     internal func ensureWindowBackground() {
@@ -103,6 +104,10 @@ class BaseVC : UIViewController {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func appDidBecomeActive(_ notification: Notification) {
+        // To be implemented by child class
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

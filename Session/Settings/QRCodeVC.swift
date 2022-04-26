@@ -210,6 +210,12 @@ private final class ViewMyQRCodeVC : UIViewController {
     @objc private func shareQRCode() {
         let qrCode = QRCode.generate(for: getUserHexEncodedPublicKey(), hasBackground: true)
         let shareVC = UIActivityViewController(activityItems: [ qrCode ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         qrCodeVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
 }
