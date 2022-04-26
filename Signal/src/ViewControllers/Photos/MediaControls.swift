@@ -172,7 +172,7 @@ class CameraCaptureControl: UIView {
                 // in the completion handler because none of those elements are needed yet a this point.
                 // Adding the controls to the view hierarchy outside of the animation block
                 // also fixes an issue where stop button would be visible briefly during shutter button animations.
-                if state == .recording && isRecordingWithLongPress {
+                if self.state == .recording && isRecordingWithLongPress {
                     self.prepareLongPressVideoRecordingControls()
                 }
             })
@@ -307,6 +307,7 @@ class CameraCaptureControl: UIView {
         case .began:
             guard state == .initial else { break }
 
+            sliderTrackingProgress = 0
             initialTouchLocation = currentLocation
             initialZoomPosition = nil
 

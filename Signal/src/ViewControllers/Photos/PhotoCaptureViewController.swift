@@ -1066,7 +1066,6 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCaptureDidBeginRecording(_ photoCapture: PhotoCapture) {
-        isRecordingVideo = true
     }
 
     func photoCaptureDidFinishRecording(_ photoCapture: PhotoCapture) {
@@ -1291,12 +1290,14 @@ private class RecordingTimerView: PillView {
     var recordingStartTime: TimeInterval?
 
     func startCounting() {
+        guard timer == nil else { return }
         recordingStartTime = CACurrentMediaTime()
         timer = Timer.weakScheduledTimer(withTimeInterval: 0.1, target: self, selector: #selector(updateView), userInfo: nil, repeats: true)
         UIView.animate(withDuration: 0.5,
                        delay: 0,
                        options: [.autoreverse, .repeat],
                        animations: { self.icon.alpha = 1 })
+        updateView()
     }
 
     func stopCounting() {
@@ -1306,7 +1307,6 @@ private class RecordingTimerView: PillView {
         UIView.animate(withDuration: 0.4) {
             self.icon.alpha = 0
         }
-        label.text = nil
     }
 
     // MARK: -
