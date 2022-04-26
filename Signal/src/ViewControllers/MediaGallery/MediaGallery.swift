@@ -761,18 +761,35 @@ class MediaGallery: Dependencies {
             deletedAttachmentIds.formUnion(items.lazy.map { $0.attachmentStream.uniqueId })
 
             self.databaseStorage.asyncWrite { transaction in
-                for item in items {
-                    let message = item.message
-                    let attachment = item.attachmentStream
-                    message.removeAttachment(attachment, transaction: transaction)
-                    if message.attachmentIds.count == 0 {
-                        Logger.debug("removing message after removing last media attachment")
-                        message.anyRemove(transaction: transaction)
+                do {
+                    for item in items {
+                        let message = item.message
+                        let attachment = item.attachmentStream
+                        message.removeAttachment(attachment, transaction: transaction)
+                        // We always have to check the database in case we do more than one deletion (at a time or in a
+                        // row) without reloading existing media items and their associated message models.
+                        var shouldDeleteMessage = message.attachmentIds.isEmpty
+                        if !shouldDeleteMessage {
+                            let upToDateAttachmentCount = try self.mediaGalleryFinder.countAllAttachments(
+                                of: message,
+                                transaction: transaction.unwrapGrdbRead)
+                            if upToDateAttachmentCount == 0 {
+                                // Refresh attachment list on the model, so deletion doesn't try to remove them again.
+                                message.anyReload(transaction: transaction)
+                                shouldDeleteMessage = true
+                            }
+                        }
+                        if shouldDeleteMessage {
+                            Logger.debug("removing message after removing last media attachment")
+                            message.anyRemove(transaction: transaction)
+                        }
                     }
-                }
 
-                transaction.addAsyncCompletionOnMain {
-                    self.deletedAttachmentIds.subtract(items.lazy.map { $0.attachmentStream.uniqueId })
+                    transaction.addAsyncCompletionOnMain {
+                        self.deletedAttachmentIds.subtract(items.lazy.map { $0.attachmentStream.uniqueId })
+                    }
+                } catch {
+                    owsFailDebug("database error: \(error)")
                 }
             }
         }

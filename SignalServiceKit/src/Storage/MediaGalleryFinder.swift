@@ -167,18 +167,13 @@ extension MediaGalleryFinder {
         let orderClauses: String
         let rangeClauses: String
 
-        init(for interaction: TSInteraction? = nil,
-             in dateInterval: DateInterval? = nil,
+        init(in dateInterval: DateInterval? = nil,
              excluding deletedAttachmentIds: Set<String>,
              order: Order = .ascending,
              limit: Int? = nil,
              offset: Int? = nil) {
-            owsAssertDebug(interaction == nil || dateInterval == nil,
-                           "cannot query based on both an interaction and a date interval")
 
-            let whereCondition: String = interaction.map {
-                return "AND media_gallery_items.albumMessageId = \($0.uniqueId)"
-            } ?? dateInterval.map {
+            let whereCondition: String = dateInterval.map {
                 let startMillis = $0.start.ows_millisecondsSince1970
                 // Both DateInterval and SQL BETWEEN are closed ranges, but rounding to millisecond precision loses range
                 // at the boundaries, leading to the first millisecond of a month being considered part of the previous
@@ -230,15 +225,15 @@ extension MediaGalleryFinder {
 
     /// An **unsanitized** interface for building queries against the `media_gallery_items` table
     /// and the associated AttachmentRecord and InteractionRecord tables.
+    ///
+    /// Contains one query parameter: the thread ID.
     private static func itemsQuery(result: String = "\(AttachmentRecord.databaseTableName).*",
-                                   for interaction: TSInteraction? = nil,
                                    in dateInterval: DateInterval? = nil,
                                    excluding deletedAttachmentIds: Set<String> = Set(),
                                    order: Order = .ascending,
                                    limit: Int? = nil,
                                    offset: Int? = nil) -> String {
-        let queryParts = QueryParts(for: interaction,
-                                    in: dateInterval,
+        let queryParts = QueryParts(in: dateInterval,
                                     excluding: deletedAttachmentIds,
                                     order: order,
                                     limit: limit,
@@ -281,17 +276,6 @@ extension MediaGalleryFinder {
             owsAssertDebug(range.contains(index))
             block(index, next)
             index += 1
-        }
-    }
-
-    public func enumerateMediaAttachments(for interaction: TSInteraction,
-                                          transaction: GRDBReadTransaction,
-                                          block: (TSAttachment) -> Void) {
-        let sql = Self.itemsQuery(for: interaction, excluding: [])
-
-        let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
-        while let next = try! cursor.next() {
-            block(next)
         }
     }
 
@@ -370,5 +354,15 @@ extension MediaGalleryFinder {
         """
 
         return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
+    }
+
+    /// Returns the number of attachments attached to `interaction`, whether or not they are media attachments.
+    public func countAllAttachments(of interaction: TSInteraction, transaction: GRDBReadTransaction) throws -> UInt {
+        let sql = """
+            SELECT COUNT(*)
+            FROM \(AttachmentRecord.databaseTableName)
+            WHERE \(attachmentColumn: .albumMessageId) = ?
+        """
+        return try UInt.fetchOne(transaction.database, sql: sql, arguments: [interaction.uniqueId]) ?? 0
     }
 }
