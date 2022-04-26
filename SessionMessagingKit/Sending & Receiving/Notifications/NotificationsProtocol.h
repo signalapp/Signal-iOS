@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSErrorMessage;
 @class TSIncomingMessage;
+@class TSInfoMessage;
 @class TSThread;
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
@@ -19,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
                             inThread:(TSThread *)thread
                          transaction:(YapDatabaseReadTransaction *)transaction;
+
+- (void)notifyUserForIncomingCall:(TSInfoMessage *)callInfoMessage
+                          inThread:(TSThread *)thread
+                       transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)cancelNotification:(NSString *)identifier;
 - (void)clearAllNotifications;

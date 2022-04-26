@@ -29,6 +29,8 @@ public enum SNUserDefaults {
         case hasSyncedInitialConfiguration = "hasSyncedConfiguration"
         case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
+        case hasSeenCallIPExposureWarning
+        case hasSeenCallMissedTips
         case isUsingFullAPNs
         case hasHiddenMessageRequests
     }

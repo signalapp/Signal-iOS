@@ -61,7 +61,7 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
     // MARK: Running
     public func execute() {
         if let id = id {
-            JobQueue.currentlyExecutingJobs.insert(id)
+            JobQueue.currentlyExecutingJobs.mutate{ $0.insert(id) }
         }
         guard let stream = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentStream else {
             return handleFailure(error: Error.noAttachment)
@@ -124,6 +124,9 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         stream.isUploaded = false
         stream.save()
         upload(data).done(on: DispatchQueue.global(qos: .userInitiated)) { fileId in
+            // On the recipient side, it only uses the fileID in this URL,
+            // so the host doesn't matter even we use file server host for
+            // open group attachments
             guard let intFileId: UInt64 = UInt64(fileId) else {
                 onFailure?(HTTP.Error.parsingFailed)
                 return

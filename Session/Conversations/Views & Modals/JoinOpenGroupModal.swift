@@ -24,7 +24,7 @@ final class JoinOpenGroupModal : Modal {
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = "Join \(name)?"
         titleLabel.textAlignment = .center
         // Message
@@ -52,15 +52,20 @@ final class JoinOpenGroupModal : Modal {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        // Content stack view
+        let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel ])
+        contentStackView.axis = .vertical
+        contentStackView.spacing = Values.largeSpacing
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel, buttonStackView ])
+        let spacing = Values.largeSpacing - Values.smallFontSize / 2
+        let mainStackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = Values.largeSpacing
+        mainStackView.spacing = spacing
         contentView.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: spacing)
     }
     
     // MARK: Interaction
@@ -68,7 +73,7 @@ final class JoinOpenGroupModal : Modal {
         guard let (room, server, publicKey) = OpenGroupManager.parseOpenGroup(from: url) else {
             let alert = UIAlertController(title: "Couldn't Join", message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-            return presentingViewController!.present(alert, animated: true, completion: nil)
+            return presentingViewController!.presentAlert(alert)
         }
         presentingViewController!.dismiss(animated: true, completion: nil)
         

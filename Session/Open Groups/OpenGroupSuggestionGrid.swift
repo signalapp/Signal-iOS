@@ -144,7 +144,8 @@ final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UIColle
     // MARK: - Layout
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: maxWidth / 2, height: OpenGroupSuggestionGrid.cellHeight)
+        let cellWidth = UIDevice.current.isIPad ? maxWidth / 4 : maxWidth / 2
+        return CGSize(width: cellWidth, height: OpenGroupSuggestionGrid.cellHeight)
     }
     
     // MARK: - Data Source

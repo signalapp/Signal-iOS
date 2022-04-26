@@ -17,7 +17,7 @@ public enum PushRegistrationError: Error {
 /**
  * Singleton used to integrate with push notification services - registration and routing received remote notifications.
  */
-@objc public class PushRegistrationManager: NSObject {
+@objc public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK: - Dependencies
 
@@ -44,21 +44,25 @@ public enum PushRegistrationError: Error {
     private var vanillaTokenResolver: Resolver<Data>?
 
     private var voipRegistry: PKPushRegistry?
-    private var voipTokenPromise: Promise<Data>?
-    private var voipTokenResolver: Resolver<Data>?
+    private var voipTokenPromise: Promise<Data?>?
+    private var voipTokenResolver: Resolver<Data?>?
 
     // MARK: Public interface
 
     public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
-        return firstly {
+        Logger.info("")
+
+        return firstly { () -> Promise<Void> in
             self.registerUserNotificationSettings()
-        }.then { () -> Promise<(pushToken: String, voipToken: String)> in
+        }.then { (_) -> Promise<(pushToken: String, voipToken: String)> in
             #if targetEnvironment(simulator)
             throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             #endif
-
-            return self.registerForVanillaPushToken().map { vanillaPushToken -> (pushToken: String, voipToken: String) in
-                return (pushToken: vanillaPushToken, voipToken: "")
+            
+            return self.registerForVanillaPushToken().then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String)> in
+                self.registerForVoipPushToken().map { voipPushToken in
+                    (pushToken: vanillaPushToken, voipToken: voipPushToken ?? "")
+                }
             }
         }
     }
@@ -166,6 +170,93 @@ public enum PushRegistrationError: Error {
             return pushTokenData.hexEncodedString
         }.ensure {
             self.vanillaTokenPromise = nil
+        }
+    }
+    
+    private func createVoipRegistryIfNecessary() {
+        AssertIsOnMainThread()
+
+        guard voipRegistry == nil else { return }
+        let voipRegistry = PKPushRegistry(queue: nil)
+        self.voipRegistry  = voipRegistry
+        voipRegistry.desiredPushTypes = [.voIP]
+        voipRegistry.delegate = self
+    }
+    
+    private func registerForVoipPushToken() -> Promise<String?> {
+        AssertIsOnMainThread()
+
+        guard self.voipTokenPromise == nil else {
+            let promise = self.voipTokenPromise!
+            return promise.map { $0?.hexEncodedString }
+        }
+
+        // No pending voip token yet. Create a new promise
+        let (promise, resolver) = Promise<Data?>.pending()
+        self.voipTokenPromise = promise
+        self.voipTokenResolver = resolver
+
+        // We don't create the voip registry in init, because it immediately requests the voip token,
+        // potentially before we're ready to handle it.
+        createVoipRegistryIfNecessary()
+
+        guard let voipRegistry = self.voipRegistry else {
+            owsFailDebug("failed to initialize voipRegistry")
+            resolver.reject(PushRegistrationError.assertionError(description: "failed to initialize voipRegistry"))
+            return promise.map { _ in
+                // coerce expected type of returned promise - we don't really care about the value,
+                // since this promise has been rejected. In practice this shouldn't happen
+                String()
+            }
+        }
+
+        // If we've already completed registering for a voip token, resolve it immediately,
+        // rather than waiting for the delegate method to be called.
+        if let voipTokenData = voipRegistry.pushToken(for: .voIP) {
+            Logger.info("using pre-registered voIP token")
+            resolver.fulfill(voipTokenData)
+        }
+
+        return promise.map { (voipTokenData: Data?) -> String? in
+            Logger.info("successfully registered for voip push notifications")
+            return voipTokenData?.hexEncodedString
+        }.ensure {
+            self.voipTokenPromise = nil
+        }
+    }
+    
+    // MARK: PKPushRegistryDelegate
+    public func pushRegistry(_ registry: PKPushRegistry, didUpdate pushCredentials: PKPushCredentials, for type: PKPushType) {
+        Logger.info("")
+        owsAssertDebug(type == .voIP)
+        owsAssertDebug(pushCredentials.type == .voIP)
+        guard let voipTokenResolver = voipTokenResolver else { return }
+
+        voipTokenResolver.fulfill(pushCredentials.token)
+    }
+    
+    // NOTE: This function MUST report an incoming call.
+    public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
+        SNLog("[Calls] Receive new voip notification.")
+        owsAssertDebug(CurrentAppContext().isMainApp)
+        owsAssertDebug(type == .voIP)
+        let payload = payload.dictionaryPayload
+        if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String, let timestamp = payload["timestamp"] as? UInt64 {
+            let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
+            Storage.write{ transaction in
+                let thread = TSContactThread.getOrCreateThread(withContactSessionID: caller, transaction: transaction)
+                let infoMessage = TSInfoMessage.callInfoMessage(from: caller, timestamp: timestamp, in: thread)
+                infoMessage.save(with: transaction)
+                call.callMessageID = infoMessage.uniqueId
+            }
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            // NOTE: Just start 1-1 poller so that it won't wait for polling group messages
+            appDelegate.startPollerIfNeeded()
+            call.reportIncomingCallIfNeeded { error in
+                if let error = error {
+                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
+                }
+            }
         }
     }
 }

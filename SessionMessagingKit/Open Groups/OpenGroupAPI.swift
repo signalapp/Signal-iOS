@@ -1,7 +1,8 @@
 import PromiseKit
-import SessionSnodeKit
 import Sodium
 import Curve25519Kit
+import SessionSnodeKit
+import SessionUtilitiesKit
 
 public enum OpenGroupAPI {
     // MARK: - Settings

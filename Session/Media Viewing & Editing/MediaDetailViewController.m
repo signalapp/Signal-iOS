@@ -3,7 +3,6 @@
 //
 
 #import "MediaDetailViewController.h"
-#import "AttachmentSharing.h"
 #import "ConversationViewItem.h"
 #import "Session-Swift.h"
 #import "TSAttachmentStream.h"

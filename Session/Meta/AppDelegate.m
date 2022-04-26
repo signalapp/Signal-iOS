@@ -114,8 +114,13 @@ static NSTimeInterval launchStartedAt;
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
     [DDLog flushLog];
-
-    [self stopPoller];
+    
+    // NOTE: Fix an edge case where user taps on the callkit notification
+    // but answers the call on another device
+    if (![self hasIncomingCallWaiting]) {
+        [self stopPoller];
+    }
+    
     [self stopClosedGroupPoller];
     [self stopOpenGroupPollers];
 }
@@ -175,7 +180,7 @@ static NSTimeInterval launchStartedAt;
     [SNConfiguration performMainSetup];
 
     [SNAppearance switchToSessionAppearance];
-
+    
     if (CurrentAppContext().isRunningTests) {
         return YES;
     }
@@ -190,13 +195,11 @@ static NSTimeInterval launchStartedAt;
     LKAppMode appMode = [LKAppModeManager getAppModeOrSystemDefault];
     [self adaptAppMode:appMode];
 
-    if (@available(iOS 11, *)) {
-        // This must happen in appDidFinishLaunching or earlier to ensure we don't
-        // miss notifications.
-        // Setting the delegate also seems to prevent us from getting the legacy notification
-        // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
-        UNUserNotificationCenter.currentNotificationCenter.delegate = self;
-    }
+    // This must happen in appDidFinishLaunching or earlier to ensure we don't
+    // miss notifications.
+    // Setting the delegate also seems to prevent us from getting the legacy notification
+    // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
+    UNUserNotificationCenter.currentNotificationCenter.delegate = self;
 
     [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
     [[OWSWindowManager sharedManager] setupWithRootWindow:self.window
@@ -212,11 +215,12 @@ static NSTimeInterval launchStartedAt;
                                                  name:RegistrationStateDidChangeNotification
                                                object:nil];
 
-    // Loki - Observe data nuke request notifications
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleDataNukeRequested:) name:NSNotification.dataNukeRequested object:nil];
     
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
-
+    
+    [self setUpCallHandling];
+    
     return YES;
 }
 
@@ -399,6 +403,7 @@ static NSTimeInterval launchStartedAt;
             if (CurrentAppContext().isMainApp) {
                 [SNJobQueue.shared resumePendingJobs];
                 [self syncConfigurationIfNeeded];
+                [self handleAppActivatedWithOngoingCallIfNeeded];
             }
         });
     }

@@ -3,7 +3,6 @@ import SessionSnodeKit
 
 @objc(LKBackgroundPoller)
 public final class BackgroundPoller: NSObject {
-    private static var closedGroupPoller: ClosedGroupPoller!
     private static var promises: [Promise<Void>] = []
 
     private override init() { }

@@ -50,7 +50,7 @@ public final class NotifyPNServerJob : NSObject, Job, NSCoding { // NSObject/NSC
     
     public func execute() -> Promise<Void> {
         if let id = id {
-            JobQueue.currentlyExecutingJobs.insert(id)
+            JobQueue.currentlyExecutingJobs.mutate{ $0.insert(id) }
         }
         let server = PushNotificationAPI.server
         let url = URL(string: "\(server)/notify")!

@@ -76,7 +76,7 @@ enum MockDataGenerator {
         var existingMockDataThread: TSContactThread?
 
         Storage.read { transaction in
-            existingMockDataThread = TSContactThread.getWithContactSessionID("MockDatabaseThread", transaction: transaction)
+            existingMockDataThread = TSContactThread.fetch(for: "MockDatabaseThread", using: transaction)
         }
 
         guard !hasStartedGenerationThisRun && existingMockDataThread == nil else {

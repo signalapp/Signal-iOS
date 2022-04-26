@@ -1,27 +1,33 @@
 import UserNotifications
+import BackgroundTasks
 import SessionMessagingKit
 import SignalUtilitiesKit
+import CallKit
 import PromiseKit
 
 public final class NotificationServiceExtension : UNNotificationServiceExtension {
     private var didPerformSetup = false
     private var areVersionMigrationsComplete = false
     private var contentHandler: ((UNNotificationContent) -> Void)?
-    private var notificationContent: UNMutableNotificationContent?
+    private var request: UNNotificationRequest?
 
     public static let isFromRemoteKey = "remote"
     public static let threadIdKey = "Signal.AppNotificationsUserInfoKey.threadId"
+    public static let threadNotificationCounter = "Session.AppNotificationsUserInfoKey.threadNotificationCounter"
 
     // MARK: Did receive a remote push notification request
     
     override public func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        self.notificationContent = request.content.mutableCopy() as? UNMutableNotificationContent
+        self.request = request
+        guard let notificationContent = request.content.mutableCopy() as? UNMutableNotificationContent else { return self.completeSilenty() }
 
         // Abort if the main app is running
         var isMainAppAndActive = false
+        var isCallOngoing = false
         if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
             isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
+            isCallOngoing = sharedUserDefaults.bool(forKey: "isCallOngoing")
         }
         guard !isMainAppAndActive else { return self.completeSilenty() }
 
@@ -36,7 +42,6 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     self.completeSilenty()
                 }
             }
-            let notificationContent = self.notificationContent!
             guard let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String?, let data = Data(base64Encoded: base64EncodedData),
                 let envelope = try? MessageWrapper.unwrap(data: data), let envelopeAsData = try? envelope.serializedData() else {
                 return self.handleFailure(for: notificationContent)
@@ -68,11 +73,40 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         MessageReceiver.handleUnsendRequest(unsendRequest, using: transaction)
                     case let closedGroupControlMessage as ClosedGroupControlMessage:
                         MessageReceiver.handleClosedGroupControlMessage(closedGroupControlMessage, using: transaction)
+                    case let callMessage as CallMessage:
+                        MessageReceiver.handleCallMessage(callMessage, using: transaction)
+                        guard case .preOffer = callMessage.kind else { return self.completeSilenty() }
+                        if !SSKPreferences.areCallsEnabled {
+                            if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), !thread.isMessageRequest(using: transaction) {
+                                let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
+                                infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
+                                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
+                            }
+                            break
+                        }
+                        if isCallOngoing {
+                            if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), !thread.isMessageRequest(using: transaction) {
+                                // Handle call in busy state
+                                let message = CallMessage()
+                                message.uuid = callMessage.uuid
+                                message.kind = .endCall
+                                SNLog("[Calls] Sending end call message because there is an ongoing call.")
+                                MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
+                                let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
+                                infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                                SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
+                            }
+                            break
+                        }
+                        self.handleSuccessForIncomingCall(for: callMessage, using: transaction)
                     default: break
                     }
                 } catch {
                     if let error = error as? MessageReceiver.Error, error.isRetryable {
-                        self.handleFailure(for: notificationContent)
+                        switch error {
+                        case .invalidGroupPublicKey, .noGroupKeyPair: self.completeSilenty()
+                        default: self.handleFailure(for: notificationContent)
+                        }
                     }
                 }
             }
@@ -80,7 +114,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     }
 
     // MARK: Setup
-    
+
     private func setUpIfNecessary(completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
@@ -167,6 +201,54 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         SNLog("Complete silenty")
         self.contentHandler!(.init())
     }
+    
+    private func handleSuccessForIncomingCall(for callMessage: CallMessage, using transaction: YapDatabaseReadWriteTransaction) {
+        if #available(iOSApplicationExtension 14.5, *), SSKPreferences.isCallKitSupported {
+            if let uuid = callMessage.uuid, let caller = callMessage.sender, let timestamp = callMessage.sentTimestamp {
+                let payload: JSON = ["uuid": uuid, "caller": caller, "timestamp": timestamp]
+                CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
+                    if let error = error {
+                        self.handleFailureForVoIP(for: callMessage, using: transaction)
+                        SNLog("Failed to notify main app of call message: \(error)")
+                    } else {
+                        self.completeSilenty()
+                        SNLog("Successfully notified main app of call message.")
+                    }
+                }
+            }
+        } else {
+            self.handleFailureForVoIP(for: callMessage, using: transaction)
+        }
+    }
+    
+    private func handleFailureForVoIP(for callMessage: CallMessage, using transaction: YapDatabaseReadWriteTransaction) {
+        let notificationContent = UNMutableNotificationContent()
+        notificationContent.userInfo = [ NotificationServiceExtension.isFromRemoteKey : true ]
+        notificationContent.title = "Session"
+        
+        // Badge Number
+        let newBadgeNumber = CurrentAppContext().appUserDefaults().integer(forKey: "currentBadgeNumber") + 1
+        notificationContent.badge = NSNumber(value: newBadgeNumber)
+        CurrentAppContext().appUserDefaults().set(newBadgeNumber, forKey: "currentBadgeNumber")
+        
+        if let sender = callMessage.sender, let contact = Storage.shared.getContact(with: sender, using: transaction) {
+            let senderDisplayName = contact.displayName(for: .regular) ?? sender
+            notificationContent.body = "\(senderDisplayName) is calling..."
+        } else {
+            notificationContent.body = "Incoming call..."
+        }
+        let identifier = self.request?.identifier ?? UUID().uuidString
+        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
+        let semaphore = DispatchSemaphore(value: 0)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                SNLog("Failed to add notification request due to error:\(error)")
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
+        SNLog("Add remote notification request")
+    }
 
     private func handleSuccess(for content: UNMutableNotificationContent) {
         contentHandler!(content)
@@ -186,7 +268,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         let servers = Set(Storage.shared.getAllOpenGroups().values.map { $0.server })
         servers.forEach { server in
             let poller = OpenGroupAPI.Poller(for: server)
-            let promise = poller.poll().timeout(seconds: 20, timeoutError: NotificationServiceError.timeout)
+            let promise = poller.poll(isBackgroundPoll: true).timeout(seconds: 20, timeoutError: NotificationServiceError.timeout)
             promises.append(promise)
         }
         return promises

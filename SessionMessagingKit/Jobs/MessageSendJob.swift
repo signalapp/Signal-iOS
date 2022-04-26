@@ -172,7 +172,7 @@ public final class MessageSendJob : NSObject, Job, NSCoding { // NSObject/NSCodi
     // MARK: Running
     public func execute() {
         if let id = id {
-            JobQueue.currentlyExecutingJobs.insert(id)
+            JobQueue.currentlyExecutingJobs.mutate{ $0.insert(id) }
         }
         let storage = SNMessagingKitConfiguration.shared.storage
         if let message = message as? VisibleMessage {

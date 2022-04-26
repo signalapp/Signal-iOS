@@ -11,6 +11,9 @@ abstract_target 'GlobalDependencies' do
   # FIXME: If https://github.com/jedisct1/swift-sodium/pull/249 gets resolved then revert this back to the standard pod
   pod 'Sodium', :git => 'https://github.com/oxen-io/session-ios-swift-sodium.git', branch: 'session-build'
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/oxen-io/session-ios-yap-database.git', branch: 'signal-release'
+  # FIXME: If 'GoogleWebRTC' ever properly supports the arm64 simulators then remove the 'set_simulators_to_run_x86' post install step
+  pod 'GoogleWebRTC'
+  pod 'SocketRocket', '~> 0.5.1'
   
   target 'Session' do
     pod 'AFNetworking'
@@ -84,6 +87,7 @@ target 'SessionUIKit'
 post_install do |installer|
   enable_whole_module_optimization_for_crypto_swift(installer)
   set_minimum_deployment_target(installer)
+  set_simulators_to_run_x86(installer)
 end
 
 def enable_whole_module_optimization_for_crypto_swift(installer)
@@ -101,6 +105,22 @@ def set_minimum_deployment_target(installer)
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |build_configuration|
       build_configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+    end
+  end
+end
+
+# Note: This is needed in order to build with the 'GoogleWebRTC' framework on M1 macs as well
+# as to allow it to run on the iOS simulator as they don't include an iOS arm64 simulator slice
+# in the framework (see https://stackoverflow.com/a/66094347 for more info and also
+# https://blog.sudeium.com/2021/06/18/build-for-x86-simulator-on-apple-silicon-macs/)
+#
+# Accoring to https://github.com/react-native-webrtc/react-native-webrtc/issues/1033 it also doesn't
+# support Catalyst at the moment so changes/updates would be needed if we wanted to add support
+def set_simulators_to_run_x86(installer)
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      # Force CocoaPods targets to always build for x86_64
+      config.build_settings['ARCHS[sdk=iphonesimulator*]'] = 'x86_64'
     end
   end
 end
