@@ -425,6 +425,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         highlightFocusedMessageIfNeeded()
         didFinishInitialLayout = true
         markAllAsRead()
+        recoverInputView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -442,9 +443,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     }
     
     override func appDidBecomeActive(_ notification: Notification) {
-        // This is a workaround for an issue where the textview is not scrollable
-        // after the app goes into background and goes back in foreground.
-        self.snInputView.text = self.snInputView.text
+        recoverInputView()
     }
     
     deinit {
@@ -734,6 +733,14 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         }
         else {
             detach()
+        }
+    }
+    
+    func recoverInputView() {
+        // This is a workaround for an issue where the textview is not scrollable
+        // after the app goes into background and goes back in foreground.
+        DispatchQueue.main.async {
+            self.snInputView.text = self.snInputView.text
         }
     }
     

@@ -785,6 +785,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
+    
+    func contextMenuDismissed() {
+        recoverInputView()
+    }
 
     func handleQuoteViewCancelButtonTapped() {
         snInputView.quoteDraftInfo = nil

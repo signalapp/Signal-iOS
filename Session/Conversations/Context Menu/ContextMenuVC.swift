@@ -132,6 +132,7 @@ final class ContextMenuVC : UIViewController {
             self.timestampLabel.alpha = 0
         }, completion: { _ in
             self.dismiss()
+            self.delegate?.contextMenuDismissed()
         })
     }
 }
