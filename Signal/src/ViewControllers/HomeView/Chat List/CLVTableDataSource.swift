@@ -431,6 +431,10 @@ extension CLVTableDataSource: UITableViewDelegate {
             Logger.warn("No index path for threadId: \(threadId).")
             return nil
         }
+        guard tableView.window != nil else {
+            Logger.warn("Dismissing tableView not in view hierarchy")
+            return nil
+        }
 
         // Below is a partial workaround for database updates causing cells to reload mid-transition:
         // When the conversation view controller is dismissed, it touches the database which causes
