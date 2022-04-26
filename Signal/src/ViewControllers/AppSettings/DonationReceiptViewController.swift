@@ -22,6 +22,9 @@ class DonationReceiptViewController: OWSTableViewController2 {
         button.clipsToBounds = true
         button.layer.cornerRadius = 8
         button.contentEdgeInsets = UIEdgeInsets(top: 13, leading: 13, bottom: 13, trailing: 13)
+        button.dimsWhenHighlighted = true
+        button.backgroundColor = .ows_accentBlue
+
         return button
     }()
     let shareReceiptButtonContainer: UIStackView = {
@@ -129,17 +132,8 @@ class DonationReceiptViewController: OWSTableViewController2 {
     }
 
     private func updateShareReceiptButton() {
-        let textColor: UIColor
-        let backgroundColor: UIColor
-        if Theme.isDarkThemeEnabled {
-            textColor = .ows_white
-            backgroundColor = .ows_gray75
-        } else {
-            textColor = .ows_gray90
-            backgroundColor = .ows_gray05
-        }
+        let textColor: UIColor = Theme.isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_white
         shareReceiptButton.setTitleColor(textColor, for: .normal)
-        shareReceiptButton.setBackgroundImage(UIImage(color: backgroundColor), for: .normal)
     }
 
     private func showShareReceiptActivity() {
