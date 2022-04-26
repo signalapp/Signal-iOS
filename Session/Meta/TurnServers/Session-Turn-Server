@@ -1,0 +1,11 @@
+{
+    "urls": ["turn:freyr.getsession.org",
+             "turn:fenrir.getsession.org",
+             "turn:frigg.getsession.org",
+             "turn:angus.getsession.org",
+             "turn:hereford.getsession.org",
+             "turn:holstein.getsession.org",
+             "turn:brahman.getsession.org"],
+    "username": "session202111",
+    "password": "053c268164bc7bd7"
+}
