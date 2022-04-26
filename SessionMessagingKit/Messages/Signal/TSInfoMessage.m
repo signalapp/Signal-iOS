@@ -3,6 +3,7 @@
 //
 
 #import "TSInfoMessage.h"
+#import "TSContactThread.h"
 #import "SSKEnvironment.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
@@ -65,6 +66,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     }
 
     _messageType = infoMessage;
+    _callState = TSInfoMessageCallStateUnknown;
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
 
     if (self.isDynamicInteraction) {
@@ -103,8 +105,34 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return OWSInteractionType_Info;
 }
 
+- (NSString *)getCallMessagePreviewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    TSThread *thread = [self threadWithTransaction:transaction];
+    if ([thread isKindOfClass: [TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        NSString *sessionID = contactThread.contactSessionID;
+        NSString *name = [contactThread nameWithTransaction:transaction];
+        if ([name isEqual:sessionID]) {
+            name = [NSString stringWithFormat:@"%@...%@", [sessionID substringToIndex:4], [sessionID substringFromIndex:sessionID.length - 4]];
+        }
+        switch (_callState) {
+            case TSInfoMessageCallStateIncoming:
+                return [NSString stringWithFormat:NSLocalizedString(@"call_incoming", @""), name];
+            case TSInfoMessageCallStateOutgoing:
+                return [NSString stringWithFormat:NSLocalizedString(@"call_outgoing", @""), name];
+            case TSInfoMessageCallStateMissed:
+            case TSInfoMessageCallStatePermissionDenied:
+                return [NSString stringWithFormat:NSLocalizedString(@"call_missed", @""), name];
+            default:
+                break;
+        }
+    }
+    return _customMessage;
+}
+
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    
     switch (_messageType) {
         case TSInfoMessageTypeGroupCreated:
             return NSLocalizedString(@"GROUP_CREATED", @"");
@@ -112,6 +140,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
             return NSLocalizedString(@"GROUP_YOU_LEFT", @"");
         case TSInfoMessageTypeGroupUpdated:
             return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", @"");
+        case TSInfoMessageTypeCall:
+            return [self getCallMessagePreviewTextWithTransaction:transaction];
         case TSInfoMessageTypeMessageRequestAccepted:
             return NSLocalizedString(@"MESSAGE_REQUESTS_ACCEPTED", @"");
         default:
@@ -125,7 +155,12 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
 - (BOOL)shouldAffectUnreadCounts
 {
-    return NO;
+    switch (_messageType) {
+        case TSInfoMessageTypeCall:
+            return YES;
+        default:
+            return NO;
+    }
 }
 
 - (uint64_t)expireStartedAt

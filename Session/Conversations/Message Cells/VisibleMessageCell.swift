@@ -126,7 +126,13 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     static let largeCornerRadius: CGFloat = 18
     static let contactThreadHSpacing = Values.mediumSpacing
     
-    static var gutterSize: CGFloat { groupThreadHSpacing + profilePictureSize + groupThreadHSpacing }
+    static var gutterSize: CGFloat = {
+        var result = groupThreadHSpacing + profilePictureSize + groupThreadHSpacing
+        if UIDevice.current.isIPad {
+            result += CGFloat(UIScreen.main.bounds.width / 2 - 88)
+        }
+        return result
+    }()
     
     private var bodyLabelTextColor: UIColor {
         switch (direction, AppModeManager.shared.currentAppMode) {
@@ -258,7 +264,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         messageStatusImageView.tintColor = tintColor
         messageStatusImageView.backgroundColor = backgroundColor
         if let message = message as? TSOutgoingMessage {
-            messageStatusImageView.isHidden = (message.messageState == .sent && thread?.lastInteraction != message)
+            messageStatusImageView.isHidden = (message.isCallMessage || message.messageState == .sent && thread?.lastInteraction != message)
         } else {
             messageStatusImageView.isHidden = true
         }
@@ -276,7 +282,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         timerViewOutgoingMessageConstraint.isActive = (direction == .outgoing)
         timerViewIncomingMessageConstraint.isActive = (direction == .incoming)
         // Swipe to reply
-        if (message.isDeleted) {
+        if (message.isDeleted || message.isCallMessage) {
             removeGestureRecognizer(panGestureRecognizer)
         } else {
             addGestureRecognizer(panGestureRecognizer)
@@ -319,6 +325,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
             if let linkPreview = viewItem.linkPreview {
                 let linkPreviewView = LinkPreviewView(for: viewItem, maxWidth: maxWidth, delegate: self)
+                linkPreviewView.layer.mask = bubbleViewMaskLayer
                 linkPreviewView.linkPreviewState = LinkPreviewSent(linkPreview: linkPreview, imageAttachment: viewItem.linkPreviewAttachment)
                 snContentView.addSubview(linkPreviewView)
                 linkPreviewView.pin(to: snContentView)
@@ -326,6 +333,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 self.bodyTextView = linkPreviewView.bodyTextView
             } else if let openGroupInvitationName = message.openGroupInvitationName, let openGroupInvitationURL = message.openGroupInvitationURL {
                 let openGroupInvitationView = OpenGroupInvitationView(name: openGroupInvitationName, url: openGroupInvitationURL, textColor: bodyLabelTextColor, isOutgoing: isOutgoing)
+                openGroupInvitationView.layer.mask = bubbleViewMaskLayer
                 snContentView.addSubview(openGroupInvitationView)
                 openGroupInvitationView.pin(to: snContentView)
                 openGroupInvitationView.layer.mask = bubbleViewMaskLayer

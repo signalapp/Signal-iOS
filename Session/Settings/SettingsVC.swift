@@ -174,10 +174,16 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         // Button container
         let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
         buttonContainer.axis = .horizontal
-        buttonContainer.spacing = Values.mediumSpacing
+        buttonContainer.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         buttonContainer.distribution = .fillEqually
+        if (UIDevice.current.isIPad) {
+            buttonContainer.layoutMargins = UIEdgeInsets(top: 0, left: Values.iPadButtonContainerMargin, bottom: 0, right: Values.iPadButtonContainerMargin)
+            buttonContainer.isLayoutMarginsRelativeArrangement = true
+        }
+        // User session id container
+        let userPublicKeyContainer = UIView(wrapping: publicKeyLabel, withInsets: .zero, shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth)
         // Top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, publicKeyLabel, buttonContainer ])
+        let topStackView = UIStackView(arrangedSubviews: [ headerStackView, separator, userPublicKeyContainer, buttonContainer ])
         topStackView.axis = .vertical
         topStackView.spacing = Values.largeSpacing
         topStackView.alignment = .fill
@@ -389,7 +395,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                         let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
                         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                        self?.present(alert, animated: true, completion: nil)
+                        self?.presentAlert(alert)
                     }
                 }
             }, requiresSync: true)
@@ -488,6 +494,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
@@ -528,6 +540,12 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func sendInvitation() {
         let invitation = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(getUserHexEncodedPublicKey()) !"
         let shareVC = UIActivityViewController(activityItems: [ invitation ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
         navigationController!.present(shareVC, animated: true, completion: nil)
     }
     

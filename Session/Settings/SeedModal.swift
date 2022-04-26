@@ -59,15 +59,20 @@ final class SeedModal : Modal {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        // Content stack view
+        let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabelContainer, explanationLabel ])
+        contentStackView.axis = .vertical
+        contentStackView.spacing = Values.largeSpacing
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabelContainer, explanationLabel, buttonStackView ])
+        let spacing = Values.largeSpacing - Values.smallFontSize / 2
+        let stackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         stackView.axis = .vertical
-        stackView.spacing = Values.largeSpacing
+        stackView.spacing = spacing
         contentView.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         stackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
         contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: spacing)
         // Mark seed as viewed
         UserDefaults.standard[.hasViewedSeed] = true
         NotificationCenter.default.post(name: .seedViewed, object: nil)

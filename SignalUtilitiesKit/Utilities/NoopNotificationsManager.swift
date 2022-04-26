@@ -9,6 +9,10 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         owsFailDebug("")
     }
     
+    public func notifyUser(forIncomingCall callInfoMessage: TSInfoMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+        owsFailDebug("")
+    }
+    
     public func cancelNotification(_ identifier: String) {
         owsFailDebug("")
     }

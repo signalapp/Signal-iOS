@@ -331,13 +331,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
         messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
         
-        messageRequestAcceptButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
-        messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
-        messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
-        messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
-        
         messageRequestDeleteButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
-        messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: 20)
+        messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: UIDevice.current.isIPad ? Values.iPadButtonSpacing : 20)
         messageRequestDeleteButton.pin(.right, to: .right, of: messageRequestView, withInset: -20)
         messageRequestDeleteButton.pin(.bottom, to: .bottom, of: messageRequestView)
         messageRequestDeleteButton.set(.width, to: .width, of: messageRequestAcceptButton)
@@ -434,7 +429,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         Storage.write { transaction in
             self.thread.setDraft(text, transaction: transaction)
         }
-        inputAccessoryView?.resignFirstResponder()
+        self.resignFirstResponder()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -474,38 +469,42 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
             navigationItem.rightBarButtonItems = []
         }
         else {
+            var rightBarButtonItems: [UIBarButtonItem] = []
             if let contactThread: TSContactThread = thread as? TSContactThread {
                 // Don't show the settings button for message requests
                 if let contact: Contact = Storage.shared.getContact(with: contactThread.contactSessionID()), contact.isApproved, contact.didApproveMe {
                     let size = Values.verySmallProfilePictureSize
                     let profilePictureView = ProfilePictureView()
+                    profilePictureView.accessibilityLabel = "Settings button"
                     profilePictureView.size = size
                     profilePictureView.update(for: thread)
                     profilePictureView.set(.width, to: size)
                     profilePictureView.set(.height, to: size)
-                    
                     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
                     profilePictureView.addGestureRecognizer(tapGestureRecognizer)
-                    
-                    let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(customView: profilePictureView)
-                    rightBarButtonItem.accessibilityLabel = "Settings button"
-                    rightBarButtonItem.isAccessibilityElement = true
-                    
-                    navigationItem.rightBarButtonItem = rightBarButtonItem
+                    let settingsButton = UIBarButtonItem(customView: profilePictureView)
+                    settingsButton.accessibilityLabel = "Settings button"
+                    settingsButton.isAccessibilityElement = true
+                    rightBarButtonItems.append(settingsButton)
+                    let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isMessageRequest()
+                    if shouldShowCallButton {
+                        let callButton = UIBarButtonItem(image: UIImage(named: "Phone")!, style: .plain, target: self, action: #selector(startCall))
+                        rightBarButtonItems.append(callButton)
+                    }
                 }
                 else {
                     // Note: Adding an empty button because without it the title alignment is busted (Note: The size was
                     // taken from the layout inspector for the back button in Xcode
-                    navigationItem.rightBarButtonItem = UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: Values.verySmallProfilePictureSize, height: 44)))
+                    rightBarButtonItems.append(UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: Values.verySmallProfilePictureSize, height: 44))))
                 }
             }
             else {
-                let rightBarButtonItem: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
-                rightBarButtonItem.accessibilityLabel = "Settings button"
-                rightBarButtonItem.isAccessibilityElement = true
-                
-                navigationItem.rightBarButtonItem = rightBarButtonItem
+                let settingsButton = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+                settingsButton.accessibilityLabel = "Settings button"
+                settingsButton.isAccessibilityElement = true
+                rightBarButtonItems.append(settingsButton)
             }
+            navigationItem.rightBarButtonItems = rightBarButtonItems
         }
     }
     
@@ -843,7 +842,32 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         // Search bar
         let searchBar = searchController.uiSearchController.searchBar
         searchBar.setUpSessionStyle()
-        navigationItem.titleView = searchBar
+        
+        let searchBarContainer = UIView()
+        searchBarContainer.layoutMargins = UIEdgeInsets.zero
+        searchBar.sizeToFit()
+        searchBar.layoutMargins = UIEdgeInsets.zero
+        searchBarContainer.set(.height, to: 44)
+        searchBarContainer.set(.width, to: UIScreen.main.bounds.width - 32)
+        searchBarContainer.addSubview(searchBar)
+        navigationItem.titleView = searchBarContainer
+        
+        // On iPad, the cancel button won't show
+        // See more https://developer.apple.com/documentation/uikit/uisearchbar/1624283-showscancelbutton?language=objc
+        if UIDevice.current.isIPad {
+            let ipadCancelButton = UIButton()
+            ipadCancelButton.setTitle("Cancel", for: .normal)
+            ipadCancelButton.addTarget(self, action: #selector(hideSearchUI(_ :)), for: .touchUpInside)
+            ipadCancelButton.setTitleColor(Colors.text, for: .normal)
+            searchBarContainer.addSubview(ipadCancelButton)
+            ipadCancelButton.pin(.trailing, to: .trailing, of: searchBarContainer)
+            ipadCancelButton.autoVCenterInSuperview()
+            searchBar.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .trailing)
+            searchBar.pin(.trailing, to: .leading, of: ipadCancelButton, withInset: -Values.smallSpacing)
+        } else {
+            searchBar.autoPinEdgesToSuperviewMargins()
+        }
+
         // Nav bar buttons
         updateNavBarButtons()
         // Hack so that the ResultsBar stays on the screen when dismissing the search field
@@ -877,7 +901,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         navBar.stubbedNextResponder = self
     }
     
-    func hideSearchUI() {
+    @objc func hideSearchUI(_ sender: Any? = nil) {
         isShowingSearchUI = false
         navigationItem.titleView = titleView
         updateNavBarButtons()

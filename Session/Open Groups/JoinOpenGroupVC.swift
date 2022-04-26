@@ -61,7 +61,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
         tabBar.pin(.leading, to: .leading, of: view)
         let tabBarInset: CGFloat
         if #available(iOS 13, *) {
-            tabBarInset = navigationBar.height()
+            tabBarInset = UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height()
         } else {
             tabBarInset = 0
         }
@@ -167,6 +167,9 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
 
 private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, OpenGroupSuggestionGridDelegate {
     weak var joinOpenGroupVC: JoinOpenGroupVC!
+    private var isKeyboardShowing = false
+    private var bottomConstraint: NSLayoutConstraint!
+    private let bottomMargin: CGFloat = UIDevice.current.isIPad ? Values.largeSpacing : 0
     
     // MARK: Components
     private lazy var urlTextView: TextView = {
@@ -184,42 +187,50 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
         return result
     }()
     
+    private lazy var suggestionGridTitleLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        result.text = NSLocalizedString("vc_join_open_group_suggestions_title", comment: "")
+        result.numberOfLines = 0
+        result.lineBreakMode = .byWordWrapping
+        return result
+    }()
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
-        // Suggestion grid title label
-        let suggestionGridTitleLabel = UILabel()
-        suggestionGridTitleLabel.textColor = Colors.text
-        suggestionGridTitleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
-        suggestionGridTitleLabel.text = NSLocalizedString("vc_join_open_group_suggestions_title", comment: "")
-        suggestionGridTitleLabel.numberOfLines = 0
-        suggestionGridTitleLabel.lineBreakMode = .byWordWrapping
         // Next button
         let nextButton = Button(style: .prominentOutline, size: .large)
         nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
         nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
-        let nextButtonContainer = UIView()
-        nextButtonContainer.addSubview(nextButton)
-        nextButton.pin(.leading, to: .leading, of: nextButtonContainer, withInset: 80)
-        nextButton.pin(.top, to: .top, of: nextButtonContainer)
-        nextButtonContainer.pin(.trailing, to: .trailing, of: nextButton, withInset: 80)
-        nextButtonContainer.pin(.bottom, to: .bottom, of: nextButton)
+        let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel,
-            UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.pin(to: view)
+        stackView.pin(.leading, to: .leading, of: view)
+        stackView.pin(.top, to: .top, of: view)
+        view.pin(.trailing, to: .trailing, of: stackView)
+        bottomConstraint = view.pin(.bottom, to: .bottom, of: stackView, withInset: bottomMargin)
         // Constraints
         view.set(.width, to: UIScreen.main.bounds.width)
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGestureRecognizer.delegate = self
         view.addGestureRecognizer(tapGestureRecognizer)
+        // Listen to keyboard notifications
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: General
@@ -244,6 +255,35 @@ private final class EnterURLVC : UIViewController, UIGestureRecognizerDelegate, 
     @objc private func joinOpenGroup() {
         let url = urlTextView.text?.trimmingCharacters(in: .whitespaces) ?? ""
         joinOpenGroupVC.joinOpenGroup(with: url)
+    }
+    
+    // MARK: Updating
+    @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
+        guard !isKeyboardShowing else { return }
+        isKeyboardShowing = true
+        guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        bottomConstraint.constant = newHeight + bottomMargin
+        UIView.animate(withDuration: 0.25, animations: {
+            self.view.layoutIfNeeded()
+            self.suggestionGridTitleLabel.alpha = 0
+            self.suggestionGrid.alpha = 0
+        }, completion: { _ in
+            self.suggestionGridTitleLabel.isHidden = true
+            self.suggestionGrid.isHidden = true
+        })
+    }
+    
+    @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
+        guard isKeyboardShowing else { return }
+        isKeyboardShowing = false
+        bottomConstraint.constant = bottomMargin
+        UIView.animate(withDuration: 0.25) {
+            self.view.layoutIfNeeded()
+            self.suggestionGridTitleLabel.isHidden = false
+            self.suggestionGridTitleLabel.alpha = 1
+            self.suggestionGrid.isHidden = false
+            self.suggestionGrid.alpha = 1
+        }
     }
 }
 

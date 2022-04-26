@@ -24,6 +24,33 @@ public class SSKPreferences: NSObject {
             setBool(newValue, key: areLinkPreviewsEnabledKey)
         }
     }
+    
+    // MARK: -
+    private static let areCallsEnabledKey = "areCallsEnabled"
+
+    @objc
+    public static var areCallsEnabled: Bool {
+        get {
+            return getBool(key: areCallsEnabledKey, defaultValue: false)
+        }
+        set {
+            setBool(newValue, key: areCallsEnabledKey)
+        }
+    }
+    
+    @objc
+    public static var isCallKitSupported: Bool {
+        let userLocale = NSLocale.current
+        
+        guard let regionCode = userLocale.regionCode else { return false }
+        
+        if regionCode.contains("CN") ||
+            regionCode.contains("CHN") {
+            return false
+        } else {
+            return true
+        }
+    }
 
     // MARK: -
 

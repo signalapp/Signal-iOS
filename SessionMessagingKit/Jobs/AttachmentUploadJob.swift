@@ -102,6 +102,9 @@ public final class AttachmentUploadJob : NSObject, Job, NSCoding { // NSObject/N
         stream.isUploaded = false
         stream.save()
         upload(data).done(on: DispatchQueue.global(qos: .userInitiated)) { fileID in
+            // On the recipient side, it only uses the fileID in this URL,
+            // so the host doesn't matter even we use file server host for
+            // opne group attachments.
             let downloadURL = "\(FileServerAPIV2.server)/files/\(fileID)"
             stream.serverId = fileID
             stream.isUploaded = true

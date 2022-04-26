@@ -381,8 +381,20 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         let attachmentStream = currentViewController.galleryItem.attachmentStream
-
-        AttachmentSharing.showShareUI(forAttachment: attachmentStream) { activityType in
+        
+        let shareVC = UIActivityViewController(activityItems: [ attachmentStream.originalMediaURL! ], applicationActivities: nil)
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
+        shareVC.completionWithItemsHandler = { activityType, completed, returnedItems, activityError in
+            if let activityError = activityError {
+                SNLog("Failed to share with activityError: \(activityError)")
+            } else if completed {
+                SNLog("Did share with activityType: \(activityType.debugDescription)")
+            }
             guard let activityType = activityType, activityType == .saveToCameraRoll,
                 let tsMessage = currentViewController.galleryItem.message as? TSIncomingMessage, let thread = tsMessage.thread as? TSContactThread else { return }
             let message = DataExtractionNotification()
@@ -390,8 +402,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             Storage.write { transaction in
                 MessageSender.send(message, in: thread, using: transaction)
             }
-            
         }
+        self.present(shareVC, animated: true, completion: nil)
     }
 
     @objc
