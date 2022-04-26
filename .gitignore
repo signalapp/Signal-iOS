@@ -27,7 +27,6 @@ DerivedData
 *.ipa
 *.xcuserstate
 Index/
-Session-Turn-Server
 
 # CocoaPods
 Pods
