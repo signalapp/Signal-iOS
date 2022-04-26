@@ -127,7 +127,7 @@ public extension UIDevice {
 
         // Not strictly necessary for the orientation to appear as changed
         // but allegedly helps ensure related rotation delegate methods are called.
-        // https://stackoverflow.com/questions/20987249/how-do-i-programmatically-set-device-orientation-in-ios7
+        // https://stackoverflow.com/questions/20987249/how-do-i-programmatically-set-device-orientation-in-ios-7
         UINavigationController.attemptRotationToDeviceOrientation()
     }
 }
