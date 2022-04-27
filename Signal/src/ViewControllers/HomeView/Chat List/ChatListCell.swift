@@ -356,10 +356,6 @@ public class ChatListCell: UITableViewCell {
 
         NotificationCenter.default.removeObserver(self)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(otherUsersProfileDidChange(notification:)),
-                                               name: .otherUsersProfileDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(typingIndicatorStateDidChange),
                                                name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
                                                object: nil)
@@ -881,23 +877,6 @@ public class ChatListCell: UITableViewCell {
     }
 
     // MARK: - Name
-
-    @objc
-    private func otherUsersProfileDidChange(notification: Notification) {
-        AssertIsOnMainThread()
-
-        guard let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress,
-              address.isValid,
-              let contactThread = thread as? TSContactThread,
-              contactThread.contactAddress == address else {
-            return
-        }
-        guard let cellContentToken = self.cellContentToken else {
-            return
-        }
-        reset()
-        configure(cellContentToken: cellContentToken)
-    }
 
     @objc
     private func typingIndicatorStateDidChange(notification: Notification) {
