@@ -393,6 +393,86 @@ class MediaGallery: Dependencies {
             return range
         }()
 
+        func isSubstantialRequest() -> Bool {
+            // If we have not loaded the item at the given path yet, it's substantial.
+            guard let item = anchorItem else {
+                return true
+            }
+
+            let sectionItems = sections[sectionIndex].value
+
+            // If we're loading the remainder of an album, check to see if any items in the album are not loaded yet.
+            if shouldLoadAlbumRemainder {
+                let albumStart = (itemIndex - item.albumIndex)
+                    .clamp(sectionItems.startIndex, sectionItems.endIndex)
+                let albumEnd = (albumStart + item.message.attachmentIds.count)
+                    .clamp(sectionItems.startIndex, sectionItems.endIndex)
+                if sectionItems[albumStart..<albumEnd].contains(nil) { return true }
+            }
+
+            // Count unfetched items forward and backward.
+            func countUnfetched(in slice: ArraySlice<MediaGalleryItem?>) -> Int {
+                return slice.lazy.filter { $0 == nil }.count
+            }
+
+            owsAssertDebug(naiveRequestRange.lowerBound < sectionItems.count)
+            let sectionSliceStart = naiveRequestRange.lowerBound
+                .clamp(sectionItems.startIndex, sectionItems.endIndex)
+            let sectionSliceEnd = naiveRequestRange.upperBound
+                .clamp(sectionItems.startIndex, sectionItems.endIndex)
+            let sectionSlice = sectionItems[sectionSliceStart..<sectionSliceEnd]
+            var unfetchedCount = countUnfetched(in: sectionSlice)
+
+            if naiveRequestRange.upperBound > sectionItems.count {
+                var currentSectionIndex = sectionIndex + 1
+                var remainingForward = naiveRequestRange.upperBound - sectionItems.count
+                repeat {
+                    guard let currentSectionItems = sections[safe: currentSectionIndex]?.value else {
+                        // We've reached the end of the fetched sections. If there are more sections, or the last item
+                        // isn't fetched yet, assume it's substantial.
+                        if !hasFetchedMostRecent || (sections.last?.value.last ?? nil) == nil {
+                            return true
+                        }
+                        break
+                    }
+                    unfetchedCount += countUnfetched(in: currentSectionItems.prefix(remainingForward))
+                    if remainingForward <= currentSectionItems.count {
+                        break
+                    }
+                    remainingForward -= currentSectionItems.count
+                    currentSectionIndex += 1
+                } while true
+            }
+
+            if naiveRequestRange.lowerBound < 0 {
+                var currentSectionIndex = sectionIndex - 1
+                var remainingBackward = -naiveRequestRange.lowerBound
+                repeat {
+                    guard let currentSectionItems = sections[safe: currentSectionIndex]?.value else {
+                        // We've reached the start of the fetched sections. If there are more sections, or the first
+                        // item isn't fetched yet, assume it's substantial.
+                        if !hasFetchedOldest || (sections.first?.value.first ?? nil) == nil {
+                            return true
+                        }
+                        break
+                    }
+                    unfetchedCount += countUnfetched(in: currentSectionItems.suffix(remainingBackward))
+                    if remainingBackward <= currentSectionItems.count {
+                        break
+                    }
+                    remainingBackward -= currentSectionItems.count
+                    currentSectionIndex -= 1
+                } while true
+            }
+
+            // If we haven't hit the start or end, and more than half the items are unfetched, it's substantial.
+            return unfetchedCount > (naiveRequestRange.count / 2)
+        }
+
+        guard isSubstantialRequest() else {
+            return
+        }
+
         var numNewlyLoadedEarlierSections: Int = 0
         var numNewlyLoadedLaterSections: Int = 0
 
