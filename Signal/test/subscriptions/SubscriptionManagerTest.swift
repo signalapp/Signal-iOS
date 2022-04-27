@@ -19,26 +19,47 @@ class SubscriptionTest: XCTestCase {
             "status": "active"
         ]
     }()
+    let chargeFailureDictionary: [String: Any] = ["code": "foo"]
 
     func testJsonInit() throws {
-        let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary)
+        let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
+                                            chargeFailureValue: nil)
 
         XCTAssertEqual(subscription.level, 123)
         XCTAssertEqual(subscription.currency, "USD")
         XCTAssertEqual(subscription.amount, 500)
         XCTAssertEqual(subscription.endOfCurrentPeriod, 1618881836)
         XCTAssertEqual(subscription.billingCycleAnchor, 1587345836)
-        XCTAssert(subscription.active)
-        XCTAssert(!subscription.cancelAtEndOfPeriod)
+        XCTAssertTrue(subscription.active)
+        XCTAssertFalse(subscription.cancelAtEndOfPeriod)
         XCTAssertEqual(subscription.status, .active)
+        XCTAssertFalse(subscription.hasChargeFailure)
     }
 
     func testJsonInitWithUnexpectedStatus() throws {
         var jsonDictionaryWithUnexpectedStatus = subscriptionJsonDictionary
         jsonDictionaryWithUnexpectedStatus["status"] = "unexpected!!"
 
-        let subscription = try Subscription(jsonDictionary: jsonDictionaryWithUnexpectedStatus)
+        let subscription = try Subscription(jsonDictionary: jsonDictionaryWithUnexpectedStatus,
+                                            chargeFailureValue: nil)
 
         XCTAssertEqual(subscription.status, .unknown)
+        XCTAssertFalse(subscription.hasChargeFailure)
+    }
+
+    func testChargeFailure() throws {
+        let indicatesFailure: [Any] = [chargeFailureDictionary, 0, 123, true]
+        for chargeFailureValue in indicatesFailure {
+            let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
+                                                chargeFailureValue: chargeFailureValue)
+            XCTAssertTrue(subscription.hasChargeFailure)
+        }
+
+        let indicatesNoFailure: [Any?] = [nil, false]
+        for chargeFailureValue in indicatesNoFailure {
+            let subscription = try Subscription(jsonDictionary: subscriptionJsonDictionary,
+                                                chargeFailureValue: chargeFailureValue)
+            XCTAssertFalse(subscription.hasChargeFailure)
+        }
     }
 }

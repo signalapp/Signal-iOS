@@ -80,23 +80,36 @@ public extension ChatListViewController {
     // MARK: -
 
     func showBadgeExpirationSheetIfNeeded() {
+        Logger.info("[Subscriptions] Checking whether we should show badge expiration sheet...")
+
         guard !hasShownBadgeExpiration else { // Do this once per launch
+            Logger.info("[Subscriptions] Not showing badge expiration sheet, because we've already done so")
             return
         }
 
-        let expiredBadgeID = SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction()
+        let (
+            expiredBadgeID,
+            shouldShowExpirySheet,
+            doesMostRecentSubscriptionBadgeHaveChargeFailure,
+            hasCurrentSubscription
+        ) = databaseStorage.read { transaction in (
+            SubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
+            SubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction),
+            SubscriptionManager.doesMostRecentSubscriptionBadgeHaveChargeFailure(transaction: transaction),
+            subscriptionManager.hasCurrentSubscription(transaction: transaction)
+        )}
+
         guard let expiredBadgeID = expiredBadgeID else {
-            Logger.info("No expired badgeIDs, not showing sheet")
+            Logger.info("[Subscriptions] No expired badge ID, not showing sheet")
             return
         }
 
-        let shouldShow = databaseStorage.read { transaction in
-            SubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction)
+        guard shouldShowExpirySheet else {
+            Logger.info("[Subscriptions] Not showing badge expiration sheet because the flag is off")
+            return
         }
 
-        guard shouldShow else { return }
-
-        Logger.info("showing expiry sheet for badge \(expiredBadgeID)")
+        Logger.info("[Subscriptions] showing expiry sheet for badge \(expiredBadgeID)")
 
         if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {
@@ -109,7 +122,8 @@ public extension ChatListViewController {
                     guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
                           self.conversationSplitViewController?.selectedThread == nil else { return }
 
-                    let badgeSheet = BadgeExpirationSheet(badge: boostBadge)
+                    let badgeSheet = BadgeExpirationSheet(badge: boostBadge,
+                                                          mode: .boostExpired(hasCurrentSubscription: hasCurrentSubscription))
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)
                     self.hasShownBadgeExpiration = true
@@ -140,7 +154,8 @@ public extension ChatListViewController {
                     guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
                           self.conversationSplitViewController?.selectedThread == nil else { return }
 
-                    let badgeSheet = BadgeExpirationSheet(badge: subscriptionLevel.badge)
+                    let badgeSheet = BadgeExpirationSheet(badge: subscriptionLevel.badge,
+                                                          mode: doesMostRecentSubscriptionBadgeHaveChargeFailure ? .subscriptionExpiredBecauseOfChargeFailure : .subscriptionExpiredBecauseNotRenewed)
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)
                     self.hasShownBadgeExpiration = true
@@ -418,16 +433,16 @@ public extension ChatListViewController {
 }
 
 extension ChatListViewController: BadgeExpirationSheetDelegate {
-    func badgeExpirationSheetActionButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
-        SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
-        if BoostBadgeIds.contains(badgeExpirationSheet.badgeID), SubscriptionManager.hasCurrentSubscriptionWithSneakyTransaction() {
+    func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction) {
+        switch action {
+        case .dismiss:
+            break
+        case .openBoostView:
             showAppSettings(mode: .boost)
-        } else {
+        case .openSubscriptionsView:
             showAppSettings(mode: .subscriptions)
         }
     }
-
-    func badgeExpirationSheetNotNowButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) { }
 }
 
 extension ChatListViewController: ThreadSwipeHandler {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -128,6 +128,18 @@ extension ProfileBadge {
         }
     }
 }
+
+// MARK: - ProfileBadge fake assets
+
+#if TESTABLE_BUILD
+extension ProfileBadge {
+    public func _testingOnly_populateAssets() {
+        assets = BadgeAssets(scale: badgeVariant.intendedScale,
+                             remoteSourceUrl: remoteAssetUrl,
+                             localAssetDirectory: localAssetDir)
+    }
+}
+#endif
 
 // MARK: - ProfileBadge<PersistableRecord>
 
