@@ -547,15 +547,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt"
-        ON "model_TSInteraction"("expiresAt"
-    ,"expireStartedAt"
-    ,"storedShouldStartExpireTimer"
-    ,"uniqueThreadId"
-)
-;
-
-CREATE
     INDEX "index_attachments_on_lazyRestoreFragmentId"
         ON "model_TSAttachment"("lazyRestoreFragmentId"
 )
@@ -1329,4 +1320,18 @@ CREATE
             ,"amount" NUMERIC NOT NULL
             ,"currencyCode" TEXT NOT NULL
         )
+;
+
+CREATE
+    INDEX index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt
+        ON model_TSInteraction (
+        uniqueThreadId
+        ,uniqueId
+    )
+WHERE
+    storedShouldStartExpireTimer IS TRUE
+    AND (
+        expiresAt IS 0
+        OR expireStartedAt IS 0
+    )
 ;

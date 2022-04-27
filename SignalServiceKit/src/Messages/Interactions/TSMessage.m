@@ -263,17 +263,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self;
 }
 
-- (void)setExpiresInSeconds:(uint32_t)expiresInSeconds
-{
-    uint32_t maxExpirationDuration = [OWSDisappearingMessagesConfiguration maxDurationSeconds];
-    if (expiresInSeconds > maxExpirationDuration) {
-        OWSFailDebug(@"using `maxExpirationDuration` instead of: %u", maxExpirationDuration);
-    }
-
-    _expiresInSeconds = MIN(expiresInSeconds, maxExpirationDuration);
-    [self updateExpiresAt];
-}
-
 - (void)setExpireStartedAt:(uint64_t)expireStartedAt
 {
     if (_expireStartedAt != 0 && _expireStartedAt < expireStartedAt) {
