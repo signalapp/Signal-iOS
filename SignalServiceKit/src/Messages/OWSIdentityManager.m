@@ -91,29 +91,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)checkForPniIdentity
-{
-    // This entire operation is about old devices coming into a PNI-capable world.
-    // Once everybody has a PNI identity key (that won't be reset), this won't be necessary any longer.
-    if (!self.tsAccountManager.isRegistered) {
-        return;
-    }
-    if ([self identityKeyPairForIdentity:OWSIdentityPNI] != nil) {
-        return;
-    }
-    // PNI TODO: At some point this should schedule a check that the server's copy of our identity key matches our own.
-    // That will help with early PNI implementation mistakes as well as a possible "mass reset" by the server.
-
-    if (self.tsAccountManager.isPrimaryDevice) {
-        // Note that this does create a window where there's a PNI identity that linked devices don't yet know about.
-        [TSPreKeyManager createPreKeysForIdentity:OWSIdentityPNI
-            success:^{ [self.syncManager sendPniIdentitySyncMessage]; }
-            failure:^(NSError *error) { OWSFailDebug(@"Failed to create PNI identity and pre-keys: %@", error); }];
-    } else {
-        [self.syncManager sendPniIdentitySyncRequestMessage];
-    }
-}
-
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
