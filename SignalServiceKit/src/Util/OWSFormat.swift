@@ -163,9 +163,28 @@ public extension OWSFormat {
         return formatter
     }()
 
+    /**
+     * There's no DateComponentsFormatter configuration that produces "0:00".
+     * As a workaround, we make the full "00:00" string and take last N characters from it,
+     * where N is the length of "0:01".
+     */
+    private static var zeroDurationString: String? = {
+        let formatter = DateComponentsFormatter()
+        formatter.formattingContext = .standalone
+        formatter.zeroFormattingBehavior = .pad
+        formatter.allowedUnits = [ .minute, .second ]
+        guard let longString = formatter.string(from: 0) else {
+            return nil
+        }
+        let resultStringLength = localizedDurationString(from: 1).count
+        return String(longString.suffix(resultStringLength))
+    }()
+
     static func localizedDurationString(from timeInterval: TimeInterval) -> String {
         var result: String?
         switch timeInterval {
+        case 0:
+            result = zeroDurationString
         case 0..<60:
             result = durationFormatterS.string(from: timeInterval)
         case 3600...:
