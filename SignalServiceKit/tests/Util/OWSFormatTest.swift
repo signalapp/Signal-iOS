@@ -10,6 +10,7 @@ import XCTest
 class OWSFormatTest: SSKBaseTestSwift {
 
     func testTimeIntervals() throws {
+        XCTAssertEqual(OWSFormat.localizedDurationString(from: 0), "0:00")
         XCTAssertEqual(OWSFormat.localizedDurationString(from: 1), "0:01")
         XCTAssertEqual(OWSFormat.localizedDurationString(from: 60), "1:00")
         XCTAssertEqual(OWSFormat.localizedDurationString(from: 60+12), "1:12")
