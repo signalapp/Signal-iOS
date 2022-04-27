@@ -140,53 +140,42 @@ protocol CallAudioServiceDelegate: AnyObject {
         }
     }
 
-    private func ensureProperAudioSession(call: SignalCall?) {
-        switch call?.mode {
+    private func ensureProperAudioSession(call: SignalCall) {
+        switch call.mode {
         case .individual(let call):
             ensureProperAudioSession(call: call)
         case .group(let call):
             ensureProperAudioSession(call: call)
-        default:
-            // Revert to ambient audio
-            setAudioSession(category: .ambient, mode: .default)
         }
     }
 
-    private func ensureProperAudioSession(call: GroupCall?) {
-        guard let call = call, call.localDeviceState.joinState != .notJoined else {
+    private func ensureProperAudioSession(call: GroupCall) {
+        guard call.localDeviceState.joinState != .notJoined else {
             // Revert to ambient audio.
             setAudioSession(category: .ambient, mode: .default)
             return
         }
 
-        if call.isOutgoingVideoMuted {
-            if self.isSpeakerEnabled {
-                // When there is no outgoing video, set the AudioSession
-                // to the VideoChat mode if the speaker is enabled.
-                setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
-            } else {
-                // When there is no outgoing video, set the AudioSession
-                // to the VoiceChat mode.
-                setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
-            }
-        } else {
-            // The AudioSession for group calls as long as there is
-            // outgoing video. Choose the VideoChat mode, which enables
-            // the speaker.
+        if !call.isOutgoingVideoMuted || self.isSpeakerEnabled {
+            // The user is capturing video or wants to use the speaker for an
+            // audio call, so choose the VideoChat mode, which enables the speaker
+            // with the proximity sensor disabled.
             setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+        } else {
+            // The user is not capturing video and doesn't want to use the speaker
+            // for an audio call, so choose VoiceChat mode, which uses the receiver
+            // with the proximity sensor enabled.
+            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
         }
     }
 
     /// Set the AudioSession based on the state of the call. If video is captured locally,
     /// it is assumed that the speaker should be used. Otherwise audio will be routed
     /// through the receiver, or speaker if enabled.
-    ///
-    /// Note: Force the .allowBluetooth option to ensure linked bluetooth devices are
-    /// included as an available input.
-    private func ensureProperAudioSession(call: IndividualCall?) {
+    private func ensureProperAudioSession(call: IndividualCall) {
         AssertIsOnMainThread()
 
-        guard let call = call, !call.isEnded, call.state != .answering else {
+        guard !call.isEnded, call.state != .answering else {
             // Revert to ambient audio.
             setAudioSession(category: .ambient, mode: .default)
             return
