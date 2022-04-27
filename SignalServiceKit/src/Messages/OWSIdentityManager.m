@@ -91,24 +91,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)checkForPniIdentity
-{
-    if (!self.tsAccountManager.isRegistered) {
-        return;
-    }
-    if ([self identityKeyPairForIdentity:OWSIdentityPNI] != nil) {
-        return;
-    }
-
-    if (self.tsAccountManager.isPrimaryDevice) {
-        [TSPreKeyManager createPreKeysForIdentity:OWSIdentityPNI
-            success:^{}
-            failure:^(NSError *error) { OWSFailDebug(@"Failed to create PNI identity and pre-keys: %@", error); }];
-    } else {
-        [self.syncManager sendPniIdentitySyncRequestMessage];
-    }
-}
-
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self

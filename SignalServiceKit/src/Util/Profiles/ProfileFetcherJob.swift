@@ -47,18 +47,19 @@ public enum ProfileFetchType: UInt {
 
 // MARK: -
 
-@objc
-public class ProfileFetchOptions: NSObject {
-    fileprivate let mainAppOnly: Bool
-    fileprivate let ignoreThrottling: Bool
-    // TODO: Do we ever want to fetch but not update our local profile store?
-    fileprivate let fetchType: ProfileFetchType
+private struct ProfileFetchOptions {
+    let mainAppOnly: Bool
+    let ignoreThrottling: Bool
+    let shouldUpdateStore: Bool
+    let fetchType: ProfileFetchType
 
-    fileprivate init(mainAppOnly: Bool = true,
-                     ignoreThrottling: Bool = false,
-                     fetchType: ProfileFetchType = .default) {
+    init(mainAppOnly: Bool = true,
+         ignoreThrottling: Bool = false,
+         shouldUpdateStore: Bool = true,
+         fetchType: ProfileFetchType = .default) {
         self.mainAppOnly = mainAppOnly
         self.ignoreThrottling = ignoreThrottling || DebugFlags.aggressiveProfileFetching.get()
+        self.shouldUpdateStore = shouldUpdateStore
         self.fetchType = fetchType
     }
 }
@@ -132,10 +133,12 @@ public class ProfileFetcherJob: NSObject {
     public class func fetchProfilePromise(address: SignalServiceAddress,
                                           mainAppOnly: Bool = true,
                                           ignoreThrottling: Bool = false,
+                                          shouldUpdateStore: Bool = true,
                                           fetchType: ProfileFetchType = .default) -> Promise<FetchedProfile> {
         let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(mainAppOnly: mainAppOnly,
                                           ignoreThrottling: ignoreThrottling,
+                                          shouldUpdateStore: shouldUpdateStore,
                                           fetchType: fetchType)
         return ProfileFetcherJob(subject: subject, options: options).runAsPromise()
     }
@@ -201,8 +204,11 @@ public class ProfileFetcherJob: NSObject {
         }.then(on: Self.queueCluster.next()) { _ in
             self.requestProfile()
         }.then(on: Self.queueCluster.next()) { fetchedProfile in
-            firstly {
-                self.updateProfile(fetchedProfile: fetchedProfile)
+            firstly { () -> Promise<Void> in
+                if self.options.shouldUpdateStore {
+                    return self.updateProfile(fetchedProfile: fetchedProfile)
+                }
+                return .value(())
             }.map(on: Self.queueCluster.next()) { _ in
                 return fetchedProfile
             }
@@ -232,7 +238,9 @@ public class ProfileFetcherJob: NSObject {
             }
         }
 
-        recordLastFetchDate(for: subject)
+        if options.shouldUpdateStore {
+            recordLastFetchDate(for: subject)
+        }
 
         return requestProfileWithRetries()
     }
