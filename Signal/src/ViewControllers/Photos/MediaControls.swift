@@ -401,7 +401,8 @@ class CameraCaptureControl: UIView {
             touchTimer?.invalidate()
             touchTimer = nil
 
-            if state == .recording {
+            switch state {
+            case .recording:
                 let shouldLockRecording = sliderTrackingProgress > 0.5
 
                 // 1. Snap slider to one of the endpoints with the spring animation.
@@ -433,8 +434,12 @@ class CameraCaptureControl: UIView {
 
                     delegate?.cameraCaptureControlDidRequestFinishVideoRecording(self)
                 }
-            } else {
+
+            case .initial:
                 delegate?.cameraCaptureControlDidRequestCapturePhoto(self)
+
+            case .recordingLocked:
+                break
             }
 
         case .cancelled, .failed:
