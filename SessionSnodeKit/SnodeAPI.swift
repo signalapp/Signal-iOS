@@ -258,7 +258,9 @@ public final class SnodeAPI : NSObject {
     public static func getSnodePool() -> Promise<Set<Snode>> {
         loadSnodePoolIfNeeded()
         let now = Date()
-        let hasSnodePoolExpired = given(GRDBStorage.shared[.lastSnodePoolRefreshDate]) { now.timeIntervalSince($0) > 2 * 60 * 60 } ?? true
+        let hasSnodePoolExpired = given(GRDBStorage.shared[.lastSnodePoolRefreshDate]) {
+            now.timeIntervalSince($0) > 2 * 60 * 60
+        }.defaulting(to: true)
         let snodePool = SnodeAPI.snodePool
         let hasInsufficientSnodes = (snodePool.count < minSnodePoolCount)
         
@@ -441,6 +443,7 @@ public final class SnodeAPI : NSObject {
 //            "pubkey_ed25519" : ed25519PublicKey,
 //            "signature" : signature.toBase64()!
         ]
+        
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 

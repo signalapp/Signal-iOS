@@ -18,11 +18,12 @@ public enum SNUtilitiesKit { // Just to make the external API nice
             identifier: .utilitiesKit,
             migrations: [
                 [
-                    // Intentionally including the '_002_YDBToGRDBMigration' in the first migration
+                    // Intentionally including the '_003_YDBToGRDBMigration' in the first migration
                     // set to ensure the 'Identity' data is migrated before any other migrations are
                     // run (some need access to the users publicKey)
                     _001_InitialSetupMigration.self,
-                    _002_YDBToGRDBMigration.self
+                    _002_SetupStandardJobs.self,
+                    _003_YDBToGRDBMigration.self
                 ]
             ]
         )

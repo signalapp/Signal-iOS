@@ -6,7 +6,7 @@ import SessionSnodeKit
 import SessionUtilitiesKit
 
 public enum NotifyPushServerJob: JobExecutor {
-    public static var maxFailureCount: UInt = 20
+    public static var maxFailureCount: Int = 20
     public static var requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
     

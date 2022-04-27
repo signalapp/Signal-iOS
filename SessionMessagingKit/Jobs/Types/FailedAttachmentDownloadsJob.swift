@@ -6,7 +6,7 @@ import SignalCoreKit
 import SessionUtilitiesKit
 
 public enum FailedAttachmentDownloadsJob: JobExecutor {
-    public static let maxFailureCount: UInt = 0
+    public static let maxFailureCount: Int = -1
     public static let requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
     

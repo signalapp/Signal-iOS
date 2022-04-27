@@ -5,7 +5,7 @@ import GRDB
 import SessionUtilitiesKit
 
 public enum DisappearingMessagesJob: JobExecutor {
-    public static let maxFailureCount: UInt = 0
+    public static let maxFailureCount: Int = -1
     public static let requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
     
@@ -25,8 +25,15 @@ public enum DisappearingMessagesJob: JobExecutor {
                 .filter(sql: "(\(Interaction.Columns.expiresStartedAtMs) + (\(Interaction.Columns.expiresInSeconds) * 1000) <= \(timestampNowMs)")
                 .deleteAll(db)
             
-            // Update the next run timestamp for the DisappearingMessagesJob
+            // Update the next run timestamp for the DisappearingMessagesJob (if the call
+            // to 'updateNextRunIfNeeded' returns 'nil' then it doesn't need to re-run so
+            // should have it's 'nextRunTimestamp' cleared)
             return updateNextRunIfNeeded(db)
+                .defaulting(
+                    to: try job
+                        .with(nextRunTimestamp: 0)
+                        .saved(db)
+                )
         }
         
         success(updatedJob ?? job, false)
@@ -40,12 +47,8 @@ public enum DisappearingMessagesJob: JobExecutor {
 
 public extension DisappearingMessagesJob {
     @discardableResult static func updateNextRunIfNeeded(_ db: Database) -> Job? {
-        // Don't schedule run when inactive or not in main app
-        var isMainAppActive = false
-        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppActive = sharedUserDefaults[.isMainAppActive]
-        }
-        guard isMainAppActive else { return nil }
+        // Don't run when inactive or not in main app
+        guard (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false) else { return nil }
         
         // If there is another expiring message then update the job to run 1 second after it's meant to expire
         let nextExpirationTimestampMs: Double? = try? Double

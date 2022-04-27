@@ -8,7 +8,7 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 
 public enum SyncPushTokensJob: JobExecutor {
-    public static let maxFailureCount: UInt = 0
+    public static let maxFailureCount: Int = -1
     public static let requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
     
@@ -18,12 +18,8 @@ public enum SyncPushTokensJob: JobExecutor {
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
     ) {
-        // Don't schedule run when inactive or not in main app
-        var isMainAppActive = false
-        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppActive = sharedUserDefaults[.isMainAppActive]
-        }
-        guard isMainAppActive else {
+        // Don't run when inactive or not in main app
+        guard (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false) else {
             deferred(job) // Don't need to do anything if it's not the main app
             return
         }

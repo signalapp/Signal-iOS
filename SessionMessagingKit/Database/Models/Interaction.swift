@@ -334,6 +334,11 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
             }
         }
         
+        // Delete any jobs associated to this interaction
+        try Job
+            .filter(Job.Columns.interactionId == id)
+            .deleteAll(db)
+        
         return try performDelete(db)
     }
 }

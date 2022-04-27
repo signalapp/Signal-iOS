@@ -13,7 +13,7 @@ extension MessageReceiver {
     ///
     /// **Note:** This is a slightly optimised version of the `decryptWithSessionProtocol` function which just skips
     /// the validation (handled when the job actually runs) and doesn't throw
-    internal static func extractSenderPublicKey(_ db: Database, from envelope: SNProtoEnvelope) -> String? {
+    public static func extractSenderPublicKey(_ db: Database, from envelope: SNProtoEnvelope) -> String? {
         guard
             let ciphertext: Data = envelope.content,
             let userX25519KeyPair: Box.KeyPair = Identity.fetchUserKeyPair(db)

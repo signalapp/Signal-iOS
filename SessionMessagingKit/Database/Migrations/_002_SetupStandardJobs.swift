@@ -17,32 +17,28 @@ enum _002_SetupStandardJobs: Migration {
         try autoreleasepool {
             // TODO: Add additional jobs from the AppDelegate
             _ = try Job(
-                failureCount: 0,
                 variant: .disappearingMessages,
-                behaviour: .recurringOnLaunch,
-                nextRunTimestamp: 0
+                behaviour: .recurringOnLaunchBlockingOncePerSession
             ).inserted(db)
             
             _ = try Job(
-                failureCount: 0,
                 variant: .failedMessages,
-                behaviour: .recurringOnLaunch,
-                nextRunTimestamp: 0
+                behaviour: .recurringOnLaunchBlocking
             ).inserted(db)
             
             _ = try Job(
-                failureCount: 0,
                 variant: .failedAttachmentDownloads,
-                behaviour: .recurringOnLaunch,
-                nextRunTimestamp: 0
+                behaviour: .recurringOnLaunchBlocking
             ).inserted(db)
             
-            // Note: This job exists in the 'Session' target but that doesn't have it's own migrations
             _ = try Job(
-                failureCount: 0,
-                variant: .syncPushTokens,
-                behaviour: .recurringOnLaunch,
-                nextRunTimestamp: 0
+                variant: .updateProfilePicture,
+                behaviour: .recurringOnActive
+            ).inserted(db)
+            
+            _ = try Job(
+                variant: .retrieveDefaultOpenGroupRooms,
+                behaviour: .recurringOnActive
             ).inserted(db)
         }
     }

@@ -7,7 +7,7 @@ import SessionSnodeKit
 import SignalCoreKit
 
 public enum AttachmentDownloadJob: JobExecutor {
-    public static var maxFailureCount: UInt = 10
+    public static var maxFailureCount: Int = 10
     public static var requiresThreadId: Bool = true
     public static let requiresInteractionId: Bool = true
     

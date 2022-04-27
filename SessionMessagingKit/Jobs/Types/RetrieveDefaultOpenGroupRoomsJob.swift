@@ -5,7 +5,7 @@ import GRDB
 import SignalCoreKit
 import SessionUtilitiesKit
 
-public enum FailedMessagesJob: JobExecutor {
+public enum RetrieveDefaultOpenGroupRoomsJob: JobExecutor {
     public static let maxFailureCount: Int = -1
     public static let requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
@@ -16,15 +16,15 @@ public enum FailedMessagesJob: JobExecutor {
         failure: @escaping (Job, Error?, Bool) -> (),
         deferred: @escaping (Job) -> ()
     ) {
-        // Update all 'sending' message states to 'failed'
-        GRDBStorage.shared.write { db in
-            let changeCount: Int = try RecipientState
-                .filter(RecipientState.Columns.state == RecipientState.State.sending)
-                .updateAll(db, RecipientState.Columns.state.set(to: RecipientState.State.failed))
-        
-            Logger.debug("Marked \(changeCount) messages as failed")
+        // Don't run when inactive or not in main app
+        guard (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false) else {
+            deferred(job) // Don't need to do anything if it's not the main app
+            return
         }
         
-        success(job, false)
+        OpenGroupAPIV2.getDefaultRoomsIfNeeded()
+            .done { _ in success(job, false) }
+            .catch { error in failure(job, error, false) }
+            .retainUntilComplete()
     }
 }

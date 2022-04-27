@@ -120,6 +120,17 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
         self.notificationSound = notificationSound
         self.mutedUntilTimestamp = mutedUntilTimestamp
     }
+    
+    // MARK: - Custom Database Interaction
+    
+    public func delete(_ db: Database) throws -> Bool {
+        // Delete any jobs associated to this thread
+        try Job
+            .filter(Job.Columns.threadId == id)
+            .deleteAll(db)
+        
+        return try performDelete(db)
+    }
 }
 
 // MARK: - GRDB Interactions

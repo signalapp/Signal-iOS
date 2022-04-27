@@ -2,21 +2,9 @@
 
 import Foundation
 import GRDB
-import SessionUtilitiesKit
-import SwiftProtobuf
 
 public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "job" }
-    internal static let threadForeignKey = ForeignKey(
-        [Columns.threadId],
-        to: [SessionThread.Columns.id]
-    )
-    internal static let interactionForeignKey = ForeignKey(
-        [Columns.interactionId],
-        to: [Interaction.Columns.id]
-    )
-    internal static let thread = hasOne(SessionThread.self, using: Job.threadForeignKey)
-    internal static let interaction = hasOne(Interaction.self, using: Job.interactionForeignKey)
     
     public typealias Columns = CodingKeys
     public enum CodingKeys: String, CodingKey, ColumnExpression {
@@ -35,13 +23,31 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         /// at the timestamp of the next disappearing message
         case disappearingMessages
         
+        /// This is a recurring job that ensures the app retrieves a service node pool on active
+        ///
+        /// **Note:** This is a blocking job so it will run before any other jobs and prevent them from
+        /// running until it's complete
+        case getSnodePool
+        
+        /// This is a recurring job that checks if the user needs to update their profile picture on launch, and if so
+        /// attempt to download the latest
+        case updateProfilePicture
+        
+        /// This is a recurring job that ensures the app fetches the default open group rooms on launch
+        case retrieveDefaultOpenGroupRooms
         
         /// This is a recurring job that runs on launch and flags any messages marked as 'sending' to
         /// be in their 'failed' state
+        ///
+        /// **Note:** This is a blocking job so it will run before any other jobs and prevent them from
+        /// running until it's complete
         case failedMessages = 1000
         
         /// This is a recurring job that runs on launch and flags any attachments marked as 'uploading' to
         /// be in their 'failed' state
+        ///
+        /// **Note:** This is a blocking job so it will run before any other jobs and prevent them from
+        /// running until it's complete
         case failedAttachmentDownloads
         
         /// This is a recurring job that runs on return from background and registeres and uploads the
@@ -84,11 +90,26 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
         /// the future) in order to be run again
         case recurring
         
-        /// This job will run once each launch
+        /// This job will run once each launch and may run again during the same session if `nextRunTimestamp`
+        /// gets set
         case recurringOnLaunch
         
-        /// This job will run once each whenever the app becomes active (launch and return from background)
+        /// This job will run once each launch and may run again during the same session if `nextRunTimestamp`
+        /// gets set, it also must complete before any other jobs can run
+        case recurringOnLaunchBlocking
+        
+        /// This job will run once each launch and may run again during the same session if `nextRunTimestamp`
+        /// gets set, it also must complete before any other jobs can run
+        case recurringOnLaunchBlockingOncePerSession
+        
+        /// This job will run once each whenever the app becomes active (launch and return from background) and
+        /// may run again during the same session if `nextRunTimestamp` gets set
         case recurringOnActive
+        
+        /// This job will run once each whenever the app becomes active (launch and return from background) and
+        /// may run again during the same session if `nextRunTimestamp` gets set, it also must complete before
+        /// any other jobs can run
+        case recurringOnActiveBlocking
     }
     
     /// The `id` value is auto incremented by the database, if the `Job` hasn't been inserted into
@@ -121,16 +142,6 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     
     /// JSON encoded data required for the job
     public let details: Data?
-    
-    // MARK: - Relationships
-    
-    public var thread: QueryInterfaceRequest<SessionThread> {
-        request(for: Job.thread)
-    }
-    
-    public var interaction: QueryInterfaceRequest<Interaction> {
-        request(for: Job.interaction)
-    }
     
     // MARK: - Initialization
     
@@ -201,26 +212,72 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     }
 }
 
+// MARK: - GRDB Interactions
+
+extension Job {
+    internal static func filterPendingJobs(excludeFutureJobs: Bool = true) -> QueryInterfaceRequest<Job> {
+        let query: QueryInterfaceRequest<Job> = Job
+            .filter(
+                // TODO: Should this include other behaviours? (what happens if one of the other types fails???? Just leave it until the next launch/active???) Set a 'failureCount' and use that to determine if it should run? (reset on success)
+                // Retrieve all 'runOnce' and 'recurring' jobs
+                [
+                    Job.Behaviour.runOnce,
+                    Job.Behaviour.recurring
+                ].contains(Job.Columns.behaviour) || (
+                    // Retrieve any 'recurringOnLaunch' and 'recurringOnActive' jobs that have a
+                    // 'nextRunTimestamp'
+                    [
+                        Job.Behaviour.recurringOnLaunch,
+                        Job.Behaviour.recurringOnLaunchBlocking,
+                        Job.Behaviour.recurringOnActive,
+                        Job.Behaviour.recurringOnActiveBlocking
+                    ].contains(Job.Columns.behaviour) &&
+                    Job.Columns.nextRunTimestamp > 0
+                )
+            )
+            .order(Job.Columns.nextRunTimestamp)
+            .order(Job.Columns.id)
+        
+        guard excludeFutureJobs else {
+            return query
+        }
+        
+        return query
+            .filter(Job.Columns.nextRunTimestamp <= Date().timeIntervalSince1970)
+    }
+}
+
 // MARK: - Convenience
 
 public extension Job {
-    internal func with(
+    var isBlocking: Bool {
+        switch self.behaviour {
+            case .recurringOnLaunchBlocking,
+                .recurringOnLaunchBlockingOncePerSession,
+                .recurringOnActiveBlocking:
+                return true
+                
+            default: return false
+        }
+    }
+    
+    func with(
         failureCount: UInt = 0,
-        nextRunTimestamp: TimeInterval?
+        nextRunTimestamp: TimeInterval
     ) -> Job {
         return Job(
             id: id,
             failureCount: failureCount,
             variant: variant,
             behaviour: behaviour,
-            nextRunTimestamp: (nextRunTimestamp ?? self.nextRunTimestamp),
+            nextRunTimestamp: nextRunTimestamp,
             threadId: threadId,
             interactionId: interactionId,
             details: details
         )
     }
     
-    internal func with<T: Encodable>(details: T) -> Job? {
+    func with<T: Encodable>(details: T) -> Job? {
         guard let detailsData: Data = try? JSONEncoder().encode(details) else { return nil }
         
         return Job(

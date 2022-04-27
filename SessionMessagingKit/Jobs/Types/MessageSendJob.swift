@@ -7,7 +7,7 @@ import SessionUtilitiesKit
 import SessionSnodeKit
 
 public enum MessageSendJob: JobExecutor {
-    public static var maxFailureCount: UInt = 10
+    public static var maxFailureCount: Int = 10
     public static var requiresThreadId: Bool = true
     public static let requiresInteractionId: Bool = false   // Some messages don't have interactions
     

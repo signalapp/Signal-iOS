@@ -124,31 +124,39 @@ public final class ClosedGroupPoller : NSObject {
                 SNLog("Received \(messages.count) new message(s) in closed group with public key: \(groupPublicKey).")
                 
                 GRDBStorage.shared.write { db in
+                    var jobDetailMessages: [MessageReceiveJob.Details.MessageInfo] = []
+                    
                     messages.forEach { message in
                         guard let envelope = SNProtoEnvelope.from(message) else { return }
                         
                         do {
-                            JobRunner.add(
-                                db,
-                                job: Job(
-                                    variant: .messageReceive,
-                                    behaviour: .runOnce,
-                                    threadId: groupPublicKey,
-                                    details: MessageReceiveJob.Details(
-                                        data: try envelope.serializedData(),
-                                        serverHash: message.info.hash,
-                                        isBackgroundPoll: false
-                                    )
+                            jobDetailMessages.append(
+                                MessageReceiveJob.Details.MessageInfo(
+                                    data: try envelope.serializedData(),
+                                    serverHash: message.info.hash
                                 )
                             )
                             
                             // Persist the received message after the MessageReceiveJob is created
-                            try message.info.save(db)
+                            _ = try message.info.saved(db)
                         }
                         catch {
                             SNLog("Failed to deserialize envelope due to error: \(error).")
                         }
                     }
+                    
+                    JobRunner.add(
+                        db,
+                        job: Job(
+                            variant: .messageReceive,
+                            behaviour: .runOnce,
+                            threadId: groupPublicKey,
+                            details: MessageReceiveJob.Details(
+                                messages: jobDetailMessages,
+                                isBackgroundPoll: false
+                            )
+                        )
+                    )
                 }
             }
         }

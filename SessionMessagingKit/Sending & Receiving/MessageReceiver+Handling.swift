@@ -29,11 +29,7 @@ extension MessageReceiver {
             default: fatalError()
         }
         
-        var isMainAppActive = false
-        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppActive = sharedUserDefaults[.isMainAppActive]
-        }
-        guard isMainAppActive else { return }
+        guard (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false) else { return }
         
         // Touch the thread to update the home screen preview
         let storage = SNMessagingKitConfiguration.shared.storage
@@ -399,11 +395,7 @@ extension MessageReceiver {
         
         // Note: `message.sentTimestamp` is in ms
         let messageSentTimestamp: TimeInterval = TimeInterval((message.sentTimestamp ?? 0) / 1000)
-        
-        var isMainAppActive = false
-        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppActive = sharedUserDefaults[.isMainAppActive]
-        }
+        let isMainAppActive: Bool = (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false)
         
         // Parse & persist attachments
         

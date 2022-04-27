@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-enum _002_YDBToGRDBMigration: Migration {
+enum _003_YDBToGRDBMigration: Migration {
     static let identifier: String = "YDBToGRDBMigration"
     
     static func migrate(_ db: Database) throws {
@@ -103,6 +103,7 @@ enum _002_YDBToGRDBMigration: Migration {
         var lastMessageResults: [String: (hash: String, json: JSON)] = [:]
         var receivedMessageResults: [String: Set<String>] = [:]
 
+        // TODO: Move into the top read block???
         Storage.read { transaction in
             // Extract the received message hashes
             transaction.enumerateKeysAndObjects(inCollection: Legacy.receivedMessagesCollection) { key, object, _ in

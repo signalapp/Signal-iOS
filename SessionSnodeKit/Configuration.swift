@@ -13,15 +13,18 @@ public enum SNSnodeKit { // Just to make the external API nice
             identifier: .snodeKit,
             migrations: [
                 [
-                    _001_InitialSetupMigration.self
+                    _001_InitialSetupMigration.self,
+                    _002_SetupStandardJobs.self
                 ],
                 [
-                    _002_YDBToGRDBMigration.self
+                    _003_YDBToGRDBMigration.self
                 ]
             ]
         )
     }
 
     public static func configure() {
+        // Configure the job executors
+        JobRunner.add(executor: GetSnodePoolJob.self, for: .getSnodePool)
     }
 }

@@ -3,7 +3,7 @@
 import Foundation
 import GRDB
 
-enum _002_YDBToGRDBMigration: Migration {
+enum _003_YDBToGRDBMigration: Migration {
     static let identifier: String = "YDBToGRDBMigration"
     
     static func migrate(_ db: Database) throws {
@@ -65,6 +65,7 @@ enum _002_YDBToGRDBMigration: Migration {
             
             throw GRDBStorageError.migrationFailed
         }
+        print("RAWR publicKey \(userX25519KeyPair.publicKey.toHexString())")
         try autoreleasepool {
             // Insert the data into GRDB
             try Identity(

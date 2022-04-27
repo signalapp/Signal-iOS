@@ -3,10 +3,12 @@
 import Foundation
 import GRDB
 import SignalCoreKit
-import SessionUtilitiesKit
 
 public protocol JobExecutor {
-    static var maxFailureCount: UInt { get }
+    /// The maximum number of times the job can fail before it fails permanently
+    ///
+    /// **Note:** A value of `-1` means it will retry indefinitely
+    static var maxFailureCount: Int { get }
     static var requiresThreadId: Bool { get }
     static var requiresInteractionId: Bool { get }
 
@@ -57,8 +59,8 @@ public final class JobRunner {
         }
     }
     
-    // TODO: Could this be a bottleneck? (single serial queue to process all these jobs? Group by thread?)
-    // TODO: Multi-thread support
+    // TODO: Could this be a bottleneck? (single serial queue to process all these jobs? Group by thread?).
+    // TODO: Multi-thread support.
     private static let queueKey: DispatchSpecificKey = DispatchSpecificKey<String>()
     private static let queueContext: String = "JobRunner"
     private static let internalQueue: DispatchQueue = {
@@ -74,6 +76,7 @@ public final class JobRunner {
     private static var jobQueue: Atomic<[Job]> = Atomic([])
     
     private static var jobsCurrentlyRunning: Atomic<Set<Int64>> = Atomic([])
+    private static var perSessionJobsCompleted: Atomic<Set<Int64>> = Atomic([])
     
     // MARK: - Configuration
     
@@ -182,27 +185,64 @@ public final class JobRunner {
                 .filter(
                     [
                         Job.Behaviour.recurringOnLaunch,
+                        Job.Behaviour.recurringOnLaunchBlocking,
+                        Job.Behaviour.recurringOnLaunchBlockingOncePerSession,
                         Job.Behaviour.runOnceNextLaunch
                     ].contains(Job.Columns.behaviour)
                 )
+                .order(Job.Columns.id)
                 .fetchAll(db)
         }
         
         guard let jobsToRun: [Job] = maybeJobsToRun else { return }
         
-        jobQueue.mutate { $0.append(contentsOf: jobsToRun) }
+        jobQueue.mutate {
+            // Insert any blocking jobs after any existing blocking jobs then add
+            // the remaining jobs to the end of the queue
+            let lastBlockingIndex = $0.lastIndex(where: { $0.isBlocking })
+                .defaulting(to: $0.startIndex.advanced(by: -1))
+                .advanced(by: 1)
+            
+            $0.insert(
+                contentsOf: jobsToRun.filter { $0.isBlocking },
+                at: lastBlockingIndex
+            )
+            $0.append(
+                contentsOf: jobsToRun.filter { !$0.isBlocking }
+            )
+        }
     }
     
     public static func appDidBecomeActive() {
         let maybeJobsToRun: [Job]? = GRDBStorage.shared.read { db in
             try Job
-                .filter(Job.Columns.behaviour == Job.Behaviour.recurringOnActive)
+                .filter(
+                    [
+                        Job.Behaviour.recurringOnActive,
+                        Job.Behaviour.recurringOnActiveBlocking
+                    ].contains(Job.Columns.behaviour)
+                )
+                .order(Job.Columns.id)
                 .fetchAll(db)
         }
         
         guard let jobsToRun: [Job] = maybeJobsToRun else { return }
         
-        jobQueue.mutate { $0.append(contentsOf: jobsToRun) }
+        jobQueue.mutate {
+            // Insert any blocking jobs after any existing blocking jobs then add
+            // the remaining jobs to the end of the queue
+            let lastBlockingIndex = $0.lastIndex(where: { $0.isBlocking })
+                .defaulting(to: $0.startIndex.advanced(by: -1))
+                .advanced(by: 1)
+            
+            $0.insert(
+                contentsOf: jobsToRun.filter { $0.isBlocking },
+                at: lastBlockingIndex
+            )
+            $0.append(
+                contentsOf: jobsToRun.filter { !$0.isBlocking }
+            )
+        }
         
         // Start the job runner if needed
         if !isRunning.wrappedValue {
@@ -228,21 +268,14 @@ public final class JobRunner {
         guard DispatchQueue.getSpecific(key: queueKey) == queueContext else {
             internalQueue.async {
                 start()
-            }
+            }// TODO: Want to have multiple threads for this (attachment download should be separate - do we even use attachment upload anymore???)
             return
         }
         
         // Get any pending jobs
         let maybeJobsToRun: [Job]? = GRDBStorage.shared.read { db in
-            try Job
-                .filter(
-                    [
-                        Job.Behaviour.runOnce,
-                        Job.Behaviour.recurring
-                    ].contains(Job.Columns.behaviour)
-                )
-                .filter(Job.Columns.nextRunTimestamp <= Date().timeIntervalSince1970)
-                .order(Job.Columns.nextRunTimestamp)
+            try Job// TODO: Test this
+                .filterPendingJobs()
                 .fetchAll(db)
         }
         
@@ -300,6 +333,12 @@ public final class JobRunner {
             return
         }
         
+        // If the 'nextRunTimestamp' for the job is in the future then don't run it yet
+        guard nextJob.nextRunTimestamp <= Date().timeIntervalSince1970 else {
+            handleJobDeferred(nextJob)
+            return
+        }
+        
         // Update the state to indicate it's running
         //
         // Note: We need to store 'numJobsRemaining' in it's own variable because
@@ -324,21 +363,17 @@ public final class JobRunner {
                 try TimeInterval
                     .fetchOne(
                         db,
-                        Job
+                        Job// TODO: Test this works as expected
+                            .filterPendingJobs(excludeFutureJobs: false)
                             .select(Job.Columns.nextRunTimestamp)
-                            .filter(
-                                [
-                                    Job.Behaviour.runOnce,
-                                    Job.Behaviour.recurring
-                                ].contains(Job.Columns.behaviour)
-                            )
-                            .order(Job.Columns.nextRunTimestamp)
                     )
             }
+        
         guard let nextJobTimestamp: TimeInterval = nextJobTimestamp else { return }
         
         // If the next job isn't scheduled in the future then just restart the JobRunner immediately
         let secondsUntilNextJob: TimeInterval = (nextJobTimestamp - Date().timeIntervalSince1970)
+        
         guard secondsUntilNextJob > 0 else {
             SNLog("[JobRunner] Restarting immediately for job scheduled \(Int(ceil(abs(secondsUntilNextJob)))) second\(Int(ceil(abs(secondsUntilNextJob))) == 1 ? "" : "s")) ago")
             
@@ -378,6 +413,9 @@ public final class JobRunner {
                         .saved(db)
                 }
                 
+            case .recurringOnLaunchBlockingOncePerSession:
+                perSessionJobsCompleted.mutate { $0 = $0.inserting(job.id) }
+                
             default: break
         }
         
@@ -393,17 +431,48 @@ public final class JobRunner {
         guard GRDBStorage.shared.read({ db in try Job.exists(db, id: job.id ?? -1) }) == true else {
             SNLog("[JobRunner] \(job.variant) job canceled")
             jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
-            runNextJob()
+            
+            internalQueue.async {
+                runNextJob()
+            }
             return
         }
         
+        switch job.behaviour {
+            // If a "blocking" job failed then rerun it immediately
+            case .recurringOnLaunchBlocking, .recurringOnActiveBlocking:
+                SNLog("[JobRunner] blocking \(job.variant) job failed; retrying immediately")
+                jobQueue.mutate({ $0.insert(job, at: 0) })
+                
+                internalQueue.async {
+                    runNextJob()
+                }
+                return
+                
+            // For "blocking once per session" jobs only rerun it immediately if it hasn't already
+            // run this session
+            case .recurringOnLaunchBlockingOncePerSession:
+                guard !perSessionJobsCompleted.wrappedValue.contains(job.id ?? -1) else { break }
+                
+                SNLog("[JobRunner] blocking \(job.variant) job failed; retrying immediately")
+                perSessionJobsCompleted.mutate { $0 = $0.inserting(job.id) }
+                jobQueue.mutate({ $0.insert(job, at: 0) })
+                
+                internalQueue.async {
+                    runNextJob()
+                }
+                return
+                
+            default: break
+        }
+        
         GRDBStorage.shared.write { db in
-            // Check if the job has a 'maxFailureCount' (a value of '0' means it will always retry)
-            let maxFailureCount: UInt = (executorMap.wrappedValue[job.variant]?.maxFailureCount ?? 0)
+            // Get the max failure count for the job (a value of '-1' means it will retry indefinitely)
+            let maxFailureCount: Int = (executorMap.wrappedValue[job.variant]?.maxFailureCount ?? 0)
             
             guard
                 !permanentFailure &&
-                maxFailureCount > 0 &&
+                maxFailureCount >= 0 &&
                 job.failureCount + 1 < maxFailureCount
             else {
                 // If the job permanently failed or we have performed all of our retry attempts
@@ -422,7 +491,9 @@ public final class JobRunner {
         }
         
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
-        runNextJob()
+        internalQueue.async {
+            runNextJob()
+        }
     }
     
     /// This function is called when a job neither succeeds or fails (this should only occur if the job has specific logic that makes it dependant

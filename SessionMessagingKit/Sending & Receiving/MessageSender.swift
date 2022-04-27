@@ -89,10 +89,7 @@ public final class MessageSender : NSObject {
         let (promise, seal) = Promise<Void>.pending()
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
         
-        var isMainAppActive = false
-        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppActive = sharedUserDefaults[.isMainAppActive]
-        }
+        let isMainAppActive: Bool = (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false)
         
         // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set

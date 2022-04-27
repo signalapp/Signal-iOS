@@ -15,6 +15,30 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.data, .blob).notNull()
         }
         
+        try db.create(table: Job.self) { t in
+            t.column(.id, .integer)
+                .notNull()
+                .primaryKey(autoincrement: true)
+            t.column(.failureCount, .integer)
+                .notNull()
+                .defaults(to: 0)
+            t.column(.variant, .integer)
+                .notNull()
+                .indexed()                                            // Quicker querying
+            t.column(.behaviour, .integer)
+                .notNull()
+                .indexed()                                            // Quicker querying
+            t.column(.nextRunTimestamp, .double)
+                .notNull()
+                .indexed()                                            // Quicker querying
+                .defaults(to: 0)
+            t.column(.threadId, .text)
+                .indexed()                                            // Quicker querying
+            t.column(.interactionId, .text)
+                .indexed()                                            // Quicker querying
+            t.column(.details, .blob)
+        }
+        
         try db.create(table: Setting.self) { t in
             t.column(.key, .text)
                 .notNull()

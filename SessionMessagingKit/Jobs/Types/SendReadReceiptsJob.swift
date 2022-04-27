@@ -6,7 +6,7 @@ import PromiseKit
 import SessionUtilitiesKit
 
 public enum SendReadReceiptsJob: JobExecutor {
-    public static let maxFailureCount: UInt = 0
+    public static let maxFailureCount: Int = -1
     public static let requiresThreadId: Bool = false
     public static let requiresInteractionId: Bool = false
     private static let minRunFrequency: TimeInterval = 3

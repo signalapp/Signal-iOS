@@ -278,29 +278,5 @@ enum _001_InitialSetupMigration: Migration {
             
             t.uniqueKey([.threadId, .sentTimestampMs, .serverHash, .openGroupMessageServerId])
         }
-        
-        try db.create(table: Job.self) { t in
-            t.column(.id, .integer)
-                .notNull()
-                .primaryKey(autoincrement: true)
-            t.column(.failureCount, .integer)
-                .notNull()
-                .defaults(to: 0)
-            t.column(.variant, .integer)
-                .notNull()
-                .indexed()                                            // Quicker querying
-            t.column(.behaviour, .integer).notNull()    // TODO: Indexed???
-            t.column(.nextRunTimestamp, .double)
-                .notNull()  // TODO: Should this just be nullable??? (or do we want to fetch by this?)
-                .indexed()                                            // Quicker querying
-                .defaults(to: 0)
-            t.column(.threadId, .text)
-                .indexed()                                            // Quicker querying
-                .references(SessionThread.self, onDelete: .cascade)   // Delete if thread deleted
-            t.column(.interactionId, .text)
-                .indexed()                                            // Quicker querying
-                .references(Interaction.self, onDelete: .cascade)     // Delete if interaction deleted
-            t.column(.details, .blob)
-        }
     }
 }

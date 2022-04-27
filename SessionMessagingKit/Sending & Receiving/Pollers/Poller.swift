@@ -95,7 +95,9 @@ public final class Poller : NSObject {
 
     private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard isPolling else { return Promise { $0.fulfill(()) } }
+        
         let userPublicKey = getUserHexEncodedPublicKey()
+        
         return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey)
             .then(on: Threading.pollerQueue) { [weak self] rawResponse -> Promise<Void> in
                 guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
@@ -106,6 +108,8 @@ public final class Poller : NSObject {
                     SNLog("Received \(messages.count) new message(s).")
                     
                     GRDBStorage.shared.write { db in
+                        var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
+                        
                         messages.forEach { message in
                             guard let envelope = SNProtoEnvelope.from(message) else { return }
                             
@@ -117,26 +121,35 @@ public final class Poller : NSObject {
                             }
                             
                             do {
-                                JobRunner.add(
-                                    db,
-                                    job: Job(
-                                        variant: .messageReceive,
-                                        behaviour: .runOnce,
-                                        threadId: threadId,
-                                        details: MessageReceiveJob.Details(
+                                threadMessages[threadId ?? ""] = (threadMessages[threadId ?? ""] ?? [])
+                                    .appending(
+                                        MessageReceiveJob.Details.MessageInfo(
                                             data: try envelope.serializedData(),
-                                            serverHash: message.info.hash,
-                                            isBackgroundPoll: false
+                                            serverHash: message.info.hash
                                         )
                                     )
-                                )
                                 
                                 // Persist the received message after the MessageReceiveJob is created
-                                try message.info.save(db)
+                                _ = try message.info.saved(db)
                             }
                             catch {
                                 SNLog("Failed to deserialize envelope due to error: \(error).")
                             }
+                        }
+                        
+                        threadMessages.forEach { threadId, threadMessages in
+                            JobRunner.add(
+                                db,
+                                job: Job(
+                                    variant: .messageReceive,
+                                    behaviour: .runOnce,
+                                    threadId: threadId,
+                                    details: MessageReceiveJob.Details(
+                                        messages: threadMessages,
+                                        isBackgroundPoll: false
+                                    )
+                                )
+                            )
                         }
                     }
                 }

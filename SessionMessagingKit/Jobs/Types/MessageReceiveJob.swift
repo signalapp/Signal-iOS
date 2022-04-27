@@ -5,7 +5,7 @@ import PromiseKit
 import SessionUtilitiesKit
 
 public enum MessageReceiveJob: JobExecutor {
-    public static var maxFailureCount: UInt = 10
+    public static var maxFailureCount: Int = 10
     public static var requiresThreadId: Bool = true
     public static let requiresInteractionId: Bool = false
     

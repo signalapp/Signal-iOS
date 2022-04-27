@@ -162,9 +162,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationDidBecomeActive(_ application: UIApplication) {
         guard !CurrentAppContext().isRunningTests else { return }
         
-        // FIXME: We should move this somewhere to prevent typos from breaking it
-        let sharedUserDefaults: UserDefaults? = UserDefaults(suiteName: "group.com.loki-project.loki-messenger")
-        sharedUserDefaults?[.isMainAppActive] = true
+        UserDefaults.sharedLokiProject?[.isMainAppActive] = true
         
         ensureRootViewController()
         adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
@@ -186,8 +184,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func applicationWillResignActive(_ application: UIApplication) {
         clearAllNotificationsAndRestoreBadgeCount()
         
-        let sharedUserDefaults: UserDefaults? = UserDefaults(suiteName: "group.com.loki-project.loki-messenger")
-        sharedUserDefaults?[.isMainAppActive] = false
+        UserDefaults.sharedLokiProject?[.isMainAppActive] = false
 
         DDLog.flushLog()
     }
@@ -258,7 +255,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         enableBackgroundRefreshIfNecessary()
         JobRunner.appDidBecomeActive()
         
-        SnodeAPI.getSnodePool().retainUntilComplete()
         startPollersIfNeeded()
         
         if CurrentAppContext().isMainApp {
