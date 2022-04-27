@@ -912,9 +912,28 @@ class MediaGallery: Dependencies {
 
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("")
+        return galleryItem(.after, item: currentItem)
+    }
+
+    internal func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem? {
+        Logger.debug("")
+        return galleryItem(.before, item: currentItem)
+    }
+
+    private func galleryItem(_ direction: GalleryDirection, item currentItem: MediaGalleryItem) -> MediaGalleryItem? {
+        let advance: (IndexPath) -> IndexPath?
+        switch direction {
+        case .around:
+            owsFailDebug("should not use this function with .around")
+            return currentItem
+        case .before:
+            advance = { self.indexPath(before: $0) }
+        case .after:
+            advance = { self.indexPath(after: $0) }
+        }
 
         if !isCurrentlyProcessingExternalDeletion {
-            self.ensureGalleryItemsLoaded(.after,
+            self.ensureGalleryItemsLoaded(direction,
                                           item: currentItem,
                                           amount: kGallerySwipeLoadBatchSize,
                                           shouldLoadAlbumRemainder: true)
@@ -925,9 +944,9 @@ class MediaGallery: Dependencies {
             return nil
         }
 
-        // Repeatedly calling indexPath(after:) isn't super efficient,
+        // Repeatedly calling indexPath(before:) or indexPath(after:) isn't super efficient,
         // but we don't expect it to be more than a few steps.
-        let laterItemPaths = sequence(first: currentPath, next: { self.indexPath(after: $0) }).dropFirst()
+        let laterItemPaths = sequence(first: currentPath, next: advance).dropFirst()
         for nextPath in laterItemPaths {
             guard let loadedNextItem = galleryItem(at: nextPath) else {
                 owsAssertDebug(isCurrentlyProcessingExternalDeletion,
@@ -941,40 +960,6 @@ class MediaGallery: Dependencies {
         }
 
         // already at last item
-        return nil
-    }
-
-    internal func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem? {
-        Logger.debug("")
-
-        if !isCurrentlyProcessingExternalDeletion {
-            self.ensureGalleryItemsLoaded(.before,
-                                          item: currentItem,
-                                          amount: kGallerySwipeLoadBatchSize,
-                                          shouldLoadAlbumRemainder: true)
-        }
-
-        guard let currentPath = indexPath(for: currentItem) else {
-            owsFailDebug("current item not found")
-            return nil
-        }
-
-        // Repeatedly calling indexPath(before:) isn't super efficient,
-        // but we don't expect it to be more than a few steps.
-        let olderItemPaths = sequence(first: currentPath, next: { self.indexPath(before: $0) }).dropFirst()
-        for previousPath in olderItemPaths {
-            guard let loadedPreviousItem = galleryItem(at: previousPath) else {
-                owsAssertDebug(isCurrentlyProcessingExternalDeletion,
-                               "should have loaded the previous item already")
-                return nil
-            }
-
-            if !deletedGalleryItems.contains(loadedPreviousItem) {
-                return loadedPreviousItem
-            }
-        }
-
-        // already at first item
         return nil
     }
 
