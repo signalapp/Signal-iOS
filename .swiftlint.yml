@@ -1,3 +1,11 @@
+disabled_rules:
+- cyclomatic_complexity
+- file_length
+- function_body_length
+- function_parameter_count
+- line_length
+- nesting
+- type_body_length
 opt_in_rules:
 - attributes
 attributes:
