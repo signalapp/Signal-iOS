@@ -395,9 +395,9 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             if remaining < attemptsAlertThreshold {
                 let formatMessage = hasPendingRestoration
                         ? NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d", tableName: "PluralAware",
-                                            comment: "Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled.")
+                                            comment: "Alert message explaining what happens if you get your pin wrong and have one or more attempts remaining 'two-factor auth pin' with reglock disabled.")
                         : NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d", tableName: "PluralAware",
-                                            comment: "Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled.")
+                                            comment: "Alert message explaining what happens if you get your pin wrong and have one or more attempts remaining 'two-factor auth pin' with reglock enabled.")
 
                 OWSActionSheets.showActionSheet(
                     title: NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_TITLE",
@@ -407,7 +407,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             }
 
             let formatMessage = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN_%d", tableName: "PluralAware",
-                                                  comment: "Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view.")
+                                                  comment: "Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view.")
 
             validationWarningLabel.text = String.localizedStringWithFormat(formatMessage, remaining)
 
