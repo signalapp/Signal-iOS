@@ -997,7 +997,9 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return request;
 }
 
-+ (TSRequest *)subscriptionRecieptCredentialsRequest:(NSString *)base64SubscriberID request:(NSString *)base64ReceiptCredentialRequest {
++ (TSRequest *)subscriptionReceiptCredentialsRequest:(NSString *)base64SubscriberID
+                                             request:(NSString *)base64ReceiptCredentialRequest
+{
     TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/receipt_credentials", base64SubscriberID]]
                                               method:@"POST"
                                          parameters:@{@"receiptCredentialRequest" : base64ReceiptCredentialRequest}];
@@ -1006,7 +1008,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return request;
 }
 
-+ (TSRequest *)subscriptionRedeemRecieptCredential:(NSString *)base64ReceiptCredentialPresentation
++ (TSRequest *)subscriptionRedeemReceiptCredential:(NSString *)base64ReceiptCredentialPresentation
 {
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/redeem-receipt"]
                                             method:@"POST"
@@ -1049,7 +1051,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return request;
 }
 
-+ (TSRequest *)boostRecieptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
++ (TSRequest *)boostReceiptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
                                                andRequest:(NSString *)base64ReceiptCredentialRequest
 {
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/receipt_credentials"]

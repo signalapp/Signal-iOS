@@ -928,9 +928,9 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
         }
 
         do {
-            try SubscriptionManager.requestAndRedeemRecieptsIfNecessary(for: subscriberID,
-                                                                           subscriptionLevel: newSubscriptionLevel.level,
-                                                                           priorSubscriptionLevel: priorSubscriptionLevel?.level ?? 0)
+            try SubscriptionManager.requestAndRedeemReceiptsIfNecessary(for: subscriberID,
+                                                                        subscriptionLevel: newSubscriptionLevel.level,
+                                                                        priorSubscriptionLevel: priorSubscriptionLevel?.level ?? 0)
         } catch {
             owsFailDebug("Failed to redeem receipts \(error)")
         }

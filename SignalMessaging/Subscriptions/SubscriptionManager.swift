@@ -502,10 +502,10 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    public class func requestAndRedeemRecieptsIfNecessary(for subscriberID: Data,
+    public class func requestAndRedeemReceiptsIfNecessary(for subscriberID: Data,
                                                           subscriptionLevel: UInt,
                                                           priorSubscriptionLevel: UInt = 0) throws {
-        let request = try generateRecieptRequest()
+        let request = try generateReceiptRequest()
 
         // Remove prior operations if one exists (allow prior job to complete)
         for redemptionJob in subscriptionJobQueue.runningOperations.get() {
@@ -531,7 +531,7 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    public class func generateRecieptRequest() throws -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
+    public class func generateReceiptRequest() throws -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
         let clientOperations = try clientZKReceiptOperations()
         let receiptSerial = try generateReceiptSerial()
 
@@ -547,7 +547,7 @@ public class SubscriptionManager: NSObject {
                                                            priorSubscriptionLevel: UInt = 0) throws -> Promise<ReceiptCredentialPresentation> {
         let clientOperations = try clientZKReceiptOperations()
         let encodedReceiptCredentialRequest = request.serialize().asData.base64EncodedString()
-        let request = OWSRequestFactory.subscriptionRecieptCredentialsRequest(subscriberID.asBase64Url, request: encodedReceiptCredentialRequest)
+        let request = OWSRequestFactory.subscriptionReceiptCredentialsRequest(subscriberID.asBase64Url, request: encodedReceiptCredentialRequest)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
@@ -640,7 +640,7 @@ public class SubscriptionManager: NSObject {
         let receiptCredentialPresentationData = receiptCredentialPresentation.serialize().asData
 
         let receiptCredentialPresentationString = receiptCredentialPresentationData.base64EncodedString()
-        let request = OWSRequestFactory.subscriptionRedeemRecieptCredential(
+        let request = OWSRequestFactory.subscriptionRedeemReceiptCredential(
             receiptCredentialPresentationString
         )
         return firstly(on: .global()) {
@@ -730,7 +730,7 @@ public class SubscriptionManager: NSObject {
                 // Re-kick
                 let newDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
                 Logger.info("[Subscriptions] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
-                try self.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscriptionLevel: subscription.level)
+                try self.requestAndRedeemReceiptsIfNecessary(for: subscriberID, subscriptionLevel: subscription.level)
 
                 // Save last expiration
                 databaseStorage.write { transaction in
@@ -959,7 +959,7 @@ extension SubscriptionManager {
     public class func createAndRedeemBoostReceipt(for intentId: String,
                                                   amount: Decimal,
                                                   currencyCode: Currency.Code) throws {
-        let request = try generateRecieptRequest()
+        let request = try generateReceiptRequest()
 
         // Remove prior operations if one exists (allow prior job to complete)
         for redemptionJob in subscriptionJobQueue.runningOperations.get() {
@@ -1006,7 +1006,7 @@ extension SubscriptionManager {
         let clientOperations = try clientZKReceiptOperations()
         let receiptCredentialRequest = request.serialize().asData.base64EncodedString()
 
-        let request = OWSRequestFactory.boostRecieptCredentials(withPaymentIntentId: intentId, andRequest: receiptCredentialRequest)
+        let request = OWSRequestFactory.boostReceiptCredentials(withPaymentIntentId: intentId, andRequest: receiptCredentialRequest)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in

@@ -214,11 +214,12 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)subscriptionCreatePaymentMethodRequest:(NSString *)base64SubscriberID;
 + (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID paymentID:(NSString *)paymentID;
 + (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey;
-+ (TSRequest *)subscriptionRecieptCredentialsRequest:(NSString *)base64SubscriberID request:(NSString *)base64ReceiptCredentialRequest;
-+ (TSRequest *)subscriptionRedeemRecieptCredential:(NSString *)base64ReceiptCredentialPresentation;
++ (TSRequest *)subscriptionReceiptCredentialsRequest:(NSString *)base64SubscriberID
+                                             request:(NSString *)base64ReceiptCredentialRequest;
++ (TSRequest *)subscriptionRedeemReceiptCredential:(NSString *)base64ReceiptCredentialPresentation;
 + (TSRequest *)boostSuggestedAmountsRequest;
 + (TSRequest *)boostCreatePaymentIntentWithAmount:(NSUInteger)amount inCurrencyCode:(NSString *)currencyCode;
-+ (TSRequest *)boostRecieptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
++ (TSRequest *)boostReceiptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
                                                andRequest:(NSString *)base64ReceiptCredentialRequest;
 + (TSRequest *)boostBadgesRequest;
 
