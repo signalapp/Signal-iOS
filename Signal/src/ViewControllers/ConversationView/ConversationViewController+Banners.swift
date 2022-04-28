@@ -88,7 +88,7 @@ public extension ConversationViewController {
                                   migrationInfo: GroupsV2MigrationInfo) -> UIView {
 
         let title = NSLocalizedString("GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER",
-                                      comment: "Title for the the 'migrate group' banner.")
+                                      comment: "Title for the 'migrate group' banner.")
 
         let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in
             AssertIsOnMainThread()
@@ -271,11 +271,11 @@ fileprivate extension ConversationViewController {
         let title: String
         if droppedMembersInfo.addableMembers.count > 1 {
             let titleFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT",
-                                                comment: "Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}.")
+                                                comment: "Format for the title for the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}.")
             title = String(format: titleFormat, OWSFormat.formatInt(droppedMembersInfo.addableMembers.count))
         } else {
             title = NSLocalizedString("GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1",
-                                      comment: "Title for the the 'dropped group member' banner.")
+                                      comment: "Title for the 'dropped group member' banner.")
         }
 
         let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -176,7 +176,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             return
         }
 
-        // Hide the the modal and wait for a second before revealing it,
+        // Hide the modal and wait for a second before revealing it,
         // to avoid "blipping" in the modal during short blocking operations.
         //
         // NOTE: It will still intercept user interactions while hidden, as it

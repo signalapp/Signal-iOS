@@ -230,7 +230,7 @@ public class InteractiveSheetViewController: OWSViewController {
     private func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
         let panningScrollView = interactiveScrollViews.first { $0.panGestureRecognizer == sender }
 
-        // If we're at the top of the scrollView, the the view is not
+        // If we're at the top of the scrollView, the view is not
         // currently maximized, or we're panning outside of the scroll
         // view we want to do an interactive transition.
         guard (panningScrollView != nil && panningScrollView!.contentOffset.y <= 0)

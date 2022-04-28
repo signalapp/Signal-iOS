@@ -772,7 +772,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                        statusCode == 404 {
                         // Fulfill with empty data if service returns 404 status code.
                         // We don't want the group to be left in an unrecoverable state
-                        // if the the avatar is missing from the CDN.
+                        // if the avatar is missing from the CDN.
                         return .value(Data())
                     }
 

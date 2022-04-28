@@ -610,13 +610,13 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     @objc
     public var cellHOuterRightMargin: CGFloat { Self.cellHOuterRightMargin(in: view) }
 
-    // The distance from the the cell border to the cell content.
+    // The distance from the cell border to the cell content.
     @objc
     public static var cellHInnerMargin: CGFloat {
         UIDevice.current.isPlusSizePhone ? 20 : 16
     }
 
-    // The distance from the the cell border to the cell content.
+    // The distance from the cell border to the cell content.
     public static var cellVInnerMargin: CGFloat {
         13
     }

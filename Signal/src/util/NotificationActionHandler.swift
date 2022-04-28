@@ -167,7 +167,7 @@ public class NotificationActionHandler: NSObject {
     }
 
     private class func showThread(notificationMessage: NotificationMessage) {
-        // If this happens when the the app is not, visible we skip the animation so the thread
+        // If this happens when the app is not visible we skip the animation so the thread
         // can be visible to the user immediately upon opening the app, rather than having to watch
         // it animate in from the homescreen.
         signalApp.presentConversationAndScrollToFirstUnreadMessage(
