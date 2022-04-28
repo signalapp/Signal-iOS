@@ -186,14 +186,14 @@ private class BannerView: UIView {
         if displayNames.count > 2 {
             let formatText = action == .join
                 ? NSLocalizedString(
-                    "GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT",
-                    comment: "Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members}"
+                    "GROUP_CALL_NOTIFICATION_MANY_JOINED_%d", tableName: "PluralAware",
+                    comment: "Copy explaining that many new users have joined the group call. Embeds {number of additional members}, {first member name}, {second member name}"
                 )
                 : NSLocalizedString(
-                    "GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT",
-                    comment: "Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members}"
+                    "GROUP_CALL_NOTIFICATION_MANY_LEFT_%d", tableName: "PluralAware",
+                    comment: "Copy explaining that many users have left the group call. Embeds {number of additional members}, {first member name}, {second member name}"
                 )
-            actionText = String(format: formatText, displayNames[0], displayNames[1], displayNames.count - 2)
+            actionText = String.localizedStringWithFormat(formatText, displayNames.count - 2, displayNames[0], displayNames[1])
         } else if displayNames.count > 1 {
             let formatText = action == .join
                 ? NSLocalizedString(

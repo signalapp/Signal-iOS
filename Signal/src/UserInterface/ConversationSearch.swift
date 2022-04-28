@@ -312,20 +312,17 @@ public class SearchResultsBar: UIView {
             return
         }
 
-        switch resultSet.messages.count {
-        case 0:
+        if resultSet.messages.count == 0 {
             labelItem.title = NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "keyboard toolbar label when no messages match the search string")
-        case 1:
-            labelItem.title = NSLocalizedString("CONVERSATION_SEARCH_ONE_RESULT", comment: "keyboard toolbar label when exactly 1 message matches the search string")
-        default:
-            let format = NSLocalizedString("CONVERSATION_SEARCH_RESULTS_FORMAT",
-                                           comment: "keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}}")
+        } else {
+            let format = NSLocalizedString("CONVERSATION_SEARCH_RESULTS_%d", tableName: "PluralAware",
+                                           comment: "keyboard toolbar label when more than one or more messages matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}}")
 
             guard let currentIndex = currentIndex else {
                 owsFailDebug("currentIndex was unexpectedly nil")
                 return
             }
-            labelItem.title = String(format: format, currentIndex + 1, resultSet.messages.count)
+            labelItem.title = String.localizedStringWithFormat(format, currentIndex + 1, resultSet.messages.count)
         }
 
         if let currentIndex = currentIndex {

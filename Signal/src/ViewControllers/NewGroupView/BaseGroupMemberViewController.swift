@@ -143,12 +143,11 @@ public class BaseGroupMemberViewController: OWSViewController {
         }
 
         memberCountWrapper.isHidden = false
-        let format = NSLocalizedString("GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT",
+        let format = NSLocalizedString("GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d", tableName: "PluralAware",
                                        comment: "Format string for the group member count indicator. Embeds {{ the number of members in the group }}.")
         let memberCount = groupMemberViewDelegate.groupMemberViewGroupMemberCountForDisplay()
 
-        memberCountLabel.text = String(format: format,
-                                       OWSFormat.formatInt(memberCount))
+        memberCountLabel.text = String.localizedStringWithFormat(format, memberCount)
         if memberCount >= GroupManager.groupsV2MaxGroupSizeRecommended {
             memberCountLabel.textColor = .ows_accentRed
         } else {
@@ -240,9 +239,9 @@ public class BaseGroupMemberViewController: OWSViewController {
     }
 
     private func showGroupFullAlert_HardLimit() {
-        let format = NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT",
+        let format = NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d", tableName: "PluralAware",
                                        comment: "Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}.")
-        let message = String(format: format, OWSFormat.formatUInt(GroupManager.groupsV2MaxGroupSizeHardLimit))
+        let message = String.localizedStringWithFormat(format, GroupManager.groupsV2MaxGroupSizeHardLimit)
         OWSActionSheets.showErrorAlert(message: message)
     }
 
@@ -250,9 +249,9 @@ public class BaseGroupMemberViewController: OWSViewController {
                                               groupMemberViewDelegate: GroupMemberViewDelegate) {
         let title = NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE",
                                       comment: "Title for alert warning the user that they've reached the recommended limit on how many members can be in a group.")
-        let messageFormat = NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT",
+        let messageFormat = NSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d", tableName: "PluralAware",
                                               comment: "Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}.")
-        var message = String(format: messageFormat, OWSFormat.formatUInt(GroupManager.groupsV2MaxGroupSizeRecommended))
+        var message = String.localizedStringWithFormat(messageFormat, GroupManager.groupsV2MaxGroupSizeRecommended)
 
         if groupMemberViewDelegate.isNewGroup {
             let actionSheet = ActionSheetController(title: title, message: message)

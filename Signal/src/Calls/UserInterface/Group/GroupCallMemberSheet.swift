@@ -168,17 +168,12 @@ extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
         label.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
         label.textColor = Theme.darkThemePrimaryColor
 
-        if sortedMembers.count > 1 {
+        if sortedMembers.count > 0 {
             let formatString = NSLocalizedString(
-                "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT",
+                "GROUP_CALL_IN_THIS_CALL_%d", tableName: "PluralAware",
                 comment: "String indicating how many people are current in the call"
             )
-            label.text = String(format: formatString, sortedMembers.count)
-        } else if sortedMembers.count > 0 {
-            label.text = NSLocalizedString(
-                "GROUP_CALL_ONE_IN_THIS_CALL",
-                comment: "String indicating one person is currently in the call"
-            )
+            label.text = String.localizedStringWithFormat(formatString, sortedMembers.count)
         } else {
             label.text = nil
         }

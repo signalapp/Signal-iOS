@@ -257,10 +257,10 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
     // MARK: - Too Many
 
     func showTooManySelectedToast() {
-        let toastFormat = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT",
+        let toastFormat = NSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d", tableName: "PluralAware",
                                             comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
 
-        let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
+        let toastText = String.localizedStringWithFormat(toastFormat, SignalAttachment.maxAttachmentsAllowed)
         let toastController = ToastController(text: toastText)
         toastController.presentToastView(fromBottomOfView: view, inset: view.layoutMargins.bottom + 10)
     }

@@ -40,6 +40,9 @@ do
     mv $translation.utf8 $translation
   done
 
+  # messing translations in stringsdict files are not filled with the source language automatically
+  swift $BIN_DIR/MergeStringsDictFiles.swift ../en.lproj/PluralAware.stringsdict PluralAware.stringsdict
+  
   popd
 
 done

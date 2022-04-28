@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -323,17 +323,9 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                         let configuration = ContactCellConfiguration(address: inviterAddress, localUserDisplayMode: .asUser)
                         let inviterName = Self.contactsManager.displayName(for: inviterAddress,
                                                                            transaction: transaction)
-                        if invitedAddresses.count > 1 {
-                            let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT",
-                                                           comment: "Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}.")
-                            configuration.customName = String(format: format,
-                                                              inviterName,
-                                                              OWSFormat.formatInt(invitedAddresses.count))
-                        } else {
-                            let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT",
-                                                           comment: "Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}.")
-                            configuration.customName = String(format: format, inviterName)
-                        }
+                        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d", tableName: "PluralAware",
+                                                       comment: "Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member }}.")
+                        configuration.customName = String.localizedStringWithFormat(format, invitedAddresses.count, inviterName)
                         cell.configure(configuration: configuration, transaction: transaction)
                     }
 
@@ -359,15 +351,9 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             invalidInvitesSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES",
                                                                   comment: "Title for the 'invalid invites' section of the 'member requests and invites' view.")
 
-            let cellTitle: String
-            if invalidInvitesCount > 1 {
-                let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT",
-                                               comment: "Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}.")
-                cellTitle = String(format: format, OWSFormat.formatInt(invalidInvitesCount))
-            } else {
-                cellTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1",
-                                              comment: "Format for 'revoke invalid 1 invite' item.")
-            }
+            let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d", tableName: "PluralAware",
+                                           comment: "Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}.")
+            let cellTitle = String.localizedStringWithFormat(format, invalidInvitesCount)
 
             invalidInvitesSection.add(OWSTableItem.disclosureItem(withText: cellTitle) { [weak self] in
                 self?.revokeInvalidInvites()
@@ -419,24 +405,13 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     private func showRevokePendingInviteFromOtherUserConfirmation(invitedAddresses: [SignalServiceAddress],
                                                                   inviterAddress: SignalServiceAddress) {
 
-        let isPlural = invitedAddresses.count != 1
         let inviterName = contactsManager.displayName(for: inviterAddress)
-        let alertTitle: String
-        if isPlural {
-            let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT",
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d", tableName: "PluralAware",
                                        comment: "Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}.")
-            alertTitle = String(format: format, OWSFormat.formatInt(invitedAddresses.count), inviterName)
-        } else {
-            let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT",
-                                       comment: "Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}.")
-            alertTitle = String(format: format, inviterName)
-        }
+        let alertTitle = String.localizedStringWithFormat(format, invitedAddresses.count, inviterName)
         let actionSheet = ActionSheetController(title: alertTitle)
-        let actionTitle = (isPlural
-            ? NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON",
-                                comment: "Title of 'revoke invites' button.")
-            : NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON",
-                                comment: "Title of 'revoke invite' button."))
+        let actionTitle = String.localizedStringWithFormat(NSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d", tableName: "PluralAware",
+                                                                             comment: "Title of 'revoke invites' button."), invitedAddresses.count)
         actionSheet.addAction(ActionSheetAction(title: actionTitle,
                                                 style: .destructive) { _ in
                                                     self.revokePendingInvites(addresses: invitedAddresses)

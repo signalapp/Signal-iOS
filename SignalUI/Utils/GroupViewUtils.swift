@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,17 +10,9 @@ import SignalMessaging
 public class GroupViewUtils {
 
     public static func formatGroupMembersLabel(memberCount: Int) -> String {
-        guard memberCount > 0 else {
-            return OWSLocalizedString("GROUP_MEMBER_COUNT_LABEL_0",
-                                     comment: "The 'group member count' indicator when there are no members in the group.")
-        }
-        guard memberCount != 1 else {
-            return OWSLocalizedString("GROUP_MEMBER_COUNT_LABEL_1",
-                                     comment: "The 'group member count' indicator when there is 1 member in the group.")
-        }
-        let format = OWSLocalizedString("GROUP_MEMBER_COUNT_LABEL_FORMAT",
-                                       comment: "Format for the 'group member count' indicator. Embeds {the number of group members}.")
-        return String(format: format, OWSFormat.formatInt(memberCount))
+        let format = OWSLocalizedString("GROUP_MEMBER_COUNT_LABEL_%d", tableName: "PluralAware",
+                                        comment: "The 'group member count' indicator when there are no members in the group.")
+        return String.localizedStringWithFormat(format, memberCount)
     }
 
     public static func updateGroupWithActivityIndicator<T>(fromViewController: UIViewController,

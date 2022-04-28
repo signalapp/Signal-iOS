@@ -232,10 +232,10 @@ class CallHeader: UIView {
                     callTitleText = String(format: formatString, memberNames[0], memberNames[1])
                 default:
                     let formatString = NSLocalizedString(
-                        "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
-                        comment: "Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }}"
+                        "GROUP_CALL_MANY_PEOPLE_HERE_%d", tableName: "PluralAware",
+                        comment: "Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"
                     )
-                    callTitleText = String(format: formatString, memberNames[0], memberNames[1], OWSFormat.formatInt(memberNames.count - 2))
+                    callTitleText = String.localizedStringWithFormat(formatString, memberNames.count - 2, memberNames[0], memberNames[1])
                 }
             }
         }

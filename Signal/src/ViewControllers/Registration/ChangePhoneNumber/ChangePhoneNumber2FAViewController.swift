@@ -399,38 +399,22 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
 
             // If there are less than the threshold attempts remaining, also show an alert with more detail.
             if remaining < attemptsAlertThreshold {
-                let formatMessage: String
-                if remaining == 1 {
-                    formatMessage = hasPendingRestoration
-                        ? NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE",
-                                            comment: "Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled.")
-                        : NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE",
-                                            comment: "Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled.")
-                } else {
-                    formatMessage = hasPendingRestoration
-                        ? NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT",
-                                            comment: "Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled.")
-                        : NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT",
-                                            comment: "Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled.")
-                }
+                let formatMessage = hasPendingRestoration
+                        ? NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d", tableName: "PluralAware",
+                                            comment: "Alert message explaining what happens if you get your pin wrong and have one or more attempts remaining 'two-factor auth pin' with reglock disabled.")
+                        : NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d", tableName: "PluralAware",
+                                            comment: "Alert message explaining what happens if you get your pin wrong and have one or more attempts remaining 'two-factor auth pin' with reglock enabled.")
 
                 OWSActionSheets.showActionSheet(
                     title: NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_TITLE",
                                              comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."),
-                    message: String(format: formatMessage, remaining)
+                    message: String.localizedStringWithFormat(formatMessage, remaining)
                 )
             }
 
-            let formatMessage: String
-            if remaining == 1 {
-                formatMessage = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN_SINGLE",
-                                                  comment: "Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view.")
-            } else {
-                formatMessage = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT",
-                                                  comment: "Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view.")
-            }
-
-            validationWarningLabel.text = String(format: formatMessage, remaining)
+            let formatMessage = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN_%d", tableName: "PluralAware",
+                                                  comment: "Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view.")
+            validationWarningLabel.text = String.localizedStringWithFormat(formatMessage, remaining)
 
         default:
             break

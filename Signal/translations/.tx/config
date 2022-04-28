@@ -11,7 +11,7 @@ file_filter = <lang>.lproj/InfoPlist.strings
 source_file = en.lproj/InfoPlist.strings
 source_lang = en
 
-#[o:signalapp:p:signal-ios:r:pluralawarestringsdict]
-#file_filter = <lang>.lproj/PluralAware.stringsdict
-#source_file = en.lproj/PluralAware.stringsdict
-#source_lang = en
+[o:signalapp:p:signal-ios:r:pluralawarestringsdict]
+file_filter = <lang>.lproj/PluralAware.stringsdict
+source_file = en.lproj/PluralAware.stringsdict
+source_lang = en

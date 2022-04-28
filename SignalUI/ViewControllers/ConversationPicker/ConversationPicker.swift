@@ -536,10 +536,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func showTooManySelectedToast() {
         Logger.info("")
 
-        let toastFormat = OWSLocalizedString("CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS",
+        let toastFormat = OWSLocalizedString("CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d", tableName: "PluralAware",
                                             comment: "Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected.")
 
-        let toastText = String(format: toastFormat, NSNumber(value: kMaxPickerSelection))
+        let toastText = String.localizedStringWithFormat(toastFormat, kMaxPickerSelection)
         showToast(message: toastText)
     }
 

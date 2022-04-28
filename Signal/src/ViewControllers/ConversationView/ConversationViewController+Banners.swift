@@ -45,9 +45,9 @@ public extension ConversationViewController {
                                         viewMemberRequestsBlock: @escaping () -> Void) -> UIView {
         owsAssertDebug(pendingMemberRequestCount > 0)
 
-        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT",
+        let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d", tableName: "PluralAware",
                                        comment: "Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}.")
-        let title = String(format: format, OWSFormat.formatInt(pendingMemberRequestCount))
+        let title = String.localizedStringWithFormat(format, pendingMemberRequestCount)
 
         let dismissButton = OWSButton(title: CommonStrings.dismissButton) { [weak self] in
             AssertIsOnMainThread()
@@ -194,19 +194,9 @@ public extension ConversationViewController {
 
             let totalCollisionElementCount = collisionSets.reduce(0) { $0 + $1.elements.count }
 
-            let title: String = {
-                if collisionSets.count == 1 {
-                    let titleFormat = NSLocalizedString(
-                        "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT",
-                        comment: "Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }}")
-                    return String(format: titleFormat, OWSFormat.formatInt(totalCollisionElementCount))
-                } else {
-                    let titleFormat = NSLocalizedString(
-                        "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT",
-                        comment: "Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }}")
-                    return String(format: titleFormat, OWSFormat.formatInt(totalCollisionElementCount))
-                }
-            }()
+            let titleFormat = NSLocalizedString("GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d", tableName: "PluralAware",
+                                                comment: "Banner title alerting user to a name collision set ub the group membership. Embeds {{ total number of colliding members }}")
+            let title = String.localizedStringWithFormat(titleFormat, totalCollisionElementCount)
 
             let fetchAvatarForAddress = { (address: SignalServiceAddress) -> UIImage? in
                 if address.isLocalAddress, let profileAvatar = self.profileManager.localProfileAvatarImage() {
@@ -267,16 +257,9 @@ fileprivate extension ConversationViewController {
 
     func createDroppedGroupMembersBanner(viewState: CVViewState,
                                          droppedMembersInfo: DroppedMembersInfo) -> UIView {
-
-        let title: String
-        if droppedMembersInfo.addableMembers.count > 1 {
-            let titleFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT",
-                                                comment: "Format for the title for the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}.")
-            title = String(format: titleFormat, OWSFormat.formatInt(droppedMembersInfo.addableMembers.count))
-        } else {
-            title = NSLocalizedString("GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1",
-                                      comment: "Title for the 'dropped group member' banner.")
-        }
+        let titleFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d", tableName: "PluralAware",
+                                            comment: "Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}.")
+        let title = String.localizedStringWithFormat(titleFormat, droppedMembersInfo.addableMembers.count)
 
         let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in
             AssertIsOnMainThread()
@@ -582,13 +565,11 @@ extension ConversationViewController {
                     return nil
                 }
                 let blockedGroupMemberCount = self.blockedGroupMemberCount
-                if blockedGroupMemberCount == 1 {
-                    return NSLocalizedString("MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED",
-                                             comment: "Indicates that a single member of this group has been blocked.")
-                } else if blockedGroupMemberCount > 1 {
-                    return String(format: NSLocalizedString("MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT",
-                                                            comment: "Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}."),
-                                  OWSFormat.formatInt(blockedGroupMemberCount))
+                if blockedGroupMemberCount > 0 {
+                    return String.localizedStringWithFormat(
+                        NSLocalizedString("MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d", tableName: "PluralAware",
+                                          comment: "Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}."),
+                        blockedGroupMemberCount)
                 } else {
                     return nil
                 }

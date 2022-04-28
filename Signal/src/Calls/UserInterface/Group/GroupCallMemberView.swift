@@ -197,11 +197,10 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 
             let text: String
             if let maxDevices = call.groupCall.maxDevices {
-                let formatString = NSLocalizedString(
-                    "GROUP_CALL_HAS_MAX_DEVICES_FORMAT",
-                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                let formatString = NSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
+                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
-                text = String(format: formatString, maxDevices)
+                text = String.localizedStringWithFormat(formatString, maxDevices)
             } else {
                 text = NSLocalizedString(
                     "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",

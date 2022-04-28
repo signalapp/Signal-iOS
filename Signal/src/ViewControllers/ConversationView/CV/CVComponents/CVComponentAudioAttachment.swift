@@ -281,10 +281,9 @@ extension CVComponentAudioAttachment: CVAccessibilityComponent {
         if attachment.isVoiceMessage {
             if let attachmentStream = attachmentStream,
                attachmentStream.audioDurationSeconds() > 0 {
-                let format = NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT",
+                let format = NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO_%d", tableName: "PluralAware",
                                                comment: "Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}.")
-                let duration = OWSFormat.formatInt(Int(attachmentStream.audioDurationSeconds()))
-                return String(format: format, duration)
+                return String.localizedStringWithFormat(format, Int(attachmentStream.audioDurationSeconds()))
             } else {
                 return NSLocalizedString("ACCESSIBILITY_LABEL_VOICE_MEMO",
                                          comment: "Accessibility label for a voice memo.")

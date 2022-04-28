@@ -161,18 +161,9 @@ public class MessageActionsToolbar: UIToolbar {
         let forwardItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: forwardMessagesAction)
 
         let selectedCount: Int = actionDelegate?.messageActionsToolbarSelectedInteractionCount ?? 0
-        let labelTitle: String
-        if selectedCount == 0 {
-            labelTitle = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_0",
-                                           comment: "Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected.")
-        } else if selectedCount == 1 {
-            labelTitle = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_1",
-                                           comment: "Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected.")
-        } else {
-            let labelFormat = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT",
-                                                comment: "Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}.")
-            labelTitle = String(format: labelFormat, OWSFormat.formatInt(selectedCount))
-        }
+        let labelFormat = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware",
+                                            comment: "Label for the toolbar used in the multi-select mode. The number of selected items is passed.")
+        let labelTitle = String.localizedStringWithFormat(labelFormat, selectedCount)
         let label = UILabel()
         label.text = labelTitle
         label.font = UIFont.ows_dynamicTypeBodyClamped

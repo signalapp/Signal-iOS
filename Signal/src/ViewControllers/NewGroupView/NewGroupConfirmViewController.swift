@@ -130,28 +130,15 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         } else if membersDoNotSupportGroupsV2.count > 0 {
             let legacyGroupText: String
             let learnMoreText = CommonStrings.learnMore
-            if membersDoNotSupportGroupsV2.count > 1 {
-                let memberCountText = OWSFormat.formatInt(membersDoNotSupportGroupsV2.count)
-                let legacyGroupFormat: String
-                if GroupManager.areMigrationsBlocking {
-                    legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N",
-                                                          comment: "Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
-                } else {
-                    legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N",
-                                                          comment: "Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
-                }
-                legacyGroupText = String(format: legacyGroupFormat, memberCountText, learnMoreText)
+            let legacyGroupFormat: String
+            if GroupManager.areMigrationsBlocking {
+                legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_%d", tableName: "PluralAware",
+                                                      comment: "Indicates that a new group cannot be created because on ore more members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
             } else {
-                let legacyGroupFormat: String
-                if GroupManager.areMigrationsBlocking {
-                    legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1",
-                                                          comment: "Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}.")
-               } else {
-                    legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1",
-                                                          comment: "Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}.")
-                }
-                legacyGroupText = String(format: legacyGroupFormat, learnMoreText)
+                legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_%d", tableName: "PluralAware",
+                                                      comment: "Indicates that a new group will be a legacy group because one or more members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
             }
+            legacyGroupText = String.localizedStringWithFormat(legacyGroupFormat, membersDoNotSupportGroupsV2.count, learnMoreText)
 
             let attributedString = NSMutableAttributedString(string: legacyGroupText)
             attributedString.setAttributes(
@@ -379,18 +366,17 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
         let alertTitle: String
         let alertMessage: String
-        if pendingMembers.count > 1 {
-            let alertTitleFormat = NSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT",
-                                           comment: "Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }}")
-            alertTitle = String(format: alertTitleFormat, OWSFormat.formatInt(pendingMembers.count))
+        let alertTitleFormat = NSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_%d", tableName: "PluralAware",
+                                       comment: "Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }}")
+        if pendingMembers.count > 0 {
+            alertTitle = String.localizedStringWithFormat(alertTitleFormat, pendingMembers.count)
             alertMessage = NSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE",
                                              comment: "Message for an alert indicating that some members were invited to a group.")
         } else {
-            alertTitle = NSLocalizedString("GROUP_INVITES_SENT_ALERT_TITLE_1",
-                                                     comment: "Title for an alert indicating that a member was invited to a group.")
+            alertTitle = String.localizedStringWithFormat(alertTitleFormat, 1)
             let inviteeName = contactsManager.displayName(for: firstPendingMember)
             let alertMessageFormat = NSLocalizedString("GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT",
-                                                     comment: "Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }}")
+                                                     comment: "Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }}")
             alertMessage = String(format: alertMessageFormat, inviteeName)
         }
 
@@ -478,26 +464,15 @@ class NewLegacyGroupView: UIView {
         headerLabel.numberOfLines = 0
         headerLabel.lineBreakMode = .byWordWrapping
         headerLabel.font = UIFont.ows_dynamicTypeBody
-        if v1Members.count > 1 {
-            let format: String
-            if GroupManager.areMigrationsBlocking {
-                format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT",
-                                           comment: "Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
-            } else {
-                format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT",
-                                           comment: "Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
-            }
-            let formattedCount = OWSFormat.formatInt(v1Members.count)
-            headerLabel.text = String(format: format, formattedCount)
+        let format: String
+        if GroupManager.areMigrationsBlocking {
+            format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d", tableName: "PluralAware",
+                                       comment: "Title for alert that explains that a new group cannot be created one ore more members does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
         } else {
-            if GroupManager.areMigrationsBlocking {
-                headerLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1",
-                                                     comment: "Title for alert that explains that a new group cannot be created 1 member does not support v2 groups.")
-            } else {
-                headerLabel.text = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1",
-                                                     comment: "Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups.")
-            }
+            format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d", tableName: "PluralAware",
+                                       comment: "Title for alert that explains that a new group will be a legacy group because one or more members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
         }
+        headerLabel.text = String.localizedStringWithFormat(format, v1Members.count)
         headerLabel.textAlignment = .center
 
         let members = databaseStorage.read { transaction in

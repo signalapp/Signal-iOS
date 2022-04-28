@@ -271,14 +271,9 @@ class ChatColorViewController: OWSTableViewController2 {
         }
 
         let message: String
-        if usageCount > 1 {
-            let messageFormat = NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT",
-                                                  comment: "Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.")
-            message = String(format: messageFormat, OWSFormat.formatInt(usageCount))
-        } else {
-            message = NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1",
-                                        comment: "Message for the 'delete chat color confirm alert' in the chat color settings view.")
-        }
+        let messageFormat = NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d", tableName: "PluralAware",
+                                              comment: "Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.")
+        message = String.localizedStringWithFormat(messageFormat, usageCount)
         let actionSheet = ActionSheetController(
             title: NSLocalizedString("CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE",
                                      comment: "Title for the 'delete chat color confirm alert' in the chat color settings view."),

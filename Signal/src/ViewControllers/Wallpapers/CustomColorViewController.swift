@@ -419,9 +419,9 @@ class CustomColorViewController: OWSTableViewController2 {
             return
         }
 
-        let messageFormat = NSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT",
+        let messageFormat = NSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d", tableName: "PluralAware",
                                               comment: "Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.")
-        let message = String(format: messageFormat, OWSFormat.formatInt(usageCount))
+        let message = String.localizedStringWithFormat(messageFormat, usageCount)
         let actionSheet = ActionSheetController(
             title: NSLocalizedString("CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE",
                                      comment: "Title for the 'edit chat color confirm alert' in the chat color settings view."),

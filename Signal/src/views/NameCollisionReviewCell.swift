@@ -44,9 +44,9 @@ extension NameCollision {
         switch (thread, commonGroups.count) {
         case (_, 2...):
             let formatString = NSLocalizedString(
-                "MANY_GROUPS_IN_COMMON",
+                "MANY_GROUPS_IN_COMMON_%d", tableName: "PluralAware",
                 comment: "A string describing that the user has many groups in common with another user. Embeds {{common group count}}")
-            return String(format: formatString, String(commonGroups.count))
+            return String.localizedStringWithFormat(formatString, commonGroups.count)
 
         case (is TSContactThread, 1):
             let formatString = NSLocalizedString(

@@ -10,6 +10,7 @@
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
 		1422CB3E27AD4AA400090BB6 /* Signalyzer.instrpkg in Sources */ = {isa = PBXBuildFile; fileRef = 1422CB3D27AD456900090BB6 /* Signalyzer.instrpkg */; };
+		1466AB282817F7E7003B3D9F /* PluralAware.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */; };
 		1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */; };
 		1489ED0227A3D70200C7043A /* ArchivedConversationsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */; };
 		14E4A340278EE999008408FD /* BlurredToolbarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4A33F278EE999008408FD /* BlurredToolbarContainer.swift */; };
@@ -1181,6 +1182,25 @@
 		10AE4264D3E52937D8964A86 /* Pods-SignalMessaging.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.profiling.xcconfig"; sourceTree = "<group>"; };
 		1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Multiselect.swift"; sourceTree = "<group>"; };
 		1422CB3D27AD456900090BB6 /* Signalyzer.instrpkg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "com.apple.instruments.package-definition"; path = Signalyzer.instrpkg; sourceTree = "<group>"; };
+		1466AB272817F7E7003B3D9F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = translations/en.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB292817F7F2003B3D9F /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = de; path = translations/de.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB2A2817F80A003B3D9F /* az */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = az; path = translations/az.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB2B2817F811003B3D9F /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ca; path = translations/ca.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB2C2817F816003B3D9F /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = da; path = translations/da.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB2D2817F822003B3D9F /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = es; path = translations/es.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB2E2817F827003B3D9F /* es_ES */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = es_ES; path = translations/es_ES.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB2F2817F836003B3D9F /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = he; path = translations/he.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB302817F83A003B3D9F /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = hu; path = translations/hu.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB312817F83F003B3D9F /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = it; path = translations/it.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB322817F848003B3D9F /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = nl; path = translations/nl.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB332817F855003B3D9F /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pl; path = translations/pl.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB342817F85E003B3D9F /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pt_BR; path = translations/pt_BR.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB352817F861003B3D9F /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = pt_PT; path = translations/pt_PT.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB362817F866003B3D9F /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ru; path = translations/ru.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB372817F875003B3D9F /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = sk; path = translations/sk.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB382817F87D003B3D9F /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = uk; path = translations/uk.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB392817F88A003B3D9F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_TW; path = translations/zh_TW.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		1466AB3B2817F89D003B3D9F /* zh_HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_HK; path = translations/zh_HK.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		146FFAA027A7FE87004A2A64 /* Signalyzer.instrdst */ = {isa = PBXFileReference; explicitFileType = com.apple.instruments.instrdst; includeInIndex = 0; path = Signalyzer.instrdst; sourceTree = BUILT_PRODUCTS_DIR; };
 		1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSwipeHandler.swift; sourceTree = "<group>"; };
 		1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedConversationsCell.swift; sourceTree = "<group>"; };
@@ -4608,6 +4628,7 @@
 		B6B6C3C419193F5B00C0B76B /* Translations */ = {
 			isa = PBXGroup;
 			children = (
+				1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */,
 				A5E7C673248C5442007C949A /* InfoPlist.strings */,
 				B6F509951AA53F760068F56A /* Localizable.strings */,
 			);
@@ -5354,6 +5375,7 @@
 				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
 				45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */,
 				45B74A7A2044AAB600CD42F8 /* keys.aifc in Resources */,
+				1466AB282817F7E7003B3D9F /* PluralAware.stringsdict in Resources */,
 				45B74A762044AAB600CD42F8 /* keys-quiet.aifc in Resources */,
 				45B74A862044AAB600CD42F8 /* note.aifc in Resources */,
 				888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */,
@@ -6737,6 +6759,32 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1466AB272817F7E7003B3D9F /* en */,
+				1466AB292817F7F2003B3D9F /* de */,
+				1466AB2A2817F80A003B3D9F /* az */,
+				1466AB2B2817F811003B3D9F /* ca */,
+				1466AB2C2817F816003B3D9F /* da */,
+				1466AB2D2817F822003B3D9F /* es */,
+				1466AB2E2817F827003B3D9F /* es_ES */,
+				1466AB2F2817F836003B3D9F /* he */,
+				1466AB302817F83A003B3D9F /* hu */,
+				1466AB312817F83F003B3D9F /* it */,
+				1466AB322817F848003B3D9F /* nl */,
+				1466AB332817F855003B3D9F /* pl */,
+				1466AB342817F85E003B3D9F /* pt_BR */,
+				1466AB352817F861003B3D9F /* pt_PT */,
+				1466AB362817F866003B3D9F /* ru */,
+				1466AB372817F875003B3D9F /* sk */,
+				1466AB382817F87D003B3D9F /* uk */,
+				1466AB392817F88A003B3D9F /* zh_TW */,
+				1466AB3B2817F89D003B3D9F /* zh_HK */,
+			);
+			name = PluralAware.stringsdict;
+			sourceTree = "<group>";
+		};
 		4535186C1FC635DD00210559 /* MainInterface.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

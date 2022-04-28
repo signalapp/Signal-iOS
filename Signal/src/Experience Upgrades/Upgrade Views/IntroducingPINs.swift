@@ -40,10 +40,10 @@ class IntroducingPinsMegaphone: MegaphoneView {
             let daysRemaining = ExperienceUpgradeManager.splashStartDay - experienceUpgrade.daysSinceFirstViewed
             assert(daysRemaining > 0)
 
-            let toastFormat = NSLocalizedString("PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT",
-                                    comment: "Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}}")
+            let toastFormat = NSLocalizedString("PINS_MEGAPHONE_SNOOZE_TOAST_%d", tableName: "PluralAware",
+                                                comment: "Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}}")
 
-            return String(format: toastFormat, daysRemaining)
+            return String.localizedStringWithFormat(toastFormat, daysRemaining)
         }
 
         setButtons(primary: primaryButton, secondary: secondaryButton)

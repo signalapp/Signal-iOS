@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -20,8 +20,8 @@ public class ExpirationNagView: ReminderView {
         } else if appExpiry.daysUntilBuildExpiry == 1 {
             text = NSLocalizedString("EXPIRATION_WARNING_TODAY", comment: "Label warning the user that the app will expire today.")
         } else {
-            let soonWarning = NSLocalizedString("EXPIRATION_WARNING_SOON", comment: "Label warning the user that the app will expire soon.")
-            text = String(format: soonWarning, appExpiry.daysUntilBuildExpiry)
+            let format = NSLocalizedString("EXPIRATION_WARNING_%d", tableName: "PluralAware", comment: "Label warning the user that the app will expire soon.")
+            text = String.localizedStringWithFormat(format, appExpiry.daysUntilBuildExpiry)
         }
     }
 }

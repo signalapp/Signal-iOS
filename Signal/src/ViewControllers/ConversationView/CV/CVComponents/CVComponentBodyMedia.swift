@@ -165,13 +165,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
                 let downloadLabel = CVLabel()
                 let downloadFormat = (areAllItemsImages
-                                        ? NSLocalizedString("MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT",
+                                        ? NSLocalizedString("MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d", tableName: "PluralAware",
                                         comment: "Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}.")
-                                        : NSLocalizedString("MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT",
+                                        : NSLocalizedString("MEDIA_GALLERY_ITEM_MIXED_COUNT_%d", tableName: "PluralAware",
                                         comment: "Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}."))
                 downloadStack.addArrangedSubview(downloadLabel)
-                let downloadLabelConfig = CVLabelConfig(text: String(format: downloadFormat,
-                                                                     OWSFormat.formatInt(items.count)),
+                let downloadLabelConfig = CVLabelConfig(text: String.localizedStringWithFormat(downloadFormat, items.count),
                                                         font: .ows_dynamicTypeSubheadline,
                                                         textColor: UIColor.ows_white)
                 downloadLabelConfig.applyForRendering(label: downloadLabel)

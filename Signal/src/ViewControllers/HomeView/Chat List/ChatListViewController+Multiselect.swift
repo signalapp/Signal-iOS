@@ -354,11 +354,10 @@ extension ChatListViewController {
         let count = tableView.indexPathsForSelectedRows?.count ?? 0
         if count == 0 {
             title = viewState.multiSelectState.title
-        } else if count == 1 {
-            title = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_1", comment: "Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected.")
         } else {
-            let labelFormat = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT", comment: "Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}.")
-            title = String(format: labelFormat, OWSFormat.formatInt(count))
+            let format = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware",
+                                           comment: "Label for the toolbar used in the multi-select mode. The number of selected items (1 or more) is passed.")
+            title = String.localizedStringWithFormat(format, count)
         }
         adjustToolbarButtons(viewState.multiSelectState.toolbar?.toolbar)
     }
@@ -413,18 +412,12 @@ extension ChatListViewController {
         let title: String
         let message: String
         let count = tableView.indexPathsForSelectedRows?.count ?? 0
-        if count > 1 {
-            let labelFormat = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE",
-                                                comment: "Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}.")
-            title = String(format: labelFormat, OWSFormat.formatInt(count))
-            message = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES",
-                                        comment: "Message for the 'conversations delete confirmation' alert for multiple messages.")
-        } else {
-            title = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
-                                      comment: "Title for the 'conversation delete confirmation' alert.")
-            message = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
-                                        comment: "Message for the 'conversation delete confirmation' alert.")
-        }
+        let labelFormat = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d", tableName: "PluralAware",
+                                            comment: "Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}.")
+        title = String.localizedStringWithFormat(labelFormat, count)
+        let messageFormat = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d", tableName: "PluralAware",
+                                              comment: "Message for the 'conversations delete confirmation' alert for multiple messages.")
+        message = String.localizedStringWithFormat(messageFormat, count)
 
         let alert = ActionSheetController(title: title, message: message)
         alert.addAction(ActionSheetAction(title: CommonStrings.deleteButton,

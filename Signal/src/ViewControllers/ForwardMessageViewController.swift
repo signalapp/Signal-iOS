@@ -225,15 +225,9 @@ extension ForwardMessageViewController {
                                      comment: "Message for alert with information about forwarding messages.")
             )
 
-        let actionTitle: String
-        if content.allItems.count > 1 {
-            let format = NSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT",
-                                           comment: "Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }}")
-            actionTitle = String(format: format, OWSFormat.formatInt(content.allItems.count))
-        } else {
-            actionTitle = NSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1",
-                                          comment: "Label for button to proceed with forwarding a single message.")
-        }
+        let format = NSLocalizedString("FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d", tableName: "PluralAware",
+                                       comment: "Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }}")
+        let actionTitle = String.localizedStringWithFormat(format, content.allItems.count)
         actionSheet.addAction(ActionSheetAction(title: actionTitle) { [weak self] _ in
             Self.markHasForwardedWithSneakyTransaction()
 

@@ -626,14 +626,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return
         }
 
-        let confirmationTitle: String = {
-            if indexPaths.count == 1 {
-                return NSLocalizedString("MEDIA_GALLERY_DELETE_SINGLE_MESSAGE", comment: "Confirmation button text to delete selected media message from the gallery")
-            } else {
-                let format = NSLocalizedString("MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT", comment: "Confirmation button text to delete selected media from the gallery, embeds {{number of messages}}")
-                return String(format: format, indexPaths.count)
-            }
-        }()
+        let format = NSLocalizedString("MEDIA_GALLERY_DELETE_MESSAGES_%d", tableName: "PluralAware",
+                                       comment: "Confirmation button text to delete selected media message(s) from the gallery")
+        let confirmationTitle = String.localizedStringWithFormat(format, indexPaths.count)
 
         let deleteAction = ActionSheetAction(title: confirmationTitle, style: .destructive) { _ in
             let galleryIndexPaths = indexPaths.map { IndexPath(item: $0.item, section: $0.section - 1) }

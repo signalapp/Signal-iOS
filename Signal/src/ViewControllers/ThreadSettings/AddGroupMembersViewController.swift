@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -69,25 +69,13 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
         let alertTitle: String
         let alertMessage: String
         let actionTitle: String
-        if newMemberCount > 1 {
-            let messageFormat = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT",
-                                                  comment: "Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}.")
-            alertMessage = String(format: messageFormat,
-                             OWSFormat.formatInt(newRecipientSet.count),
-                             groupName)
-            alertTitle = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N",
-                                            comment: "Title for the 'add group members' confirmation alert.")
-            actionTitle = NSLocalizedString("ADD_GROUP_MEMBERS_ACTION_TITLE_N",
-                                            comment: "Label for the 'add group members' button.")
-        } else {
-            let messageFormat = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT",
-                                        comment: "Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}.")
-            alertMessage = String(format: messageFormat, groupName)
-            alertTitle = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1",
-                                           comment: "Title for the 'add group member' confirmation alert.")
-            actionTitle = NSLocalizedString("ADD_GROUP_MEMBERS_ACTION_TITLE_1",
-                                            comment: "Label for the 'add group member' button.")
-        }
+        let messageFormat = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d", tableName: "PluralAware",
+                                              comment: "Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}.")
+        alertMessage = String.localizedStringWithFormat(messageFormat, newRecipientSet.count, groupName)
+        alertTitle = String.localizedStringWithFormat(NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d", tableName: "PluralAware",
+                                                      comment: "Title for the 'add group members' confirmation alert."), newRecipientSet.count)
+        actionTitle = String.localizedStringWithFormat(NSLocalizedString("ADD_GROUP_MEMBERS_ACTION_TITLE_%d", tableName: "PluralAware",
+                                        comment: "Label for the 'add group members' button."), newRecipientSet.count)
 
         let actionSheet = ActionSheetController(title: alertTitle, message: alertMessage)
         actionSheet.addAction(ActionSheetAction(title: actionTitle,

@@ -132,15 +132,14 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
 
             if thread.isGroupThread, cellModels.count >= 2 {
                 let format = NSLocalizedString(
-                    "GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER",
+                    "GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d", tableName: "PluralAware",
                     comment: "A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }}")
-                label.text = String(format: format, OWSFormat.formatInt(flattenedCellModels.count))
+                label.text = String.localizedStringWithFormat(format, flattenedCellModels.count)
             } else if thread.isGroupThread {
                 let format = NSLocalizedString(
-                    "GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER",
+                    "GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d", tableName: "PluralAware",
                     comment: "A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }}")
-                label.text = String(format: format, OWSFormat.formatInt(flattenedCellModels.count))
-
+                label.text = String.localizedStringWithFormat(format, flattenedCellModels.count)
             } else {
                 label.text = NSLocalizedString(
                     "MESSAGE_REQUEST_NAME_COLLISON_HEADER",

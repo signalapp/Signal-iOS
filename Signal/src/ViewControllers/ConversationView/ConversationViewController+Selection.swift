@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 public struct CVSelectionType: OptionSet {
@@ -277,15 +277,9 @@ extension ConversationViewController {
             return
         }
 
-        let message: String
-        if selectionItems.count > 1 {
-            let messageFormat = NSLocalizedString("DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT",
-                                                  comment: "action sheet body. Embeds {{number of selected messages}} which will be deleted.")
-            message = String(format: messageFormat, selectionItems.count)
-        } else {
-            message = NSLocalizedString("DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT",
-                                        comment: "action sheet body")
-        }
+        let messageFormat = NSLocalizedString("DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d", tableName: "PluralAware",
+                                              comment: "action sheet body. Embeds {{number of selected messages}} which will be deleted.")
+        let message = String.localizedStringWithFormat(messageFormat, selectionItems.count)
         let alert = ActionSheetController(title: nil, message: message)
         alert.addAction(OWSActionSheets.cancelAction)
 

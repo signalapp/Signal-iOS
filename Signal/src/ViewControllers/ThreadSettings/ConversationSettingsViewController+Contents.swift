@@ -487,15 +487,9 @@ extension ConversationSettingsViewController {
 
         let totalMemberCount = sortedGroupMembers.count
 
-        if totalMemberCount > 1 {
-            let headerFormat = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT",
-                                                 comment: "Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}.")
-            section.headerTitle = String(format: headerFormat,
-                                         OWSFormat.formatInt(totalMemberCount))
-        } else {
-            section.headerTitle = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE",
-                                                    comment: "Section title of the 'members' section in conversation settings view.")
-        }
+        let format = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d", tableName: "PluralAware",
+                                       comment: "Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}.")
+        section.headerTitle = String.localizedStringWithFormat(format, totalMemberCount)
 
         var membersToRender = sortedGroupMembers
 
@@ -705,21 +699,14 @@ extension ConversationSettingsViewController {
             }
         ))
 
-        if mutualGroupThreads.count > 1 {
-            let headerFormat = NSLocalizedString(
-                "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT",
-                comment: "Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}."
+        if mutualGroupThreads.count > 0 {
+            let headerFormat = NSLocalizedString("CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d", tableName: "PluralAware",
+                                                 comment: "Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}."
             )
-            section.headerTitle = String(format: headerFormat, OWSFormat.formatInt(mutualGroupThreads.count))
-        } else if mutualGroupThreads.count == 1 {
-            section.headerTitle = NSLocalizedString(
-                "CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE",
-                comment: "Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group."
-            )
+            section.headerTitle = String.localizedStringWithFormat(headerFormat, mutualGroupThreads.count)
         } else {
-            section.headerTitle = NSLocalizedString(
-                "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE",
-                comment: "Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups."
+            section.headerTitle = NSLocalizedString("CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE",
+                                                    comment: "Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups."
             )
         }
 

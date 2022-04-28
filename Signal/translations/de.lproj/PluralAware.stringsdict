@@ -1,0 +1,1138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Sprachnachricht 1 Sekunde</string>
+            <key>other</key>
+            <string>Sprachnachricht %d Sekunden</string>
+        </dict>
+    </dict>
+    <key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Mitglied zu »%2$@« hinzufügen?</string>
+            <key>other</key>
+            <string>%d Mitglieder zu »%2$@« hinzufügen?</string>
+        </dict>
+    </dict>
+    <key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Neues Mitglied hinzufügen</string>
+            <key>other</key>
+            <string>Neue Mitglieder hinzufügen</string>
+        </dict>
+    </dict>
+    <key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Mitglied hinzufügen</string>
+            <key>other</key>
+            <string>Mitglieder hinzufügen</string>
+        </dict>
+    </dict>
+    <key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Diese personalisierte Farbe wird in 1 Unterhaltung verwendet. Möchtest du sie löschen?</string>
+            <key>other</key>
+            <string>Diese personalisierte Farbe wird in %d Unterhaltungen verwendet. Möchtest du sie für alle Unterhaltungen löschen?</string>
+        </dict>
+    </dict>
+    <key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Diese Farbe wird in 1 Unterhaltung verwendet. Möchtest du Änderungen für alle Unterhaltungen speichern?</string>
+            <key>other</key>
+            <string>Diese Farbe wird in %d Unterhaltungen verwendet. Möchtest du Änderungen für alle Unterhaltungen speichern?</string>
+        </dict>
+    </dict>
+    <key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Unterhaltung löschen?</string>
+            <key>other</key>
+            <string>%d Unterhaltungen löschen?</string>
+        </dict>
+    </dict>
+    <key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Diese Unterhaltung wird von diesem Gerät gelöscht.</string>
+            <key>other</key>
+            <string>Diese Unterhaltungen werden von diesem Gerät gelöscht.</string>
+        </dict>
+    </dict>
+    <key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Du kannst maximal 1 Unterhaltung auswählen.</string>
+            <key>other</key>
+            <string>Du kannst maximal %d Unterhaltungen auswählen.</string>
+        </dict>
+    </dict>
+    <key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@position@</string>
+        <key>position</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 %2$#@total@</string>
+            <key>other</key>
+            <string>%d %2$#@total@</string>
+        </dict>
+        <key>total</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Treffer</string>
+            <key>other</key>
+            <string>von %d Treffern</string>
+        </dict>
+    </dict>
+    <key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Mitglied</string>
+            <key>other</key>
+            <string>%d Mitglieder</string>
+        </dict>
+    </dict>
+    <key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 gemeinsame Gruppe</string>
+            <key>other</key>
+            <string>%d gemeinsame Gruppen</string>
+        </dict>
+    </dict>
+    <key>DATE_MINUTES_AGO_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%dmin</string>
+            <key>other</key>
+            <string>%dmin</string>
+        </dict>
+    </dict>
+    <key>DATE_MINUTES_AGO_LONG_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Vor 1 Minute</string>
+            <key>other</key>
+            <string>Vor %d Minuten</string>
+        </dict>
+    </dict>
+    <key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Nachricht löschen?</string>
+            <key>other</key>
+            <string>%d Nachrichten löschen?</string>
+        </dict>
+    </dict>
+    <key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Maximale Gruppengröße von %d Mitglied erreicht.</string>
+            <key>other</key>
+            <string>Maximale Gruppengröße von %d Mitgliedern erreicht.</string>
+        </dict>
+    </dict>
+    <key>EXPIRATION_WARNING_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Diese Signal-Version wird heute ablaufen. Bitte antippen, um auf die neueste Version zu aktualisieren.</string>
+            <key>other</key>
+            <string>Diese Signal-Version wird in %d Tagen ablaufen. Bitte antippen, um auf die neueste Version zu aktualisieren.</string>
+        </dict>
+    </dict>
+    <key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Nachricht senden</string>
+            <key>other</key>
+            <string>%d Nachrichten senden</string>
+        </dict>
+    </dict>
+    <key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Für diesen Anruf wurde die maximale Anzahl von 1 Teilnehmer erreicht. Bitte versuche es später erneut.</string>
+            <key>other</key>
+            <string>Für diesen Anruf wurde die maximale Anzahl von %d Teilnehmern erreicht. Bitte versuche es später erneut.</string>
+        </dict>
+    </dict>
+    <key>GROUP_CALL_IN_THIS_CALL_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Anrufteilnehmer · 1 Person</string>
+            <key>other</key>
+            <string>Anrufteilnehmer · %d Personen</string>
+        </dict>
+    </dict>
+    <key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%2$@, %3$@ und 1 weitere Person nehmen an diesem Anruf teil</string>
+            <key>other</key>
+            <string>%2$@, %3$@ und %d weitere Personen nehmen an diesem Anruf teil</string>
+        </dict>
+    </dict>
+    <key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%2$@, %3$@ und 1 weitere Person sind dem Anruf beigetreten</string>
+            <key>other</key>
+            <string>%2$@, %3$@ und %d weitere Personen sind dem Anruf beigetreten</string>
+        </dict>
+    </dict>
+    <key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%2$@, %3$@ und 1 weitere Person haben den Anruf verlassen</string>
+            <key>other</key>
+            <string>%2$@, %3$@ und %d weitere Personen haben den Anruf verlassen</string>
+        </dict>
+    </dict>
+    <key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Einladung versendet</string>
+            <key>other</key>
+            <string>%d Einladungen versendet</string>
+        </dict>
+    </dict>
+    <key>GROUP_MEMBER_COUNT_LABEL_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Mitglied</string>
+            <key>other</key>
+            <string>%d Mitglieder</string>
+        </dict>
+    </dict>
+    <key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Mitglied</string>
+            <key>other</key>
+            <string>%d Mitglieder</string>
+        </dict>
+    </dict>
+    <key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Gruppenmitglied hat einen ähnlichen Namen.</string>
+            <key>other</key>
+            <string>%d Gruppenmitglieder haben ähnliche Namen.</string>
+        </dict>
+    </dict>
+    <key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Gruppenmitglied hat einen ähnlichen Namen. Prüfe das folgende Mitglied oder handle entsprechend.</string>
+            <key>other</key>
+            <string>%d Gruppenmitglieder haben ähnliche Namen. Prüfe die folgenden Mitglieder oder handle entsprechend.</string>
+        </dict>
+    </dict>
+    <key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Gruppenmitglied hat denselben Namen. Prüfe das folgende Mitglied oder handle entsprechend.</string>
+            <key>other</key>
+            <string>%d Gruppenmitglieder haben denselben Namen. Prüfe die folgenden Mitglieder oder handle entsprechend.</string>
+        </dict>
+    </dict>
+    <key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Gruppeneinladungen wurden für 1 Person widerrufen.</string>
+            <key>other</key>
+            <string>Gruppeneinladungen wurden für %d Personen widerrufen.</string>
+        </dict>
+    </dict>
+    <key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%2$@ hat eine Gruppeneinladung für 1 Person widerrufen.</string>
+            <key>other</key>
+            <string>%2$@ hat eine Gruppeneinladung für %d Personen widerrufen.</string>
+        </dict>
+    </dict>
+    <key>GROUP_REMOTE_USER_INVITED_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Person wurde in die Gruppe eingeladen.</string>
+            <key>other</key>
+            <string>%d Personen wurden in die Gruppe eingeladen.</string>
+        </dict>
+    </dict>
+    <key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%2$@ hat 1 Person in die Gruppe eingeladen.</string>
+            <key>other</key>
+            <string>%2$@ hat %d Personen in die Gruppe eingeladen.</string>
+        </dict>
+    </dict>
+    <key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Ein Mitglied konnte der Gruppe neuen Typs nicht hinzugefügt werden und wurde daher aus der Gruppe entfernt.</string>
+            <key>other</key>
+            <string>%d Mitglieder konnten der Gruppe neuen Typs nicht hinzugefügt werden und wurden daher aus der Gruppe entfernt.</string>
+        </dict>
+    </dict>
+    <key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Ein Mitglied konnte der Gruppe neuen Typs nicht hinzugefügt werden und wurde daher eingeladen, beizutreten.</string>
+            <key>other</key>
+            <string>%d Mitglieder konnten der Gruppe neuen Typs nicht hinzugefügt werden und wurden daher eingeladen, beizutreten.</string>
+        </dict>
+    </dict>
+    <key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Diese Gruppe kann nicht erstellt werden, da 1 Mitglied eine alte Signal-Version verwendet. Du kannst eine Gruppe neuen Typs mit diesem Mitglied erstellen, sobald es Signal aktualisiert hat, oder es vor Erstellen der Gruppe entfernen. %2$@</string>
+            <key>other</key>
+            <string>Diese Gruppe kann nicht erstellt werden, da %d Mitglieder eine alte Signal-Version verwenden. Du kannst eine Gruppe neuen Typs mit diesen Mitgliedern erstellen, sobald sie Signal aktualisiert haben, oder sie vor Erstellen der Gruppe entfernen. %2$@</string>
+        </dict>
+    </dict>
+    <key>GROUPS_LEGACY_GROUP_CREATION_WARNING_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Mitglied unterstützt keine Gruppen neuen Typs, daher wird diese Gruppe als Gruppe alten Typs erstellt. %2$@</string>
+            <key>other</key>
+            <string>%d Mitglieder unterstützen keine Gruppen neuen Typs, daher wird diese Gruppe als Gruppe alten Typs erstellt. %2$@</string>
+        </dict>
+    </dict>
+    <key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Diese Gruppe kann nicht erstellt werden, da 1 Mitglied eine alte Signal-Version verwendet. Du kannst eine Gruppe neuen Typs mit diesem Mitglied erstellen, sobald es Signal aktualisiert hat, oder es vor Erstellen der Gruppe entfernen.</string>
+            <key>other</key>
+            <string>Diese Gruppe kann nicht erstellt werden, da %d Mitglieder eine alte Signal-Version verwenden. Du kannst eine Gruppe neuen Typs mit diesen Mitgliedern erstellen, sobald sie Signal aktualisiert haben, oder sie vor Erstellen der Gruppe entfernen.</string>
+        </dict>
+    </dict>
+    <key>GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Es wird eine Gruppe alten Typs erstellt, da 1 Mitglied eine alte Signal-Version verwendet. Du kannst eine Gruppe neuen Typs mit diesem Mitglied erstellen, sobald es Signal aktualisiert hat, oder es vor Erstellen der Gruppe entfernen.</string>
+            <key>other</key>
+            <string>Es wird eine Gruppe alten Typs erstellt, da %d Mitglieder eine alte Signal-Version verwenden. Du kannst eine Gruppe neuen Typs mit diesen Mitgliedern erstellen, sobald sie Signal aktualisiert haben, oder sie vor Erstellen der Gruppe entfernen.</string>
+        </dict>
+    </dict>
+    <key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Mitglied konnte der Gruppe neuen Typs nicht wieder hinzugefügt werden. Möchtest du es jetzt hinzufügen?</string>
+            <key>other</key>
+            <string>%d Mitglieder konnten der Gruppe neuen Typs nicht wieder hinzugefügt werden. Möchtest du sie jetzt hinzufügen?</string>
+        </dict>
+    </dict>
+    <key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Signal-Gruppen funktionieren am besten mit 1 oder weniger Mitgliedern. Das Hinzufügen weiterer Mitglieder führt zu Verzögerungen beim Senden und Empfangen von Nachrichten.</string>
+            <key>other</key>
+            <string>Signal-Gruppen funktionieren am besten mit %d oder weniger Mitgliedern. Das Hinzufügen weiterer Mitglieder führt zu Verzögerungen beim Senden und Empfangen von Nachrichten.</string>
+        </dict>
+    </dict>
+    <key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Du kannst maximal 1 Element teilen.</string>
+            <key>other</key>
+            <string>Du kannst maximal %d Elemente teilen.</string>
+        </dict>
+    </dict>
+    <key>MANY_GROUPS_IN_COMMON_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 gemeinsame Gruppe</string>
+            <key>other</key>
+            <string>%d gemeinsame Gruppen</string>
+        </dict>
+    </dict>
+    <key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1  Nachricht löschen</string>
+            <key>other</key>
+            <string>%d Nachrichten löschen</string>
+        </dict>
+    </dict>
+    <key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Bild</string>
+            <key>other</key>
+            <string>%d Bilder</string>
+        </dict>
+    </dict>
+    <key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Element</string>
+            <key>other</key>
+            <string>%d Elemente</string>
+        </dict>
+    </dict>
+    <key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 ausgewählt</string>
+            <key>other</key>
+            <string>%d ausgewählt</string>
+        </dict>
+    </dict>
+    <key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Du hast 1 Mitglied dieser Gruppe blockiert</string>
+            <key>other</key>
+            <string>Du hast %d Mitglieder dieser Gruppe blockiert</string>
+        </dict>
+    </dict>
+    <key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Mitglied</string>
+            <key>other</key>
+            <string>%d Mitglieder</string>
+        </dict>
+    </dict>
+    <key>ONBOARDING_2FA_INVALID_PIN_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Falsche PIN. 1 verbleibender Versuch.</string>
+            <key>other</key>
+            <string>Falsche PIN. %d verbleibende Versuche.</string>
+        </dict>
+    </dict>
+    <key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>%2$@ hat 1 Person eingeladen</string>
+            <key>other</key>
+            <string>%2$@ hat %d Personen eingeladen</string>
+        </dict>
+    </dict>
+    <key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 ausstehende Beitrittsanfrage.</string>
+            <key>other</key>
+            <string>%d ausstehende Beitrittsanfragen.</string>
+        </dict>
+    </dict>
+    <key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Ungültige Einladung widerrufen</string>
+            <key>other</key>
+            <string>%d ungültige Einladungen widerrufen</string>
+        </dict>
+    </dict>
+    <key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Von »%2$@« versendete Einladung widerrufen?</string>
+            <key>other</key>
+            <string>%d von »%2$@« versendete Einladungen widerrufen?</string>
+        </dict>
+    </dict>
+    <key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Einladung widerrufen</string>
+            <key>other</key>
+            <string>Einladungen widerrufen</string>
+        </dict>
+    </dict>
+    <key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Wir erinnern dich später. Das Erstellen einer PIN wird in 1 Tag zwingend erforderlich.</string>
+            <key>other</key>
+            <string>Wir erinnern dich später. Das Erstellen einer PIN wird in %d Tagen zwingend erforderlich.</string>
+        </dict>
+    </dict>
+    <key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Du hast 1 verbleibenden Versuch. Falls du all deine Versuche aufbrauchst, kannst du eine neue PIN erstellen. Du kannst dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.</string>
+            <key>other</key>
+            <string>Du hast %d verbleibende Versuche. Falls du all deine Versuche aufbrauchst, kannst du eine neue PIN erstellen. Du kannst dich registrieren und dein Nutzerkonto verwenden, wirst aber einige gespeicherte Einstellungen, wie z. B. deine Profilinformationen verlieren.</string>
+        </dict>
+    </dict>
+    <key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@caption@</string>
+        <key>caption</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Du hast 1 verbleibenden Versuch. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte werden gelöscht.</string>
+            <key>other</key>
+            <string>Du hast %d verbleibende Versuche. Falls du alle Versuche aufbrauchst, wird dein Konto gesperrt. Nach Ablauf von 7 Tagen ohne Aktivität kannst du dich ohne deine PIN erneut registrieren. Dein Konto wird dabei zurückgesetzt und alle Inhalte werden gelöscht.</string>
+        </dict>
+    </dict>
+    <key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%1$#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>Mitglied von %2$@, %3$@ und 1 weiteren Gruppe</string>
+            <key>other</key>
+            <string>Mitglied von %2$@, %3$@ und %d weiteren Gruppen</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_DAYS_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Tag</string>
+            <key>other</key>
+            <string>%d Tage</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_DAYS_SHORT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1d</string>
+            <key>other</key>
+            <string>%dd</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_HOURS_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Stunde</string>
+            <key>other</key>
+            <string>%d Stunden</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_HOURS_SHORT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1h</string>
+            <key>other</key>
+            <string>%dh</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_MINUTES_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Minute</string>
+            <key>other</key>
+            <string>%d Minuten</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1min</string>
+            <key>other</key>
+            <string>%dmin</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_SECONDS_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Sekunde</string>
+            <key>other</key>
+            <string>%d Sekunden</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1s</string>
+            <key>other</key>
+            <string>%ds</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_WEEKS_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Woche</string>
+            <key>other</key>
+            <string>%d Wochen</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1w</string>
+            <key>other</key>
+            <string>%dw</string>
+        </dict>
+    </dict>
+    <key>TIME_AMOUNT_YEARS_%d</key>
+    <dict>
+        <key>NSStringLocalizedFormatKey</key>
+        <string>%#@text@</string>
+        <key>text</key>
+        <dict>
+            <key>NSStringFormatSpecTypeKey</key>
+            <string>NSStringPluralRuleType</string>
+            <key>NSStringFormatValueTypeKey</key>
+            <string>d</string>
+            <key>one</key>
+            <string>1 Jahr</string>
+            <key>other</key>
+            <string>%d Jahre</string>
+        </dict>
+    </dict>
+    
+</dict>
+</plist>

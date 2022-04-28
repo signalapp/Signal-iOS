@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -670,54 +670,35 @@ public extension NSString {
 
         struct Unit {
             let secondsPerUnit: UInt32
-            let singleUnitFormat: String
-            let multipleUnitsFormat: String
+            let unitFormat: String
         }
 
         // Listed in descending order.
         let units: [Unit] = [
             // Years
             Unit(secondsPerUnit: secondsPerYear,
-                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_YEAR",
-                                                     comment: "{{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_YEARS_FORMAT",
-                                                        comment: "{{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings")),
-
+                 unitFormat: OWSLocalizedString("TIME_AMOUNT_YEARS_%d", tableName: "PluralAware",
+                                                comment: "{{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings")),
             // Weeks
             Unit(secondsPerUnit: secondsPerWeek,
-                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_WEEK",
-                                                     comment:
-                    "{{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_WEEKS",
-                                                        comment: "{{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings")),
+                 unitFormat: OWSLocalizedString("TIME_AMOUNT_WEEKS_%d", tableName: "PluralAware",
+                                                comment: "{{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings")),
             // Days
             Unit(secondsPerUnit: secondsPerDay,
-                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_DAY",
-                                                     comment:
-                    "{{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_DAYS",
-                                                        comment: "{{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings")),
+                 unitFormat: OWSLocalizedString("TIME_AMOUNT_DAYS_%d", tableName: "PluralAware",
+                                                comment: "{{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings")),
             // Hours
             Unit(secondsPerUnit: secondsPerHour,
-                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_HOUR",
-                                                     comment:
-                    "{{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_HOURS",
-                                                        comment: "{{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings")),
+                 unitFormat: OWSLocalizedString("TIME_AMOUNT_HOURS_%d", tableName: "PluralAware",
+                                                comment: "{{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings")),
             // Minutes
             Unit(secondsPerUnit: secondsPerMinute,
-                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_MINUTE",
-                                                     comment: "{{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_MINUTES",
-                                                        comment:
-                    "{{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings")),
+                 unitFormat: OWSLocalizedString("TIME_AMOUNT_MINUTES_%d", tableName: "PluralAware",
+                                                comment: "{{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings")),
             // Seconds
             Unit(secondsPerUnit: 1,
-                 singleUnitFormat: OWSLocalizedString("TIME_AMOUNT_SINGLE_SECOND",
-                                                     comment:
-                    "{{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings"),
-                 multipleUnitsFormat: OWSLocalizedString("TIME_AMOUNT_SECONDS",
-                                                        comment: "{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings"))
+                 unitFormat: OWSLocalizedString("TIME_AMOUNT_SECONDS_%d", tableName: "PluralAware",
+                                                comment: "{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings"))
         ]
 
         var components = [String]()
@@ -728,17 +709,13 @@ public extension NSString {
                 let units = remainder / secondsPerUnit
                 remainder -= units * secondsPerUnit
                 assert(units > 0)
-                let formattedUnits = String(format: "%ld", Int(units))
-                let format = (units > 1
-                    ? unit.multipleUnitsFormat
-                    : unit.singleUnitFormat)
-                components.append(String(format: format, formattedUnits))
+                components.append(String.localizedStringWithFormat(unit.unitFormat, Int(units)))
             }
         }
 
         if components.isEmpty {
-            return OWSLocalizedString("TIME_AMOUNT_ZERO_SECONDS",
-                                     comment: "Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings")
+            return String.localizedStringWithFormat(OWSLocalizedString("TIME_AMOUNT_SECONDS_%d", tableName: "PluralAware",
+                                                     comment: "{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings"), 0)
         } else {
             // TODO: Can we localize this join?
             return components.joined(separator: ", ")
