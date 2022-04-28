@@ -964,8 +964,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     case .reportInvalidOrBlockedGroupLink:
                         owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
 
-                        if FeatureFlags.groupAbuse, let responseHeaders = error.httpResponseHeaders,
-                           responseHeaders.value(forHeader: "X-Signal-Forbidden-Reason") == "banned" {
+                        if FeatureFlags.groupAbuse, error.httpResponseHeaders?.containsBan == true {
                             throw GroupsV2Error.localUserBlockedFromJoining
                         } else {
                             throw GroupsV2Error.expiredGroupInviteLink
@@ -1965,23 +1964,22 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             return Promise<TSGroupThread>(error: error)
         }
 
-        return firstly(on: .global()) { () -> Promise<UInt32> in
+        return firstly(on: .global()) { () -> Promise<UInt32?> in
             self.cancelMemberRequestsUsingPatch(
                 groupId: groupModel.groupId,
                 groupV2Params: groupV2Params,
-                inviteLinkPassword: groupModel.inviteLinkPassword)
-        }.map(on: .global()) { (newRevision: UInt32) -> TSGroupThread in
-            try self.updateGroupRemovingMemberRequest(groupId: groupModel.groupId, newRevision: newRevision)
-        }.recover(on: .global()) { (error: Error) -> Promise<TSGroupThread> in
-            if case GroupsV2Error.localUserIsNotARequestingMember = error {
-                // We don't need to cancel our pending member request; there is none.
-                // Update the model to reflect that.
-                let groupThread = try self.updateGroupRemovingMemberRequest(groupId: groupModel.groupId,
-                                                                            newRevision: nil)
-                return Promise.value(groupThread)
-            } else {
+                inviteLinkPassword: groupModel.inviteLinkPassword).map { Optional($0) }
+        }.recover(on: .global()) { (error: Error) -> Promise<UInt32?> in
+            switch error {
+            case GroupsV2Error.localUserBlockedFromJoining, GroupsV2Error.localUserIsNotARequestingMember:
+                // In both of these cases, our request has already been removed. We can proceed with updating the model.
+                return .value(nil)
+            default:
+                // Otherwise, we don't recover and let the error propogate
                 throw error
             }
+        }.map(on: .global()) { (newRevision: UInt32?) -> TSGroupThread in
+            try self.updateGroupRemovingMemberRequest(groupId: groupModel.groupId, newRevision: newRevision)
         }
     }
 
@@ -2118,12 +2116,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                     groupSecretParamsData: groupV2Params.groupSecretParamsData,
                                                     allowCached: false)
         }.catch { (error: Error) -> Void in
-            if case GroupsV2Error.localUserIsNotARequestingMember = error {
-                // Expected if our request has been cancelled.
+            switch error {
+            case GroupsV2Error.localUserNotInGroup, GroupsV2Error.localUserBlockedFromJoining:
+                // Expected if our request has been cancelled or we're banned
                 Logger.verbose("Error: \(error)")
-                return
+            default:
+                owsFailDebug("Error: \(error)")
             }
-            owsFailDebug("Error: \(error)")
         }
     }
 
@@ -2226,5 +2225,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             uuids.append(uuid)
         }
         return uuids
+    }
+}
+
+fileprivate extension OWSHttpHeaders {
+    private static let forbiddenKey: String = "X-Signal-Forbidden-Reason"
+    private static let forbiddenValue: String = "banned"
+
+    var containsBan: Bool {
+        value(forHeader: Self.forbiddenKey) == Self.forbiddenValue
     }
 }

@@ -104,7 +104,7 @@ public class FeatureFlags: BaseFlags {
     public static let canUseNativeWebsocket = true
 
     @objc
-    public static let groupAbuse = false
+    public static let groupAbuse = build.includes(.beta)
 
     @objc
     public static var notificationServiceExtension: Bool {
