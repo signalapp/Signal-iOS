@@ -709,7 +709,7 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
             firstly {
-                try SubscriptionManager.cancelSubscription(for: persistedSubscriberID)
+                SubscriptionManager.cancelSubscription(for: persistedSubscriberID)
             }.done(on: .main) {
                 modal.dismiss {
                     if let navController = self.navigationController {
