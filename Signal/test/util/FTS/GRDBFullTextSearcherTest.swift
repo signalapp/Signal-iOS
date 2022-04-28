@@ -7,7 +7,6 @@ import Contacts
 @testable import Signal
 @testable import SignalMessaging
 @testable import SignalServiceKit
-import Contacts
 
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
