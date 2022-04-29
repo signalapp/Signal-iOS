@@ -136,8 +136,6 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return false
         case .subscriptionMegaphone:
             return false
-        default:
-            return true
         }
     }
 

@@ -555,8 +555,6 @@ public class OWSAttachmentDownloads: NSObject {
                 } else {
                     attachmentPointer.updateAttachmentPointerState(.failed, transaction: transaction)
                 }
-            @unknown default:
-                owsFailDebug("Invalid value.")
             }
 
             if let message = job.message {
