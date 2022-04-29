@@ -1,2 +1,2 @@
-• הידקנו קצת דברים כדי להקטין את הגודל של יישום Signal ב־25%.
-• עוד שיפורים כדי לעשות פתיחה זריזה ממש של התכתבויות קבוצתיות.
+• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
+• תיקונים אחרים שונים של תקלים ושיפורי ביצוע עוזרים לשמור על היישום שלך שירוץ באופן חלק.

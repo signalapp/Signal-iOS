@@ -1,2 +1,2 @@
-• Apertamos um pouco as coisas para tornar o tamanho do aplicativo Signal 25% menor.
-• A abertura de conversas de grupos está super confortável com as recentes melhorias.
+• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
+• Muitas outras correções de bugs e aprimoramentos de performance ajudam a manter seu app rodando suavemente.

@@ -1,2 +1,2 @@
-• Ми трохи підтягнулись та зробили розмір застосунку Signal на 25% меншим.
-• Багато покращень для того, щоб чати груп відкривались неймовірно швидко.
+• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
+• Various other bugfixes and performance improvements help keep your app running smoothly.

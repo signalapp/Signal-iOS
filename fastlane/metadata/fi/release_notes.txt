@@ -1,2 +1,2 @@
-• Olemme vähän tiivistäneet asioita: sovellus vie nyt 25 % vähemmän tilaa!
-• Ryhmäkeskusteluiden avaaminen on tehty mutkattomammaksi.
+• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
+• Useita pieni virheitä on korjattu ja suorituskykyä parannettu. 

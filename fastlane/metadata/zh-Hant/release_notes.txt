@@ -1,2 +1,2 @@
-• 我們稍微精簡了一些內容，使 Signal 應用程式的大小縮小了 25%。
-• 更多改善，使開啟群組聊天變得更快速。
+• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
+• 各種其他錯誤修復和性能改進有助於保持你的app順利運作。

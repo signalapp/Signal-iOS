@@ -1,2 +1,2 @@
-• Trochu sme veci zoštíhlili, a dosiahli sme že veľkosť aplikácie Signal je o 25 % menšia.
-• Ďalšie vylepšenia, vďaka ktorým bude otváranie skupinových rozhovorov mimoriadne rýchle.
+• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
+• Rôzne ďalšie opravy chýb a vylepšenia výkonu pomáhajú zaistiť bezproblémový chod vašej aplikácie.
