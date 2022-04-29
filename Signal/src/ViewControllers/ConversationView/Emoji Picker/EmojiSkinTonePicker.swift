@@ -225,7 +225,7 @@ class EmojiSkinTonePicker: UIView {
     private var skinTonePerComponentEmojiIndex = [Int: Emoji.SkinTone]() {
         didSet {
             var selectedSkinTones = [Emoji.SkinTone]()
-            for (idx, _) in skinToneComponentEmoji.enumerated() {
+            for idx in skinToneComponentEmoji.indices {
                 for (skinTone, button) in buttonsPerComponentEmojiIndex[idx] ?? [] {
                     if skinTonePerComponentEmojiIndex[idx] == skinTone {
                         selectedSkinTones.append(skinTone)

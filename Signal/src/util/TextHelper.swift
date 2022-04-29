@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -149,7 +149,7 @@ private enum TextHelper {
         // However if pasting, accept as much of the string as possible.
         var acceptableSubstring = ""
 
-        for (_, char) in replacementString.enumerated() {
+        for char in replacementString {
             var maybeAcceptableSubstring = acceptableSubstring
             maybeAcceptableSubstring.append(char)
 
