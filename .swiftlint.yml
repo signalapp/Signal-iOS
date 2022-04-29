@@ -1,3 +1,5 @@
+excluded:
+- SignalServiceKit/src/Protos/Generated
 disabled_rules:
 - cyclomatic_complexity
 - file_length
