@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-/// *
+///*
 /// Copyright (C) 2019 Open Whisper Systems
 ///
 /// Licensed according to the LICENSE file in this repository.
@@ -15,7 +15,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -86,9 +86,14 @@ struct ContactDiscoveryMessages_ClientResponse {
   init() {}
 }
 
+#if swift(>=5.5) && canImport(_Concurrency)
+extension ContactDiscoveryMessages_ClientRequest: @unchecked Sendable {}
+extension ContactDiscoveryMessages_ClientResponse: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "ContactDiscoveryMessages"
+fileprivate let _protobuf_package = "ContactDiscoveryMessages"
 
 extension ContactDiscoveryMessages_ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ClientRequest"
@@ -98,7 +103,7 @@ extension ContactDiscoveryMessages_ClientRequest: SwiftProtobuf.Message, SwiftPr
     3: .same(proto: "newE164List"),
     4: .same(proto: "discardE164List"),
     5: .same(proto: "moreComing"),
-    6: .same(proto: "token")
+    6: .same(proto: "token"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -157,7 +162,7 @@ extension ContactDiscoveryMessages_ClientResponse: SwiftProtobuf.Message, SwiftP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "e164PniAciTriples"),
     2: .same(proto: "retryAfterSecs"),
-    3: .same(proto: "token")
+    3: .same(proto: "token"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

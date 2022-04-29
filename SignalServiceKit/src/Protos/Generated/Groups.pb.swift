@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-/// *
+///*
 /// Copyright (C) 2019 Open Whisper Systems
 ///
 /// Licensed according to the LICENSE file in this repository.
@@ -15,7 +15,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -110,7 +110,7 @@ extension GroupsProtos_Member.Role: CaseIterable {
   static var allCases: [GroupsProtos_Member.Role] = [
     .unknown,
     .default,
-    .administrator
+    .administrator,
   ]
 }
 
@@ -141,7 +141,7 @@ struct GroupsProtos_PendingMember {
 
   init() {}
 
-  fileprivate var _member: GroupsProtos_Member?
+  fileprivate var _member: GroupsProtos_Member? = nil
 }
 
 struct GroupsProtos_RequestingMember {
@@ -230,7 +230,7 @@ extension GroupsProtos_AccessControl.AccessRequired: CaseIterable {
     .any,
     .member,
     .administrator,
-    .unsatisfiable
+    .unsatisfiable,
   ]
 }
 
@@ -282,7 +282,7 @@ struct GroupsProtos_Group {
 
   init() {}
 
-  fileprivate var _accessControl: GroupsProtos_AccessControl?
+  fileprivate var _accessControl: GroupsProtos_AccessControl? = nil
 }
 
 struct GroupsProtos_GroupChange {
@@ -489,7 +489,7 @@ struct GroupsProtos_GroupChange {
 
       init() {}
 
-      fileprivate var _added: GroupsProtos_Member?
+      fileprivate var _added: GroupsProtos_Member? = nil
     }
 
     struct DeleteMemberAction {
@@ -548,7 +548,7 @@ struct GroupsProtos_GroupChange {
 
       init() {}
 
-      fileprivate var _added: GroupsProtos_PendingMember?
+      fileprivate var _added: GroupsProtos_PendingMember? = nil
     }
 
     struct DeletePendingMemberAction {
@@ -593,7 +593,7 @@ struct GroupsProtos_GroupChange {
 
       init() {}
 
-      fileprivate var _added: GroupsProtos_RequestingMember?
+      fileprivate var _added: GroupsProtos_RequestingMember? = nil
     }
 
     struct DeleteRequestingMemberAction {
@@ -797,7 +797,7 @@ struct GroupsProtos_GroupAttributeBlob {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var content: GroupsProtos_GroupAttributeBlob.OneOf_Content?
+  var content: GroupsProtos_GroupAttributeBlob.OneOf_Content? = nil
 
   var title: String {
     get {
@@ -875,7 +875,7 @@ struct GroupsProtos_GroupInviteLink {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var contents: GroupsProtos_GroupInviteLink.OneOf_Contents?
+  var contents: GroupsProtos_GroupInviteLink.OneOf_Contents? = nil
 
   /// I have renamed this field to work around a limitation 
   /// in our code generation.
@@ -964,9 +964,51 @@ struct GroupsProtos_GroupExternalCredential {
   init() {}
 }
 
+#if swift(>=5.5) && canImport(_Concurrency)
+extension GroupsProtos_AvatarUploadAttributes: @unchecked Sendable {}
+extension GroupsProtos_Member: @unchecked Sendable {}
+extension GroupsProtos_Member.Role: @unchecked Sendable {}
+extension GroupsProtos_PendingMember: @unchecked Sendable {}
+extension GroupsProtos_RequestingMember: @unchecked Sendable {}
+extension GroupsProtos_AccessControl: @unchecked Sendable {}
+extension GroupsProtos_AccessControl.AccessRequired: @unchecked Sendable {}
+extension GroupsProtos_Group: @unchecked Sendable {}
+extension GroupsProtos_GroupChange: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.AddMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.DeleteMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: @unchecked Sendable {}
+extension GroupsProtos_GroupChanges: @unchecked Sendable {}
+extension GroupsProtos_GroupChanges.GroupChangeState: @unchecked Sendable {}
+extension GroupsProtos_GroupAttributeBlob: @unchecked Sendable {}
+extension GroupsProtos_GroupAttributeBlob.OneOf_Content: @unchecked Sendable {}
+extension GroupsProtos_GroupInviteLink: @unchecked Sendable {}
+extension GroupsProtos_GroupInviteLink.OneOf_Contents: @unchecked Sendable {}
+extension GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1: @unchecked Sendable {}
+extension GroupsProtos_GroupJoinInfo: @unchecked Sendable {}
+extension GroupsProtos_GroupExternalCredential: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "GroupsProtos"
+fileprivate let _protobuf_package = "GroupsProtos"
 
 extension GroupsProtos_AvatarUploadAttributes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AvatarUploadAttributes"
@@ -977,7 +1019,7 @@ extension GroupsProtos_AvatarUploadAttributes: SwiftProtobuf.Message, SwiftProto
     4: .same(proto: "algorithm"),
     5: .same(proto: "date"),
     6: .same(proto: "policy"),
-    7: .same(proto: "signature")
+    7: .same(proto: "signature"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1043,7 +1085,7 @@ extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     2: .same(proto: "role"),
     3: .same(proto: "profileKey"),
     4: .same(proto: "presentation"),
-    5: .same(proto: "joinedAtRevision")
+    5: .same(proto: "joinedAtRevision"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1096,7 +1138,7 @@ extension GroupsProtos_Member.Role: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "DEFAULT"),
-    2: .same(proto: "ADMINISTRATOR")
+    2: .same(proto: "ADMINISTRATOR"),
   ]
 }
 
@@ -1105,7 +1147,7 @@ extension GroupsProtos_PendingMember: SwiftProtobuf.Message, SwiftProtobuf._Mess
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "member"),
     2: .same(proto: "addedByUserId"),
-    3: .same(proto: "timestamp")
+    3: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1154,7 +1196,7 @@ extension GroupsProtos_RequestingMember: SwiftProtobuf.Message, SwiftProtobuf._M
     1: .same(proto: "userId"),
     2: .same(proto: "profileKey"),
     3: .same(proto: "presentation"),
-    4: .same(proto: "timestamp")
+    4: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1203,7 +1245,7 @@ extension GroupsProtos_AccessControl: SwiftProtobuf.Message, SwiftProtobuf._Mess
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "attributes"),
     2: .same(proto: "members"),
-    3: .same(proto: "addFromInviteLink")
+    3: .same(proto: "addFromInviteLink"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1248,7 +1290,7 @@ extension GroupsProtos_AccessControl.AccessRequired: SwiftProtobuf._ProtoNamePro
     1: .same(proto: "ANY"),
     2: .same(proto: "MEMBER"),
     3: .same(proto: "ADMINISTRATOR"),
-    4: .same(proto: "UNSATISFIABLE")
+    4: .same(proto: "UNSATISFIABLE"),
   ]
 }
 
@@ -1266,7 +1308,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     9: .same(proto: "requestingMembers"),
     10: .same(proto: "inviteLinkPassword"),
     11: .same(proto: "descriptionBytes"),
-    12: .same(proto: "announcementsOnly")
+    12: .same(proto: "announcementsOnly"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1359,7 +1401,7 @@ extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._Messag
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "actions"),
     2: .same(proto: "serverSignature"),
-    3: .same(proto: "changeEpoch")
+    3: .same(proto: "changeEpoch"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1421,7 +1463,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     18: .same(proto: "promoteRequestingMembers"),
     19: .same(proto: "modifyInviteLinkPassword"),
     20: .same(proto: "modifyDescription"),
-    21: .same(proto: "modifyAnnouncementsOnly")
+    21: .same(proto: "modifyAnnouncementsOnly"),
   ]
 
   fileprivate class _StorageClass {
@@ -1434,18 +1476,18 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     var _addPendingMembers: [GroupsProtos_GroupChange.Actions.AddPendingMemberAction] = []
     var _deletePendingMembers: [GroupsProtos_GroupChange.Actions.DeletePendingMemberAction] = []
     var _promotePendingMembers: [GroupsProtos_GroupChange.Actions.PromotePendingMemberAction] = []
-    var _modifyTitle: GroupsProtos_GroupChange.Actions.ModifyTitleAction?
-    var _modifyAvatar: GroupsProtos_GroupChange.Actions.ModifyAvatarAction?
-    var _modifyDisappearingMessagesTimer: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction?
-    var _modifyAttributesAccess: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction?
-    var _modifyMemberAccess: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction?
-    var _modifyAddFromInviteLinkAccess: GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction?
+    var _modifyTitle: GroupsProtos_GroupChange.Actions.ModifyTitleAction? = nil
+    var _modifyAvatar: GroupsProtos_GroupChange.Actions.ModifyAvatarAction? = nil
+    var _modifyDisappearingMessagesTimer: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction? = nil
+    var _modifyAttributesAccess: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction? = nil
+    var _modifyMemberAccess: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction? = nil
+    var _modifyAddFromInviteLinkAccess: GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction? = nil
     var _addRequestingMembers: [GroupsProtos_GroupChange.Actions.AddRequestingMemberAction] = []
     var _deleteRequestingMembers: [GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction] = []
     var _promoteRequestingMembers: [GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction] = []
-    var _modifyInviteLinkPassword: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction?
-    var _modifyDescription: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction?
-    var _modifyAnnouncementsOnly: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction?
+    var _modifyInviteLinkPassword: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction? = nil
+    var _modifyDescription: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction? = nil
+    var _modifyAnnouncementsOnly: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -1630,7 +1672,7 @@ extension GroupsProtos_GroupChange.Actions.AddMemberAction: SwiftProtobuf.Messag
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "added"),
-    2: .same(proto: "joinFromInviteLink")
+    2: .same(proto: "joinFromInviteLink"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1671,7 +1713,7 @@ extension GroupsProtos_GroupChange.Actions.AddMemberAction: SwiftProtobuf.Messag
 extension GroupsProtos_GroupChange.Actions.DeleteMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "deletedUserId")
+    1: .same(proto: "deletedUserId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1704,7 +1746,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction: SwiftProtobuf
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberRoleAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "userId"),
-    2: .same(proto: "role")
+    2: .same(proto: "role"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1741,7 +1783,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction: SwiftProtobuf
 extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberProfileKeyAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "presentation")
+    1: .same(proto: "presentation"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1773,7 +1815,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftPr
 extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddPendingMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "added")
+    1: .same(proto: "added"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1809,7 +1851,7 @@ extension GroupsProtos_GroupChange.Actions.AddPendingMemberAction: SwiftProtobuf
 extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeletePendingMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "deletedUserId")
+    1: .same(proto: "deletedUserId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1841,7 +1883,7 @@ extension GroupsProtos_GroupChange.Actions.DeletePendingMemberAction: SwiftProto
 extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromotePendingMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "presentation")
+    1: .same(proto: "presentation"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1873,7 +1915,7 @@ extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProt
 extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".AddRequestingMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "added")
+    1: .same(proto: "added"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1909,7 +1951,7 @@ extension GroupsProtos_GroupChange.Actions.AddRequestingMemberAction: SwiftProto
 extension GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".DeleteRequestingMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "deletedUserId")
+    1: .same(proto: "deletedUserId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1942,7 +1984,7 @@ extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: SwiftP
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromoteRequestingMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "userId"),
-    2: .same(proto: "role")
+    2: .same(proto: "role"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1979,7 +2021,7 @@ extension GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction: SwiftP
 extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyTitleAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "title")
+    1: .same(proto: "title"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2011,7 +2053,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyTitleAction: SwiftProtobuf.Mess
 extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAvatarAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "avatar")
+    1: .same(proto: "avatar"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2043,7 +2085,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAvatarAction: SwiftProtobuf.Mes
 extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyDisappearingMessagesTimerAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "timer")
+    1: .same(proto: "timer"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2075,7 +2117,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction
 extension GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAttributesAccessControlAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "attributesAccess")
+    1: .same(proto: "attributesAccess"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2107,7 +2149,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction: 
 extension GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAvatarAccessControlAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "avatarAccess")
+    1: .same(proto: "avatarAccess"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2139,7 +2181,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction: Swif
 extension GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMembersAccessControlAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "membersAccess")
+    1: .same(proto: "membersAccess"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2171,7 +2213,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction: Swi
 extension GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAddFromInviteLinkAccessControlAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "addFromInviteLinkAccess")
+    1: .same(proto: "addFromInviteLinkAccess"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2203,7 +2245,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlA
 extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyInviteLinkPasswordAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "inviteLinkPassword")
+    1: .same(proto: "inviteLinkPassword"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2235,7 +2277,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction: Swift
 extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyDescriptionAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "descriptionBytes")
+    1: .same(proto: "descriptionBytes"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2267,7 +2309,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyDescriptionAction: SwiftProtobu
 extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyAnnouncementsOnlyAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "announcementsOnly")
+    1: .same(proto: "announcementsOnly"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2299,7 +2341,7 @@ extension GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction: SwiftP
 extension GroupsProtos_GroupChanges: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupChanges"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "groupChanges")
+    1: .same(proto: "groupChanges"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2332,12 +2374,12 @@ extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, Swi
   static let protoMessageName: String = GroupsProtos_GroupChanges.protoMessageName + ".GroupChangeState"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "groupChange"),
-    2: .same(proto: "groupState")
+    2: .same(proto: "groupState"),
   ]
 
   fileprivate class _StorageClass {
-    var _groupChange: GroupsProtos_GroupChange?
-    var _groupState: GroupsProtos_Group?
+    var _groupChange: GroupsProtos_GroupChange? = nil
+    var _groupState: GroupsProtos_Group? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -2410,7 +2452,7 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
     1: .same(proto: "title"),
     2: .same(proto: "avatar"),
     3: .same(proto: "disappearingMessagesDuration"),
-    4: .same(proto: "descriptionText")
+    4: .same(proto: "descriptionText"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2493,7 +2535,7 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
 extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupInviteLink"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "contentsV1")
+    1: .same(proto: "contentsV1"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2542,7 +2584,7 @@ extension GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1: SwiftProtobuf.
   static let protoMessageName: String = GroupsProtos_GroupInviteLink.protoMessageName + ".GroupInviteLinkContentsV1"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "groupMasterKey"),
-    2: .same(proto: "inviteLinkPassword")
+    2: .same(proto: "inviteLinkPassword"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2586,7 +2628,7 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
     5: .same(proto: "addFromInviteLink"),
     6: .same(proto: "revision"),
     7: .same(proto: "pendingAdminApproval"),
-    8: .same(proto: "descriptionBytes")
+    8: .same(proto: "descriptionBytes"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2653,7 +2695,7 @@ extension GroupsProtos_GroupJoinInfo: SwiftProtobuf.Message, SwiftProtobuf._Mess
 extension GroupsProtos_GroupExternalCredential: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".GroupExternalCredential"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "token")
+    1: .same(proto: "token"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

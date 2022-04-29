@@ -16,7 +16,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -57,9 +57,9 @@ struct KeyBackupProtos_Request {
 
   init() {}
 
-  fileprivate var _backup: KeyBackupProtos_BackupRequest?
-  fileprivate var _restore: KeyBackupProtos_RestoreRequest?
-  fileprivate var _delete: KeyBackupProtos_DeleteRequest?
+  fileprivate var _backup: KeyBackupProtos_BackupRequest? = nil
+  fileprivate var _restore: KeyBackupProtos_RestoreRequest? = nil
+  fileprivate var _delete: KeyBackupProtos_DeleteRequest? = nil
 }
 
 struct KeyBackupProtos_Response {
@@ -98,9 +98,9 @@ struct KeyBackupProtos_Response {
 
   init() {}
 
-  fileprivate var _backup: KeyBackupProtos_BackupResponse?
-  fileprivate var _restore: KeyBackupProtos_RestoreResponse?
-  fileprivate var _delete: KeyBackupProtos_DeleteResponse?
+  fileprivate var _backup: KeyBackupProtos_BackupResponse? = nil
+  fileprivate var _restore: KeyBackupProtos_RestoreResponse? = nil
+  fileprivate var _delete: KeyBackupProtos_DeleteResponse? = nil
 }
 
 struct KeyBackupProtos_BackupRequest {
@@ -175,13 +175,13 @@ struct KeyBackupProtos_BackupRequest {
 
   init() {}
 
-  fileprivate var _serviceID: Data?
-  fileprivate var _backupID: Data?
-  fileprivate var _token: Data?
-  fileprivate var _validFrom: UInt64?
-  fileprivate var _data: Data?
-  fileprivate var _pin: Data?
-  fileprivate var _tries: UInt32?
+  fileprivate var _serviceID: Data? = nil
+  fileprivate var _backupID: Data? = nil
+  fileprivate var _token: Data? = nil
+  fileprivate var _validFrom: UInt64? = nil
+  fileprivate var _data: Data? = nil
+  fileprivate var _pin: Data? = nil
+  fileprivate var _tries: UInt32? = nil
 }
 
 struct KeyBackupProtos_BackupResponse {
@@ -240,8 +240,8 @@ struct KeyBackupProtos_BackupResponse {
 
   init() {}
 
-  fileprivate var _status: KeyBackupProtos_BackupResponse.Status?
-  fileprivate var _token: Data?
+  fileprivate var _status: KeyBackupProtos_BackupResponse.Status? = nil
+  fileprivate var _token: Data? = nil
 }
 
 #if swift(>=4.2)
@@ -306,11 +306,11 @@ struct KeyBackupProtos_RestoreRequest {
 
   init() {}
 
-  fileprivate var _serviceID: Data?
-  fileprivate var _backupID: Data?
-  fileprivate var _token: Data?
-  fileprivate var _validFrom: UInt64?
-  fileprivate var _pin: Data?
+  fileprivate var _serviceID: Data? = nil
+  fileprivate var _backupID: Data? = nil
+  fileprivate var _token: Data? = nil
+  fileprivate var _validFrom: UInt64? = nil
+  fileprivate var _pin: Data? = nil
 }
 
 struct KeyBackupProtos_RestoreResponse {
@@ -393,10 +393,10 @@ struct KeyBackupProtos_RestoreResponse {
 
   init() {}
 
-  fileprivate var _status: KeyBackupProtos_RestoreResponse.Status?
-  fileprivate var _token: Data?
-  fileprivate var _data: Data?
-  fileprivate var _tries: UInt32?
+  fileprivate var _status: KeyBackupProtos_RestoreResponse.Status? = nil
+  fileprivate var _token: Data? = nil
+  fileprivate var _data: Data? = nil
+  fileprivate var _tries: UInt32? = nil
 }
 
 #if swift(>=4.2)
@@ -434,8 +434,8 @@ struct KeyBackupProtos_DeleteRequest {
 
   init() {}
 
-  fileprivate var _serviceID: Data?
-  fileprivate var _backupID: Data?
+  fileprivate var _serviceID: Data? = nil
+  fileprivate var _backupID: Data? = nil
 }
 
 struct KeyBackupProtos_DeleteResponse {
@@ -448,16 +448,29 @@ struct KeyBackupProtos_DeleteResponse {
   init() {}
 }
 
+#if swift(>=5.5) && canImport(_Concurrency)
+extension KeyBackupProtos_Request: @unchecked Sendable {}
+extension KeyBackupProtos_Response: @unchecked Sendable {}
+extension KeyBackupProtos_BackupRequest: @unchecked Sendable {}
+extension KeyBackupProtos_BackupResponse: @unchecked Sendable {}
+extension KeyBackupProtos_BackupResponse.Status: @unchecked Sendable {}
+extension KeyBackupProtos_RestoreRequest: @unchecked Sendable {}
+extension KeyBackupProtos_RestoreResponse: @unchecked Sendable {}
+extension KeyBackupProtos_RestoreResponse.Status: @unchecked Sendable {}
+extension KeyBackupProtos_DeleteRequest: @unchecked Sendable {}
+extension KeyBackupProtos_DeleteResponse: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "KeyBackupProtos"
+fileprivate let _protobuf_package = "KeyBackupProtos"
 
 extension KeyBackupProtos_Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Request"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "backup"),
     2: .same(proto: "restore"),
-    3: .same(proto: "delete")
+    3: .same(proto: "delete"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -505,7 +518,7 @@ extension KeyBackupProtos_Response: SwiftProtobuf.Message, SwiftProtobuf._Messag
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "backup"),
     2: .same(proto: "restore"),
-    3: .same(proto: "delete")
+    3: .same(proto: "delete"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -557,7 +570,7 @@ extension KeyBackupProtos_BackupRequest: SwiftProtobuf.Message, SwiftProtobuf._M
     4: .standard(proto: "valid_from"),
     5: .same(proto: "data"),
     6: .same(proto: "pin"),
-    7: .same(proto: "tries")
+    7: .same(proto: "tries"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -624,7 +637,7 @@ extension KeyBackupProtos_BackupResponse: SwiftProtobuf.Message, SwiftProtobuf._
   static let protoMessageName: String = _protobuf_package + ".BackupResponse"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "status"),
-    2: .same(proto: "token")
+    2: .same(proto: "token"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -666,7 +679,7 @@ extension KeyBackupProtos_BackupResponse.Status: SwiftProtobuf._ProtoNameProvidi
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "OK"),
     2: .same(proto: "ALREADY_EXISTS"),
-    3: .same(proto: "NOT_YET_VALID")
+    3: .same(proto: "NOT_YET_VALID"),
   ]
 }
 
@@ -677,7 +690,7 @@ extension KeyBackupProtos_RestoreRequest: SwiftProtobuf.Message, SwiftProtobuf._
     2: .standard(proto: "backup_id"),
     3: .same(proto: "token"),
     4: .standard(proto: "valid_from"),
-    5: .same(proto: "pin")
+    5: .same(proto: "pin"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -736,7 +749,7 @@ extension KeyBackupProtos_RestoreResponse: SwiftProtobuf.Message, SwiftProtobuf.
     1: .same(proto: "status"),
     2: .same(proto: "token"),
     3: .same(proto: "data"),
-    4: .same(proto: "tries")
+    4: .same(proto: "tries"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -790,7 +803,7 @@ extension KeyBackupProtos_RestoreResponse.Status: SwiftProtobuf._ProtoNameProvid
     2: .same(proto: "TOKEN_MISMATCH"),
     3: .same(proto: "NOT_YET_VALID"),
     4: .same(proto: "MISSING"),
-    5: .same(proto: "PIN_MISMATCH")
+    5: .same(proto: "PIN_MISMATCH"),
   ]
 }
 
@@ -798,7 +811,7 @@ extension KeyBackupProtos_DeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._M
   static let protoMessageName: String = _protobuf_package + ".DeleteRequest"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "service_id"),
-    2: .standard(proto: "backup_id")
+    2: .standard(proto: "backup_id"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

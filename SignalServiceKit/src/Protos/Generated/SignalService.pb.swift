@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-// *
+//*
 // Copyright (C) 2014-2016 Open Whisper Systems
 //
 // Licensed according to the LICENSE file in this repository.
@@ -18,7 +18,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -181,17 +181,17 @@ struct SignalServiceProtos_Envelope {
 
   init() {}
 
-  fileprivate var _type: SignalServiceProtos_Envelope.TypeEnum?
-  fileprivate var _sourceE164: String?
-  fileprivate var _sourceDevice: UInt32?
-  fileprivate var _destinationUuid: String?
-  fileprivate var _relay: String?
-  fileprivate var _timestamp: UInt64?
-  fileprivate var _legacyMessage: Data?
-  fileprivate var _content: Data?
-  fileprivate var _serverGuid: String?
-  fileprivate var _serverTimestamp: UInt64?
-  fileprivate var _sourceUuid: String?
+  fileprivate var _type: SignalServiceProtos_Envelope.TypeEnum? = nil
+  fileprivate var _sourceE164: String? = nil
+  fileprivate var _sourceDevice: UInt32? = nil
+  fileprivate var _destinationUuid: String? = nil
+  fileprivate var _relay: String? = nil
+  fileprivate var _timestamp: UInt64? = nil
+  fileprivate var _legacyMessage: Data? = nil
+  fileprivate var _content: Data? = nil
+  fileprivate var _serverGuid: String? = nil
+  fileprivate var _serverTimestamp: UInt64? = nil
+  fileprivate var _sourceUuid: String? = nil
 }
 
 #if swift(>=4.2)
@@ -265,9 +265,9 @@ struct SignalServiceProtos_TypingMessage {
 
   init() {}
 
-  fileprivate var _timestamp: UInt64?
-  fileprivate var _action: SignalServiceProtos_TypingMessage.Action?
-  fileprivate var _groupID: Data?
+  fileprivate var _timestamp: UInt64? = nil
+  fileprivate var _action: SignalServiceProtos_TypingMessage.Action? = nil
+  fileprivate var _groupID: Data? = nil
 }
 
 #if swift(>=4.2)
@@ -543,20 +543,20 @@ struct SignalServiceProtos_TextAttachment {
 
     init() {}
 
-    fileprivate var _startColor: UInt32?
-    fileprivate var _endColor: UInt32?
-    fileprivate var _angle: UInt32?
+    fileprivate var _startColor: UInt32? = nil
+    fileprivate var _endColor: UInt32? = nil
+    fileprivate var _angle: UInt32? = nil
   }
 
   init() {}
 
-  fileprivate var _text: String?
-  fileprivate var _textStyle: SignalServiceProtos_TextAttachment.Style?
-  fileprivate var _textForegroundColor: UInt32?
-  fileprivate var _textBackgroundColor: UInt32?
-  fileprivate var _preview: SignalServiceProtos_Preview?
-  fileprivate var _gradient: SignalServiceProtos_TextAttachment.Gradient?
-  fileprivate var _color: UInt32?
+  fileprivate var _text: String? = nil
+  fileprivate var _textStyle: SignalServiceProtos_TextAttachment.Style? = nil
+  fileprivate var _textForegroundColor: UInt32? = nil
+  fileprivate var _textBackgroundColor: UInt32? = nil
+  fileprivate var _preview: SignalServiceProtos_Preview? = nil
+  fileprivate var _gradient: SignalServiceProtos_TextAttachment.Gradient? = nil
+  fileprivate var _color: UInt32? = nil
 }
 
 #if swift(>=4.2)
@@ -659,15 +659,15 @@ struct SignalServiceProtos_Content {
 
   init() {}
 
-  fileprivate var _dataMessage: SignalServiceProtos_DataMessage?
-  fileprivate var _syncMessage: SignalServiceProtos_SyncMessage?
-  fileprivate var _callMessage: SignalServiceProtos_CallMessage?
-  fileprivate var _nullMessage: SignalServiceProtos_NullMessage?
-  fileprivate var _receiptMessage: SignalServiceProtos_ReceiptMessage?
-  fileprivate var _typingMessage: SignalServiceProtos_TypingMessage?
-  fileprivate var _senderKeyDistributionMessage: Data?
-  fileprivate var _decryptionErrorMessage: Data?
-  fileprivate var _storyMessage: SignalServiceProtos_StoryMessage?
+  fileprivate var _dataMessage: SignalServiceProtos_DataMessage? = nil
+  fileprivate var _syncMessage: SignalServiceProtos_SyncMessage? = nil
+  fileprivate var _callMessage: SignalServiceProtos_CallMessage? = nil
+  fileprivate var _nullMessage: SignalServiceProtos_NullMessage? = nil
+  fileprivate var _receiptMessage: SignalServiceProtos_ReceiptMessage? = nil
+  fileprivate var _typingMessage: SignalServiceProtos_TypingMessage? = nil
+  fileprivate var _senderKeyDistributionMessage: Data? = nil
+  fileprivate var _decryptionErrorMessage: Data? = nil
+  fileprivate var _storyMessage: SignalServiceProtos_StoryMessage? = nil
 }
 
 struct SignalServiceProtos_CallMessage {
@@ -840,10 +840,10 @@ struct SignalServiceProtos_CallMessage {
 
     init() {}
 
-    fileprivate var _id: UInt64?
-    fileprivate var _sdp: String?
-    fileprivate var _type: SignalServiceProtos_CallMessage.Offer.TypeEnum?
-    fileprivate var _opaque: Data?
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _sdp: String? = nil
+    fileprivate var _type: SignalServiceProtos_CallMessage.Offer.TypeEnum? = nil
+    fileprivate var _opaque: Data? = nil
   }
 
   struct Answer {
@@ -884,9 +884,9 @@ struct SignalServiceProtos_CallMessage {
 
     init() {}
 
-    fileprivate var _id: UInt64?
-    fileprivate var _sdp: String?
-    fileprivate var _opaque: Data?
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _sdp: String? = nil
+    fileprivate var _opaque: Data? = nil
   }
 
   struct IceUpdate {
@@ -947,11 +947,11 @@ struct SignalServiceProtos_CallMessage {
 
     init() {}
 
-    fileprivate var _id: UInt64?
-    fileprivate var _mid: String?
-    fileprivate var _line: UInt32?
-    fileprivate var _sdp: String?
-    fileprivate var _opaque: Data?
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _mid: String? = nil
+    fileprivate var _line: UInt32? = nil
+    fileprivate var _sdp: String? = nil
+    fileprivate var _opaque: Data? = nil
   }
 
   struct Busy {
@@ -973,7 +973,7 @@ struct SignalServiceProtos_CallMessage {
 
     init() {}
 
-    fileprivate var _id: UInt64?
+    fileprivate var _id: UInt64? = nil
   }
 
   struct Hangup {
@@ -1048,9 +1048,9 @@ struct SignalServiceProtos_CallMessage {
 
     init() {}
 
-    fileprivate var _id: UInt64?
-    fileprivate var _type: SignalServiceProtos_CallMessage.Hangup.TypeEnum?
-    fileprivate var _deviceID: UInt32?
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _type: SignalServiceProtos_CallMessage.Hangup.TypeEnum? = nil
+    fileprivate var _deviceID: UInt32? = nil
   }
 
   struct Opaque {
@@ -1106,8 +1106,8 @@ struct SignalServiceProtos_CallMessage {
 
     init() {}
 
-    fileprivate var _data: Data?
-    fileprivate var _urgency: SignalServiceProtos_CallMessage.Opaque.Urgency?
+    fileprivate var _data: Data? = nil
+    fileprivate var _urgency: SignalServiceProtos_CallMessage.Opaque.Urgency? = nil
   }
 
   init() {}
@@ -1497,10 +1497,10 @@ struct SignalServiceProtos_DataMessage {
 
     init() {}
 
-    fileprivate var _id: UInt64?
-    fileprivate var _authorE164: String?
-    fileprivate var _authorUuid: String?
-    fileprivate var _text: String?
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _authorE164: String? = nil
+    fileprivate var _authorUuid: String? = nil
+    fileprivate var _text: String? = nil
   }
 
   struct Contact {
@@ -1615,12 +1615,12 @@ struct SignalServiceProtos_DataMessage {
 
       init() {}
 
-      fileprivate var _givenName: String?
-      fileprivate var _familyName: String?
-      fileprivate var _prefix: String?
-      fileprivate var _suffix: String?
-      fileprivate var _middleName: String?
-      fileprivate var _displayName: String?
+      fileprivate var _givenName: String? = nil
+      fileprivate var _familyName: String? = nil
+      fileprivate var _prefix: String? = nil
+      fileprivate var _suffix: String? = nil
+      fileprivate var _middleName: String? = nil
+      fileprivate var _displayName: String? = nil
     }
 
     struct Phone {
@@ -1691,9 +1691,9 @@ struct SignalServiceProtos_DataMessage {
 
       init() {}
 
-      fileprivate var _value: String?
-      fileprivate var _type: SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum?
-      fileprivate var _label: String?
+      fileprivate var _value: String? = nil
+      fileprivate var _type: SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum? = nil
+      fileprivate var _label: String? = nil
     }
 
     struct Email {
@@ -1764,9 +1764,9 @@ struct SignalServiceProtos_DataMessage {
 
       init() {}
 
-      fileprivate var _value: String?
-      fileprivate var _type: SignalServiceProtos_DataMessage.Contact.Email.TypeEnum?
-      fileprivate var _label: String?
+      fileprivate var _value: String? = nil
+      fileprivate var _type: SignalServiceProtos_DataMessage.Contact.Email.TypeEnum? = nil
+      fileprivate var _label: String? = nil
     }
 
     struct PostalAddress {
@@ -1888,15 +1888,15 @@ struct SignalServiceProtos_DataMessage {
 
       init() {}
 
-      fileprivate var _type: SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum?
-      fileprivate var _label: String?
-      fileprivate var _street: String?
-      fileprivate var _pobox: String?
-      fileprivate var _neighborhood: String?
-      fileprivate var _city: String?
-      fileprivate var _region: String?
-      fileprivate var _postcode: String?
-      fileprivate var _country: String?
+      fileprivate var _type: SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum? = nil
+      fileprivate var _label: String? = nil
+      fileprivate var _street: String? = nil
+      fileprivate var _pobox: String? = nil
+      fileprivate var _neighborhood: String? = nil
+      fileprivate var _city: String? = nil
+      fileprivate var _region: String? = nil
+      fileprivate var _postcode: String? = nil
+      fileprivate var _country: String? = nil
     }
 
     struct Avatar {
@@ -1926,8 +1926,8 @@ struct SignalServiceProtos_DataMessage {
 
       init() {}
 
-      fileprivate var _avatar: SignalServiceProtos_AttachmentPointer?
-      fileprivate var _isProfile: Bool?
+      fileprivate var _avatar: SignalServiceProtos_AttachmentPointer? = nil
+      fileprivate var _isProfile: Bool? = nil
     }
 
     init() {}
@@ -2052,11 +2052,11 @@ struct SignalServiceProtos_DataMessage {
 
     init() {}
 
-    fileprivate var _emoji: String?
-    fileprivate var _remove: Bool?
-    fileprivate var _authorE164: String?
-    fileprivate var _authorUuid: String?
-    fileprivate var _timestamp: UInt64?
+    fileprivate var _emoji: String? = nil
+    fileprivate var _remove: Bool? = nil
+    fileprivate var _authorE164: String? = nil
+    fileprivate var _authorUuid: String? = nil
+    fileprivate var _timestamp: UInt64? = nil
   }
 
   struct Delete {
@@ -2078,7 +2078,7 @@ struct SignalServiceProtos_DataMessage {
 
     init() {}
 
-    fileprivate var _targetSentTimestamp: UInt64?
+    fileprivate var _targetSentTimestamp: UInt64? = nil
   }
 
   struct BodyRange {
@@ -2122,9 +2122,9 @@ struct SignalServiceProtos_DataMessage {
 
     init() {}
 
-    fileprivate var _start: UInt32?
-    fileprivate var _length: UInt32?
-    fileprivate var _mentionUuid: String?
+    fileprivate var _start: UInt32? = nil
+    fileprivate var _length: UInt32? = nil
+    fileprivate var _mentionUuid: String? = nil
   }
 
   struct GroupCallUpdate {
@@ -2145,7 +2145,7 @@ struct SignalServiceProtos_DataMessage {
 
     init() {}
 
-    fileprivate var _eraID: String?
+    fileprivate var _eraID: String? = nil
   }
 
   struct Payment {
@@ -2222,12 +2222,12 @@ struct SignalServiceProtos_DataMessage {
 
         init() {}
 
-        fileprivate var _picoMob: UInt64?
+        fileprivate var _picoMob: UInt64? = nil
       }
 
       init() {}
 
-      fileprivate var _mobileCoin: SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin?
+      fileprivate var _mobileCoin: SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin? = nil
     }
 
     struct RequestId {
@@ -2249,7 +2249,7 @@ struct SignalServiceProtos_DataMessage {
 
       init() {}
 
-      fileprivate var _uuid: String?
+      fileprivate var _uuid: String? = nil
     }
 
     struct Request {
@@ -2290,9 +2290,9 @@ struct SignalServiceProtos_DataMessage {
 
       init() {}
 
-      fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId?
-      fileprivate var _amount: SignalServiceProtos_DataMessage.Payment.Amount?
-      fileprivate var _note: String?
+      fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId? = nil
+      fileprivate var _amount: SignalServiceProtos_DataMessage.Payment.Amount? = nil
+      fileprivate var _note: String? = nil
     }
 
     struct Notification {
@@ -2351,14 +2351,14 @@ struct SignalServiceProtos_DataMessage {
 
         init() {}
 
-        fileprivate var _receipt: Data?
+        fileprivate var _receipt: Data? = nil
       }
 
       init() {}
 
-      fileprivate var _mobileCoin: SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin?
-      fileprivate var _note: String?
-      fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId?
+      fileprivate var _mobileCoin: SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin? = nil
+      fileprivate var _note: String? = nil
+      fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId? = nil
     }
 
     struct Cancellation {
@@ -2380,14 +2380,14 @@ struct SignalServiceProtos_DataMessage {
 
       init() {}
 
-      fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId?
+      fileprivate var _requestID: SignalServiceProtos_DataMessage.Payment.RequestId? = nil
     }
 
     init() {}
 
-    fileprivate var _notification: SignalServiceProtos_DataMessage.Payment.Notification?
-    fileprivate var _request: SignalServiceProtos_DataMessage.Payment.Request?
-    fileprivate var _cancellation: SignalServiceProtos_DataMessage.Payment.Cancellation?
+    fileprivate var _notification: SignalServiceProtos_DataMessage.Payment.Notification? = nil
+    fileprivate var _request: SignalServiceProtos_DataMessage.Payment.Request? = nil
+    fileprivate var _cancellation: SignalServiceProtos_DataMessage.Payment.Cancellation? = nil
   }
 
   struct StoryContext {
@@ -2417,8 +2417,8 @@ struct SignalServiceProtos_DataMessage {
 
     init() {}
 
-    fileprivate var _authorUuid: String?
-    fileprivate var _sentTimestamp: UInt64?
+    fileprivate var _authorUuid: String? = nil
+    fileprivate var _sentTimestamp: UInt64? = nil
   }
 
   init() {}
@@ -2472,7 +2472,7 @@ struct SignalServiceProtos_NullMessage {
 
   init() {}
 
-  fileprivate var _padding: Data?
+  fileprivate var _padding: Data? = nil
 }
 
 struct SignalServiceProtos_ReceiptMessage {
@@ -2524,7 +2524,7 @@ struct SignalServiceProtos_ReceiptMessage {
 
   init() {}
 
-  fileprivate var _type: SignalServiceProtos_ReceiptMessage.TypeEnum?
+  fileprivate var _type: SignalServiceProtos_ReceiptMessage.TypeEnum? = nil
 }
 
 #if swift(>=4.2)
@@ -2618,11 +2618,11 @@ struct SignalServiceProtos_Verified {
 
   init() {}
 
-  fileprivate var _destinationE164: String?
-  fileprivate var _destinationUuid: String?
-  fileprivate var _identityKey: Data?
-  fileprivate var _state: SignalServiceProtos_Verified.State?
-  fileprivate var _nullMessage: Data?
+  fileprivate var _destinationE164: String? = nil
+  fileprivate var _destinationUuid: String? = nil
+  fileprivate var _identityKey: Data? = nil
+  fileprivate var _state: SignalServiceProtos_Verified.State? = nil
+  fileprivate var _nullMessage: Data? = nil
 }
 
 #if swift(>=4.2)
@@ -2880,19 +2880,19 @@ struct SignalServiceProtos_SyncMessage {
 
       init() {}
 
-      fileprivate var _destinationE164: String?
-      fileprivate var _destinationUuid: String?
-      fileprivate var _unidentified: Bool?
+      fileprivate var _destinationE164: String? = nil
+      fileprivate var _destinationUuid: String? = nil
+      fileprivate var _unidentified: Bool? = nil
     }
 
     init() {}
 
-    fileprivate var _destinationE164: String?
-    fileprivate var _destinationUuid: String?
-    fileprivate var _timestamp: UInt64?
-    fileprivate var _message: SignalServiceProtos_DataMessage?
-    fileprivate var _expirationStartTimestamp: UInt64?
-    fileprivate var _isRecipientUpdate: Bool?
+    fileprivate var _destinationE164: String? = nil
+    fileprivate var _destinationUuid: String? = nil
+    fileprivate var _timestamp: UInt64? = nil
+    fileprivate var _message: SignalServiceProtos_DataMessage? = nil
+    fileprivate var _expirationStartTimestamp: UInt64? = nil
+    fileprivate var _isRecipientUpdate: Bool? = nil
   }
 
   struct Contacts {
@@ -2924,8 +2924,8 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _blob: SignalServiceProtos_AttachmentPointer?
-    fileprivate var _isComplete: Bool?
+    fileprivate var _blob: SignalServiceProtos_AttachmentPointer? = nil
+    fileprivate var _isComplete: Bool? = nil
   }
 
   struct Groups {
@@ -2946,7 +2946,7 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _blob: SignalServiceProtos_AttachmentPointer?
+    fileprivate var _blob: SignalServiceProtos_AttachmentPointer? = nil
   }
 
   struct Blocked {
@@ -3024,7 +3024,7 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _type: SignalServiceProtos_SyncMessage.Request.TypeEnum?
+    fileprivate var _type: SignalServiceProtos_SyncMessage.Request.TypeEnum? = nil
   }
 
   struct Read {
@@ -3064,9 +3064,9 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _senderE164: String?
-    fileprivate var _senderUuid: String?
-    fileprivate var _timestamp: UInt64?
+    fileprivate var _senderE164: String? = nil
+    fileprivate var _senderUuid: String? = nil
+    fileprivate var _timestamp: UInt64? = nil
   }
 
   struct Viewed {
@@ -3106,9 +3106,9 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _senderE164: String?
-    fileprivate var _senderUuid: String?
-    fileprivate var _timestamp: UInt64?
+    fileprivate var _senderE164: String? = nil
+    fileprivate var _senderUuid: String? = nil
+    fileprivate var _timestamp: UInt64? = nil
   }
 
   struct Configuration {
@@ -3166,11 +3166,11 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _readReceipts: Bool?
-    fileprivate var _unidentifiedDeliveryIndicators: Bool?
-    fileprivate var _typingIndicators: Bool?
-    fileprivate var _provisioningVersion: UInt32?
-    fileprivate var _linkPreviews: Bool?
+    fileprivate var _readReceipts: Bool? = nil
+    fileprivate var _unidentifiedDeliveryIndicators: Bool? = nil
+    fileprivate var _typingIndicators: Bool? = nil
+    fileprivate var _provisioningVersion: UInt32? = nil
+    fileprivate var _linkPreviews: Bool? = nil
   }
 
   struct StickerPackOperation {
@@ -3237,9 +3237,9 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _packID: Data?
-    fileprivate var _packKey: Data?
-    fileprivate var _type: SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum?
+    fileprivate var _packID: Data? = nil
+    fileprivate var _packKey: Data? = nil
+    fileprivate var _type: SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum? = nil
   }
 
   struct ViewOnceOpen {
@@ -3279,9 +3279,9 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _senderE164: String?
-    fileprivate var _senderUuid: String?
-    fileprivate var _timestamp: UInt64?
+    fileprivate var _senderE164: String? = nil
+    fileprivate var _senderUuid: String? = nil
+    fileprivate var _timestamp: UInt64? = nil
   }
 
   struct FetchLatest {
@@ -3334,7 +3334,7 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _type: SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum?
+    fileprivate var _type: SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum? = nil
   }
 
   struct Keys {
@@ -3355,7 +3355,7 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _storageService: Data?
+    fileprivate var _storageService: Data? = nil
   }
 
   struct PniIdentity {
@@ -3385,8 +3385,8 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _publicKey: Data?
-    fileprivate var _privateKey: Data?
+    fileprivate var _publicKey: Data? = nil
+    fileprivate var _privateKey: Data? = nil
   }
 
   struct MessageRequestResponse {
@@ -3469,10 +3469,10 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _threadE164: String?
-    fileprivate var _threadUuid: String?
-    fileprivate var _groupID: Data?
-    fileprivate var _type: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum?
+    fileprivate var _threadE164: String? = nil
+    fileprivate var _threadUuid: String? = nil
+    fileprivate var _groupID: Data? = nil
+    fileprivate var _type: SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum? = nil
   }
 
   struct OutgoingPayment {
@@ -3580,19 +3580,19 @@ struct SignalServiceProtos_SyncMessage {
 
       init() {}
 
-      fileprivate var _recipientAddress: Data?
-      fileprivate var _amountPicoMob: UInt64?
-      fileprivate var _feePicoMob: UInt64?
-      fileprivate var _receipt: Data?
-      fileprivate var _ledgerBlockTimestamp: UInt64?
-      fileprivate var _ledgerBlockIndex: UInt64?
+      fileprivate var _recipientAddress: Data? = nil
+      fileprivate var _amountPicoMob: UInt64? = nil
+      fileprivate var _feePicoMob: UInt64? = nil
+      fileprivate var _receipt: Data? = nil
+      fileprivate var _ledgerBlockTimestamp: UInt64? = nil
+      fileprivate var _ledgerBlockIndex: UInt64? = nil
     }
 
     init() {}
 
-    fileprivate var _recipientUuid: String?
-    fileprivate var _note: String?
-    fileprivate var _mobileCoin: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin?
+    fileprivate var _recipientUuid: String? = nil
+    fileprivate var _note: String? = nil
+    fileprivate var _mobileCoin: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin? = nil
   }
 
   init() {}
@@ -3802,21 +3802,21 @@ struct SignalServiceProtos_AttachmentPointer {
 
   init() {}
 
-  fileprivate var _cdnID: UInt64?
-  fileprivate var _cdnKey: String?
-  fileprivate var _contentType: String?
-  fileprivate var _key: Data?
-  fileprivate var _size: UInt32?
-  fileprivate var _thumbnail: Data?
-  fileprivate var _digest: Data?
-  fileprivate var _fileName: String?
-  fileprivate var _flags: UInt32?
-  fileprivate var _width: UInt32?
-  fileprivate var _height: UInt32?
-  fileprivate var _caption: String?
-  fileprivate var _blurHash: String?
-  fileprivate var _uploadTimestamp: UInt64?
-  fileprivate var _cdnNumber: UInt32?
+  fileprivate var _cdnID: UInt64? = nil
+  fileprivate var _cdnKey: String? = nil
+  fileprivate var _contentType: String? = nil
+  fileprivate var _key: Data? = nil
+  fileprivate var _size: UInt32? = nil
+  fileprivate var _thumbnail: Data? = nil
+  fileprivate var _digest: Data? = nil
+  fileprivate var _fileName: String? = nil
+  fileprivate var _flags: UInt32? = nil
+  fileprivate var _width: UInt32? = nil
+  fileprivate var _height: UInt32? = nil
+  fileprivate var _caption: String? = nil
+  fileprivate var _blurHash: String? = nil
+  fileprivate var _uploadTimestamp: UInt64? = nil
+  fileprivate var _cdnNumber: UInt32? = nil
 }
 
 #if swift(>=4.2)
@@ -3935,7 +3935,7 @@ struct SignalServiceProtos_GroupContext {
 
     init() {}
 
-    fileprivate var _e164: String?
+    fileprivate var _e164: String? = nil
   }
 
   init() {}
@@ -3987,9 +3987,9 @@ struct SignalServiceProtos_GroupContextV2 {
 
   init() {}
 
-  fileprivate var _masterKey: Data?
-  fileprivate var _revision: UInt32?
-  fileprivate var _groupChange: Data?
+  fileprivate var _masterKey: Data? = nil
+  fileprivate var _revision: UInt32? = nil
+  fileprivate var _groupChange: Data? = nil
 }
 
 struct SignalServiceProtos_ContactDetails {
@@ -4126,23 +4126,23 @@ struct SignalServiceProtos_ContactDetails {
 
     init() {}
 
-    fileprivate var _contentType: String?
-    fileprivate var _length: UInt32?
+    fileprivate var _contentType: String? = nil
+    fileprivate var _length: UInt32? = nil
   }
 
   init() {}
 
-  fileprivate var _contactE164: String?
-  fileprivate var _contactUuid: String?
-  fileprivate var _name: String?
-  fileprivate var _avatar: SignalServiceProtos_ContactDetails.Avatar?
-  fileprivate var _color: String?
-  fileprivate var _verified: SignalServiceProtos_Verified?
-  fileprivate var _profileKey: Data?
-  fileprivate var _blocked: Bool?
-  fileprivate var _expireTimer: UInt32?
-  fileprivate var _inboxPosition: UInt32?
-  fileprivate var _archived: Bool?
+  fileprivate var _contactE164: String? = nil
+  fileprivate var _contactUuid: String? = nil
+  fileprivate var _name: String? = nil
+  fileprivate var _avatar: SignalServiceProtos_ContactDetails.Avatar? = nil
+  fileprivate var _color: String? = nil
+  fileprivate var _verified: SignalServiceProtos_Verified? = nil
+  fileprivate var _profileKey: Data? = nil
+  fileprivate var _blocked: Bool? = nil
+  fileprivate var _expireTimer: UInt32? = nil
+  fileprivate var _inboxPosition: UInt32? = nil
+  fileprivate var _archived: Bool? = nil
 }
 
 struct SignalServiceProtos_GroupDetails {
@@ -4265,8 +4265,8 @@ struct SignalServiceProtos_GroupDetails {
 
     init() {}
 
-    fileprivate var _contentType: String?
-    fileprivate var _length: UInt32?
+    fileprivate var _contentType: String? = nil
+    fileprivate var _length: UInt32? = nil
   }
 
   struct Member {
@@ -4288,20 +4288,20 @@ struct SignalServiceProtos_GroupDetails {
 
     init() {}
 
-    fileprivate var _e164: String?
+    fileprivate var _e164: String? = nil
   }
 
   init() {}
 
-  fileprivate var _id: Data?
-  fileprivate var _name: String?
-  fileprivate var _avatar: SignalServiceProtos_GroupDetails.Avatar?
-  fileprivate var _active: Bool?
-  fileprivate var _expireTimer: UInt32?
-  fileprivate var _color: String?
-  fileprivate var _blocked: Bool?
-  fileprivate var _inboxPosition: UInt32?
-  fileprivate var _archived: Bool?
+  fileprivate var _id: Data? = nil
+  fileprivate var _name: String? = nil
+  fileprivate var _avatar: SignalServiceProtos_GroupDetails.Avatar? = nil
+  fileprivate var _active: Bool? = nil
+  fileprivate var _expireTimer: UInt32? = nil
+  fileprivate var _color: String? = nil
+  fileprivate var _blocked: Bool? = nil
+  fileprivate var _inboxPosition: UInt32? = nil
+  fileprivate var _archived: Bool? = nil
 }
 
 struct SignalServiceProtos_Pack {
@@ -4377,16 +4377,16 @@ struct SignalServiceProtos_Pack {
 
     init() {}
 
-    fileprivate var _id: UInt32?
-    fileprivate var _emoji: String?
-    fileprivate var _contentType: String?
+    fileprivate var _id: UInt32? = nil
+    fileprivate var _emoji: String? = nil
+    fileprivate var _contentType: String? = nil
   }
 
   init() {}
 
-  fileprivate var _title: String?
-  fileprivate var _author: String?
-  fileprivate var _cover: SignalServiceProtos_Pack.Sticker?
+  fileprivate var _title: String? = nil
+  fileprivate var _author: String? = nil
+  fileprivate var _cover: SignalServiceProtos_Pack.Sticker? = nil
 }
 
 struct SignalServiceProtos_PaymentAddress {
@@ -4436,13 +4436,13 @@ struct SignalServiceProtos_PaymentAddress {
 
     init() {}
 
-    fileprivate var _publicAddress: Data?
-    fileprivate var _signature: Data?
+    fileprivate var _publicAddress: Data? = nil
+    fileprivate var _signature: Data? = nil
   }
 
   init() {}
 
-  fileprivate var _mobileCoin: SignalServiceProtos_PaymentAddress.MobileCoin?
+  fileprivate var _mobileCoin: SignalServiceProtos_PaymentAddress.MobileCoin? = nil
 }
 
 struct SignalServiceProtos_DecryptionErrorMessage {
@@ -4481,9 +4481,9 @@ struct SignalServiceProtos_DecryptionErrorMessage {
 
   init() {}
 
-  fileprivate var _ratchetKey: Data?
-  fileprivate var _timestamp: UInt64?
-  fileprivate var _deviceID: UInt32?
+  fileprivate var _ratchetKey: Data? = nil
+  fileprivate var _timestamp: UInt64? = nil
+  fileprivate var _deviceID: UInt32? = nil
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
@@ -4583,7 +4583,7 @@ extension SignalServiceProtos_DecryptionErrorMessage: @unchecked Sendable {}
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "SignalServiceProtos"
+fileprivate let _protobuf_package = "SignalServiceProtos"
 
 extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Envelope"
@@ -4598,7 +4598,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     8: .same(proto: "content"),
     9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
-    11: .same(proto: "sourceUuid")
+    11: .same(proto: "sourceUuid"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4690,7 +4690,7 @@ extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProvidi
     5: .same(proto: "RECEIPT"),
     6: .same(proto: "UNIDENTIFIED_SENDER"),
     7: .same(proto: "SENDERKEY_MESSAGE"),
-    8: .same(proto: "PLAINTEXT_CONTENT")
+    8: .same(proto: "PLAINTEXT_CONTENT"),
   ]
 }
 
@@ -4699,7 +4699,7 @@ extension SignalServiceProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobu
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "timestamp"),
     2: .same(proto: "action"),
-    3: .same(proto: "groupId")
+    3: .same(proto: "groupId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4745,7 +4745,7 @@ extension SignalServiceProtos_TypingMessage: SwiftProtobuf.Message, SwiftProtobu
 extension SignalServiceProtos_TypingMessage.Action: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "STARTED"),
-    1: .same(proto: "STOPPED")
+    1: .same(proto: "STOPPED"),
   ]
 }
 
@@ -4756,15 +4756,15 @@ extension SignalServiceProtos_StoryMessage: SwiftProtobuf.Message, SwiftProtobuf
     2: .same(proto: "group"),
     3: .same(proto: "fileAttachment"),
     4: .same(proto: "textAttachment"),
-    5: .same(proto: "allowsReplies")
+    5: .same(proto: "allowsReplies"),
   ]
 
   fileprivate class _StorageClass {
-    var _profileKey: Data?
-    var _group: SignalServiceProtos_GroupContextV2?
-    var _fileAttachment: SignalServiceProtos_AttachmentPointer?
-    var _textAttachment: SignalServiceProtos_TextAttachment?
-    var _allowsReplies: Bool?
+    var _profileKey: Data? = nil
+    var _group: SignalServiceProtos_GroupContextV2? = nil
+    var _fileAttachment: SignalServiceProtos_AttachmentPointer? = nil
+    var _textAttachment: SignalServiceProtos_TextAttachment? = nil
+    var _allowsReplies: Bool? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4856,15 +4856,15 @@ extension SignalServiceProtos_Preview: SwiftProtobuf.Message, SwiftProtobuf._Mes
     2: .same(proto: "title"),
     3: .same(proto: "image"),
     4: .same(proto: "previewDescription"),
-    5: .same(proto: "date")
+    5: .same(proto: "date"),
   ]
 
   fileprivate class _StorageClass {
-    var _url: String?
-    var _title: String?
-    var _image: SignalServiceProtos_AttachmentPointer?
-    var _previewDescription: String?
-    var _date: UInt64?
+    var _url: String? = nil
+    var _title: String? = nil
+    var _image: SignalServiceProtos_AttachmentPointer? = nil
+    var _previewDescription: String? = nil
+    var _date: UInt64? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4958,7 +4958,7 @@ extension SignalServiceProtos_TextAttachment: SwiftProtobuf.Message, SwiftProtob
     4: .same(proto: "textBackgroundColor"),
     5: .same(proto: "preview"),
     6: .same(proto: "gradient"),
-    7: .same(proto: "color")
+    7: .same(proto: "color"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5028,7 +5028,7 @@ extension SignalServiceProtos_TextAttachment.Style: SwiftProtobuf._ProtoNameProv
     2: .same(proto: "BOLD"),
     3: .same(proto: "SERIF"),
     4: .same(proto: "SCRIPT"),
-    5: .same(proto: "CONDENSED")
+    5: .same(proto: "CONDENSED"),
   ]
 }
 
@@ -5037,7 +5037,7 @@ extension SignalServiceProtos_TextAttachment.Gradient: SwiftProtobuf.Message, Sw
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "startColor"),
     2: .same(proto: "endColor"),
-    3: .same(proto: "angle")
+    3: .same(proto: "angle"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5091,7 +5091,7 @@ extension SignalServiceProtos_Content: SwiftProtobuf.Message, SwiftProtobuf._Mes
     6: .same(proto: "typingMessage"),
     7: .same(proto: "senderKeyDistributionMessage"),
     8: .same(proto: "decryptionErrorMessage"),
-    9: .same(proto: "storyMessage")
+    9: .same(proto: "storyMessage"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5176,20 +5176,20 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     7: .same(proto: "hangup"),
     8: .same(proto: "supportsMultiRing"),
     9: .same(proto: "destinationDeviceId"),
-    10: .same(proto: "opaque")
+    10: .same(proto: "opaque"),
   ]
 
   fileprivate class _StorageClass {
-    var _offer: SignalServiceProtos_CallMessage.Offer?
-    var _answer: SignalServiceProtos_CallMessage.Answer?
+    var _offer: SignalServiceProtos_CallMessage.Offer? = nil
+    var _answer: SignalServiceProtos_CallMessage.Answer? = nil
     var _iceUpdate: [SignalServiceProtos_CallMessage.IceUpdate] = []
-    var _legacyHangup: SignalServiceProtos_CallMessage.Hangup?
-    var _busy: SignalServiceProtos_CallMessage.Busy?
-    var _profileKey: Data?
-    var _hangup: SignalServiceProtos_CallMessage.Hangup?
-    var _supportsMultiRing: Bool?
-    var _destinationDeviceID: UInt32?
-    var _opaque: SignalServiceProtos_CallMessage.Opaque?
+    var _legacyHangup: SignalServiceProtos_CallMessage.Hangup? = nil
+    var _busy: SignalServiceProtos_CallMessage.Busy? = nil
+    var _profileKey: Data? = nil
+    var _hangup: SignalServiceProtos_CallMessage.Hangup? = nil
+    var _supportsMultiRing: Bool? = nil
+    var _destinationDeviceID: UInt32? = nil
+    var _opaque: SignalServiceProtos_CallMessage.Opaque? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -5310,7 +5310,7 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
     1: .same(proto: "id"),
     2: .same(proto: "sdp"),
     3: .same(proto: "type"),
-    4: .same(proto: "opaque")
+    4: .same(proto: "opaque"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5361,7 +5361,7 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
 extension SignalServiceProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "OFFER_AUDIO_CALL"),
-    1: .same(proto: "OFFER_VIDEO_CALL")
+    1: .same(proto: "OFFER_VIDEO_CALL"),
   ]
 }
 
@@ -5370,7 +5370,7 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
     2: .same(proto: "sdp"),
-    3: .same(proto: "opaque")
+    3: .same(proto: "opaque"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5420,7 +5420,7 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
     2: .same(proto: "mid"),
     3: .same(proto: "line"),
     4: .same(proto: "sdp"),
-    5: .same(proto: "opaque")
+    5: .same(proto: "opaque"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5476,7 +5476,7 @@ extension SignalServiceProtos_CallMessage.IceUpdate: SwiftProtobuf.Message, Swif
 extension SignalServiceProtos_CallMessage.Busy: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Busy"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id")
+    1: .same(proto: "id"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5514,7 +5514,7 @@ extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftPr
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
     2: .same(proto: "type"),
-    3: .same(proto: "deviceId")
+    3: .same(proto: "deviceId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5563,7 +5563,7 @@ extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoN
     1: .same(proto: "HANGUP_ACCEPTED"),
     2: .same(proto: "HANGUP_DECLINED"),
     3: .same(proto: "HANGUP_BUSY"),
-    4: .same(proto: "HANGUP_NEED_PERMISSION")
+    4: .same(proto: "HANGUP_NEED_PERMISSION"),
   ]
 }
 
@@ -5571,7 +5571,7 @@ extension SignalServiceProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftPr
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Opaque"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "data"),
-    2: .same(proto: "urgency")
+    2: .same(proto: "urgency"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5612,7 +5612,7 @@ extension SignalServiceProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftPr
 extension SignalServiceProtos_CallMessage.Opaque.Urgency: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "DROPPABLE"),
-    1: .same(proto: "HANDLE_IMMEDIATELY")
+    1: .same(proto: "HANDLE_IMMEDIATELY"),
   ]
 }
 
@@ -5638,30 +5638,30 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     18: .same(proto: "bodyRanges"),
     19: .same(proto: "groupCallUpdate"),
     20: .same(proto: "payment"),
-    21: .same(proto: "storyContext")
+    21: .same(proto: "storyContext"),
   ]
 
   fileprivate class _StorageClass {
-    var _body: String?
+    var _body: String? = nil
     var _attachments: [SignalServiceProtos_AttachmentPointer] = []
-    var _group: SignalServiceProtos_GroupContext?
-    var _groupV2: SignalServiceProtos_GroupContextV2?
-    var _flags: UInt32?
-    var _expireTimer: UInt32?
-    var _profileKey: Data?
-    var _timestamp: UInt64?
-    var _quote: SignalServiceProtos_DataMessage.Quote?
+    var _group: SignalServiceProtos_GroupContext? = nil
+    var _groupV2: SignalServiceProtos_GroupContextV2? = nil
+    var _flags: UInt32? = nil
+    var _expireTimer: UInt32? = nil
+    var _profileKey: Data? = nil
+    var _timestamp: UInt64? = nil
+    var _quote: SignalServiceProtos_DataMessage.Quote? = nil
     var _contact: [SignalServiceProtos_DataMessage.Contact] = []
     var _preview: [SignalServiceProtos_Preview] = []
-    var _sticker: SignalServiceProtos_DataMessage.Sticker?
-    var _requiredProtocolVersion: UInt32?
-    var _isViewOnce: Bool?
-    var _reaction: SignalServiceProtos_DataMessage.Reaction?
-    var _delete: SignalServiceProtos_DataMessage.Delete?
+    var _sticker: SignalServiceProtos_DataMessage.Sticker? = nil
+    var _requiredProtocolVersion: UInt32? = nil
+    var _isViewOnce: Bool? = nil
+    var _reaction: SignalServiceProtos_DataMessage.Reaction? = nil
+    var _delete: SignalServiceProtos_DataMessage.Delete? = nil
     var _bodyRanges: [SignalServiceProtos_DataMessage.BodyRange] = []
-    var _groupCallUpdate: SignalServiceProtos_DataMessage.GroupCallUpdate?
-    var _payment: SignalServiceProtos_DataMessage.Payment?
-    var _storyContext: SignalServiceProtos_DataMessage.StoryContext?
+    var _groupCallUpdate: SignalServiceProtos_DataMessage.GroupCallUpdate? = nil
+    var _payment: SignalServiceProtos_DataMessage.Payment? = nil
+    var _storyContext: SignalServiceProtos_DataMessage.StoryContext? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -5840,7 +5840,7 @@ extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProvidi
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "END_SESSION"),
     2: .same(proto: "EXPIRATION_TIMER_UPDATE"),
-    4: .same(proto: "PROFILE_KEY_UPDATE")
+    4: .same(proto: "PROFILE_KEY_UPDATE"),
   ]
 }
 
@@ -5853,7 +5853,7 @@ extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoN
     4: .same(proto: "REACTIONS"),
     5: .same(proto: "CDN_SELECTOR_ATTACHMENTS"),
     6: .same(proto: "MENTIONS"),
-    7: .aliased(proto: "PAYMENTS", aliases: ["CURRENT"])
+    7: .aliased(proto: "PAYMENTS", aliases: ["CURRENT"]),
   ]
 }
 
@@ -5865,7 +5865,7 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     5: .same(proto: "authorUuid"),
     3: .same(proto: "text"),
     4: .same(proto: "attachments"),
-    6: .same(proto: "bodyRanges")
+    6: .same(proto: "bodyRanges"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5929,14 +5929,14 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
     1: .same(proto: "contentType"),
     2: .same(proto: "fileName"),
     3: .same(proto: "thumbnail"),
-    4: .same(proto: "flags")
+    4: .same(proto: "flags"),
   ]
 
   fileprivate class _StorageClass {
-    var _contentType: String?
-    var _fileName: String?
-    var _thumbnail: SignalServiceProtos_AttachmentPointer?
-    var _flags: UInt32?
+    var _contentType: String? = nil
+    var _fileName: String? = nil
+    var _thumbnail: SignalServiceProtos_AttachmentPointer? = nil
+    var _flags: UInt32? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -6017,7 +6017,7 @@ extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment: SwiftProtobuf.
 
 extension SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "VOICE_MESSAGE")
+    1: .same(proto: "VOICE_MESSAGE"),
   ]
 }
 
@@ -6029,16 +6029,16 @@ extension SignalServiceProtos_DataMessage.Contact: SwiftProtobuf.Message, SwiftP
     4: .same(proto: "email"),
     5: .same(proto: "address"),
     6: .same(proto: "avatar"),
-    7: .same(proto: "organization")
+    7: .same(proto: "organization"),
   ]
 
   fileprivate class _StorageClass {
-    var _name: SignalServiceProtos_DataMessage.Contact.Name?
+    var _name: SignalServiceProtos_DataMessage.Contact.Name? = nil
     var _number: [SignalServiceProtos_DataMessage.Contact.Phone] = []
     var _email: [SignalServiceProtos_DataMessage.Contact.Email] = []
     var _address: [SignalServiceProtos_DataMessage.Contact.PostalAddress] = []
-    var _avatar: SignalServiceProtos_DataMessage.Contact.Avatar?
-    var _organization: String?
+    var _avatar: SignalServiceProtos_DataMessage.Contact.Avatar? = nil
+    var _organization: String? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -6137,7 +6137,7 @@ extension SignalServiceProtos_DataMessage.Contact.Name: SwiftProtobuf.Message, S
     3: .same(proto: "prefix"),
     4: .same(proto: "suffix"),
     5: .same(proto: "middleName"),
-    6: .same(proto: "displayName")
+    6: .same(proto: "displayName"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6200,7 +6200,7 @@ extension SignalServiceProtos_DataMessage.Contact.Phone: SwiftProtobuf.Message, 
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "value"),
     2: .same(proto: "type"),
-    3: .same(proto: "label")
+    3: .same(proto: "label"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6248,7 +6248,7 @@ extension SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum: SwiftProtobuf.
     1: .same(proto: "HOME"),
     2: .same(proto: "MOBILE"),
     3: .same(proto: "WORK"),
-    4: .same(proto: "CUSTOM")
+    4: .same(proto: "CUSTOM"),
   ]
 }
 
@@ -6257,7 +6257,7 @@ extension SignalServiceProtos_DataMessage.Contact.Email: SwiftProtobuf.Message, 
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "value"),
     2: .same(proto: "type"),
-    3: .same(proto: "label")
+    3: .same(proto: "label"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6305,7 +6305,7 @@ extension SignalServiceProtos_DataMessage.Contact.Email.TypeEnum: SwiftProtobuf.
     1: .same(proto: "HOME"),
     2: .same(proto: "MOBILE"),
     3: .same(proto: "WORK"),
-    4: .same(proto: "CUSTOM")
+    4: .same(proto: "CUSTOM"),
   ]
 }
 
@@ -6320,7 +6320,7 @@ extension SignalServiceProtos_DataMessage.Contact.PostalAddress: SwiftProtobuf.M
     6: .same(proto: "city"),
     7: .same(proto: "region"),
     8: .same(proto: "postcode"),
-    9: .same(proto: "country")
+    9: .same(proto: "country"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6397,7 +6397,7 @@ extension SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum: SwiftP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "HOME"),
     2: .same(proto: "WORK"),
-    3: .same(proto: "CUSTOM")
+    3: .same(proto: "CUSTOM"),
   ]
 }
 
@@ -6405,7 +6405,7 @@ extension SignalServiceProtos_DataMessage.Contact.Avatar: SwiftProtobuf.Message,
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Contact.protoMessageName + ".Avatar"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "avatar"),
-    2: .same(proto: "isProfile")
+    2: .same(proto: "isProfile"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6450,15 +6450,15 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
     2: .same(proto: "packKey"),
     3: .same(proto: "stickerId"),
     4: .same(proto: "data"),
-    5: .same(proto: "emoji")
+    5: .same(proto: "emoji"),
   ]
 
   fileprivate class _StorageClass {
-    var _packID: Data?
-    var _packKey: Data?
-    var _stickerID: UInt32?
-    var _data: SignalServiceProtos_AttachmentPointer?
-    var _emoji: String?
+    var _packID: Data? = nil
+    var _packKey: Data? = nil
+    var _stickerID: UInt32? = nil
+    var _data: SignalServiceProtos_AttachmentPointer? = nil
+    var _emoji: String? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -6550,7 +6550,7 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
     2: .same(proto: "remove"),
     3: .same(proto: "authorE164"),
     4: .same(proto: "authorUuid"),
-    5: .same(proto: "timestamp")
+    5: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6606,7 +6606,7 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
 extension SignalServiceProtos_DataMessage.Delete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Delete"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "targetSentTimestamp")
+    1: .same(proto: "targetSentTimestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6644,7 +6644,7 @@ extension SignalServiceProtos_DataMessage.BodyRange: SwiftProtobuf.Message, Swif
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "start"),
     2: .same(proto: "length"),
-    3: .same(proto: "mentionUuid")
+    3: .same(proto: "mentionUuid"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6690,7 +6690,7 @@ extension SignalServiceProtos_DataMessage.BodyRange: SwiftProtobuf.Message, Swif
 extension SignalServiceProtos_DataMessage.GroupCallUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".GroupCallUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "eraId")
+    1: .same(proto: "eraId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6728,7 +6728,7 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "notification"),
     1002: .same(proto: "request"),
-    1003: .same(proto: "cancellation")
+    1003: .same(proto: "cancellation"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6774,7 +6774,7 @@ extension SignalServiceProtos_DataMessage.Payment: SwiftProtobuf.Message, SwiftP
 extension SignalServiceProtos_DataMessage.Payment.Amount: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Amount"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "mobileCoin")
+    1: .same(proto: "mobileCoin"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6810,7 +6810,7 @@ extension SignalServiceProtos_DataMessage.Payment.Amount: SwiftProtobuf.Message,
 extension SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.Amount.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "picoMob")
+    1: .same(proto: "picoMob"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6846,7 +6846,7 @@ extension SignalServiceProtos_DataMessage.Payment.Amount.MobileCoin: SwiftProtob
 extension SignalServiceProtos_DataMessage.Payment.RequestId: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".RequestId"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "uuid")
+    1: .same(proto: "uuid"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6884,7 +6884,7 @@ extension SignalServiceProtos_DataMessage.Payment.Request: SwiftProtobuf.Message
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "requestId"),
     2: .same(proto: "amount"),
-    3: .same(proto: "note")
+    3: .same(proto: "note"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6932,7 +6932,7 @@ extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Me
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "mobileCoin"),
     2: .same(proto: "note"),
-    1003: .same(proto: "requestId")
+    1003: .same(proto: "requestId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -6978,7 +6978,7 @@ extension SignalServiceProtos_DataMessage.Payment.Notification: SwiftProtobuf.Me
 extension SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.Notification.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "receipt")
+    1: .same(proto: "receipt"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7014,7 +7014,7 @@ extension SignalServiceProtos_DataMessage.Payment.Notification.MobileCoin: Swift
 extension SignalServiceProtos_DataMessage.Payment.Cancellation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_DataMessage.Payment.protoMessageName + ".Cancellation"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "requestId")
+    1: .same(proto: "requestId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7051,7 +7051,7 @@ extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, S
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".StoryContext"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "authorUuid"),
-    2: .same(proto: "sentTimestamp")
+    2: .same(proto: "sentTimestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7092,7 +7092,7 @@ extension SignalServiceProtos_DataMessage.StoryContext: SwiftProtobuf.Message, S
 extension SignalServiceProtos_NullMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".NullMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "padding")
+    1: .same(proto: "padding"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7129,7 +7129,7 @@ extension SignalServiceProtos_ReceiptMessage: SwiftProtobuf.Message, SwiftProtob
   static let protoMessageName: String = _protobuf_package + ".ReceiptMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
-    2: .same(proto: "timestamp")
+    2: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7171,7 +7171,7 @@ extension SignalServiceProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "DELIVERY"),
     1: .same(proto: "READ"),
-    2: .same(proto: "VIEWED")
+    2: .same(proto: "VIEWED"),
   ]
 }
 
@@ -7182,7 +7182,7 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
     5: .same(proto: "destinationUuid"),
     2: .same(proto: "identityKey"),
     3: .same(proto: "state"),
-    4: .same(proto: "nullMessage")
+    4: .same(proto: "nullMessage"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7239,7 +7239,7 @@ extension SignalServiceProtos_Verified.State: SwiftProtobuf._ProtoNameProviding 
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "DEFAULT"),
     1: .same(proto: "VERIFIED"),
-    2: .same(proto: "UNVERIFIED")
+    2: .same(proto: "UNVERIFIED"),
   ]
 }
 
@@ -7262,27 +7262,27 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     14: .same(proto: "messageRequestResponse"),
     15: .same(proto: "outgoingPayment"),
     16: .same(proto: "viewed"),
-    17: .same(proto: "pniIdentity")
+    17: .same(proto: "pniIdentity"),
   ]
 
   fileprivate class _StorageClass {
-    var _sent: SignalServiceProtos_SyncMessage.Sent?
-    var _contacts: SignalServiceProtos_SyncMessage.Contacts?
-    var _groups: SignalServiceProtos_SyncMessage.Groups?
-    var _request: SignalServiceProtos_SyncMessage.Request?
+    var _sent: SignalServiceProtos_SyncMessage.Sent? = nil
+    var _contacts: SignalServiceProtos_SyncMessage.Contacts? = nil
+    var _groups: SignalServiceProtos_SyncMessage.Groups? = nil
+    var _request: SignalServiceProtos_SyncMessage.Request? = nil
     var _read: [SignalServiceProtos_SyncMessage.Read] = []
-    var _blocked: SignalServiceProtos_SyncMessage.Blocked?
-    var _verified: SignalServiceProtos_Verified?
-    var _configuration: SignalServiceProtos_SyncMessage.Configuration?
-    var _padding: Data?
+    var _blocked: SignalServiceProtos_SyncMessage.Blocked? = nil
+    var _verified: SignalServiceProtos_Verified? = nil
+    var _configuration: SignalServiceProtos_SyncMessage.Configuration? = nil
+    var _padding: Data? = nil
     var _stickerPackOperation: [SignalServiceProtos_SyncMessage.StickerPackOperation] = []
-    var _viewOnceOpen: SignalServiceProtos_SyncMessage.ViewOnceOpen?
-    var _fetchLatest: SignalServiceProtos_SyncMessage.FetchLatest?
-    var _keys: SignalServiceProtos_SyncMessage.Keys?
-    var _messageRequestResponse: SignalServiceProtos_SyncMessage.MessageRequestResponse?
-    var _outgoingPayment: SignalServiceProtos_SyncMessage.OutgoingPayment?
+    var _viewOnceOpen: SignalServiceProtos_SyncMessage.ViewOnceOpen? = nil
+    var _fetchLatest: SignalServiceProtos_SyncMessage.FetchLatest? = nil
+    var _keys: SignalServiceProtos_SyncMessage.Keys? = nil
+    var _messageRequestResponse: SignalServiceProtos_SyncMessage.MessageRequestResponse? = nil
+    var _outgoingPayment: SignalServiceProtos_SyncMessage.OutgoingPayment? = nil
     var _viewed: [SignalServiceProtos_SyncMessage.Viewed] = []
-    var _pniIdentity: SignalServiceProtos_SyncMessage.PniIdentity?
+    var _pniIdentity: SignalServiceProtos_SyncMessage.PniIdentity? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -7448,7 +7448,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     3: .same(proto: "message"),
     4: .same(proto: "expirationStartTimestamp"),
     5: .same(proto: "unidentifiedStatus"),
-    6: .same(proto: "isRecipientUpdate")
+    6: .same(proto: "isRecipientUpdate"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7516,7 +7516,7 @@ extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: Swift
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "destinationE164"),
     3: .same(proto: "destinationUuid"),
-    2: .same(proto: "unidentified")
+    2: .same(proto: "unidentified"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7563,7 +7563,7 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Contacts"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "blob"),
-    2: .same(proto: "isComplete")
+    2: .same(proto: "isComplete"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7604,7 +7604,7 @@ extension SignalServiceProtos_SyncMessage.Contacts: SwiftProtobuf.Message, Swift
 extension SignalServiceProtos_SyncMessage.Groups: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Groups"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "blob")
+    1: .same(proto: "blob"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7642,7 +7642,7 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "numbers"),
     2: .same(proto: "groupIds"),
-    3: .same(proto: "uuids")
+    3: .same(proto: "uuids"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7684,7 +7684,7 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
 extension SignalServiceProtos_SyncMessage.Request: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Request"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type")
+    1: .same(proto: "type"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7725,7 +7725,7 @@ extension SignalServiceProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._Proto
     3: .same(proto: "BLOCKED"),
     4: .same(proto: "CONFIGURATION"),
     5: .same(proto: "KEYS"),
-    6: .same(proto: "PNI_IDENTITY")
+    6: .same(proto: "PNI_IDENTITY"),
   ]
 }
 
@@ -7734,7 +7734,7 @@ extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProt
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "senderE164"),
     3: .same(proto: "senderUuid"),
-    2: .same(proto: "timestamp")
+    2: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7782,7 +7782,7 @@ extension SignalServiceProtos_SyncMessage.Viewed: SwiftProtobuf.Message, SwiftPr
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "senderE164"),
     3: .same(proto: "senderUuid"),
-    2: .same(proto: "timestamp")
+    2: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7832,7 +7832,7 @@ extension SignalServiceProtos_SyncMessage.Configuration: SwiftProtobuf.Message, 
     2: .same(proto: "unidentifiedDeliveryIndicators"),
     3: .same(proto: "typingIndicators"),
     5: .same(proto: "provisioningVersion"),
-    6: .same(proto: "linkPreviews")
+    6: .same(proto: "linkPreviews"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7890,7 +7890,7 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation: SwiftProtobuf.Me
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "packId"),
     2: .same(proto: "packKey"),
-    3: .same(proto: "type")
+    3: .same(proto: "type"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7936,7 +7936,7 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation: SwiftProtobuf.Me
 extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "INSTALL"),
-    1: .same(proto: "REMOVE")
+    1: .same(proto: "REMOVE"),
   ]
 }
 
@@ -7945,7 +7945,7 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, S
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "senderE164"),
     3: .same(proto: "senderUuid"),
-    2: .same(proto: "timestamp")
+    2: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -7991,7 +7991,7 @@ extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, S
 extension SignalServiceProtos_SyncMessage.FetchLatest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".FetchLatest"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "type")
+    1: .same(proto: "type"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8029,14 +8029,14 @@ extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: SwiftProtobuf._P
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "LOCAL_PROFILE"),
     2: .same(proto: "STORAGE_MANIFEST"),
-    3: .same(proto: "SUBSCRIPTION_STATUS")
+    3: .same(proto: "SUBSCRIPTION_STATUS"),
   ]
 }
 
 extension SignalServiceProtos_SyncMessage.Keys: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Keys"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "storageService")
+    1: .same(proto: "storageService"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8073,7 +8073,7 @@ extension SignalServiceProtos_SyncMessage.PniIdentity: SwiftProtobuf.Message, Sw
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".PniIdentity"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "publicKey"),
-    2: .same(proto: "privateKey")
+    2: .same(proto: "privateKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8117,7 +8117,7 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: SwiftProtobuf.
     1: .same(proto: "threadE164"),
     2: .same(proto: "threadUuid"),
     3: .same(proto: "groupId"),
-    4: .same(proto: "type")
+    4: .same(proto: "type"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8171,7 +8171,7 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: Swift
     1: .same(proto: "ACCEPT"),
     2: .same(proto: "DELETE"),
     3: .same(proto: "BLOCK"),
-    4: .same(proto: "BLOCK_AND_DELETE")
+    4: .same(proto: "BLOCK_AND_DELETE"),
   ]
 }
 
@@ -8180,7 +8180,7 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment: SwiftProtobuf.Message
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "recipientUuid"),
     2: .same(proto: "note"),
-    3: .same(proto: "mobileCoin")
+    3: .same(proto: "mobileCoin"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8233,7 +8233,7 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProto
     5: .same(proto: "ledgerBlockTimestamp"),
     6: .same(proto: "ledgerBlockIndex"),
     7: .same(proto: "spentKeyImages"),
-    8: .same(proto: "outputPublicKeys")
+    8: .same(proto: "outputPublicKeys"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8318,7 +8318,7 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     11: .same(proto: "caption"),
     12: .same(proto: "blurHash"),
     13: .same(proto: "uploadTimestamp"),
-    14: .same(proto: "cdnNumber")
+    14: .same(proto: "cdnNumber"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8425,7 +8425,7 @@ extension SignalServiceProtos_AttachmentPointer.Flags: SwiftProtobuf._ProtoNameP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "VOICE_MESSAGE"),
     2: .same(proto: "BORDERLESS"),
-    8: .same(proto: "GIF")
+    8: .same(proto: "GIF"),
   ]
 }
 
@@ -8437,15 +8437,15 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
     3: .same(proto: "name"),
     4: .same(proto: "membersE164"),
     5: .same(proto: "avatar"),
-    6: .same(proto: "members")
+    6: .same(proto: "members"),
   ]
 
   fileprivate class _StorageClass {
-    var _id: Data?
-    var _type: SignalServiceProtos_GroupContext.TypeEnum?
-    var _name: String?
+    var _id: Data? = nil
+    var _type: SignalServiceProtos_GroupContext.TypeEnum? = nil
+    var _name: String? = nil
     var _membersE164: [String] = []
-    var _avatar: SignalServiceProtos_AttachmentPointer?
+    var _avatar: SignalServiceProtos_AttachmentPointer? = nil
     var _members: [SignalServiceProtos_GroupContext.Member] = []
 
     static let defaultInstance = _StorageClass()
@@ -8543,14 +8543,14 @@ extension SignalServiceProtos_GroupContext.TypeEnum: SwiftProtobuf._ProtoNamePro
     1: .same(proto: "UPDATE"),
     2: .same(proto: "DELIVER"),
     3: .same(proto: "QUIT"),
-    4: .same(proto: "REQUEST_INFO")
+    4: .same(proto: "REQUEST_INFO"),
   ]
 }
 
 extension SignalServiceProtos_GroupContext.Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_GroupContext.protoMessageName + ".Member"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "e164")
+    2: .same(proto: "e164"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8588,7 +8588,7 @@ extension SignalServiceProtos_GroupContextV2: SwiftProtobuf.Message, SwiftProtob
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "masterKey"),
     2: .same(proto: "revision"),
-    3: .same(proto: "groupChange")
+    3: .same(proto: "groupChange"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8644,7 +8644,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
     7: .same(proto: "blocked"),
     8: .same(proto: "expireTimer"),
     10: .same(proto: "inboxPosition"),
-    11: .same(proto: "archived")
+    11: .same(proto: "archived"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8731,7 +8731,7 @@ extension SignalServiceProtos_ContactDetails.Avatar: SwiftProtobuf.Message, Swif
   static let protoMessageName: String = SignalServiceProtos_ContactDetails.protoMessageName + ".Avatar"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "contentType"),
-    2: .same(proto: "length")
+    2: .same(proto: "length"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8782,7 +8782,7 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
     8: .same(proto: "blocked"),
     9: .same(proto: "members"),
     10: .same(proto: "inboxPosition"),
-    11: .same(proto: "archived")
+    11: .same(proto: "archived"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8869,7 +8869,7 @@ extension SignalServiceProtos_GroupDetails.Avatar: SwiftProtobuf.Message, SwiftP
   static let protoMessageName: String = SignalServiceProtos_GroupDetails.protoMessageName + ".Avatar"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "contentType"),
-    2: .same(proto: "length")
+    2: .same(proto: "length"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8910,7 +8910,7 @@ extension SignalServiceProtos_GroupDetails.Avatar: SwiftProtobuf.Message, SwiftP
 extension SignalServiceProtos_GroupDetails.Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_GroupDetails.protoMessageName + ".Member"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    2: .same(proto: "e164")
+    2: .same(proto: "e164"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8949,7 +8949,7 @@ extension SignalServiceProtos_Pack: SwiftProtobuf.Message, SwiftProtobuf._Messag
     1: .same(proto: "title"),
     2: .same(proto: "author"),
     3: .same(proto: "cover"),
-    4: .same(proto: "stickers")
+    4: .same(proto: "stickers"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -9002,7 +9002,7 @@ extension SignalServiceProtos_Pack.Sticker: SwiftProtobuf.Message, SwiftProtobuf
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
     2: .same(proto: "emoji"),
-    3: .same(proto: "contentType")
+    3: .same(proto: "contentType"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -9048,7 +9048,7 @@ extension SignalServiceProtos_Pack.Sticker: SwiftProtobuf.Message, SwiftProtobuf
 extension SignalServiceProtos_PaymentAddress: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".PaymentAddress"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "mobileCoin")
+    1: .same(proto: "mobileCoin"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -9085,7 +9085,7 @@ extension SignalServiceProtos_PaymentAddress.MobileCoin: SwiftProtobuf.Message, 
   static let protoMessageName: String = SignalServiceProtos_PaymentAddress.protoMessageName + ".MobileCoin"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "publicAddress"),
-    2: .same(proto: "signature")
+    2: .same(proto: "signature"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -9128,7 +9128,7 @@ extension SignalServiceProtos_DecryptionErrorMessage: SwiftProtobuf.Message, Swi
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "ratchetKey"),
     2: .same(proto: "timestamp"),
-    3: .same(proto: "deviceId")
+    3: .same(proto: "deviceId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

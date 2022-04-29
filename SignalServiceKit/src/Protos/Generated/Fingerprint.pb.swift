@@ -13,7 +13,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -37,7 +37,7 @@ struct FingerprintProtos_LogicalFingerprint {
 
   init() {}
 
-  fileprivate var _identityData: Data?
+  fileprivate var _identityData: Data? = nil
 }
 
 struct FingerprintProtos_LogicalFingerprints {
@@ -79,19 +79,24 @@ struct FingerprintProtos_LogicalFingerprints {
 
   init() {}
 
-  fileprivate var _version: UInt32?
-  fileprivate var _localFingerprint: FingerprintProtos_LogicalFingerprint?
-  fileprivate var _remoteFingerprint: FingerprintProtos_LogicalFingerprint?
+  fileprivate var _version: UInt32? = nil
+  fileprivate var _localFingerprint: FingerprintProtos_LogicalFingerprint? = nil
+  fileprivate var _remoteFingerprint: FingerprintProtos_LogicalFingerprint? = nil
 }
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension FingerprintProtos_LogicalFingerprint: @unchecked Sendable {}
+extension FingerprintProtos_LogicalFingerprints: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "FingerprintProtos"
+fileprivate let _protobuf_package = "FingerprintProtos"
 
 extension FingerprintProtos_LogicalFingerprint: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".LogicalFingerprint"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "identityData")
+    1: .same(proto: "identityData"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -129,7 +134,7 @@ extension FingerprintProtos_LogicalFingerprints: SwiftProtobuf.Message, SwiftPro
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "version"),
     2: .same(proto: "localFingerprint"),
-    3: .same(proto: "remoteFingerprint")
+    3: .same(proto: "remoteFingerprint"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-// *
+//*
 // Copyright (C) 2014-2016 Open Whisper Systems
 //
 // Licensed according to the LICENSE file in this repository.
@@ -18,7 +18,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -73,10 +73,10 @@ struct WebSocketProtos_WebSocketRequestMessage {
 
   init() {}
 
-  fileprivate var _verb: String?
-  fileprivate var _path: String?
-  fileprivate var _body: Data?
-  fileprivate var _requestID: UInt64?
+  fileprivate var _verb: String? = nil
+  fileprivate var _path: String? = nil
+  fileprivate var _body: Data? = nil
+  fileprivate var _requestID: UInt64? = nil
 }
 
 struct WebSocketProtos_WebSocketResponseMessage {
@@ -128,10 +128,10 @@ struct WebSocketProtos_WebSocketResponseMessage {
 
   init() {}
 
-  fileprivate var _requestID: UInt64?
-  fileprivate var _status: UInt32?
-  fileprivate var _message: String?
-  fileprivate var _body: Data?
+  fileprivate var _requestID: UInt64? = nil
+  fileprivate var _status: UInt32? = nil
+  fileprivate var _message: String? = nil
+  fileprivate var _body: Data? = nil
 }
 
 struct WebSocketProtos_WebSocketMessage {
@@ -199,9 +199,9 @@ struct WebSocketProtos_WebSocketMessage {
 
   init() {}
 
-  fileprivate var _type: WebSocketProtos_WebSocketMessage.TypeEnum?
-  fileprivate var _request: WebSocketProtos_WebSocketRequestMessage?
-  fileprivate var _response: WebSocketProtos_WebSocketResponseMessage?
+  fileprivate var _type: WebSocketProtos_WebSocketMessage.TypeEnum? = nil
+  fileprivate var _request: WebSocketProtos_WebSocketRequestMessage? = nil
+  fileprivate var _response: WebSocketProtos_WebSocketResponseMessage? = nil
 }
 
 #if swift(>=4.2)
@@ -212,9 +212,16 @@ extension WebSocketProtos_WebSocketMessage.TypeEnum: CaseIterable {
 
 #endif  // swift(>=4.2)
 
+#if swift(>=5.5) && canImport(_Concurrency)
+extension WebSocketProtos_WebSocketRequestMessage: @unchecked Sendable {}
+extension WebSocketProtos_WebSocketResponseMessage: @unchecked Sendable {}
+extension WebSocketProtos_WebSocketMessage: @unchecked Sendable {}
+extension WebSocketProtos_WebSocketMessage.TypeEnum: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "WebSocketProtos"
+fileprivate let _protobuf_package = "WebSocketProtos"
 
 extension WebSocketProtos_WebSocketRequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".WebSocketRequestMessage"
@@ -223,7 +230,7 @@ extension WebSocketProtos_WebSocketRequestMessage: SwiftProtobuf.Message, SwiftP
     2: .same(proto: "path"),
     3: .same(proto: "body"),
     5: .same(proto: "headers"),
-    4: .same(proto: "requestId")
+    4: .same(proto: "requestId"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -283,7 +290,7 @@ extension WebSocketProtos_WebSocketResponseMessage: SwiftProtobuf.Message, Swift
     2: .same(proto: "status"),
     3: .same(proto: "message"),
     5: .same(proto: "headers"),
-    4: .same(proto: "body")
+    4: .same(proto: "body"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -341,7 +348,7 @@ extension WebSocketProtos_WebSocketMessage: SwiftProtobuf.Message, SwiftProtobuf
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
     2: .same(proto: "request"),
-    3: .same(proto: "response")
+    3: .same(proto: "response"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -388,6 +395,6 @@ extension WebSocketProtos_WebSocketMessage.TypeEnum: SwiftProtobuf._ProtoNamePro
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "REQUEST"),
-    2: .same(proto: "RESPONSE")
+    2: .same(proto: "RESPONSE"),
   ]
 }

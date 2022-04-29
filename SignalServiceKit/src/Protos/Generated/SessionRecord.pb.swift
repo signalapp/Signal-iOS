@@ -13,7 +13,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -193,8 +193,8 @@ struct SessionRecordProtos_SessionStructure {
 
       init() {}
 
-      fileprivate var _index: UInt32?
-      fileprivate var _key: Data?
+      fileprivate var _index: UInt32? = nil
+      fileprivate var _key: Data? = nil
     }
 
     struct MessageKey {
@@ -242,17 +242,17 @@ struct SessionRecordProtos_SessionStructure {
 
       init() {}
 
-      fileprivate var _index: UInt32?
-      fileprivate var _cipherKey: Data?
-      fileprivate var _macKey: Data?
-      fileprivate var _iv: Data?
+      fileprivate var _index: UInt32? = nil
+      fileprivate var _cipherKey: Data? = nil
+      fileprivate var _macKey: Data? = nil
+      fileprivate var _iv: Data? = nil
     }
 
     init() {}
 
-    fileprivate var _senderRatchetKey: Data?
-    fileprivate var _senderRatchetKeyPrivate: Data?
-    fileprivate var _chainKey: SessionRecordProtos_SessionStructure.Chain.ChainKey?
+    fileprivate var _senderRatchetKey: Data? = nil
+    fileprivate var _senderRatchetKeyPrivate: Data? = nil
+    fileprivate var _chainKey: SessionRecordProtos_SessionStructure.Chain.ChainKey? = nil
   }
 
   struct PendingPreKey {
@@ -291,9 +291,9 @@ struct SessionRecordProtos_SessionStructure {
 
     init() {}
 
-    fileprivate var _preKeyID: UInt32?
-    fileprivate var _signedPreKeyID: Int32?
-    fileprivate var _baseKey: Data?
+    fileprivate var _preKeyID: UInt32? = nil
+    fileprivate var _signedPreKeyID: Int32? = nil
+    fileprivate var _baseKey: Data? = nil
   }
 
   init() {}
@@ -322,12 +322,21 @@ struct SessionRecordProtos_RecordStructure {
 
   init() {}
 
-  fileprivate var _currentSession: SessionRecordProtos_SessionStructure?
+  fileprivate var _currentSession: SessionRecordProtos_SessionStructure? = nil
 }
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension SessionRecordProtos_SessionStructure: @unchecked Sendable {}
+extension SessionRecordProtos_SessionStructure.Chain: @unchecked Sendable {}
+extension SessionRecordProtos_SessionStructure.Chain.ChainKey: @unchecked Sendable {}
+extension SessionRecordProtos_SessionStructure.Chain.MessageKey: @unchecked Sendable {}
+extension SessionRecordProtos_SessionStructure.PendingPreKey: @unchecked Sendable {}
+extension SessionRecordProtos_RecordStructure: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "SessionRecordProtos"
+fileprivate let _protobuf_package = "SessionRecordProtos"
 
 extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".SessionStructure"
@@ -343,22 +352,22 @@ extension SessionRecordProtos_SessionStructure: SwiftProtobuf.Message, SwiftProt
     10: .same(proto: "remoteRegistrationId"),
     11: .same(proto: "localRegistrationId"),
     12: .same(proto: "needsRefresh"),
-    13: .same(proto: "aliceBaseKey")
+    13: .same(proto: "aliceBaseKey"),
   ]
 
   fileprivate class _StorageClass {
-    var _sessionVersion: UInt32?
-    var _localIdentityPublic: Data?
-    var _remoteIdentityPublic: Data?
-    var _rootKey: Data?
-    var _previousCounter: UInt32?
-    var _senderChain: SessionRecordProtos_SessionStructure.Chain?
+    var _sessionVersion: UInt32? = nil
+    var _localIdentityPublic: Data? = nil
+    var _remoteIdentityPublic: Data? = nil
+    var _rootKey: Data? = nil
+    var _previousCounter: UInt32? = nil
+    var _senderChain: SessionRecordProtos_SessionStructure.Chain? = nil
     var _receiverChains: [SessionRecordProtos_SessionStructure.Chain] = []
-    var _pendingPreKey: SessionRecordProtos_SessionStructure.PendingPreKey?
-    var _remoteRegistrationID: UInt32?
-    var _localRegistrationID: UInt32?
-    var _needsRefresh: Bool?
-    var _aliceBaseKey: Data?
+    var _pendingPreKey: SessionRecordProtos_SessionStructure.PendingPreKey? = nil
+    var _remoteRegistrationID: UInt32? = nil
+    var _localRegistrationID: UInt32? = nil
+    var _needsRefresh: Bool? = nil
+    var _aliceBaseKey: Data? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -491,7 +500,7 @@ extension SessionRecordProtos_SessionStructure.Chain: SwiftProtobuf.Message, Swi
     1: .same(proto: "senderRatchetKey"),
     2: .same(proto: "senderRatchetKeyPrivate"),
     3: .same(proto: "chainKey"),
-    4: .same(proto: "messageKeys")
+    4: .same(proto: "messageKeys"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -543,7 +552,7 @@ extension SessionRecordProtos_SessionStructure.Chain.ChainKey: SwiftProtobuf.Mes
   static let protoMessageName: String = SessionRecordProtos_SessionStructure.Chain.protoMessageName + ".ChainKey"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "index"),
-    2: .same(proto: "key")
+    2: .same(proto: "key"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -587,7 +596,7 @@ extension SessionRecordProtos_SessionStructure.Chain.MessageKey: SwiftProtobuf.M
     1: .same(proto: "index"),
     2: .same(proto: "cipherKey"),
     3: .same(proto: "macKey"),
-    4: .same(proto: "iv")
+    4: .same(proto: "iv"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -640,7 +649,7 @@ extension SessionRecordProtos_SessionStructure.PendingPreKey: SwiftProtobuf.Mess
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "preKeyId"),
     3: .same(proto: "signedPreKeyId"),
-    2: .same(proto: "baseKey")
+    2: .same(proto: "baseKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -687,7 +696,7 @@ extension SessionRecordProtos_RecordStructure: SwiftProtobuf.Message, SwiftProto
   static let protoMessageName: String = _protobuf_package + ".RecordStructure"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "currentSession"),
-    2: .same(proto: "previousSessions")
+    2: .same(proto: "previousSessions"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

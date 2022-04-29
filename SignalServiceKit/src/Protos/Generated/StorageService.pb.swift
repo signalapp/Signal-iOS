@@ -13,7 +13,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -99,7 +99,7 @@ struct StorageServiceProtos_WriteOperation {
 
   init() {}
 
-  fileprivate var _manifest: StorageServiceProtos_StorageManifest?
+  fileprivate var _manifest: StorageServiceProtos_StorageManifest? = nil
 }
 
 struct StorageServiceProtos_ManifestRecord {
@@ -179,7 +179,7 @@ extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: CaseIterable {
     .contact,
     .groupv1,
     .groupv2,
-    .account
+    .account,
   ]
 }
 
@@ -190,7 +190,7 @@ struct StorageServiceProtos_StorageRecord {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var record: StorageServiceProtos_StorageRecord.OneOf_Record?
+  var record: StorageServiceProtos_StorageRecord.OneOf_Record? = nil
 
   var contact: StorageServiceProtos_ContactRecord {
     get {
@@ -338,7 +338,7 @@ extension StorageServiceProtos_ContactRecord.IdentityState: CaseIterable {
   static var allCases: [StorageServiceProtos_ContactRecord.IdentityState] = [
     .default,
     .verified,
-    .unverified
+    .unverified,
   ]
 }
 
@@ -553,7 +553,7 @@ struct StorageServiceProtos_AccountRecord {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var identifier: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier?
+    var identifier: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier? = nil
 
     var contact: StorageServiceProtos_AccountRecord.PinnedConversation.Contact {
       get {
@@ -653,21 +653,44 @@ extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: CaseIterabl
   static var allCases: [StorageServiceProtos_AccountRecord.PhoneNumberSharingMode] = [
     .everybody,
     .contactsOnly,
-    .nobody
+    .nobody,
   ]
 }
 
 #endif  // swift(>=4.2)
 
+#if swift(>=5.5) && canImport(_Concurrency)
+extension StorageServiceProtos_StorageItem: @unchecked Sendable {}
+extension StorageServiceProtos_StorageItems: @unchecked Sendable {}
+extension StorageServiceProtos_StorageManifest: @unchecked Sendable {}
+extension StorageServiceProtos_ReadOperation: @unchecked Sendable {}
+extension StorageServiceProtos_WriteOperation: @unchecked Sendable {}
+extension StorageServiceProtos_ManifestRecord: @unchecked Sendable {}
+extension StorageServiceProtos_ManifestRecord.Key: @unchecked Sendable {}
+extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: @unchecked Sendable {}
+extension StorageServiceProtos_StorageRecord: @unchecked Sendable {}
+extension StorageServiceProtos_StorageRecord.OneOf_Record: @unchecked Sendable {}
+extension StorageServiceProtos_ContactRecord: @unchecked Sendable {}
+extension StorageServiceProtos_ContactRecord.IdentityState: @unchecked Sendable {}
+extension StorageServiceProtos_GroupV1Record: @unchecked Sendable {}
+extension StorageServiceProtos_GroupV2Record: @unchecked Sendable {}
+extension StorageServiceProtos_AccountRecord: @unchecked Sendable {}
+extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: @unchecked Sendable {}
+extension StorageServiceProtos_AccountRecord.PinnedConversation: @unchecked Sendable {}
+extension StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier: @unchecked Sendable {}
+extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: @unchecked Sendable {}
+extension StorageServiceProtos_AccountRecord.Payments: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "StorageServiceProtos"
+fileprivate let _protobuf_package = "StorageServiceProtos"
 
 extension StorageServiceProtos_StorageItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageItem"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "key"),
-    2: .same(proto: "value")
+    2: .same(proto: "value"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -704,7 +727,7 @@ extension StorageServiceProtos_StorageItem: SwiftProtobuf.Message, SwiftProtobuf
 extension StorageServiceProtos_StorageItems: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageItems"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "items")
+    1: .same(proto: "items"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -737,7 +760,7 @@ extension StorageServiceProtos_StorageManifest: SwiftProtobuf.Message, SwiftProt
   static let protoMessageName: String = _protobuf_package + ".StorageManifest"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "version"),
-    2: .same(proto: "value")
+    2: .same(proto: "value"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -774,7 +797,7 @@ extension StorageServiceProtos_StorageManifest: SwiftProtobuf.Message, SwiftProt
 extension StorageServiceProtos_ReadOperation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ReadOperation"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "readKey")
+    1: .same(proto: "readKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -809,7 +832,7 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
     1: .same(proto: "manifest"),
     2: .same(proto: "insertItem"),
     3: .same(proto: "deleteKey"),
-    4: .same(proto: "deleteAll")
+    4: .same(proto: "deleteAll"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -861,7 +884,7 @@ extension StorageServiceProtos_ManifestRecord: SwiftProtobuf.Message, SwiftProto
   static let protoMessageName: String = _protobuf_package + ".ManifestRecord"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "version"),
-    2: .same(proto: "keys")
+    2: .same(proto: "keys"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -899,7 +922,7 @@ extension StorageServiceProtos_ManifestRecord.Key: SwiftProtobuf.Message, SwiftP
   static let protoMessageName: String = StorageServiceProtos_ManifestRecord.protoMessageName + ".Key"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "data"),
-    2: .same(proto: "type")
+    2: .same(proto: "type"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -939,7 +962,7 @@ extension StorageServiceProtos_ManifestRecord.Key.TypeEnum: SwiftProtobuf._Proto
     1: .same(proto: "CONTACT"),
     2: .same(proto: "GROUPV1"),
     3: .same(proto: "GROUPV2"),
-    4: .same(proto: "ACCOUNT")
+    4: .same(proto: "ACCOUNT"),
   ]
 }
 
@@ -949,7 +972,7 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
     1: .same(proto: "contact"),
     2: .same(proto: "groupV1"),
     3: .same(proto: "groupV2"),
-    4: .same(proto: "account")
+    4: .same(proto: "account"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1064,7 +1087,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     10: .same(proto: "whitelisted"),
     11: .same(proto: "archived"),
     12: .same(proto: "markedUnread"),
-    13: .same(proto: "mutedUntilTimestamp")
+    13: .same(proto: "mutedUntilTimestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1157,7 +1180,7 @@ extension StorageServiceProtos_ContactRecord.IdentityState: SwiftProtobuf._Proto
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "DEFAULT"),
     1: .same(proto: "VERIFIED"),
-    2: .same(proto: "UNVERIFIED")
+    2: .same(proto: "UNVERIFIED"),
   ]
 }
 
@@ -1169,7 +1192,7 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
     3: .same(proto: "whitelisted"),
     4: .same(proto: "archived"),
     5: .same(proto: "markedUnread"),
-    6: .same(proto: "mutedUntilTimestamp")
+    6: .same(proto: "mutedUntilTimestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1231,7 +1254,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     3: .same(proto: "whitelisted"),
     4: .same(proto: "archived"),
     5: .same(proto: "markedUnread"),
-    6: .same(proto: "mutedUntilTimestamp")
+    6: .same(proto: "mutedUntilTimestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1310,7 +1333,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     21: .same(proto: "subscriberID"),
     22: .same(proto: "subscriberCurrencyCode"),
     23: .same(proto: "displayBadgesOnProfile"),
-    24: .same(proto: "subscriptionManuallyCancelled")
+    24: .same(proto: "subscriptionManuallyCancelled"),
   ]
 
   fileprivate class _StorageClass {
@@ -1329,7 +1352,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _notDiscoverableByPhoneNumber: Bool = false
     var _pinnedConversations: [StorageServiceProtos_AccountRecord.PinnedConversation] = []
     var _preferContactAvatars: Bool = false
-    var _payments: StorageServiceProtos_AccountRecord.Payments?
+    var _payments: StorageServiceProtos_AccountRecord.Payments? = nil
     var _universalExpireTimer: UInt32 = 0
     var _e164: String = String()
     var _preferredReactionEmoji: [String] = []
@@ -1533,7 +1556,7 @@ extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: SwiftProtob
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "EVERYBODY"),
     1: .same(proto: "CONTACTS_ONLY"),
-    2: .same(proto: "NOBODY")
+    2: .same(proto: "NOBODY"),
   ]
 }
 
@@ -1542,7 +1565,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "contact"),
     3: .same(proto: "legacyGroupId"),
-    4: .same(proto: "groupMasterKey")
+    4: .same(proto: "groupMasterKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1619,7 +1642,7 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation.Contact: SwiftPr
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.PinnedConversation.protoMessageName + ".Contact"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "uuid"),
-    2: .same(proto: "e164")
+    2: .same(proto: "e164"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1657,7 +1680,7 @@ extension StorageServiceProtos_AccountRecord.Payments: SwiftProtobuf.Message, Sw
   static let protoMessageName: String = StorageServiceProtos_AccountRecord.protoMessageName + ".Payments"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "enabled"),
-    2: .same(proto: "paymentsEntropy")
+    2: .same(proto: "paymentsEntropy"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

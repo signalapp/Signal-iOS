@@ -13,7 +13,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -85,8 +85,8 @@ struct DeviceTransferProtos_Database {
 
   init() {}
 
-  fileprivate var _database: DeviceTransferProtos_File?
-  fileprivate var _wal: DeviceTransferProtos_File?
+  fileprivate var _database: DeviceTransferProtos_File? = nil
+  fileprivate var _wal: DeviceTransferProtos_File? = nil
 }
 
 struct DeviceTransferProtos_Manifest {
@@ -118,19 +118,26 @@ struct DeviceTransferProtos_Manifest {
 
   init() {}
 
-  fileprivate var _database: DeviceTransferProtos_Database?
+  fileprivate var _database: DeviceTransferProtos_Database? = nil
 }
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension DeviceTransferProtos_File: @unchecked Sendable {}
+extension DeviceTransferProtos_Default: @unchecked Sendable {}
+extension DeviceTransferProtos_Database: @unchecked Sendable {}
+extension DeviceTransferProtos_Manifest: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "DeviceTransferProtos"
+fileprivate let _protobuf_package = "DeviceTransferProtos"
 
 extension DeviceTransferProtos_File: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".File"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "identifier"),
     2: .same(proto: "relativePath"),
-    3: .same(proto: "estimatedSize")
+    3: .same(proto: "estimatedSize"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -173,7 +180,7 @@ extension DeviceTransferProtos_Default: SwiftProtobuf.Message, SwiftProtobuf._Me
   static let protoMessageName: String = _protobuf_package + ".Default"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "key"),
-    2: .same(proto: "encodedValue")
+    2: .same(proto: "encodedValue"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -212,7 +219,7 @@ extension DeviceTransferProtos_Database: SwiftProtobuf.Message, SwiftProtobuf._M
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "key"),
     2: .same(proto: "database"),
-    3: .same(proto: "wal")
+    3: .same(proto: "wal"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -263,7 +270,7 @@ extension DeviceTransferProtos_Manifest: SwiftProtobuf.Message, SwiftProtobuf._M
     3: .same(proto: "appDefaults"),
     4: .same(proto: "standardDefaults"),
     5: .same(proto: "files"),
-    6: .same(proto: "estimatedTotalSize")
+    6: .same(proto: "estimatedTotalSize"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

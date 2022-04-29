@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-// *
+//*
 // Copyright (C) 2014-2016 Open Whisper Systems
 //
 // Licensed according to the LICENSE file in this repository.
@@ -18,7 +18,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -42,7 +42,7 @@ struct ProvisioningProtos_ProvisioningUuid {
 
   init() {}
 
-  fileprivate var _uuid: String?
+  fileprivate var _uuid: String? = nil
 }
 
 struct ProvisioningProtos_ProvisionEnvelope {
@@ -74,8 +74,8 @@ struct ProvisioningProtos_ProvisionEnvelope {
 
   init() {}
 
-  fileprivate var _publicKey: Data?
-  fileprivate var _body: Data?
+  fileprivate var _publicKey: Data? = nil
+  fileprivate var _body: Data? = nil
 }
 
 struct ProvisioningProtos_ProvisionMessage {
@@ -199,18 +199,18 @@ struct ProvisioningProtos_ProvisionMessage {
 
   init() {}
 
-  fileprivate var _aciIdentityKeyPublic: Data?
-  fileprivate var _aciIdentityKeyPrivate: Data?
-  fileprivate var _pniIdentityKeyPublic: Data?
-  fileprivate var _pniIdentityKeyPrivate: Data?
-  fileprivate var _aci: String?
-  fileprivate var _pni: String?
-  fileprivate var _number: String?
-  fileprivate var _provisioningCode: String?
-  fileprivate var _userAgent: String?
-  fileprivate var _profileKey: Data?
-  fileprivate var _readReceipts: Bool?
-  fileprivate var _provisioningVersion: UInt32?
+  fileprivate var _aciIdentityKeyPublic: Data? = nil
+  fileprivate var _aciIdentityKeyPrivate: Data? = nil
+  fileprivate var _pniIdentityKeyPublic: Data? = nil
+  fileprivate var _pniIdentityKeyPrivate: Data? = nil
+  fileprivate var _aci: String? = nil
+  fileprivate var _pni: String? = nil
+  fileprivate var _number: String? = nil
+  fileprivate var _provisioningCode: String? = nil
+  fileprivate var _userAgent: String? = nil
+  fileprivate var _profileKey: Data? = nil
+  fileprivate var _readReceipts: Bool? = nil
+  fileprivate var _provisioningVersion: UInt32? = nil
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
@@ -221,12 +221,12 @@ extension ProvisioningProtos_ProvisionMessage: @unchecked Sendable {}
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "ProvisioningProtos"
+fileprivate let _protobuf_package = "ProvisioningProtos"
 
 extension ProvisioningProtos_ProvisioningUuid: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".ProvisioningUuid"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "uuid")
+    1: .same(proto: "uuid"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -263,7 +263,7 @@ extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProt
   static let protoMessageName: String = _protobuf_package + ".ProvisionEnvelope"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "publicKey"),
-    2: .same(proto: "body")
+    2: .same(proto: "body"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -315,7 +315,7 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
     5: .same(proto: "userAgent"),
     6: .same(proto: "profileKey"),
     7: .same(proto: "readReceipts"),
-    9: .same(proto: "provisioningVersion")
+    9: .same(proto: "provisioningVersion"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

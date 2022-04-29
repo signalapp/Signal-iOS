@@ -2,7 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-// *
+//*
 // Copyright (C) 2014-2016 Open Whisper Systems
 //
 // Licensed according to the LICENSE file in this repository.
@@ -18,7 +18,7 @@ import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -118,10 +118,10 @@ struct IOSProtos_BackupSnapshot {
 
     init() {}
 
-    fileprivate var _type: IOSProtos_BackupSnapshot.BackupEntity.TypeEnum?
-    fileprivate var _entityData: Data?
-    fileprivate var _collection: String?
-    fileprivate var _key: String?
+    fileprivate var _type: IOSProtos_BackupSnapshot.BackupEntity.TypeEnum? = nil
+    fileprivate var _entityData: Data? = nil
+    fileprivate var _collection: String? = nil
+    fileprivate var _key: String? = nil
   }
 
   init() {}
@@ -174,19 +174,26 @@ struct IOSProtos_DeviceName {
 
   init() {}
 
-  fileprivate var _ephemeralPublic: Data?
-  fileprivate var _syntheticIv: Data?
-  fileprivate var _ciphertext: Data?
+  fileprivate var _ephemeralPublic: Data? = nil
+  fileprivate var _syntheticIv: Data? = nil
+  fileprivate var _ciphertext: Data? = nil
 }
+
+#if swift(>=5.5) && canImport(_Concurrency)
+extension IOSProtos_BackupSnapshot: @unchecked Sendable {}
+extension IOSProtos_BackupSnapshot.BackupEntity: @unchecked Sendable {}
+extension IOSProtos_BackupSnapshot.BackupEntity.TypeEnum: @unchecked Sendable {}
+extension IOSProtos_DeviceName: @unchecked Sendable {}
+#endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-private let _protobuf_package = "IOSProtos"
+fileprivate let _protobuf_package = "IOSProtos"
 
 extension IOSProtos_BackupSnapshot: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".BackupSnapshot"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "entity")
+    1: .same(proto: "entity"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -221,7 +228,7 @@ extension IOSProtos_BackupSnapshot.BackupEntity: SwiftProtobuf.Message, SwiftPro
     1: .same(proto: "type"),
     2: .same(proto: "entityData"),
     3: .same(proto: "collection"),
-    4: .same(proto: "key")
+    4: .same(proto: "key"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -276,7 +283,7 @@ extension IOSProtos_BackupSnapshot.BackupEntity.TypeEnum: SwiftProtobuf._ProtoNa
     2: .same(proto: "THREAD"),
     3: .same(proto: "INTERACTION"),
     4: .same(proto: "ATTACHMENT"),
-    5: .same(proto: "MISC")
+    5: .same(proto: "MISC"),
   ]
 }
 
@@ -285,7 +292,7 @@ extension IOSProtos_DeviceName: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "ephemeralPublic"),
     2: .same(proto: "syntheticIv"),
-    3: .same(proto: "ciphertext")
+    3: .same(proto: "ciphertext"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
