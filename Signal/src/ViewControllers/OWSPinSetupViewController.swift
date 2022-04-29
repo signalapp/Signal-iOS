@@ -100,7 +100,7 @@ public class PinSetupViewController: OWSViewController {
         return pinTypeToggle
     }()
 
-    private let nextButton: OWSFlatButton = {
+    private lazy var nextButton: OWSFlatButton = {
         let nextButton = OWSFlatButton()
         nextButton.setTitle(
             title: CommonStrings.nextButton,
@@ -112,6 +112,7 @@ public class PinSetupViewController: OWSViewController {
         nextButton.button.layer.cornerRadius = 14
         nextButton.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
 
+        nextButton.addTarget(target: self, selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "pinCreation.nextButton"
         return nextButton
     }()
@@ -136,17 +137,19 @@ public class PinSetupViewController: OWSViewController {
         return recommendationLabel
     }()
 
-    private let backButton: UIButton = {
+    private lazy var backButton: UIButton = {
         let topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
         let backButton = UIButton.withTemplateImage(topButtonImage, tintColor: Theme.secondaryTextAndIconColor)
 
         backButton.autoSetDimensions(to: CGSize(square: 40))
+        backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
         return backButton
     }()
 
-    private let moreButton: UIButton = {
+    private lazy var moreButton: UIButton = {
         let moreButton = UIButton.withTemplateImageName("more-horiz-24", tintColor: Theme.primaryIconColor)
         moreButton.autoSetDimensions(to: CGSize(square: 40))
+        moreButton.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
         return moreButton
     }()
 
@@ -369,10 +372,6 @@ public class PinSetupViewController: OWSViewController {
         if #available(iOS 13, *) {
             isModalInPresentation = true
         }
-
-        nextButton.addTarget(target: self, selector: #selector(nextPressed))
-        backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
-        moreButton.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
     }
 
     var titleText: String {

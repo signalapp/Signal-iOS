@@ -46,7 +46,7 @@ class GroupCallErrorView: UIView {
         return label
     }()
 
-    private let button: UIButton = {
+    private lazy var button: UIButton = {
         let buttonLabel = NSLocalizedString(
             "GROUP_CALL_ERROR_DETAILS",
             comment: "A button to receive more info about not seeing a participant in group call grid")
@@ -62,14 +62,16 @@ class GroupCallErrorView: UIView {
         button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
         button.setTitle(buttonLabel, for: .normal)
 
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         return button
     }()
 
-    private let miniButton: UIButton = {
+    private lazy var miniButton: UIButton = {
         let button = UIButton()
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
 
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         return button
     }()
 
@@ -104,9 +106,6 @@ class GroupCallErrorView: UIView {
         iconView.autoSetDimensions(to: CGSize(width: 24, height: 24))
         button.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
         miniButton.autoSetDimensions(to: CGSize(width: 24, height: 24))
-
-        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
-        miniButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
 
         configure()
     }
