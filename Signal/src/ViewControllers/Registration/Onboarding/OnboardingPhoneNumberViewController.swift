@@ -76,7 +76,6 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
         label.textColor = Theme.primaryTextColor
         label.font = UIFont.ows_dynamicTypeBodyClamped
         label.isUserInteractionEnabled = true
-        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryCodeTapped)))
         label.accessibilityIdentifier = "onboarding.phoneNumber." + "callingCodeLabel"
         return label
     }()
@@ -256,6 +255,8 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
         phoneNumberTextField.delegate = self
         phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         populateDefaults()
+
+        callingCodeLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(countryCodeTapped)))
     }
 
     var isAppearing = false

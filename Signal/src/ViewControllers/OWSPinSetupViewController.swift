@@ -112,7 +112,6 @@ public class PinSetupViewController: OWSViewController {
         nextButton.button.layer.cornerRadius = 14
         nextButton.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
 
-        nextButton.addTarget(target: self, selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "pinCreation.nextButton"
         return nextButton
     }()
@@ -142,14 +141,12 @@ public class PinSetupViewController: OWSViewController {
         let backButton = UIButton.withTemplateImage(topButtonImage, tintColor: Theme.secondaryTextAndIconColor)
 
         backButton.autoSetDimensions(to: CGSize(square: 40))
-        backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
         return backButton
     }()
 
     private let moreButton: UIButton = {
         let moreButton = UIButton.withTemplateImageName("more-horiz-24", tintColor: Theme.primaryIconColor)
         moreButton.autoSetDimensions(to: CGSize(square: 40))
-        moreButton.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
         return moreButton
     }()
 
@@ -372,6 +369,10 @@ public class PinSetupViewController: OWSViewController {
         if #available(iOS 13, *) {
             isModalInPresentation = true
         }
+
+        nextButton.addTarget(target: self, selector: #selector(nextPressed))
+        backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+        moreButton.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
     }
 
     var titleText: String {

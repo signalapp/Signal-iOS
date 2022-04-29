@@ -62,7 +62,6 @@ class GroupCallErrorView: UIView {
         button.titleLabel?.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
         button.setTitle(buttonLabel, for: .normal)
 
-        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         return button
     }()
 
@@ -71,7 +70,6 @@ class GroupCallErrorView: UIView {
         button.contentVerticalAlignment = .fill
         button.contentHorizontalAlignment = .fill
 
-        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         return button
     }()
 
@@ -106,6 +104,9 @@ class GroupCallErrorView: UIView {
         iconView.autoSetDimensions(to: CGSize(width: 24, height: 24))
         button.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
         miniButton.autoSetDimensions(to: CGSize(width: 24, height: 24))
+
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
+        miniButton.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
 
         configure()
     }
