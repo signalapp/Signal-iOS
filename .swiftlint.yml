@@ -5,6 +5,7 @@ disabled_rules:
 - function_parameter_count
 - line_length
 - nesting
+- todo
 - type_body_length
 opt_in_rules:
 - attributes
