@@ -130,10 +130,21 @@ public extension OWSFormat {
         return formatter
     }()
 
+    private static let byteCountFormatter: ByteCountFormatter = {
+        let formatter = ByteCountFormatter()
+        formatter.formattingContext = .standalone
+        formatter.countStyle = .file
+        return formatter
+    }()
+
     static func localizedDecimalString(from number: Int) -> String {
         let result = decimalNumberFormatter.string(for: number)
         owsAssertDebug(result != nil, "Formatted string is nil. number=[\(number)]")
         return result ?? ""
+    }
+
+    static func localizedFileSizeString(from fileSize: Int64) -> String {
+        return byteCountFormatter.string(fromByteCount: fileSize)
     }
 }
 

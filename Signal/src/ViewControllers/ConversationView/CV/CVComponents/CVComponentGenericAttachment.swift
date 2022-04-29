@@ -135,7 +135,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             var textComponents = [String]()
 
             if attachmentPointer.byteCount > 0 {
-                textComponents.append(OWSFormat.formatFileSize(UInt(attachmentPointer.byteCount)))
+                textComponents.append(OWSFormat.localizedFileSizeString(from: Int64(attachmentPointer.byteCount)))
             }
 
             switch attachmentPointer.state {
@@ -151,9 +151,9 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         } else if let attachmentStream = attachmentStream {
             if let originalFilePath = attachmentStream.originalFilePath,
                let nsFileSize = OWSFileSystem.fileSize(ofPath: originalFilePath) {
-                let fileSize = nsFileSize.uintValue
+                let fileSize = nsFileSize.int64Value
                 if fileSize > 0 {
-                    text = OWSFormat.formatFileSize(fileSize)
+                    text = OWSFormat.localizedFileSizeString(from: fileSize)
                 }
             }
         } else {

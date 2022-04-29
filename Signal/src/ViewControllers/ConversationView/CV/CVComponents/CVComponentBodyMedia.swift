@@ -197,7 +197,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 let totalSize = pendingManualDownloadAttachments.map { $0.byteCount}.reduce(0, +)
 
                 if totalSize > 0 {
-                    var downloadSizeText = [OWSFormat.formatFileSize(UInt(totalSize))]
+                    var downloadSizeText = [OWSFormat.localizedFileSizeString(from: Int64(totalSize))]
                     if pendingManualDownloadAttachments.count == 1,
                        let firstAttachmentPointer = pendingManualDownloadAttachments.first {
                         if firstAttachmentPointer.isAnimated || firstAttachmentPointer.isLoopingVideo {
