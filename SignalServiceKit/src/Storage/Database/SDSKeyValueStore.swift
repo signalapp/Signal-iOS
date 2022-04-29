@@ -59,7 +59,7 @@ public class SDSKeyValueStore: NSObject {
                 )
             )
         """
-        let statement = try database.makeUpdateStatement(sql: sql)
+        let statement = try database.makeStatement(sql: sql)
         try statement.execute()
     }
 
@@ -700,7 +700,7 @@ public class SDSKeyValueStore: NSObject {
                         sql: String,
                         arguments: [DatabaseValueConvertible]) throws {
 
-        let statement = try transaction.database.cachedUpdateStatement(sql: sql)
+        let statement = try transaction.database.cachedStatement(sql: sql)
         guard let statementArguments = StatementArguments(arguments) else {
             owsFailDebug("Could not convert values.")
             return

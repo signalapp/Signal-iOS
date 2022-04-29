@@ -75,7 +75,7 @@ public extension SDSRecord {
             let whereSQL = "\(uniqueIdColumnName.quotedDatabaseIdentifier)=?"
             let sql: String = "DELETE FROM \(tableName.quotedDatabaseIdentifier) WHERE \(whereSQL)"
 
-            let statement = try transaction.database.cachedUpdateStatement(sql: sql)
+            let statement = try transaction.database.cachedStatement(sql: sql)
             guard let arguments = StatementArguments([uniqueIdColumnValue]) else {
                 owsFail("Could not convert values.")
             }

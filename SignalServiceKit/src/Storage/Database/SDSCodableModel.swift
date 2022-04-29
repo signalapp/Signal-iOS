@@ -57,7 +57,7 @@ public extension SDSCodableModel {
     func anyWillRemove(transaction: SDSAnyWriteTransaction) {}
     func anyDidRemove(transaction: SDSAnyWriteTransaction) {}
 
-    static var databaseUUIDEncodingStrategy: DatabaseUUIDEncodingStrategy { .string }
+    static var databaseUUIDEncodingStrategy: DatabaseUUIDEncodingStrategy { .uppercaseString }
     static var databaseDateEncodingStrategy: DatabaseDateEncodingStrategy { .timeIntervalSince1970 }
     static var databaseDateDecodingStrategy: DatabaseDateDecodingStrategy { .timeIntervalSince1970 }
 
@@ -285,7 +285,7 @@ fileprivate extension SDSCodableModel {
                 WHERE uniqueId = ?
             """
 
-            let statement = try transaction.database.cachedUpdateStatement(sql: sql)
+            let statement = try transaction.database.cachedStatement(sql: sql)
             guard let arguments = StatementArguments([uniqueId]) else {
                 owsFail("Could not convert values.")
             }

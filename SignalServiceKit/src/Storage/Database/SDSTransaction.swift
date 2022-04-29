@@ -253,7 +253,7 @@ public extension StoreContext {
 public extension GRDBWriteTransaction {
     func executeUpdate(sql: String, arguments: StatementArguments = StatementArguments()) {
         do {
-            let statement = try database.makeUpdateStatement(sql: sql)
+            let statement = try database.makeStatement(sql: sql)
             // TODO: We could use setArgumentsWithValidation for more safety.
             statement.setUncheckedArguments(arguments)
             try statement.execute()
@@ -267,7 +267,7 @@ public extension GRDBWriteTransaction {
     func executeWithCachedStatement(sql: String,
                                     arguments: StatementArguments = StatementArguments()) {
         do {
-            let statement = try database.cachedUpdateStatement(sql: sql)
+            let statement = try database.cachedStatement(sql: sql)
             // TODO: We could use setArgumentsWithValidation for more safety.
             statement.setUncheckedArguments(arguments)
             try statement.execute()
