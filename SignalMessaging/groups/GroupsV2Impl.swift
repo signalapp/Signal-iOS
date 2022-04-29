@@ -2117,7 +2117,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                     allowCached: false)
         }.catch { (error: Error) -> Void in
             switch error {
-            case GroupsV2Error.localUserNotInGroup, GroupsV2Error.localUserBlockedFromJoining:
+            case GroupsV2Error.localUserIsNotARequestingMember, GroupsV2Error.localUserBlockedFromJoining:
                 // Expected if our request has been cancelled or we're banned
                 Logger.verbose("Error: \(error)")
             default:
