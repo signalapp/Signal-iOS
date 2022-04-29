@@ -26,7 +26,7 @@ extension MessageSender {
     }
 
     class func ensureSessions(forMessageSends messageSends: [OWSMessageSend],
-                                      ignoreErrors: Bool) -> Promise<Void> {
+                              ignoreErrors: Bool) -> Promise<Void> {
         let promise = firstly(on: .global()) { () -> Promise<Void> in
             var promises = [Promise<Void>]()
             for messageSend in messageSends {
@@ -1042,9 +1042,9 @@ public extension MessageSender {
     }
 
     func markAddressAsUnregistered(_ address: SignalServiceAddress,
-                                             message: TSOutgoingMessage,
-                                             thread: TSThread,
-                                             transaction: SDSAnyWriteTransaction) {
+                                   message: TSOutgoingMessage,
+                                   thread: TSThread,
+                                   transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(!Thread.isMainThread)
 
         if thread.isGroupThread {
@@ -1220,7 +1220,7 @@ extension MessageSender {
 
         // Returns the per-device-message parameters used when submitting a message to
         // the Signal Web Service.
-        // See: https://github.com/signalapp/Signal-Server/blob/master/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java
+        // See: https://github.com/signalapp/Signal-Server/blob/9b3a8897cdfab4e830b3caa7f5f300ed25fedea9/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java
         return [
             "type": messageType.rawValue,
             "destination": protocolAddress.name,
@@ -1272,7 +1272,7 @@ extension MessageSender {
 
         // Returns the per-device-message parameters used when submitting a message to
         // the Signal Web Service.
-        // See: https://github.com/signalapp/Signal-Server/blob/master/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java
+        // See: https://github.com/signalapp/Signal-Server/blob/9b3a8897cdfab4e830b3caa7f5f300ed25fedea9/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java
         let session = try signalProtocolStore(for: .aci).sessionStore.loadSession(for: protocolAddress,
                                                                                   context: transaction)!
         return [

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSData+messagePadding.h"
@@ -30,7 +30,7 @@
 - (NSData *)paddedMessageBody
 {
     // From
-    // https://github.com/signalapp/TextSecure/blob/master/libtextsecure/src/main/java/org/whispersystems/textsecure/internal/push/PushTransportDetails.java#L55
+    // https://github.com/signalapp/Signal-Android/blob/c4bc2162f23e0fd6bc25941af8fb7454d91a4a35/libsignal/service/src/main/java/org/whispersystems/signalservice/internal/push/PushTransportDetails.java#L36-L45
     // NOTE: This is dumb.  We have our own padding scheme, but so does the cipher.
     // The +1 -1 here is to make sure the Cipher has room to add one padding byte,
     // otherwise it'll add a full 16 extra bytes.

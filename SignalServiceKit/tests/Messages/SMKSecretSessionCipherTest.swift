@@ -8,7 +8,7 @@ import XCTest
 import Curve25519Kit
 import SignalCoreKit
 
-// https://github.com/signalapp/libsignal-metadata-java/blob/master/tests/src/test/java/org/signal/libsignal/metadata/SecretSessionCipherTest.java
+// https://github.com/signalapp/libsignal-metadata-java/blob/4a0e0c87ea733d5c007488671b74ace0dc5dcbef/tests/src/test/java/org/signal/libsignal/metadata/SealedSessionCipherTest.java
 // public class SecretSessionCipherTest extends TestCase {
 class SMKSecretSessionCipherTest: SSKBaseTestSwift {
 

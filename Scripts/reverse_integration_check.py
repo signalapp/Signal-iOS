@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # When we make a hotfix, we need to reverse integrate our hotfix back into
-# master. After committing to master, this script audits that all tags have been
+# main. After committing to main, this script audits that all tags have been
 # reverse integrated.
 import subprocess
 import logging
@@ -31,12 +31,12 @@ class Version:
         return False
 
 
-def is_on_master():
+def is_on_main():
     output = subprocess.check_output(
         ["git", "rev-parse", "--abbrev-ref", "HEAD"], text=True
     ).strip()
     logging.debug("branch output: %s" % output)
-    return output == "master"
+    return output == "main"
 
 
 def main():
@@ -44,18 +44,18 @@ def main():
     parser.add_argument(
         "--current-branch",
         action="store_true",
-        help="if unspecified, the check is only run when on the master branch",
+        help="if unspecified, the check is only run when on the main branch",
     )
 
     args = parser.parse_args()
 
-    if not is_on_master():
+    if not is_on_main():
         # Don't interfere while on a feature or hotfix branch
-        logging.debug("not on master branch")
+        logging.debug("not on main branch")
         if not args.current_branch:
             return
     else:
-        logging.debug("on master branch")
+        logging.debug("on main branch")
 
     unmerged_tags_output = subprocess.check_output(
         ["git", "tag", "--no-merged", "HEAD"], text=True
