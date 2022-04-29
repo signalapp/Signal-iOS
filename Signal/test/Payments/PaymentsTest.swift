@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -87,14 +87,14 @@ class PaymentsTest: SignalBaseTest {
         XCTAssertEqual(["1", "2345", "67", "89"], RemoteConfig.parsePaymentsDisabledRegions(valueList: "1,2 345, +6 7,, ,89"))
     }
 
-    func test_isValidPhoneNumberForPayments_remoteConfigBlacklist() {
-        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+523456",
+    func test_isValidPhoneNumberForPayments_remoteConfigBlocklist() {
+        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+523456",
                                                                                              paymentsDisabledRegions: ["1", "234"]))
-        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+123456",
+        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+123456",
                                                                                               paymentsDisabledRegions: ["1", "234"]))
-        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+233333333",
+        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+233333333",
                                                                                              paymentsDisabledRegions: ["1", "234"]))
-        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+234333333",
+        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+234333333",
                                                                                               paymentsDisabledRegions: ["1", "234"]))
     }
 }

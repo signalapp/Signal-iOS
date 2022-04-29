@@ -23,7 +23,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         if paymentsDisabledRegions.isEmpty {
             return Self.isValidPhoneNumberForPayments_fixedWhitelist(localNumber)
         } else {
-            return Self.isValidPhoneNumberForPayments_remoteConfigBlacklist(localNumber,
+            return Self.isValidPhoneNumberForPayments_remoteConfigBlocklist(localNumber,
                                                                             paymentsDisabledRegions: paymentsDisabledRegions)
              }
     }
@@ -50,7 +50,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         return validCountryCodes.contains(nsCountryCode.intValue)
     }
 
-    internal static func isValidPhoneNumberForPayments_remoteConfigBlacklist(_ e164: String,
+    internal static func isValidPhoneNumberForPayments_remoteConfigBlocklist(_ e164: String,
                                                                              paymentsDisabledRegions: [String]) -> Bool {
         guard !paymentsDisabledRegions.isEmpty else {
             owsFailDebug("Missing paymentsDisabledRegions.")
