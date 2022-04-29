@@ -330,7 +330,7 @@ public final class OpenGroupManager: NSObject {
             // - Room image (if there is one and it's different from the existing one, or we don't have the existing one)
             if let imageId: UInt64 = UInt64(updatedOpenGroup.imageID ?? ""), (updatedModel.groupImage == nil || updatedOpenGroup.imageID != existingOpenGroup?.imageID) {
                 OpenGroupManager.roomImage(imageId, for: roomToken, on: server, using: dependencies)
-                    .done(on: DispatchQueue.global(qos: .userInitiated)) { data in
+                    .done { data in
                         dependencies.storage.write { transaction in
                             // Update the thread
                             let transaction = transaction as! YapDatabaseReadWriteTransaction

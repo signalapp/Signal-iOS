@@ -25,7 +25,7 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - Nimble (9.2.0)
+  - Nimble (10.0.0)
   - NVActivityIndicatorView (5.1.1):
     - NVActivityIndicatorView/Base (= 5.1.1)
   - NVActivityIndicatorView/Base (5.1.1)
@@ -129,7 +129,7 @@ DEPENDENCIES:
   - Curve25519Kit (from `https://github.com/oxen-io/session-ios-curve-25519-kit.git`, branch `session-version`)
   - GoogleWebRTC
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - Nimble (from `https://github.com/Quick/Nimble`, commit `cabe966`)
+  - Nimble
   - NVActivityIndicatorView
   - PromiseKit
   - PureLayout (~> 3.1.8)
@@ -150,6 +150,7 @@ SPEC REPOS:
     - CocoaLumberjack
     - CryptoSwift
     - GoogleWebRTC
+    - Nimble
     - NVActivityIndicatorView
     - OpenSSL-Universal
     - PromiseKit
@@ -169,9 +170,6 @@ EXTERNAL SOURCES:
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
-  Nimble:
-    :commit: cabe966
-    :git: https://github.com/Quick/Nimble
   SignalCoreKit:
     :branch: session-version
     :git: https://github.com/oxen-io/session-ios-core-kit
@@ -191,9 +189,6 @@ CHECKOUT OPTIONS:
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
     :git: https://github.com/signalapp/Mantle
-  Nimble:
-    :commit: cabe966
-    :git: https://github.com/Quick/Nimble
   SignalCoreKit:
     :commit: 4590c2737a2b5dc0ef4ace9f9019b581caccc1de
     :git: https://github.com/oxen-io/session-ios-core-kit
@@ -214,7 +209,7 @@ SPEC CHECKSUMS:
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  Nimble: 0526ae760c851747ff4a682f7646af07a0cc2013
+  Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
   PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
@@ -231,6 +226,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 715ef2f16aa5c6957ff91d8dd7240a2cfba46aa2
+PODFILE CHECKSUM: e4f78b5555c81d9dc1377a9462bacc8bd662684e
 
 COCOAPODS: 1.11.2

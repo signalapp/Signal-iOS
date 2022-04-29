@@ -60,8 +60,7 @@ abstract_target 'GlobalDependencies' do
           inherit! :complete
           
           pod 'Quick'
-          # FIXME: change this back to use the latest 'Nimble' once a version newer than 9.2.1 has been released
-          pod 'Nimble', :git => 'https://github.com/Quick/Nimble', :commit => 'cabe966'
+          pod 'Nimble'
         end
       end
       
@@ -72,8 +71,7 @@ abstract_target 'GlobalDependencies' do
           inherit! :complete
           
           pod 'Quick'
-          # FIXME: change this back to use the latest 'Nimble' once a version newer than 9.2.1 has been released
-          pod 'Nimble', :git => 'https://github.com/Quick/Nimble', :commit => 'cabe966'
+          pod 'Nimble'
         end
       end
     end
