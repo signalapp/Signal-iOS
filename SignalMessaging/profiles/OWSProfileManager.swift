@@ -381,25 +381,46 @@ extension OWSProfileManager {
 
     // MARK: -
 
+    @objc public func updateProfileOnServiceIfNecessary() {
+        switch Self._updateProfileOnServiceIfNecessary() {
+        case .notReady, .updating:
+            return
+        case .notNeeded:
+            repairAvatarIfNeeded()
+        }
+    }
+
     public class func updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) {
+        _updateProfileOnServiceIfNecessary(retryDelay: retryDelay)
+    }
+
+    private enum UpdateProfileStatus {
+        case notReady
+        case notNeeded
+        case updating
+    }
+
+    @discardableResult
+    private class func _updateProfileOnServiceIfNecessary(retryDelay: TimeInterval = 1) -> UpdateProfileStatus {
         AssertIsOnMainThread()
 
         guard AppReadiness.isAppReady else {
-            return
+            return .notReady
         }
         guard tsAccountManager.isRegisteredAndReady else {
-            return
+            return .notReady
         }
         guard !profileManagerImpl.isUpdatingProfileOnService else {
             // Avoid having two redundant updates in flight at the same time.
-            return
+            return .notReady
         }
 
         let pendingUpdate = self.databaseStorage.read { transaction in
             return self.currentPendingProfileUpdate(transaction: transaction)
         }
+
         guard let update = pendingUpdate else {
-            return
+            return .notNeeded
         }
         firstly {
             attemptToUpdateProfileOnService(update: update,
@@ -408,6 +429,75 @@ extension OWSProfileManager {
             Logger.info("Update succeeded.")
         }.catch { error in
             Logger.error("Update failed: \(error)")
+        }
+        return .updating
+    }
+
+    private static var avatarRepairPromise: Promise<Void>?
+
+    private func repairAvatarIfNeeded() {
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+
+        dispatchPrecondition(condition: .onQueue(.main))
+        guard Self.avatarRepairPromise == nil else {
+            // Already have a repair outstanding.
+            return
+        }
+
+        // Have already repaired?
+
+        guard avatarRepairNeeded() else {
+            return
+        }
+        guard TSAccountManager.shared.isPrimaryDevice, self.localProfileAvatarData() != nil else {
+            clearAvatarRepairNeeded()
+            return
+        }
+
+        Self.avatarRepairPromise = firstly {
+            reuploadLocalProfilePromise()
+        }.done { _ in
+            Logger.info("Avatar repair succeeded.")
+            self.clearAvatarRepairNeeded()
+            Self.avatarRepairPromise = nil
+        }.catch { error in
+            Logger.error("Avatar repair failed: \(error)")
+            self.incrementAvatarRepairAttempts()
+            Self.avatarRepairPromise = nil
+        }
+    }
+
+    private static let maxAvataraRepairAttempts = 5
+
+    private func avatairRepairAttemptCount(_ transaction: SDSAnyReadTransaction) -> Int {
+        let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
+        return store.getInt(GRDBSchemaMigrator.avatarRepairAttemptCount,
+                            defaultValue: Self.maxAvataraRepairAttempts,
+                            transaction: transaction)
+    }
+
+    private func avatarRepairNeeded() -> Bool {
+        return self.databaseStorage.read { transaction in
+            let count = avatairRepairAttemptCount(transaction)
+            return count < Self.maxAvataraRepairAttempts
+        }
+    }
+
+    private func incrementAvatarRepairAttempts() {
+        databaseStorage.write { transaction in
+            let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
+            store.setInt(avatairRepairAttemptCount(transaction) + 1,
+                         key: GRDBSchemaMigrator.avatarRepairAttemptCount,
+                         transaction: transaction)
+        }
+    }
+
+    private func clearAvatarRepairNeeded() {
+        databaseStorage.write { transaction in
+            let store = SDSKeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
+            store.removeValue(forKey: GRDBSchemaMigrator.avatarRepairAttemptCount, transaction: transaction)
         }
     }
 

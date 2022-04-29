@@ -11,6 +11,8 @@ public class GRDBSchemaMigrator: NSObject {
     private static let _areMigrationsComplete = AtomicBool(false)
     @objc
     public static var areMigrationsComplete: Bool { _areMigrationsComplete.get() }
+    public static let migrationSideEffectsCollectionName = "MigrationSideEffects"
+    public static let avatarRepairAttemptCount = "Avatar Repair Attempt Count"
 
     // Returns true IFF incremental migrations were performed.
     @objc
@@ -173,6 +175,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_moveToThreadAssociatedData
         case dataMigration_senderKeyStoreKeyIdMigration
         case dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed
+        case dataMigration_repairAvatar
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2006,6 +2009,17 @@ public class GRDBSchemaMigrator: NSObject {
                     GRDBFullTextSearchFinder.modelWasInserted(model: member, transaction: transaction)
                 }
             }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_repairAvatar.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // Declare the key value store here, since it's normally only
+            // available in SignalMessaging (OWSPreferences).
+            let preferencesKeyValueStore = SDSKeyValueStore(collection: Self.migrationSideEffectsCollectionName)
+            let key = Self.avatarRepairAttemptCount
+            preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite)
         }
     }
 }

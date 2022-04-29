@@ -122,7 +122,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
-            [OWSProfileManager updateProfileOnServiceIfNecessary];
+            [self updateProfileOnServiceIfNecessary];
             [OWSProfileManager updateStorageServiceIfNecessary];
         }
     });
@@ -1922,14 +1922,14 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     // TODO: Sync if necessary.
 
-    [OWSProfileManager updateProfileOnServiceIfNecessary];
+    [self updateProfileOnServiceIfNecessary];
 }
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
-    [OWSProfileManager updateProfileOnServiceIfNecessary];
+    [self updateProfileOnServiceIfNecessary];
 }
 
 - (void)blockListDidChange:(NSNotification *)notification {
