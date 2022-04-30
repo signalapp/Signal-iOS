@@ -259,6 +259,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))
+            contents.addSection(paymentsSection)
         }
 
         let section3 = OWSTableSection()
