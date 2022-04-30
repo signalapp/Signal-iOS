@@ -1984,6 +1984,11 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
+            // Ensure the local address is loaded & cached. If it’s not, the
+            // `modelWasInserted` calls may try to load it with a sneaky transaction,
+            // which will fail since we’re in a barrier block on the queue.
+            _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
+
             let threadCursor = TSThread.grdbFetchCursor(
                 sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
                 transaction: transaction
