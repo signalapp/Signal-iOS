@@ -472,6 +472,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
         buildSubscriptionLevelCells(section: section,
                                     subscriptionLevels: subscriptions,
+                                    selectedCurrencyCode: selectedCurrencyCode,
                                     selectedSubscriptionLevel: selectedSubscriptionLevel,
                                     currentSubscription: currentSubscription)
 
@@ -509,6 +510,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     private func buildSubscriptionLevelCells(section: OWSTableSection,
                                              subscriptionLevels: [SubscriptionLevel],
+                                             selectedCurrencyCode: Currency.Code,
                                              selectedSubscriptionLevel: SubscriptionLevel?,
                                              currentSubscription: Subscription?) {
         subscriptionLevelCells.removeAll()
@@ -587,7 +589,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
                     let pricingLabel = UILabel()
 
-                    let currencyCode: Currency.Code = currentSubscription?.currency ?? Stripe.defaultCurrencyCode
+                    let currencyCode: Currency.Code = currentSubscription?.currency ?? selectedCurrencyCode
                     if let price = subscription.currency[currencyCode] {
                         let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
                         let currencyString = DonationUtilities.formatCurrency(price, currencyCode: currencyCode)
