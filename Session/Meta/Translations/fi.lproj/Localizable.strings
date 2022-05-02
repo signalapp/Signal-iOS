@@ -1,25 +1,25 @@
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ei nyt";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Myöhemmin";
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versio %@ on nyt ladattavissa App Storesta.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Uusin versio on nyt saatavilla App Storesta.";
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Uusi versio Sessionista on nyt saatavilla";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Uusi versio Sessionista on saatavilla";
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Päivitys";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Päivitä";
 /* No comment provided by engineer. */
-"ATTACHMENT" = "Liite";
+"ATTACHMENT" = "Lisää liite";
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Otsikon maksimimerkkimäärä saavutettu.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Kuvatekstin enimmäispituus on saavutettu.";
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Lisää otsikko…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Lisää kuvateksti…";
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Otsikko";
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tiedostotyyppi: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tiedoston formaatti: %@";
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Koko: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Rajoitettu koko: %@";
 /* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Viestin maksimimerkkimäärä saavutettu";
+"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Viestin suurin sallittu pituus saavutettu";
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Lähetä";
 /* Generic filename for an attachment with no known name */
@@ -33,37 +33,37 @@
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Kuvaa ei voitu jäsentää.";
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Metatietojen poistaminen kuvasta ei onnistunut.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Metadatan poistaminen kuvasta epäonnistui.";
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Kuvan kokoa ei voitu muuttaa.";
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Liitetiedosto on liian suuri.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Liite on liian iso.";
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Liitetiedoston sisältö on virheellinen.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Liite sisältää virheellistä sisältöä.";
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Liitetiedoston muoto on virheellinen.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Liitteellä on virheellinen tiedostotyyppi.";
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Liitetiedosto on tyhjä.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Liite on tyhjä.";
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Dokumentin valinta epäonnistui.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Ole hyvä ja kokeile kompressoidun arkiston luomista tästä tiedostosta ja lähettää se tiedoston sijaan.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Ole hyvä ja luo tiivistetty arkisto tästä tiedostosta ja kokeile lähettämistä uudelleen.";
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Tiedostotyyppiä ei tueta";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Ääniviesti";
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Varmuuskopiodataa ei pystytty viemään.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Varmuuskopiodataa ei pystytty siirtämään.";
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Virheellinen vastaus palvelulta";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Virheellinen palvelun vastaus";
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Puhdistetaan varmuuskopiota";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Puhdistetaan varmuuskopioita";
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Alustetaan varmuuskopiota";
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Viedään dataa";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Siirretään dataa";
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Varmuuskopiota viedään";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Siirretään varmuuskopiota";
 /* Indicates that the backup export data is being uploaded. */
 "BACKUP_EXPORT_PHASE_UPLOAD" = "Ladataan varmuuskopiota";
 /* Error indicating the backup import could not import the user's data. */
@@ -73,7 +73,7 @@
 /* Indicates that the backup import data is being downloaded. */
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Ladataan varmuuskopiota";
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Viimeistellään Varmuuskopiota";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Viimeistellään varmuuskopiota";
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "Tuodaan varmuuskopiota.";
 /* Indicates that the backup database is being restored. */
@@ -94,8 +94,8 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Estä";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Estä %@?";
-/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Poista esto yhteystiedolta %@?";
+/* A format for the 'unblock user' action sheet title. Embeds {{the unblocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Poista henkilön %@ esto?";
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Poista esto";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
@@ -103,7 +103,7 @@
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Käyttäjä estetty";
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ esto on poistettu.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Henkilön %@ esto on poistettu.";
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Ryhmän jäsenet voivat nyt lisätä sinut takaisin ryhmään.";
 /* An explanation of the consequences of blocking another user. */
@@ -123,7 +123,7 @@
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Sessionilta estettiin pääsy sinun iCloud-varmuuskopioihin. Myönnä Sessionille lupa iCloud-tilillesi järjestelmäasetuksissa varmuuskopioidaksesi Session-datan.";
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Et voi enää lähettää tai vastaanottaa viestejä tässä ryhmässä.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Et pysty enään lähettämään tai vastaanottamaan viestejä tässä ryhmässä.";
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "Haluatko varmasti poistua ryhmästä?";
 /* Message for the 'conversation delete confirmation' alert. */
@@ -131,43 +131,43 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Poistetaanko keskustelu?";
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "Ei osumia";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Ei tuloksia";
 /* keyboard toolbar label when exactly 1 message matches the search string */
 "CONVERSATION_SEARCH_ONE_RESULT" = "1 osuma";
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d./%d. hakutuloksesta";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d/%d osumasta";
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Keskusteluasetukset";
+"CONVERSATION_SETTINGS" = "Keskustelun asetukset";
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Estä tämä käyttäjä";
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mykistä";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Hiljennä";
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Mykistä";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Hiljennä";
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Hiljentämätön";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Ei hiljennetty";
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Hiljennä päiväksi";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Hiljennä yhdeksi päiväksi";
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Hiljennä tunniksi";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Hiljennä tunnin ajan";
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Hiljennä minuutiksi";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Mykistä minuutiksi";
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Hiljennä viikoksi";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Hiljennä yhden viikon ajaksi";
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Hiljennä vuodeksi";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Mykistä vuodeksi";
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ asti";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Hae keskusteluista";
+"CONVERSATION_SETTINGS_SEARCH" = "Etsi keskustelusta";
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Poista hiljennys";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Poista mykistys";
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Siirrä ja muuta kokoa";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Siirrä ja Skaalaa";
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Tämä saattaa viedä hetken.";
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimoidaan tietokantaa";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimoidaan tietokanta";
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "%@ tuntia sitten";
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
@@ -183,27 +183,27 @@
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Viestit tässä keskustelussa katoavat %@ jälkeen.";
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Muokkaa ryhmää";
+"EDIT_GROUP_ACTION" = "Muokkaa Ryhmää";
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Sinulla ei ole ollenkaan mediaa tässä keskustelussa.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Sinulla ei ole yhtään mediaa tässä keskustelussa.";
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Ladataan uutta mediaa…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Ladataan uudempaa mediaa…";
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "Ladataan vanhempaa mediaa…";
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Pyydetyn GIF-animaation hakeminen epäonnistui. Ole hyvä ja varmista yhteys internettiin.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Pyydetyn GIF-animaation hakeminen epäonnistui. Ole hyvä ja varmista yhteytesi.";
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "Ilmeni tuntematon virhe.";
+"GIF_PICKER_ERROR_GENERIC" = "Tuntematon virhe ilmeni.";
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "GIF-animaation valinta epäonnistui";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "GIF-animaatiota ei pystytä valitsemaan";
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Kirjoita hakutermi.";
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Virhe. Napauta kokeillaksesi uudelleen.";
+"GIF_VIEW_SEARCH_ERROR" = "Virhe. Paina kokeillaksesi uudelleen.";
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "Ei hakutuloksia.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Ei tuloksia.";
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Ryhmä luotu";
+"GROUP_CREATED" = "Ryhmä on luotu";
 /* No comment provided by engineer. */
 "GROUP_MEMBER_JOINED" = " %@ liittyi ryhmään. ";
 /* No comment provided by engineer. */
@@ -213,7 +213,7 @@
 /* No comment provided by engineer. */
 "GROUP_MEMBERS_REMOVED" = " %@ poistettiin ryhmästä. ";
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "Ryhmän nimi on nyt ”%@”. ";
+"GROUP_TITLE_CHANGED" = "Ryhmän kuvaus on nyt ”%@”. ";
 /* No comment provided by engineer. */
 "GROUP_UPDATED" = "Ryhmä päivitetty.";
 /* No comment provided by engineer. */
@@ -221,7 +221,7 @@
 /* No comment provided by engineer. */
 "YOU_WERE_REMOVED" = " Sinut poistettiin ryhmästä. ";
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Voit jakaa korkeintaan %@ kohdetta.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Et voi jakaa enempää kuin %@ kohdetta.";
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Liitteen valinta epäonnistui.";
 /* Message for the alert indicating that an audio file is invalid. */
@@ -255,7 +255,7 @@
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Lähetys epäonnistui.";
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Virhe";
+"MESSAGE_STATUS_FAILED_SHORT" = "Epäonnistui";
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Luettu";
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
@@ -267,11 +267,11 @@
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Ladataan…";
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Voit sallia tämän järjestelmäasetuksissa.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Voit sallia tämän iOS-järjestelmän asetuksista.";
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Tämä Sessionin toiminto tarvitsee käyttöluvan kuviisi.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session tarvitsee oikeuden käyttääkseen kuviasi.";
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Et saa ilmoituksia hiljennetyistä keskusteluista.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Et saa ilmoituksia mykistetyistä keskusteluista.";
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ ryhmässä %@";
 /* Label for 1:1 conversation with yourself. */
@@ -279,9 +279,9 @@
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Olet saattanut saada viesteja laitteesi %@ käynnistyessä uudelleen.";
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Due to known bugs in Apple's push framework, message previews will only be shown if the message is retrieved within 30 seconds after being sent. The application badge might be inaccurate as a result.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Tunnettujen Applen ilmoituskehyksessä olevien vikojen vuoksi, viestien esikatselut näytetään vain, jos viesti pystytään saamaan 30 sekuntin kuluessa sen lähettämisestä. Aplikaation ilmoitusmerkki saattaa tästä syystä olla epätarkka.";
 /* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Soita ilmoitusääni apin olessa avoinna";
+"NOTIFICATIONS_SECTION_INAPP" = "Älä hiljennä apin ollessa näytöllä";
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Äänet";
 /* No comment provided by engineer. */
@@ -293,7 +293,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Näytä";
 /* No comment provided by engineer. */
-"BUTTON_OK" = "Ok";
+"BUTTON_OK" = "OK";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ poisti katoavat viestit käytöstä.";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
@@ -307,17 +307,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Nimetön albumi";
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Mark as Read";
+"PUSH_MANAGER_MARKREAD" = "Merkkaa luetuksi";
 /* Notification action button title */
-"PUSH_MANAGER_REPLY" = "Reply";
+"PUSH_MANAGER_REPLY" = "Vastaa";
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Emme pysty aktivoimaan käyttäjätiliä ennen kuin vahvistat lähettämämme koodin.";
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Heti";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Session.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Tunnistaudu avataksesi Sessionin.";
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Tunnistautuminen epäonnistui";
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
 "SEND_MEDIA_ABANDON_TITLE" = "Hylkää media?";
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
@@ -335,17 +335,17 @@
 /* Label for 'cancel backup' button in the backup settings view. */
 "SETTINGS_BACKUP_CANCEL_BACKUP" = "Peruuta varmuuskopio";
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Varmuuskopiointi käytössä";
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud status";
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Varmuuskopion tuominen epäonnistui";
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Varmuuskopion tuominen on tyhjäkäynnillä";
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Varmuuskopiosta tuominen käynnissä";
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Varmuuskopiosta tuominen onnistui";
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Vaihe";
 /* Label for phase row in the in the backup settings view. */
@@ -359,39 +359,45 @@
 /* Indicates that app is backing up. */
 "SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Varmuuskopioidaan";
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Varmuuskopiointi onnistui";
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
+"SETTINGS_CLEAR_HISTORY" = "Tyhjennä keskusteluhistoria";
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Poista kaikki";
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
+"SETTINGS_HISTORYLOG_TITLE" = "Tyhjennä keskusteluhistoria";
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Viestien ilmoitusääni";
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Lähetä linkeistä esikatselu";
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for most urls.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Useimpien URL-osoitteiden esikatselut ovat tuettuja.";
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Linkkien esikatselu";
+/* Setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS" = "Ääni- ja videopuhelut";
+/* Footer for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_FOOTER" = "Salli pääsy hyväksyäksesi muilta käyttäjiltä saapuvat ääni- ja videopuhelut.";
+/* Header for setting for enabling & disabling voice & video calls. */
+"SETTINGS_CALLS_HEADER" = "Puhelut";
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Ilmoituksen sisältö";
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Lukukuittaukset";
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Nää ja jaa lukukuittaukset. Tämä asetus on vapaaehtoinen ja koskee kaikkia keskusteluja.";
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Näytön lukitus";
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Näytön lukitus";
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Näytön lukitus";
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Äänet";
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Screen Security";
+"SETTINGS_SECURITY_TITLE" = "Näytön suojaus";
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Ilmaise aktiivinen kirjoitus";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Ei ääntä";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
@@ -447,103 +453,103 @@
 "your_session_id" = "Sinun Session ID";
 "vc_landing_title_2" = "Sinun sessio alkaa tästä...";
 "vc_landing_register_button_title" = "Luo Session ID";
-"vc_landing_restore_button_title" = "Jatka istuntoasi";
-"vc_landing_link_button_title" = "Linkkaa laite";
+"vc_landing_restore_button_title" = "Jatka Sessionin käyttöä";
+"vc_landing_link_button_title" = "Yhdistä laite";
 "view_fake_chat_bubble_1" = "Mikä on Session?";
 "view_fake_chat_bubble_2" = "Se on hajautettu sekä salattu viestipalvelu";
-"view_fake_chat_bubble_3" = "Joten se ei kerää henkilökohtaisia tietoja tai keskustelujeni metadataa? Miten se sitten toimii?";
+"view_fake_chat_bubble_3" = "Joten se ei kerää henkilökohtaisia tietojani tai keskustelujeni metadataa? Miten se sitten toimii?";
 "view_fake_chat_bubble_4" = "Yhdistämällä edistynyttä reititys- ja salausteknologiaa päästä päätyyn.";
-"view_fake_chat_bubble_5" = "Kaverit eivät jätä kavereita käyttämään vaarantuneita viestipalveluita. Ole hyvä.";
+"view_fake_chat_bubble_5" = "Kaverit eivät anna kavereiden käyttää vaarantuneita viestipalveluita. Oleppa hyvä.";
 "vc_register_title" = "Sano terve sinun Session ID:lle";
-"vc_register_explanation" = "Your Session ID is the unique address people can use to contact you on Session. With no connection to your real identity, your Session ID is totally anonymous and private by design.";
+"vc_register_explanation" = "Session ID on sinun ainutlaatuinen osoite, jolla ihmiset voivat ottaa sinuun yhteyttä; ilman yhteyttä oikeaan identiteettiisi. Session ID on luonteeltaan täysin anonyymi ja yksityinen.";
 "vc_restore_title" = "Palauta käyttäjätilisi";
-"vc_restore_explanation" = "Enter the recovery phrase that was given to you when you signed up to restore your account.";
-"vc_restore_seed_text_field_hint" = "Anna palautusvirkkeesi";
+"vc_restore_explanation" = "Palauttaaksesi tilisi, syötä palautusvirke, joka annettiin sinulle kun loit tämän tilin.";
+"vc_restore_seed_text_field_hint" = "Syötä palautusvirkkeesi";
 "vc_link_device_title" = "Yhdistä laite";
 "vc_link_device_scan_qr_code_tab_title" = "Skannaa QR-koodi";
 "vc_display_name_title_2" = "Valitse julkinen nimi";
-"vc_display_name_explanation" = "Tämä on nimesi kun käytät Sessionia. Se voi olla oikea nimesi, alias tai mikä tahansa mistä tykkäät.";
-"vc_display_name_text_field_hint" = "Anna julkinen nimi";
+"vc_display_name_explanation" = "Tämä on nimesi kun käytät Sessionia. Se voi olla oikea nimesi, alias tai halutessasi jotain ihan muuta.";
+"vc_display_name_text_field_hint" = "Syötä julkinen nimi";
 "vc_display_name_display_name_missing_error" = "Ole hyvä ja valitse julkinen nimi";
 "vc_display_name_display_name_too_long_error" = "Ole hyvä ja valitse lyhyempi julkinen nimi";
-"vc_pn_mode_recommended_option_tag" = "Suositellut";
+"vc_pn_mode_recommended_option_tag" = "Suositeltu";
 "vc_pn_mode_no_option_picked_modal_title" = "Ole hyvä ja valitse vaihtoehto";
-"vc_home_empty_state_message" = "Sinulla ei ole yhtään kontaktia vielä";
+"vc_home_empty_state_message" = "Sinulla ei ole vielä yhtään keskustelua";
 "vc_home_empty_state_button_title" = "Aloita keskustelu";
 "vc_seed_title" = "Palautusvirkkeesi";
 "vc_seed_title_2" = "Tapaa palautusvirkkeesi";
-"vc_seed_explanation" = "Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone.";
-"vc_seed_reveal_button_title" = "Hold to reveal";
-"view_seed_reminder_subtitle_1" = "Secure your account by saving your recovery phrase";
-"view_seed_reminder_subtitle_2" = "Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID.";
-"view_seed_reminder_subtitle_3" = "Make sure to store your recovery phrase in a safe place";
-"vc_path_title" = "Path";
+"vc_seed_explanation" = "Palautusvirkkeesi on sinun Session ID:n pääavain — voit palauttaa sillä Session ID:n, jos menetät pääsyn laitteeseesi. Sijoita palautusvirkkeesi turvalliseen paikkaan äläkä anna sitä kellekkään.";
+"vc_seed_reveal_button_title" = "Pidä pohjassa paljastaaksesi";
+"view_seed_reminder_subtitle_1" = "Turvaa tilisi ottamalla palautusvirkkeesi ylös";
+"view_seed_reminder_subtitle_2" = "Paina ja pidä painettuna piilotettuja sanoja paljastaaksesi palautusvirkkeesi. Ota ne ylös ja sijoita turvalliseen paikkaan turvataksesi Session ID:si.";
+"view_seed_reminder_subtitle_3" = "Varmista, että säilytät palautusvirkkeesi turvallisessa paikassa";
+"vc_path_title" = "Polku";
 "vc_path_explanation" = "Session piilottaa IP-osoitteesi ohjaamalla viestisi monen välittäjäreleen läpi Sessionin hajautetussa verkossa. Tässä ovat maat joiden kautta viestisi tällä hetkellä kulkevat:";
 "vc_path_device_row_title" = "Sinä";
-"vc_path_guard_node_row_title" = "Tulorele";
+"vc_path_guard_node_row_title" = "Tulosolmu";
 "vc_path_service_node_row_title" = "Välittäjärele";
-"vc_path_destination_row_title" = "Kohde";
+"vc_path_destination_row_title" = "Määränpää";
 "vc_path_learn_more_button_title" = "Opi lisää";
-"vc_create_private_chat_title" = "Uusi istunto";
+"vc_create_private_chat_title" = "Uusi keskustelu";
 "vc_create_private_chat_enter_session_id_tab_title" = "Syötä Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Skannaa QR-koodi";
-"vc_create_private_chat_scan_qr_code_explanation" = "Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.";
-"vc_enter_public_key_explanation" = "Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code.";
+"vc_create_private_chat_scan_qr_code_explanation" = "Skannaa käyttäjän QR-koodi aloittaaksesi keskustelu. QR-koodin voit löytää napauttamalla QR-koodi kuvaketta tilin asetuksissa.";
+"vc_enter_public_key_explanation" = "Käyttäjät voivat jakaa heidän Session ID:n menemällä tilin asetuksiin ja painamalla \"Jaa\" tai jakamalla heidän QR-koodin.";
 "vc_scan_qr_code_camera_access_explanation" = "Session tarvitsee kameraa skannatakseen QR-koodeja";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Anna kameran käyttölupa";
-"vc_create_closed_group_title" = "Uusi suljettu ryhmä";
+"vc_create_closed_group_title" = "Uusi yksityinen ryhmä";
 "vc_create_closed_group_text_field_hint" = "Anna ryhmälle nimi";
-"vc_create_closed_group_empty_state_message" = "Sinulla ei ole vielä yhtään kontaktia";
+"vc_create_closed_group_empty_state_message" = "Sinulla ei ole vielä yhtään keskustelua";
 "vc_create_closed_group_empty_state_button_title" = "Aloita keskustelu";
 "vc_create_closed_group_group_name_missing_error" = "Anna ryhmälle nimi";
 "vc_create_closed_group_group_name_too_long_error" = "Anna ryhmälle lyhyempi nimi";
-"vc_create_closed_group_too_many_group_members_error" = "Suljetussa ryhmässä voi olla enintään 100 jäsentä";
-"vc_join_public_chat_title" = "Liity avoimeen ryhmään";
-"vc_join_public_chat_enter_group_url_tab_title" = "Open Group URL";
+"vc_create_closed_group_too_many_group_members_error" = "Yksityisessä ryhmässä voi olla enintään 100 jäsentä";
+"vc_join_public_chat_title" = "Liity julkiseen ryhmään";
+"vc_join_public_chat_enter_group_url_tab_title" = "Julkisen ryhmän URL";
 "vc_join_public_chat_scan_qr_code_tab_title" = "Skannaa QR-koodi";
-"vc_join_public_chat_scan_qr_code_explanation" = "Skannaa sen avoimen ryhmän QR-koodi, johon haluaisit liittyä";
-"vc_enter_chat_url_text_field_hint" = "Enter an open group URL";
+"vc_join_public_chat_scan_qr_code_explanation" = "Skannaa sen julkisen ryhmän QR-koodi, johon haluaisit liittyä";
+"vc_enter_chat_url_text_field_hint" = "Syötä julkisen ryhmän URL";
 "vc_settings_title" = "Asetukset";
-"vc_settings_display_name_text_field_hint" = "Enter a display name";
-"vc_settings_display_name_missing_error" = "Please pick a display name";
-"vc_settings_display_name_too_long_error" = "Please pick a shorter display name";
+"vc_settings_display_name_text_field_hint" = "Anna julkinen nimi";
+"vc_settings_display_name_missing_error" = "Ole hyvä ja valitse julkinen nimi";
+"vc_settings_display_name_too_long_error" = "Ole hyvä ja valitse lyhyempi julkinen nimi";
 "vc_settings_privacy_button_title" = "Yksityisyys";
 "vc_settings_notifications_button_title" = "Ilmoitukset";
 "vc_settings_recovery_phrase_button_title" = "Palautusvirke";
-"vc_settings_clear_all_data_button_title" = "Tyhjennä data";
+"vc_settings_clear_all_data_button_title" = "Tyhjennä kaikki data";
 "vc_notification_settings_title" = "Ilmoitukset";
 "vc_privacy_settings_title" = "Yksityisyys";
 "preferences_notifications_strategy_category_title" = "Ilmoitustyyli";
 "modal_seed_title" = "Palatusvirkkeesi";
 "modal_seed_explanation" = "Tämä on palautusvirkkeesi. Sillä voit palauttaa tai siirtää Session ID:si uuteen laitteeseen.";
 "modal_clear_all_data_title" = "Tyhjennä kaikki data";
-"modal_clear_all_data_explanation" = "Tämä poistaa kaikki viestisi, istuntosi sekä kontaktisi lopullisesti.";
-"modal_clear_all_data_explanation_2" = "Would you like to clear only this device, or delete your entire account?";
-"dialog_clear_all_data_deletion_failed_1" = "Data not deleted by 1 Service Node. Service Node ID: %@.";
-"dialog_clear_all_data_deletion_failed_2" = "Data not deleted by %@ Service Nodes. Service Node IDs: %@.";
-"modal_clear_all_data_device_only_button_title" = "Device Only";
-"modal_clear_all_data_entire_account_button_title" = "Entire Account";
+"modal_clear_all_data_explanation" = "Tämä poistaa kaikki viestisi sekä yhteydet lopullisesti.";
+"modal_clear_all_data_explanation_2" = "Haluatko tyhjentää datan vain tästä laitteesta vai poistaa koko tilin?";
+"dialog_clear_all_data_deletion_failed_1" = "Dataa ei poistettu yhdestä palvelusolmusta. Palvelusolmun tunnus: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "Dataa ei poistettu %@ palvelusolmusta. Palvelusolmujen tunnukset: %@.";
+"modal_clear_all_data_device_only_button_title" = "Vain tämä laite";
+"modal_clear_all_data_entire_account_button_title" = "Koko tili";
 "vc_qr_code_title" = "QR-koodi";
 "vc_qr_code_view_my_qr_code_tab_title" = "Näytä QR-koodini";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Skannaa QR-koodi";
 "vc_qr_code_view_scan_qr_code_explanation" = "Skannaa jonkun QR-koodi aloittaaksesi keskustelu heidän kanssaan";
-"vc_view_my_qr_code_explanation" = "Tämä on QR-koodisi. Toiset käyttäjät voivat skannata sen aloittaakseen keskustelun kanssasi.";
+"vc_view_my_qr_code_explanation" = "Tämä on QR-koodisi. Muut käyttäjät voivat skannata sen aloittaakseen keskustelun kanssasi.";
 // MARK: - Not Yet Translated
-"fast_mode_explanation" = "Sinulle ilmoitetaan uusista viesteistä luotettavasti ja viivyittelemättä Applen ilmoituspalveluja käyttäen.";
-"fast_mode" = "Pikatila";
+"fast_mode_explanation" = "Sinulle ilmoitetaan uusista viesteistä luotettavasti ja viivyttelemättä Applen ilmoituspalvelua käyttäen.";
+"fast_mode" = "Nopeasti";
 "slow_mode_explanation" = "Session tarkistaa taustalla ajoittain uudet viestit.";
-"slow_mode" = "Hidas tila";
+"slow_mode" = "Hitaasti";
 "vc_pn_mode_title" = "Viesti-ilmoitukset";
-"vc_notification_settings_notification_mode_title" = "Käytä pikatilaa";
+"vc_notification_settings_notification_mode_title" = "Toimita nopeasti";
 "vc_link_device_recovery_phrase_tab_title" = "Palautusvirke";
-"vc_link_device_scan_qr_code_explanation" = "Siirry asetuksiin ja sitten kohtaan palautusvirke toisella laitteellasi näyttääksesi QR-koodisi.";
+"vc_link_device_scan_qr_code_explanation" = "Siirry asetuksiin → palautusvirke toisella laitteellasi näyttääksesi QR-koodisi.";
 "vc_enter_recovery_phrase_title" = "Palautusvirke";
 "vc_enter_recovery_phrase_explanation" = "Yhdistääksesi laitteesi, anna palautusvirke, jonka sait rekisteröitymisen yhteydessä.";
-"vc_enter_public_key_text_field_hint" = "Anna Session ID tai ONS-nimi";
+"vc_enter_public_key_text_field_hint" = "Syötä Session ID tai ONS-nimi";
 "vc_home_title" = "Viestit";
-"admin_group_leave_warning" = "Koska teit tämän ryhmän, poistetaan se kaikilta. Tätä ei voi peruuttaa.";
+"admin_group_leave_warning" = "Koska loit tämän ryhmän, se poistetaan kaikilta. Tätä ei voi peruuttaa.";
 "vc_join_open_group_suggestions_title" = "Tai liity yhteen näistä...";
-"vc_settings_invite_a_friend_button_title" = "Kutsu ystävä";
+"vc_settings_invite_a_friend_button_title" = "Kutsu ystäviä";
 "vc_settings_help_us_translate_button_title" = "Auta meitä kääntämään Session";
 "copied" = "Kopioitu";
 "vc_conversation_settings_copy_session_id_button_title" = "Kopioi Session ID";
@@ -555,72 +561,92 @@
 "modal_open_url_title" = "Avataanko URL?";
 "modal_open_url_explanation" = "Oletko varma, että haluat avata linkin %@?";
 "modal_open_url_button_title" = "Avaa";
-"modal_copy_url_button_title" = "Copy Link";
-"modal_blocked_title" = "Poista esto henkilöltä %@?";
+"modal_copy_url_button_title" = "Kopioi Linkki";
+"modal_blocked_title" = "Poistetaanko esto henkilöltä %@?";
 "modal_blocked_explanation" = "Oletko varma, että haluat poistaa eston henkilöltä %@?";
 "modal_blocked_button_title" = "Poista esto";
-"modal_link_previews_title" = "Ota linkkien esikatselu käyttöön?";
-"modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
+"modal_link_previews_title" = "Luodaanko linkeistä esikatselut?";
+"modal_link_previews_explanation" = "Linkkien esikatselu näyttää esikatselun saamiesi ja lähettämiesi linkkien sisällöstä. Tämä voi olla hyödyllistä, mutta Sessionin pitää vierailla linkatulla nettisivulla luodakseen esikatselun. Voit aina ottaa tämän toiminnon pois päältä Sessionin asetuksissa.";
 "modal_link_previews_button_title" = "Ota käyttöön";
-"modal_share_logs_title" = "Share Logs";
-"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
+"modal_call_title" = "Ääni-/videopuhelut";
+"modal_call_explanation" = "Nykyinen ääni-/videopuheluiden toteutus paljastaa IP-osoitteesi Oxen-säätiön palvelimille sekä soittavalle/soitettavalle käyttäjälle.";
+"modal_share_logs_title" = "Jaa lokitietoja";
+"modal_share_logs_explanation" = "Haluatko siirtää sovelluksen lokitiedot että ne ovat jaettavissa vianmääritystä varten?";
 "vc_share_title" = "Jaa Sessioniin";
 "vc_share_loading_message" = "Valmistellaan liitteitä...";
 "vc_share_sending_message" = "Lähetetään...";
-"vc_share_link_previews_unsecure" = "Preview not loaded for unsecure link";
-"vc_share_link_previews_error" = "Unable to load preview";
-"vc_share_link_previews_disabled_title" = "Link Previews Disabled";
+"vc_share_link_previews_unsecure" = "Esikatselua ei ladattu epäturvalliselle linkille";
+"vc_share_link_previews_error" = "Esikatselun lataaminen epäonnistui";
+"vc_share_link_previews_disabled_title" = "Linkin esikatselut otettu pois käytöstä";
 "vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "Avaa ryhmäkutsu";
 "vc_conversation_settings_invite_button_title" = "Lisää jäseniä";
-"vc_settings_faq_button_title" = "FAQ";
-"vc_settings_survey_button_title" = "Feedback / Survey";
-"vc_settings_support_button_title" = "Debug Log";
-"modal_send_seed_title" = "Warning";
-"modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
-"modal_send_seed_send_button_title" = "Send";
-"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
-"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
-"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
-"message_deleted" = "This message has been deleted";
-"delete_message_for_me" = "Delete just for me";
-"delete_message_for_everyone" = "Delete for everyone";
-"delete_message_for_me_and_recipient" = "Delete for me and %@";
-"context_menu_reply" = "Reply";
-"context_menu_save" = "Save";
-"context_menu_ban_user" = "Ban User";
-"context_menu_ban_and_delete_all" = "Ban and Delete All";
-"accessibility_expanding_attachments_button" = "Add attachments";
+"vc_settings_faq_button_title" = "UKK";
+"vc_settings_survey_button_title" = "Palaute / Kysely";
+"vc_settings_support_button_title" = "Virheenkorjausloki";
+"modal_send_seed_title" = "Varoitus";
+"modal_send_seed_explanation" = "Tämä on palautuslauseesi. Jos lähetät sen jollekulle, heillä on täysin vapaa pääsy tililesi.";
+"modal_send_seed_send_button_title" = "Lähetä";
+"vc_conversation_settings_notify_for_mentions_only_title" = "Huomioi vain mainitut";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "Vain viestit joissa sinut mainitaan, huomioidaan.";
+"view_conversation_title_notify_for_mentions_only" = "Vain huomioidut ilmoitukset";
+"message_deleted" = "Tämä viesti on poistettu";
+"delete_message_for_me" = "Poista vain minun nähtäväksi";
+"delete_message_for_everyone" = "Poista kaikkien näkyviltä";
+"delete_message_for_me_and_recipient" = "Poista minulta ja vastaanottajalta";
+"context_menu_reply" = "Vastaa";
+"context_menu_save" = "Tallenna";
+"context_menu_ban_user" = "Estä Käyttäjä";
+"context_menu_ban_and_delete_all" = "Estä ja Poista kaikki";
+"accessibility_expanding_attachments_button" = "Lisää liitteitä";
 "accessibility_gif_button" = "Gif";
-"accessibility_document_button" = "Document";
-"accessibility_library_button" = "Photo library";
-"accessibility_camera_button" = "Camera";
-"accessibility_main_button_collapse" = "Collapse attachment options";
-"invalid_recovery_phrase" = "Invalid Recovery Phrase";
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"accessibility_document_button" = "Asiakirja";
+"accessibility_library_button" = "Kuvakirjasto";
+"accessibility_camera_button" = "Kamera";
+"accessibility_main_button_collapse" = "Tiivistä liiteasetukset";
+"invalid_recovery_phrase" = "Virheellinen Palautuslauseke";
+"invalid_recovery_phrase" = "Virheellinen palautuslauseke";
+"DISMISS_BUTTON_TEXT" = "Hylkää";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
-"voice_call" = "Voice Call";
-"video_call" = "Video Call";
-"APN_Message" = "You've got a new message";
-"system_mode_theme" = "System";
-"dark_mode_theme" = "Dark";
-"light_mode_theme" = "Light";
-"MESSAGE_REQUESTS_TITLE" = "Message Requests";
-"MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
-"MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
-"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Are you sure you want to clear all message requests?";
-"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Clear";
-"MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Are you sure you want to delete this message request?";
-"MESSAGE_REQUESTS_APPROVAL_ERROR_MESSAGE" = "An error occurred when trying to accept this message request";
-"MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request.";
-"MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
-"MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
-"TXT_HIDE_TITLE" = "Hide";
-"TXT_DELETE_ACCEPT" = "Accept";
-"NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
-"NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
-"NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
+"OPEN_SETTINGS_BUTTON" = "Asetukset";
+"call_outgoing" = "Soitit käyttäjälle %@";
+"call_incoming" = "%@ soitti sinulle";
+"call_missed" = "Vastaamaton puhelu käyttäjältä %@";
+"call_rejected" = "Hylätty puhelu";
+"call_cancelled" = "Peruttu puhelu";
+"call_timeout" = "Vastaamaton puhelu";
+"voice_call" = "Äänipuhelu";
+"video_call" = "Videopuhelu";
+"APN_Message" = "Sinulla on uusi viesti";
+"APN_Collapsed_Messages" = "Sinulla on %@ uutta viestiä.";
+"system_mode_theme" = "Järjestelmä";
+"dark_mode_theme" = "Tumma";
+"light_mode_theme" = "Vaalea";
+"PIN_BUTTON_TEXT" = "Kiinnitä";
+"UNPIN_BUTTON_TEXT" = "Irrota";
+"modal_call_missed_tips_title" = "Vastaamaton puhelu";
+"modal_call_missed_tips_explanation" = "Vastaamaton puhelu käyttäjältä '%@', koska pahelut edellyttävät 'Ääni- ja videopuhelut' -käyttöoikeuden yksityisyysasetuksista.";
+"meida_saved" = "%@ tallensi median.";
+"screenshot_taken" = "%@ otti kuvankaappauksen.";
+"SEARCH_SECTION_CONTACTS" = "Henkilöt ja ryhmät";
+"SEARCH_SECTION_MESSAGES" = "Viestit";
+"SEARCH_SECTION_RECENT" = "Viimeisimmät";
+"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "viimeisin viesti: %@";
+"MESSAGE_REQUESTS_TITLE" = "Viestipyynnöt";
+"MESSAGE_REQUESTS_EMPTY_TEXT" = "Ei odottavia viestipyyntöjä";
+"MESSAGE_REQUESTS_CLEAR_ALL" = "Poista kaikki";
+"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Oletko varma että haluat poistaa kaikki viestipyynnöt?";
+"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Poista";
+"MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Oletko varma että haluat poistaa tämän viestipyynnön?";
+"MESSAGE_REQUESTS_APPROVAL_ERROR_MESSAGE" = "Viestipyyntöä hyväksyttäessä ilmeni virhe";
+"MESSAGE_REQUESTS_INFO" = "Viestin lähettäminen tälle henkilölle hyväksyy automaattisesti viestipyynnön.";
+"MESSAGE_REQUESTS_ACCEPTED" = "Viestipyyntösi hyväksyttiin.";
+"MESSAGE_REQUESTS_NOTIFICATION" = "Sinulla on uusi viestipyyntö";
+"TXT_HIDE_TITLE" = "Piilota";
+"TXT_DELETE_ACCEPT" = "Hyväksy";
+"NEW_CONVERSATION_MENU_OPEN_GROUP" = "Avoin ryhmä";
+"NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Yksityisviesti";
+"NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Suljettu ryhmä";
 "modal_call_permission_request_title" = "Call Permissions Required";
 "modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
