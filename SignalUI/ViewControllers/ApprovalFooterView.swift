@@ -231,24 +231,21 @@ public class ApprovalFooterView: UIView {
 // MARK: -
 
 fileprivate extension ApprovalMode {
-	var proceedButtonAccessibilityLabel: String? {
-		switch self {
-		case .next: return CommonStrings.nextButton
-		case .send: return MessageStrings.sendButton
+    var proceedButtonAccessibilityLabel: String? {
+        switch self {
+        case .next: return CommonStrings.nextButton
+        case .send: return MessageStrings.sendButton
         case .loading: return nil
-		}
-	}
+        }
+    }
 
-	var proceedButtonImageName: String? {
-		switch self {
-		case .next:
-			return "arrow-right-24"
-		case .send:
-			return "send-solid-24"
-        case .loading:
-            return nil
-		}
-	}
+    var proceedButtonImageName: String? {
+        switch self {
+        case .next: return "arrow-right-24"
+        case .send: return "send-solid-24"
+        case .loading: return nil
+        }
+    }
 }
 
 // MARK: -

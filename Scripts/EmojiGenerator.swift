@@ -180,11 +180,11 @@ struct EmojiModel {
         var isNormalized: Bool { enumName == normalizedEnumName }
         var normalizedEnumName: String {
             switch enumName {
-                // flagUm (US Minor Outlying Islands) looks identical to the
-                // US flag. We don't present it as a sendable reaction option
-                // This matches the iOS keyboard behavior.
-                case "flagUm": return "us"
-                default: return enumName
+            // flagUm (US Minor Outlying Islands) looks identical to the
+            // US flag. We don't present it as a sendable reaction option
+            // This matches the iOS keyboard behavior.
+            case "flagUm": return "us"
+            default: return enumName
             }
         }
 
