@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,24 +42,17 @@ public class ContentProxy: NSObject {
     }
 
     public class func padRequestSize(request: inout URLRequest) {
-        // Generate 1-64 chars of padding.
-        let paddingLength: Int = 1 + Int(arc4random_uniform(64))
+        let paddingLength = Int.random(in: 1...64)
         let padding = self.padding(withLength: paddingLength)
         assert(padding.count == paddingLength)
         request.addValue(padding, forHTTPHeaderField: "X-SignalPadding")
     }
 
     private class func padding(withLength length: Int) -> String {
-        // Pick a random ASCII char in the range 48-122
         var result = ""
-        // Min and max values, inclusive.
-        let minValue: UInt32 = 48
-        let maxValue: UInt32 = 122
         for _ in 1...length {
-            let value = minValue + arc4random_uniform(maxValue - minValue + 1)
-            assert(value >= minValue)
-            assert(value <= maxValue)
-            result += String(UnicodeScalar(UInt8(value)))
+            let value = UInt8.random(in: 48...122)
+            result += String(UnicodeScalar(value))
         }
         return result
     }

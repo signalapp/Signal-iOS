@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -667,7 +667,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
 
             let segmentStart: UInt = 0
             // Vary the initial segment size to obscure the length of the response headers.
-            let segmentLength: UInt = 1024 + UInt(arc4random_uniform(1024))
+            let segmentLength = UInt.random(in: 1024..<2048)
             var request = URLRequest(url: assetRequest.assetDescription.url as URL)
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(segmentStart)-\(segmentStart + segmentLength - 1)"

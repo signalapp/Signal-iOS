@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,29 @@ public extension CGFloat {
 
     func clamp01() -> CGFloat {
         return CGFloatClamp01(self)
+    }
+
+    /// Returns a random value within the specified range with a fixed number of discrete choices.
+    ///
+    /// ```
+    /// CGFloat.random(in: 0..10, choices: 2)  // => 5
+    /// CGFloat.random(in: 0..10, choices: 2)  // => 0
+    /// CGFloat.random(in: 0..10, choices: 2)  // => 5
+    ///
+    /// CGFloat.random(in: 0..10, choices: 10)  // => 8
+    /// CGFloat.random(in: 0..10, choices: 10)  // => 4
+    /// CGFloat.random(in: 0..10, choices: 10)  // => 0
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - range: The range in which to create a random value.
+    ///     `range` must be finite and nonempty.
+    ///   - choices: The number of discrete choices for the result.
+    /// - Returns: A random value within the bounds of `range`, constrained to the number of `choices`.
+    static func random(in range: Range<CGFloat>, choices: UInt) -> CGFloat {
+        let rangeSize = range.upperBound - range.lowerBound
+        let choice = UInt.random(in: 0..<choices)
+        return range.lowerBound + (rangeSize * CGFloat(choice) / CGFloat(choices))
     }
 
     // Linear interpolation

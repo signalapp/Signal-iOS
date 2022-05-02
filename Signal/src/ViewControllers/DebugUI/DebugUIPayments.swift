@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -69,7 +69,7 @@ class DebugUIPayments: DebugUIPage {
 
     private func sendPaymentRequestMessage(contactThread: TSContactThread) {
         let address = contactThread.contactAddress
-        let picoMob: UInt64 = 1 + UInt64(arc4random_uniform(255))
+        let picoMob = UInt64.random(in: 1..<256)
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin,
                                             picoMob: picoMob)
         let memoMessage = "Please pay me because: \(UUID().uuidString)."
@@ -116,7 +116,7 @@ class DebugUIPayments: DebugUIPage {
 
     private func sendPaymentRequestAndCancellation(contactThread: TSContactThread) {
         let address = contactThread.contactAddress
-        let picoMob: UInt64 = 1 + UInt64(arc4random_uniform(255))
+        let picoMob = UInt64.random(in: 1..<256)
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin,
                                             picoMob: picoMob)
         let memoMessage = "Please pay me because: \(UUID().uuidString)."
@@ -160,7 +160,7 @@ class DebugUIPayments: DebugUIPage {
                     mcTransactionData = Randomness.generateRandomBytes(32)
                 }
                 var memoMessage: String?
-                if arc4random_uniform(2) == 0 {
+                if Bool.random() {
                     memoMessage = "Pizza Party 🍕"
                 }
                 var addressUuidString: String?
@@ -278,7 +278,7 @@ class DebugUIPayments: DebugUIPage {
     }
 
     private static func sendTinyPayments(contactThread: TSContactThread, count: UInt) {
-        let picoMob = PaymentsConstants.picoMobPerMob + UInt64(arc4random_uniform(1000))
+        let picoMob = PaymentsConstants.picoMobPerMob + UInt64.random(in: 0..<1000)
         let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: picoMob)
         let recipient = SendPaymentRecipientImpl.address(address: contactThread .contactAddress)
         firstly(on: .global()) { () -> Promise<PreparedPayment> in

@@ -280,8 +280,7 @@ public extension UIColor {
 
     class func ows_randomColor(isAlphaRandom: Bool) -> UIColor {
         func randomComponent() -> CGFloat {
-            let precision: UInt32 = 255
-            return CGFloat(arc4random_uniform(precision + 1)) / CGFloat(precision)
+            CGFloat.random(in: 0..<1, choices: 256)
         }
         return UIColor(red: randomComponent(),
                        green: randomComponent(),

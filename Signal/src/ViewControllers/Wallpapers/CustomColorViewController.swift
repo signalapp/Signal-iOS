@@ -272,8 +272,7 @@ class CustomColorViewController: OWSTableViewController2 {
     }()
 
     private static func randomAlphaValue() -> CGFloat {
-        let precision: UInt32 = 1024
-        return (CGFloat(arc4random_uniform(precision)) / CGFloat(precision)).clamp01()
+        CGFloat.random(in: 0..<1, choices: 1024).clamp01()
     }
 
     private static func randomColorSetting() -> ColorSetting {

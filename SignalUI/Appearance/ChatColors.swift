@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -153,24 +153,24 @@ public class ChatColors: NSObject, Dependencies {
     @objc
     public static func createFakeChatColors(transaction: SDSAnyWriteTransaction) {
 
-        func randomUnitCGFloat(precision: UInt32 = 256) -> CGFloat {
-            (CGFloat(arc4random_uniform(precision)) / CGFloat(precision)).clamp01()
+        func randomOWSColorComponent() -> CGFloat {
+            CGFloat.random(in: 0..<1, choices: 256)
         }
 
         func randomOWSColor() -> OWSColor {
-            OWSColor(red: randomUnitCGFloat(),
-                     green: randomUnitCGFloat(),
-                     blue: randomUnitCGFloat())
+            OWSColor(red: randomOWSColorComponent(),
+                     green: randomOWSColorComponent(),
+                     blue: randomOWSColorComponent())
         }
 
         func randomAngleRadians() -> CGFloat {
-            CGFloat.pi * 2 * randomUnitCGFloat()
+            CGFloat.random(in: 0..<(CGFloat.pi * 2), choices: 256)
         }
 
         let count = 256
         for _ in 0..<count {
             let setting: ColorOrGradientSetting
-            if arc4random_uniform(2) == 0 {
+            if Bool.random() {
                 setting = .solidColor(color: randomOWSColor())
             } else {
                 setting = .gradient(gradientColor1: randomOWSColor(),

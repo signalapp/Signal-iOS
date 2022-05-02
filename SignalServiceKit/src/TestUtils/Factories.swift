@@ -480,7 +480,7 @@ public class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public var memberAddressesBuilder: () -> [SignalServiceAddress] = {
-        let groupSize = arc4random_uniform(10) + 1
+        let groupSize = Int.random(in: 1...10)
         return (0..<groupSize).map { _ in  CommonGenerator.address(hasPhoneNumber: Bool.random()) }
     }
 }
@@ -1870,8 +1870,7 @@ public class CommonGenerator: NSObject {
 
     @objc
     static public var paragraph: String {
-        let sentenceCount = UInt(arc4random_uniform(7) + 2)
-        return paragraph(sentenceCount: sentenceCount)
+        paragraph(sentenceCount: UInt.random(in: 2...8))
     }
 
     @objc
