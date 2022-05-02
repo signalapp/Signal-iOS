@@ -22,6 +22,11 @@ public final class SnodeAPI : NSObject {
     public static var clockOffset: Int64 = 0
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var swarmCache: [String:Set<Snode>] = [:]
+    
+    // MARK: Namespaces
+    private static let defaultNamespace = 0
+    private static let unauthenticatedNamespace = -10
+    private static let configNamespace = 5
 
     // MARK: Settings
     private static let maxRetryCount: UInt = 8
@@ -393,34 +398,59 @@ public final class SnodeAPI : NSObject {
     public static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let (promise, seal) = RawResponsePromise.pending()
         Threading.workQueue.async {
+            getMessagesWithAuthentication(from: snode, associatedWith: publicKey).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+        }
+        return promise
+    }
+    
+    public static func getRawMessagesUnauthenticated(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+        let (promise, seal) = RawResponsePromise.pending()
+        Threading.workQueue.async {
             getMessagesInternal(from: snode, associatedWith: publicKey).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
+    }
+    
+    private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+        let storage = SNSnodeKitConfiguration.shared.storage
+        
+        // NOTE: All authentication logic is only apply to 1-1 chats, the reason being that we can't currently support
+        // it yet for closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our
+        // closed groups.
+        
+        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
+        // Get last message hash
+        storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
+        let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
+        // Construct signature
+        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
+        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
+        let verificationData = ("retrieve" + String(timestamp)).data(using: String.Encoding.utf8)!
+        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
+        // Make the request
+        let parameters: JSON = [
+            "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
+            "namespace": defaultNamespace,
+            "lastHash" : lastHash,
+            "timestamp" : timestamp,
+            "pubkey_ed25519" : ed25519PublicKey,
+            "signature" : signature.toBase64()
+        ]
+        return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 
     private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
         
-        // NOTE: All authentication logic is currently commented out, the reason being that we can't currently support
-        // it yet for closed groups. The Storage Server requires an ed25519 key pair, but we don't have that for our
-        // closed groups.
-        
-//        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
         // Get last message hash
         storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey)
         let lastHash = storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
-        // Construct signature
-//        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
-//        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
-//        let verificationData = ("retrieve" + String(timestamp)).data(using: String.Encoding.utf8)!
-//        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
+
         // Make the request
         let parameters: JSON = [
             "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
+            "namespace": unauthenticatedNamespace,
             "lastHash" : lastHash,
-//            "timestamp" : timestamp,
-//            "pubkey_ed25519" : ed25519PublicKey,
-//            "signature" : signature.toBase64()!
         ]
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
