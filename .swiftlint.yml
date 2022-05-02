@@ -12,6 +12,8 @@ opt_in_rules:
 - attributes
 attributes:
   always_on_line_above: ["@objc"]
+inclusive_language:
+  override_allowed_terms: ["master", "whitelist"]
 large_tuple:
   warning: 4
   error: 4
