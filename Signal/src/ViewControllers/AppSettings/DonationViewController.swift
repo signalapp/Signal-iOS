@@ -397,6 +397,16 @@ class DonationViewController: OWSTableViewController2 {
                 }
             }
         ))
+
+        if DonationUtilities.isApplePayAvailable && FeatureFlags.giftBadgeSending {
+            section.add(.disclosureItem(
+                icon: .settingsGift,
+                name: NSLocalizedString("DONATION_VIEW_GIFT", comment: "Title for the 'Gift a Badge' link in the donation view"),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "giftBadge"),
+                actionBlock: {}
+            ))
+        }
+
         return section
     }
 

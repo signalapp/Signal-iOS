@@ -1612,6 +1612,9 @@
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
 
+/* Title for the 'Gift a Badge' link in the donation view */
+"DONATION_VIEW_GIFT" = "Gift a Badge";
+
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Network error. Check your connection and try again.";
 
