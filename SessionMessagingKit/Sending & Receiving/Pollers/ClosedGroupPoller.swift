@@ -103,7 +103,7 @@ public final class ClosedGroupPoller : NSObject {
             // randomElement() uses the system's default random generator, which is cryptographically secure
             guard let snode = swarm.randomElement() else { return Promise(error: Error.insufficientSnodes) }
             guard let self = self, self.isPolling(for: groupPublicKey) else { return Promise(error: Error.pollingCanceled) }
-            return SnodeAPI.getRawMessagesUnauthenticated(from: snode, associatedWith: groupPublicKey).map2 {
+            return SnodeAPI.getRawMessages(from: snode, associatedWith: groupPublicKey, authenticated: false).map2 {
                 let (rawMessages, lastRawMessage) = SnodeAPI.parseRawMessagesResponse($0, from: snode, associatedWith: groupPublicKey)
                 
                 return (snode, rawMessages, lastRawMessage)

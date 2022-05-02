@@ -395,23 +395,30 @@ public final class SnodeAPI : NSObject {
         }
     }
     
-    public static func getRawMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+    // MARK: Retrieve
+    
+    public static func getConfigMessages(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let (promise, seal) = RawResponsePromise.pending()
         Threading.workQueue.async {
-            getMessagesWithAuthentication(from: snode, associatedWith: publicKey).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+            getMessagesWithAuthentication(from: snode, associatedWith: publicKey, namespace: configNamespace).done2 {
+                seal.fulfill($0)
+            }.catch2 {
+                seal.reject($0)
+            }
         }
         return promise
     }
     
-    public static func getRawMessagesUnauthenticated(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+    public static func getRawMessages(from snode: Snode, associatedWith publicKey: String, authenticated: Bool = true) -> RawResponsePromise {
         let (promise, seal) = RawResponsePromise.pending()
         Threading.workQueue.async {
-            getMessagesInternal(from: snode, associatedWith: publicKey).done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+            let retrievePromise = authenticated ? getMessagesWithAuthentication(from: snode, associatedWith: publicKey, namespace: defaultNamespace) : getMessagesUnauthenticated(from: snode, associatedWith: publicKey)
+            retrievePromise.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
         }
         return promise
     }
     
-    private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+    private static func getMessagesWithAuthentication(from snode: Snode, associatedWith publicKey: String, namespace: Int) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
         
         // NOTE: All authentication logic is only apply to 1-1 chats, the reason being that we can't currently support
@@ -425,12 +432,13 @@ public final class SnodeAPI : NSObject {
         // Construct signature
         let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
         let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
-        let verificationData = ("retrieve" + String(timestamp)).data(using: String.Encoding.utf8)!
-        let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)!
+        guard let verificationData = ("retrieve" + String(namespace) + String(timestamp)).data(using: String.Encoding.utf8),
+              let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
+        else { return Promise(error: Error.signingFailed) }
         // Make the request
         let parameters: JSON = [
             "pubKey" : Features.useTestnet ? publicKey.removing05PrefixIfNeeded() : publicKey,
-            "namespace": defaultNamespace,
+            "namespace": namespace,
             "lastHash" : lastHash,
             "timestamp" : timestamp,
             "pubkey_ed25519" : ed25519PublicKey,
@@ -439,7 +447,7 @@ public final class SnodeAPI : NSObject {
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 
-    private static func getMessagesInternal(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
+    private static func getMessagesUnauthenticated(from snode: Snode, associatedWith publicKey: String) -> RawResponsePromise {
         let storage = SNSnodeKitConfiguration.shared.storage
         
         // Get last message hash
@@ -455,12 +463,42 @@ public final class SnodeAPI : NSObject {
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
 
-    public static func sendMessage(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
+    // MARK: Store
+    
+    public static func sendConfigMessage(_ message: SnodeMessage)  -> Promise<Set<RawResponsePromise>> {
+        return sendMessageWithAuthentication(message, namespace: configNamespace)
+    }
+    
+    public static func sendMessage(_ message: SnodeMessage, authenticated: Bool, isConfigMessage: Bool) -> Promise<Set<RawResponsePromise>> {
+        if isConfigMessage {
+            return sendConfigMessage(message)
+        }
+        if authenticated {
+            return sendMessageWithAuthentication(message, namespace: defaultNamespace)
+        }
+        return sendMessageUnauthenticated(message)
+    }
+    
+    private static func sendMessageWithAuthentication(_ message: SnodeMessage, namespace: Int) -> Promise<Set<RawResponsePromise>> {
+        let storage = SNSnodeKitConfiguration.shared.storage
+        
+        guard let userED25519KeyPair = storage.getUserED25519KeyPair() else { return Promise(error: Error.noKeyPair) }
+        // Construct signature
+        let timestamp = UInt64(Int64(NSDate.millisecondTimestamp()) + SnodeAPI.clockOffset)
+        let ed25519PublicKey = userED25519KeyPair.publicKey.toHexString()
+        guard let verificationData = ("store" + String(namespace) + String(timestamp)).data(using: String.Encoding.utf8),
+              let signature = sodium.sign.signature(message: Bytes(verificationData), secretKey: userED25519KeyPair.secretKey)
+        else { return Promise(error: Error.signingFailed) }
+        // Make the request
         let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
         let publicKey = Features.useTestnet ? message.recipient.removing05PrefixIfNeeded() : message.recipient
         Threading.workQueue.async {
             getTargetSnodes(for: publicKey).map2 { targetSnodes in
-                let parameters = message.toJSON()
+                var parameters = message.toJSON()
+                parameters["namespace"] = namespace
+                parameters["sig_timestamp"] = timestamp
+                parameters["pubkey_ed25519"] = ed25519PublicKey
+                parameters["signature"] = signature.toBase64()
                 return Set(targetSnodes.map { targetSnode in
                     attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
                         invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
@@ -470,6 +508,25 @@ public final class SnodeAPI : NSObject {
         }
         return promise
     }
+    
+    private static func sendMessageUnauthenticated(_ message: SnodeMessage) -> Promise<Set<RawResponsePromise>> {
+        let (promise, seal) = Promise<Set<RawResponsePromise>>.pending()
+        let publicKey = Features.useTestnet ? message.recipient.removing05PrefixIfNeeded() : message.recipient
+        Threading.workQueue.async {
+            getTargetSnodes(for: publicKey).map2 { targetSnodes in
+                var parameters = message.toJSON()
+                parameters["namespace"] = unauthenticatedNamespace
+                return Set(targetSnodes.map { targetSnode in
+                    attempt(maxRetryCount: maxRetryCount, recoveringOn: Threading.workQueue) {
+                        invoke(.sendMessage, on: targetSnode, associatedWith: publicKey, parameters: parameters)
+                    }
+                })
+            }.done2 { seal.fulfill($0) }.catch2 { seal.reject($0) }
+        }
+        return promise
+    }
+    
+    // MARK: Delete
     
     @objc(deleteMessageForPublickKey:serverHashes:)
     public static func objc_deleteMessage(publicKey: String, serverHashes: [String]) -> AnyPromise {
