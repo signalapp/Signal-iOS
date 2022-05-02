@@ -1674,22 +1674,18 @@ public class GRDBSchemaMigrator: NSObject {
             """)
         }
 
-        if FeatureFlags.storiesMigration3 {
+        migrator.registerMigration(MigrationId.updateConversationUnreadCountIndex.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
 
-            migrator.registerMigration(MigrationId.updateConversationUnreadCountIndex.rawValue) { db in
-                let transaction = GRDBWriteTransaction(database: db)
-                defer { transaction.finalizeTransaction() }
-                guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
+            try db.execute(sql: """
+                DROP INDEX IF EXISTS index_interactions_unread_counts;
+                DROP INDEX IF EXISTS index_model_TSInteraction_UnreadCount;
 
-                try db.execute(sql: """
-                    DROP INDEX IF EXISTS index_interactions_unread_counts;
-                    DROP INDEX IF EXISTS index_model_TSInteraction_UnreadCount;
-
-                    CREATE INDEX index_model_TSInteraction_UnreadCount
-                    ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
-                """)
-            }
-
+                CREATE INDEX index_model_TSInteraction_UnreadCount
+                ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
+            """)
         }
 
         if FeatureFlags.storiesMigration4 {
