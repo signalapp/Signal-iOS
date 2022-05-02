@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -48,7 +48,7 @@ public struct AudioSource: Hashable {
 
     // MARK: Hashable
 
-    public static func ==(lhs: AudioSource, rhs: AudioSource) -> Bool {
+    public static func == (lhs: AudioSource, rhs: AudioSource) -> Bool {
         // Simply comparing the `portDescription` vs the `portDescription.uid`
         // caused multiple instances of the built in mic to turn up in a set.
         if lhs.isBuiltInSpeaker && rhs.isBuiltInSpeaker {
