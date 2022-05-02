@@ -24,8 +24,8 @@ public final class SnodeAPI : NSObject {
     public static var swarmCache: [String:Set<Snode>] = [:]
     
     // MARK: Namespaces
-    private static let defaultNamespace = 1
-    private static let unauthenticatedNamespace = 10
+    private static let defaultNamespace = 0
+    private static let unauthenticatedNamespace = -10
     private static let configNamespace = 5
 
     // MARK: Settings
