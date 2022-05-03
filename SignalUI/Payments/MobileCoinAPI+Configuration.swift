@@ -52,7 +52,7 @@ extension MobileCoinAPI {
 
         static var signalMainNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://node1.prod.mobilecoinww.com"
-            let fogUrl = "fog://fog-rpt-prd.namda.net"
+            let fogUrl = "fog://service.fog.mob.production.namda.net"
             return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
         }
 
@@ -64,7 +64,7 @@ extension MobileCoinAPI {
 
         static var signalTestNet: MobileCoinNetworkConfig {
             let consensusUrl = "mc://node1.test.mobilecoin.com"
-            let fogUrl = "fog://fog-rpt-stg.namda.net"
+            let fogUrl = "fog://service.fog.mob.staging.namda.net"
             return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl)
         }
 
