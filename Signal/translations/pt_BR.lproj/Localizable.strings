@@ -31,9 +31,6 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Mensagem de voz";
 
-/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Mensagem de voz %@ segundos";
-
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Chamada Signal";
 
@@ -51,24 +48,6 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Chamada de vídeo";
-
-/* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Adicionar membro";
-
-/* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Adicionar membros";
-
-/* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Adicionar membro a “%2$@”?";
-
-/* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Adicionar %1$@ membros a “%2$@”?";
-
-/* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Adicionar novo membro";
-
-/* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Adicionar novos membros";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Adicionar membros";
@@ -155,7 +134,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Erro";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Executar a verificação de integridade da base de dados";
+
+/* Button to try launching the app even though the last launch failed */
+"APP_LAUNCH_FAILURE_CONTINUE" = "Abrir o Signal de volta";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Não foi possível carregar o banco de dados";
@@ -165,6 +147,12 @@
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versão do banco de dados desconhecida.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "O Signal teve um problema ao abrir. Por favor, envie um registro de depuração a support@signal.org para ajudar a solucionar este problema. ";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Não foi possível abrir o Signal";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Os dados transferidos do seu antigo aparelho não puderam ser restaurados. Por favor, envie um registro de depuração para support@signal.org para que possamos verificar este problema. Se você reinstalar o Signal, pode perder seu histórico de mensagens.";
@@ -380,13 +368,13 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Fazer uma doação ao Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Seu selo Boost expirou e não é mais visível no seu perfil.\n\nVocê pode continuar usando o Signal, mas para apoiar a tecnologia que é desenvolvida para você, considere tornar-se um apoiador através de doação mensal.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "O seu selo de Apoiador expirou e não é mais visualizado por outras pessoas no seu perfil.\n\nVocê pode reativar o seu selo Boost por mais 30 dias ao fazer uma doação.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Sua doação mensal recorrente foi cancelada automaticamente porque você ficou sem usar o Signal por muito tempo. Seu selo %@ não é mais visível no seu perfil.\n\nVocê pode continuar usando o Signal, mas para apoiar o aplicativo e reativar seu selo, faça uma doação agora.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Torne-se um apoiador";
@@ -401,7 +389,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Fazer doação mensal";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Doação Mensal cancelada";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Agradecemos por sua doação única!";
@@ -419,7 +407,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Quando você tiver mais de um selo, você poderá escolher qual deles será apresentado em seu perfil para as outras pessoas verem.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Você ganhou um selo %@. Mostre este selo no seu perfil para promover a conscientização de doar para o Signal.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Fechar balão";
@@ -500,7 +488,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Definir a moeda";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Faça uma doação única e ganhe um selo Boost por 30 dias.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "O seu selo Boost expirará em %@.";
@@ -736,12 +724,6 @@
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
 
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Essa cor personalizada é usada em 1 conversa. Deseja removê-la da conversa?";
-
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Essa cor personalizada é usada em %@ conversas. Deseja removê-la de todas as conversas?";
-
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Remover cor";
 
@@ -750,9 +732,6 @@
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Editar cor";
-
-/* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Essa cor é usada em %@ conversas. Deseja salvar as alterações para todas as conversas?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Auto combina a cor com o papel de parede";
@@ -1021,14 +1000,8 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Esta conversa será excluída do dispositivo.";
 
-/* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "Estas conversas serão excluídas deste aparelho.";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Excluir conversa?";
-
-/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Excluir %@ conversas?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Silenciar esta conversa por...";
@@ -1051,9 +1024,6 @@
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Somente admins podem enviar mensagens para esse grupo.";
 
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Você não pode selecionar mais do que %@ conversas.";
-
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupos";
 
@@ -1068,12 +1038,6 @@
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Sem resultados";
-
-/* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "Um resultado";
-
-/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d de %d resultados";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Configurações da Conversa";
@@ -1153,12 +1117,6 @@
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Pedidos e convites";
 
-/* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Membros";
-
-/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ membros";
-
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Sempre notificar";
 
@@ -1219,17 +1177,11 @@
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Silenciada até %@";
 
-/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ grupos em comum";
-
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Criar novo contato";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Nenhum grupo em comum";
-
-/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 grupo em comum";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Permissões";
@@ -1331,19 +1283,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Arraste para mudar a direção do gradiente";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Executar";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Isto pode levar um tempo (vários minutos ou mais) dependendo de quanto você usou o Signal. É seguro fechar o Signal se estiver demorando muito.";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Adicionar ao registro de depuração";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Resultados da verificação de integridade";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Executar a verificação de integridade da base de dados?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Isso pode levar alguns minutos.";
@@ -1351,17 +1303,8 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Otimizando base de dados";
 
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@m";
-
-/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutos atrás";
-
 /* The present; the current time. */
 "DATE_NOW" = "Agora";
-
-/* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "Há 1 minuto";
 
 /* The current day. */
 "DATE_TODAY" = "Hoje";
@@ -1452,12 +1395,6 @@
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Apagar todas as mensagens";
-
-/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Apagar as mensagens de %ld?";
-
-/* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Apagar mensagem?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registrar este número de telefone novamente";
@@ -1634,10 +1571,10 @@
 "DONATION_RECEIPT_DETAILS" = "Detalhes";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Compartilhar nota fiscal";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Obrigado por apoiar o Signal. Sua contribuição ajuda a incentivar a missão de desenvolver uma tecnologia de privacidade de software livre que protege a liberdade de expressão e permite a comunicação global segura para milhões de pessoas em todo o mundo. Se você for residente nos Estados Unidos, por favor, fique com este recibo para seus registros fiscais. A Signal Technology Foundation é uma organização sem fins lucrativos, isenta de impostos nos Estados Unidos, sob a seção 501c3 do Código da Receita Federal. Nossa CNPJ é 82-4506840.";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Uma única vez";
@@ -1649,7 +1586,7 @@
 "DONATION_RECEIPT_TITLE" = "Nota fiscal da doação";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "Tipo";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "Notas fiscais de doações";
@@ -1657,8 +1594,44 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Se você reinstalou o Signal, as notas fiscais de doações anteriores não estarão disponíveis.";
 
+/* Text of the 'donate to signal' button on the donation screen */
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Doar para o Signal";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Doação para o Signal";
+
+/* Text that's shown when the donation view fails to load data, probably due to network failure */
+"DONATION_VIEW_LOAD_FAILED" = "Erro na rede. Verifique a sua conexão e tente novamente.";
+
+/* Text of the 'make a monthly donation' button on the donation screen */
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+
+/* Title for the 'Badges' button on the donation screen */
+"DONATION_VIEW_MANAGE_BADGES" = "Selos";
+
+/* Title for the 'Manage Subscription' button on the donation screen */
+"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Ajustar doação";
+
+/* Title for the 'more' section on the donation screen */
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Mais";
+
+/* Title for the 'my support' section in the donation view */
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "Meu apoio";
+
+/* Title for the 'one-time donation' link in the donation view */
+"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+
+/* Title for the 'other ways to give' section on the donation view */
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+
+/* Title for the 'receipts' section on the donation screen */
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+
+/* Title for the 'Subscription FAQ' button on the donation screen */
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Perguntas frequentes sobre doação";
+
+/* Title on the 'Donate to Signal' screen */
+"DONATION_VIEW_TITLE" = "Doar para o Signal";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Você pode conceder essa permissão no app Ajustes do iOS.";
@@ -1671,9 +1644,6 @@
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Essa pessoa não pode ser adicionada ao grupo até que ela atualize o Signal.";
-
-/* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "O grupo atingiu a capacidade máxima de %@ membros.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Foto inválida.";
@@ -1867,9 +1837,6 @@
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Sua versão do Signal não é mais suportada! Toque para atualizar para a versão mais recente.";
 
-/* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Sua versão do Signal irá expirar em %d dias. Toque para atualizar para a versão mais recente.";
-
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Sua versão do Signal expirará hoje. Toque para atualizar para a versão mais recente.";
 
@@ -1905,12 +1872,6 @@
 
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Mensagens encaminhadas agora são enviadas imediatamente.";
-
-/* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Enviar mensagem";
-
-/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Enviar %@ mensagens";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Encaminhar mais rapidamente";
@@ -2044,9 +2005,6 @@
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Detalhes";
 
-/* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "O número máximo de %ld participantes foi atingido nesta chamada. Tente mais tarde.";
-
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "O número máximo de participantes foi atingido nesta chamada. Tente mais tarde.";
 
@@ -2058,9 +2016,6 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Sair da chamada";
-
-/* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Nesta chamada · %ld pessoas";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ e %3$@ outras pessoas estão nessa chamada";
@@ -2080,12 +2035,6 @@
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Ninguém entrou nessa chamada até agora.";
 
-/* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ e %ld outros entraram na chamada";
-
-/* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ e %ld outros saíram da chamada";
-
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ entrou na chamada";
 
@@ -2097,9 +2046,6 @@
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ e %@ saíram da chamada";
-
-/* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "Nesta chamada · 1 pessoa";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ está nesta chamada";
@@ -2269,14 +2215,8 @@
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ ativou a aprovação do admin para o link do grupo.";
 
-/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
+/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ não pôde ser adicionado/a automaticamente a este grupo por você. Essa pessoa foi convidada a participar e não verá nenhuma mensagem do grupo até que aceite o convite.";
-
-/* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Convite enviado";
-
-/* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Convites enviados";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Essas pessoas não podem ser adicionadas automaticamente a este grupo por você. Elas foram convidadas a participar e não verão nenhuma mensagem do grupo até que aceitem o convite.";
@@ -2473,18 +2413,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
 
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "Nenhum membro";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "Um membro";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ membros";
-
-/* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
-"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ membros";
-
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Você";
 
@@ -2494,9 +2422,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Membros";
 
-/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ membros do grupo têm nomes semelhantes.";
-
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Toque para revisar";
 
@@ -2505,15 +2430,6 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Revisar os Membros";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ membros do grupo têm nomes semelhantes. Revise os membros abaixo e decida o que fazer.";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ membros do grupo têm o mesmo nome. Revise os membros abaixo e decida o que fazer.";
-
-/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ membros do grupo têm o mesmo nome.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Nome do grupo (obrigatório)";
@@ -2797,30 +2713,6 @@
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Todo o histórico de mensagens e mídias serão mantidos após a atualização.";
 
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Este grupo não pode ser criado porque 1 membro está usando uma versão desatualizada do Signal. Você poderá criar um Novo Grupo com ele depois de ele ter atualizado o Signal, ou remova-o antes de criar o grupo.";
-
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Este grupo não pode ser criado porque %@ membros estão usando uma versão desatualizada do Signal. Você poderá criar um Novo Grupo com eles depois de terem atualizado o Signal, ou remova-os antes de criar o grupo.";
-
-/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Este grupo não pode ser criado porque 1 membro está usando uma versão desatualizada do Signal. Você poderá criar um Novo Grupo com ele depois de ele ter atualizado o Signal, ou remova-o antes de criar o grupo. %@";
-
-/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Este grupo não pode ser criado porque %1$@ membros estão usando uma versão desatualizada do Signal. Você poderá criar um Novo Grupo com eles depois de terem atualizado o Signal, ou remova-os antes de criar o grupo. %2$@";
-
-/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Um Grupo Legado será criado porque 1 membro está usando uma versão desatualizada do Signal. Você poderá criar um Novo Grupo com ele depois de ter atualizado o Signal, ou remova-o antes de criar o grupo.";
-
-/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Um Grupo Legado será criado porque %@ membros estão usando uma versão desatualizada do Signal. Você poderá criar um Novo Grupo com eles depois de terem atualizado o Signal, ou remova-os antes de criar o grupo.";
-
-/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 membro não tem suporte aos Novos Grupos, portanto, este será um Grupo Legado. %@";
-
-/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ membros não têm suporte aos Novos Grupos, portanto, este será um Grupo Legado. %2$@";
-
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Este é um Grupo Legado. Recursos como administradores de grupos só estão disponíveis em Novos Grupos. %@";
 
@@ -2833,12 +2725,6 @@
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Este é um Grupo Legado. Para acessar novos recursos como @menções e administradores, %@.";
 
-/* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Não foi possível adicionar 1 membro ao Novo Grupo. Gostaria de adicioná-lo agora?";
-
-/* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ membros não puderam ser adicionados ao Novo Grupo. Gostaria de adicioná-los agora?";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grupo Legado";
 
@@ -2848,7 +2734,7 @@
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Atualizar o Grupo";
 
-/* Title for the the 'migrate group' banner. */
+/* Title for the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Para acessar novos recursos como @menções e administradores, atualize este grupo.";
 
 /* Title for the 'migrated group' alert view. */
@@ -2931,9 +2817,6 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Escolha novo admin";
-
-/* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Os grupos do Signal têm melhor desempenho com %@ membros ou menos. Adicionar mais membros causará atrasos no envio e recebimento de mensagens.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "O limite recomendado de membros foi alcançado";
@@ -3220,23 +3103,8 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mensagem";
 
-/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ grupos em comum";
-
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Todas as mídias";
-
-/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Apagar %d mensagens";
-
-/* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Apagar mensagem";
-
-/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ fotos";
-
-/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ arquivos de mídia";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3324,15 +3192,6 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Pacote de figurinhas";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 selecionada";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 selecionada";
-
-/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ selecionadas";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mensagem";
@@ -3556,12 +3415,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ não está mais marcado como verificado. Toque para ver as opções.";
 
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Você bloqueou um membro deste grupo";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Você bloqueou %@ membros deste grupo";
-
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Ao menos um membro deste grupo não está mais marcado como verificado. Toque para ver as opções.";
 
@@ -3625,9 +3478,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Encontrar pelo número de telefone";
 
-/* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 membro";
-
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Novo grupo";
 
@@ -3651,9 +3501,6 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Novo grupo";
-
-/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
-"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ membros";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ para %@";
@@ -3777,12 +3624,6 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN incorreto";
-
-/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "PIN incorreto. %lu tentativas restantes.";
-
-/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN incorreto. Uma tentativa restante.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Pular e criar novo PIN";
@@ -4156,12 +3997,6 @@
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Recusar solicitação de “%@”?";
 
-/* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ convidou uma pessoa";
-
-/* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ convidou %2$@ pessoas";
-
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Não há pedidos pendentes de membros.";
 
@@ -4171,32 +4006,14 @@
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "“%@“ foi adicionado.";
 
-/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ pedidos pendentes de membros.";
-
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Ver os Pedidos";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "“%@“ foi recusado.";
 
-/* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revogar um convite inválido";
-
-/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revogar %@ convites inválidos";
-
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revogar convite";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revogar convite de grupo enviado por  “%@“?";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revogar %1$@ convites enviados por \"%2$@\"?";
-
-/* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revogar convites";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revogar convite de grupo para \"%@\"?";
@@ -4474,9 +4291,6 @@
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Termine de criar o seu PIN do Signal.";
 
-/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Nós relembraremos você mais tarde. A criação de um PIN será obrigatória em %ld dias.";
-
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Criar um PIN";
 
@@ -4643,7 +4457,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagiu ao seu story";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagiu ao Story de %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
@@ -4731,18 +4545,6 @@
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "O seu PIN é um código, criado por você, com 4 ou mais dígitos númericos ou alfanuméricos. Se não lembrar dele, você terá que esperar 7 dias antes de registrar sua conta novamente.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Restam %lu tentativas. Se você esgotá-las antes de conseguir se lembrar do seu PIN, poderá criar um outro. Nesse caso, você pode se registrar e usar sua conta, mas perderá algumas configurações salvas, como as informações do seu perfil.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Você tem mais %lu tentativas restantes. Se suas tentativas acabarem, sua conta será bloqueada. Depois de 7 dias de inatividade, você pode se registrar novamente sem um PIN. Sua conta será suprimida e seu conteúdo apagado.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Resta uma tentativa. Se você esgotar as suas tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, você poderá se registrar novamente sem o seu PIN. Todo o conteúdo da sua conta será suprimido.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Resta uma tentativa. Se você esgotá-la antes de conseguir se lembrar do seu PIN, poderá criar um outro. Nesse caso, você pode se registrar e usar sua conta, mas perderá algumas configurações salvas, como as informações do seu perfil.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorreto";
@@ -5323,9 +5125,6 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Direitos autorais Signal Messenger\nLicenciado nos termos da GPLv3";
 
-/* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Doação mensal";
-
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Uso de rede";
 
@@ -5466,9 +5265,6 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notificações";
-
-/* Title for the 'one-time donation' link in settings. */
-"SETTINGS_ONE_TIME_DONATION" = "One-time Donation";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Ativar";
@@ -5983,9 +5779,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Autoriza o iOS a acessar sua lista de contatos do Signal, para suas conversas serem exibidas em notificações e como sugestões ao compartilhar conteúdo a partir de outros aplicativos.";
 
-/* Title for the 'monthly donation' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Monthly Donation";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueio de Registro";
 
@@ -6187,20 +5980,11 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Você";
 
-/* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Selos";
-
-/* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Ajustar doação";
-
-/* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Perguntas frequentes sobre doação";
-
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Doar";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal é mantido por pessoas como você. Contribua e receba um selo.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Agora não";
@@ -6266,22 +6050,19 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Carregando";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "O Signal é uma entidade sem fins lucrativos, sem anunciantes ou investidores, apoiada apenas pelas pessoas que o usam e valorizam. Faça uma doação mensal recorrente e receba um selo no perfil para demonstrar o seu apoio.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "O Signal está comprometido com desenvolvimento de uma tecnologia de privacidade de código aberto que protege a liberdade de expressão e permite uma comunicação global segura. \n\nSua doação incentiva esta causa e paga pelo desenvolvimento e funcionamento de um aplicativo usado por milhões de pessoas para comunicação privada. Sem anúncios. Sem rastreadores. Sem brincadeira.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Apoie a tecnologia que é desenvolvida pensando em você - e não em seus dados, junte-se à comunidade que a sustenta financeiramente.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Por que doar?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Ainda em processamento";
-
-/* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Fazer uma doação ao Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obter um selo %@";
@@ -6316,9 +6097,6 @@
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Erro ao efetuar o pagamento";
 
-/* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "Meu apoio";
-
 /* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Erro ao efetuar o pagamento. %@";
 
@@ -6338,7 +6116,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Efetuando a transação…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "Leia mais.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renova em %@";
@@ -6365,7 +6143,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Atualizar";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Faça uma doação mensal recorrente para o Signal a fim de apoiar a tecnologia desenvolvida pensando em você e não em seus dados.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Desligado";
@@ -6442,26 +6220,14 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ minuto";
 
-/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ segundo";
-
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ semana";
-
-/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ ano";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ semanas";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@sem.";
-
-/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ anos";
-
-/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 segundos";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Cancelar";

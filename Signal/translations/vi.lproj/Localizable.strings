@@ -31,9 +31,6 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Tin nhắn thoại";
 
-/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Tin nhắn thoại %@ giây";
-
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Cuộc gọi Signal";
 
@@ -51,24 +48,6 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Gọi video";
-
-/* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Thêm thành viên";
-
-/* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Thêm Thành viên";
-
-/* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Thêm thành viên vào \"%2$@\"?";
-
-/* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Thêm %1$@ thành viên vào \"%2$@\"?";
-
-/* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Thêm Thành viên Mới";
-
-/* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Thêm các Thành viên Mới";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Thêm Thành viên";
@@ -157,6 +136,9 @@
 /* No comment provided by engineer. */
 "APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
 
+/* Button to try launching the app even though the last launch failed */
+"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Không thể tải cơ sở dữ liệu";
 
@@ -165,6 +147,12 @@
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Phiên bản cơ sở dữ liệu không xác định.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Dữ liệu từ thiết bị cũ của bạn không thể được khôi phục. Hãy gửi bản ghi chép lỗi đến support@signal.org để chúng tôi có thể khắc phục vấn đề. Nếu bạn cài đặt lại Signal lịch sử trò chuyện của bạn sẽ không được lưu giữ.";
@@ -736,12 +724,6 @@
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "tự động";
 
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Màu tuỳ chỉnh này được sử dụng trong 1 cuộc trò chuyện. Bạn có muốn xoá nó không?";
-
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Màu cuộc trò chuyện này được sử dụng trong %@ cuộc trò chuyện. Bạn có muốn xoá nó cho tất cuộc trò chuyện?";
-
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Xoá Màu";
 
@@ -750,9 +732,6 @@
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Tuỳ chỉnh Màu";
-
-/* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Màu cuộc trò chuyện này được sử dụng trong %@ cuộc trò chuyện. Bạn có muốn lưu lại thay đổi cho tất cuộc trò chuyện?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Tự động tương thích màu với màn hình nền";
@@ -1021,14 +1000,8 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tin nhắn này sẽ bị xoá khỏi thiết bị này.";
 
-/* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xoá Cuộc trò chuyện?";
-
-/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
@@ -1051,9 +1024,6 @@
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Chỉ có người quản trị mới có thể gửi tin nhắn vào nhóm này.";
 
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Bạn không thể chọn nhiều hơn %@ cuộc trò chuyện. ";
-
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Nhóm";
 
@@ -1068,12 +1038,6 @@
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Không có kết quả";
-
-/* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 kết quả";
-
-/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d trong số %d kết quả";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Cài đặt Cuộc trò chuyện";
@@ -1153,12 +1117,6 @@
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Yêu cầu & Lời mời";
 
-/* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Thành viên";
-
-/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Thành viên";
-
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Luôn luôn Thông báo";
 
@@ -1219,17 +1177,11 @@
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Tắt tiếng cho đến %@";
 
-/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Nhóm Chung";
-
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Tạo Liên hệ Mới";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Không có Nhóm chung";
-
-/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Nhóm Chung";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Quyền";
@@ -1351,17 +1303,8 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Đang tối ưu hóa Cơ sở dữ liệu";
 
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@phút";
-
-/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ phút trước";
-
 /* The present; the current time. */
 "DATE_NOW" = "Vừa xong";
-
-/* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 phút trước";
 
 /* The current day. */
 "DATE_TODAY" = "Hôm nay";
@@ -1452,12 +1395,6 @@
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Xoá Mọi Tin nhắn";
-
-/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Xoá %ld Tin nhắn?";
-
-/* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Xoá Tin nhắn?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Đăng ký lại số điện thoại này";
@@ -1657,8 +1594,44 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
 
+/* Text of the 'donate to signal' button on the donation screen */
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Ủng hộ Signal";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Đóng góp cho Signal";
+
+/* Text that's shown when the donation view fails to load data, probably due to network failure */
+"DONATION_VIEW_LOAD_FAILED" = "Lỗi kết nối: Hãy kiểm tra kết nối của bạn và thử lại.";
+
+/* Text of the 'make a monthly donation' button on the donation screen */
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+
+/* Title for the 'Badges' button on the donation screen */
+"DONATION_VIEW_MANAGE_BADGES" = "Huy hiệu";
+
+/* Title for the 'Manage Subscription' button on the donation screen */
+"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Quản lý Quyên góp";
+
+/* Title for the 'more' section on the donation screen */
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Thêm";
+
+/* Title for the 'my support' section in the donation view */
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "Hổ trợ của tôi";
+
+/* Title for the 'one-time donation' link in the donation view */
+"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+
+/* Title for the 'other ways to give' section on the donation view */
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+
+/* Title for the 'receipts' section on the donation screen */
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+
+/* Title for the 'Subscription FAQ' button on the donation screen */
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "FAQ Quyên góp";
+
+/* Title on the 'Donate to Signal' screen */
+"DONATION_VIEW_TITLE" = "Ủng hộ Signal";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Bạn có thể cho phép quyền truy cập trong Cài đặt iOS.";
@@ -1671,9 +1644,6 @@
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Người dùng này không thể được thêm vào nhóm cho đến khi họ nâng cấp Signal.";
-
-/* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Đã đạt kích cỡ nhóm tối đa %@ thành viên.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ảnh không hợp lệ.";
@@ -1867,9 +1837,6 @@
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Phiên bản Signal của bạn đã hết hạn! Nhấn để cập nhật lên phiên bản mới nhất.";
 
-/* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Phiên bản Signal của bạn sẽ hết hạn trong %d ngày. Chạm để cập nhật lên phiên bản mới nhất.";
-
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Phiên bản Signal của bạn sẽ hết hạn vào hôm nay. Chạm để cập nhật lên phiên bản mới nhất.";
 
@@ -1905,12 +1872,6 @@
 
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Tin nhắn được chuyển tiếp sẽ được gửi ngay bây giờ.";
-
-/* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Gửi tin nhắn";
-
-/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Gửi %@tin nhắn";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Chuyển tiếp nhanh hơn";
@@ -2044,9 +2005,6 @@
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Thông tin khác";
 
-/* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Đã chạm mức %ld người tham dự tối đa cho cuộc gọi này. Hãy thử lại sau.";
-
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Đã chạm mức số người tham dự tối đa cho cuộc gọi này. Hãy thử lại sau.";
 
@@ -2058,9 +2016,6 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Rời Cuộc gọi";
-
-/* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Trong cuộc gọi này · %ld người";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, và %3$@ người khác trong cuộc gọi này";
@@ -2080,12 +2035,6 @@
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Chưa có ai trong cuộc gọi này.";
 
-/* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, và %ld người khác đã tham dự cuộc gọi";
-
-/* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, và %ld người khác đã rời cuộc gọi";
-
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ đã tham gia cuộc gọi";
 
@@ -2097,9 +2046,6 @@
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ và %@ đã rời cuộc gọi";
-
-/* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "Trong cuộc gọi này · 1 người";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ đang trong cuộc gọi này";
@@ -2269,14 +2215,8 @@
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ đã bật sự chấp duyệt của admin cho đường dẫn nhóm.";
 
-/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
+/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ không thể được tự động thêm vào nhóm này bởi bạn. Họ đã được mời tham gia, và sẽ không thấy tin nhắn nhóm cho đến khi họ chấp nhận.";
-
-/* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Thư mời đã được gửi";
-
-/* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ thư mời đã gửi";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Các người dùng này không thể được tự động thêm vào nhóm bởi bạn. Họ đã được mời tham gia, và sẽ không thấy các tin nhắn nhóm cho đến khi họ chấp nhận.";
@@ -2473,18 +2413,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Quản trị viên";
 
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "Không có thành viên";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 thành viên";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ thành viên";
-
-/* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
-"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ Thành viên";
-
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Bạn";
 
@@ -2494,9 +2422,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Thành viên";
 
-/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ thành viên nhóm có cùng tên.";
-
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Nhấn để xem lại";
 
@@ -2505,15 +2430,6 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Xét duyệt Thành viên";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ thành viên nhóm có cùng tên, xem qua các thành viên dưới đây hoặc chọn để thực hiện hành động.";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ thành viên nhóm có cùng tên, xem qua các thành viên dưới đây hoặc chọn để thực hiện hành động.";
-
-/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ thành viên nhóm có cùng tên.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Tên Nhóm (Bắt buộc)";
@@ -2797,30 +2713,6 @@
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Tất cả lịch sử tin nhắn và đa phương tiện sẽ được giữ lại từ trước khi nâng cấp.";
 
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Nhóm này không thể được tạo vì 1 thành viên đang sử dụng một phiên bản cũ của Signal. Bạn có thể tạo Nhóm Kiểu Mới với họ sau khi họ cập nhật Signal, hoặc gỡ bỏ họ trước khi tạo nhóm.";
-
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Nhóm này không thể được tạo vì %@ thành viên đang sử dụng một phiên bản cũ của Signal. Bạn có thể tạo Nhóm Kiểu Mới với họ sau khi họ cập nhật Signal, hoặc gỡ bỏ họ trước khi tạo nhóm.";
-
-/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Nhóm này không thể được tạo vì 1 thành viên đang sử dụng một phiên bản cũ của Signal. Bạn có thể tạo Nhóm Kiểu Mới với họ sau khi họ cập nhật Signal, hoặc gỡ bỏ họ trước khi tạo nhóm.%@";
-
-/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Nhóm này không thể được tạo vì %1$@ thành viên đang sử dụng một phiên bản cũ của Signal. Bạn có thể tạo Nhóm Kiểu Mới với họ sau khi họ cập nhật Signal, hoặc gỡ bỏ họ trước khi tạo nhóm. %2$@";
-
-/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Một Nhóm Cũ sẽ được tạo vì 1 thành viên đang sử dụng một phiên bản cũ của Signal. Bạn có thể tạo Nhóm Kiểu Mới với họ sau khi họ cập nhật Signal, hoặc gỡ bỏ họ trước khi tạo nhóm.";
-
-/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Một Nhóm Cũ sẽ được tạo vì %@ thành viên đang sử dụng một phiên bản cũ của Signal. Bạn có thể tạo Nhóm Kiểu Mới với họ sau khi họ cập nhật Signal, hoặc gỡ bỏ họ trước khi tạo nhóm.";
-
-/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 thành viên không hỗ trợ Nhóm Mới, vì vậy nên đây sẽ là Nhóm Cũ. %@";
-
-/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ thành viên không hỗ trợ Nhóm Mới, vì vậy nên đây sẽ là Nhóm Cũ. %2$@";
-
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Đây là Nhóm Cũ. Các tính năng như admin nhóm chỉ có sẵn cho Nhóm Mới. %@";
 
@@ -2833,12 +2725,6 @@
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Đây là Nhóm Cũ. Để truy cập các tính năng mới như @nhắc tên và admin, %@.";
 
-/* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 thành viên chưa thể được thêm lại vào Nhóm Mới. Bạn có muốn thêm họ bây giờ không?";
-
-/* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ thành viên không thể được thêm lại vào Nhóm Mới. Bạn có muốn thêm họ bây giờ không?";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Nhóm Cũ";
 
@@ -2848,7 +2734,7 @@
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Nâng cấp Nhóm";
 
-/* Title for the the 'migrate group' banner. */
+/* Title for the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Để truy cập các tính năng mới như @nhắc tên và admins, hãy nâng cấp nhóm này.";
 
 /* Title for the 'migrated group' alert view. */
@@ -2931,9 +2817,6 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Chọn quản trị viên mới";
-
-/* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Nhóm Signal hoạt động tốt nhất với %@ thành viên hoặc ít hơn. Thêm nhiều thành viên hơn sẽ gây trì hoãn trong việc gửi và nhận tin nhắn.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Đã đạt giới hạn thành viên được giới thiệu";
@@ -3220,23 +3103,8 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Tin nhắn";
 
-/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ nhóm chung";
-
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tất cả Tập tin đa phương tiện";
-
-/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Xóa %d Tin nhắn";
-
-/* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Xóa tin nhắn";
-
-/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ Ảnh";
-
-/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ mục";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3324,15 +3192,6 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Gói Nhãn dán";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "Đã chọn 0";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "Đã chọn 1";
-
-/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "Đã chọn %@";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Tin nhắn";
@@ -3556,12 +3415,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ không còn được xác minh. Chạm để xem các lựa chọn.";
 
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Bạn đã chặn 1 thành viên của nhóm này";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Bạn đã chặn %@ thành viên của nhóm này";
-
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Nhiều thành viên của nhóm này không còn được xác minh. Chạm để xem các lựa chọn.";
 
@@ -3625,9 +3478,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Tìm bằng Số điện thoại";
 
-/* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
-
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nhóm Mới";
 
@@ -3651,9 +3501,6 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nhóm Mới";
-
-/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
-"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ Thành viên";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ đến %@";
@@ -3777,12 +3624,6 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Mã PIN không chính xác";
-
-/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Mã PIN không chính xác. Còn %lu lần thử.";
-
-/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Mã PIN không chính xác. Còn 1 lần thử.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Bỏ qua và Tạo PIN mới";
@@ -4156,12 +3997,6 @@
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Từ chối yêu cầu từ \"%@\"?";
 
-/* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ đã mời 1 người dùng";
-
-/* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ đã mời %2$@ người dùng";
-
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Đang không có yêu cầu thành viên nào đang chờ.";
 
@@ -4171,32 +4006,14 @@
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Đã thêm \"%@\".";
 
-/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ yêu cầu thành viên đang chờ.";
-
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Xem các Yêu cầu";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Đã từ chối \"%@\".";
 
-/* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Thu hồi lời mời không có hiệu lực";
-
-/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Thu hồi %@ lời mời không có hiệu lực";
-
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Thu hồi Thư mời";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Thu hồi thư mời tham gia nhóm được gửi bởi \"%@\"?";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Thu hồi %1$@ thu mời được gửi bởi \"%2$@\"?";
-
-/* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Thu hồi Thư mời";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Thu hồi thư mời cho \"%@\"?";
@@ -4474,9 +4291,6 @@
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
-/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Chúng tôi sẽ nhắc bạn sau. Tạo mã PIN sẽ trở thành bắt buộc sau %ld ngày.";
-
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Tạo mã PIN";
 
@@ -4731,18 +4545,6 @@
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Mã PIN là một mã ít nhất 4 kí tự bạn tạo ra. Nếu bạn không nhớ được mã PIN, bạn sẽ phải chờ 7 ngày để đăng ký lại tài khoản.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Bạn còn %lu lần thử còn lại. Nếu bạn hết lần thử, bạn có thể tạo mã PIN mới. Bạn có thể đăng ký và sử dụng tài khoản nhưng bạn sẽ mất một số cài đặt đã được lưu như thông tin người dùng.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Bạn còn %lu lần thử. Nếu dùng hết các lần thử này, tài khoản của bạn sẽ bị xóa. Sau 7 ngày không sử dụng, bạn có thể đăng ký lại mà không cần mã PIN. Mọi nội dung và thông tin của tài khoản sẽ bị xóa.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Bạn còn 1 lần thử. Nếu dùng hết các lần thử này, tài khoản của bạn sẽ bị xóa. Sau 7 ngày không sử dụng, bạn có thể đăng ký lại mà không cần mã PIN. Mọi nội dung và thông tin của tài khoản sẽ bị xóa.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Bạn còn 1 lần thử còn lại. Nếu bạn hết lần thử, bạn có thể tạo mã PIN mới. Bạn có thể đăng ký và sử dụng tài khoản nhưng bạn sẽ mất một số cài đặt đã được lưu như thông tin người dùng.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Mã PIN không chính xác";
@@ -5323,9 +5125,6 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Bản quyền Signal Messenger\nCấp phép dưới GPLv3";
 
-/* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Số tiền đống góp";
-
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Việc sử dụng Dữ liệu";
 
@@ -5466,9 +5265,6 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Thông báo";
-
-/* Title for the 'one-time donation' link in settings. */
-"SETTINGS_ONE_TIME_DONATION" = "One-time Donation";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Kích hoạt";
@@ -5983,9 +5779,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Cho phép iOS truy cập vào thông tin liên lạc và hội thoại để kích hoạt các tính năng như chia sẻ các đề suất cho người dùng và hiển thị thông báo";
 
-/* Title for the 'monthly donation' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Monthly Donation";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Khoá Đăng ký";
 
@@ -6187,15 +5980,6 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Bạn";
 
-/* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Huy hiệu";
-
-/* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Quản lý Quyên góp";
-
-/* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "FAQ Quyên góp";
-
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Ủng hộ";
 
@@ -6280,9 +6064,6 @@
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Vẫn đang xữ lý";
 
-/* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Thêm vào một phần quyên góp cho Signal";
-
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Nhận một huy hiệu %@";
 
@@ -6315,9 +6096,6 @@
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Lỗi khi xử lý Thanh toán";
-
-/* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "Hổ trợ của tôi";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Lỗi khi xử lý thanh toán. %@";
@@ -6442,26 +6220,14 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ phút";
 
-/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ giây";
-
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ tuần";
-
-/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ năm";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ tuần";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ tuần";
-
-/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ năm";
-
-/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 giây";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Hủy";

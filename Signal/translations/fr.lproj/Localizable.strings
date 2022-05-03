@@ -31,9 +31,6 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Message vocal";
 
-/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Message vocal de %@ secondes.";
-
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Appel Signal";
 
@@ -51,24 +48,6 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Appel vidéo";
-
-/* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Ajouter un membre";
-
-/* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Ajouter des membres";
-
-/* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Ajouter un membre à « %2$@ » ?";
-
-/* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Ajouter %1$@ membres à « %2$@ » ?";
-
-/* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Ajouter un nouveau membre";
-
-/* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Ajouter de nouveaux membres";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Ajouter des membres";
@@ -157,6 +136,9 @@
 /* No comment provided by engineer. */
 "APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
 
+/* Button to try launching the app even though the last launch failed */
+"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Impossible de charger la base de données";
 
@@ -165,6 +147,12 @@
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Version de base de données inconnue.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Les données transférées de votre ancien appareil n’ont pas pu être restaurées. Veuillez envoyer un journal de débogage à support@signal.org afin que nous puissions examiner ce problème. Si vous réinstallez Signal, l’historique de vos messages pourrait être perdu.";
@@ -374,7 +362,7 @@
 "BADGE_CONFIGURATION_TITLE" = "Macarons";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Devenir un soutien";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Devenir donateur mensuel";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Donnez un Coup de pouce à Signal";
@@ -401,7 +389,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renouveler l’abonnement";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Don mensuel résilié";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Merci pour le Coup de pouce !";
@@ -736,12 +724,6 @@
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
 
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Cette couleur personnalisée est utilisée dans 1 conversation. Voulez-vous la supprimer ?";
-
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Cette couleur personnalisée est utilisée dans %@ conversations. Voulez-vous la supprimer pour toutes les conversations ?";
-
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Supprimer la couleur";
 
@@ -750,9 +732,6 @@
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Modifier la couleur";
-
-/* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Cette couleur est utilisée dans %@ conversations. Voulez-vous enregistrer les changements pour toutes les conversations ?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Adaptez automatiquement la couleur au fond d’écran";
@@ -1004,7 +983,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "Supprimer";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Renseignements";
+"CONTEXT_MENU_DETAILS" = "Info";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Transférer";
@@ -1021,14 +1000,8 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Cette conversation sera supprimée de cet appareil.";
 
-/* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "Ces conversations seront supprimées de cet appareil.";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
-
-/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Supprimer %@ conversations ?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mettre la conversation en sourdine pour…";
@@ -1051,9 +1024,6 @@
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Seuls les administrateurs peuvent envoyer des messages à ce groupe.";
 
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Vous ne pouvez pas sélectionner plus de %@ conversations.";
-
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Groupes";
 
@@ -1068,12 +1038,6 @@
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Aucune correspondance";
-
-/* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 correspondance";
-
-/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d sur %d correspondances";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Paramètres de la conversation";
@@ -1124,7 +1088,7 @@
 "CONVERSATION_SETTINGS_EDIT" = "Modifier";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Modifier les renseignements du groupe";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Modifier les informations du groupe";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Les administrateurs";
@@ -1152,12 +1116,6 @@
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Demandes et invitations";
-
-/* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Membres";
-
-/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ membres";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Toujours m’avertir";
@@ -1219,17 +1177,11 @@
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "En sourdine jusqu’à %@";
 
-/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ groupes en commun";
-
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Créer un nouveau contact";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Aucun groupe en commun";
-
-/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 groupe en commun";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Autorisations";
@@ -1351,17 +1303,8 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimisation de la base de données";
 
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ m";
-
-/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "Il y a %@ minutes";
-
 /* The present; the current time. */
 "DATE_NOW" = "À l’instant";
-
-/* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "Il y a 1 minute";
 
 /* The current day. */
 "DATE_TODAY" = "Aujourd’hui";
@@ -1409,7 +1352,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirection vers GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Renseignements sur les journaux de débogage";
+"DEBUG_LOG_INFO_BUTTON" = "Informations sur les journaux de débogage";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Supprimer le compte";
@@ -1427,7 +1370,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Échec de suppression du compte. Assurez-vous que le Wi-Fi ou les données mobiles sont activés, puis réessayez.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Les renseignements de votre compte, votre profil et tous vos messages seront supprimés.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Les informations de votre compte, votre profil et tous vos messages seront supprimés.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Suppression du compte…";
@@ -1452,12 +1395,6 @@
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Supprimer tous les messages";
-
-/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Supprimer %ld messages ?";
-
-/* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Supprimer le message ?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Inscrire ce numéro de téléphone de nouveau";
@@ -1640,7 +1577,7 @@
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "One-time";
+"DONATION_RECEIPT_ONE_TIME" = "Une fois";
 
 /* Title for recurring donation receipts */
 "DONATION_RECEIPT_RECURRING" = "Périodique";
@@ -1657,23 +1594,56 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Si vous avez réinstallé Signal, les reçus de dons précédents ne seront pas accessibles.";
 
+/* Text of the 'donate to signal' button on the donation screen */
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Faire un don à Signal";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Don à Signal";
+
+/* Text that's shown when the donation view fails to load data, probably due to network failure */
+"DONATION_VIEW_LOAD_FAILED" = "Erreur réseau. Vérifiez votre connexion et réessayez.";
+
+/* Text of the 'make a monthly donation' button on the donation screen */
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+
+/* Title for the 'Badges' button on the donation screen */
+"DONATION_VIEW_MANAGE_BADGES" = "Macarons";
+
+/* Title for the 'Manage Subscription' button on the donation screen */
+"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Gérer l’abonnement";
+
+/* Title for the 'more' section on the donation screen */
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Plus";
+
+/* Title for the 'my support' section in the donation view */
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "Mon soutien";
+
+/* Title for the 'one-time donation' link in the donation view */
+"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+
+/* Title for the 'other ways to give' section on the donation view */
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+
+/* Title for the 'receipts' section on the donation screen */
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Reçus";
+
+/* Title for the 'Subscription FAQ' button on the donation screen */
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "FAQ Abonnement";
+
+/* Title on the 'Donate to Signal' screen */
+"DONATION_VIEW_TITLE" = "Faire un don à Signal";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez accorder l’accès dans l’appli Réglages d’iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal a besoin d’accéder aux contacts pour modifier les renseignements des contacts";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal a besoin d’accéder aux contacts pour modifier les informations des contacts";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Modifier le groupe";
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Il est impossible d’ajouter cette personne à ce groupe tant qu’elle n’aura pas mis Signal à niveau.";
-
-/* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "La taille de groupe maximale de %@ membres est atteinte.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "La photo n’est pas valide.";
@@ -1867,9 +1837,6 @@
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Votre version de Signal est expirée. Touchez pour passer à la version la plus récente.";
 
-/* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Votre version de Signal expirera dans %d jours. Touchez pour passer à la version la plus récente.";
-
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Votre version de Signal expirera aujourd’hui. Touchez pour passer à la version la plus récente.";
 
@@ -1905,12 +1872,6 @@
 
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Les messages transférés sont désormais immédiatement envoyés.";
-
-/* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Envoyer un message";
-
-/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Envoyer %@ messages";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Transferts plus rapides";
@@ -1985,13 +1946,13 @@
 "GO_TO_SETTINGS_BUTTON" = "Aller dans Réglages";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Vous avez changé qui peut modifier les renseignements du groupe en « %@ ».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Vous avez changé qui peut modifier les informations du groupe en « %@ ».";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a changé qui peut modifier les renseignements du groupe en « %2$@ ».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ a changé qui peut modifier les informations du groupe en « %2$@ ».";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Les renseignements du groupe peuvent être changés par « %@ ».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Les informations du groupe peuvent être changées par « %@ ».";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Les administrateurs";
@@ -2044,9 +2005,6 @@
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Plus de précisions";
 
-/* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Le nombre maximal de %ld participants a été atteint pour cet appel. Veuillez réessayer plus tard.";
-
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Le nombre maximal de participants a été atteint pour cet appel. Veuillez réessayer plus tard.";
 
@@ -2058,9 +2016,6 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Quitter l’appel";
-
-/* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Dans cet appel · %ld personnes";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ et %3$@ autres personnes font partie de cet appel";
@@ -2080,12 +2035,6 @@
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Il n’y a encore personne dans cet appel.";
 
-/* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ et %ld autres se sont joints à l’appel";
-
-/* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ et %ld autres ont quitté l’appel";
-
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ s’est joint à l’appel";
 
@@ -2097,9 +2046,6 @@
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ et %@ ont quitté l’appel";
-
-/* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "Dans cet appel · 1 personne";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ est dans cet appel";
@@ -2269,14 +2215,8 @@
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ a activé l’approbation d’un administrateur pour le lien du groupe.";
 
-/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
+/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ ne peut pas être ajouté automatiquement par vous à ce groupe. Une invitation a été envoyée, et l’utilisateur ne verra aucun message du groupe tant que l’invitation n’aura pas été acceptée.";
-
-/* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "L’invitation a été envoyée";
-
-/* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ invitations ont été envoyées";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ces utilisateurs ne peuvent pas être ajoutés automatiquement par vous à ce groupe. Des invitations ont été envoyées et ces utilisateurs ne verront aucun message du groupe tant que les invitations n’auront pas été acceptées.";
@@ -2473,18 +2413,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Administrateur";
 
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "Aucun membre";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 membre";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ membres";
-
-/* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
-"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ membres";
-
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Vous";
 
@@ -2494,9 +2422,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Membres";
 
-/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ membres du groupe ont un nom similaire.";
-
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Toucher pour examiner";
 
@@ -2505,15 +2430,6 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Examiner les membres";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ membres du groupe portent un nom semblable. Examinez-les ci-dessous ou choisissez l’action appropriée.";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ membres du groupe portent le même nom. Examinez-les ci-dessous ou choisissez l’action appropriée.";
-
-/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ membres du groupe portent le même nom.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Nom du groupe (requis)";
@@ -2797,30 +2713,6 @@
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Tout l’historique des messages et tous les médias d’avant la conversion seront conservés.";
 
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Ce groupe ne peut pas être créé, car un membre utilise une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec ce membre une fois que ce membre aura mis Signal à jour, ou supprimez ce membre avant de créer le groupe.";
-
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Ce groupe ne peut pas être créé, car %@ membres utilisent une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
-
-/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Ce groupe ne peut pas être créé, car un membre utilise une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec ce membre une fois que ce membre aura mis Signal à jour, ou supprimez ce membre avant de créer le groupe. %@";
-
-/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Ce groupe ne peut pas être créé, car %1$@ membres utilisent une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe. %2$@";
-
-/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Un groupe hérité sera créé, car un membre utilise une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
-
-/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Un groupe hérité sera créé, car %@ membres utilisent une ancienne version de Signal. Vous pourrez créer un nouveau groupe avec eux une fois qu’ils auront mis Signal à jour, ou supprimez-les avant de créer le groupe.";
-
-/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "Un membre ne prend pas en charge les Nouveaux groupes, ce sera donc un groupe hérité. %@";
-
-/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ membres ne prennent pas en charge les Nouveaux groupes, ce sera donc un groupe hérité. %2$@";
-
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Ce groupe est un groupe hérité. Les fonctions telles que l’administration des groupes ne sont proposées que pour les Nouveaux groupes. %@";
 
@@ -2833,12 +2725,6 @@
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Ce groupe est un groupe hérité. Pour accéder aux nouvelles fonctions telles que les @mentions et l’administration, %@";
 
-/* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "Un membre n’a pas pu être rajouté au Nouveau groupe. Voulez-vous l’ajouter maintenant ?";
-
-/* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ membres n’ont pas pu être rajoutés au Nouveau groupe. Voulez-vous les ajouter maintenant ?";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Groupe hérité";
 
@@ -2848,7 +2734,7 @@
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Convertir le groupe";
 
-/* Title for the the 'migrate group' banner. */
+/* Title for the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Pour accéder aux nouvelles fonctions telles que les @mentions et l’administration, convertissez ce groupe.";
 
 /* Title for the 'migrated group' alert view. */
@@ -2931,9 +2817,6 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Choisir un nouvel administrateur";
-
-/* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Les groupes Signal fonctionnent mieux avec %@ membres ou moins. Ajouter davantage de membres entraînera des retards d’envoi et de réception des messages.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "La limite de membres recommandée est atteinte";
@@ -3110,7 +2993,7 @@
 "KEY_COMMAND_ATTACHMENTS" = "Afficher les fichiers joints";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Accéder aux renseignements de la conversation";
+"KEY_COMMAND_CONVERSATION_INFO" = "Accéder aux informations de la conversation";
 
 /* A keyboard command to focus the current conversation's input field. */
 "KEY_COMMAND_FOCUS_COMPOSER" = "Accéder à la barre de saisie";
@@ -3220,23 +3103,8 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Message";
 
-/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ groupes en commun";
-
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tous les médias";
-
-/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Supprimer %d messages";
-
-/* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Supprimer le message";
-
-/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ photos";
-
-/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ éléments";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
@@ -3324,15 +3192,6 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Paquet d’autocollants";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 sélectionné";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 sélectionné";
-
-/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ sélectionnés";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
@@ -3556,12 +3415,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ n’est plus marqué comme confirmé. Touchez pour plus d’options.";
 
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Vous avez bloqué un membre de ce groupe";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Vous avez bloqué %@ membres de ce groupe";
-
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Plus d’un membre de ce groupe n’est plus marqué comme confirmé. Touchez pour plus d’options.";
 
@@ -3625,9 +3478,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Trouver par numéro de téléphone";
 
-/* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 membre";
-
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Nouveau groupe";
 
@@ -3651,9 +3501,6 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nouveau groupe";
-
-/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
-"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ membres";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ à %@";
@@ -3778,17 +3625,11 @@
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Le NIP est erroné";
 
-/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Le NIP est erroné. Il reste %lu essais.";
-
-/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Le NIP est erroné. Il reste 1 essai.";
-
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Ignorer et créer un nouveau NIP";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Si vous ne vous souvenez pas de votre NIP, vous pouvez en créer un nouveau. Vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les renseignements de votre profil.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Si vous ne vous souvenez pas de votre NIP, vous pouvez en créer un nouveau. Vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les informations de votre profil.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Ignorer la saisie du NIP ?";
@@ -3857,7 +3698,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Le numéro de téléphone est invalide. Pour vous inscrire, veuillez saisir un numéro de téléphone valide.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Vous avez épuisé tous vos essais de NIP, mais vous pouvez encore accéder à votre compte Signal en créant un nouveau NIP. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans renseignements de profil enregistrés ni préférences.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Vous avez épuisé tous vos essais de NIP, mais vous pouvez encore accéder à votre compte Signal en créant un nouveau NIP. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil enregistrées ni préférences.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "En apprendre davantage sur les NIP";
@@ -4156,12 +3997,6 @@
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Refuser la demande de « %@ » ?";
 
-/* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ a invité une personne";
-
-/* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ a invité %2$@ personnes";
-
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Aucune demande de membre n’est en attente.";
 
@@ -4171,38 +4006,20 @@
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "« %@ » a été ajouté.";
 
-/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ demandes de membre en attente.";
-
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Visualiser les demandes";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "« %@ » a été refusé.";
 
-/* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Révoquer une invitation invalide";
-
-/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Révoquer %@ invitations invalides";
-
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Révoquer l’invitation";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Révoquer l’invitation au groupe envoyée par « %@ » ?";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Révoquer %1$@ invitations envoyées par « %2$@ » ?";
-
-/* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Révoquer les invitations";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Révoquer l’invitation au groupe pour « %@ » ?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Les détails des personnes invitées par d’autres membres du groupe ne sont pas affichés. Si les invités choisissent de se joindre au groupe, leurs renseignements seront alors communiqués au groupe. Ils ne verront aucun message dans le groupe avant de s’y être joints.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Les détails des personnes invitées par d’autres membres du groupe ne sont pas affichés. Si les invités choisissent de se joindre au groupe, leurs informations seront alors communiquées au groupe. Ils ne verront aucun message dans le groupe avant de s’y être joints.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Les personnes de cette liste tentent de se joindre à « %@ » grâce au lien du groupe.";
@@ -4364,7 +4181,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Échec de création du NIP";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Les NIP renforcent par le chiffrement les renseignements enregistrés dans Signal afin que vous seul puissiez y accéder. Votre profil, vos paramètres et vos contacts seront restaurés quand vous réinstallerez Signal. Vous n’aurez pas besoin de votre NIP pour ouvrir l’appli.";
+"PIN_CREATION_EXPLANATION" = "Les NIP renforcent par le chiffrement les informations enregistrées dans Signal afin que vous seul puissiez y accéder. Votre profil, vos paramètres et vos contacts seront restaurés quand vous réinstallerez Signal. Vous n’aurez pas besoin de votre NIP pour ouvrir l’appli.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "En apprendre davantage les NIP";
@@ -4473,9 +4290,6 @@
 
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Terminez de créer votre NIP Signal";
-
-/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Nous vous le rappellerons plus tard. La création d’un NIP deviendra obligatoire dans %ld jours.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Créer un NIP";
@@ -4727,22 +4541,10 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Votre NIP est un code à quatre chiffres ou plus que vous avez créé et qui peut être numérique ou alphanumérique. Si vous avez oublié votre NIP, vous devrez attendre sept jours pour réinscrire votre compte.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Votre NIP est un code à quatre chiffres ou plus que vous avez créé et qui peut être numérique ou alphanumérique. Si vous avez oublié votre NIP, vous pouvez en créer un nouveau. Vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les renseignements de votre profil.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Votre NIP est un code à quatre chiffres ou plus que vous avez créé et qui peut être numérique ou alphanumérique. Si vous avez oublié votre NIP, vous pouvez en créer un nouveau. Vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les informations de votre profil.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Votre NIP est un code numérique à quatre chiffres que vous avez créé Si vous avez oublié votre NIP, vous devrez attendre sept jours pour réinscrire votre compte.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Il vous reste %lu essais. Si vous épuisez le nombre limite d’essais, vous pouvez créer un nouveau NIP. Vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les renseignements de votre profil.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Il vous reste %lu essais. Si vous épuisez le nombre limite d’essais, votre compte sera verrouillé. Après sept jours d’inactivité, vous pourrez vous réinscrire sans votre NIP. Votre compte sera effacé et son contenu supprimé.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Il vous reste un essai. Si vous épuisez le nombre limite d’essais, votre compte sera verrouillé. Après sept jours d’inactivité, vous pourrez vous réinscrire sans votre NIP. Votre compte sera effacé et son contenu supprimé.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Il vous reste un essai. Si vous épuisez le nombre limite d’essais, vous pouvez créer un nouveau NIP. Vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les renseignements de votre profil.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Le NIP est erroné";
@@ -5323,9 +5125,6 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Tous droits réservés Messagerie Signal\nSous licence GPLv3";
 
-/* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Abonnement";
-
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Utilisations des données";
 
@@ -5466,9 +5265,6 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notifications";
-
-/* Title for the 'one-time donation' link in settings. */
-"SETTINGS_ONE_TIME_DONATION" = "Don ponctuel";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activer";
@@ -5888,7 +5684,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Rappels du NIP";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Les NIP conservent les renseignements stockés dans Signal sous forme chiffrée afin que vous seul puissiez y accéder. Votre NIP ne peut pas être récupéré. Votre profil, votre configuration et vos contacts seront restaurés quand vous réinstallez Signal.";
+"SETTINGS_PINS_FOOTER" = "Les NIP conservent les informations stockées dans Signal sous forme chiffrée afin que vous seul puissiez y accéder. Votre NIP ne peut pas être récupéré. Votre profil, votre configuration et vos contacts seront restaurés quand vous réinstallez Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Changer votre NIP";
@@ -5982,9 +5778,6 @@
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Autorisez iOS à accéder aux contacts et aux conversations pour utiliser des fonctions comme les suggestions de partage et les notifications.";
-
-/* Title for the 'monthly donation' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Don mensuel";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocage de l’inscription";
@@ -6187,20 +5980,11 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Vous";
 
-/* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Macarons";
-
-/* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Gérer l’abonnement";
-
-/* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "FAQ Abonnement";
-
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Faire un don";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal est alimenté par des gens comme vous. Contribuez et recevez un macaron.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Pas maintenant";
@@ -6236,7 +6020,7 @@
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID : %@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Renseignements d’assistance ---";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "--- Info d’assistance ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "Version d’iOS : %@";
@@ -6266,7 +6050,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Chargement";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal est un organisme sans but lucratif, sans annonceurs ni investisseurs, soutenue uniquement par les gens qui l’utilisent et l’apprécient. Faites un don mensuel récurrent et recevez un macaron de profil pour afficher votre soutien.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
@@ -6279,9 +6063,6 @@
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "En cours de traitement";
-
-/* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Donner un Coup de pouce à Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obtenez un macaron %@";
@@ -6315,9 +6096,6 @@
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Erreur de traitement du paiement";
-
-/* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "Mon soutien";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Erreur de traitement du paiement. %@";
@@ -6365,7 +6143,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Mise à jour";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Faites un don mensuel récurrent à Signal pour soutenir une technologie conçue pour vous, pas pour vos données.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Désactivé";
@@ -6442,26 +6220,14 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
 
-/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ seconde";
-
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ semaine";
-
-/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ an";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ semaines";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ sem";
-
-/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ ans";
-
-/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 seconde";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Annuler";

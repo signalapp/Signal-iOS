@@ -668,13 +668,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>%2$@ запросив(-ла) 1 людину в групу.</string>
+            <string>%2$@ запросив %d 1 особу до групи.</string>
             <key>few</key>
-            <string>%2$@ запросив(-ла) %d чоловіки в групу.</string>
+            <string>%2$@ запросив %d осіб до групи.</string>
             <key>many</key>
-            <string>%2$@ запросив(-ла) %d чоловік в групу.</string>
+            <string>%2$@ запросив %d осіб до групи.</string>
             <key>other</key>
-            <string>%2$@ запросив(-ла) %d чоловік в групу.</string>
+            <string>%2$@ запросив %d осіб до групи.</string>
         </dict>
     </dict>
     <key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -888,13 +888,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Видалити 1 Повідомлення</string>
+            <string>Видалити 1 повідомлення</string>
             <key>few</key>
-            <string>Видалити %d Повідомлень</string>
+            <string>Видалити %d повідомлень</string>
             <key>many</key>
-            <string>Видалити %d Повідомлень</string>
+            <string>Видалити %d повідомлень</string>
             <key>other</key>
-            <string>Видалити %d Повідомлень</string>
+            <string>Видалити %d повідомлень</string>
         </dict>
     </dict>
     <key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -1088,13 +1088,13 @@
             <key>NSStringFormatValueTypeKey</key>
             <string>d</string>
             <key>one</key>
-            <string>Відкликати запрошення, яке відправив(-ла) "%2$@"?</string>
+            <string>Відкликати запрошення, відправлене «%2$@»?</string>
             <key>few</key>
-            <string>Відкликати %d запрошення, які відправив(-ла) "%2$@"?</string>
+            <string>Відкликати %d запрошень, відправлених «%2$@»?</string>
             <key>many</key>
-            <string>Відкликати %d запрошень, які відправив(-ла) "%2$@"?</string>
+            <string>Відкликати %d запрошень, відправлених «%2$@»?</string>
             <key>other</key>
-            <string>Відкликати %d запрошень, які відправив(-ла) "%2$@"?</string>
+            <string>Відкликати %d запрошень, відправлених «%2$@»?</string>
         </dict>
     </dict>
     <key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>

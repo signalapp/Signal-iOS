@@ -31,9 +31,6 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "語音訊息";
 
-/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "%@ 秒長嘅語音訊息";
-
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal 通話";
 
@@ -51,24 +48,6 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "視像通話";
-
-/* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "加成員";
-
-/* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "加成員";
-
-/* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "係咪要加成員入去「%2$@」度？";
-
-/* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "係咪要加 %1$@ 位成員入去「%2$@」度？";
-
-/* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "加新成員";
-
-/* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "加新成員";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "加成員";
@@ -157,6 +136,9 @@
 /* No comment provided by engineer. */
 "APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
 
+/* Button to try launching the app even though the last launch failed */
+"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "載入唔到資料庫";
 
@@ -165,6 +147,12 @@
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "未知嘅資料庫版本。";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "未能還原由您部舊機轉移過嚟嘅資料。請將除錯記錄檔發送至 support@signal.org，等我哋可以睇睇呢個問題。若然您重新安裝 Signal，可能會遺失您嘅訊息紀錄。";
@@ -401,7 +389,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "為課金計劃續期";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "每月捐款已經取消";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "多謝您為我哋集氣！";
@@ -736,12 +724,6 @@
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "自動";
 
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "呢隻自訂顏色喺 1 個傾偈度用緊。您係咪要刪除呢隻顏色？";
-
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "呢隻自訂顏色喺 %@ 個傾偈度用緊。您係咪要為所有傾偈刪除呢隻顏色？";
-
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "刪除顏色";
 
@@ -750,9 +732,6 @@
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "改過隻顏色";
-
-/* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "呢隻顏色喺 %@ 個傾偈度用緊。您係咪要為所有傾偈儲存更改？";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "根據背景自動襯色";
@@ -1021,14 +1000,8 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "呢個傾偈會喺呢部機度刪除。";
 
-/* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "呢啲傾偈會喺呢部機度刪除。";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "係咪要刪除傾偈？";
-
-/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "係咪要刪除呢 %@ 個傾偈？";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "將呢個傾偈避靜...";
@@ -1051,9 +1024,6 @@
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "只有話事人先可以喺呢個谷度傳送訊息。";
 
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "您冇得揀選超過 %@ 個傾偈。";
-
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "谷";
 
@@ -1068,12 +1038,6 @@
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "得個吉";
-
-/* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 項結果";
-
-/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "第 %d 項，共 %d 項結果";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "傾偈設定";
@@ -1153,12 +1117,6 @@
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "請求與邀請";
 
-/* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "成員";
-
-/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ 位成員";
-
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "幾時都要通知";
 
@@ -1219,17 +1177,11 @@
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "避靜至 %@";
 
-/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ 個有緣相遇嘅谷";
-
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "建立新嘅聯絡人";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "無有緣相遇嘅谷";
-
-/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 個有緣相遇嘅谷";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "准許";
@@ -1351,17 +1303,8 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "優化緊資料庫";
 
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ 分鐘之前";
-
-/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ 分鐘之前";
-
 /* The present; the current time. */
 "DATE_NOW" = "啱啱";
-
-/* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 分鐘之前";
 
 /* The current day. */
 "DATE_TODAY" = "今日";
@@ -1452,12 +1395,6 @@
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "刪除晒所有訊息";
-
-/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "係咪要刪除 %ld 個訊息？";
-
-/* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "係咪要刪除訊息？";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新註冊呢個電話冧把";
@@ -1640,7 +1577,7 @@
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "One-time";
+"DONATION_RECEIPT_ONE_TIME" = "單次";
 
 /* Title for recurring donation receipts */
 "DONATION_RECEIPT_RECURRING" = "長期";
@@ -1657,8 +1594,44 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "若然您重新裝過 Signal，先前嘅捐款恕未能提供收據。";
 
+/* Text of the 'donate to signal' button on the donation screen */
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "課金 Signal";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "課金 Signal";
+
+/* Text that's shown when the donation view fails to load data, probably due to network failure */
+"DONATION_VIEW_LOAD_FAILED" = "網絡有問題。請檢查您嘅連線，然後再試下啦。";
+
+/* Text of the 'make a monthly donation' button on the donation screen */
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+
+/* Title for the 'Badges' button on the donation screen */
+"DONATION_VIEW_MANAGE_BADGES" = "襟章";
+
+/* Title for the 'Manage Subscription' button on the donation screen */
+"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "管理課金計劃";
+
+/* Title for the 'more' section on the donation screen */
+"DONATION_VIEW_MORE_SECTION_TITLE" = "更多";
+
+/* Title for the 'my support' section in the donation view */
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "我擔當後援";
+
+/* Title for the 'one-time donation' link in the donation view */
+"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+
+/* Title for the 'other ways to give' section on the donation view */
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+
+/* Title for the 'receipts' section on the donation screen */
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+
+/* Title for the 'Subscription FAQ' button on the donation screen */
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "課金計劃問答";
+
+/* Title on the 'Donate to Signal' screen */
+"DONATION_VIEW_TITLE" = "課金 Signal";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "您可以喺 iOS 設定 app 度啟用存取。";
@@ -1671,9 +1644,6 @@
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "喺呢個使用者升級 Signal 之前，都唔能夠加佢入個谷度。";
-
-/* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "谷嘅人數已經盡晒上限 %@ 位成員。";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "幅相無效。";
@@ -1867,9 +1837,6 @@
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "您用緊嘅 Signal 版本已經過期喇！撳一下更新去最新嘅版本。";
 
-/* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "您用緊嘅 Signal 版本 %d 日後到期㗎喇。撳一下更新去最新嘅版本。";
-
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "您用緊嘅 Signal 版本今日到期㗎喇。撳一下更新去最新嘅版本。";
 
@@ -1905,12 +1872,6 @@
 
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "轉寄訊息，而家嗱嗱聲同您迅速純熟送出。";
-
-/* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "傳送訊息";
-
-/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "傳送呢 %@ 個訊息";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "更快趣嘅轉寄傳送門";
@@ -2044,9 +2005,6 @@
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "講多啲嚟聽下";
 
-/* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "呢次通話已經頂到盡 %ld 位參與者爆晒棚。陣間再試下啦。";
-
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "呢次通話嘅參與者人數已經頂到盡爆晒棚。陣間再試下啦。";
 
@@ -2058,9 +2016,6 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "退出通話";
-
-/* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "嚟到呢次通話 · %ld 人";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@、%2$@ 同其餘 %3$@ 人嚟到呢次通話";
@@ -2080,12 +2035,6 @@
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Nobody is in this call yet.";
 
-/* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@、%@ 同其餘 %ld 人已加入呢次通話";
-
-/* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@、%@ 同其餘 %ld 人已退出呢次通話";
-
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ 已加入通話";
 
@@ -2097,9 +2046,6 @@
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ 同 %@ 已退出通話";
-
-/* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "嚟到呢次通話 · 1 人";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ 嚟到呢次通話";
@@ -2269,14 +2215,8 @@
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ 已為條谷拎訂定送交話事人審批。";
 
-/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
+/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "您冇得自動將 %@ 加入呢個谷度。已經邀請咗佢加入，喺佢應承之前，唔會見到個谷嘅任何訊息住。";
-
-/* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "邀請已發送";
-
-/* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ 個邀請已發送";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "您冇得自動將呢啲使用者加入呢個谷度。已經邀請咗佢哋加入，喺佢哋應承之前，都唔會見到個谷嘅任何訊息住。";
@@ -2473,18 +2413,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "話事人";
 
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "未有成員";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 位成員";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ 位成員";
-
-/* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
-"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ 位成員";
-
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "您";
 
@@ -2494,9 +2422,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "成員";
 
-/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "個谷有 %@ 位成員，個名差唔多。";
-
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "撳一下細閱";
 
@@ -2505,15 +2430,6 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "批閱成員";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "個谷嘅 %@ 位成員，個名差唔多，請批閱下列成員或視乎情況做要做嘅嘢。";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "個谷嘅 %@ 位成員撞名，請批閱下列成員或視乎情況做要做嘅嘢。";
-
-/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "個谷有 %@ 位成員撞名。";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "個谷嘅名 (必填)";
@@ -2797,30 +2713,6 @@
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "升級之前嘅所有訊息紀錄同媒體仍然會維持原狀。";
 
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
-
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "This group cannot be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
-
-/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %@";
-
-/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
-
-/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "將會開一個舊版谷，因為 1 位成員用緊舊版本嘅 Signal。您可以等佢更新咗 Signal 之後先開一個新版谷，又或者踼走佢先開新谷。";
-
-/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "將會開一個舊版谷，因為 %@ 位成員用緊舊版本嘅 Signal。您可以等佢哋更新咗 Signal 之後先開一個新版谷，又或者踼走佢哋先開新谷。";
-
-/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 位成員唔支援新版谷，因此呢個谷將會係舊版谷。%@";
-
-/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ 位成員唔支援新版谷，因此呢個谷將會係舊版谷。%2$@";
-
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "呢個係舊版谷。個谷嘅話事人等功能只有新版谷先用得。%@";
 
@@ -2833,12 +2725,6 @@
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "呢個係舊版谷。若要用新功能，例如 @點名講 同埋個谷嘅話事人功能，請%@。";
 
-/* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 位成員冇辦法重新加入去個新版谷度。您而家要唔要加返佢？";
-
-/* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ 位成員冇辦法重新加入去個新版谷度。您而家要唔要加返佢哋？";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "舊版谷";
 
@@ -2848,7 +2734,7 @@
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "升級個谷";
 
-/* Title for the the 'migrate group' banner. */
+/* Title for the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "To access new features like @mentions and admins, upgrade this group.";
 
 /* Title for the 'migrated group' alert view. */
@@ -2931,9 +2817,6 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "揀選新嘅話事人";
-
-/* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal 谷頂櫳 %@ 位成員就佮佮冚㗎嘞。再加多啲成員嘅話，收發訊息就可能會有延遲。";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "夠晒建議嘅成員人數喇";
@@ -3220,23 +3103,8 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "訊息";
 
-/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ 個有緣相遇嘅谷";
-
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有多媒體";
-
-/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "刪除 %d 個訊息";
-
-/* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "刪除訊息";
-
-/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ 幅相";
-
-/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ 個項目";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3324,15 +3192,6 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "貼圖包";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "揀選咗 0 個";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "揀選咗 1 個";
-
-/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "揀選咗 %@ 個";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "訊息";
@@ -3556,12 +3415,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ 而家唔再係剔低話驗證咗。撳一下睇下選項。";
 
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "您已封鎖呢個谷入面嘅 1 位成員";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "您已封鎖呢個谷入面嘅 %@ 位成員";
-
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "呢個谷入面有啲成員已經唔再係剔低話驗證咗。撳一下睇下選項。";
 
@@ -3625,9 +3478,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "用電話冧把搵";
 
-/* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 位成員";
-
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "開個新谷";
 
@@ -3651,9 +3501,6 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "開個新谷";
-
-/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
-"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ 位成員";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ 傳畀 %@";
@@ -3777,12 +3624,6 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN 碼唔啱";
-
-/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "PIN 碼唔啱。剩返 %lu 次機會。";
-
-/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN 碼唔啱。剩返 1 次機會。";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "飛過並建立新嘅 PIN 碼";
@@ -4156,12 +3997,6 @@
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "係咪要拒絕「%@」嘅請求？";
 
-/* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ 已邀請咗 1 人";
-
-/* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ 已邀請咗 %2$@ 人";
-
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "There are no pending member requests.";
 
@@ -4171,32 +4006,14 @@
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "已加咗「%@」入谷。";
 
-/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ 個成員請求仲等緊。";
-
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "睇下請求";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "已拒絕「%@」入谷。";
 
-/* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "撤回無效嘅邀請";
-
-/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "撤回 %@ 個無效嘅邀請";
-
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "撤回邀請";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "係咪要撤回由「%@」發送嘅入谷邀請？";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "係咪要撤回由「%2$@」發送嘅 %1$@ 個入谷邀請？";
-
-/* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "撤回呢啲邀請";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "係咪要撤回發送畀「%@」嘅入谷邀請？";
@@ -4474,9 +4291,6 @@
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "您個 Signal PIN 碼仲未搞掂，不如整埋佢啦。";
 
-/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "我哋遲啲再提您啦。不過，個 PIN 碼過多 %ld 日就冇得再拖，要整㗎喇。";
-
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "建立一個 PIN 碼";
 
@@ -4731,18 +4545,6 @@
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "您仲可以試多 %lu 次。如果用晒畀您嘅機會，都撞唔啱您先前整落嗰個 PIN 碼，您整過個新嘅都得。咁您就可以註冊同使用您嘅帳戶，但係您就會冇咗先前儲存落嘅一啲設定，例如話您嘅個人資料資訊。";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "您仲可以試多 %lu 次。若果您用盡晒啲機會都撞唔啱，您嘅帳戶將會被暫時凍結。等您嘅帳戶閒置 7 日之後，您就唔使您個 PIN 碼都可以重新註冊。到時，您嘅帳戶將會被抹除得一乾二淨，而所有內容亦會被刪除。";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "您仲可以試多 1 次。若果您用盡晒啲機會都撞唔啱，您嘅帳戶將會被暫時凍結。等您嘅帳戶閒置 7 日之後，您就唔使您個 PIN 碼都可以重新註冊。到時，您嘅帳戶將會被抹除得一乾二淨，而所有內容亦會被刪除。";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "您仲可以試多 1 次。如果用晒畀您嘅機會，都撞唔啱您先前整落嗰個 PIN 碼，您整過個新嘅都得。咁您就可以註冊同使用您嘅帳戶，但係您就會冇咗先前儲存落嘅一啲設定，例如話您嘅個人資料資訊。";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN 碼唔啱";
@@ -5323,9 +5125,6 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Signal Messenger 版權所有\n根據 GPLv3 嘅協議授權";
 
-/* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "課金計劃";
-
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "數據用量";
 
@@ -5466,9 +5265,6 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "通知";
-
-/* Title for the 'one-time donation' link in settings. */
-"SETTINGS_ONE_TIME_DONATION" = "One-time Donation";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "啟用";
@@ -5983,9 +5779,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "俾 iOS 存取 Signal 聯絡人同傾偈，以便提供分享建議同通知等功能。";
 
-/* Title for the 'monthly donation' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Monthly Donation";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "註冊鎖";
 
@@ -6187,20 +5980,11 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "您";
 
-/* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "襟章";
-
-/* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "管理課金計劃";
-
-/* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "課金計劃問答";
-
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "課金";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal 應援靠團伙。誠意召集課金師隨心捐款，並贈送一枚個人資料襟章致謝。";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "遲啲先啦";
@@ -6266,7 +6050,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "載入緊";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal 係非牟利組織，背後冇廣告商或投資者大條水喉硬碰加軟撼，全靠位位用呢個爐、錫呢個爐嘅「惜爐」團伙，燃亮最光的星斗，至能夠廢鉄到足金。希望您做我哋每月捐款計劃嘅善長，同時可換取一枚襟章掛喺個人資料度，同好友分享您做力撐派嘅喜悅。";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
@@ -6279,9 +6063,6 @@
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "仲處理緊";
-
-/* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "幫 Signal 買多支旗";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "獲得一枚「%@」襟章";
@@ -6315,9 +6096,6 @@
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "處理付款嘅時候發生錯誤";
-
-/* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "我擔當後援";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "處理付款嘅時候發生錯誤。%@";
@@ -6365,7 +6143,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "更新";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "藉每月捐款計劃課金 Signal，力撐為您而設、而非為求您嘅資料而打造嘅科技。";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "唔用";
@@ -6442,26 +6220,14 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ 分鐘";
 
-/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ 秒";
-
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ 星期";
-
-/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ 年";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ 星期";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ 星期";
-
-/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ 年";
-
-/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 秒";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "取消";

@@ -31,9 +31,6 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "વૉઈસ મેસેજ";
 
-/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "વૉઈસ મેસેજ %@ સેકન્ડ";
-
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal કૉલ";
 
@@ -51,24 +48,6 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "વિડિયો કૉલ";
-
-/* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "સભ્ય ઉમેરો";
-
-/* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "સભ્યો ઉમેરો";
-
-/* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "“%2$@” માં સભ્ય ઉમેરો?";
-
-/* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "%1$@ સભ્યોને “%2$@” માં ઉમેરો?";
-
-/* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "નવું સભ્ય ઉમેરો";
-
-/* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "નવા સભ્યો ઉમેરો";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "સભ્યો ઉમેરો";
@@ -157,6 +136,9 @@
 /* No comment provided by engineer. */
 "APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
 
+/* Button to try launching the app even though the last launch failed */
+"APP_LAUNCH_FAILURE_CONTINUE" = "Open Signal Instead";
+
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "ડેટાબેસ લોડ કરી શકાયું નથી";
 
@@ -165,6 +147,12 @@
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "અજાણ ડેટાબેઝ વર્ઝન.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal had a problem while trying to open. Please send a debug log to support@signal.org to help troubleshoot this issue.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "તમારા જૂના ડિવાઇસમાંથી ટ્રાન્સફર કરેલ ડેટા રિસ્ટોર કરી શકાયો નહીં. કૃપા કરીને support@signal.org પર ડિબગ લૉગ મોકલો જેથી અમે આ સમસ્યાને નિવારણ કરી શકીએ. જો તમે Signal ને ફરીથી ઇન્સ્ટોલ કરો છો તો તમારી મેસેજ હિસ્ટ્રી ખોવાઈ શકે છે";
@@ -736,12 +724,6 @@
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "આપમેળે";
 
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "આ કસ્ટમ રંગનો ઉપયોગ 1 ચેટમાં થાય છે. શું તમે તેને કાઢી નાંખવા માંગો છો?";
-
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "આ કસ્ટમ કલરનો ઉપયોગ %@ ચેટમાં થાય છે. શું તમે તેને બધી ચેટ માટે કાઢી નાંખવા માંગો છો?";
-
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "રંગને કાઢી નાંખો";
 
@@ -750,9 +732,6 @@
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "રંગને સંપાદિત કરો";
-
-/* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "આ રંગનો ઉપયોગ %@ ચેટમાં થાય છે. શું તમે બધી ચેટ માટે ફેરફારોને સેવ કરવા માંગો છો?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "વૉલપેપર સાથે રંગને આપમેળે મેળ ખાતો કરે છે";
@@ -1021,14 +1000,8 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "આ ડિવાઇસમાંથી આ ચેટને કાઢી નાંખવામાં આવશે.";
 
-/* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "શું ચેટ કાઢી નાંખવી છે?";
-
-/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
@@ -1051,9 +1024,6 @@
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "આ ગ્રુપને ફક્ત એડમિન જ મેસેજ મોકલી શકે છે.";
 
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "તમે %@ કરતા વધુ ચેટ પસંદ કરી શકતા નથી.";
-
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "ગ્રુપ";
 
@@ -1068,12 +1038,6 @@
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "કોઈ મેળ નથી";
-
-/* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 મેળ";
-
-/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d માંથી %d  મેચ";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "ચેટ સેટિંગ્સ";
@@ -1153,12 +1117,6 @@
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "વિનંતીઓ અને આમંત્રણો";
 
-/* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "સભ્યો";
-
-/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ સભ્યો";
-
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "હંમેશાં સૂચિત કરો";
 
@@ -1219,17 +1177,11 @@
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ સુધી મ્યુટ ન થાય ત્યાં સુધી મ્યૂટ કરેલ છે";
 
-/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "કોમનમાં %@ સમાન ગ્રુપ";
-
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "નવો સંપર્ક બનાવો";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "કોમનમાં કોઈ ગ્રુપ નથી";
-
-/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 સમાન ગ્રુપ";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "પરવાનગીઓ";
@@ -1351,17 +1303,8 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "ઑપ્ટિમાઇઝ ડેટાબેસ";
 
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@મિ";
-
-/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ મિનિટ પહેલાં";
-
 /* The present; the current time. */
 "DATE_NOW" = "હમણાં";
-
-/* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 મિનિટ પહેલાં";
 
 /* The current day. */
 "DATE_TODAY" = "આજે";
@@ -1452,12 +1395,6 @@
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "બધા મેસેજ કાઢી નાખો";
-
-/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld મેસેજ કાઢી નાખીએ?";
-
-/* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "મેસેજ કાઢી નાખો?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "આ ફોન નંબરને ફરીથી રજીસ્ટર કરો";
@@ -1657,8 +1594,44 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
 
+/* Text of the 'donate to signal' button on the donation screen */
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal ને ફાળો આપો";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal માટે ફાળો";
+
+/* Text that's shown when the donation view fails to load data, probably due to network failure */
+"DONATION_VIEW_LOAD_FAILED" = "Network error. Check your connection and try again.";
+
+/* Text of the 'make a monthly donation' button on the donation screen */
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
+
+/* Title for the 'Badges' button on the donation screen */
+"DONATION_VIEW_MANAGE_BADGES" = "Badges";
+
+/* Title for the 'Manage Subscription' button on the donation screen */
+"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+
+/* Title for the 'more' section on the donation screen */
+"DONATION_VIEW_MORE_SECTION_TITLE" = "વધુ";
+
+/* Title for the 'my support' section in the donation view */
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "My Support";
+
+/* Title for the 'one-time donation' link in the donation view */
+"DONATION_VIEW_ONE_TIME_DONATION" = "One-time donation";
+
+/* Title for the 'other ways to give' section on the donation view */
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
+
+/* Title for the 'receipts' section on the donation screen */
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+
+/* Title for the 'Subscription FAQ' button on the donation screen */
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+
+/* Title on the 'Donate to Signal' screen */
+"DONATION_VIEW_TITLE" = "Signal ને ફાળો આપો";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "તમે iOS સેટિંગ્સ એપ્લિકેશનમાં એક્સેસને સક્ષમ કરી શકો છો.";
@@ -1671,9 +1644,6 @@
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "જ્યાં સુધી તેઓ Signal અપગ્રેડ નહીં કરે ત્યાં સુધી આ વપરાશકર્તાને ગ્રુપમાં ઉમેરી શકાશે નહીં.";
-
-/* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "%@ સભ્યોનું મહત્તમ ગ્રુપ કદ સુધી પહોંચ્યું.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "અમાન્ય ફોટો.";
@@ -1867,9 +1837,6 @@
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "તમારા Signal ના વર્ઝનની સમયસીમા સમાપ્ત થઈ ગઈ છે! સૌથી તાજેતરનું વર્ઝન અપડેટ કરવા માટે ટેપ કરો.";
 
-/* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "તમારું Signal નું વર્ઝન%d દિવસોમાં સમાપ્ત થશે. સૌથી તાજેતરના વર્ઝન પર અપડેટ કરવા માટે ટેપ કરો.";
-
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "તમારું Signal નું વર્ઝન આજે સમાપ્ત થશે. સૌથી તાજેતરના વર્ઝન પર અપડેટ કરવા માટે ટેપ કરો.";
 
@@ -1905,12 +1872,6 @@
 
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
-
-/* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "મેસેજ મોકલો";
-
-/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
@@ -2044,9 +2005,6 @@
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "વધુ માહિતી";
 
-/* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "આ કૉલ માટે %ld સહભાગીઓની સંખ્યા મહત્તમ સુધી પહોંચી ગઈ છે. પછીથી ફરીથી પ્રયાસ કરો.";
-
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "આ કૉલ માટે સહભાગીઓની સંખ્યા મહત્તમ સુધી પહોંચી ગઈ છે. પછીથી ફરીથી પ્રયાસ કરો.";
 
@@ -2058,9 +2016,6 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "કૉલ છોડી દો";
-
-/* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "આ કૉલમાં · %ld લોકો";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, અને %3$@ અન્યો આ કૉલમાં છે";
@@ -2080,12 +2035,6 @@
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "હજી સુધી કોઈ આ કૉલમાં નથી.";
 
-/* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, અને %ld અન્યો કૉલમાં જોડાયા";
-
-/* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, આને %ld અન્યોએ કૉલ છોડી દીધો છે";
-
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ કૉલમાં જોડાયા";
 
@@ -2097,9 +2046,6 @@
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ અને %@ એ કૉલ છોડી દીધો";
-
-/* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "આ કોલમાં · 1 વ્યક્તિ";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@આ કૉલમાં છે";
@@ -2269,14 +2215,8 @@
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@એ ગ્રુપ લિંક માટે એડમિનની મંજૂરી ચાલુ કરી.";
 
-/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
+/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ તમારા દ્વારા આ ગ્રુપમાં આપમેળે ઉમેરી શકાશે નહીં. તેમને જોડાવા માટે આમંત્રણ અપાયું છે, અને તેઓ સ્વીકારે નહીં ત્યાં સુધી કોઈપણ ગ્રુપ મેસેજ જોશે નહીં";
-
-/* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "આમંત્રણ મોકલ્યું";
-
-/* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ આમંત્રણો મોકલાયા";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "આ વપરાશકર્તાઓ તમારા દ્વારા આ ગ્રુપમાં આપમેળે ઉમેરી શકાતા નથી. તેમને જોડાવા માટે આમંત્રણ અપાયું છે, અને તેઓ સ્વીકારે નહીં ત્યાં સુધી કોઈપણ ગ્રુપ મેસેજ જોશે નહીં.";
@@ -2473,18 +2413,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "એડમિન";
 
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "કોઈ સભ્યો નથી";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 મેમ્બર";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ સભ્યો";
-
-/* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
-"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ સભ્યો";
-
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "તમે";
 
@@ -2494,9 +2422,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "સભ્યો";
 
-/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ ગ્રુપના સભ્યોને સમાન નામ છે.";
-
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "રિવ્યુ કરવા માટે ટેપ કરો";
 
@@ -2505,15 +2430,6 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "સભ્યોની સમીક્ષા કરો";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ ગ્રુપના સભ્યોના સમાન નામ છે, નીચેના સભ્યોની સમીક્ષા કરો અથવા કાર્યવાહી કરવાનું પસંદ કરો.";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ ગ્રુપના સભ્યોનું નામ એક જ છે, નીચેના સભ્યોની સમીક્ષા કરો અથવા કાર્યવાહી કરવાનું પસંદ કરો.";
-
-/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ ગ્રુપના સભ્યોનું નામ એક જ છે.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "ગ્રુપનું નામ (આવશ્યક)";
@@ -2797,30 +2713,6 @@
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "અપગ્રેડ પહેલાના તમામ મેસેજ હિસ્ટ્રી અને મીડિયા રાખવામાં આવશે.";
 
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "આ ગ્રુપ બનાવી શકાતું નથી કારણ કે 1 મેમ્બર Signal ના જૂના વર્ઝનનો ઉપયોગ કરી રહ્યા છે. તમે Signal અપડેટ કર્યા પછી તેમની સાથે નવું સ્ટાઇલ ગ્રુપ બનાવી શકો છો, અથવા ગ્રુપ બનાવતા પહેલાં તેમને દૂર કરી શકો છો.";
-
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "આ ગ્રુપ બનાવી શકાતું નથી કારણ કે %@સભ્યો Signal ના જૂના વર્ઝનનો ઉપયોગ કરી રહ્યા છે. તમે Signal અપડેટ કર્યા પછી તેમની સાથે નવા સ્ટાઈલનું ગ્રુપ બનાવી શકો છો, અથવા ગ્રુપ બનાવતા પહેલા તેમને દૂર કરી શકો છો. ";
-
-/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "આ ગ્રુપ બનાવી શકાતું નથી કારણ કે 1 મેમ્બર Signal ના જૂના વર્ઝનનો ઉપયોગ કરી રહ્યા છે. તમે Signal અપડેટ કર્યા પછી તેમની સાથે નવું સ્ટાઇલ ગ્રુપ બનાવી શકો છો, અથવા ગ્રુપ બનાવતા પહેલાં તેમને દૂર કરી શકો છો. %@";
-
-/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "આ ગ્રુપ બનાવી શકાતું નથી કારણ કે %1$@ સભ્યો Signal નું જૂનું વર્ઝન ઉપયોગ કરી રહ્યા છે. તમે Signal અપડેટ કર્યા પછી તેમની સાથે નવું સ્ટાઇલ ગ્રુપ બનાવી શકો છો, અથવા ગ્રુપ બનાવતા પહેલાં તેમને દૂર કરી શકો છો. %2$@";
-
-/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "1 મેમ્બર Signal ના જૂના વર્ઝનનો ઉપયોગ કરી હોવાથી જૂનુ ગ્રુપ બનાવવામાં આવશે. તમે Signal અપડેટ કર્યા પછી તેમની સાથે નવી શૈલીનું ગ્રુપ બનાવી શકો છો, અથવા ગ્રુપ બનાવતા પહેલા તેમને દૂર કરી શકો છો.";
-
-/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "%@ સભ્યો Signal ના જૂના વર્ઝનનો ઉપયોગ કરી રહ્યા હોવાથી એક જૂનુ ગ્રુપ બનાવવામાં આવશે. તમે Signal અપડેટ કર્યા પછી તેમની સાથે નવી સ્ટાઇલના ગ્રુપ બનાવી શકો છો, અથવા ગ્રુપ બનાવતા પહેલા તેમને દૂર કરી શકો છો.";
-
-/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 મેમ્બર નવા ગ્રુપને ટેકો આપતા નથી, તેથી આ એક જૂનુ ગ્રુપ થશે. %@";
-
-/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ સભ્યો નવા ગ્રુપને સપોર્ટ કરતા નથી, તેથી આ એક જૂનું ગ્રુપ થશે.%2$@";
-
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "આ એક જૂનું ગ્રુપ છે. ગ્રુપ એડમિન જેવા ફીચર ફક્ત નવા ગ્રુપ માટે ઉપલબ્ધ છે. %@";
 
@@ -2833,12 +2725,6 @@
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "આ એક જૂનું ગ્રુપ છે. @ઉલ્લેખો અને એડમિન જેવા નવા ફીચરને ઍક્સેસ કરવા માટે, %@";
 
-/* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 મેમ્બરને નવા ગ્રુપમાં ફરીથી ઉમેરી શકાયો નહીં. શું તમે હવે તેમને ઉમેરવા માંગો છો?";
-
-/* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ સભ્યોને નવા ગ્રુપમાં ફરીથી ઉમેરી શકાયા નહીં. શું તમે હવે તેમને ઉમેરવા માંગો છો?";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "જૂના ગ્રુપ";
 
@@ -2848,7 +2734,7 @@
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "ગ્રુપને અપગ્રેડ કરો";
 
-/* Title for the the 'migrate group' banner. */
+/* Title for the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@ઉલ્લેખો અને એડમિન જેવા નવા ફીચરની ઍક્સેસ કરવા માટે આ ગ્રુપને અપગ્રેડ કરો.";
 
 /* Title for the 'migrated group' alert view. */
@@ -2931,9 +2817,6 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "નવો એડમિન પસંદ કરો";
-
-/* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal ગ્રુપ %@ સભ્યો અથવા તેનાથી ઓછા દ્વારા શ્રેષ્ઠ પ્રદર્શન કરે છે. વધુ સભ્યો ઉમેરવાથી મેસેજ મોકલવામાં અને મેળવવામાં વિલંબ થશે.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "ભલામણ કરેલ મેમ્બરની મર્યાદા પહોંચી ગઈ";
@@ -3220,23 +3103,8 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "મેસેજ";
 
-/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "કોમનમાં %@ગ્રુપ";
-
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "બધા મીડિયા";
-
-/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d મેસેજ કાઢી નાખો";
-
-/* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "મેસેજ કાઢી નાખો";
-
-/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ ફોટા";
-
-/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ આઇટમ";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3324,15 +3192,6 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "સ્ટીકર પેક";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
-
-/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "મેસેજ";
@@ -3556,12 +3415,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ હવે ચકાસેલા તરીકે માર્ક થયેલ નથી. વિકલ્પો માટે ટેપ કરો.";
 
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "તમે આ ગ્રુપના 1 સભ્યને બ્લોક કર્યો છે";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "તમે આ ગ્રુપના %@ સભ્યો બ્લોક કર્યા છે";
-
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "આ ગ્રુપના એક કરતા વધુ સભ્યોને ચકાસણી તરીકે લાંબા સમય સુધી માર્ક કરવામાં આવશે નહીં. વિકલ્પો માટે ટેપ કરો.";
 
@@ -3625,9 +3478,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ફોન નંબર દ્વારા શોધો";
 
-/* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 Member";
-
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "નવુ ગ્રુપ";
 
@@ -3651,9 +3501,6 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "નવુ ગ્રુપ";
-
-/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
-"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ સભ્યો";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@થી%@";
@@ -3777,12 +3624,6 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "ખોટો PIN";
-
-/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "ખોટો PIN. %lu પ્રયાસો બાકી છે.";
-
-/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "ખોટો PIN. 1 પ્રયાસ બાકી છે.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "સ્કિપ કરો અને નવો PIN બનાવો";
@@ -4156,12 +3997,6 @@
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "શું “%@” તરફની વિનંતીનો અસ્વીકાર કરવો છે?";
 
-/* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ આમંત્રિત 1 વ્યક્તિ";
-
-/* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@એ %2$@ લોકોને આમંત્રિત કર્યા";
-
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "મેમ્બરની કોઈ બાકી રહેલી વિનંતીઓ નથી.";
 
@@ -4171,32 +4006,14 @@
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "“%@“ ઉમેર્યું.";
 
-/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ બાકી મેમ્બર વિનંતીઓ.";
-
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "વિનંતીઓ જુઓ";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "“%@“નો અસ્વીકાર કર્યો.";
 
-/* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "અમાન્ય આમંત્રણને રદ કરો";
-
-/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "%@અમાન્ય આમંત્રણોને રદ કરો";
-
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "આમંત્રણ રદ કરો";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" દ્વારા મોકલાયેલ ગ્રુપનું આમંત્રણ રદ કરો?";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "\"%2$@\" દ્વારા મોકલેલા %1$@ આમંત્રણોને રદ કરો?";
-
-/* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "આમંત્રણો રદ કરો";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "“%@“ માટે જૂથ આમંત્રણ રદ કરો?";
@@ -4474,9 +4291,6 @@
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Finish creating your Signal PIN.";
 
-/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "અમે તમને પછીથી યાદ કરાવીશું. PIN બનાવવાનું %ld દિવસમાં ફરજિયાત થઈ જશે.";
-
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "એક PIN બનાવો";
 
@@ -4731,18 +4545,6 @@
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "તમારો PIN 4+ અંકનો ન્યુમેરિક કોડ છે જે તમે બનાવ્યો છે. જો તમને તમારો PIN યાદ ન આવે, તો તમારે તમારું એકાઉન્ટ ફરીથી રજીસ્ટર કરવવા માટે 7 દિવસ રાહ જોવી પડશે.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "તમારી પાસે %lu પ્રયત્નો બાકી છે. જો તમે પ્રયત્નોનો અંત લાવો છો, તો તમે નવો PIN બનાવી શકો છો. તમે તમારા એકાઉન્ટ રજીસ્ટર અને ઉપયોગ કરી શકો છો પરંતુ તમે તમારી પ્રોફાઇલ માહિતી જેવી કેટલીક સાચવેલી સેટિંગ્સ ગુમાવશો.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "તમારી પાસે %lu પ્રયત્નો બાકી છે. જો તમે પ્રયાસોમાંથી બહાર નીકળશો તો તમારું એકાઉન્ટ લૉક થઈ જશે. નિષ્ક્રિયતાના 7 દિવસ પછી, તમે તમારા PIN વિના ફરીથી રજીસ્ટર કરી શકો છો. તમારું એકાઉન્ટ ભૂંસી નાખવામાં આવશે અને બધી સામગ્રી કાઢી નાખવામાં આવશે.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "તમારી પાસે 1 પ્રયાસ બાકી છે. જો તમે પ્રયાસોમાંથી બહાર નીકળશો તો તમારું એકાઉન્ટ લૉક થઈ જશે. નિષ્ક્રિયતાના 7 દિવસ પછી, તમે તમારા PIN વિના ફરીથી નોંધણી કરી શકો છો. તમારું એકાઉન્ટ ભૂંસી નાખવામાં આવશે અને બધી સામગ્રી કાઢી નાખવામાં આવશે.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "તમારી પાસે 1 પ્રયાસ બાકી છે. જો તમે પ્રયત્નોનો અંત લાવો છો, તો તમે નવો PIN બનાવી શકો છો. તમે તમારા એકાઉન્ટ રજીસ્ટર અને ઉપયોગ કરી શકો છો પરંતુ તમે તમારી પ્રોફાઇલ માહિતી જેવી કેટલીક સાચવેલી સેટિંગ્સ ગુમાવશો.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "ખોટો PIN";
@@ -5323,9 +5125,6 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "કૉપિરાઇટ Signal મેસેન્જર\nGPLv3 હેઠળ લાઇસન્સ પ્રાપ્ત";
 
-/* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Subscription";
-
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "ડેટાનો વપરાશ";
 
@@ -5466,9 +5265,6 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "સૂચનાઓ";
-
-/* Title for the 'one-time donation' link in settings. */
-"SETTINGS_ONE_TIME_DONATION" = "One-time Donation";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "સક્રિય કરો";
@@ -5983,9 +5779,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
-/* Title for the 'monthly donation' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Monthly Donation";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "રજીસ્ટ્રેશન લૉક";
 
@@ -6187,15 +5980,6 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "તમે";
 
-/* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Badges";
-
-/* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
-
-/* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
-
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "દાન કરો";
 
@@ -6280,9 +6064,6 @@
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
 
-/* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Add a Signal Boost";
-
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
 
@@ -6315,9 +6096,6 @@
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
-
-/* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
@@ -6442,26 +6220,14 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@મિનિટ";
 
-/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ સેકન્ડ";
-
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@અઠવાડિયુ";
-
-/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ વર્ષ";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@અઠવાડિયા";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@અ";
-
-/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ વર્ષ";
-
-/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 સેકન્ડ";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "રદ કરો";

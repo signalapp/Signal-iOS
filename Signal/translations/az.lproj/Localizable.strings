@@ -31,9 +31,6 @@
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Səsyazmalı mesaj";
 
-/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "%@ saniyəlik səsyazmalı mesaj";
-
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal zəngi";
 
@@ -51,24 +48,6 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Görüntülü zəng";
-
-/* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Üzv əlavə et";
-
-/* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Üzv əlavə et";
-
-/* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "\"%2$@\" qrupuna əlavə edilsin?";
-
-/* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "%1$@ üzv \"%2$@\" qrupuna əlavə edilsin?";
-
-/* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Yeni üzv əlavə et";
-
-/* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Yeni üzvlər əlavə et";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Üzv əlavə et";
@@ -155,7 +134,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Xəta";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Verilənlər Bazasının Bütövlük Yoxlamasını işə salın";
+
+/* Button to try launching the app even though the last launch failed */
+"APP_LAUNCH_FAILURE_CONTINUE" = "Əvəzində Signal-ı açın";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Verilənlər bazası yüklənilə bilmədi";
@@ -165,6 +147,12 @@
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Bilinməyən verilənlər bazası versiyası";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal-ı açmağa çalışarkən bir problem yarandı. Zəhmət olmasa problemi aradan qaldıra bilməyimiz üçün support@signal.org ünvanına sazlama jurnalını göndərin.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Signal açıla bilmədi";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Köhnə cihazınızdan köçürülmüş verilənlər geri yüklənilə bilmədi. Zəhmət olmasa problemi aradan qaldıra bilməyimiz üçün support@signal.org ünvanına sazlama jurnalını göndərin. Əgər Signal-ı yenidən quraşdırsanız, mesaj tarixçəniz itə bilər.";
@@ -380,13 +368,13 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal-ı gücləndirin";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Gücləndirmə nişanınızın müddəti bitdi və artıq profilinizdə görünməyəcək.\n\nSignal-ı istifadə etməyə davam edə bilərsiniz, ancaq sizin üçün qurulmuş texnologiyanı dəstəkləmək üçün aylıq ianə verərək dəstəkçi olmağı düşünməyinizi istərdik.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Gücləndirmə nişanınızın müddəti bitdi və artıq profilinizdə görünməyəcək.\n\nTəksəfərlik töhfə ilə Gücləndirmə nişanınızı daha 30 gün aktivləşdirə bilərsiniz.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Uzun müddət aktiv olmadığınız üçün təkrarlanan aylıq ianəniz avtomatik olaraq ləğv edildi. %@ nişanınız artıq profilinizdə görünmür.\n\nSignal-ı istifadə etməyə davam edə bilərsiniz, ancaq tətbiqi dəstəkləmək və nişanı təkrar aktivləşdirmək üçün indi yeniləyin.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Bir dəstəkçi olun";
@@ -419,7 +407,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Bir neçə nişana sahib olanda, profilinizdə başqalarının görməsi üçün birini seçə bilərsiniz.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "%@ nişanını qazandınız! Signal-a ianə verilməsi üzrə fərqindəlik yaratmaq üçün bu nişanı profilinizdə nümayiş etdirin.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Banneri bağla";
@@ -500,7 +488,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Pul vahidini tənzimlə";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Birdəfəlik ianə ilə 30 günlük Gücləndirmə nişanını qazanın.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Gücləndirmə nişanınızın müddəti %@ bitir.";
@@ -736,12 +724,6 @@
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "avto";
 
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Bu özəl rəng 1 söhbətdə istifadə olunur. Onu silmək istəyirsiniz?";
-
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Bu özəl rəng %@ söhbətdə istifadə olunur. Onu bütün söhbətlərdən silmək istəyirsiniz?";
-
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Rəngi sil";
 
@@ -750,9 +732,6 @@
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Rəngə düzəliş et";
-
-/* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Bu rəng %@ söhbətdə istifadə olunur. Onu bütün söhbətlər üçün saxlamaq istəyirsiniz?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Divar kağızı ilə rəngi avtomatik uyğunlaşdırır";
@@ -1021,14 +1000,8 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Bu söhbət, bu cihazdan silinəcək.";
 
-/* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "Bu söhbətlər bu cihazdan silinəcək.";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Söhbət silinsin?";
-
-/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "%@ söhbət silinsin?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Bu söhbəti səssizə al...";
@@ -1051,9 +1024,6 @@
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Bu qrupda yalnız adminlər mesaj göndərə bilər.";
 
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "%@ söhbətdən çoxunu seçə bilməzsiniz.";
-
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Qruplar";
 
@@ -1068,12 +1038,6 @@
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Uyğun gələn yoxdur";
-
-/* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 uyğun";
-
-/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d/%d uyğun";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Söhbət tənzimləmələri";
@@ -1153,12 +1117,6 @@
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Tələb və dəvətlər";
 
-/* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Üzvlər";
-
-/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ üzv";
-
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Həmişə bildir";
 
@@ -1219,17 +1177,11 @@
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ tarixinə qədər səssizə alındı";
 
-/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ ortaq qrupunuz var";
-
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Yeni əlaqə yarat";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Heç bir ortaq qrup yoxdur";
-
-/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 ortaq qrupunuz var";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "İcazələr";
@@ -1331,19 +1283,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Meylin istiqamətini dəyişdirmək üçün çəkin";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "İşə sal";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Bu, Signal-ı istifadə etmə müddətinə görə bir az (bir neçə dəqiqə və ya daha çox) çəkə bilər. Əgər uzun çəksə, Signal-ı bağlamaq daha güvənlidir.";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Sazlama jurnalına əlavə et";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Bütövlük yoxlanış nəticələri";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Verilənlər Bazasının Bütövlük Yoxlamasını işə salınsın?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Bu, bir neçə dəqiqə çəkə bilər.";
@@ -1351,17 +1303,8 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Verilənlər bazası optimallaşdırılır";
 
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ dəq";
-
-/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ dəqiqə əvvəl";
-
 /* The present; the current time. */
 "DATE_NOW" = "İndi";
-
-/* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 dəqiqə əvvəl";
 
 /* The current day. */
 "DATE_TODAY" = "Bu gün";
@@ -1452,12 +1395,6 @@
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Bütün mesajları sil";
-
-/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld mesaj silinsin?";
-
-/* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Mesaj silinsin?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Bu telefon nömrəsi ilə təkrar qeydiyyat";
@@ -1634,10 +1571,10 @@
 "DONATION_RECEIPT_DETAILS" = "Təfsilatlar";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Qəbzi paylaş";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Signal-ı dəstəklədiyiniz üçün təşəkkürlər. Töhfəniz, dünyadakı milyonlarla insan üçün güvənli qlobal ünsiyyəti təmin edən və azad ifadəni qoruyan açıq mənbəli gizlilik texnologiyasının inkişaf missiyasını dəstəkləməyə kömək edir. Əgər Birləşmiş Ştatlarda yaşayırsınızsa, zəhmət olmasa bu qəbzi vergi qeydlərinizin arasında saxlayın. Signal texnologiya fondu, Daxili Gəlir Məcəlləsinin 501c3 maddəsinə əsasən Birləşmiş Ştatlarda vergidən azad edilmiş qeyri-kommersiya təşkilatıdır. Federal Vergi Kimliyimiz: 82-4506840.";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Birdəfəlik";
@@ -1649,7 +1586,7 @@
 "DONATION_RECEIPT_TITLE" = "İanə qəbzi";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "Növü";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "İanə qəbzləri";
@@ -1657,8 +1594,44 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Signal-ı yenidən quraşdırmısınızsa, əvvəlki ianələrin qəbzləri mövcud olmayacaq.";
 
+/* Text of the 'donate to signal' button on the donation screen */
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal-a ianə verin";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal-a ianə verin";
+
+/* Text that's shown when the donation view fails to load data, probably due to network failure */
+"DONATION_VIEW_LOAD_FAILED" = "Şəbəkə xətası. Bağlantınızı yoxlayıb yenidən sınayın.";
+
+/* Text of the 'make a monthly donation' button on the donation screen */
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Aylıq ianə edin";
+
+/* Title for the 'Badges' button on the donation screen */
+"DONATION_VIEW_MANAGE_BADGES" = "Nişanlar";
+
+/* Title for the 'Manage Subscription' button on the donation screen */
+"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Abunəliyi idarə et";
+
+/* Title for the 'more' section on the donation screen */
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Daha çox";
+
+/* Title for the 'my support' section in the donation view */
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "Dəstəyim";
+
+/* Title for the 'one-time donation' link in the donation view */
+"DONATION_VIEW_ONE_TIME_DONATION" = "Birdəfəlik ianə";
+
+/* Title for the 'other ways to give' section on the donation view */
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Digər metodlar";
+
+/* Title for the 'receipts' section on the donation screen */
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Qəbzlər";
+
+/* Title for the 'Subscription FAQ' button on the donation screen */
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Abunəlik üçün TSS";
+
+/* Title on the 'Donate to Signal' screen */
+"DONATION_VIEW_TITLE" = "Signal-a ianə verin";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOS tənzimləmələrində müraciəti fəallaşdıra bilərsiniz.";
@@ -1671,9 +1644,6 @@
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Bu istifadəçi, Signal-ı yüksəldənə qədər qrupa əlavə edilə bilməyəcək.";
-
-/* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Qrup həcmi üçün maksimum %@ üzv sayına çatıldı.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Etibarsız foto.";
@@ -1867,9 +1837,6 @@
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Signal versiyanızın istifadə müddəti bitib! Son versiyaya yeniləmək üçün toxunun.";
 
-/* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Signal versiyanızın istifadə müddəti %d günə bitir. Son versiyaya yeniləmək üçün toxunun.";
-
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Signal versiyanızın istifadə müddəti bu gün bitir. Son versiyaya yeniləmək üçün toxunun.";
 
@@ -1905,12 +1872,6 @@
 
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Yönləndirilən mesajlar, artıq dərhal göndərilir.";
-
-/* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Mesaj göndər";
-
-/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "%@ mesajı göndər";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Daha sürətli yönləndirmələr";
@@ -2044,9 +2005,6 @@
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Daha çox məlumat";
 
-/* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Bu zəng üçün maksimum %ld iştirakçı sayına çatdınız. Daha sonra yenidən sınayın.";
-
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Bu zəng üçün maksimum iştirakçı sayına çatdınız. Daha sonra yenidən sınayın.";
 
@@ -2058,9 +2016,6 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Zəngi tərk et";
-
-/* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Bu zəngdə · %ld nəfər";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ və digər %3$@ nəfər bu zəngdədir";
@@ -2080,12 +2035,6 @@
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Hələ ki, bu zəngdə heç kəs yoxdur.";
 
-/* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ və digər %ld nəfər zəngə qoşuldu";
-
-/* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ və digər %ld nəfər zəngi tərk etdi";
-
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ zəngə qoşuldu";
 
@@ -2097,9 +2046,6 @@
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ və %@ zəngi tərk etdi";
-
-/* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "Bu zəngdə · 1 nəfə";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ bu zəngdədir";
@@ -2269,14 +2215,8 @@
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@, qrup bağlantısı üçün admin təsdiqini işə saldı.";
 
-/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
+/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "\"%@\", sizin tərəfinizdən bu qrupa avtomatik olaraq əlavə edilə bilməz. Qoşulması üçün dəvət göndərildi və qəbul edənə qədər qrup mesajını görməyəcək.";
-
-/* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Dəvət göndərildi";
-
-/* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ dəvət göndərildi";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Bu istifadəçiləri bu qrupa avtomatik olaraq əlavə edə bilməzsiniz.\n\nQoşulmaq üçün dəvət göndərildi və qəbul edənə qədər qrup mesajlarını görməyəcəklər.";
@@ -2473,18 +2413,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
 
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "Üzv yoxdur";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 üzv";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ üzv";
-
-/* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
-"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ üzv";
-
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Siz";
 
@@ -2494,9 +2422,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Üzvlər";
 
-/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ qrup üzvünün adı eynidir.";
-
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Nəzərdən keçirmək üçün toxunun";
 
@@ -2505,15 +2430,6 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Üzvləri nəzərdən keçir";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ qrup üzvü oxşar ada sahibdir. Üzvləri aşağıda nəzərdən keçirin və seçim edin.";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ qrup üzvü oxşar ada sahibdir. Üzvləri aşağıda nəzərdən keçirin və seçim edin.";
-
-/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ qrup üzvünün adı eynidir.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Qrup adı (tələb olunur)";
@@ -2797,30 +2713,6 @@
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Bütün mesaj tarixçəsi və mediası, yüksəldilməzdən əvvəl saxlanılacaq.";
 
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "1 üzv, Signal-ın köhnə versiyasını istifadə etdiyi üçün qrup yaradıla bilmir. Həmin üzvlər Signal-ı yenilədikdən və ya siz onları qrupdan çıxartdıqdan sonra Yeni Stil Qrup yarada biləcəksiniz.";
-
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "%@ üzv, Signal-ın köhnə versiyasını istifadə etdiyi üçün qrup yaradıla bilmir. Həmin üzvlər Signal-ı yenilədikdən və ya siz onları qrupdan çıxartdıqdan sonra Yeni Stil Qrup yarada biləcəksiniz.";
-
-/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "1 üzv, Signal-ın köhnə versiyasını istifadə etdiyi üçün qrup yaradıla bilmir. Həmin üzvlər Signal-ı yenilədikdən və ya siz onları qrupdan çıxartdıqdan sonra Yeni Stil Qrup yarada biləcəksiniz. %@";
-
-/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "%1$@ üzv, Signal-ın köhnə versiyasını istifadə etdiyi üçün qrup yaradıla bilmir. Həmin üzvlər Signal-ı yenilədikdən və ya siz onları qrupdan çıxartdıqdan sonra Yeni Stil Qrup yarada biləcəksiniz. %2$@";
-
-/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "1 üzv, Signal-ın köhnə versiyasını istifadə etdiyi üçün Köhnə Qrup yaradılacaq. Həmin üzvlər Signal-ı yenilədikdən və ya siz onları qrupdan çıxartdıqdan sonra Yeni Stil Qrup yarada biləcəksiniz.";
-
-/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "%@ üzv, Signal-ın köhnə versiyasını istifadə etdiyi üçün Köhnə Qrup yaradılacaq. Həmin üzvlər Signal-ı yenilədikdən və ya siz onları qrupdan çıxartdıqdan sonra Yeni Stil Qrup yarada biləcəksiniz.";
-
-/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 üzv Yeni Qrupu dəstəkləmir, ona görə də bu, Köhnə Qrup olacaq. %@ ";
-
-/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ üzv Yeni Qrupu dəstəkləmir, ona görə də bu, Köhnə Qrup olacaq. %2$@";
-
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Bu bir Köhnə Qrupdur. Qrup adminləri kimi özəlliklər, yalnız Yeni Qruplar üçün əlçatandır. %@";
 
@@ -2833,12 +2725,6 @@
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Bu bir Köhnə Qrupdur. @adçəkmələr və adminlər kimi yeni özəlliklərə müraciət etmək üçün, %@.";
 
-/* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 üzv Yeni Qrupa əlavə edilə bilmədi. Onu indi əlavə etmək istəyirsiniz?";
-
-/* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "%@ üzv Yeni Qrupa əlavə edilə bilmədi. Onları indi əlavə etmək istəyirsiniz?";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Köhnə Qrup";
 
@@ -2848,7 +2734,7 @@
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Qrupu yüksəlt";
 
-/* Title for the the 'migrate group' banner. */
+/* Title for the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "@adçəkmələr və adminlər kimi yeni özəlliklərə müraciət etmək üçün, bu qrupu yüksəldin.";
 
 /* Title for the 'migrated group' alert view. */
@@ -2931,9 +2817,6 @@
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Yeni admin seçin";
-
-/* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal qrupları, %@ və daha az üzvlə daha yaxşı işləyir. Daha çox üzvün əlavə edilməsi mesajların alınması və göndərilməsində gecikmələrə səbəb olacaq.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Tövsiyə edilən üzv limitinə çatıldı";
@@ -3220,23 +3103,8 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Mesaj";
 
-/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "%@ ortaq qrupunuz var";
-
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Bütün media";
-
-/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%d mesajı sil";
-
-/* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Mesajı sil";
-
-/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ foto";
-
-/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ element";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -3324,15 +3192,6 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Stiker paketi";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 seçildi";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 seçildi";
-
-/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ seçildi";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesaj yaz";
@@ -3556,12 +3415,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ artıq təsdiqləndi olaraq işarələnmir. Seçimlər üçün toxunun.";
 
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Bu qrupun 1 üzvünü əngəllədiniz";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Bu qrupun %@ üzvünü əngəllədiniz";
-
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Bu qrupun birdən çox üzvü artıq təsdiqləndi olaraq işarələnmir. Seçimlər üçün toxunun.";
 
@@ -3625,9 +3478,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Telefon nömrəsinə görə tap";
 
-/* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 üzv";
-
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Yeni Qrup";
 
@@ -3651,9 +3501,6 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Yeni qrup";
-
-/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
-"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "%@ üzv";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ tərəfindən %@ qrupuna";
@@ -3777,12 +3624,6 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Yanlış PIN";
-
-/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Yanlış PIN. %lu cəhd qaldı.";
-
-/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Yanlış PIN. 1 cəhd qaldı.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Ötür və Yeni PIN yarat";
@@ -4156,12 +3997,6 @@
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\" tərəfindən göndərilən tələb rədd edilsin?";
 
-/* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ 1 nəfəri dəvət etdi";
-
-/* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ %2$@ nəfəri dəvət etdi";
-
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Gözləyən heç bir üzv tələbi yoxdur.";
 
@@ -4171,32 +4006,14 @@
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "\"%@\" əlavə edildi.";
 
-/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "Gözləyən %@ üzv tələbi var.";
-
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Tələblərə bax";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%@\" rədd edildi.";
 
-/* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Etibarsız dəvət ləğv edildi";
-
-/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "%@ etibarsız dəvəti ləğv et";
-
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Dəvəti ləğv et";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" tərəfindən göndərilən qrup dəvəti ləğv edilsin?";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "\"%2$@\" tərəfindən göndərilən %1$@ dəvət ləğv edilsin?";
-
-/* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Dəvətləri ləğv et";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" üçün qrup dəvəti ləğv edilsin? ";
@@ -4474,9 +4291,6 @@
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Signal PIN-inin yaradılmasını tamamlayın.";
 
-/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Daha sonra xatırladacağıq. Bir PIN yaratmaq, %ld günə məcburi olacaq.";
-
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "PIN yarat";
 
@@ -4643,10 +4457,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Hekayənizə reaksiya verildi";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%@ paylaşan hekayəyə reaksiya verildi";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Hekayə";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Qoşma";
@@ -4731,18 +4545,6 @@
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN-iniz, yaratdığınız 4+ rəqəmli koddur. Əgər PIN-inizi xatırlaya bilmirsinizsə, hesabızı təkrar qeydiyyata almaq üçün 7 gün gözləməli olacaqsınız.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "%lu cəhdiniz qaldı. Cəhdləriniz bitsə, yeni bir PİN yarada bilərsiniz. Hesabı qeydiyyatdan keçirib istifadə edə bilərsiniz, lakin yadda saxlanılan tənzimləmələr və hesab məlumatı silinəcək.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "%lu cəhdiniz qalıb. Cəhdləriniz bitsə, hesabınız kilidlənəcək. 7 günlük fəaliyyətsizlikdən sonra, PIN-iniz olmadan təkrar qeydiyyatdan keçə bilərsiniz. Hesabınız və bütün məzmunları silinəcək.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "1 cəhdiniz qalıb. Cəhdləriniz bitsə, hesabınız kilidlənəcək. 7 günlük fəaliyyətsizlikdən sonra, PIN-iniz olmadan təkrar qeydiyyatdan keçə bilərsiniz. Hesabınız və bütün məzmunları silinəcək.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "1 cəhdiniz qaldı. Cəhdləriniz bitsə, yeni bir PİN yarada bilərsiniz. Hesabı qeydiyyatdan keçirib istifadə edə bilərsiniz, lakin yadda saxlanılan tənzimləmələr və hesab məlumatı silinəcək.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Yanlış PIN";
@@ -5323,9 +5125,6 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Signal Messenger Müəllif Hüquqları\nGPLv3 altında lisenziyalaşdırılıb";
 
-/* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Abunəlik";
-
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Verilənlər istifadəsi";
 
@@ -5466,9 +5265,6 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Bildirişlər";
-
-/* Title for the 'one-time donation' link in settings. */
-"SETTINGS_ONE_TIME_DONATION" = "Birdəfəlik ianə";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Aktivləşdir";
@@ -5983,9 +5779,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Təklifləri və bildirişləri paylaşmaq kimi özəlliklər üçün iOS-un, Signal əlaqələrinə və söhbətlərinə müraciətinə icazəsi verin.";
 
-/* Title for the 'monthly donation' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Aylıq ianə";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Qeydiyyat Kilidi";
 
@@ -6187,15 +5980,6 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Siz";
 
-/* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Nişanlar";
-
-/* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Abunəliyi idarə et";
-
-/* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Abunəlik üçün TSS";
-
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "İanə ver";
 
@@ -6269,19 +6053,16 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal, reklam verəni və ya investoru olmayan, yalnız onu istifadə edən və ona dəyər verən insanlar tərəfindən dəstəklənən qeyri-kommersiya təşkilatıdır. Hər ay müntəzəm olaraq ianə verin və dəstəyinizi paylaşmaq üçün bir profil nişanı alın.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal, azad ifadəni qoruyan və güvənli qlobal ünsiyyəti təmin edən açıq mənbəli gizlilik texnologiyasını təkmilləşdirmə missiyasına sadiqdir.\n\nSizin ianəniz də bu niyyətə xidmət edir və milyonlarla insan tərəfindən gizli ünsiyyət üçün istifadə olunan tətbiqin əməliyyat və inkişaf xərclərini qarşılayır. Reklam yoxdur. İzləmə yoxdur. Zarafat yoxdur.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Signal-ı dəstəkləyən cəmiyyətə qoşularaq verilənləriniz üçün yox, sizin üçün hazırlanmış texnologiyaya dəstək verin.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Niyə ianə verməliyəm?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Hələ də emal olunur";
-
-/* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Signal gücləndirməsi əlavə et";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "%@ nişanını əldə edin";
@@ -6316,9 +6097,6 @@
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Ödəniş emal xətası";
 
-/* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "Dəstəyim";
-
 /* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Ödəniş emal xətası. %@";
 
@@ -6338,7 +6116,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Əməliyyat emal edilir...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "Daha çox oxu.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%@ yenilənir";
@@ -6442,26 +6220,14 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ dəqiqə";
 
-/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ saniyə";
-
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ həftə";
-
-/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ il";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ həftə";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ həf";
-
-/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ il";
-
-/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 saniyə";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "İmtina";

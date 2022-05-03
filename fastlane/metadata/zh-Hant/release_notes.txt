@@ -1,2 +1,2 @@
-• If you're a donor, we've reorganized some of the screens to make it easier to manage your subscription, badges, and receipts. Thanks for supporting Signal!
+• 如果你是贊助者，我們已經重新設計了一些螢幕畫面，以便更輕鬆地管理你的訂閱、徽章和收據。 感謝你對Signal的支持！
 • 各種其他錯誤修復和性能改進有助於保持你的app順利運作。

@@ -8,7 +8,7 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "Прийняти новий код безпеки";
 
 /* Accessibility label for attachment. */
-"ACCESSIBILITY_LABEL_ATTACHMENT" = "Додаток";
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "Вкладення";
 
 /* Accessibility label for audio. */
 "ACCESSIBILITY_LABEL_AUDIO" = "Аудіо";
@@ -26,13 +26,10 @@
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "Ви";
 
 /* Accessibility label for stickers. */
-"ACCESSIBILITY_LABEL_STICKER" = "Стікер";
+"ACCESSIBILITY_LABEL_STICKER" = "Наліпка";
 
 /* Accessibility label for a voice memo. */
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Голосове повідомлення";
-
-/* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Голосове повідомлення %@ секунд";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Виклик Signal";
@@ -51,24 +48,6 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Відеовиклик";
-
-/* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Додати учасника";
-
-/* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Додати учасників";
-
-/* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Додати учасника до «%2$@»?";
-
-/* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Додати %1$@ учасників до «%2$@»?";
-
-/* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Додати нового учасника";
-
-/* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Додати нових учасників";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Додати учасників";
@@ -110,16 +89,16 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із користувачем?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Ясно";
+"ALERT_ACTION_ACKNOWLEDGE" = "Зрозуміло";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Повідомлення, стікери, реакції, сповіщення про прочитання або медіа від %@ не вдалось доставити у цьому чаті.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Повідомлення, наліпки, реакції, сповіщення про прочитання або медіа від %@ не вдалося доставити вам у цьому чаті.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Проблема з доставленням";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Повідомлення, стікери, реакції, сповіщення про прочитання або медіа від %@ доставити не вдалось. Можливо, їх надсилали напряму або у групі.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Повідомлення, наліпки, реакції, сповіщення про прочитання або медіа від %@ не вдалося доставити. Можливо, їх надсилали безпосередньо вам, або в групі.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Відхилити";
@@ -140,7 +119,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "У вас немає спільних учасників у цій групі. Уважно розглядайте запити перед тим, як їх прийняти, щоб уникнути небажаних повідомлень.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Про запити на листування";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Про запити на повідомлення";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Відповісти";
@@ -155,7 +134,10 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Помилка";
 
 /* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Run Database Integrity Check";
+"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Виконати перевірку інтеграції бази даних";
+
+/* Button to try launching the app even though the last launch failed */
+"APP_LAUNCH_FAILURE_CONTINUE" = "Відкрити Signal натомість";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Не вдалося завантажити базу даних";
@@ -166,11 +148,17 @@
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Невідома версія бази даних.";
 
-/* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Дані, перенесені з вашого старого пристрою, не вдалось відновити. Будь-ласка, надішліть журнал налаштувань на support@signal.org, щоб ми змогли виправити цю проблему. Якщо ви переінсталюєте Signal, ваша історія повідомлень може бути втрачена.";
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal зіткнувся з проблемою під час відкриття. Будь ласка, надішліть журнал зневадження на support@signal.org, щоб допомогти усунути цю проблему.";
+
+/* Error indicating that the app crashed during the previous launch. */
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Не вдається відкрити Signal";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Не вдалось завершити перенесення";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Не вдалося відновити дані, перенесені з вашого старого пристрою. Будь ласка, надішліть журнал зневадження на support@signal.org, щоб ми змогли виправити цю проблему. Якщо ви перевстановите Signal, історія повідомлень може бути втрачена.";
+
+/* Error indicating that the app could not restore transferred data. */
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Не вдається завершити перенесення";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Уведіть своє ім’я";
@@ -233,16 +221,16 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Швидше, менше даних";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Якість Медіа";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Якість медіа";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Повідомлення до %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Відправити";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Надіслати";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Додаток";
+"ATTACHMENT_DEFAULT_FILENAME" = "Вкладення";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Помилка надсилання долучення";
@@ -275,7 +263,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Долучення порожнє.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Вибрати медіа для відправлення";
+"ATTACHMENT_HINT" = "Вибрати медіа для надсилання";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Камера";
@@ -293,10 +281,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Розташування";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Надайте доступ до ваших фото в Параметрах для можливості відправлення.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Надайте доступ до ваших фото в Параметрах для можливості надсилання.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Після того як ви зробите фото, ви зможете відправляти нещодавні фото тут.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Як тільки ви зробите знімок, ви зможете надіслати нещодавні фото тут.";
 
 /* A button to select a payment from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Платіж";
@@ -338,7 +326,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Звукове повідомлення";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Голосовий дзвінок";
+"AUDIO_CALL_LABEL" = "Голосовий виклик";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Динамік";
@@ -350,7 +338,7 @@
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Колір";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Опис";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Текст";
 
 /* Text indicating the user can select an avatar from their camera */
 "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "камера";
@@ -368,58 +356,58 @@
 "BACK_BUTTON" = "Назад";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Мої емблеми";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Мої відзнаки";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Емблеми";
+"BADGE_CONFIGURATION_TITLE" = "Відзнаки";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Стати підтримувачем";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Надати Signal можливість розвитку";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Надайте Signal можливість розвитку";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired and is no longer visible on your profile.\n\nYou can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Термін дії вашої відзнаки розвитку завершився і вона більше не показуватиметься у вашому профілі.\n\nВи можете й надалі користуватися Signal, але для підтримки технології, створеної для вас, подумайте про регулярний щомісячний внесок.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Строк дії Емблеми розвитку сплив та вона більше не показуватиметься у вашому профілі.\n\nВи можете знов активувати свою емблему розвитку на 30 днів за допомогою одного внеску.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Термін дії відзнаки розвитку завершився і вона більше не показуватиметься у вашому профілі.\n\nВи можете знов активувати свою відзнаку розвитку на 30 днів, зробивши одноразовий внесок.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Ваш регулярний щомісячний платіж було автоматично скасовано, оскільки ви занадто довго були неактивні. Відзнака %@ більше не показуватиметься у вашому профілі.\n\nВи можете й надалі користуватися Signal, але для підтримки програми та відновлення вашої відзнаки, необхідно поновити внесок.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Стати підтримувачем";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Додати пришвидшення";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Продовжити підтримку";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Строк дії емблеми сплив";
+"BADGE_EXPIRED_BOOST_TITLE" = "Термін дії відзнаки завершився";
 
 /* Button title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Поновити передплату";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Щомісячний внесок скасовано";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Дякуємо за можливість розвиватись!";
+"BADGE_THANKS_BOOST_TITLE" = "Дякуємо за підтримку!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показувати в обліковому записі";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показувати в профілі";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Зробити емблемою, що показується";
+"BADGE_THANKS_MAKE_FEATURED" = "Зробити обраною відзнакою";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Дякуємо за вашу підтримку!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "Коли у вас більше однієї емблеми, ви можете обирати, яку саме показувати у своєму обліковому записі.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Коли у вас більше однієї відзнаки, ви можете обрати, яку саме показувати у своєму профілі.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Ви заробили відзнаку %@. Покажіть її у своєму профілі, щоб повідомити про підтримку Signal.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Закрити банер";
@@ -452,16 +440,16 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Розблокувати";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ви зможете відправляти повідомлення та дзвонити один одному.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ви зможете надсилати повідомлення та дзвонити один одному.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Учасники зможуть додати вас до групи.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Учасники зможуть додати вас до групи знову.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Учасники групи зможуть знову додати вас до неї.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Розблокувати групу?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Розблокувати цю групу?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Розблокувати %@?";
@@ -470,7 +458,7 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Заблокувати";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ заблоковано.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ було заблоковано.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Користувач заблокований";
@@ -485,7 +473,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Помилка";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ розблоковано.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ було розблоковано.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Учасники зможуть додати вас до групи.";
@@ -500,16 +488,16 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Обрати валюту";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Зробіть одноразовий внесок і заробіть відзнаку розвитку на 30 днів.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Строк дії вашої Емблеми розвитку спливає %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Термін дії вашої відзнаки розвитку завершується %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Власна сума";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "Більше опцій для сплати";
+"BOOST_VIEW_OTHER_WAYS" = "Більше варіантів сплати";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Оберіть більшу суму для внеску";
@@ -521,7 +509,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Оберіть розмір внеску";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Надати Signal можливість розвитку";
+"BOOST_VIEW_TITLE" = "Підтримайте Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Додати";
@@ -554,7 +542,7 @@
 "BUTTON_NOT_NOW" = "Не зараз";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Добре";
+"BUTTON_OKAY" = "Гаразд";
 
 /* Label for the 'previous' button. */
 "BUTTON_PREVIOUS" = "Назад";
@@ -578,7 +566,7 @@
 "BUTTON_UNMUTE" = "Сповіщати";
 
 /* Label for the 'view' button. */
-"BUTTON_VIEW" = "Детальніше";
+"BUTTON_VIEW" = "Переглянути";
 
 /* Label for the 'yes' button. */
 "BUTTON_YES" = "Так";
@@ -587,22 +575,22 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Перетелефонувати";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Вхідний дзвінок…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Вхідний голосовий виклик…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Пропущено голосовий виклик о %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Пропущений голосовий виклик о %@";
 
 /* notification body for a call that was just missed */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Пропущений дзвінок";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Пропущений виклик";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Пропущено голосовий виклик %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Пропущений голосовий виклик %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Пропущено голосовий виклик у %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Пропущений голосовий виклик у %@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Щоб телефонувати та записувати голосові повідомлення в Signal, надайте програмі доступ до мікрофона в налаштуваннях iOS.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Для викликів та запису голосових повідомлень в Signal, надайте програмі доступ до мікрофона в параметрах iOS.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Потрібен доступ до мікрофона";
@@ -629,19 +617,19 @@
 "CALL_USER_ALERT_TITLE" = "Зателефонувати?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Вхідний відео дзвінок…";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Вхідний відеовиклик…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Пропущено відеовиклик о %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Пропущений відеовиклик о %@";
 
 /* notification body for a call that was just missed */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Пропущений відео дзвінок";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Пропущений відеовиклик";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Пропущено відеовиклик %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Пропущений відеовиклик %@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Пропущено відеовиклик у %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Пропущений відеовиклик у %@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Відповісти без відео";
@@ -662,7 +650,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Вимкнути мікрофон";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ отримає запит від вас. Ви зможете подзвонити коли запит приймуть.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ отримає запит від вас. Ви зможете телефонувати коли запит буде прийнято.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Змінити камеру";
@@ -683,7 +671,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Користувач Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Зробіть фотографію та відправте її";
+"CAMERA_BUTTON_HINT" = "Зробіть фото, а потім надішліть";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Камера";
@@ -701,19 +689,19 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "Редагувати фото";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Новий номер телефона має відрізнятись від старого. Будь ласка, введіть новий номер для зміни свого номеру телефона.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Новий номер телефону повинен відрізнятися від старого. Будь ласка, введіть новий номер телефону для зміни.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Введений номер телефону не відповідає номеру телефону вашого облікового запису.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Введений номер телефону не відповідає вашому обліковому запису.";
 
 /* Error indicating that the user's new phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Новий номер телефона є хибним. Будь ласка, введіть дійсний номер для заміни свого номеру телефона.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Недійсний новий номер телефону. Будь ласка, введіть дійсний номер телефону для зміни.";
 
 /* Error indicating that the user's old phone number is not valid. */
-"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Старий номер телефона є хибним. Будь ласка, введіть дійсний номер для заміни свого номеру телефона.";
+"CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Недійсний старий номер телефону. Будь ласка, введіть дійсний номер телефону для зміни.";
 
 /* Title of the 'change phone number PIN' view. */
-"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Введіть PIN для нового номеру телефона. Це не код підтвердження, надісланий у SMS.";
+"CHANGE_PHONE_NUMBER_PIN_EXPLANATION" = "Введіть ПІН для нового номера телефону. Це не код підтвердження, надісланий вам у SMS.";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Ось таким буде колір чату.";
@@ -736,12 +724,6 @@
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "авто";
 
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Цей власний колір використовується в 1 чаті. Бажаєте його видалити?";
-
-/* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Цей власний колір використовується в чатах: %@. Бажаєте його видалити для усіх чатів?";
-
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Видалити колір";
 
@@ -750,9 +732,6 @@
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Редагувати колір";
-
-/* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Цей колір використовується в чатах: %@. Бажаєте зберегти зміни для усіх чатів?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Автоматично припасувати колір до шпалер";
@@ -767,7 +746,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Порівняти із буфером обміну";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Оберіть або знайдіть користувача Signal, щоб почати з ним листування.";
+"COMPOSE_BUTTON_HINT" = "Оберіть або знайдіть користувача Signal, щоб почати спілкування.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Написати";
@@ -791,13 +770,13 @@
 "CONFIGURE_REACTIONS" = "Налаштувати реакції";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TEXT" = "Це скине застосунок видаливши ваші повідомлення. Після завершення цього процесу застосунок буде закрито.";
+"CONFIRM_DELETE_DATA_TEXT" = "Ця дія відновить програму, видаливши ваші повідомлення. Після завершення процесу програма закриється.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TITLE" = "Ви дійсно хочете видалити всі ваші дані?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Це обнулить програму та видалить всі ваші повідомлення з цього пристрою. Ви завжди зможете прив'язати ваш телефон знову, але це не відновить видалені повідомлення. Після завершення процесу програма закриється.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ця дія відновить програму, видаливши всі ваші повідомлення з цього пристрою. Ви завжди зможете прив'язати ваш телефон знову, але це не відновить видалені повідомлення. Після завершення процесу програма закриється.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ви дійсно хочете видалити всі дані?";
@@ -875,10 +854,10 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Щоб бачити імена та фото контактів у своїх чатах:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Натисніть Налаштування нижче";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Торкніться \"Відкрити параметри\" нижче";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Увімкнути \"Контакти\"";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Увімкніть \"Контакти\"";
 
 /* Title for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Увімкнути Контакти";
@@ -914,7 +893,7 @@
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Редагувати ім’я";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Хибний контакт.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Недійсний контакт.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Не вибрано жодних даних контакту.";
@@ -1021,14 +1000,8 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Чат буде видалено з цього пристрою.";
 
-/* Message for the 'conversations delete confirmation' alert for multiple messages. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "Ці чати буде видалено з цього пристрою.";
-
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Видалити чат?";
-
-/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
-"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Видалити чати %@?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Стишити цей чат на...";
@@ -1051,9 +1024,6 @@
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Лише адміністратори можуть відправити повідомлення у цю групу.";
 
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Не можна обирати більше %@ чатів.";
-
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Групи";
 
@@ -1068,12 +1038,6 @@
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Жодного збігу";
-
-/* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 збіг";
-
-/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "1%d з 1%d збігу";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Налаштування чату";
@@ -1103,10 +1067,10 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "аудіо";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Отримайте емблеми для свого облікового запису підтримуючи Signal. Торкніться емблеми, щоб дізнатись більше.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Отримуйте відзнаки для свого профілю, підтримуючи Signal. Торкніться відзнаки, щоб дізнатися більше.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Емблеми";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Відзнаки";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Ви більше не отримуватимете повідомлень чи оновлень від цього користувача.";
@@ -1152,12 +1116,6 @@
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Запити та запрошення";
-
-/* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Учасники";
-
-/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "Учасники %@";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Завжди повідомляти";
@@ -1219,17 +1177,11 @@
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Стишено до %@";
 
-/* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ спільних груп";
-
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Створити новий контакт";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
 "CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Спільних груп немає";
-
-/* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
-"CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 спільна група";
 
 /* Label for 'permissions' action in conversation settings view. */
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Дозволи";
@@ -1331,19 +1283,19 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Потягніть для зміни напрямку градієнту";
 
 /* Button to run the database integrity check */
-"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Run";
+"DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Виконати";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This may take a while (several minutes or more) depending on how much you have used Signal. It is safe to close Signal if it is taking too long.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Це може тривати деякий час (декілька хвилин), залежно від того, як довго ви користуєтеся Signal. Ви можете закрити Signal, якщо це триватиме надто довго.";
 
 /* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Add to Debug Log";
+"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Додати журнал зневадження";
 
 /* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Integrity check results";
+"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Результати інтеграційної перевірки";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database integrity check?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Виконати інтеграційну перевірку бази даних?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Це може зайняти кілька хвилин.";
@@ -1351,17 +1303,8 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Оптимізація бази даних";
 
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@хв";
-
-/* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "Хвилин тому %@";
-
 /* The present; the current time. */
 "DATE_NOW" = "Зараз";
-
-/* Full string for a relative time of one minute ago. */
-"DATE_ONE_MINUTE_AGO_LONG" = "1 хвилину тому";
 
 /* The current day. */
 "DATE_TODAY" = "Сьогодні";
@@ -1452,12 +1395,6 @@
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Видалити усі повідомлення";
-
-/* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Видалити %ld повідомлення?";
-
-/* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Видалити повідомлення?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Зареєструвати цей номер телефону знову";
@@ -1619,7 +1556,7 @@
 "DISMISS_CONTEXT_MENU" = "Прибрати контекстне меню";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Показувати емблеми в обліковому записі";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Показувати відзнаки у профілі";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Країна для обходу цензури";
@@ -1634,10 +1571,10 @@
 "DONATION_RECEIPT_DETAILS" = "Деталі";
 
 /* Text on the button that exports the receipt */
-"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Share Receipt";
+"DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Поділитися квитанцією";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Дякуємо за підтримку Signal. Ваш внесок допомагає підтримувати місію розробки технології приватності з відкритим кодом, яка захищає вільне висловлювання та дає змогу безпечно спілкуватися мільйонам людей у всьому світі. Якщо ви є резидентом Сполучених Штатів, збережіть цю квитанцію для податкового обліку. Signal Technology Foundation – відповідно до розділу 501c3 Податкового кодексу це звільнена від податків некомерційна організація в Сполучених Штатах. Наш федеральний податковий номер: 82–4506840.";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Одноразово";
@@ -1649,7 +1586,7 @@
 "DONATION_RECEIPT_TITLE" = "Квитанція внеску";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Type";
+"DONATION_RECEIPT_TYPE" = "Тип";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "Квитанція внеску";
@@ -1657,8 +1594,44 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Якщо ви перевстановлювали Signal, квитанції попередніх внесків не будуть доступні.";
 
+/* Text of the 'donate to signal' button on the donation screen */
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Підтримати Signal";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Зробити внесок для Signal";
+
+/* Text that's shown when the donation view fails to load data, probably due to network failure */
+"DONATION_VIEW_LOAD_FAILED" = "Помилка мережі. Перевірте з'єднання та спробуйте знову.";
+
+/* Text of the 'make a monthly donation' button on the donation screen */
+"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Зробити щомісячний внесок";
+
+/* Title for the 'Badges' button on the donation screen */
+"DONATION_VIEW_MANAGE_BADGES" = "Відзнаки";
+
+/* Title for the 'Manage Subscription' button on the donation screen */
+"DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Керувати передплатою";
+
+/* Title for the 'more' section on the donation screen */
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Більше";
+
+/* Title for the 'my support' section in the donation view */
+"DONATION_VIEW_MY_SUPPORT_TITLE" = "Моя підтримка";
+
+/* Title for the 'one-time donation' link in the donation view */
+"DONATION_VIEW_ONE_TIME_DONATION" = "Зробити один внесок";
+
+/* Title for the 'other ways to give' section on the donation view */
+"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Інші типи внесків";
+
+/* Title for the 'receipts' section on the donation screen */
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Квитанції";
+
+/* Title for the 'Subscription FAQ' button on the donation screen */
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Часті питання про передплату";
+
+/* Title on the 'Donate to Signal' screen */
+"DONATION_VIEW_TITLE" = "Підтримати Signal";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ви можете надати доступ у налаштуваннях iOS.";
@@ -1671,9 +1644,6 @@
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Цей користувач не може бути доданий до групи, поки не оновить Signal.";
-
-/* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Досягнуто максимальної кількості користувачів у чаті — %@.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Фото не підходить.";
@@ -1867,9 +1837,6 @@
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Ваша версія Signal застаріла! Торкніться, щоб оновитись до найновішої версії.";
 
-/* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Вашу версію Signal перестануть підтримувати за %d днів. Торкніться, щоб оновити до останньої версії.";
-
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Вашу версію Signal перестануть підтримувати сьогодні. Торкніться, щоб оновити до останньої версії.";
 
@@ -1883,10 +1850,10 @@
 "FAILED_VERIFICATION_TITLE" = "Не вдалося підтвердити код безпеки!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Обрати емблему";
+"FEATURED_BADGE_SECTION_HEADER" = "Обрати відзнаку";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Показується емблема";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Обрана відзнака";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Завірити";
@@ -1905,12 +1872,6 @@
 
 /* Message for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Переслані повідомлення тепер відправляються миттєво.";
-
-/* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Надіслати повідомлення";
-
-/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Відправити повідомлень %@";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Швидше пересилання";
@@ -1943,7 +1904,7 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Нове повідомлення!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Давайте почнемо";
+"GET_STARTED_BANNER_TITLE" = "Розпочнімо";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Вигляд";
@@ -1982,7 +1943,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Уведіть пошуковий запит";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Перейти до Налаштувань";
+"GO_TO_SETTINGS_BUTTON" = "Відкрити параметри";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Ви вибрали, хто може редагувати інформацію групи, на \"%@\".";
@@ -2044,9 +2005,6 @@
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Детальніше";
 
-/* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Максимальну кількість учасників — %ld — досягнуто для цього дзвінка. Спробуйте пізніше.";
-
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Досягнуто максимальної кількості учасників для цього дзвінка. Спробуйте пізніше.";
 
@@ -2058,9 +2016,6 @@
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Покинути дзвінок";
-
-/* String indicating how many people are current in the call */
-"GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "У цій розмові · %ld осіб";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
 "GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ та інші %3$@ у цьому дзвінку";
@@ -2080,12 +2035,6 @@
 /* Text explaining to the user that nobody has joined this call yet. */
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Ще ніхто не приєднався до цього виклику.";
 
-/* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ та інші %ld приєднались до дзвінка";
-
-/* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ та %ld залишили дзвінок";
-
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ приєднався до дзвінка";
 
@@ -2097,9 +2046,6 @@
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ та %@ залишили дзвінок";
-
-/* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "У цьому дзвінку · 1 особа";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ у цьому дзвінку";
@@ -2269,14 +2215,8 @@
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ увімкнув схвалення адміністратором для посилання групи.";
 
-/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
+/* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ не може бути автоматично доданим вами до цієї групи. Його було запрошено приєднатися без можливості бачити жодного повідомлення групи до тих пір, поки він не прийме запрошення.";
-
-/* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Запрошення надіслано";
-
-/* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ запрошень надіслано";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ці користувачі не можуть бути автоматично додані вами у цій групі. Вони були запрошені приєднатися і не бачать інших повідомлень групи, поки не приймуть запрошення.";
@@ -2473,18 +2413,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Адміністратор";
 
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "Немає учасників";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 учасник";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ учасники";
-
-/* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
-"GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@Учасники";
-
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Ви";
 
@@ -2494,9 +2422,6 @@
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Учасники";
 
-/* Banner title alerting user to many name collisions in the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "Учасники групи мають схожі імена: %@";
-
 /* Button to allow user to review known name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Натисніть для перегляду";
 
@@ -2505,15 +2430,6 @@
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Перегляд учасників";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "Учасники групи мають схожі імена: %@. Перегляньте учасників нижче або оберіть дію.";
-
-/* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "Учасники групи мають однакові імена: %@. Перегляньте учасників нижче або оберіть дію.";
-
-/* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ учасників групи мають однакові імена.";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Ім'я групи (обов'язково)";
@@ -2797,30 +2713,6 @@
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Уся історія повідомлень та медіа будуть збережені під час оновлення.";
 
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Цю групу неможливо створити, оскільки 1 учасник користується застарілою версією Signal. Ви можете створити Нову групу за його участю після того, як він оновить Signal, або видалити його перед створенням групи.";
-
-/* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Цю групу неможливо створити, оскільки %@ учасників користуються застарілою версією Signal. Ви можете створити Нову групу за їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи.";
-
-/* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Цю групу неможливо створити, оскільки 1 учасник користується застарілою версією Signal. Ви можете створити Нову групу за його участю після того, як він оновить Signal, або видалити його перед створенням групи. %@";
-
-/* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Цю групу неможливо створити, оскільки %1$@ учасників користуються застарілою версією Signal. Ви можете створити Нову групу за їх участю після того, як вони оновлять Signal, або видалити їх перед створенням групи. %2$@";
-
-/* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Буде створено Спадкову Групу, оскільки 1 учасник використовує стару версію Signal. Ви можете створити з ним Групу Нового Стилю після того, як він оновить Signal, або видаліть його перед створенням групи.";
-
-/* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Буде створено Спадкову Групу, оскільки учасник %@ використовує стару версію Signal. Ви можете створити з ним Групу Нового Стилю після того, як він оновить Signal, або видаліть його перед створенням групи.";
-
-/* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 учасник не підтримує Нові Групи, тому це буде Спадкова Група. %@";
-
-/* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ учасників не підтримують Нові Групи, тому це буде Спадкова Група. %2$@";
-
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Це Успадкована група. Такі можливості як адміністратори доступні лише для Нових груп. %@";
 
@@ -2833,12 +2725,6 @@
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Це Успадкована група. Для отримання нових можливостей як @згадування та адміністратори — %@.";
 
-/* Title for the the 'dropped group member' banner. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_1" = "1 учасника не вдалось повторно додати до Нової групи. Бажаєте додати його зараз?";
-
-/* Format for the title for the the 'dropped group members' banner. Embeds: {{ the number of dropped group members }}. */
-"GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_N_FORMAT" = "Не вдалось повторно додати до Нової групи користувачів: %@. Бажаєте додати їх зараз?";
-
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Спадкована Група";
 
@@ -2848,7 +2734,7 @@
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Оновити групу";
 
-/* Title for the the 'migrate group' banner. */
+/* Title for the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Щоб скористатись новими можливостями як @згадування та адміністратори, оновіть цю групу.";
 
 /* Title for the 'migrated group' alert view. */
@@ -2932,9 +2818,6 @@
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Виберіть нового адміністратора";
 
-/* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Групи у Signal найкраще працюють з кількістю учасників %@ або менше. Додавання нових учасників викличе затримки у відправленні та отримуванні повідомлень.";
-
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Досягнуто ліміт на рекомендовану кількість користувачів у групі";
 
@@ -2966,13 +2849,13 @@
 "HOME_VIEW_DRAFT_PREFIX" = "Чернетка:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Дехто з ваших контактів вже користується Signal, включаючи %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Дехто з ваших контактів користується Signal, включно з %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Дехто з ваших контактів вже користується Signal, включаючи %@ та %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Дехто з ваших контактів користується Signal, включно з %@ та %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Дехто з ваших контактів вже користується Signal, включаючи %@, %@ та %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Дехто з ваших контактів користується Signal, включно з %@, %@ та %@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Розпочати свій перший чат.";
@@ -3053,7 +2936,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ці чати було заархівовано, отже ви побачите їх у Вхідних лише коли в них з'являться нові повідомлення.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Ще немає чатів.\nСтворіть перший, почав листування з другом.";
+"INBOX_VIEW_EMPTY_INBOX" = "Ще немає чатів.\nРозпочніть, написавши повідомлення друзям.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ телефонував вам";
@@ -3220,23 +3103,8 @@
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Повідомлення";
 
-/* A string describing that the user has many groups in common with another user. Embeds {{common group count}} */
-"MANY_GROUPS_IN_COMMON" = "Спільних груп %@";
-
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Усі медіа";
-
-/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Видалити %d повідомлень";
-
-/* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Видалити повідомлення";
-
-/* Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "Фото %@";
-
-/* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "Елементів %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
@@ -3324,15 +3192,6 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Набір наліпок";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 обрано";
-
-/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 обрано";
-
-/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ обрано";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Повідомлення";
@@ -3556,12 +3415,6 @@
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ більше не завірений. Натисніть для опцій.";
 
-/* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Ви заблокували 1 учасника цієї групи";
-
-/* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Ви заблокували %@ учасників цієї групи";
-
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "У цій групі понад один учасник більше не позначений як підтверджений. Натисніть для опцій.";
 
@@ -3625,9 +3478,6 @@
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Знайти за номером телефону";
 
-/* The title for the 'select members for new group' view if already one member is selected. */
-"NEW_GROUP_1_MEMBERS_VIEW_TITLE" = "1 учасник";
-
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Нова група";
 
@@ -3651,9 +3501,6 @@
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Нова група";
-
-/* The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members. */
-"NEW_GROUP_MANY_MEMBERS_VIEW_TITLE" = "Учасники %@";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ до %@";
@@ -3713,7 +3560,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Щоб отримувати сповіщення про нові повідомлення:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Натисніть Налаштування нижче";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Торкніться \"Відкрити параметри\" нижче";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Увімкніть «Дозволити сповіщення»";
@@ -3777,12 +3624,6 @@
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Неправильний PIN-код";
-
-/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Неправильний PIN-код. Залишилось  %lu спроб.";
-
-/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Неправильний PIN-код. Залишилась 1 спроба.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Пропустити і Створити Новий PIN-код";
@@ -4156,12 +3997,6 @@
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Відхилити запит від «%@»?";
 
-/* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ запросив(-ла) 1 людину";
-
-/* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ запросив(-ла) %2$@ людей";
-
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Немає запитів учасників, що очікують на розгляд.";
 
@@ -4171,32 +4006,14 @@
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Додано «%@».";
 
-/* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ запитів учасників, що очікують розгляду";
-
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Переглянути запити";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Відхилено «%@».";
 
-/* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Відкликати хибне запрошення";
-
-/* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Відкликати хибні запрошення: %@";
-
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Відкликати Запрошення";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Відкликати запрошення в групу, яке відправив(-ла) \"%@\"?";
-
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Відкликати %1$@ запрошень, які відправив(-ла) \"%2$@\"?";
-
-/* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Відкликати Запрошення";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Відкликати запрошення в групу для \"%@\"?";
@@ -4474,9 +4291,6 @@
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Завершіть створення Signal PIN.";
 
-/* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Ми нагадаємо вам пізніше. Створення PIN-коду стане обов'язковим через %ld днів.";
-
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Створіть PIN-код";
 
@@ -4643,10 +4457,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Відреагували на вашу історію";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реагує на розповідь %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Розповідь";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Долучення";
@@ -4731,18 +4545,6 @@
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Ваш PIN - це код з 4+ цифр, створений вами. Якщо ви не зможете згадати свій PIN-код, вам доведеться почекати 7 днів, щоб наново зареєструватися.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "У вас залишилося %lu спроб. Якщо ви вичерпаєте спроби, ви зможете створити новий PIN-код. Ви зможете зареєструватися та використовувати свій обліковий запис, але втратите деякі збережені настройки, наприклад інформацію вашого профілю.";
-
-/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "У вас залишилося %lu спроб. Якщо ви вичерпаєте спроби, ваш обліковий запис буде заблоковано. Якщо після цього протягом 7 днів в ньому не буде активності, ви зможете зареєструватися наново без введення PIN-коду. При цьому обліковий запис буде стертий, а весь вміст видалений.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "У вас залишилась 1 спроба. Якщо ви вичерпаєте спроби, ваш обліковий запис буде заблоковано. Якщо після цього протягом 7 днів в ньому не буде активності, ви зможете зареєструватися наново без введення PIN-коду. При цьому обліковий запис буде стертий, а весь вміст видалений.";
-
-/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "У вас залишилась 1 спроба. Якщо ви вичерпаєте спроби, ви зможете створити новий PIN-код. Ви зможете зареєструватися та використовувати свій обліковий запис, але втратите деякі збережені настройки, наприклад інформацію вашого профілю.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Неправельний PIN-код";
@@ -5323,9 +5125,6 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Права захищено Signal Messenger\nЛіцензовано за GPLv3";
 
-/* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Передплата";
-
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Споживання даних";
 
@@ -5466,9 +5265,6 @@
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Сповіщення";
-
-/* Title for the 'one-time donation' link in settings. */
-"SETTINGS_ONE_TIME_DONATION" = "One-time Donation";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Активувати";
@@ -5983,9 +5779,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Дозволити iOS доступ до контактів та чатів Signal для таких функцій, як пропозиції поділитись та сповіщення.";
 
-/* Title for the 'monthly donation' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Monthly Donation";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Блокування реєстрації";
 
@@ -6187,20 +5980,11 @@
 /* Author text when the local user author's a story reply */
 "STORY_REPLY_YOU_AUTHOR" = "Ви";
 
-/* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Емблеми";
-
-/* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Керувати передплатою";
-
-/* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Передплата ЧАП";
-
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Дарувати";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal працює завдяки таким людям, як ви. Зробіть внесок та отримайте відзнаку.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Не зараз";
@@ -6266,13 +6050,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Завантаження";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal — некомерційний, без рекламодавців чи інвесторів, підтримуваний лише людьми, які ним користуються та цінують. Зробіть регулярний щомісячний внесок та отримайте відзнаку профілю, повідомляючи про свою підтримку.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal відданий розробці технології приватності з відкритим кодом, яка захищає вільне висловлювання та сприяє безпечному глобальному спілкуванню.\n\nВаш внесок підтримує нашу місію та дає змогу сплачувати розробку й роботу програми, якою користуються мільйони людей для приватного спілкування. Без реклами. Без стеження. Жодних жартів.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Підтримайте технологію, створену для вас, а не ваших даних, долучившись до спільноти, яка її живить.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Навіщо робити внески?";
@@ -6280,11 +6064,8 @@
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Ще обробляється";
 
-/* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Сприяти розвитку Signal";
-
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Отримати емблему %@";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Отримати відзнаку %@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Скасувати передплату";
@@ -6293,19 +6074,19 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Підтвердження";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Плата більше не стягуватиметься. Вашу емблему буде видалено з облікового запису після закінчення строку дії підписки.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Плата більше не стягуватиметься. Вашу відзнаку буде вилучено з профілю після закінчення періоду передплати.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Підтвердити скасування?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Не вдалось додати емблему. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Не вдалося додати відзнаку. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не вдалось додати емблему до вашого облікового запису. Будь ласка, зверніться до служби підтримки.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не вдалося додати відзнаку до вашого облікового запису. Будь ласка, зверніться до служби підтримки.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Не вдалось додати емблему";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Не вдалося додати відзнаку";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Будь ласка, зверніться до служби підтримки.";
@@ -6315,9 +6096,6 @@
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Помилка обробки платежу";
-
-/* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "Моя підтримка";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Помилка обробки платежу. %@";
@@ -6338,7 +6116,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Обробка транзакції...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "Дізнатись більше.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Оновиться %@";
@@ -6365,7 +6143,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Оновити";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Робіть регулярні щомісячні внески для Signal на підтримку технології, створеної для вас, а не ваших даних.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Вимк.";
@@ -6442,26 +6220,14 @@
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%@ хвилина";
 
-/* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "%@ секунд";
-
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_WEEK" = "%@ тиждень";
-
-/* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "%@ рік";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ тижнів";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@т";
-
-/* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "%@ років";
-
-/* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_ZERO_SECONDS" = "0 секунд";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Скасувати";
