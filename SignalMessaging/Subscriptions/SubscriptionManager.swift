@@ -608,11 +608,11 @@ public class SubscriptionManager: NSObject {
                 throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0, validation failed")
             }
 
-            // Validate expiration is less than 60 days from now
-            let maximumValidExpirationDate = Date().timeIntervalSince1970 + (60 * 24 * 60 * 60)
+            // Validate expiration is less than 90 days from now
+            let maximumValidExpirationDate = Date().timeIntervalSince1970 + (90 * 24 * 60 * 60)
             guard TimeInterval(expiration) < maximumValidExpirationDate else {
                 failValidation()
-                throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 60 days from now")
+                throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 90 days from now")
             }
 
             let receiptCredentialPresentation = try clientOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
@@ -1051,10 +1051,10 @@ extension SubscriptionManager {
                     throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0")
                 }
 
-                // Validate expiration is less than 60 days from now
-                let maximumValidExpirationDate = Date().timeIntervalSince1970 + (60 * 24 * 60 * 60)
+                // Validate expiration is less than 90 days from now
+                let maximumValidExpirationDate = Date().timeIntervalSince1970 + (90 * 24 * 60 * 60)
                 guard TimeInterval(expiration) < maximumValidExpirationDate else {
-                    throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 60 days from now")
+                    throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 90 days from now")
                 }
 
                 let receiptCredentialPresentation = try clientOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
